@@ -57,6 +57,17 @@ document.getElementById('back-to-reservation-btn').addEventListener('click', () 
     document.getElementById('reservation-section').classList.remove('hidden');
 });
 
+// 🚨 '내 예약 목록' 리스트에 이벤트 위임을 사용하여 클릭 이벤트 처리
+document.getElementById('my-reservation-list').addEventListener('click', (event) => {
+    // 클릭된 요소가 'delete-btn' 클래스를 가지고 있는지 확인
+    if (event.target.classList.contains('delete-btn')) {
+        const reservationId = event.target.dataset.id;
+        if (confirm('정말로 이 예약을 취소하시겠습니까?')) {
+            deleteMyReservation(reservationId);
+        }
+    }
+});
+
 
 // =================================================================================================
 // ✅ TODO 1: 테마 목록을 API(GET /themes)로 가져와서 <select>에 채우기
@@ -208,18 +219,45 @@ function loadMyReservations() {
                 const formattedEndTime = endDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
                 // 🚨 "테마: " 레이블을 추가하고, div와 span으로 구조화하여 CSS로 제어하기 쉽게 만듭니다.
+                // 🚨 오른쪽에 '취소' 버튼을 추가합니다.
                 li.innerHTML = `
-                    <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
-                    <div class="reservation-item-details">
-                        <span>날짜: ${formattedDate}</span>
-                        <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
+                    <div class="reservation-item-content">
+                        <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
+                        <div class="reservation-item-details">
+                            <span>날짜: ${formattedDate}</span>
+                            <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
+                        </div>
                     </div>
+                    <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
                 `;
                 myReservationList.appendChild(li);
             });
         })
         .catch(error => console.error('내 예약 목록 로드 중 에러:', error));
 }
+
+// =================================================================================================
+// ✅ 사용자 본인의 예약 취소
+// API 명세: DELETE /reservations/{id}?name={name}
+// =================================================================================================
+function deleteMyReservation(id) {
+    fetch(`/reservations/${id}?name=${currentUser}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (response.status === 204) { // 204 No Content
+                alert('예약이 성공적으로 취소되었습니다.');
+                loadMyReservations(); // 내 예약 목록 새로고침
+                loadPopularThemes(); // 인기 테마 통계도 바뀔 수 있으므로 새로고침
+            } else {
+                response.json().then(errorBody => {
+                    alert(`예약 취소 실패: ${errorBody.message || '알 수 없는 오류'}`);
+                });
+            }
+        })
+        .catch(error => console.error('예약 취소 중 에러:', error));
+}
+
 
 // =================================================================================================
 // ✅ TODO 3: '예약하기' 버튼 클릭 시 API(POST /reservations) 호출

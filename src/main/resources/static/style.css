@@ -245,11 +245,20 @@ hr {
 
 /* 내 예약 목록 아이템 스타일 */
 .my-reservations-list-section .schedule-list li {
-    display: flex;
-    flex-direction: column; /* 헤더와 상세 정보를 세로로 쌓음 */
-    align-items: flex-start; /* 텍스트를 왼쪽 정렬 */
-    gap: 5px; /* 헤더와 상세 정보 사이 간격 */
+    display: flex; /* 🚨 flex로 변경 */
+    flex-direction: row; /* 🚨 가로로 배치 */
+    justify-content: space-between; /* 🚨 양 끝으로 정렬 */
+    align-items: center; /* 🚨 세로 중앙 정렬 */
+    gap: 15px; /* 🚨 컨텐츠와 버튼 사이 간격 */
     padding: 15px; /* 패딩 조정 */
+}
+
+/* 예약 아이템 내용(텍스트)을 감싸는 div */
+.reservation-item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
 }
 
 .my-reservations-list-section .schedule-list li .reservation-item-header {
@@ -263,11 +272,26 @@ hr {
     width: 100%;
     display: flex; /* 날짜와 시간을 가로로 배치 */
     flex-wrap: wrap; /* 공간이 부족하면 줄바꿈 허용 */
-    justify-content: space-between; /* 날짜와 시간을 양 끝으로 분리 */
+    gap: 15px; /* 날짜와 시간 사이 간격 */
+    justify-content: flex-start; /* 🚨 왼쪽 정렬로 변경 */
     font-size: 0.9em;
     color: #666;
 }
 
 .my-reservations-list-section .schedule-list li .reservation-item-details span {
     white-space: nowrap; /* 날짜나 시간이 중간에 끊기지 않도록 */
+}
+
+/* 예약 취소 버튼 스타일 */
+.my-reservations-list-section .delete-btn.small {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    width: auto; /* 버튼 너비 자동 조절 */
+    flex-shrink: 0; /* 버튼이 찌그러지지 않도록 */
+}
+
+.my-reservations-list-section .delete-btn.small:hover {
+    background-color: #c0392b;
 }
