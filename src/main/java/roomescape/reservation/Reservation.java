@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.Theme;
@@ -60,13 +61,27 @@ public class Reservation {
     }
 
     public void cancel(LocalDateTime now) {
-        if (this.deletedAt != null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_CANCELED);
-        }
-
+        validateActiveReservation();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         validateReservationTime(reservationDateTime, now);
         this.deletedAt = now;
+    }
+
+    public Reservation change(Theme newTheme, LocalDate newDate, ReservationTime newTime, LocalDateTime now) {
+        validateActiveReservation();
+        LocalDateTime newReservationDateTime = LocalDateTime.of(newDate, newTime.getStartAt());
+        validateReservationTime(newReservationDateTime, now);
+        return new Reservation(this.id, this.userName, newTheme, newDate, newTime, null);
+    }
+
+    public boolean belongsTo(String userName) {
+        return Objects.equals(this.userName, userName);
+    }
+
+    private void validateActiveReservation() {
+        if (this.deletedAt != null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_CANCELED);
+        }
     }
 
     private void validateReservationTime(LocalDateTime reservationDateTime, LocalDateTime now) {

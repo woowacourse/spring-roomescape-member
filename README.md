@@ -18,9 +18,9 @@
 ### 3단계 - 내 예약 조회/변경/취소
 
 - [x] 본인 예약 목록 조회 (GET /api/reservations?user_name={name})
-- [ ] 본인 예약 변경 (PATCH /api/reservations/{id})
+- [x] 본인 예약 변경 (PATCH /api/reservations/{id})
 - [x] 본인 예약 취소 (DELETE /api/reservations/{id}, soft delete)
-- [ ] 변경/취소 시 거부 케이스 처리 (이미 지난 예약, 변경 시간 점유 등)
+- [x] 변경/취소 시 거부 케이스 처리 (이미 지난 예약, 변경 시간 점유 등)
 
 ### 4단계 - 프론트 화면
 

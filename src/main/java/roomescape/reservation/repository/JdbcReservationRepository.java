@@ -105,8 +105,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void update(Reservation reservation) {
-        String sql = "UPDATE reservation SET deleted_at = ? WHERE id = ?";
-        jdbcTemplate.update(sql, reservation.getDeletedAt(), reservation.getId());
+        String sql = "UPDATE reservation SET theme_id = ?, date = ?, time_id = ?, deleted_at = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                reservation.getTheme().getId(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getDeletedAt(),
+                reservation.getId()
+        );
     }
 
     @Override
@@ -121,6 +127,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "WHERE date = ? AND theme_id = ? AND time_id = ? AND deleted_at IS NULL";
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, themeId, timeId);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsActiveByDateAndThemeAndTimeExcludingId(LocalDate date, Long themeId, Long timeId, Long excludeId) {
+        String sql = "SELECT COUNT(*) FROM reservation " +
+                "WHERE date = ? AND theme_id = ? AND time_id = ? AND deleted_at IS NULL AND id != ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, themeId, timeId, excludeId);
         return count != null && count > 0;
     }
 }
