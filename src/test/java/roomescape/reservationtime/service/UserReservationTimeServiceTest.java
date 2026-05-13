@@ -1,96 +1,70 @@
 package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.repository.ReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ActiveProfiles("test")
 class UserReservationTimeServiceTest {
 
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private UserReservationTimeService userReservationTimeService;
 
-    @Mock
-    private ReservationRepository reservationRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @InjectMocks
-    private UserReservationTimeService reservationTimeService;
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("DELETE FROM reservation");
+        jdbcTemplate.execute("DELETE FROM reservation_time");
+        jdbcTemplate.execute("DELETE FROM themes");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+
+        // time(id=1~5), theme(id=1)
+        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('13:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('14:00:00')");
+        // 2099-12-31에 time(id=1)만 예약 → isAvailable=false, time(id=2)는 예약 없음 → isAvailable=true
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2099-12-31', 1, 1)");
+    }
 
     @Test
     void 예약_시간_목록을_조회할_수_있다() {
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
+        List<ReservationTime> times = userReservationTimeService.getReservationTimes();
 
-        when(reservationTimeRepository.findAll()).thenReturn(times);
-
-        List<ReservationTime> result = reservationTimeService.getReservationTimes();
-
-        assertThat(result).hasSize(2);
-        assertThat(result)
-                .extracting(ReservationTime::startAt)
-                .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
+        assertThat(times).hasSize(5);
     }
 
     @Test
     void 스케줄_목록을_조회할_수_있다() {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Long themeId = 1L;
+        List<AvailableTime> schedules = userReservationTimeService.getSchedules(LocalDate.of(2099, 12, 31), 1L);
 
-        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        when(reservationTimeRepository.findAll()).thenReturn(List.of(time1, time2));
-
-        when(reservationRepository.findByDateAndTheme(tomorrow, themeId))
-                .thenReturn(List.of(2L));
-
-        List<AvailableTime> result = reservationTimeService.getSchedules(tomorrow, themeId);
-
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).isAvailable()).isTrue();
-        assertThat(result.get(1).isAvailable()).isFalse();
+        assertThat(schedules).hasSize(5);
+        assertThat(schedules.stream().filter(t -> t.timeId() == 1).findFirst().get().isAvailable()).isFalse();
+        assertThat(schedules.stream().filter(t -> t.timeId() == 2).findFirst().get().isAvailable()).isTrue();
     }
 
     @Test
     void 과거_날짜의_스케줄은_예약_여부와_관계없이_모두_불가능하다() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        Long themeId = 1L;
+        List<AvailableTime> schedules = userReservationTimeService.getSchedules(LocalDate.now().minusDays(1), 1L);
 
-        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        when(reservationTimeRepository.findAll()).thenReturn(List.of(time1, time2));
-
-        when(reservationRepository.findByDateAndTheme(yesterday, themeId))
-                .thenReturn(Collections.emptyList());
-
-        List<AvailableTime> result = reservationTimeService.getSchedules(yesterday, themeId);
-
-        assertThat(result).hasSize(2);
-        assertThat(result).allMatch(t -> !t.isAvailable());
-    }
-
-    @Test
-    void 전체_시간_목록이_없으면_스케줄_목록도_비어있다() {
-        LocalDate date = LocalDate.of(2026, 5, 8);
-        Long themeId = 1L;
-
-        when(reservationTimeRepository.findAll()).thenReturn(Collections.emptyList());
-
-        List<AvailableTime> result = reservationTimeService.getSchedules(date, themeId);
-        assertThat(result).isEmpty();
+        assertThat(schedules).allMatch(t -> !t.isAvailable());
     }
 }

@@ -62,9 +62,6 @@ VALUES (20, 'RankD1', '2026-05-07', 1, 4);
 INSERT INTO reservation (id, name, date, time_id, theme_id)
 VALUES (21, 'ScheduleTest', '2099-12-31', 1, 1);
 
-ALTER TABLE themes
-    ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE reservation_time
-    ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE reservation
-    ALTER COLUMN id RESTART WITH 30;
+ALTER TABLE themes ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 22;

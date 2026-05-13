@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -21,7 +20,6 @@ import org.springframework.test.context.jdbc.Sql;
 @ActiveProfiles("test")
 @Sql(scripts = {"classpath:schema-test.sql", "classpath:reset-test.sql", "classpath:data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class RoomescapeApplicationTest {
 
     @LocalServerPort
@@ -65,19 +63,25 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 이미_예약된_시간에_중복_예약을_시도하면_400_예외가_발생한다() {
+    void 이미_예약된_시간에_중복_예약을_시도하면_409_예외가_발생한다() {
         Map<String, Object> request = new HashMap<>();
         request.put("themeId", 1);
         request.put("name", "캐모");
-        request.put("date", "2026-05-01");
+        request.put("date", LocalDate.now().plusYears(1).toString());
         request.put("timeId", 1);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -104,6 +108,15 @@ class RoomescapeApplicationTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void 타인의_예약을_삭제하려_하면_403이_반환된다() {
+        RestAssured.given().log().all()
+                .header("X-User-Name", "WrongUser")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -190,11 +203,14 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 파라미터_없이_랭킹을_조회하면_최근_7일_기준_상위_10개_기본값의_테마가_반환된다() {
+    void 날짜_범위_내_예약_수_기준으로_랭킹이_내림차순_반환된다() {
         RestAssured.given().log().all()
+                .queryParam("startDate", "2026-05-06")
+                .queryParam("endDate", "2026-05-08")
                 .when().get("/themes/rank")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).body("size()", is(4))
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(4))
                 .body("[0].id", is(1))
                 .body("[1].id", is(2))
                 .body("[2].id", is(3))
@@ -204,6 +220,8 @@ class RoomescapeApplicationTest {
     @Test
     void limit_파라미터를_2로_지정하면_상위_2개의_테마만_반환된다() {
         RestAssured.given().log().all()
+                .queryParam("startDate", "2026-05-06")
+                .queryParam("endDate", "2026-05-08")
                 .queryParam("limit", 2)
                 .when().get("/themes/rank")
                 .then().log().all()

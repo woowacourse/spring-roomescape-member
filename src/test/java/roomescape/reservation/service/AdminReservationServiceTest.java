@@ -2,85 +2,72 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ActiveProfiles("test")
 class AdminReservationServiceTest {
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Mock
-    private ThemeRepository themeRepository;
-
-    @InjectMocks
+    @Autowired
     private AdminReservationService adminReservationService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("DELETE FROM reservation");
+        jdbcTemplate.execute("DELETE FROM reservation_time");
+        jdbcTemplate.execute("DELETE FROM themes");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+
+        // Theme A(id=1), time(id=1)=10:00, reservation(id=1)
+        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 1, 1)");
+    }
+
     @Test
-    void 관리자가_예약을_등록할_수_있다() {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(2L, "Theme A", "desc", "thumb");
-        Reservation saved = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
+    void 관리자가_과거_날짜로도_예약을_등록할_수_있다() {
+        Reservation saved = adminReservationService.forceCreateReservation(1L, "브라운", LocalDate.of(2020, 1, 1), 1L);
 
-        when(reservationTimeRepository.findById(eq(1L))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(2L))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time), eq(theme)))
-                .thenReturn(saved);
-
-        Reservation result = adminReservationService.forceCreateReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
-
-        assertThat(result.getId()).isEqualTo(3L);
-        assertThat(result.getName()).isEqualTo("브라운");
-        assertThat(result.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(result.getTheme().name()).isEqualTo("Theme A");
+        assertThat(saved.getName()).isEqualTo("브라운");
+        assertThat(saved.getDate()).isEqualTo(LocalDate.of(2020, 1, 1));
     }
 
     @Test
     void 예약_시간이_없으면_예외가_발생한다() {
-        when(reservationTimeRepository.findById(eq(999L))).thenReturn(Optional.empty());
-
         assertThatThrownBy(
-                () -> adminReservationService.forceCreateReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 999L))
+                () -> adminReservationService.forceCreateReservation(1L, "브라운", LocalDate.now().plusDays(1), 999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 테마가_없으면_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        when(reservationTimeRepository.findById(eq(1L))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(999L))).thenReturn(Optional.empty());
-
         assertThatThrownBy(
-                () -> adminReservationService.forceCreateReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
+                () -> adminReservationService.forceCreateReservation(999L, "브라운", LocalDate.now().plusDays(1), 1L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 관리자가_예약을_검증_없이_삭제할_수_있다() {
-        long targetReservationId = 1L;
+        int before = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        adminReservationService.forceDeleteReservation(1L);
+        int after = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        adminReservationService.forceDeleteReservation(targetReservationId);
-
-        verify(reservationRepository, times(1)).delete(eq(targetReservationId));
+        assertThat(after).isEqualTo(before - 1);
     }
 }

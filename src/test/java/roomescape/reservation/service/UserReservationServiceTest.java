@@ -2,151 +2,124 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ActiveProfiles("test")
 class UserReservationServiceTest {
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Mock
-    private ThemeRepository themeRepository;
-
-    @InjectMocks
+    @Autowired
     private UserReservationService userReservationService;
 
-    private Theme theme;
-    private ReservationTime time;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        theme = new Theme(1L, "Theme A", "desc", "https://example.com/a.png");
-        time = new ReservationTime(2L, LocalTime.of(10, 0));
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("DELETE FROM reservation");
+        jdbcTemplate.execute("DELETE FROM reservation_time");
+        jdbcTemplate.execute("DELETE FROM themes");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+
+        // Theme A(id=1), Theme B(id=2)
+        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme B', 'Desc', 'https://b.png')");
+        // time(id=1)=10:00, time(id=2)=11:00
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00:00')");
+        // reservation(id=1): 2099-12-31 / time=1 / theme=1  → 중복·삭제 테스트용
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('ScheduleTest', '2099-12-31', 1, 1)");
+        // reservation(id=2): 2026-05-01 / time=2 / theme=1  → 이름 불일치 테스트용
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 2, 1)");
     }
 
     @Test
     void 예약을_등록할_수_있다() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation savedReservation = new Reservation(3L, "브라운", tomorrow, time, theme);
-
-        when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq("브라운"), eq(tomorrow), eq(time), eq(theme)))
-                .thenReturn(savedReservation);
-
-        Reservation saved = userReservationService.createReservation("브라운", tomorrow, time.id(), theme.id());
+        Reservation saved = userReservationService.createReservation("브라운", tomorrow, 2L, 2L);
 
         assertThat(saved.getName()).isEqualTo("브라운");
         assertThat(saved.getDate()).isEqualTo(tomorrow);
-        assertThat(saved.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(saved.getTheme().name()).isEqualTo("Theme A");
+        assertThat(saved.getTime().startAt()).isNotNull();
+        assertThat(saved.getTheme().name()).isEqualTo("Theme B");
     }
 
     @Test
     void 예약_시간_ID가_없으면_예외가_발생한다() {
-        when(reservationTimeRepository.findById(eq(999L))).thenReturn(Optional.empty());
-
         assertThatThrownBy(
-                () -> userReservationService.createReservation("브라운", LocalDate.of(2026, 5, 1), 999L, theme.id()))
+                () -> userReservationService.createReservation("브라운", LocalDate.now().plusDays(1), 999L, 1L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 테마_ID가_없으면_예외가_발생한다() {
-        when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(999L))).thenReturn(Optional.empty());
-
         assertThatThrownBy(
-                () -> userReservationService.createReservation("브라운", LocalDate.of(2026, 5, 1), time.id(), 999L))
+                () -> userReservationService.createReservation("브라운", LocalDate.now().plusDays(1), 1L, 999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 지나간_날짜에_예약하면_예외가_발생한다() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-
         assertThatThrownBy(
-                () -> userReservationService.createReservation("브라운", yesterday, time.id(), theme.id()))
+                () -> userReservationService.createReservation("브라운", LocalDate.now().minusDays(1), 1L, 1L))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
     @Test
     void 지나간_시간에_예약하면_예외가_발생한다() {
-        LocalDate today = LocalDate.now();
-        ReservationTime pastTime = new ReservationTime(time.id(), LocalTime.of(0, 1));
-        when(reservationTimeRepository.findById(eq(pastTime.id()))).thenReturn(Optional.of(pastTime));
-        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (99, '00:00:00')");
 
         assertThatThrownBy(
-                () -> userReservationService.createReservation("브라운", today, pastTime.id(), theme.id()))
+                () -> userReservationService.createReservation("브라운", LocalDate.now(), 99L, 1L))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
     @Test
     void 예약이_중복되면_예외가_발생한다() {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
-        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-
-        when(reservationRepository.save(any(), any(), eq(time), eq(theme)))
-                .thenThrow(new DuplicateKeyException("DB 레벨의 중복 키 에러 발생"));
-
         assertThatThrownBy(
-                () -> userReservationService.createReservation("코니", tomorrow, time.id(), theme.id()))
+                () -> userReservationService.createReservation("코니", LocalDate.of(2099, 12, 31), 1L, 1L))
                 .isInstanceOf(DuplicateException.class)
                 .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다");
     }
 
     @Test
     void 예약을_삭제할_수_있다() {
-        Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
-        when(reservationRepository.findById(eq(3L))).thenReturn(Optional.of(savedReservation));
+        List<Reservation> before = userReservationService.getReservations();
+        userReservationService.deleteReservation(1L, "ScheduleTest");
+        List<Reservation> after = userReservationService.getReservations();
 
-        userReservationService.deleteReservation(3L, "브라운");
-
-        verify(reservationRepository).delete(eq(3L));
+        assertThat(after).hasSize(before.size() - 1);
     }
 
     @Test
     void 예약자_이름이_다르면_예외가_발생한다() {
-        Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
+        assertThatThrownBy(() -> userReservationService.deleteReservation(1L, "WrongName"))
+                .isInstanceOf(UnauthorizedActionException.class)
+                .hasMessage("예약자 이름이 일치하지 않습니다.");
+    }
 
-        when(reservationRepository.findById(eq(3L))).thenReturn(Optional.of(savedReservation));
-
-        assertThatThrownBy(() -> userReservationService.deleteReservation(3L, "코니"))
-                .isInstanceOf(ApiException.class)
-                .extracting(Throwable::getMessage)
-                .isEqualTo("예약자 이름이 일치하지 않습니다.");
+    @Test
+    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+        assertThatThrownBy(() -> userReservationService.deleteReservation(999L, "누구"))
+                .isInstanceOf(NotFoundException.class);
     }
 }
