@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> readByName(String name) {
+        String sql =
+                "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url "
+                        + "FROM `reservation` r "
+                        + "INNER JOIN `reservation_time` t ON r.time_id = t.id "
+                        + "INNER JOIN `theme` th ON r.theme_id = th.id "
+                        + "WHERE r.name = (?)";
+
+        return jdbcTemplate.query(sql, reservationRowMapper(), name);
+    }
+
+    @Override
     public List<Reservation> readAll() {
         String sql =
                 "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url "
@@ -51,7 +64,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                         + "INNER JOIN `reservation_time` t ON r.time_id = t.id "
                         + "INNER JOIN `theme` th ON r.theme_id = th.id";
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+        return jdbcTemplate.query(sql, reservationRowMapper());
+    }
+
+    private static RowMapper<Reservation> reservationRowMapper() {
+        return (resultSet, rowNum) -> {
             Long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
             LocalDate date = resultSet.getDate("date").toLocalDate();
@@ -65,7 +82,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
             Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnailUrl);
             return new Reservation(id, name, date, reservationTime, theme);
-        });
+        };
     }
 
     @Override

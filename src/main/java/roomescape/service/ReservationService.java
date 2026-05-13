@@ -60,8 +60,17 @@ public class ReservationService {
         return ServiceReservationResponse.from(reservation);
     }
 
+    public List<ServiceReservationResponse> readByName(String name) {
+        List<Reservation> reservations = reservationRepository.readByName(name);
+
+        return reservations.stream()
+                .map(ServiceReservationResponse::from)
+                .toList();
+    }
+
     public List<ServiceReservationResponse> readAll() {
         List<Reservation> reservations = reservationRepository.readAll();
+
         return reservations.stream()
                 .map(ServiceReservationResponse::from)
                 .toList();

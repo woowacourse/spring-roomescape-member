@@ -8,6 +8,8 @@ public interface ReservationRepository {
 
     Reservation create(Reservation reservationWithoutId);
 
+    List<Reservation> readByName(String name);
+
     List<Reservation> readAll();
 
     void delete(Long id);

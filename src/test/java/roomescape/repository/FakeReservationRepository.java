@@ -23,6 +23,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> readByName(String name) {
+        return fakeDatabase.readAll(RESERVATION_TABLE, Reservation.class).stream()
+                .filter(reservation -> reservation.getName().equals(name))
+                .toList();
+    }
+
+    @Override
     public List<Reservation> readAll() {
         return fakeDatabase.readAll(RESERVATION_TABLE, Reservation.class).stream()
                 .toList();

@@ -39,6 +39,7 @@ public class ReservationRepositoryTest {
         String insertReservationTimeSql = "INSERT INTO `reservation_time` (`start_at`) VALUES (?)";
         jdbcTemplate.update(insertReservationTimeSql, "10:00");
         jdbcTemplate.update(insertReservationTimeSql, "11:00");
+        jdbcTemplate.update(insertReservationTimeSql, "12:00");
 
         String insertThemeSql = "INSERT INTO `theme` (`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertThemeSql, "방탈출1", "방탈출1 설명", "url.jpg");
@@ -54,6 +55,22 @@ public class ReservationRepositoryTest {
         Reservation reservation = reservationRepository.create(reservationWithoutId);
 
         assertThat(reservation.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void readByNameTest() {
+        String sql = "INSERT INTO `reservation` (`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
+        jdbcTemplate.update(sql, "tree", "2026-05-02", 2L, 1L);
+        jdbcTemplate.update(sql, "fizz", "2026-05-02", 3L, 1L);
+
+        List<Reservation> reservations = reservationRepository.readByName("fizz");
+
+        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(reservations.get(0).getName()).isEqualTo("fizz");
+        assertThat(reservations.get(1).getName()).isEqualTo("fizz");
+
+        assertThat(reservationRepository.readByName("user").size()).isEqualTo(0);
     }
 
     @Test
