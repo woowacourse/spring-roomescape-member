@@ -112,7 +112,7 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
+    @DisplayName("나의 예약들을 조회하면 날짜는 내림차순, 시간은 오름차순으로 정렬해 모두 조회한다.")
     void findAllByName() {
         // given
         List<Reservation> reservations = saveAll(List.of(
@@ -122,7 +122,7 @@ class ReservationRepositoryTest {
                 Reservation.create(name, reservationDate2, reservationTime2, theme))
         );
         reservations.sort(
-                Comparator.comparing((Reservation reservation) -> reservation.date().date())
+                Comparator.comparing((Reservation reservation) -> reservation.date().date(), Comparator.reverseOrder())
                         .thenComparing(reservation -> reservation.time().startAt())
         );
 

@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.name = :name
-                ORDER BY d.date ASC, t.start_at ASC
+                ORDER BY d.date DESC , t.start_at ASC
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource("name", name);
