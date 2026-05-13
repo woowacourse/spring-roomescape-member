@@ -50,11 +50,13 @@
 - 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
     - [ ] 유효하지 않은 입력값이 들어오면 400 에러를 발생시킨다.
 - 랭킹 조회 기간이 유효하지 않으면 거부한다.
-    - [ ] 종료 날짜와 시작 날짜 모두 미래일 수 없다.
-    - [ ] 조회 종료 날짜가 시작 날짜보다 뒤여야 한다.
-    - [ ] 조회 기간은 1년 이내여야 한다.
+    - [x] 종료 날짜와 시작 날짜 모두 미래일 수 없다.
+    - [x] 조회 종료 날짜가 시작 날짜보다 뒤여야 한다.
+    - [x] 조회 기간은 1년 이내여야 한다.
 - 중복된 예약 시간 추가를 거부한다.
     - [ ] 중복된 예약 시간 추가를 요청하면 409 에러를 발생시킨다.
+- 지나간 날짜로 예약 가능한 시간 조회를 거부한다.
+    - [ ] 지나간 날짜로 예약 가능한 시간을 조회하면 422 에러를 발생시킨다.
 
 ## 5단계 - 에러 응답 설계
 
@@ -215,6 +217,30 @@
         ]
         ```
 
+        - [x] 시작 날짜 또는 종료 날짜가 미래인 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 조회 기간에 미래 날짜가 존재합니다. 현재보다 이전으로 기간을 설정해 주세요."
+        }
+        ```
+
+        - [x] 종료 날짜가 시작 날짜보다 먼저 올 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 종료 날짜가 시작 날짜보다 빠릅니다. 종료 날짜가 시작 날짜보다 뒤에 오도록 요청해 주세요."
+        }
+        ```
+
+        - [x] 조회 기간이 1년을 초과할 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 조회 기간이 최대 기간을 초과했습니다. 기간이 1년 이내가 되도록 다시 요청해 주세요."
+        }
+        ```
+
 ### Reservation
 
 - 예약 추가
@@ -246,6 +272,22 @@
                 "description": "피즈가 모험하는 이야기",
                 "thumbnailUrl": "1.jpg"
             }
+        }
+        ```
+
+        - [x] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
+        {
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."
+        }
+        ```
+
+        - [x] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
+        {
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."
         }
         ```
 
@@ -366,6 +408,14 @@
         }
         ```
 
+        - [ ] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
+        {
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."
+        }
+        ```
+
         - [ ] 이미 지나간 날짜, 시간으로 예약을 변경할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
@@ -478,27 +528,19 @@
         ]
         ```
 
-        - [ ] 시작 날짜 또는 종료 날짜가 미래인 경우: `Http Status: 422 Unprocessable Entity`
-        ```
+        - [ ] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
-            "message": "[ERROR] 요청에 미래 날짜가 존재합니다. 현재보다 이전 날짜로 다시 요청해 주세요."
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."
         }
         ```
 
-        - [ ] 종료 날짜가 시작 날짜보다 먼저 올 경우: `Http Status: 422 Unprocessable Entity`
-        ```
+        - [ ] 이미 지나간 날짜로 조회할 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
         {
             "status": "UNPROCESSABLE_ENTITY",
-            "message": "[ERROR] 종료 날짜가 시작 날짜보다 빠릅니다. 종료 날짜가 시작 날짜보다 뒤에 오도록 요청해 주세요."
-        }
-        ```
-
-        - [ ] 조회 기간이 1년을 초과할 경우: `Http Status: 422 Unprocessable Entity`
-        ```
-        {
-            "status": "UNPROCESSABLE_ENTITY",
-            "message": "[ERROR] 조회 기간이 최대 기간을 초과했습니다. 기간이 1년 이내가 되도록 다시 요청해 주세요."
+            "message": "[ERROR] 지나간 날짜의 예약 가능 시간은 조회할 수 없습니다."
         }
         ```
 
