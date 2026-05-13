@@ -1,5 +1,6 @@
 package roomescape.common.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.from(exception.getMessage()));
     }
 
+    @ExceptionHandler(UnprocessableException.class)
+    public ResponseEntity<ErrorResponse> handleUnprocessableException(UnprocessableException exception) {
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ErrorResponse.from(exception.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {
@@ -40,5 +48,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(exception.getStatusCode())
                 .body(ErrorResponse.from(message));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.from("서버 내부에 오류가 발생했습니다."));
     }
 }
