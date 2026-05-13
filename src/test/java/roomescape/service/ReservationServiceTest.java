@@ -9,6 +9,7 @@ import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicationException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;

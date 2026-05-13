@@ -17,6 +17,12 @@ public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 값이 유효하지 않습니다.", "요청 값을 확인 후 다시 시도해주세요."),
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "요청 형식이 올바르지 않습니다.", "요청 값을 확인 후 다시 시도해주세요."),
 
+    INVALID_RESERVATION_NAME(HttpStatus.BAD_REQUEST, "유효하지 않은 이름입니다.", "이름을 다시 확인해주세요."),
+    BLANK_RESERVATION_NAME(HttpStatus.BAD_REQUEST, "이름은 공백일 수 없습니다.", "이름을 다시 확인해주세요."),
+    INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜입니다.", "날짜를 다시 확인해주세요."),
+    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "유효하지 않은 시간입니다.", "시간을 다시 확인해주세요."),
+    INVALID_RESERVATION_THEME(HttpStatus.BAD_REQUEST, "유효하지 않은 테마입니다.", "테마를 다시 확인해주세요."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "요청 처리에 문제가 발생했습니다.", null);
 
     private final HttpStatus status;

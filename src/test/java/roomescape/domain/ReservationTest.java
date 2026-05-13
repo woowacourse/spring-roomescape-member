@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,35 +18,35 @@ class ReservationTest {
     @Test
     void 이름이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, null, DATE, TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 이름입니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ErrorCode.INVALID_RESERVATION_NAME.getMessage());
     }
 
     @Test
     void 이름이_공백이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, " ", DATE, TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 공백일 수 없습니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ErrorCode.BLANK_RESERVATION_NAME.getMessage());
     }
 
     @Test
     void 날짜가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", null, TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 날짜입니다");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ErrorCode.INVALID_RESERVATION_DATE.getMessage());
     }
 
     @Test
     void 시간이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", DATE, null, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 시간입니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ErrorCode.INVALID_RESERVATION_TIME.getMessage());
     }
 
     @Test
     void 테마가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", DATE, TIME, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 테마입니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ErrorCode.INVALID_RESERVATION_THEME.getMessage());
     }
 }
