@@ -1,7 +1,6 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -79,9 +78,8 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then()
                 .statusCode(400)
-                .body("message", equalTo("검증 실패"))
-                .body("errors.field", hasItem("name"))
-                .body("errors.reason", hasItem("이름은 필수입니다."));
+                .body("code", equalTo("INVALID_NAME_FORMAT"))
+                .body("message", equalTo("이름은 필수입니다."));
     }
 
     @Test
@@ -98,8 +96,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then()
                 .statusCode(400)
-                .body("message", equalTo("검증 실패"))
-                .body("errors.field", hasItem("date"))
-                .body("errors.reason", hasItem("이름은 필수입니다."));
+                .body("code", equalTo("INVALID_DATE_FORMAT"))
+                .body("message", equalTo("날짜 형식이 잘못되었습니다. (yyyy-MM-dd)"));
     }
 }
