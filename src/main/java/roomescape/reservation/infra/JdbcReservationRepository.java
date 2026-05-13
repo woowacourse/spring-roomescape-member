@@ -67,6 +67,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(Reservation reservation) {
+        String sql = "UPDATE reservation "
+                + "SET name=:name, date=:date, time_id=:timeId, theme_id=:themeId "
+                + "WHERE id=:id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservation.getId())
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
+        jdbcTemplate.update(sql, params);
+        return reservation;
+    }
+
+    @Override
     public List<Reservation> findAll() {
         String sql = "SELECT "
                 + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "

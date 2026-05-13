@@ -12,6 +12,7 @@ import roomescape.reservation.domain.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.exception.ReservationOwnerMismatchException;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
+import roomescape.reservation.presentation.dto.ReservationUpdateRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
@@ -55,20 +56,52 @@ public class ReservationService {
     public void cancelReservation(Long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약ID 입니다."));
-        validateOwner(reservation, name);
-        validateNotPast(reservation);
+        validateOwner(reservation, name, "본인의 예약만 취소할 수 있습니다.");
+        validateNotPast(reservation, "이미 지난 예약은 취소할 수 없습니다.");
         reservationRepository.deleteById(id);
     }
 
-    private void validateOwner(Reservation reservation, String name) {
+    public ReservationResponse updateReservation(Long id, ReservationUpdateRequest request) {
+        Reservation existing = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약ID 입니다."));
+        validateOwner(existing, request.name(), "본인의 예약만 변경할 수 있습니다.");
+        validateNotPast(existing, "이미 지난 예약은 변경할 수 없습니다.");
+
+        ReservationTime newTime = findReservationTime(request.timeId());
+        reservationSchedulePolicy.validateReservable(request.date(), newTime.getStartAt());
+        validateNoDuplicateForUpdate(existing, request);
+
+        Reservation updated = Reservation.builder()
+                .id(existing.getId())
+                .name(existing.getName())
+                .date(request.date())
+                .time(newTime)
+                .theme(existing.getTheme())
+                .build();
+        return ReservationResponse.from(reservationRepository.update(updated));
+    }
+
+    private void validateOwner(Reservation reservation, String name, String message) {
         if (!reservation.getName().equals(name)) {
-            throw new ReservationOwnerMismatchException("본인의 예약만 취소할 수 있습니다.");
+            throw new ReservationOwnerMismatchException(message);
         }
     }
 
-    private void validateNotPast(Reservation reservation) {
+    private void validateNotPast(Reservation reservation, String message) {
         if (!reservationSchedulePolicy.canReserve(reservation.getDate(), reservation.getTime().getStartAt())) {
-            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
+            throw new PastReservationException(message);
+        }
+    }
+
+    private void validateNoDuplicateForUpdate(Reservation existing, ReservationUpdateRequest request) {
+        boolean sameSlot = existing.getDate().equals(request.date())
+                && existing.getTime().getId().equals(request.timeId());
+        if (sameSlot) {
+            return;
+        }
+        if (reservationRepository.existsByDateAndTimeAndTheme(
+                request.date(), request.timeId(), existing.getTheme().getId())) {
+            throw new DuplicateReservationException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
 

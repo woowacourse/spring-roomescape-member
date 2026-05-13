@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
+    Reservation update(Reservation reservation);
     List<Reservation> findAll();
     List<Reservation> findByName(String name);
     List<Reservation> findByThemeAndDate(Long aLong, LocalDate date);
