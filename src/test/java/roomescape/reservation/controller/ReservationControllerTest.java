@@ -11,6 +11,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -333,6 +335,138 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("이미 지난 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("예약 가능한 날짜로 변경할 수 있다.")
+    void changeSchedule() {
+        String futureDate = LocalDate.now().plusDays(1).toString();
+        String futureTime = LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString();
+        Integer dateId = createReservationDate(date);
+        Integer changedDateId = createReservationDate(futureDate);
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(futureTime);
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is(futureDate))
+                .body("time", is(futureTime));
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아닌데 변경을 시도하면 예외가 발생한다.")
+    void changeSchedule_not_owner() {
+        Integer dateId = createReservationDate(date);
+        Integer changedDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        String notOwnerName = "다른사람";
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", notOwnerName);
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("이미 취소된 예약을 변경하면 예외가 발생한다.")
+    void changeSchedule_already_canceled() {
+        Integer dateId = createReservationDate(date);
+        Integer changedDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        cancelReservation(reservationId, reservationName);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 취소된 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 변경하면 예외가 발생한다.")
+    @Sql(
+            scripts = "classpath:past-reservation.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    void changeSchedule_past() {
+        Integer changedDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer changedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+
+        String sqlRequsterName = "송송";
+        Long sqlSavedId = 1L;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", sqlRequsterName);
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + sqlSavedId + "/schedule")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 지난 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("지난 날짜/시간으로 예약을 변경하면 예외가 발생한다.")
+    @Sql(
+            scripts = "classpath:past-reservation-date.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    void changeSchedule_new_datetime_is_past() {
+        Integer dateId = createReservationDate(date);
+        Integer pastDateId = 1;
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", pastDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 지난 날짜/시간을 예약할 수 없습니다."));
     }
 
 }
