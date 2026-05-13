@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.validation.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.mapper.ReservationTimeMapper;
 import roomescape.time.repository.dao.ReservationTimeDao;
@@ -35,13 +36,13 @@ public class ReservationTimeRepository {
         int deletedCount = reservationTimeDao.deleteById(id);
 
         if (deletedCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 ID입니다");
+            throw new ReservationTimeNotFoundException();
         }
     }
 
     public ReservationTime findById(Long id) {
          ReservationTimeEntity reservationTimeEntity = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
          return ReservationTimeMapper.toReservationTime(reservationTimeEntity);
     }
