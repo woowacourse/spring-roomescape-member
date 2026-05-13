@@ -31,9 +31,17 @@ public class ReservationControllerTest {
 
     @Test
     public void 예약_삭제_API() {
+        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.now().plusDays(1L), 1L, 1L);
+        int id = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().path("id");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("admin/reservations/1")
+                .when().delete("admin/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -108,6 +116,36 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(422)
                 .body("message", is(ErrorCode.RESERVATION_PAST_DATE.getMessage()));
+    }
+
+    @Test
+    public void 사용자_예약_취소_시_존재하지_않는_예약이면_404를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .delete("/reservations/-1?username=토리")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is(ErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+    }
+
+    @Test
+    public void 사용자_예약_취소_시_다른_사람의_예약이면_422를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .delete("/reservations/1?username=페이커")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", is(ErrorCode.RESERVATION_NOT_USER_CANCEL.getMessage()));
+    }
+
+    @Test
+    public void 이미_지난_예약_취소_시_422를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .delete("admin/reservations/4")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", is(ErrorCode.RESERVATION_PAST_CANCEL.getMessage()));
     }
 
     private static Stream<ReservationRequest> emptyReservationRequest() {

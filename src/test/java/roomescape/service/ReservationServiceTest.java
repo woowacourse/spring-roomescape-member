@@ -22,14 +22,7 @@ public class ReservationServiceTest {
     void 존재하지_않는_예약을_삭제할_경우_예외가_발생한다() {
         // when
         Assertions.assertThatThrownBy(() -> reservationService.removeById(-1L))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void 존재하는_예약에_대해서_삭제할_수_있다() {
-        // when
-        Assertions.assertThatCode(() -> reservationService.removeById(1L))
-                .doesNotThrowAnyException();
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
@@ -76,6 +69,38 @@ public class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("토리임", LocalDate.now().plusDays(1L), 1L, -2L);
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 사용자는_자신의_예약을_취소할_수_있다() {
+        // given
+        Long reservationId = 1L;
+        String username = "토리";
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.removeByIdAndName(reservationId, username))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 다른_사용자가_예약을_취소에_대한_요청은_예외가_발생한다() {
+        // given
+        Long reservationId = 1L;
+        String username = "수라";
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.removeByIdAndName(reservationId, username))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 이미_지난_예약을_취소하면_예외가_발생한다() {
+        // given
+        Long reservationId = 1L;
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.removeById(reservationId))
                 .isInstanceOf(RoomescapeException.class);
     }
 

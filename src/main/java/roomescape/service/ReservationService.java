@@ -45,8 +45,25 @@ public class ReservationService {
     }
 
     public void removeById(Long id) {
-        reservationRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 예약 ID가 없습니다."));
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_CANCEL);
+        }
+        reservationRepository.deleteById(id);
+    }
+
+    public void removeByIdAndName(Long id, String username) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND)
+        );
+        if (!reservation.getName().equals(username)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_USER_CANCEL);
+        }
+        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_CANCEL);
+        }
         reservationRepository.deleteById(id);
     }
 
