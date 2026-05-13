@@ -1,24 +1,19 @@
 package roomescape.theme.controller;
 
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.exception.common.InvalidRequestValueException;
 import roomescape.reservation.service.ReservationService;
-import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 
 @RestController
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -29,7 +24,7 @@ public class ThemeController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         List<ThemeResponse> responses = themeService.findAllThemes()
                 .stream()
@@ -38,7 +33,7 @@ public class ThemeController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping(value = "/themes", params = "popular=true")
+    @GetMapping(params = "popular=true")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
             @RequestParam("period") int period,
             @RequestParam("limit") int limit
@@ -53,20 +48,5 @@ public class ThemeController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responses);
-    }
-
-    @PostMapping("/admin/themes")
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest requestDto) {
-        Theme theme = themeService.registerTheme(requestDto.toCommand());
-        ThemeResponse response = ThemeResponse.from(theme);
-        return ResponseEntity
-                .created(URI.create("/themes/" + theme.getId()))
-                .body(response);
-    }
-
-    @DeleteMapping("/admin/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.removeThemeById(id);
-        return ResponseEntity.noContent().build();
     }
 }

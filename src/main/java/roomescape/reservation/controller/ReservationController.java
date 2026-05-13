@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.exception.common.InvalidRequestFormatException;
@@ -20,6 +21,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -28,17 +30,18 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/admin/reservations")
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        List<ReservationResponse> responses = reservationService.findReservations()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    @PostMapping
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest requestDto) {
+        Reservation reservation = reservationService.makeReservation(requestDto.toCommand());
+        ReservationResponse response = ReservationResponse.from(reservation);
 
-        return ResponseEntity.ok(responses);
+        return ResponseEntity
+                .created(URI.create("/reservations/" + response.id()))
+                .body(response);
     }
 
-    @GetMapping("/reservations")
+
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAllReservationsByName(@RequestParam("name") String name) {
         validateName(name);
 
@@ -56,23 +59,20 @@ public class ReservationController {
         }
     }
 
-    @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest requestDto) {
-        Reservation reservation = reservationService.makeReservation(requestDto.toCommand());
-        ReservationResponse response = ReservationResponse.from(reservation);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateMyReservation(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String name,
+            @RequestBody ReservationUpdateRequest request
+    ) {
+        validateName(name);
 
-        return ResponseEntity
-                .created(URI.create("/reservations/" + response.id()))
-                .body(response);
-    }
-
-    @DeleteMapping("/admin/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservationById(id);
+        reservationService.authorizeOwner(name, id);
+        reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMyReservation(
             @PathVariable Long id,
             @RequestHeader("Authorization") String name
@@ -81,19 +81,6 @@ public class ReservationController {
 
         reservationService.authorizeOwner(name, id);
         reservationService.deleteReservationById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/reservations/{id}")
-    public ResponseEntity<Void> updateMyReservation(
-            @PathVariable Long id,
-            @RequestHeader("Authorization") String name,
-            @RequestBody ReservationUpdateRequest request
-            ) {
-        validateName(name);
-
-        reservationService.authorizeOwner(name, id);
-        reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
     }
 }
