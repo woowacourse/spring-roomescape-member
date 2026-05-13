@@ -717,12 +717,63 @@
         });
     }
 
+    const userFriendlyErrorMessages = Object.freeze({
+        RESERVE404_001: "요청한 예약을 찾을 수 없습니다. 예약 정보를 다시 확인해 주세요.",
+        RESERVATION409_001: "이미 예약된 시간입니다. 다른 시간을 선택해 주세요.",
+        RESERVATION400_001: "지나간 날짜와 시간은 예약할 수 없습니다. 다른 날짜나 시간을 선택해 주세요.",
+        RESERVATION_TIME404_001: "선택한 예약 시간을 찾을 수 없습니다. 가능 시간을 다시 조회해 주세요.",
+        RESERVATION_TIME409_001: "이미 예약이 존재하는 시간입니다. 다른 시간을 선택해 주세요.",
+        THEME404_001: "선택한 테마를 찾을 수 없습니다. 테마를 다시 선택해 주세요.",
+        THEME409_001: "이미 예약이 존재하는 테마는 삭제할 수 없습니다.",
+        COMMON400_001: "입력값이 올바르지 않습니다. 이름, 날짜, 예약 시간을 다시 확인해 주세요.",
+        COMMON400_002: "요청 경로가 올바르지 않습니다. 다시 시도해 주세요.",
+        COMMON400_003: "필요한 조회 조건이 빠졌습니다. 날짜와 테마를 다시 확인해 주세요.",
+        COMMON400_004: "입력 형식이 올바르지 않습니다. 날짜와 시간 형식을 다시 확인해 주세요.",
+        COMMON500_001: "문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
+    });
+
+    function getUserFriendlyMessage(errorCode, fallbackMessage) {
+        return userFriendlyErrorMessages[errorCode] || fallbackMessage;
+    }
+
+    async function readErrorResponse(response, fallbackMessage) {
+        try {
+            const errorResponse = await response.json();
+            const backendMessage = typeof errorResponse?.message === "string"
+                ? errorResponse.message.replace(/^\[ERROR\]\s*/, "")
+                : fallbackMessage;
+            const errorCode = typeof errorResponse?.errorCode === "string"
+                ? errorResponse.errorCode
+                : null;
+            const message = getUserFriendlyMessage(errorCode, backendMessage);
+
+            return {message, errorCode, backendMessage};
+        } catch (error) {
+            return {
+                message: getUserFriendlyMessage(null, fallbackMessage),
+                errorCode: null,
+                backendMessage: fallbackMessage
+            };
+        }
+    }
+
+    async function ensureOk(response, fallbackMessage) {
+        if (response.ok) {
+            return response;
+        }
+
+        const errorResponse = await readErrorResponse(response, fallbackMessage);
+        const error = new Error(errorResponse.message);
+        error.errorCode = errorResponse.errorCode;
+        error.status = response.status;
+
+        throw error;
+    }
+
     async function loadThemes() {
         try {
             const response = await fetch("/api/v1/themes");
-            if (!response.ok) {
-                throw new Error("테마 목록을 불러오지 못했습니다.");
-            }
+            await ensureOk(response, "테마 목록을 불러오지 못했습니다.");
 
             const themes = await response.json();
             state.themes = themes;
@@ -754,9 +805,7 @@
 
         try {
             const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
-            if (!response.ok) {
-                throw new Error("인기 테마를 불러오지 못했습니다.");
-            }
+            await ensureOk(response, "인기 테마를 불러오지 못했습니다.");
 
             state.popularThemeProjections = await response.json();
             renderPopularThemes();
@@ -764,6 +813,7 @@
             popularThemeList.innerHTML = "";
             popularThemeEmpty.textContent = error.message;
             popularThemeEmpty.classList.remove("hidden");
+            setStatus(error.message, "error");
         }
     }
 
@@ -887,10 +937,8 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/times?${searchParams.toString()}`);
-            if (!response.ok) {
-                throw new Error("가능 시간을 불러오지 못했습니다.");
-            }
+            const response = await fetch(`/api/v1/reservation/times?${searchParams.toString()}`);
+            await ensureOk(response, "가능 시간을 불러오지 못했습니다.");
 
             const times = await response.json();
             renderTimeSlots(times);
@@ -1011,13 +1059,7 @@
                 })
             });
 
-            if (response.status === 409) {
-                throw new Error("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
-            }
-
-            if (!response.ok) {
-                throw new Error("예약 생성에 실패했습니다.");
-            }
+            await ensureOk(response, "예약 생성에 실패했습니다.");
 
             const createdReservation = await response.json();
             reservationNameInput.value = "";
