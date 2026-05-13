@@ -1,5 +1,6 @@
 package roomescape.time.application;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +17,6 @@ import roomescape.time.application.dto.ReservationTimeCommand;
 import roomescape.time.application.exception.DuplicateReservationTimeException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.application.exception.ReservationTimeInUseException;
-import roomescape.time.application.exception.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTimeRepository;
 
 @Service
@@ -24,8 +24,7 @@ import roomescape.time.domain.ReservationTimeRepository;
 @RequiredArgsConstructor
 public class ReservationTimeService {
 
-    private static final int DELETE_ROW_COUNTS = 0;
-
+    private final Clock clock;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
@@ -46,9 +45,9 @@ public class ReservationTimeService {
         if (reservationRepository.existsByReservationTime(id)) {
             throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
         }
-        if (reservationTimeRepository.deleteById(id) == DELETE_ROW_COUNTS) {
-            throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
-        }
+        ReservationTime time = reservationTimeRepository.getById(id)
+                .delete(clock);
+        reservationTimeRepository.delete(time);
     }
 
     @Transactional(readOnly = true)

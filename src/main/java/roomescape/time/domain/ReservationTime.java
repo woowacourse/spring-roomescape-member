@@ -16,11 +16,20 @@ public class ReservationTime {
 
     private Long id;
     private LocalTime startAt;
+    private LocalDateTime deletedAt;
 
     public ReservationTime withId(Long id) {
         return ReservationTime.builder()
                 .id(id)
                 .startAt(this.startAt)
+                .build();
+    }
+
+    public ReservationTime delete(Clock clock) {
+        return ReservationTime.builder()
+                .id(id)
+                .startAt(startAt)
+                .deletedAt(LocalDateTime.now(clock))
                 .build();
     }
 

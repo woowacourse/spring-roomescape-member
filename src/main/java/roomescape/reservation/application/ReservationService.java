@@ -53,7 +53,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void hardDeleteReservation(Long id) {
         if (reservationRepository.deleteById(id) == DELETE_ROW_COUNTS) {
             throw new ReservationNotFoundException("존재하지 않는 예약ID 입니다.");
         }

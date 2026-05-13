@@ -88,8 +88,13 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("예약 시간을 삭제 할 수 있다.")
     void deleteTest() {
-        ReservationTime time = timeRepository.save(ReservationTime.builder().startAt(LocalTime.now(clock)).build());
-        timeRepository.deleteById(time.getId());
+        ReservationTime time = timeRepository.save(
+                ReservationTime.builder()
+                        .startAt(LocalTime.now(clock))
+                        .build()
+        );
+        ReservationTime deletedTime = time.delete(clock);
+        timeRepository.delete(deletedTime);
         Assertions.assertThatThrownBy(() -> timeRepository.getById(time.getId()))
                 .isInstanceOf(ReservationTimeNotFoundException.class);
     }

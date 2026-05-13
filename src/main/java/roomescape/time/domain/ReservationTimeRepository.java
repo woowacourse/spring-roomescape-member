@@ -10,7 +10,7 @@ public interface ReservationTimeRepository {
     List<ReservationTime> findAll();
     Optional<ReservationTime> findById(Long id);
     boolean existsByStartAt(LocalTime time);
-    int deleteById(Long id);
+    int delete(ReservationTime time);
 
     default ReservationTime getById(Long id) {
         return findById(id).orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다."));
