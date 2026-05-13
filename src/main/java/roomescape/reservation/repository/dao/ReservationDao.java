@@ -35,12 +35,12 @@ public class ReservationDao {
     }
 
     public List<ReservationEntity> findAll() {
-        String sql = "SELECT * FROM reservation;";
+        String sql = "SELECT * FROM reservation WHERE is_deleted = FALSE;";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Optional<ReservationEntity> findById(Long id) {
-        String sql = "SELECT * FROM reservation WHERE id = ?;";
+        String sql = "SELECT * FROM reservation WHERE id = ? AND is_deleted = FALSE";
         return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
                 .findAny();
     }
@@ -57,7 +57,7 @@ public class ReservationDao {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?;";
+        String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
     }
 
@@ -68,6 +68,7 @@ public class ReservationDao {
                 WHERE theme_id = ?
                   AND date = ?
                   AND time_id = ?
+                  AND is_deleted = FALSE
                 """;
 
         Integer count = jdbcTemplate.queryForObject(
