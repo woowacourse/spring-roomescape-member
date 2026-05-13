@@ -74,19 +74,15 @@ public class ThemeRepository {
     }
 
     private String getReservationSortSql(SortColumn sortColumn, SortOrder sortOrder, Long limit) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
-                        "FROM themes t " +
-                        "INNER JOIN reservation r ON t.id = r.theme_id " +
-                        "WHERE r.date >= ? AND r.date <= ? " +
-                        "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY " + sortColumn.getValue() + " " + sortOrder.getValue()
-        );
-
-        if (limit != null) {
-            sql.append(" LIMIT ").append(limit);
-        }
-
-        return sql.toString();
+        String limitClause = limit != null ? "LIMIT " + limit : "";
+        return """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount
+                FROM themes t
+                INNER JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY %s %s
+                %s
+                """.formatted(sortColumn.getValue(), sortOrder.getValue(), limitClause);
     }
 }
