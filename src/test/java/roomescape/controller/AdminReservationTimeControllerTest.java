@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class AdminReservationTimeControllerTest {
 
     @Test
-    void 시간_추가() {
+    void 예약시간_생성시_성공하면_201을_반환한다() {
         RestAssured.given().contentType(ContentType.JSON)
                 .body(timeParams())
                 .when().post("/api/v1/admin/times")
@@ -28,7 +28,7 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 시간_삭제() {
+    void 예약시간_삭제시_성공하면_204를_반환한다() {
         RestAssured.given().contentType(ContentType.JSON)
                 .body(timeParams())
                 .when().post("/api/v1/admin/times")
@@ -55,7 +55,7 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 예약이_존재하는_예약시간을_삭제하면_409를_반환한다() {
+    void 예약시간_삭제시_예약이_존재하면_409를_반환한다() {
         createDefaultTimes();
         createDefaultThemes();
 
@@ -70,17 +70,42 @@ public class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/api/v1/admin/times/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", is("RESERVATION_TIME409_001"));
     }
 
     @Test
-    void 존재하지_않는_예약시간을_삭제하면_404를_반환한다() {
+    void 예약시간_삭제시_존재하지_않는_예약시간이면_404를_반환한다() {
         createDefaultTimes();
 
         RestAssured.given().log().all()
                 .when().delete("/api/v1/admin/times/4")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", is("RESERVATION_TIME404_001"));
+    }
+
+    @Test
+    void 예약시간_생성시_startAt이_누락되면_400을_반환한다() {
+        RestAssured.given().contentType(ContentType.JSON)
+                .body("{}")
+                .when().post("/api/v1/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_001"));
+    }
+
+    @Test
+    void 예약시간_생성시_시작시간_형식이_잘못되면_400을_반환한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00:00");
+
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/api/v1/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_004"));
     }
 
     private void createDefaultTimes() {

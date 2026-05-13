@@ -1,14 +1,12 @@
 package roomescape.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
 public record ThemeCreateRequest(
         @NotBlank
         @Size(min = 2, max = 100)
-        @Pattern(regexp = "^[a-zA-Z가-힣 ]+$")
         String name,
 
         @NotBlank
