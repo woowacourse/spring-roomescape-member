@@ -413,3 +413,125 @@ body {
 .is-hidden {
   display: none !important;
 }
+
+/* ===== 내 예약 섹션 ===== */
+.my-reservation-section {
+  max-width: 560px;
+}
+
+.my-search-form {
+  margin-bottom: 2rem;
+}
+
+.my-search-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.my-search-row .field {
+  flex: 1;
+}
+
+.my-result-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.my-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.my-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+}
+
+.my-card__badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+  margin-bottom: 1.25rem;
+}
+
+.my-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.my-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.my-card__label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.my-card__value {
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.my-card__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.my-btn-danger {
+  background: transparent;
+  border: 1px solid #e85d5d;
+  color: #e85d5d;
+}
+
+.my-btn-danger:hover {
+  background: rgba(232, 93, 93, 0.1);
+}
+
+.my-edit-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.my-edit-title {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.my-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.my-edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}

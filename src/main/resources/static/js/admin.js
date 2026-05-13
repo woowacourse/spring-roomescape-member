@@ -183,8 +183,8 @@
       }
       list.forEach((r) => {
         const tr = document.createElement("tr");
-        const timeVal = r.time && r.time.startAt ? r.time.startAt : r.time;
-        const cells = [r.id, r.name, r.date, formatTime(timeVal), r.theme?.name || "—"];
+        const timeVal = r.timeResponse?.startAt;
+        const cells = [r.id, r.name, r.date, formatTime(timeVal), r.themeResponse?.name || "—"];
         cells.forEach(text => {
           const td = document.createElement("td");
           td.textContent = text;
