@@ -14,6 +14,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
+import roomescape.reservation.service.dto.ReservationUpdateServiceDto;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
@@ -46,6 +47,11 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getAll() {
         return reservationRepository.findAll();
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
     }
 
     @Override
@@ -105,9 +111,48 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public Reservation update(ReservationUpdateServiceDto dto) {
+        Reservation existing = reservationRepository.findById(dto.id())
+                .orElseThrow(() -> new ReservationNotFoundException(dto.id()));
+        validateOwner(existing, dto.requesterName());
+
+        ReservationTime newTime = timeService.findById(dto.timeId());
+        Theme newTheme = findTheme(dto.themeId());
+        validatePastReservation(dto.date(), newTime);
+        validateHoliday(dto.date());
+        validateDuplicatedReservation(newTheme.getId(), newTime, dto.date());
+
+        reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
+        return reservationRepository.findById(dto.id())
+                .orElseThrow(() -> new ReservationNotFoundException(dto.id()));
+    }
+
+    @Override
     public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
             throw new ReservationNotFoundException(id);
+        }
+    }
+
+    @Override
+    public void cancel(Long id, String requesterName) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        validateOwner(reservation, requesterName);
+        validatePastCancel(reservation.getDate(), reservation.getTime());
+        reservationRepository.deleteById(id);
+    }
+
+    private void validateOwner(Reservation reservation, String requesterName) {
+        if (!reservation.getName().equals(requesterName)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_OWNER_MISMATCH);
+        }
+    }
+
+    private void validatePastCancel(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
+            throw new RoomescapeException(ErrorCode.PAST_RESERVATION_CANCEL_NOT_ALLOWED);
         }
     }
 }
