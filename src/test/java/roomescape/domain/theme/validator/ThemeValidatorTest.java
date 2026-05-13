@@ -42,6 +42,53 @@ class ThemeValidatorTest {
                 expectedErrors
             );
         }
+
+        @Test
+        @DisplayName("테마 설명이 비어있는 경우 예외가 발생한다.")
+        void 실패2() {
+            String name = "name";
+            String description = "";
+            String imageUrl = "imageUrl";
+            List<ErrorDetail> expectedErrors = List.of(
+                ErrorDetail.of("description", "", "테마 설명은 비어있지 않은 문자열이어야 합니다."));
+
+            ExceptionAssertions.assertErrorCodeWithErrors(
+                () -> ThemeValidator.validate(name, description, imageUrl),
+                ErrorCode.COMMON_INVALID_REQUEST,
+                expectedErrors
+            );
+        }
+
+        @Test
+        @DisplayName("이미지 url이 비어있는 경우 예외가 발생한다.")
+        void 실패3() {
+            String name = "name";
+            String description = "description";
+            String imageUrl = "";
+            List<ErrorDetail> expectedErrors = List.of(
+                ErrorDetail.of("imageUrl", "", "썸네일 url은 비어있지 않은 문자열이어야 합니다."));
+
+            ExceptionAssertions.assertErrorCodeWithErrors(
+                () -> ThemeValidator.validate(name, description, imageUrl),
+                ErrorCode.COMMON_INVALID_REQUEST,
+                expectedErrors
+            );
+        }
+
+        @Test
+        @DisplayName("여러 필드가 비어있는 경우 예외가 발생한다.")
+        void 실패4() {
+            List<ErrorDetail> expectedErrors = List.of(
+                ErrorDetail.of("name", "", "테마명은 비어있지 않은 문자열이어야 합니다."),
+                ErrorDetail.of("description", "", "테마 설명은 비어있지 않은 문자열이어야 합니다."),
+                ErrorDetail.of("imageUrl", "", "썸네일 url은 비어있지 않은 문자열이어야 합니다."));
+
+            ExceptionAssertions.assertErrorCodeWithErrors(
+                () -> ThemeValidator.validate("", "", ""),
+                ErrorCode.COMMON_INVALID_REQUEST,
+                expectedErrors
+            );
+        }
     }
 
 }
