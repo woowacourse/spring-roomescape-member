@@ -45,12 +45,6 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @Positive long id) {
-        reservationService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
     @GetMapping(params = "name")
     public ResponseEntity<List<ReservationDetailFindResponse>> findDetailsByName(
             @RequestParam @NotBlank String name

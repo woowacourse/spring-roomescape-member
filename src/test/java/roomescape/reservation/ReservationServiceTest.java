@@ -45,65 +45,134 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Test
-    @DisplayName("예약 삭제 시 삭제 건수가 0이면 예외가 발생하지 않는다.")
-    void deleteById_삭제건수0_성공() {
-        when(reservationRepository.deleteById(1L)).thenReturn(0);
-
-        assertThatCode(() -> reservationService.deleteById(1L))
-                .doesNotThrowAnyException();
-        verify(reservationRepository).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("예약 삭제 시 삭제 건수가 1이면 예외가 발생하지 않는다.")
-    void deleteById_삭제건수1_성공() {
-        when(reservationRepository.deleteById(1L)).thenReturn(1);
-
-        assertThatCode(() -> reservationService.deleteById(1L))
-                .doesNotThrowAnyException();
-        verify(reservationRepository).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("예약 삭제 시 삭제 건수가 2 이상이면 예외가 발생한다.")
-    void deleteById_삭제건수2이상_실패() {
-        when(reservationRepository.deleteById(1L)).thenReturn(2);
-
-        assertThatThrownBy(() -> reservationService.deleteById(1L))
-                .isInstanceOf(IllegalStateException.class);
-
-        verify(reservationRepository).deleteById(1L);
-    }
-
-    @Test
     @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 0이면 예외가 발생하지 않는다.")
-    void deleteByIdAndName_삭제건수0_성공() {
-        when(reservationRepository.deleteByIdAndName(1L, "a")).thenReturn(0);
+    void deleteByIdAndName_테스트_1() {
+        // given
+        long reservationId = 1L;
+        String name = "a";
+        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
+                reservationId, name,
+                LocalDate.of(2026, 5, 5),
+                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
+                new TimeInformation(7L, LocalTime.of(8, 0))
+        );
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
+        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(0);
 
-        assertThatCode(() -> reservationService.deleteByIdAndName(1L, "a"))
+        // when, then
+        assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
                 .doesNotThrowAnyException();
-        verify(reservationRepository).deleteByIdAndName(1L, "a");
+
+        verify(reservationRepository).findDetailByIdAndName(reservationDetail.id(), reservationDetail.name());
+        verify(scheduleService).validateNotPastDate(reservationDetail.date());
+        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        verify(reservationRepository).deleteByIdAndName(reservationId, name);
     }
 
     @Test
     @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 1이면 예외가 발생하지 않는다.")
-    void deleteByIdAndName_삭제건수1_성공() {
-        when(reservationRepository.deleteByIdAndName(1L, "a")).thenReturn(1);
+    void deleteByIdAndName_테스트_2() {
+        // given
+        long reservationId = 1L;
+        String name = "a";
+        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
+                reservationId, name,
+                LocalDate.of(2026, 5, 5),
+                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
+                new TimeInformation(7L, LocalTime.of(8, 0))
+        );
 
-        assertThatCode(() -> reservationService.deleteByIdAndName(1L, "a"))
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
+        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(1);
+
+        // when, then
+        assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
                 .doesNotThrowAnyException();
-        verify(reservationRepository).deleteByIdAndName(1L, "a");
+        verify(reservationRepository).findDetailByIdAndName(reservationId, name);
+        verify(scheduleService).validateNotPastDate(reservationDetail.date());
+        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        verify(reservationRepository).deleteByIdAndName(reservationId, name);
     }
 
     @Test
     @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 2 이상이면 예외가 발생한다.")
-    void deleteByIdAndName_삭제건수2이상_실패() {
-        when(reservationRepository.deleteByIdAndName(1L, "a")).thenReturn(2);
+    void deleteByIdAndName_테스트_3() {
+        // given
+        long reservationId = 1L;
+        String name = "a";
+        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
+                reservationId, name,
+                LocalDate.of(2026, 5, 5),
+                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
+                new TimeInformation(7L, LocalTime.of(8, 0))
+        );
 
-        assertThatThrownBy(() -> reservationService.deleteByIdAndName(1L, "a"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("예약 삭제에 실패했습니다. reservationId=1, name=a");
-        verify(reservationRepository).deleteByIdAndName(1L, "a");
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
+        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(2);
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(reservationRepository).findDetailByIdAndName(reservationId, name);
+        verify(scheduleService).validateNotPastDate(reservationDetail.date());
+        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        verify(reservationRepository).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 예약날짜가 과거인 경우 삭제 시도 시 예외가 발생한다.")
+    void deleteByIdAndName_테스트_4() {
+        long reservationId = 1L;
+        String name = "a";
+
+        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
+                reservationId, name,
+                LocalDate.of(2026, 5, 13),
+                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
+                new TimeInformation(1L, LocalTime.of(10, 0))
+        );
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(reservationDetail.date());
+
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(scheduleService).validateNotPastDate(reservationDetail.date());
+        verify(scheduleService, never()).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 예약날짜가 오늘과 같지만 시간이 과거시간인 경우 삭제 시도 시 예외가 발생한다.")
+    void deleteByIdAndName_테스트_5() {
+        long reservationId = 1L;
+        String name = "a";
+
+        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
+                reservationId, name,
+                LocalDate.of(2026, 5, 13),
+                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
+                new TimeInformation(1L, LocalTime.of(10, 0))
+        );
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(scheduleService).validateNotPastDate(reservationDetail.date());
+        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
     }
 
     @Test
@@ -238,10 +307,10 @@ class ReservationServiceTest {
         assertThat(response.name()).isEqualTo("테스트");
         assertThat(response.scheduleId()).isEqualTo(4L);
 
-        verify(scheduleService, times(1)).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
-        verify(reservationRepository, times(1)).existsByScheduleId(scheduleId);
-        verify(scheduleService, times(1)).validateSchedule(body.date(), body.timeId(), body.themeId());
-        verify(reservationRepository, times(1)).save(any(Reservation.class));
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).existsByScheduleId(scheduleId);
+        verify(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).save(any(Reservation.class));
     }
 
     @Test
@@ -264,9 +333,9 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(body))
                 .isInstanceOf(IllegalStateException.class);
 
-        verify(scheduleService, times(1)).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
-        verify(reservationRepository, times(1)).existsByScheduleId(scheduleId);
-        verify(scheduleService, times(1)).validateSchedule(body.date(), body.timeId(), body.themeId());
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).existsByScheduleId(scheduleId);
+        verify(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
@@ -288,8 +357,8 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(body))
                 .isInstanceOf(IllegalStateException.class);
 
-        verify(scheduleService, times(1)).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
-        verify(reservationRepository, times(1)).existsByScheduleId(scheduleId);
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).existsByScheduleId(scheduleId);
         verify(scheduleService, never()).validateSchedule(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
@@ -310,7 +379,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(body))
                 .isInstanceOf(IllegalStateException.class);
 
-        verify(scheduleService, times(1)).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).existsByScheduleId(anyLong());
         verify(scheduleService, never()).validateSchedule(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).save(any(Reservation.class));

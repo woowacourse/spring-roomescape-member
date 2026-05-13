@@ -85,15 +85,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteById(long id) {
-        String sql = "DELETE FROM reservation WHERE id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        return template.update(sql, params);
-    }
-
-    @Override
     public Set<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
         String sql = """
                 SELECT
@@ -221,10 +212,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByScheduleId(long scheduleId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = :id)";
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE schedule_id = :scheduleId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", scheduleId);
+                .addValue("scheduleId", scheduleId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
     }

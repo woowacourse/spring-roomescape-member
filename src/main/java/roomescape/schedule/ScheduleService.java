@@ -11,6 +11,7 @@ import roomescape.theme.repository.ThemeRepository;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -62,13 +63,26 @@ public class ScheduleService {
     }
 
     public void validateSchedule(LocalDate date, Long timeId, Long themeId) {
-        if (date.isBefore(LocalDate.now(clock))) {
-            throw new IllegalStateException("지난 날짜로는 예약을 할 수 없습니다.");
-        }
+        validateNotPastDate(date);
         reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalStateException("해당 id를 가진 시간 데이터가 존재하지 않습니다."));
         themeRepository.findById(themeId)
                 .orElseThrow(() -> new IllegalStateException("해당 id를 가진 테마 데이터가 존재하지 않습니다."));
+    }
+
+    public void validateNotPastDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now(clock))) {
+            throw new IllegalStateException("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
+        }
+    }
+
+    public void validateNotPastTime(LocalDate date, LocalTime time) {
+        LocalDate currentDate = LocalDate.now(clock);
+        LocalTime currentTime = LocalTime.now(clock);
+
+        if (date.isEqual(currentDate) && time.isBefore(currentTime)) {
+            throw new IllegalStateException("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
+        }
     }
 
     private Schedule getScheduleOrElseThrow(long scheduleId) {

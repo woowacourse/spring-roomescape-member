@@ -66,7 +66,7 @@ class JdbcReservationRepositoryTest {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // when
-        reservationRepository.deleteById(savedReservation.getId());
+        reservationRepository.deleteByIdAndName(savedReservation.getId(), savedReservation.getName());
 
         // then
         List<ReservationDetailProjection> reservations = reservationRepository.findAllDetails();

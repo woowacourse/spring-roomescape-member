@@ -13,8 +13,6 @@ public interface ReservationRepository {
 
     List<ReservationDetailProjection> findAllDetails();
 
-    int deleteById(long id);
-
     Set<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
 
     List<ReservationDetailProjection> findDetailsByName(String name);

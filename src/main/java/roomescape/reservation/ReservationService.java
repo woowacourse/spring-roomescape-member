@@ -35,18 +35,19 @@ public class ReservationService {
         return ReservationDetailFindResponse.from(reservationRepository.findAllDetails());
     }
 
-    public void deleteById(long id) {
-        if (reservationRepository.deleteById(id) <= 1) {
-            return;
-        }
-        throw new IllegalStateException("예약 삭제에 실패했습니다. reservationId=" + id);
-    }
+    public void deleteByIdAndName(long reservationId, String name) {
+        ReservationDetailProjection reservationDetail = reservationRepository.findDetailByIdAndName(reservationId, name)
+                .orElse(null);
 
-    public void deleteByIdAndName(long id, String name) {
-        if (reservationRepository.deleteByIdAndName(id, name) <= 1) {
+        if (reservationDetail == null) {
             return;
         }
-        throw new IllegalStateException("예약 삭제에 실패했습니다. reservationId=" + id + ", name=" + name);
+        validateNotPast(reservationDetail);
+
+        if (reservationRepository.deleteByIdAndName(reservationId, name) <= 1) {
+            return;
+        }
+        throw new IllegalStateException("예약 삭제에 실패했습니다. reservationId=" + reservationId + ", name=" + name);
     }
 
     public List<ReservationDetailFindResponse> findDetailByName(String name) {
@@ -79,5 +80,10 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalStateException("예약 수정 후 데이터를 조회하지 못했습니다. reservationId=" + reservationId));
 
         return ReservationSaveResponse.from(newReservation);
+    }
+
+    private void validateNotPast(ReservationDetailProjection reservationDetail) {
+        scheduleService.validateNotPastDate(reservationDetail.date());
+        scheduleService.validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
     }
 }
