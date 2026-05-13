@@ -102,20 +102,20 @@ public class ReservationDao {
 
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     public boolean existsByThemeId(Long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     public boolean existsById(Long id) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(exists);
     }
 
     public boolean hasDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
@@ -126,7 +126,7 @@ public class ReservationDao {
                                 and theme_id = ?
                     )
                 """;
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(exists);
     }
 }

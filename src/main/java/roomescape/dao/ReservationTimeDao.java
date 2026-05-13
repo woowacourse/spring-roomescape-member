@@ -64,7 +64,7 @@ public class ReservationTimeDao {
 
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, startAt.toString());
+        return Boolean.TRUE.equals(exists);
     }
 }
