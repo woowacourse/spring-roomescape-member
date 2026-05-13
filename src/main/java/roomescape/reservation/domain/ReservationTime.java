@@ -4,8 +4,8 @@ import java.time.LocalTime;
 
 public class ReservationTime {
 
-    private Long id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
     private ReservationTime(Long id, LocalTime startAt) {
         validateStartAt(startAt);

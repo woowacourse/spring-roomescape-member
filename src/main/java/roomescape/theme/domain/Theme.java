@@ -5,10 +5,10 @@ import org.springframework.util.StringUtils;
 
 public class Theme {
 
-    private Long id;
-    private String name;
-    private String description;
-    private String imageUrl;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String imageUrl;
 
     private Theme(Long id, String name, String description, String imageUrl) {
         validateName(name);
