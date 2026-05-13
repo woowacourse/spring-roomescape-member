@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Reservation {
 
@@ -45,6 +47,19 @@ public class Reservation {
         if (theme == null) {
             throw new IllegalArgumentException("[ERROR] 테마는 비어 있을 수 없습니다.");
         }
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
+
+        if (date.isBefore(nowDate)) {
+            return true;
+        }
+        if (date.isAfter(nowDate)) {
+            return false;
+        }
+        return time.isPast(nowTime);
     }
 
     public Long getId() {

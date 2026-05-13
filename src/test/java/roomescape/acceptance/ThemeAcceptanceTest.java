@@ -1,6 +1,8 @@
 package roomescape.acceptance;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,13 @@ public class ThemeAcceptanceTest {
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
+    private LocalDateTime futureDateTime;
+
+    @BeforeEach
+    void beforeEach() {
+        futureDateTime = LocalDateTime.now().plusHours(10);
+    }
+
     @Test
     void reservationTimeApiSuccessTest() {
         // 1. 테마 추가
@@ -25,10 +34,10 @@ public class ThemeAcceptanceTest {
         ThemeSteps.checkAllThemeSize(1);
 
         // 3. 시간 추가
-        ReservationTimeSteps.createReservationTime("10:00");
+        ReservationTimeSteps.createReservationTime(futureDateTime.toLocalTime().toString());
 
         // 4. 예약 추가
-        ReservationSteps.createReservation("예약자", "2026-05-01", 1L, 1L);
+        ReservationSteps.createReservation("예약자", futureDateTime.toLocalDate().toString(), 1L, 1L);
 
         // 5. 특정 기간 내의 테마 랭킹 조회
         ThemeSteps.checkThemeRanking("2026-05-01", "2026-05-07", 1);

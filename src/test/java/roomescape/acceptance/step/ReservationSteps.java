@@ -1,6 +1,7 @@
 package roomescape.acceptance.step;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -51,7 +52,7 @@ public class ReservationSteps {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("[ERROR] 동일한 예약이 이미 존재합니다."));
+                .statusCode(409)
+                .body("message", is(DUPLICATED_RESERVATION.getMessage()));
     }
 }

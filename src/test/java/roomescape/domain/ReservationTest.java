@@ -1,8 +1,10 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,5 +45,18 @@ public class ReservationTest {
         assertThatThrownBy(() -> new Reservation(1L, "fizz", LocalDate.of(2026, 5, 2), reservationTime, null))
                 .hasMessage("[ERROR] 테마는 비어 있을 수 없습니다.")
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void checkPastTest() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "방탈출1", "방탈출1 설명", "url.jpg");
+        Reservation pastReservation = new Reservation(1L, "fizz", LocalDate.of(2025, 5, 2), reservationTime, theme);
+        Reservation futureReservation = new Reservation(1L, "fizz", LocalDate.of(3025, 5, 2), reservationTime, theme);
+
+        LocalDateTime localDateTime = LocalDateTime.of(2026, 5, 13, 10, 0);
+
+        assertThat(pastReservation.isPast(localDateTime)).isTrue();
+        assertThat(futureReservation.isPast(localDateTime)).isFalse();
     }
 }

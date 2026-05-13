@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,10 @@ public class ReservationService {
         }
 
         Reservation reservationWithoutId = requestDto.toEntity(reservationTime.get(), theme.get());
+        if (reservationWithoutId.isPast(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION);
+        }
+
         Reservation reservation = reservationRepository.create(reservationWithoutId);
 
         return ServiceReservationResponse.from(reservation);

@@ -2,9 +2,12 @@ package roomescape.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION;
+import static roomescape.exception.ErrorCode.NOT_FOUND_RESERVATION_TIME;
+import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
+import static roomescape.exception.ErrorCode.PAST_TIME_RESERVATION;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +34,8 @@ public class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
 
+    private LocalDateTime futureDateTime;
+
     @BeforeEach
     void beforeEach() {
         FakeDatabase fakeDatabase = new FakeDatabase();
@@ -40,90 +45,110 @@ public class ReservationServiceTest {
         themeRepository = new FakeThemeRepository(fakeDatabase);
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+
+        futureDateTime = LocalDateTime.now().plusHours(10);
     }
 
     @Test
     void createNotFoundReservationTimeExceptionTest() {
         themeRepository.create(new Theme("피즈의 모험", "설명", "url.jpg"));
         ServiceReservationRequest serviceReservationRequest = new ServiceReservationRequest("fizz",
-                LocalDate.of(2026, 5, 2), 1L, 1L);
+                futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationRequest))
-                .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
+                .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage())
                 .isInstanceOf(CustomException.class);
     }
 
     @Test
     void createNotFoundThemeTimeExceptionTest() {
-        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.create(new ReservationTime(futureDateTime.toLocalTime()));
         ServiceReservationRequest serviceReservationRequest = new ServiceReservationRequest("fizz",
-                LocalDate.of(2026, 5, 2), 1L, 1L);
+                futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationRequest))
-                .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
+                .hasMessage(NOT_FOUND_THEME.getMessage())
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
+    void createPastReservationExceptionTest() {
+        LocalDateTime pastDateTime = LocalDateTime.now().minusHours(10);
+        reservationTimeRepository.create(new ReservationTime(1L, pastDateTime.toLocalTime()));
+        themeRepository.create(new Theme("피즈의 모험", "설명", "url.jpg"));
+
+        ServiceReservationRequest serviceReservationRequest = new ServiceReservationRequest("fizz",
+                pastDateTime.toLocalDate(), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.create(serviceReservationRequest))
+                .hasMessage(PAST_TIME_RESERVATION.getMessage())
                 .isInstanceOf(CustomException.class);
     }
 
     @Test
     void duplicatedReservationExceptionTest() {
-        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.create(new ReservationTime(futureDateTime.toLocalTime()));
         themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
 
-        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
+        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", futureDateTime.toLocalDate(), 1L,
                 1L);
         reservationService.create(requestDto);
 
         assertThatThrownBy(() -> reservationService.create(requestDto))
-                .hasMessage("[ERROR] 동일한 예약이 이미 존재합니다.")
+                .hasMessage(DUPLICATED_RESERVATION.getMessage())
                 .isInstanceOf(CustomException.class);
     }
 
     @Test
     void createTest() {
-        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = reservationTimeRepository.create(
+                new ReservationTime(futureDateTime.toLocalTime()));
         ServiceReservationTimeResponse serviceReservationTimeResponse = ServiceReservationTimeResponse.from(
                 reservationTime);
         Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
         ServiceThemeResponse serviceThemeResponse = ServiceThemeResponse.from(theme);
 
         ServiceReservationResponse responseDto = reservationService.create(
-                new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+                new ServiceReservationRequest("fizz", futureDateTime.toLocalDate(), 1L, 1L));
 
         assertThat(responseDto).isEqualTo(
-                new ServiceReservationResponse(1L, "fizz", LocalDate.of(2026, 5, 2),
+                new ServiceReservationResponse(1L, "fizz", futureDateTime.toLocalDate(),
                         serviceReservationTimeResponse,
                         serviceThemeResponse));
     }
 
     @Test
     void readAllTest() {
-        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = reservationTimeRepository.create(
+                new ReservationTime(futureDateTime.toLocalTime()));
         ServiceReservationTimeResponse serviceReservationTimeResponse = ServiceReservationTimeResponse.from(
                 reservationTime);
         Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
         ServiceThemeResponse serviceThemeResponse = ServiceThemeResponse.from(theme);
 
-        reservationService.create(new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
-        reservationService.create(new ServiceReservationRequest("fizz2", LocalDate.of(2026, 5, 4), 1L, 1L));
+        reservationService.create(new ServiceReservationRequest("fizz", futureDateTime.toLocalDate(), 1L, 1L));
+        reservationService.create(
+                new ServiceReservationRequest("fizz2", futureDateTime.toLocalDate().plusDays(1), 1L, 1L));
 
         List<ServiceReservationResponse> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(
-                new ServiceReservationResponse(responseDtos.getFirst().id(), "fizz", LocalDate.of(2026, 5, 2),
+                new ServiceReservationResponse(responseDtos.getFirst().id(), "fizz", futureDateTime.toLocalDate(),
                         serviceReservationTimeResponse,
                         serviceThemeResponse));
         assertThat(responseDtos.get(1)).isEqualTo(
-                new ServiceReservationResponse(responseDtos.get(1).id(), "fizz2", LocalDate.of(2026, 5, 4),
+                new ServiceReservationResponse(responseDtos.get(1).id(), "fizz2",
+                        futureDateTime.toLocalDate().plusDays(1),
                         serviceReservationTimeResponse,
                         serviceThemeResponse));
     }
 
     @Test
     void deleteTest() {
-        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.create(new ReservationTime(futureDateTime.toLocalTime()));
         themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
 
-        reservationService.create(new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+        reservationService.create(new ServiceReservationRequest("fizz", futureDateTime.toLocalDate(), 1L, 1L));
         reservationService.delete(1L);
 
         List<ServiceReservationResponse> responseDtos = reservationService.readAll();
