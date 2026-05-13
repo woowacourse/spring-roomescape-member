@@ -10,6 +10,7 @@ import roomescape.domain.reservationtime.entity.ReservationTime;
 import roomescape.domain.reservationtime.exception.TimeErrorCode;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.request.ReservationTimeUpdateRequest;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
 import roomescape.domain.reservationtime.response.ReservationTimesResponse;
 
@@ -41,9 +42,27 @@ public class ReservationTimeService {
     }
 
     @Transactional
+    public ReservationTimeResponse updateReservationTime(Long id, ReservationTimeUpdateRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DUPLICATE);
+        }
+
+        reservationTime.update(request.startAt());
+        reservationTimeRepository.update(id, reservationTime);
+
+        return ReservationTimeResponse.from(reservationTime);
+    }
+
+    @Transactional
     public void deleteReservationTimeBy(Long id) {
         try {
-            reservationTimeRepository.deleteById(id);
+            int deletedCount = reservationTimeRepository.deleteById(id);
+            if (deletedCount == 0) {
+                throw new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND);
+            }
         } catch (DataIntegrityViolationException exception) {
             throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DELETE_CONFLICT, exception);
         }

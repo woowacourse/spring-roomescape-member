@@ -12,5 +12,9 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    void deleteById(Long id);
+    int update(Long id, ReservationTime reservationTime);
+
+    int deleteById(Long id);
+
+    boolean existsByStartAt(java.time.LocalTime startAt);
 }

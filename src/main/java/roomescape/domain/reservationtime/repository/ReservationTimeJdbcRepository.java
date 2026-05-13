@@ -31,6 +31,20 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             WHERE id = :id
             """;
 
+    private static final String UPDATE_RESERVATION_TIME_QUERY = """
+            UPDATE reservation_time
+            SET start_at = :start_at
+            WHERE id = :id
+            """;
+
+    private static final String EXISTS_BY_START_AT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE start_at = :start_at
+            )
+            """;
+
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) -> ReservationTime.of(
             resultSet.getLong("id"),
             resultSet.getObject("start_at", LocalTime.class)
@@ -90,13 +104,30 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int update(Long id, ReservationTime reservationTime) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("start_at", reservationTime.getStartAt());
+
+        return jdbcTemplate.update(UPDATE_RESERVATION_TIME_QUERY, parameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        jdbcTemplate.update(
+        return jdbcTemplate.update(
                 DELETE_RESERVATION_TIME_BY_ID_QUERY,
                 parameters
         );
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("start_at", startAt);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXISTS_BY_START_AT_QUERY, parameters, Boolean.class));
     }
 }

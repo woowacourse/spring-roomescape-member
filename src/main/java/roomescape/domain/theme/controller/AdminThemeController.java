@@ -30,6 +30,8 @@ public class AdminThemeController {
                 .body(theme);
     }
 
+    // TODO: 관리자 테마 수정 기능 추가 put
+
     @DeleteMapping("/{themeId}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long themeId) {
         themeService.deleteThemeById(themeId);

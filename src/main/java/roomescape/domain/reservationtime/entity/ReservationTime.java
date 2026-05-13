@@ -7,7 +7,7 @@ public class ReservationTime {
 
     private Long id;
 
-    private final LocalTime startAt;
+    private LocalTime startAt;
 
     private ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
@@ -35,6 +35,10 @@ public class ReservationTime {
         if (this.id != null) {
             throw new IllegalStateException("이미 id가 할당된 예약 시간입니다.");
         }
+    }
+
+    public void update(LocalTime startAt) {
+        this.startAt = startAt;
     }
 
     public Long getId() {
