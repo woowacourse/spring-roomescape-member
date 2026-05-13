@@ -77,7 +77,7 @@ class ThemeTest {
     }
 
     @Test
-    void 테마를_삭제할_수_있다() {
+    void 테마를_비활성화할_수_있다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
 
@@ -89,7 +89,7 @@ class ThemeTest {
     }
 
     @Test
-    void 이미_삭제된_테마를_삭제하면_예외가_발생한다() {
+    void 이미_삭제된_테마를_비활성화하면_예외가_발생한다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
         theme.deactivate();

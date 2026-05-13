@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Theme;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.service.BaseIntegrationTest;
 
 class ThemeRepositoryTest extends BaseIntegrationTest {
@@ -91,6 +92,17 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         Optional<Theme> found = themeRepository.findById(savedTheme.getId());
         assertThat(found).isPresent();
         assertThat(found.get().isActive()).isFalse();
+    }
+
+    @Test
+    void 존재하지_않는_테마_정보를_수정하면_예외가_발생한다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+        theme.deactivate();
+
+        // when & then
+        assertThatThrownBy(() -> themeRepository.update(theme))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test

@@ -43,4 +43,17 @@ class ReservationTimeTest {
         // then
         assertThat(reservationDateTime).isEqualTo(LocalDateTime.of(reservationDate, startAt));
     }
+
+    @Test
+    void 예약_시간을_비활성화_한다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        ReservationTime reservationTime = new ReservationTime(startAt);
+
+        // when
+        reservationTime.deactivate();
+
+        // then
+        assertThat(reservationTime.isActive()).isFalse();
+    }
 }

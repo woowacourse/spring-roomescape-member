@@ -57,24 +57,26 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 시간을_삭제한다() {
+    void 시간을_수정한다() {
         // given
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
 
         // when
-        reservationTimeRepository.deleteById(saved.getId());
+        saved.deactivate();
+        reservationTimeRepository.update(saved);
+        ReservationTime time = reservationTimeRepository.findById(saved.getId()).get();
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.getId())).isEmpty();
+        assertThat(time.isActive()).isFalse();
     }
 
     @Test
-    void 삭제할_시간이_존재하지_않으면_예외가_발생한다() {
+    void 수정할_시간이_존재하지_않으면_예외가_발생한다() {
         // given
-        Long nonexistentId = 999L;
+        ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(nonexistentId))
+        assertThatThrownBy(() -> reservationTimeRepository.update(time))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 시간 정보입니다.");
     }

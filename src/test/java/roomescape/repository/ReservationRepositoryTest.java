@@ -91,19 +91,6 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 예약을_삭제한다() {
-        // given
-        Reservation saved = reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithName("이프", theme, reservationTime));
-
-        // when
-        reservationRepository.deleteById(saved.getId());
-
-        // then
-        assertThat(dataSource.hasReservationById(saved.getId())).isFalse();
-    }
-
-    @Test
     void 예약_정보를_수정한다() {
         // given
         Reservation reservation = reservationRepository.save(
@@ -121,14 +108,16 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 삭제할_예약이_존재하지_않으면_예외가_발생한다() {
+    void 존재하지_않는_예약_정보를_수정하면_예외가_발생한다() {
         // given
-        Long nonexistentId = 999L;
+        Reservation reservation = ReservationFixture.createDefaultReservationWithName("바니", theme, reservationTime);
 
-        // when & then
-        assertThatThrownBy(() -> reservationRepository.deleteById(nonexistentId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("존재하지 않는 예약 정보입니다.");
+        // when
+        reservation.cancel();
+
+        // then
+        assertThatThrownBy(() -> reservationRepository.update(reservation))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -170,9 +159,10 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
                 reservationTime);
         reservationRepository.save(reservation);
 
-        Reservation canceledReservation = ReservationFixture.createDefaultReservationWithNameAndDate("바니",
-                date.plusDays(2), theme, reservationTime);
-        reservationRepository.save(canceledReservation);
+        Reservation canceledReservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithNameAndDate("바니",
+                        date.plusDays(2), theme, reservationTime));
+
         canceledReservation.cancel();
         reservationRepository.update(canceledReservation);
 
@@ -203,5 +193,16 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
                 .hasSize(1)
                 .extracting(Reservation::getName)
                 .containsExactly("바니");
+    }
+
+    @Test
+    void 특정_시간대에_예약이_존재하는지_반환한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.save(ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme,
+                reservationTime));
+
+        // when & then
+        assertThat(reservationRepository.existsByTimeId(reservationTime.getId())).isTrue();
     }
 }

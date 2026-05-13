@@ -52,12 +52,8 @@ class ReservationControllerTest extends BaseControllerUnitTest {
     void 예약_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationRequest body, String exceptionMessage) {
         // given
         // when & then
-        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .body(body)
-                .when().post("/api/reservations")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body(containsString(exceptionMessage));
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all().body(body).when().post("/api/reservations").then()
+                .log().all().status(HttpStatus.BAD_REQUEST).body(containsString(exceptionMessage));
     }
 
     @Test
@@ -72,13 +68,9 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         when(reservationService.reserve(any(ReservationRequest.class))).thenReturn(expected);
 
         // when & then
-        ReservationResponse response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .body(request)
-                .when().post("/api/reservations")
-                .then().log().all()
-                .status(HttpStatus.CREATED)
-                .header("Location", containsString("/api/reservations/1"))
-                .extract().as(new TypeRef<>() {
+        ReservationResponse response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all().body(request).when()
+                .post("/api/reservations").then().log().all().status(HttpStatus.CREATED)
+                .header("Location", containsString("/api/reservations/1")).extract().as(new TypeRef<>() {
                 });
 
         assertThat(response).isEqualTo(expected);
@@ -93,10 +85,7 @@ class ReservationControllerTest extends BaseControllerUnitTest {
 
         // when & then
         ReservationResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .queryParam("name", "웨지")
-                .when().get("/api/reservations")
-                .then().log().all()
-                .status(HttpStatus.OK)
+                .queryParam("name", "웨지").when().get("/api/reservations").then().log().all().status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
                 });
 
@@ -109,14 +98,10 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         ReservationCancelRequest request = new ReservationCancelRequest("바니");
 
         // when & then
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .body(request)
-                .when().patch("/api/reservations/1")
-                .then().log().all()
-                .status(HttpStatus.NO_CONTENT);
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
+                .patch("/api/reservations/1/cancel").then().log().all().status(HttpStatus.NO_CONTENT);
 
-        verify(reservationService, times(1))
-                .cancel(anyLong(), any(ReservationCancelRequest.class));
+        verify(reservationService, times(1)).cancel(anyLong(), any(ReservationCancelRequest.class));
     }
 
 
@@ -127,12 +112,9 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         ReservationCancelRequest request = new ReservationCancelRequest("바니");
 
         // when & then
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .body(request)
-                .when().patch("/api/reservations/" + reservationId)
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("예약 식별자는 양수여야 합니다."));
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
+                .patch("/api/reservations/" + reservationId + "/cancel").then().log().all()
+                .status(HttpStatus.BAD_REQUEST).body(containsString("예약 식별자는 양수여야 합니다."));
     }
 
     @Test
@@ -141,11 +123,8 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         ReservationCancelRequest request = new ReservationCancelRequest(" ");
 
         // when & then
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .body(request)
-                .when().patch("/api/reservations/1")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
+                .patch("/api/reservations/1/cancel").then().log().all().status(HttpStatus.BAD_REQUEST)
                 .body(containsString("예약자 이름 정보는 필수 값입니다."));
     }
 }
