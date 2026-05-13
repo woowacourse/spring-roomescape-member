@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
         ));
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(ResourceDeleteConflicted.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponse> handlerConflictedException(ResourceDeleteConflicted e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
