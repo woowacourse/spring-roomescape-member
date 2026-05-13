@@ -9,12 +9,11 @@ public enum ErrorCode {
     INVALID_NAME_LENGTH(HttpStatus.BAD_REQUEST, "INVALID_NAME", "이름의 길이가 유효하지 않습니다."),
     INVALID_ID(HttpStatus.BAD_REQUEST, "INVALID_ID", "식별자 값이 올바르지 않습니다."),
     INVALID_DATE(HttpStatus.BAD_REQUEST, "INVALID_DATE_FORMAT", "날짜 형식이 올바르지 않거나 존재하지 않는 날짜입니다. 날짜 입력값을 다시 확인해주세요."),
-    THEME_NOT_FOUND(HttpStatus.BAD_REQUEST, "THEME_NOT_FOUND", "등록되지 않은 테마입니다."),
-    TIME_NOT_FOUND(HttpStatus.BAD_REQUEST, "TIME_NOT_FOUND", "등록되지 않은 시간입니다."),
-    INVALID_REQUEST_TYPE(HttpStatus.BAD_REQUEST, "INVALID_REQUEST_TYPE", "요청 값 타입이 올바르지 않습니다."),
-
-    //404
-    RESERVATION_ALREADY_CANCELED(HttpStatus.NOT_FOUND, "RESERVATION_ALREADY_CANCELED", "이미 취소된 예약입니다."),
+    
+    // 404
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "THEME_NOT_FOUND", "등록되지 않은 테마입니다."),
+    TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "TIME_NOT_FOUND", "등록되지 않은 시간입니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_NOT_FOUND", "존재하지 않는 예약입니다."),
 
     // 409
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "RESERVATION_DUPLICATED", "이미 예약이 존재합니다."),
