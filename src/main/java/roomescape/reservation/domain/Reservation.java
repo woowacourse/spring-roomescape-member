@@ -6,6 +6,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -78,6 +79,10 @@ public class Reservation {
 
     public boolean isSameTime(ReservationTime time) {
         return Objects.equals(this.time, time);
+    }
+
+    public boolean isPastAt(LocalDateTime now) {
+        return time.atDate(date).isBefore(now);
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -76,6 +77,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = ?";
 
         return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(Long id, String name) {
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = ? AND r.name = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id, name)
+                .stream()
+                .findFirst();
     }
 
     @Override

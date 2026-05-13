@@ -45,8 +45,8 @@ public class ReservationTime {
         }
     }
 
-    public boolean isPastAt(LocalDate date, LocalDateTime now) {
-        return LocalDateTime.of(date, startAt).isBefore(now);
+    public LocalDateTime atDate(LocalDate date) {
+        return LocalDateTime.of(date, startAt);
     }
 
     @Override

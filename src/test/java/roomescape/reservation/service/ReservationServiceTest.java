@@ -12,6 +12,7 @@ import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.InvalidRequestException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -32,6 +33,9 @@ class ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -162,5 +166,49 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.delete(37L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+    }
+
+    @Test
+    @DisplayName("사용자가 본인의 예약을 취소한다.")
+    public void cancel_success() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+
+        // when
+        reservationService.cancel(reservation.getId(), "브라운");
+
+        // then
+        assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("해당 이름으로 예약을 찾을 수 없으면 예약 취소 시 예외가 발생한다.")
+    public void cancel_fail_whenReservationNotFoundByName() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), "레아"))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
+    public void cancel_fail_whenPastReservation() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationRepository.save(
+                new Reservation("브라운", LocalDate.of(2026, 5, 13), time, theme));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), "브라운"))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
     }
 }

@@ -45,14 +45,12 @@ class ReservationTimeTest {
     }
 
     @Test
-    @DisplayName("예약 날짜와 시간을 현재 시각과 비교해 과거 여부를 판단한다.")
-    void isPastAt() {
+    @DisplayName("예약 날짜와 시간을 조합해 예약 일시를 만든다.")
+    void atDate() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(14, 0));
         LocalDate date = LocalDate.of(2026, 5, 13);
 
-        assertThat(reservationTime.isPastAt(date, LocalDateTime.of(2026, 5, 13, 15, 0))).isTrue();
-        assertThat(reservationTime.isPastAt(date, LocalDateTime.of(2026, 5, 13, 14, 0))).isFalse();
-        assertThat(reservationTime.isPastAt(date, LocalDateTime.of(2026, 5, 13, 13, 0))).isFalse();
+        assertThat(reservationTime.atDate(date)).isEqualTo(LocalDateTime.of(2026, 5, 13, 14, 0));
     }
 
     private void assertInvalidRequestException(Runnable runnable, String message) {

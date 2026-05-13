@@ -46,7 +46,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요."));
 
-        validateNotPast(date, time);
+        validateReservableDateTime(date, time);
         validateNotDuplicated(date, time, theme);
 
         Reservation reservation = new Reservation(name, date, time, theme);
@@ -59,8 +59,8 @@ public class ReservationService {
         }
     }
 
-    private void validateNotPast(LocalDate date, ReservationTime time) {
-        if (time.isPastAt(date, LocalDateTime.now(clock))) {
+    private void validateReservableDateTime(LocalDate date, ReservationTime time) {
+        if (time.atDate(date).isBefore(LocalDateTime.now(clock))) {
             throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
         }
     }
@@ -68,6 +68,24 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<Reservation> findByName(String name) {
         return reservationRepository.findByName(name);
+    }
+
+    @Transactional
+    public void cancel(Long id, String name) {
+        Reservation reservation = reservationRepository.findByIdAndName(id, name)
+                .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
+
+        validateCancelableDateTime(reservation);
+
+        if (!reservationRepository.deleteById(reservation.getId())) {
+            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+        }
+    }
+
+    private void validateCancelableDateTime(Reservation reservation) {
+        if (reservation.isPastAt(LocalDateTime.now(clock))) {
+            throw new InvalidRequestException("이미 지난 예약은 취소할 수 없습니다.");
+        }
     }
 
     @Transactional
