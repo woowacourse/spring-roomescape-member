@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.GlobalExceptionHandlerTest.FakeController.TestRequest;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
@@ -71,7 +71,7 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Bean Validation 실패 시 400을 반환한다")
     void returnsBadRequestForValidationFailure() {
-        TestRequest testRequest = new TestRequest(null);
+        FakeController.TestRequest testRequest = new FakeController.TestRequest(null);
         RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(testRequest)
@@ -80,8 +80,20 @@ class GlobalExceptionHandlerTest {
                 .status(HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    @DisplayName("Path variable 타입 불일치 시 400을 반환한다")
+    void returnsBadRequestForTypeMismatch() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/type-mismatch/not-a-number")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+    }
+
     @RestController
     static class FakeController {
+
+        record TestRequest(@NotNull String value) {
+        }
 
         @GetMapping("/test/not-found")
         void throwNotFoundException() {
@@ -102,7 +114,8 @@ class GlobalExceptionHandlerTest {
         void validate(@Valid @RequestBody TestRequest request) {
         }
 
-        record TestRequest(@NotNull String value) {
+        @GetMapping("/test/type-mismatch/{id}")
+        void typeMismatch(@PathVariable Long id) {
         }
     }
 }
