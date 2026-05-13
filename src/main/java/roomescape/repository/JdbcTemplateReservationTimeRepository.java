@@ -65,4 +65,15 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE time_id = ?",
+                Integer.class,
+                timeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
 }
