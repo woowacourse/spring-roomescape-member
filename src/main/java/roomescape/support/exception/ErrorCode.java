@@ -9,4 +9,6 @@ public interface ErrorCode {
     String getMessage();
 
     String getCode();
+
+    String getAction();
 }
