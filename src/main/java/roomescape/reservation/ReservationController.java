@@ -30,7 +30,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody @Valid ReservationRequest reservationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservationRequest));
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservationRequest, now));
     }
 
     @GetMapping

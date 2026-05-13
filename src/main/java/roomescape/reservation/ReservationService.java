@@ -30,10 +30,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest reservationRequest) {
+    public ReservationResponse create(ReservationRequest reservationRequest, LocalDateTime now) {
+
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
-
         Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
                 .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
 
@@ -43,6 +43,13 @@ public class ReservationService {
                 reservationRequest.date(),
                 reservationTime
         );
+
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(),
+                reservation.getTime().getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new InvalidStateException("이미 지난 날짜와 시간으로 예약할 수 없습니다.");
+        }
+
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
     }
