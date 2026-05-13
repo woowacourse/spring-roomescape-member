@@ -1,6 +1,6 @@
 package roomescape.theme.controller;
 
-import org.springframework.core.convert.converter.Converter; // ⚠️ 스프링 패키지 확인!
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
