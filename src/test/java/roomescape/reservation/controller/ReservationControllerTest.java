@@ -219,4 +219,60 @@ class ReservationControllerTest {
                 .body("message", is("해당 날짜/시간/테마는 이미 예약되었습니다."));
     }
 
+    @Test
+    @DisplayName("취소된 예약을 동일한 사람이 새롭게 예약할 수 있다.")
+    void reserved_when_canceled_same_name() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        cancelReservation(reservationId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("취소된 예약을 동일한 사람이 새롭게 예약할 수 있다.")
+    void reserved_when_canceled_another_name() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        cancelReservation(reservationId);
+
+        String anotherName = "다른사람";
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", anotherName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private void cancelReservation(Integer reservationId) {
+        RestAssured.given().log().all()
+                .when().patch("/member/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }

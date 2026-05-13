@@ -138,17 +138,50 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
-    void reserve_duplicate_reservation() {
+    @DisplayName("예약된 날짜/시간/테마를 중복 예약하면 예외가 발생한다.")
+    void reserved_duplicated() {
         // given
-        ReservationSaveDto command = saveDto("브라운", reservationDate1, reservationTime1, theme1);
-        ReservationSaveDto duplicated = saveDto("한다", reservationDate1, reservationTime1, theme1);
-        reservationService.reserve(command);
+        Reservation reservation = reservation(name, reservationDate1, reservationTime1, theme1);
+        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
+        save(reservation);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.reserve(duplicated))
+        Assertions.assertThatThrownBy(() -> reservationService.reserve(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
+    }
+
+    @Test
+    @DisplayName("취소된 예약을 동일한 사람이 새롭게 예약할 수 있다.")
+    void reserved_when_cancel_same_name() {
+        // given
+        Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
+        cancel(reservation);
+
+        // when
+        Reservation actual = reservationService.reserve(duplicated);
+
+        // then
+        Assertions.assertThat(actual.status())
+                .isEqualTo(ReservationStatus.RESERVED);
+    }
+
+    @Test
+    @DisplayName("취소된 예약을 다른 사람이 새롭게 예약할 수 있다.")
+    void reserved_when_cancel_another_name() {
+        // given
+        String anotherName = "다른사람";
+        Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationSaveDto duplicated = saveDto(anotherName, reservationDate1, reservationTime1, theme1);
+        cancel(reservation);
+
+        // when
+        Reservation actual = reservationService.reserve(duplicated);
+
+        // then
+        Assertions.assertThat(actual.status())
+                .isEqualTo(ReservationStatus.RESERVED);
     }
 
     @Test
@@ -165,22 +198,13 @@ class ReservationServiceTest {
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
-    @Test
-    @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
-    void reserved_duplicated() {
-        // given
-        Reservation reservation = reservation(name, reservationDate1, reservationTime1, theme1);
-        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
-        save(reservation);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.reserve(duplicated))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
-    }
-
     private Reservation save(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
+
+    private void cancel(Reservation reservation) {
+        reservationService.cancel(reservation.id());
+    }
+
 
 }

@@ -63,7 +63,8 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(reservation ->
                         reservation.name().equals(name) &&
                                 reservation.date().id().equals(dateId) &&
-                                reservation.time().id().equals(timeId)
+                                reservation.time().id().equals(timeId) &&
+                                reservation.status() == ReservationStatus.RESERVED
                 );
     }
 
