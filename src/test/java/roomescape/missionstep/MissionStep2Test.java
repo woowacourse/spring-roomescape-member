@@ -17,7 +17,7 @@ import roomescape.service.dto.response.ReservationResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ClearDbTest
-public class MissionStep2Test {
+class MissionStep2Test {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

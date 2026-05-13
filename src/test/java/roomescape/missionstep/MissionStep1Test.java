@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 
 @ClearDbTest
-public class MissionStep1Test {
+class MissionStep1Test {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
