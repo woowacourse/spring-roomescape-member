@@ -71,6 +71,37 @@ public class ReservationService {
     }
 
     @Transactional
+    public ReservationResponse update(long id, ReservationRequest reservationRequest, String userName,
+                                      LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+
+        if (!reservation.getUserName().equals(userName)) {
+            throw new ForbiddenException("본인의 예약만 변경할 수 있습니다.");
+        }
+
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
+
+        Reservation updateReservation = new Reservation(
+                reservation.getUserName(),
+                theme,
+                reservationRequest.date(),
+                reservationTime
+        );
+
+        validateDateTime(now, updateReservation);
+        validateDuplicate(updateReservation);
+
+        reservationRepository.update(id, reservationRequest.themeId(), reservationRequest.date(),
+                reservationRequest.timeId());
+
+        return ReservationResponse.from(updateReservation);
+    }
+
+    @Transactional
     public void deleteByAdmin(Long id, LocalDateTime now) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
@@ -79,7 +110,6 @@ public class ReservationService {
 
         reservationRepository.deleteById(id);
     }
-
 
     @Transactional
     public void delete(Long id, String userName, LocalDateTime now) {
