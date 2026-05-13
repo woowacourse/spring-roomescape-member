@@ -194,6 +194,17 @@ class RestExceptionHandlerTest {
     }
 
     @Test
+    void 잘못된_경로_예외는_400_BAD_REQUEST를_응답한다() {
+        // when & then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().get("/illegalPath")
+                .then().log().all()
+                .status(HttpStatus.NOT_FOUND)
+                .body("message", equalTo("존재하지 않는 경로입니다."));
+    }
+
+    @Test
     void 처리하지_않은_예외는_500_INTERNAL_SERVER_ERROR를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()

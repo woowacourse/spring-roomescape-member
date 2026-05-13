@@ -13,6 +13,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -58,9 +59,14 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
-            MissingServletRequestParameterException ex
+            MissingServletRequestParameterException e
     ) {
-        return createResponse(HttpStatus.BAD_REQUEST, ex.getParameterName() + " 파라미터가 누락 되었습니다.");
+        return createResponse(HttpStatus.BAD_REQUEST, e.getParameterName() + " 파라미터가 누락 되었습니다.");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+        return createResponse(HttpStatus.NOT_FOUND, "존재하지 않는 경로입니다.");
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
