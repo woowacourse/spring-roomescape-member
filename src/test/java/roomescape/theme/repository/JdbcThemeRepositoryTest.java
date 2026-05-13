@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Time;
@@ -61,5 +62,21 @@ class JdbcThemeRepositoryTest {
         assertThatThrownBy(
                 () -> themeRepository.deleteById(themeId)
         ).isInstanceOf(ThemeInUseException.class);
+    }
+
+    @DisplayName("테마 이름을 기준으로 조회한다.")
+    @Test
+    void existByName() {
+        //given
+        themeRepository.save(
+                new Theme(null, "테마", "테마 설명", "썸네일_url")
+        );
+
+        //when & then
+        assertThat(themeRepository.existByName("테마"))
+                .isTrue();
+
+        assertThat(themeRepository.existByName("없는_것"))
+                .isFalse();
     }
 }

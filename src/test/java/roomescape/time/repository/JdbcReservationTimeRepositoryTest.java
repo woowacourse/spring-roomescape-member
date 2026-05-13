@@ -85,6 +85,20 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(foundTime).isEqualTo(savedTime);
     }
 
+    @DisplayName("해당 시간이 저장돼 있는지 조회한다.")
+    @Test
+    void existByStartAt() {
+        //given
+        createTime(LocalTime.of(11, 0));
+
+        //when & then
+        assertThat(reservationTimeRepository.existByStartAt(LocalTime.of(11, 0)))
+                .isTrue();
+
+        assertThat(reservationTimeRepository.existByStartAt(LocalTime.of(12, 0)))
+                .isFalse();
+    }
+
     @Test
     @DisplayName("존재하는 모든 시간 목록을 리스트로 조회한다.")
     void findAllTest() {

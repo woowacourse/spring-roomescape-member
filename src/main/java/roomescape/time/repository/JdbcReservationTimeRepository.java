@@ -18,7 +18,7 @@ import roomescape.time.exception.TimeInUseException;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()
