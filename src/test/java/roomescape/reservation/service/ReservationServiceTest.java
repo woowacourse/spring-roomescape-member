@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.policy.PastReservationCancelNotAllowedException;
 import roomescape.global.exception.policy.ReservationConflictException;
 import roomescape.global.exception.policy.PastReservationNotAllowedException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
@@ -70,7 +71,7 @@ class ReservationServiceTest {
 
             // when & then
             Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(any(Long.class)))
-                    .isInstanceOf(PastReservationNotAllowedException.class);
+                    .isInstanceOf(PastReservationCancelNotAllowedException.class);
         }
 
         @Test
@@ -146,7 +147,7 @@ class ReservationServiceTest {
 
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(PastReservationNotAllowedException.class);
         }
 
         @Test
