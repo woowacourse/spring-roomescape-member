@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Import({ThemeRepository.class, ReservationTimeRepository.class})
+@Import({ThemeRepository.class, ReservationTimeRepository.class, ReservationRepository.class})
 class ThemeRepositoryTest {
 
     @Autowired
@@ -25,7 +25,7 @@ class ThemeRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationRepository reservationRepository;
 
     private Theme savedTheme;
 
@@ -70,38 +70,28 @@ class ThemeRepositoryTest {
         Theme theme2 = themeRepository.save(Theme.of("추리", "머리 쓰는 테마", "https://example.com/img2.jpg"));
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
 
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
-        LocalDate twoDaysAgo = today.minusDays(2);
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate twoDaysAgo = LocalDate.now().minusDays(2);
 
-        // savedTheme 예약 2건
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저1", yesterday, time.getId(), savedTheme.getId());
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저2", twoDaysAgo, time.getId(), savedTheme.getId());
+        reservationRepository.save(Reservation.of("유저1", yesterday.toString(), time, savedTheme));
+        reservationRepository.save(Reservation.of("유저2", twoDaysAgo.toString(), time, savedTheme));
+        reservationRepository.save(Reservation.of("유저3", yesterday.toString(), time, theme2));
 
-        // theme2 예약 1건
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저3", yesterday, time.getId(), theme2.getId());
-
-        List<Theme> famous = themeRepository.findFamous(7, today, 10);
+        List<Theme> famous = themeRepository.findFamous(7, LocalDate.now(), 10);
 
         assertThat(famous).hasSize(2);
-        assertThat(famous.get(0).getId()).isEqualTo(savedTheme.getId()); // 2건이라 1위
-        assertThat(famous.get(1).getId()).isEqualTo(theme2.getId());     // 1건이라 2위
+        assertThat(famous.get(0).getId()).isEqualTo(savedTheme.getId());
+        assertThat(famous.get(1).getId()).isEqualTo(theme2.getId());
     }
 
     @Test
     void 조회_기간_밖의_예약은_인기_테마에_포함되지_않는다() {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        LocalDate eightDaysAgo = LocalDate.now().minusDays(8);
 
-        LocalDate today = LocalDate.now();
-        LocalDate eightDaysAgo = today.minusDays(8); // 7일 범위 밖
+        reservationRepository.save(Reservation.of("유저1", eightDaysAgo.toString(), time, savedTheme));
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저1", eightDaysAgo, time.getId(), savedTheme.getId());
-
-        List<Theme> famous = themeRepository.findFamous(7, today, 10);
+        List<Theme> famous = themeRepository.findFamous(7, LocalDate.now(), 10);
 
         assertThat(famous).isEmpty();
     }
