@@ -27,6 +27,7 @@ import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.exception.BusinessException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -88,7 +89,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(RESERVATION)))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining("이미 예약된");
     }
 
@@ -121,7 +122,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining("예약이 존재하는");
     }
 
