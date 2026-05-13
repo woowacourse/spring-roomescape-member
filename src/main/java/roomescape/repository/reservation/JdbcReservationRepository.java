@@ -142,4 +142,18 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return count != null && count != 0;
     }
+
+    @Override
+    public boolean existsById(long id) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE id = ?
+                """,
+            Integer.class,
+            id
+        );
+
+        return count != null && count != 0;
+    }
 }

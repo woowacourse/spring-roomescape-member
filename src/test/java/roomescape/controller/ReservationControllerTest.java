@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -85,8 +87,8 @@ class ReservationControllerTest {
         RoomEscapeException exception = new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
         Reservation reservation = reservation();
         ReservationRequest request = requestDtoFrom(reservation);
-        when(reservationService.addReservation(any()))
-            .thenThrow(exception);
+        doThrow(exception)
+            .when(reservationService.addReservation(any()));
 
         // when
         Response response = RestAssured
@@ -154,6 +156,29 @@ class ReservationControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(reservationService, times(1)).deleteReservation(id);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_삭제하는_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
+        doThrow(exception)
+            .when(reservationService).deleteReservation(anyLong());
+
+        // when
+        long id = 1L;
+        Response response = RestAssured
+            .given().log().all()
+            .pathParam("id", id)
+            .when().delete("/reservations/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
 
         verify(reservationService, times(1)).deleteReservation(id);
         verifyNoMoreInteractions(reservationService);

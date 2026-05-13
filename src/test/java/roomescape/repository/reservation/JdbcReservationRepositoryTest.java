@@ -102,6 +102,32 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 저장된_예약이_있다면_해당_ID의_예약이_존재한다고_조회한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Reservation saved = reservationRepository.createReservation(
+            new Reservation("브라운", tomorrow, savedTime, savedTheme));
+
+        // when
+        boolean exists = reservationRepository.existsById(saved.getId());
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void 저장된_예약이_없다면_해당_ID의_예약이_존재하지_않는다고_조회한다() {
+        // given & when
+        boolean exists = reservationRepository.existsById(1L);
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
     void 저장되어_있는_예약을_아이디로_조회한다() {
         // given
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);

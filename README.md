@@ -308,10 +308,10 @@
 
 ### 5단계 - 에러 응답 설계
 
-- [ ]  `ErrorCode` ENUM을 추가하고, 각 에러 코드에 HTTP 상태와 기본 메시지를 매핑한다
-- [ ]  에러 응답 형식을 `{ "code": "...", "message": "..." }`로 변경한다
-- [ ]  매핑되지 않는 URL 요청 시 500이 아닌 404를 반환한다. (`NoResourceFoundException` 처리)
-- [ ]  `GlobalExceptionHandler`를 `ErrorCode` 기반으로 정비한다
+- [x]  `ErrorCode` ENUM을 추가하고, 각 에러 코드에 HTTP 상태와 기본 메시지를 매핑한다
+- [x]  에러 응답 형식을 `{ "code": "...", "message": "..." }`로 변경한다
+- [x]  매핑되지 않는 URL 요청 시 500이 아닌 404를 반환한다. (`NoResourceFoundException` 처리)
+- [x]  `GlobalExceptionHandler`를 `ErrorCode` 기반으로 정비한다
 - [ ]  어떤 예외도 500이 사용자에게 노출되지 않는다
 
 ---
@@ -334,7 +334,7 @@
 #### 내 예약 취소
 
 - [ ]  **사용자는 본인의 예약을 취소할 수 있다**
-- [ ]  존재하지 않는 예약은 취소할 수 없다. -> `NOT_FOUND` (404)
+- [x]  존재하지 않는 예약은 취소할 수 없다. -> `NOT_FOUND` (404)
 - [ ]  이미 지난 예약은 취소할 수 없다. -> `PAST_RESERVATION_CANCEL` (422)
 
 ---

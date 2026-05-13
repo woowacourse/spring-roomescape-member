@@ -16,4 +16,6 @@ public interface ReservationRepository {
     Optional<Reservation> findById(long id);
 
     boolean existsByTimeIdAndDateOnOrAfter(long timeId, LocalDate date);
+
+    boolean existsById(long id);
 }

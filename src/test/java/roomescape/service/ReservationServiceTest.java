@@ -59,6 +59,38 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 예약을_삭제한다() {
+        // given
+        when(reservationRepository.existsById(anyLong()))
+            .thenReturn(false);
+
+        // when & then
+        Long id = reservation().getId();
+        assertThatCode(() -> reservationService.deleteReservation(id))
+            .doesNotThrowAnyException();
+
+        verify(reservationRepository, times(1)).existsById(id);
+        verify(reservationRepository, times(1)).deleteById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 없는_예약을_삭제하는_경우_예외가_발생한다() {
+        // given
+        when(reservationRepository.existsById(anyLong()))
+            .thenReturn(true);
+
+        // when & then
+        Long id = reservation().getId();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+
+        verify(reservationRepository, times(1)).existsById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1L);
