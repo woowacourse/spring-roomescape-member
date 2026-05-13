@@ -24,6 +24,7 @@ CREATE TABLE reservation
     time_id    BIGINT,
     theme_id   BIGINT,
     is_deleted BOOLEAN DEFAULT FALSE,
+    is_cancelled BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),

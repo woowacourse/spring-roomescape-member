@@ -20,8 +20,10 @@ public class ReservationDao {
                     rs.getString("name"),
                     rs.getObject("date", LocalDate.class),
                     rs.getLong("time_id"),
-                    rs.getLong("theme_id")
+                    rs.getLong("theme_id"),
+                    rs.getBoolean("is_cancelled")
             );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -49,7 +51,8 @@ public class ReservationDao {
                 .addValue("date", date)
                 .addValue("time_id", timeId)
                 .addValue("theme_id", themeId)
-                .addValue("is_deleted", false);
+                .addValue("is_deleted", false)
+                .addValue("is_cancelled", false);
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
