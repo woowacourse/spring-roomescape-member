@@ -60,6 +60,14 @@ public class ReservationService {
         return reservation;
     }
 
+    @Transactional
+    public Reservation cancel(Long id, String requesterName) {
+        Reservation reservation = getReservation(id);
+        reservation.cancel(requesterName);
+        reservationRepository.updateStatus(reservation);
+        return reservation;
+    }
+
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -198,6 +199,64 @@ class ReservationServiceTest {
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
+    @Test
+    @DisplayName("아직 지나지 않은 본인의 예약은 취소할 수 있다.")
+    void cancel() {
+        // given
+        Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
+
+        // when
+        Reservation actual = reservationService.cancel(savedReservation.id(), name);
+
+        // then
+        Assertions.assertThat(actual.status())
+                .isEqualTo(ReservationStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아닌데 취소를하면 예외가 발생한다.")
+    void cancel_not_owner() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        String anotherName = "다른사람";
+        Long savedId = saved.id();
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, anotherName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("본인의 예약만 취소할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 취소된 예약을 취소하면 예외가 발생한다.")
+    void cancel_already_canceled() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        saved.updateStatus(ReservationStatus.CANCELED);
+        reservationRepository.updateStatus(saved);
+        Long savedId = saved.id();
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, name))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 취소된 예약입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
+    void cancel_not_past() {
+        // given
+        ReservationDate pastDate = ReservationDate.load(1L, LocalDate.now().minusDays(1), true);
+        Reservation saved =
+                save(Reservation.load(1L, name, pastDate, reservationTime1, theme1, ReservationStatus.RESERVED));
+        Long savedId = saved.id();
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, name))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+    }
+
     private Reservation save(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
@@ -205,6 +264,5 @@ class ReservationServiceTest {
     private void cancelByManager(Reservation reservation) {
         reservationService.cancelByManager(reservation.id());
     }
-
 
 }
