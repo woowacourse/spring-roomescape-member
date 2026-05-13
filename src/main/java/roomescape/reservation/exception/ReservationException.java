@@ -7,4 +7,8 @@ public class ReservationException extends RoomescapeException {
     public ReservationException(ErrorCode errorCode) {
         super(errorCode);
     }
+
+    public ReservationException(Long id) {
+        super(ErrorCode.RESERVATION_NOT_FOUND);
+    }
 }
