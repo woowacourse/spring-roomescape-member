@@ -68,7 +68,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 특정_테마의_특정_날짜와_시간에_예약이_존재하는지_확인한다() {
+    void 특정_테마의_특정_날짜와_시간에_활성화된_예약이_존재하는지_확인한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Reservation reservation = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
@@ -78,11 +78,11 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // when & then
         Long otherTimeId = 99L;
         LocalDate otherDate = date.plusDays(1);
-        boolean exists = reservationRepository.existByDateAndTimeIdAndThemeId(date, reservationTime.getId(),
+        boolean exists = reservationRepository.existsReservedReservation(date, reservationTime.getId(),
                 theme.getId());
-        boolean existsWithOtherTime = reservationRepository.existByDateAndTimeIdAndThemeId(date, otherTimeId,
+        boolean existsWithOtherTime = reservationRepository.existsReservedReservation(date, otherTimeId,
                 theme.getId());
-        boolean existsWithOtherDate = reservationRepository.existByDateAndTimeIdAndThemeId(otherDate,
+        boolean existsWithOtherDate = reservationRepository.existsReservedReservation(otherDate,
                 reservationTime.getId(), theme.getId());
 
         assertThat(exists).isTrue();
@@ -163,15 +163,21 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 특정_테마와_날짜에_예약된_시간_식별자를_조회한다() {
+    void 특정_테마와_날짜에_활성화된_예약이_존재하는_시간_식별자를_조회한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Reservation reservation = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
                 reservationTime);
         reservationRepository.save(reservation);
 
+        Reservation canceledReservation = ReservationFixture.createDefaultReservationWithNameAndDate("바니",
+                date.plusDays(2), theme, reservationTime);
+        reservationRepository.save(canceledReservation);
+        canceledReservation.cancel();
+        reservationRepository.update(canceledReservation);
+
         // when
-        Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByThemeIdAndDate(theme.getId(), date);
+        Set<Long> reservedTimeIds = reservationRepository.findUnavailableTimeIdsByThemeIdAndDate(theme.getId(), date);
 
         // then
         assertThat(reservedTimeIds).containsExactly(reservationTime.getId());
