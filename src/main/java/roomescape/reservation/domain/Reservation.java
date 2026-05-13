@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.global.exception.validation.InvalidIdException;
 import roomescape.global.exception.validation.InvalidNameException;
 import roomescape.global.exception.validation.InvalidNameLengthException;
 import roomescape.theme.domain.Theme;
@@ -45,7 +46,7 @@ public class Reservation {
 
     private void validateId(Long id) {
         if (Objects.isNull(id) || id <= 0) {
-            throw new IllegalArgumentException("ID 비어있거나 음수일 수 없습니다.");
+            throw new InvalidIdException(id);
         }
     }
 

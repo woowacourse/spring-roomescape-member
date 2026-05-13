@@ -3,6 +3,7 @@ package roomescape.theme.domain;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.global.exception.validation.InvalidIdException;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -24,7 +25,7 @@ public class Theme {
 
     private void validateId(Long id) {
         if(Objects.isNull(id) || id <= 0) {
-            throw new IllegalArgumentException("ID 비어있거나 음수일 수 없습니다.");
+            throw new InvalidIdException(id);
         }
     }
 }
