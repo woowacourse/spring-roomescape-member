@@ -1,5 +1,6 @@
 package roomescape.controller.admin;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AdminThemeController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ThemeResponse> createTheme(@ModelAttribute ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> createTheme(@Valid @ModelAttribute ThemeRequest request) {
         ThemeResponse response = themeService.create(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
