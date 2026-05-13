@@ -273,22 +273,55 @@ erDiagram
 
 <details>
 <summary>1단계 - 서비스 정책 적용</summary>
-- ㅇ
-- ㅇ
+
+- **지나간 날짜/시간에 대한 예약 생성은 불가능하다**
+    - [x] step1에서 구현 완료
+
+- **같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약 거부**
+    - [x] step1에서 구현 완료
+
+- **예약이 존재하는 시간을 삭제할 수 없다**
+    - [x] step1에서 구현 완료
+
+- **유효하지 않은 입력값을 거부**
+    - [x] step1에서 구현 완료
 
 </details>
 
 <details>
 <summary>2단계 - 에러 응답 설계</summary>
-- ㅇ
-- ㅇ
-- ㅇ
+
+- **서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환**
+- [ ] 현재 IllegalArgumentException만 잡는 GlobalExceptionHandler에서 분리
+- [ ] ㅇ
+
+- **500(서버 에러)이 사용자에게 노출되지 않도록 한다**
+- [ ] `GlobalExceptionHandler`에 500에러 처리 구현
+- [ ] ㅇ
+
+- **에러 응답 본문에 어떤 정보를 담을지 결정**
+- [ ] 에러 응답에 message말고도 상태코드, 서비스 전용 에러코드 추가
+- [ ] 
+
+- **에러 응답 본문에 어떤 정보를 담을지 결정**
+- [ ] 상태 코드와 에러 원인을 제공 (행동 가이드는 미제공)
+
 </details>
 
 <details>
 <summary>3단계 - 내 예약 조회/변경/취소</summary>
-- ㅇ
-- ㅇ
+
+- **사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다**
+- [ ] 현재 프론트에서 할 수 있긴 한데 이거를 그냥 냅둬야하나? 지난예약은 분리를 해야하나?
+
+- **사용자가 본인의 예약을 취소 가능**
+- [ ] 취소가 지금도 가능하긴 한 것 같은데. 지난거는 취소할 수 없게 처리
+
+- **사용자가 본인의 예약의 날짜·시간을 변경 가능**
+- [ ] 변경하려는 곳에 이미 예약이 있으면 수정 불가
+
+- **변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리**
+- [ ] 확인
 
 </details>
 
@@ -372,7 +405,8 @@ erDiagram
 <summary>📓 Cycle2 미션 진행중 작성</summary>
 
 - **규칙에 의해 바뀐 점**
-    - ㅇ
+    - 응답 메시지에 사용자가 어떤 행동을 취해야 하는지 적으려 했지만, 그것은 프론트의 역할이라고 생각하여 규칙에서
+      프론트에 넘겨준다고 정의했다. 따라서 행동 가이드는 제거했다.
 
 - **변경/최소에서 발견한 엣지 케이스와 처리 방향**
     - ㅇ
@@ -382,17 +416,57 @@ erDiagram
 
 </details>
 
+<details>
+<summary>에러 응답 형식</summary>
+
+- 지나간 날짜/시간에 대한 예약 생성
+    - status: 400(Bad Request)
+    - code: "PAST_DATE_TIME"
+    - message: "지나간 날짜와 시간 예약는 생성할 수 없습니다"
+
+
+- 같은 날짜+시간+테마에 이미 예약이 있을 때 중복 예약 거부
+    - status: 409(Conflict)
+    - code: "DUPLICATED_RESERVATION"
+    - message: "예약이 중복되었습니다"
+
+
+- 같은 테마이름 생성
+    - status: 409(Conflict)
+    - code: "DUPLICATED_THEME_NAME"
+    - message: "테마이름이 중복되었습니다"
+
+
+- 같은 예약시간대 생성
+    - status: 409(Conflict)
+    - code: "DUPLICATED_TIME"
+    - message: "시간이 중복되었습니다"
+
+
+- 예약이 존재하는 시간을 삭제할 수 없음
+    - status: 409(Conflict)
+    - code: "CANNOT_DELETE_EXIST_TIME"
+    - message: "이미 존재하는 예약시간대는 삭제할 수 없습니다"
+
+
+- 유효하지 않은 입력값을 거부
+    - status: 400(Bad Request)
+    - code: "INVALID_INPUT"
+    - message: "입력이 유효하지 않습니다"
+
+
+- 찾는 값이 없을 때
+    - status: 404(Not Found)
+    - code: "RESOURCE_NOT_FOUND"
+    - message: "값이 존재하지 않습니다"
+
+</details>
+
 ---
 
 ## Cycle2 리팩토링
 
 <details>
 <summary>첫번째 리팩토링</summary>
-
-</details>
-
-
-<details>
-<summary>두번째 리팩토링</summary>
 
 </details>
