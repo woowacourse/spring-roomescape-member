@@ -1,9 +1,13 @@
 package roomescape.time.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.exception.InvalidReservationDateException;
+import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.AvailableTimesResult;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.exception.DuplicateTimeException;
@@ -14,9 +18,13 @@ import roomescape.time.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, Clock clock) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -43,6 +51,14 @@ public class ReservationTimeService {
     }
 
     public AvailableTimesResult findAvailableReservationTimes(Long themeId, LocalDate date) {
+        if (LocalDate.now(clock).isAfter(date)) {
+            throw new InvalidReservationDateException();
+        }
+
+        if (themeRepository.findById(themeId).isEmpty()) {
+            throw new ThemeNotFoundException();
+        }
+
         return new AvailableTimesResult(reservationTimeRepository.findAvailableTimes(themeId, date));
     }
 }
