@@ -25,7 +25,6 @@ class AdminThemeServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
     }
-    //공포의 저택
 
     @DisplayName("존재하는 테마를 추가하면 에러를 던진다.")
     @Test

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -52,9 +53,11 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
+        LocalDate now = LocalDate.now();
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", now.plusDays(1));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
