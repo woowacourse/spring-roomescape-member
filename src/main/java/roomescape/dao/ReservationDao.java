@@ -11,5 +11,7 @@ public interface ReservationDao {
 
     void delete(Long id);
 
-    boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsBy(LocalDate date, Long timeId, Long themeId);
+
+    List<Reservation> findByName(String name);
 }

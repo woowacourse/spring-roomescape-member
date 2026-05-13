@@ -53,7 +53,7 @@ public class ReservationTimeService {
 
     private Theme findTheme(Long id) {
         return themeDao.read(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_THEME));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public void delete(Long id) {

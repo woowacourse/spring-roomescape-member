@@ -49,11 +49,11 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public List<Reservation> readAll() {
-        String sql =
-                "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url "
-                        + "FROM `reservation` r "
-                        + "INNER JOIN `reservation_time` t ON r.time_id = t.id "
-                        + "INNER JOIN `theme` th ON r.theme_id = th.id";
+        String sql = """
+                SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url
+                FROM `reservation` r
+                INNER JOIN `reservation_time` t ON r.time_id = t.id
+                INNER JOIN `theme` th ON r.theme_id = th.id""";
 
         return jdbcTemplate.query(sql, this::mapToReservation);
     }
@@ -82,11 +82,24 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS ("
                 + "SELECT 1 FROM `reservation` WHERE `date` = (?) AND `time_id` = (?) AND `theme_id` = (?)"
                 + ")";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
     }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url
+                FROM `reservation` r
+                INNER JOIN `reservation_time` t ON r.time_id = t.id
+                INNER JOIN `theme` th ON r.theme_id = th.id
+                WHERE r.name =(?)""";
+
+        return jdbcTemplate.query(sql, this::mapToReservation, name);
+    }
+
 }

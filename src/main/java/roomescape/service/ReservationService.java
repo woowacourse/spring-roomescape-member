@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +32,10 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto request) {
         ReservationTime reservationTime = findReservationTime(request.timeId());
+        validateNotPast(request.date(), reservationTime);
         Theme theme = findTheme(request.themeId());
 
-        boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(request.date(),
-                reservationTime.getId(),
-                theme.getId());
-        if (existReservation) {
-            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
-        }
+        validateDuplicate(request, reservationTime, theme);
 
         Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
         Reservation reservation = reservationDao.create(reservationWithoutId);
@@ -45,14 +43,34 @@ public class ReservationService {
         return ReservationResponseDto.from(reservation);
     }
 
+    private void validateDuplicate(ReservationRequestDto request, ReservationTime reservationTime, Theme theme) {
+        boolean isDuplicated = reservationDao.existsBy(
+                request.date(),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        if (isDuplicated) {
+            throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
+    private void validateNotPast(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_DATE_PASSED);
+        }
+        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_TIME_PASSED);
+        }
+    }
+
     private ReservationTime findReservationTime(Long id) {
         return reservationTimeDao.read(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME));
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme findTheme(Long id) {
         return themeDao.read(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_THEME));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public List<ReservationResponseDto> readAll() {
