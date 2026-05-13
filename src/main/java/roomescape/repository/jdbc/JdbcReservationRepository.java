@@ -1,10 +1,12 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.ConflictException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -111,19 +113,23 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    sql,
-                    Statement.RETURN_GENERATED_KEYS
-            );
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        sql,
+                        Statement.RETURN_GENERATED_KEYS
+                );
 
-            preparedStatement.setString(1, reservationEntity.name());
-            preparedStatement.setDate(2, reservationEntity.date());
-            preparedStatement.setLong(3, reservationEntity.timeId());
-            preparedStatement.setLong(4, reservationEntity.themeId());
+                preparedStatement.setString(1, reservationEntity.name());
+                preparedStatement.setDate(2, reservationEntity.date());
+                preparedStatement.setLong(3, reservationEntity.timeId());
+                preparedStatement.setLong(4, reservationEntity.themeId());
 
-            return preparedStatement;
-        }, keyHolder);
+                return preparedStatement;
+            }, keyHolder);
+        } catch (DuplicateKeyException exception) {
+            throw new ConflictException("이미 예약된 시간입니다.", exception);
+        }
 
         return generatedIdFrom(keyHolder);
     }
