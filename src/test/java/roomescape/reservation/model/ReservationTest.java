@@ -1,6 +1,7 @@
 package roomescape.reservation.model;
 
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ReservationDeadlineException;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 import roomescape.user.model.Role;
@@ -42,5 +43,27 @@ class ReservationTest {
     void 본인의_아이디가_아니면_거짓을_반환한다() {
         Reservation reservation = new Reservation(user, schedule, theme);
         assertThat(reservation.isOwnedBy(2L)).isFalse();
+    }
+
+    @Test
+    void 방탈출_시작_1시간_전보다_이전이면_예외가_발생하지_않는다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        LocalDateTime validTime = LocalDateTime.of(2026, 12, 10, 10, 59);
+
+        assertThatCode(() -> reservation.validateCancelOrChangeable(validTime))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 방탈출_시작_1시간_전이거나_그_이후면_예외가_발생한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        LocalDateTime exactlyOneHourBefore = LocalDateTime.of(2026, 12, 10, 11, 0);
+        LocalDateTime pastDeadline = LocalDateTime.of(2026, 12, 10, 11, 1);
+
+        assertThatThrownBy(() -> reservation.validateCancelOrChangeable(exactlyOneHourBefore))
+                .isInstanceOf(ReservationDeadlineException.class);
+
+        assertThatThrownBy(() -> reservation.validateCancelOrChangeable(pastDeadline))
+                .isInstanceOf(ReservationDeadlineException.class);
     }
 }
