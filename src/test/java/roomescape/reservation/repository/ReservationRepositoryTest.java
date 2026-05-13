@@ -178,6 +178,22 @@ class ReservationRepositoryTest {
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
+    @Test
+    @DisplayName("이용가능한 날짜/시간으로 예약을 변경할 수 있다.")
+    void updateSchedule() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme));
+        saved.changeSchedule(name, reservationDate2, reservationTime1);
+
+        // when
+        jdbcReservationRepository.updateSchedule(saved);
+
+        // then
+        Assertions.assertThat(jdbcReservationRepository.findById(saved.id()).get())
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
+    }
+
     private List<Reservation> saveAll(List<Reservation> reservations) {
         List<Reservation> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {

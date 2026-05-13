@@ -90,4 +90,16 @@ public class FakeReservationRepository implements ReservationRepository {
         findReservation.get().updateStatus(reservation.status());
         return true;
     }
+
+    @Override
+    public boolean updateSchedule(Reservation reservation) {
+        Optional<Reservation> findReservation = findById(reservation.id());
+        if (findReservation.isEmpty()) {
+            return false;
+        }
+
+        store.put(reservation.id(), reservation);
+        return true;
+    }
+
 }

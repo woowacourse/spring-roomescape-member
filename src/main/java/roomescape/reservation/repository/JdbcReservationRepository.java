@@ -229,4 +229,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         return updatedCount > 0;
     }
 
+    @Override
+    public boolean updateSchedule(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date_id = :dateId,
+                    time_id = :timeId
+                WHERE id = :id
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("dateId", reservation.date().id())
+                .addValue("timeId", reservation.time().id())
+                .addValue("id", reservation.id());
+
+        int updatedCount = jdbcTemplate.update(sql, params);
+        return updatedCount > 0;
+    }
 }
