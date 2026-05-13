@@ -69,10 +69,10 @@ public class ReservationService {
     }
 
     public void deleteReservationTime(final long id) {
-        // TODO : 그럼 시간은 영원히 삭제 못하게 될 수도?
-//        if (reservationRepository.existsByTimeId(id)) {
-//            throw new RoomEscapeException("예약이 존재하는 시간은 삭제할 수 없습니다.");
-//        }
+        LocalDate today = LocalDate.now();
+        if (reservationRepository.existsByTimeIdAndDateOnOrAfter(id, today)) {
+            throw new RoomEscapeException(ErrorCode.TIME_HAS_RESERVATIONS);
+        }
 
         reservationTimeRepository.deleteById(id);
     }

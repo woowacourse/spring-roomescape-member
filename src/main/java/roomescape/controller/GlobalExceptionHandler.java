@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.ErrorMessageResponse;
+import roomescape.exception.ErrorResponse;
 import roomescape.exception.RoomEscapeException;
 
 @RestControllerAdvice
@@ -22,13 +22,13 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorMessageResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         printErrorStatus(e);
         return parseOf(ErrorCode.INVALID_REQUEST_FORMAT);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorMessageResponse> handleMethodArgumentTypeMismatch(
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
         MethodArgumentTypeMismatchException e
     ) {
         printErrorStatus(e);
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessageResponse> handleValidation(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
         printErrorStatus(e);
         String joinedMessage = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -46,19 +46,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorMessageResponse> handleNoResourceFound(NoResourceFoundException e) {
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
         printErrorStatus(e);
         return parseOf(ErrorCode.NOT_FOUND);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorMessageResponse> handleNoSuchElement(NoSuchElementException e) {
+    public ResponseEntity<ErrorResponse> handleNoSuchElement(NoSuchElementException e) {
         printErrorStatus(e);
         return parseOf(ErrorCode.NOT_FOUND);
     }
 
     @ExceptionHandler(RoomEscapeException.class)
-    public ResponseEntity<ErrorMessageResponse> handleBusinessException(RoomEscapeException e) {
+    public ResponseEntity<ErrorResponse> handleBusinessException(RoomEscapeException e) {
         printErrorStatus(e);
         return parseOf(e.getCode());
     }
@@ -67,15 +67,15 @@ public class GlobalExceptionHandler {
         log.error("[{}] {}", e.getClass().getSimpleName(), e.getMessage(), e);
     }
 
-    private ResponseEntity<ErrorMessageResponse> parseOf(ErrorCode errorCode) {
+    private ResponseEntity<ErrorResponse> parseOf(ErrorCode errorCode) {
         return ResponseEntity
             .status(errorCode.getCode())
-            .body(ErrorMessageResponse.of(errorCode));
+            .body(ErrorResponse.of(errorCode));
     }
 
-    private ResponseEntity<ErrorMessageResponse> parseFrom(ErrorCode errorCode, String message) {
+    private ResponseEntity<ErrorResponse> parseFrom(ErrorCode errorCode, String message) {
         return ResponseEntity
             .status(errorCode.getCode())
-            .body(ErrorMessageResponse.from(errorCode, message));
+            .body(ErrorResponse.from(errorCode, message));
     }
 }

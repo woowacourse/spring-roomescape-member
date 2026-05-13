@@ -27,7 +27,7 @@ import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.ErrorMessageResponse;
+import roomescape.exception.ErrorResponse;
 import roomescape.exception.RoomEscapeException;
 import roomescape.service.ReservationService;
 
@@ -98,10 +98,10 @@ class ReservationControllerTest {
         // then
         response
             .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            .statusCode(HttpStatus.CONFLICT.value());
 
-        ErrorMessageResponse actualResponse = response.as(ErrorMessageResponse.class);
-        ErrorMessageResponse expectedResponse = ErrorMessageResponse.of(exception.getCode());
+        ErrorResponse actualResponse = response.as(ErrorResponse.class);
+        ErrorResponse expectedResponse = ErrorResponse.of(exception.getCode());
         assertThat(actualResponse).isEqualTo(expectedResponse);
 
         verify(reservationService, times(1)).addReservation(any());

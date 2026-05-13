@@ -28,7 +28,9 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.dto.reservationTime.ReservationTimeResponse;
-import roomescape.exception.ErrorMessageResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorResponse;
+import roomescape.exception.RoomEscapeException;
 import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -126,9 +128,10 @@ class ReservationTimeControllerTest {
     }
 
     @Test
-    void 예약이_존재하는_시간을_삭제하면_예외가_발생한다() {
+    void 오늘_이후의_예약이_사용하는_시간을_삭제하면_예외가_발생한다() {
         // given
-        doThrow(new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다"))
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.TIME_HAS_RESERVATIONS);
+        doThrow(exception)
             .when(reservationService).deleteReservationTime(anyLong());
 
         // when
@@ -143,8 +146,8 @@ class ReservationTimeControllerTest {
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
 
-        ErrorMessageResponse body = response.as(ErrorMessageResponse.class);
-        assertThat(body.messages()).contains("예약이 존재하는 시간은 삭제할 수 없습니다");
+        ErrorResponse body = response.as(ErrorResponse.class);
+        assertThat(body).isEqualTo(ErrorResponse.of(exception.getCode()));
 
         verify(reservationService, times(1)).deleteReservationTime(TIME_ID);
         verifyNoMoreInteractions(reservationService);

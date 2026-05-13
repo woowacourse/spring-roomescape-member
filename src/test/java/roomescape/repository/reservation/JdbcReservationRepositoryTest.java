@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.repository.theme.JdbcThemeRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -121,36 +123,53 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    void 특정_시간_ID를_가지는_예약이_있으면_TRUE를_반환한다() {
+    void 오늘_이후의_예약중_같은_시간을_사용하는_예약이_있는지_조회한다() {
         // given
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        LocalDate today = LocalDate.now();
         Reservation saved = reservationRepository.createReservation(
-            new Reservation("브라운", tomorrow, savedTime, savedTheme));
+            new Reservation("n", today, savedTime, savedTheme));
 
         // when
-        boolean exists = reservationRepository.existsByTimeId(saved.getTimeId());
+        boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(saved.getTimeId(), LocalDate.now());
 
         // then
         assertThat(exists).isTrue();
     }
 
     @Test
-    void 특정_시간_ID를_가지는_예약이_없으면_FALSE를_반환한다() {
+    void 같은_시간이라도_오늘_이후의_예약이_아니면_FALSE를_반환한다() {
         // given
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
-        ReservationTime otherTime = timeRepository.createReservationTime(new ReservationTime("17:00"));
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        ReservationLocalDate yesterday = new ReservationLocalDate(LocalDate.now().minusDays(1));
+        reservationRepository.createReservation(
+            new Reservation(null, new MemberName("n"), yesterday, savedTime, savedTheme));
+
+        // when
+        boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(savedTime.getId(), LocalDate.now());
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 오늘_이후의_예약이라도_다른_시간이면_FALSE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(new ReservationTime("12:00"));
+        ReservationTime otherTime = timeRepository.createReservationTime(new ReservationTime("13:00"));
 
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        ReservationLocalDate today = new ReservationLocalDate(LocalDate.now());
         reservationRepository.createReservation(
-            new Reservation("브라운", tomorrow, savedTime, savedTheme));
+            new Reservation(null, new MemberName("n"), today, savedTime, savedTheme));
 
         // when
-        boolean exists = reservationRepository.existsByTimeId(otherTime.getId());
+        boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(otherTime.getId(), LocalDate.now());
 
         // then
         assertThat(exists).isFalse();

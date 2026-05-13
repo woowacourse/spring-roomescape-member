@@ -13,7 +13,7 @@ public enum ErrorCode {
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 시간입니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
     DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "같은 날짜, 시간, 테마 의 예약이 이미 존재합니다"),
-    ;
+    TIME_HAS_RESERVATIONS(HttpStatus.BAD_REQUEST, "예약이 존재하는 시간은 삭제할 수 없습니다.");
 
     private final HttpStatus code;
     private final String message;

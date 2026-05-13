@@ -283,6 +283,7 @@
 | `INVALID_REQUEST_FORMAT`            | 400     | JSON 파싱 실패                                       |
 | `INVALID_REQUEST_URI_VARIABLE_TYPE` | 400     | URL 경로 변수 타입 오류 (예: `/reservations/abc`)         |
 | `VALIDATION_FAILED`                 | 400     | 필수값 누락, 필드 유효성 검증 실패 (`@NotBlank`, `@NotNull` 등) |
+| `TIME_HAS_RESERVATIONS`             | 400     | 오늘 이후 예약이 존재하는 시간 삭제 시도                          |
 | `FORBIDDEN`                         | 403     | 접근 권한 없음                                         |
 | `NOT_FOUND`                         | 404     | 매핑되지 않는 URL 요청                                   |
 | `RESERVATION_NOT_FOUND`             | 404     | 존재하지 않는 예약                                       |
@@ -299,8 +300,8 @@
 ### 4단계 - 서비스 정책 적용
 
 - [ ]  지나간 날짜, 시간으로 예약하면 예외가 발생한다 -> `PAST_DATE_RESERVATION` (422)
-- [ ]  같은 날짜, 시간, 테마 조합이 이미 존재하면 예외가 발생한다 -> `DUPLICATED_RESERVATION` (409)
-- [ ]  예약이 존재하는 시간을 삭제하는 경우 예외가 발생한다 -> `INVALID_INPUT` (400)
+- [x]  같은 날짜, 시간, 테마 조합이 이미 존재하면 예외가 발생한다 -> `DUPLICATED_RESERVATION` (409)
+- [x]  오늘 이후 예약이 존재하는 시간을 삭제하는 경우 예외가 발생한다 -> `TIME_HAS_RESERVATIONS` (400)
 - [ ]  필수값 누락 및 잘못된 형식의 요청이 오는 경우 예외가 발생한다 -> `INVALID_INPUT` (400)
 
 ---

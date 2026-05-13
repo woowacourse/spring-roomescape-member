@@ -27,6 +27,8 @@ import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -80,7 +82,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 동일한_테마에서_이미_예약된_시간을_선택하면_예외가_발생한다() {
+    void 동일한_테마에서_이미_예약된_날짜와_시간으로_추가하면_예외가_발생한다() {
         // given
         when(timeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_TIME));
@@ -91,8 +93,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("이미 예약된");
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
 
         verify(timeRepository, times(1)).findById(anyLong());
         verify(themeRepository, times(1)).findById(anyLong());
@@ -128,15 +130,15 @@ class ReservationServiceTest {
     @Test
     void 예약이_존재하는_시간을_삭제하는_경우_예외가_발생한다() {
         // given
-        when(reservationRepository.existsByTimeId(anyLong()))
+        when(reservationRepository.existsByTimeIdAndDateOnOrAfter(anyLong(), any()))
             .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("예약이 존재하는");
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.TIME_HAS_RESERVATIONS.getMessage());
 
-        verify(reservationRepository, times(1)).existsByTimeId(anyLong());
+        verify(reservationRepository, times(1)).existsByTimeIdAndDateOnOrAfter(anyLong(), any());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 

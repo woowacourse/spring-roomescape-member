@@ -2,6 +2,7 @@ package roomescape.repository.reservation;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -128,14 +129,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(final long timeId) {
+    public boolean existsByTimeIdAndDateOnOrAfter(final long timeId, LocalDate date) {
         Integer count = template.queryForObject("""
                 SELECT COUNT(1)
                 FROM reservation
-                WHERE time_id = ?
+                WHERE time_id = ? AND res_date >= ?
                 """,
             Integer.class,
-            timeId
+            timeId,
+            Date.valueOf(date)
         );
 
         return count != null && count != 0;
