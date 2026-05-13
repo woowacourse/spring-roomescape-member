@@ -39,8 +39,18 @@ public class Reservation {
         LocalDate nowDate = LocalDate.now(clock);
 
         if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock))) {
-            throw new UnprocessableEntityException(ErrorCode.RESERVATION_INVALID_DATETIME);
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
+    }
+
+    public boolean isOwner(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isPast(Clock clock) {
+        LocalDate nowDate = LocalDate.now(clock);
+
+        return date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock));
     }
 
     public Long getId() {

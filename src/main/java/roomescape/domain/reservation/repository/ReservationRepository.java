@@ -11,15 +11,21 @@ public interface ReservationRepository {
 
     List<Reservation> findReservationsByName(String name);
 
-    Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId);
+    Optional<Reservation> findReservationById(Long id);
 
     List<Long> findTimeIdsByDateAndThemeId(LocalDate localDate, Long themeId);
 
     Reservation save(Reservation reservation);
 
+    boolean existsByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    boolean existsByDateTimeAndThemeIdExceptId(Long id, LocalDate date, Long timeId, Long themeId);
+
     boolean existsByTimeId(Long timeId);
 
     boolean existsByThemeId(Long themeId);
+
+    void updateReservationById(Long id, LocalDate date, Long timeId);
 
     int deleteReservationById(Long id);
 }

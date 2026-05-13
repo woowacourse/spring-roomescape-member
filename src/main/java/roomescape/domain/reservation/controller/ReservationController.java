@@ -7,12 +7,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.service.ReservationService;
@@ -39,5 +42,14 @@ public class ReservationController {
         @RequestBody ReservationCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reservationService.saveReservation(requestDto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateReservation(
+        @RequestHeader("Reservation-Name") String name,
+        @PathVariable Long id,
+        @RequestBody ReservationUpdateRequestDto requestDto) {
+        reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

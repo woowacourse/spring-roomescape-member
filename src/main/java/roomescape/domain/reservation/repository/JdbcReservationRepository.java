@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,45 +37,41 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllReservations() {
         String sql = """
-                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
-                FROM reservation r
-                JOIN reservation_time rt ON r.time_id = rt.id
-                JOIN theme t ON r.theme_id = t.id
-                """;
+            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            """;
         return jdbcTemplate.query(sql, this::mapReservation);
     }
 
     @Override
     public List<Reservation> findReservationsByName(String name) {
         String sql = """
-                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
-                FROM reservation r
-                JOIN reservation_time rt ON r.time_id = rt.id
-                JOIN theme t ON r.theme_id = t.id
-                WHERE r.name = :name
-                """;
+            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.name = :name
+            """;
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
 
         return jdbcTemplate.query(sql, parameters, this::mapReservation);
     }
 
     @Override
-    public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
-        Long themeId) {
+    public Optional<Reservation> findReservationById(Long id) {
         String sql = """
-                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
-                FROM reservation r
-                JOIN reservation_time rt ON r.time_id = rt.id
-                JOIN theme t ON r.theme_id = t.id
-                WHERE r.date = :date AND time_id = :timeId AND theme_id = :themeId
-                """;
-        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
-            "date", date,
-            "timeId", timeId,
-            "themeId", themeId
-        ));
+            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.id = :id
+            """;
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, parameters, this::mapReservation);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, parameters,
+                this::mapReservation);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -110,6 +108,32 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId)";
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "date", date,
+            "timeId", timeId,
+            "themeId", themeId
+        ));
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByDateTimeAndThemeIdExceptId(Long id, LocalDate date, Long timeId,
+        Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id != :id AND date = :date AND time_id = :timeId AND theme_id = :themeId)";
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "id", id,
+            "date", date,
+            "timeId", timeId,
+            "themeId", themeId
+        ));
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = :timeId)";
         SqlParameterSource parameters = new MapSqlParameterSource("timeId", timeId);
@@ -123,6 +147,44 @@ public class JdbcReservationRepository implements ReservationRepository {
         SqlParameterSource parameters = new MapSqlParameterSource("themeId", themeId);
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
+    public void updateReservationById(Long id, LocalDate date, Long timeId) {
+        StringBuilder sql = new StringBuilder("UPDATE reservation SET ");
+        List<String> clauses = getSetClauses(date, timeId);
+        MapSqlParameterSource parameters = new MapSqlParameterSource(
+            getSetParameters(id, date, timeId));
+        if (clauses.isEmpty()) {
+            return;
+        }
+        sql.append(String.join(", ", clauses));
+        sql.append(" WHERE id = :id");
+
+        jdbcTemplate.update(sql.toString(), parameters);
+    }
+
+    private List<String> getSetClauses(LocalDate date, Long timeId) {
+        List<String> clauses = new ArrayList<>();
+        if (date != null) {
+            clauses.add("date = :date");
+        }
+        if (timeId != null) {
+            clauses.add("time_id = :timeId");
+        }
+        return clauses;
+    }
+
+    private Map<String, Object> getSetParameters(Long id, LocalDate date, Long timeId) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
+        if (date != null) {
+            parameters.put("date", date);
+        }
+        if (timeId != null) {
+            parameters.put("timeId", timeId);
+        }
+        return parameters;
     }
 
     @Override

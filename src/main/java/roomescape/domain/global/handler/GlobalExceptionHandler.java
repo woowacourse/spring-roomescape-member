@@ -3,6 +3,7 @@ package roomescape.domain.global.handler;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +17,7 @@ import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.global.exception.ErrorDetail;
 import roomescape.domain.global.exception.ErrorResponse;
+import roomescape.domain.global.exception.ForbiddenException;
 import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.global.exception.UnprocessableEntityException;
 
@@ -32,6 +34,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         List<ErrorDetail> errors = new ArrayList<>();
         Throwable cause = e.getCause();
+        Optional<BadRequestException> badRequestException = findBadRequestException(e);
+        if (badRequestException.isPresent()) {
+            BadRequestException exception = badRequestException.get();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorCode(), exception.getErrors()));
+        }
+
         if (cause instanceof InvalidFormatException invalidFormatException) {
             String field = invalidFormatException.getPath()
                 .getFirst()
@@ -41,6 +50,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST_BODY, errors));
+    }
+
+    private Optional<BadRequestException> findBadRequestException(Throwable throwable) {
+        while (throwable != null) {
+            if (throwable instanceof BadRequestException badRequestException) {
+                return Optional.of(badRequestException);
+            }
+            throwable = throwable.getCause();
+        }
+
+        return Optional.empty();
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
@@ -65,6 +85,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(e.getErrorCode(), e.getErrors()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse.of(e.getErrorCode()));
     }
 
     @ExceptionHandler(NotFoundException.class)

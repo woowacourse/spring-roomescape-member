@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,13 +11,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.global.exception.BadRequestException;
 import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.ErrorDetail;
+import roomescape.domain.global.exception.ForbiddenException;
+import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
@@ -48,7 +54,8 @@ class ReservationServiceTest {
         this.reservationRepository = new FakeReservationRepository();
         this.timeRepository = new FakeTimeRepository();
         this.themeRepository = new FakeThemeRepository();
-        this.reservationService = new ReservationService(fixedClock, reservationRepository, timeRepository,
+        this.reservationService = new ReservationService(fixedClock, reservationRepository,
+            timeRepository,
             themeRepository);
     }
 
@@ -191,11 +198,159 @@ class ReservationServiceTest {
                 time.getId(),
                 theme.getId()
             );
-            reservationRepository.save(Reservation.create(request.name(), request.date(), time, theme, fixedClock));
+            reservationRepository.save(
+                Reservation.create(request.name(), request.date(), time, theme, fixedClock));
 
             assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(ConflictException.class);
         }
+    }
+
+    @Nested
+    @DisplayName("updateReservation 테스트")
+    class UpdateReservationTest {
+
+        @Test
+        @DisplayName("주어진 예약의 날짜와 시간을 변경한다.")
+        void 성공() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            Long id = savedReservation.getId();
+            LocalDate changeDate = LocalDate.of(2026, 5, 2);
+            Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                changeDate, changeTimeId);
+
+            reservationService.updateReservation(name, id, request);
+            Optional<Reservation> updatedReservation = reservationRepository.findReservationById(
+                id);
+
+            assertThat(updatedReservation).isPresent();
+            assertAll(
+                () -> assertThat(updatedReservation.get().getDate()).isEqualTo(changeDate),
+                () -> assertThat(updatedReservation.get().getTime().getId()).isEqualTo(changeTimeId)
+            );
+        }
+
+        @Test
+        @DisplayName("요청한 시간 id가 존재하지 않으면 예외가 발생한다.")
+        void 실패1() {
+            String name = "시오";
+                Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            Long id = savedReservation.getId();
+            LocalDate changeDate = LocalDate.of(2026, 5, 2);
+            Long wrongId = 99999L;
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                changeDate, wrongId);
+            List<ErrorDetail> expectedErrors = List.of(
+                ErrorDetail.of("timeId", wrongId, "요청한 시간 id가 존재하지 않습니다."));
+
+            ExceptionAssertions.assertErrorCodeWithErrors(
+                () -> reservationService.updateReservation(name, id, request),
+                ErrorCode.COMMON_INVALID_REQUEST_BODY,
+                expectedErrors
+            );
+        }
+
+        @Test
+        @DisplayName("요청한 예약에 권한이 없는 경우 예외가 발생한다.")
+        void 실패2() {
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create("시오", LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            String wrongName = "잘못된 이름";
+            Long id = savedReservation.getId();
+            LocalDate changeDate = LocalDate.of(2026, 5, 2);
+            Long wrongId = 99999L;
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                changeDate, wrongId);
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.updateReservation(wrongName, id, request),
+                ForbiddenException.class,
+                ErrorCode.RESERVATION_FORBIDDEN
+            );
+        }
+
+        @Test
+        @DisplayName("변경하려는 날짜와 시간에 이미 예약이 있으면 예외가 발생한다.")
+        void 실패3() {
+            String name = "시오";
+            Theme theme = Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png");
+            Time originalTime = timeRepository.save(Time.create(LocalTime.of(13, 0)));
+            Time duplicatedTime = timeRepository.save(Time.create(LocalTime.of(20, 30)));
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3), originalTime, theme,
+                    fixedClock));
+            reservationRepository.save(
+                Reservation.create("다른 이름", LocalDate.of(2026, 5, 4), duplicatedTime, theme,
+                    fixedClock));
+            Long id = savedReservation.getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                LocalDate.of(2026, 5, 4), duplicatedTime.getId());
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.updateReservation(name, id, request),
+                ConflictException.class,
+                ErrorCode.RESERVATION_DUPLICATE
+            );
+        }
+
+        @Test
+        @DisplayName("지난 예약을 변경하려고 하면 예외가 발생한다.")
+        void 실패4() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.reconstruct(1L, name, LocalDate.of(2025, 12, 31),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png")));
+            Long id = savedReservation.getId();
+            LocalDate changeDate = LocalDate.of(2026, 5, 2);
+            Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                changeDate, changeTimeId);
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.updateReservation(name, id, request),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_ALREADY_PASSED
+            );
+        }
+
+        @Test
+        @DisplayName("지난 시점으로 변경하려고 하면 예외가 발생한다.")
+        void 실패5() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            Long id = savedReservation.getId();
+            LocalDate changeDate = LocalDate.of(2025, 12, 31);
+            Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                changeDate, changeTimeId);
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.updateReservation(name, id, request),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_TIME_ALREADY_PASSED
+            );
+        }
+
     }
 
     @Nested

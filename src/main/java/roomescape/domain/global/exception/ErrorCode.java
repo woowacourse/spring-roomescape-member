@@ -7,9 +7,11 @@ public enum ErrorCode {
     COMMON_INVALID_REQUEST_BODY("요청 본문의 형식이 잘못되었습니다."),
     COMMON_INVALID_LIMIT("limit은 0 또는 양수여야 합니다."),
 
+    RESERVATION_FORBIDDEN("요청한 예약에 접근할 권한이 없습니다."),
     RESERVATION_NOT_FOUND("요청한 예약을 찾을 수 없습니다."),
     RESERVATION_DUPLICATE("이미 존재하는 예약입니다."),
-    RESERVATION_INVALID_DATETIME("지난 날짜 및 시간에 예약을 시도했습니다."),
+    RESERVATION_ALREADY_PASSED("지난 예약은 생성 또는 변경할 수 없습니다."),
+    RESERVATION_TIME_ALREADY_PASSED("지난 시점으로는 변경할 수 없습니다."),
 
     TIME_NOT_FOUND("요청한 시간을 찾을 수 없습니다."),
     TIME_DUPLICATE("이미 존재하는 시간입니다."),

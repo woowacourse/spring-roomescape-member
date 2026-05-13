@@ -32,6 +32,12 @@ public class FakeTimeRepository implements TimeRepository {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return times.stream()
+            .anyMatch(time -> Objects.equals(time.getId(), id));
+    }
+
+    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         return times.stream()
             .anyMatch(time -> Objects.equals(time.getStartAt(), startAt));

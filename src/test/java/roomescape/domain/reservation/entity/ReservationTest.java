@@ -54,7 +54,7 @@ class ReservationTest {
             ExceptionAssertions.assertErrorCode(
                 () -> Reservation.create("브라운", date, time, theme, fixedClock),
                 UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_INVALID_DATETIME
+                ErrorCode.RESERVATION_ALREADY_PASSED
             );
         }
 
@@ -68,7 +68,7 @@ class ReservationTest {
             ExceptionAssertions.assertErrorCode(
                 () -> Reservation.create("브라운", date, time, theme, fixedClock),
                 UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_INVALID_DATETIME
+                ErrorCode.RESERVATION_ALREADY_PASSED
             );
         }
     }

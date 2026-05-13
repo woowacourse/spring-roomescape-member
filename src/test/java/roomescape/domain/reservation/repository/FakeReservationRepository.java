@@ -28,12 +28,9 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
-        Long themeId) {
+    public Optional<Reservation> findReservationById(Long id) {
         return reservations.stream()
-            .filter(reservation -> reservation.getDate().equals(date))
-            .filter(reservation -> reservation.getTime().getId().equals(timeId))
-            .filter(reservation -> reservation.getTheme().getId().equals(themeId))
+            .filter(reservation -> reservation.getId().equals(id))
             .findFirst();
     }
 
@@ -58,6 +55,24 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        return reservations.stream()
+            .filter(reservation -> reservation.getDate().equals(date))
+            .filter(reservation -> reservation.getTime().getId().equals(timeId))
+            .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
+    public boolean existsByDateTimeAndThemeIdExceptId(Long id, LocalDate date, Long timeId,
+        Long themeId) {
+        return reservations.stream()
+            .filter(reservation -> !Objects.equals(reservation.getId(), id))
+            .filter(reservation -> reservation.getDate().equals(date))
+            .filter(reservation -> reservation.getTime().getId().equals(timeId))
+            .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
     public boolean existsByTimeId(Long timeId) {
         return reservations.stream()
             .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
@@ -67,6 +82,36 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(Long themeId) {
         return reservations.stream()
             .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
+    public void updateReservationById(Long id, LocalDate date, Long timeId) {
+        if (date == null && timeId == null) {
+            return;
+        }
+
+        for (int i = 0; i < reservations.size(); i++) {
+            Reservation reservation = reservations.get(i);
+
+            if (!reservation.getId().equals(id)) {
+                continue;
+            }
+
+            Time time = reservation.getTime();
+            if (timeId != null) {
+                time = Time.reconstruct(timeId, time.getStartAt());
+            }
+
+            Reservation updatedReservation = Reservation.reconstruct(
+                reservation.getId(),
+                reservation.getName(),
+                date != null ? date : reservation.getDate(),
+                time,
+                reservation.getTheme()
+            );
+            reservations.set(i, updatedReservation);
+            return;
+        }
     }
 
     @Override
