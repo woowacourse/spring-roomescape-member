@@ -112,3 +112,38 @@
 | 예약 등록 (관리자)  | `POST`   | `/admin/reservations`      | `{"username": "흑곰", "themeId": 1, "date": "2024-05-05", "timeId": 1}` | `{"id": 1, "username": "흑곰", "date": "2024-05-05", "time": {...}, "theme": {...}}` (201 Created) |
 | 예약 수정 (관리자)  | `PATCH`  | `/admin/reservations/{id}` | `{"themeId": 1, "date": "2024-05-06", "timeId": 2}`                   | `{"id": 1, "username": "흑곰", ...}` (200 OK)                                                      |
 | 예약 삭제 (관리자)  | `DELETE` | `/admin/reservations/{id}` | -                                                                     | `204 No Content`                                                                                 |
+
+---
+
+## 🚨 에러 응답 명세
+
+### 1. 공통 에러 응답 형식
+
+| 필드명         | 타입       | 설명                          |
+|:------------|:---------|:----------------------------|
+| `timestamp` | `String` | 에러 발생 시각 (ISO 8601)         |
+| `status`    | `int`    | HTTP 상태 코드                  |
+| `errorCode` | `String` | 서비스 자체 정의 에러 코드             |
+| `message`   | `String` | 사용자에게 노출할 에러 메시지            |
+| `errors`    | `Array`  | (선택적) 유효성 검사 실패 시 필드별 에러 목록 |
+
+**응답 예시 (400 Bad Request):**
+
+```json
+{
+  "timestamp": "2024-05-13T20:14:57.123",
+  "status": 400,
+  "errorCode": "PAST_RESERVATION",
+  "message": "지나간 날짜·시간에 대한 예약은 불가능합니다."
+}
+```
+
+### 2. 주요 에러 코드
+
+| 상태 코드 | 에러 코드                              | 메시지                           | 설명                   |
+|:------|:-----------------------------------|:------------------------------|:---------------------|
+| 400   | `VALIDATION_FAILED`                | 입력값이 올바르지 않습니다.               | Bean Validation 실패 시 |
+| 400   | `PAST_RESERVATION`                 | 지나간 날짜·시간에 대한 예약은 불가능합니다.     | 과거 예약 생성/수정/취소 시도 시  |
+| 404   | `RESERVATION_NOT_FOUND`            | 예약 정보를 찾을 수 없습니다.             | 존재하지 않는 예약 접근 시      |
+| 409   | `DUPLICATE_RESERVATION`            | 이미 동일한 날짜, 시간, 테마의 예약이 존재합니다. | 중복 예약 발생 시           |
+| 409   | `RESERVATION_TIME_DELETE_CONFLICT` | 예약이 존재하는 시간은 삭제할 수 없습니다.      | 외래 키 제약 조건 위반 시      |
