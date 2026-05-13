@@ -23,15 +23,15 @@
 ### 예약 시간
 
 - [x] 예약 시간은 `startAt`으로 관리한다.
-- [x] 관리자는 예약 시간을 추가하거나 삭제할 수 있다.
-    - [x] 단, 예약이 존재하는 시간은 삭제할 수 없다.
+- [x] 관리자는 예약 시간을 추가하거나 비활성화할 수 있다.
+    - [x] 단, 예약이 존재하는 시간은 비활성화할 수 없다.
 - [x] 테마별 예약 가능 여부 조회 시 각 예약 시간의 예약 가능 상태를 함께 반환한다.
 
 ### 요구사항
 
-- [ ] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
-- [ ] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
-- [ ] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
+- [x] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+- [x] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
 
 ## 관련 문서
 
@@ -58,9 +58,11 @@ GET /api/themes?page=0&size=10 HTTP/1.1
 
 **Response**
 
-```json
-200 OK
+Status: `200 OK`
 
+Body:
+
+```json
 {
   "responses": [
     {
@@ -89,9 +91,11 @@ GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06&limit=10 HTTP/1.
 
 **Response**
 
-```json
-200 OK
+Status: `200 OK`
 
+Body:
+
+```json
 {
   "responses": [
     {
@@ -104,19 +108,23 @@ GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06&limit=10 HTTP/1.
 }
 ```
 
+### 2. 사용자 예약
+
 #### 특정 테마의 날짜별 예약 가능 시간 조회
 
 **Request**
 
 ```http
-GET /api/themes/1/times?date=2026-05-10 HTTP/1.1
+GET /api/reservations/themes/1/times?date=2026-05-10 HTTP/1.1
 ```
 
 **Response**
 
-```json
-200 OK
+Status: `200 OK`
 
+Body:
+
+```json
 {
   "responses": [
     {
@@ -133,8 +141,6 @@ GET /api/themes/1/times?date=2026-05-10 HTTP/1.1
 }
 ```
 
-### 2. 사용자 예약
-
 #### 예약 생성
 
 **Request**
@@ -142,9 +148,13 @@ GET /api/themes/1/times?date=2026-05-10 HTTP/1.1
 ```http
 POST /api/reservations HTTP/1.1
 Content-Type: application/json
+```
 
+Body:
+
+```json
 {
-  "name": "lim",
+  "name": "바니",
   "date": "2026-05-10",
   "themeId": 1,
   "timeId": 2
@@ -153,26 +163,115 @@ Content-Type: application/json
 
 **Response**
 
-```json
-201 Created
-Location: /api/reservations/1
+Status: `201 Created`
 
+Headers:
+
+```http
+Location: /api/reservations/1
+```
+
+Body:
+
+```json
 {
-"id": 1,
-"name": "lim",
-"date": "2026-05-10",
-"time": {
-"id": 2,
-"startAt": "12:00:00"
-},
-"theme": {
-"id": 1,
-"name": "공포",
-"description": "공포 방탈출입니다.",
-"thumbnailImageUrl": "http://image.url/horror"
-}
+  "id": 1,
+  "name": "바니",
+  "date": "2026-05-10",
+  "time": {
+    "id": 2,
+    "startAt": "12:00:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "공포",
+    "description": "공포 방탈출입니다.",
+    "thumbnailImageUrl": "http://image.url/horror"
+  },
+  "status": "RESERVED"
 }
 ```
+
+#### 사용자 예약 목록 조회
+
+**Request**
+
+```http
+GET /api/reservations?name=바니 HTTP/1.1
+```
+
+**Response**
+
+Status: `200 OK`
+
+Body:
+
+```json
+{
+  "responses": [
+    {
+      "id": 1,
+      "name": "바니",
+      "date": "2026-05-10",
+      "time": {
+        "id": 2,
+        "startAt": "12:00:00"
+      },
+      "theme": {
+        "id": 1,
+        "name": "공포",
+        "description": "공포 방탈출입니다.",
+        "thumbnailImageUrl": "http://image.url/horror"
+      },
+      "status": "RESERVED"
+    }
+  ]
+}
+```
+
+#### 예약 취소
+
+**Request**
+
+```http
+PATCH /api/reservations/1/cancel HTTP/1.1
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "name": "바니"
+}
+```
+
+**Response**
+
+Status: `204 No Content`
+
+#### 예약 수정
+
+**Request**
+
+```http
+PATCH /api/reservations/1/modify HTTP/1.1
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "name": "바니",
+  "date": "2026-05-11",
+  "timeId": 3
+}
+```
+
+**Response**
+
+Status: `204 No Content`
 
 ### 3. 관리자 테마 관리
 
@@ -184,7 +283,11 @@ Location: /api/reservations/1
 POST /api/admin/themes HTTP/1.1
 Content-Type: application/json
 role: ADMIN
+```
 
+Body:
+
+```json
 {
   "name": "공포",
   "description": "공포 방탈출입니다.",
@@ -194,15 +297,22 @@ role: ADMIN
 
 **Response**
 
-```json
-201 Created
-Location: /api/admin/themes/1
+Status: `201 Created`
 
+Headers:
+
+```http
+Location: /api/admin/themes/1
+```
+
+Body:
+
+```json
 {
-"id": 1,
-"name": "공포",
-"description": "공포 방탈출입니다.",
-"thumbnailImageUrl": "http://image.url/horror"
+  "id": 1,
+  "name": "공포",
+  "description": "공포 방탈출입니다.",
+  "thumbnailImageUrl": "http://image.url/horror"
 }
 ```
 
@@ -217,9 +327,7 @@ role: ADMIN
 
 **Response**
 
-```http
-204 No Content
-```
+Status: `204 No Content`
 
 ### 4. 관리자 예약 관리
 
@@ -234,14 +342,16 @@ role: ADMIN
 
 **Response**
 
-```json
-200 OK
+Status: `200 OK`
 
+Body:
+
+```json
 {
   "responses": [
     {
       "id": 1,
-      "name": "lim",
+      "name": "바니",
       "date": "2026-05-10",
       "time": {
         "id": 2,
@@ -252,65 +362,11 @@ role: ADMIN
         "name": "공포",
         "description": "공포 방탈출입니다.",
         "thumbnailImageUrl": "http://image.url/horror"
-      }
+      },
+      "status": "RESERVED"
     }
   ]
 }
-```
-
-#### 관리자 예약 생성
-
-**Request**
-
-```http
-POST /api/admin/reservations HTTP/1.1
-Content-Type: application/json
-role: ADMIN
-
-{
-  "name": "lim",
-  "date": "2026-05-10",
-  "themeId": 1,
-  "timeId": 2
-}
-```
-
-**Response**
-
-```json
-201 Created
-Location: /api/admin/reservations/1
-
-{
-"id": 1,
-"name": "lim",
-"date": "2026-05-10",
-"time": {
-"id": 2,
-"startAt": "12:00:00"
-},
-"theme": {
-"id": 1,
-"name": "공포",
-"description": "공포 방탈출입니다.",
-"thumbnailImageUrl": "http://image.url/horror"
-}
-}
-```
-
-#### 예약 삭제
-
-**Request**
-
-```http
-DELETE /api/admin/reservations/1 HTTP/1.1
-role: ADMIN
-```
-
-**Response**
-
-```http
-204 No Content
 ```
 
 ### 5. 관리자 예약 시간 관리
@@ -326,9 +382,11 @@ role: ADMIN
 
 **Response**
 
-```json
-200 OK
+Status: `200 OK`
 
+Body:
+
+```json
 {
   "responses": [
     {
@@ -351,7 +409,11 @@ role: ADMIN
 POST /api/admin/times HTTP/1.1
 Content-Type: application/json
 role: ADMIN
+```
 
+Body:
+
+```json
 {
   "startAt": "10:00:00"
 }
@@ -359,30 +421,35 @@ role: ADMIN
 
 **Response**
 
-```json
-201 Created
-Location: /api/admin/times/1
+Status: `201 Created`
 
+Headers:
+
+```http
+Location: /api/admin/times/1
+```
+
+Body:
+
+```json
 {
-"id": 1,
-"startAt": "10:00:00"
+  "id": 1,
+  "startAt": "10:00:00"
 }
 ```
 
-#### 예약 시간 삭제
+#### 예약 시간 비활성화
 
 **Request**
 
 ```http
-DELETE /api/admin/times/1 HTTP/1.1
+PATCH /api/admin/times/1 HTTP/1.1
 role: ADMIN
 ```
 
 **Response**
 
-```http
-204 No Content
-```
+Status: `204 No Content`
 
 ## 페이지 경로
 
