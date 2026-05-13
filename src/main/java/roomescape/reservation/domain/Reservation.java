@@ -46,4 +46,8 @@ public class Reservation {
     public LocalDateTime getReservationDateTime() {
         return LocalDateTime.of(date, time.getStartAt());
     }
+
+    public boolean isFutureOrPresent(LocalDateTime compareDateTime) {
+        return !getReservationDateTime().isBefore(compareDateTime);
+    }
 }

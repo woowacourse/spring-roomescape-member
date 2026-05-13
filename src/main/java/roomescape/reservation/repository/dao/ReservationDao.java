@@ -77,4 +77,15 @@ public class ReservationDao {
 
         return count != null && count > 0;
     }
+
+    public List<ReservationEntity> findAllOnOrAfter(LocalDate localDate) {
+        String sql = """
+                SELECT * 
+                FROM reservation
+                WHERE date  >= ?
+                AND is_deleted = FALSE;
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, localDate);
+    }
 }

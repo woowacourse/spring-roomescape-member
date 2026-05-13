@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -62,5 +63,14 @@ public class ReservationRepository {
 
     public boolean existsByDateAndTimeIdAndThemeId(DuplicateReservationCondition condition) {
         return reservationDao.existsReservationAt(condition.themeId(), condition.date(), condition.timeId());
+    }
+
+    public List<Reservation> findReservationsFrom(LocalDate localDate) {
+        return reservationDao.findAllOnOrAfter(localDate).stream()
+                .map(reservation ->
+                        ReservationMapper.toReservation(reservation,
+                                reservationTimeDao.getById(reservation.getTimeId()),
+                                themeDao.getById(reservation.getThemeId()))
+                ).toList();
     }
 }
