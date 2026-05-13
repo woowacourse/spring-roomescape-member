@@ -583,3 +583,43 @@ body {
         height: 100px;
     }
 }
+
+.reservation-result-card {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    padding: 48px;
+    border: 1px solid #242832;
+    border-radius: 24px;
+    background: #07090d;
+}
+
+.reservation-thumbnail-box {
+    flex: 0 0 260px;
+    width: 260px;
+    height: 180px;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.reservation-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .reservation-result-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 28px;
+    }
+
+    .reservation-thumbnail-box {
+        width: 100%;
+        height: 220px;
+        flex: none;
+    }
+}
