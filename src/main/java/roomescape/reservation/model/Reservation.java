@@ -1,8 +1,11 @@
 package roomescape.reservation.model;
 
+import roomescape.exception.ReservationDeadlineException;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 import roomescape.user.model.User;
+
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -30,6 +33,13 @@ public class Reservation {
 
     public boolean isOwnedBy(Long userId) {
         return this.user.getId().equals(userId);
+    }
+
+    public void validateCancelOrChangeable(LocalDateTime currentTime) {
+        LocalDateTime deadline = schedule.getStartAt().minusHours(1);
+        if (!currentTime.isBefore(deadline)) {
+            throw new ReservationDeadlineException("방탈출 시작 1시간 전부터는 예약을 취소하거나 변경할 수 없습니다.");
+        }
     }
 
     public Long getId() {
