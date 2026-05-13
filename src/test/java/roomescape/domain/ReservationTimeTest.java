@@ -1,23 +1,32 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.api.Test;
 
 class ReservationTimeTest {
-    @ParameterizedTest
-    @NullSource
-    @DisplayName("예약 시간이 null이면 예외가 발생한다")
-    void validate_time_fail(LocalTime time) {
-        // given
+
+    @Test
+    @DisplayName("올바른 정보로 시간을 생성하면 성공한다.")
+    void 정상_생성_테스트() {
         Long id = 1L;
+        LocalTime startAt = LocalTime.of(10, 0);
+
+        assertDoesNotThrow(() -> new ReservationTime(id, startAt));
+    }
+
+    @Test
+    @DisplayName("예약 시간이 null이면 예외가 발생한다")
+    void 시간_null_예외_테스트() {
+        Long id = 1L;
+        LocalTime startAt = null;
 
         // when & then
-        assertThatThrownBy(() -> new ReservationTime(id, time))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시간이 유효하지 않습니다.");
+        assertThatThrownBy(() -> new ReservationTime(id, startAt))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("예약 시간이 비어 있습니다.");
     }
 }
