@@ -7,8 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
@@ -60,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             jdbcTemplate.update("delete from theme where id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
         }
     }
 
@@ -118,7 +119,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 theme.getId());
 
         if (updatedCount == 0) {
-            throw new IllegalArgumentException("수정하려는 테마가 존재하지 않습니다. (ID: " + theme.getId() + ")");
+            throw new ResourceNotFoundException("수정하려는 테마가 존재하지 않습니다. (ID: " + theme.getId() + ")");
         }
     }
 }

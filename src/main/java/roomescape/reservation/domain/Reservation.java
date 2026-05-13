@@ -1,5 +1,7 @@
 package roomescape.reservation.domain;
 
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -42,26 +44,25 @@ public class Reservation {
     }
 
     private void validateNotPast(LocalDateTime now) {
-        validateNotNull(now, "현재 시각(now)은 필수입니다.");
+        validateNotNull(now, "현재 시각은 반드시 입력해야 합니다.");
 
         if (time.getStartAt() == null) {
-            throw new IllegalStateException("예약 시간 데이터가 올바르지 않습니다. (startAt is null)");
+            throw new InvalidRequestException("예약 시간은 반드시 입력해야 합니다.");
         }
 
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException(
-                    String.format("과거 시각으로는 예약할 수 없습니다. (요청 일시: %s)", reservationDateTime)
-            );
+            throw new BusinessRuleViolationException("과거 시각으로는 예약할 수 없습니다.");
         }
     }
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+            throw new InvalidRequestException("예약자 이름은 반드시 입력해야 합니다.");
         }
+
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException(
+            throw new BusinessRuleViolationException(
                     String.format("이름은 %d글자 이하여야 합니다. (현재 이름의 글자 수: %d)", MAX_NAME_LENGTH, name.length())
             );
         }
@@ -69,7 +70,7 @@ public class Reservation {
 
     private void validateNotNull(Object obj, String message) {
         if (obj == null) {
-            throw new IllegalArgumentException(message);
+            throw new InvalidRequestException(message);
         }
     }
 

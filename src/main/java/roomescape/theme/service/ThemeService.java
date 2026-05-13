@@ -2,8 +2,8 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRequest;
@@ -46,7 +46,7 @@ public class ThemeService {
     @Transactional
     public void deleteById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new ResourceInUseException("이 테마를 참조하는 예약이 있어 삭제할 수 없습니다. ID: " + id);
+            throw new BusinessRuleViolationException("이 테마를 참조하는 예약이 있어 삭제할 수 없습니다. ID: " + id);
         }
 
         themeRepository.deleteById(id);

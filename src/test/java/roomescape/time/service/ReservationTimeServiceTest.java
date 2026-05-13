@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.support.FixedClockConfig;
 import roomescape.time.controller.dto.ReservationTimeRequest;
@@ -119,7 +119,7 @@ class ReservationTimeServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reservationTimeService.deleteById(savedTime.getId()))
-                    .isInstanceOf(ResourceInUseException.class)
+                    .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("이 시간을 참조하는 예약이 있어 삭제할 수 없습니다.");
 
             assertThat(reservationTimeService.findAll()).hasSize(1);

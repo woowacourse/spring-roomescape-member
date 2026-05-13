@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
@@ -68,7 +69,7 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("예약 일자가 과거이면 IllegalArgumentException 이 발생하고 저장되지 않는다.")
+        @DisplayName("예약 일자가 과거이면 BusinessRuleViolationException 이 발생하고 저장되지 않는다.")
         void saveFailWhenPastDate() {
             // given
             LocalDate pastDate = LocalDate.of(2026, 5, 5);
@@ -76,21 +77,21 @@ class ReservationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("과거 시각");
 
             assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
-        @DisplayName("오늘 날짜라도 예약 시간이 현재 시각보다 이전이면 예외가 발생한다.")
+        @DisplayName("오늘 날짜라도 예약 시간이 현재 시각보다 이전이면 BusinessRuleViolationException 예외가 발생한다.")
         void saveFailWhenTodayButPastTime() {
-            // given - 고정 시각 09:00, 시간 슬롯은 08:00
+            // given
             ReservationRequest request = new ReservationRequest("브라운", TODAY, timeId08, themeId);
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("과거 시각");
 
             assertThat(reservationService.findAll()).isEmpty();
