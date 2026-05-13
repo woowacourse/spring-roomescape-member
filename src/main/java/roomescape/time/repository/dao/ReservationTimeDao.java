@@ -66,4 +66,20 @@ public class ReservationTimeDao {
 
         return jdbcTemplate.queryForList(sql, Long.class, themeId, date.toString());
     }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation_time
+                WHERE id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                id
+        );
+
+        return count != null && count > 0;
+    }
 }

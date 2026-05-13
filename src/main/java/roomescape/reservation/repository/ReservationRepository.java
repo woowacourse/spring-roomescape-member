@@ -9,6 +9,7 @@ import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.reservation.repository.entity.ReservationEntity;
+import roomescape.reservation.service.DuplicateReservationCondition;
 import roomescape.theme.repository.dao.ThemeDao;
 import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.time.repository.dao.ReservationTimeDao;
@@ -48,5 +49,9 @@ public class ReservationRepository {
     @Transactional
     public int deleteById(Long id) {
         return reservationDao.deleteById(id);
+    }
+
+    public boolean existsByDateAndTimeIdAndThemeId(DuplicateReservationCondition condition) {
+        return reservationDao.existsReservationAt(condition.themeId(), condition.date(), condition.timeId());
     }
 }

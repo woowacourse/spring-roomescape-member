@@ -8,13 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
-import roomescape.theme.domain.Theme;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,14 +39,27 @@ public class ReservationService {
     }
 
     private void validateReservationAvailable(LocalDate date, Long timeId, Long themeId) {
-        //실제로 존재하는지 확인하기 위함.
-        ReservationTime time = reservationTimeRepository.findById(timeId);
-        Theme theme = themeRepository.findById(themeId);
+        validateThemeExists(themeId);
+        validateReservationTimeExists(timeId);
 
-        List<Long> reservedIds = reservationTimeRepository.findIdByCondition(new FindReservedTimeParams(theme.getId(), date));
-        if(reservedIds.contains(time.getId())) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                new DuplicateReservationCondition(date, timeId, themeId))) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
+    }
+
+    private void validateReservationTimeExists(Long id) {
+        if (reservationTimeRepository.existsById(id)) {
+            return;
+        }
+        throw new IllegalArgumentException("예약 시간이 유효하지 않습니다");
+    }
+
+    private void validateThemeExists(Long id) {
+        if (themeRepository.existsById(id)) {
+            return;
+        }
+        throw new IllegalArgumentException("테마 정보가 유효하지 않습니다");
     }
 
     @Transactional
