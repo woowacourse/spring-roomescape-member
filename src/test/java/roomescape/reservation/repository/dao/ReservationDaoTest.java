@@ -61,6 +61,36 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 예약_전체_목록을_조회한다() {
+        //given
+        reservationDao.insert("userA", LocalDate.now(), 1L, 1L);
+        reservationDao.insert("userB", LocalDate.now().plusDays(1), 1L, 1L);
+
+        //when
+        List<ReservationEntity> reservations = reservationDao.findAll();
+
+        //then
+        Assertions.assertThat(reservations).hasSize(2);
+    }
+
+    @Test
+    void 예약을_삭제한다() {
+        //given
+        String name = "user";
+        LocalDate date = LocalDate.now();
+        Long timeId = 1L;
+        Long themeId = 1L;
+
+        Long savedId = reservationDao.insert(name, date, timeId, themeId);
+
+        //when
+        reservationDao.deleteById(savedId);
+
+        //then
+        Assertions.assertThat(reservationDao.findById(savedId)).isNotPresent();
+    }
+
+    @Test
     void 기준_날짜_이후의_예약만_조회한다() {
         //given
         LocalDate yesterday = LocalDate.now().minusDays(1);
