@@ -1,11 +1,13 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.ConflictException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.entity.ReservationTimeEntity;
@@ -78,7 +80,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.update(sql, timeId) > 0;
+        try {
+            return jdbcTemplate.update(sql, timeId) > 0;
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.", exception);
+        }
     }
 
     private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {

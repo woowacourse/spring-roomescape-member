@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.common.exception.ConflictException;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("/clear.sql")
@@ -77,5 +79,27 @@ class JdbcReservationTimeRepositoryTest {
         boolean deleted = reservationTimeRepository.delete(1L);
 
         assertThat(deleted).isFalse();
+    }
+
+    @Test
+    void 해당_시간에_예약이_있으면_예약_시간을_삭제할_수_없다() {
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "링",
+                "공포 테마",
+                "http:~"
+        );
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운",
+                "2026-08-05",
+                savedTime.getId(),
+                1L
+        );
+
+        assertThatThrownBy(() -> reservationTimeRepository.delete(savedTime.getId()))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

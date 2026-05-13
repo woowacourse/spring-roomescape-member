@@ -65,4 +65,17 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @Test
+    @Sql("/clear.sql")
+    void 해당_시간에_예약이_있으면_예약_시간_삭제시_409를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }
