@@ -8,6 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +29,9 @@ import static org.mockito.Mockito.when;
 class ThemeServiceTest {
     @Mock
     private ThemeRepository themeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ThemeService themeService;
@@ -71,7 +78,8 @@ class ThemeServiceTest {
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> themeService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND));
     }
 
     @Test
@@ -89,9 +97,39 @@ class ThemeServiceTest {
     @Test
     @DisplayName("id로 테마를 삭제한다")
     void deleteThemeById() {
+        Theme theme = new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg");
+        when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
+        when(reservationRepository.existsByThemeId(1L)).thenReturn(false);
+
         themeService.deleteTheme(1L);
 
         verify(themeRepository).delete(1L);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마는 삭제할 수 없다")
+    void throwException_WhenDeleteThemeNotFound() {
+        when(themeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND));
+
+        verify(themeRepository, never()).delete(1L);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마는 삭제할 수 없다")
+    void throwException_WhenThemeHasReservation() {
+        Theme theme = new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg");
+        when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
+        when(reservationRepository.existsByThemeId(1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.THEME_IN_USE));
+
+        verify(themeRepository, never()).delete(1L);
     }
 
     @Test

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -35,6 +37,10 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+
         reservationRepository.deleteById(id);
     }
 

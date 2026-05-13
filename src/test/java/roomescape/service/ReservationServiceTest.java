@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -21,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -128,10 +131,24 @@ class ReservationServiceTest {
     @DisplayName("id로 예약을 삭제한다")
     void deleteReservationById() {
         long reservationId = 1L;
+        given(reservationRepository.existsById(reservationId)).willReturn(true);
 
         reservationService.deleteById(reservationId);
 
         verify(reservationRepository).deleteById(eq(reservationId));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약은 삭제할 수 없다")
+    void throwException_WhenDeleteReservationNotFound() {
+        long reservationId = 1L;
+        given(reservationRepository.existsById(reservationId)).willReturn(false);
+
+        assertThatThrownBy(() -> reservationService.deleteById(reservationId))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
+
+        verify(reservationRepository, never()).deleteById(reservationId);
     }
 
     @Test

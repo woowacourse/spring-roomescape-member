@@ -5,15 +5,20 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
     private static final int TOP_NUMBERS = 10;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Theme> getThemes() {
@@ -22,7 +27,7 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public Theme saveTheme(Theme theme) {
@@ -30,6 +35,12 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
+        findById(id);
+
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new RoomescapeException(ErrorCode.THEME_IN_USE);
+        }
+
         themeRepository.delete(id);
     }
 

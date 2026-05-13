@@ -14,4 +14,8 @@ public interface ReservationRepository {
     List<Reservation> findReservationsByName(String name);
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    boolean existsById(Long id);
+
+    boolean existsByThemeId(Long themeId);
 }

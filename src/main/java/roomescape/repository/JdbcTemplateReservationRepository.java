@@ -116,4 +116,26 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
         return Objects.nonNull(count) && count > 0;
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE id = ?",
+                Integer.class,
+                id
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE theme_id = ?",
+                Integer.class,
+                themeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
 }
