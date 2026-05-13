@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.policy.ReservationConflictException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -129,7 +130,7 @@ class ReservationServiceTest {
 
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(ReservationConflictException.class);
         }
 
         @Test
