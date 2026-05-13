@@ -65,7 +65,7 @@ class PageControllerTest {
     void adminPageReturnsTemplateAndModel() throws Exception {
         given(themeService.getThemes()).willReturn(List.of(themeResponse()));
         given(reservationTimeService.getReservationTimes()).willReturn(List.of(timeResponse()));
-        given(reservationService.getReservations()).willReturn(List.of(reservationResponse()));
+        given(reservationService.getReservations(null)).willReturn(List.of(reservationResponse()));
 
         mockMvc.perform(get("/admin"))
                 .andExpect(status().isOk())
