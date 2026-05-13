@@ -8,7 +8,7 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
     private static final int MAX_NAME_LENGTH = 20;
 
     private static final String INVALID_DATE_NULL = "날짜는 필수입니다.";
-    private static final String INVALID_DATE_FORMAT = "유효하지 않은 날짜입니다.";
+    private static final String INVALID_DATE_FORMAT = "유효하지 않은 날짜 형식입니다.";
     private static final String NOT_RESERVABLE_PAST_DATE = "예약일은 현재 날짜보다 이전일 수 없습니다.";
     private static final String INVALID_TIME_ID_FORMAT = "시간 id는 0보다 커야 합니다.";
     private static final String INVALID_THEME_ID_FORMAT = "테마 id 0보다 커야 합니다.";
