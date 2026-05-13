@@ -28,10 +28,10 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> cancel(
             @PathVariable UUID id
     ) {
-        service.delete(EntityId.fromUuid(id));
+        service.deleteWithoutValidate(EntityId.fromUuid(id));
 
         return ResponseEntity.ok().build();
     }

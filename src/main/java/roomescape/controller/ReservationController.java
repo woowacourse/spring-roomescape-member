@@ -46,4 +46,14 @@ public class ReservationController {
 
         return ResponseEntity.ok(responses);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancel(
+            @RequestParam String name,
+            @PathVariable UUID id
+    ) {
+        service.delete(EntityId.fromUuid(id), name);
+
+        return ResponseEntity.noContent().build();
+    }
 }

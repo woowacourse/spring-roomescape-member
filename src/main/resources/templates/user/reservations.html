@@ -80,9 +80,30 @@
         }
         rows.querySelectorAll('button[data-id]').forEach(btn => {
             btn.addEventListener('click', () => {
-                showStatus(`예약 취소 기능은 아직 준비 중입니다. (예약 ID: ${btn.dataset.id})`, false);
+                void cancelReservation(btn.dataset.id);
             });
         });
+    }
+
+    async function cancelReservation(id) {
+        const name = memberName.value.trim();
+        if (!name) {
+            showStatus('취소하려면 먼저 이름을 입력하세요.', false);
+            return;
+        }
+        if (!confirm('이 예약을 취소할까요?')) return;
+        status.style.display = 'none';
+        try {
+            const params = new URLSearchParams({name});
+            const res = await fetch('/reservations/' + id + '?' + params.toString(), {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('취소 실패');
+            showStatus('예약이 취소되었습니다.', true);
+            await searchReservations();
+        } catch (e) {
+            showStatus(e.message, false);
+        }
     }
 
     async function searchReservations() {

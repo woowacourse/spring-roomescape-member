@@ -50,7 +50,7 @@ public class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(INITIALIZED_RESERVATION_COUNT));
@@ -77,18 +77,18 @@ public class MissionStepTest {
                 .path("id");
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + createdReservationId)
+                .when().delete("/admin/reservations/" + createdReservationId)
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -135,7 +135,7 @@ public class MissionStepTest {
         );
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -172,7 +172,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + createdReservationId)
+                .when().delete("/admin/reservations/" + createdReservationId)
                 .then().log().all()
                 .statusCode(200);
 
@@ -226,7 +226,7 @@ public class MissionStepTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

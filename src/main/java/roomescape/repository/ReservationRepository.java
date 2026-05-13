@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -48,6 +50,24 @@ public class ReservationRepository {
                 + " FROM reservation r";
 
         return jdbcTemplate.query(findSql, reservationRowMapper());
+    }
+
+    public Optional<Reservation> findById(EntityId reservationId) {
+        try {
+            String findSql = "SELECT id, name, date, time_id, theme_id"
+                    + " FROM reservation r"
+                    + " WHERE id = ?";
+
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    findSql,
+                    reservationRowMapper(),
+                    reservationId.getValueAsUuid()
+            );
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public List<Reservation> findByName(String name) {

@@ -69,7 +69,20 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(EntityId reservationId) {
+    public void delete(EntityId reservationId, String name) {
+        Reservation reservation = findReservationById(reservationId);
+        if (reservation.hasDifferentName(name)) {
+            throw new IllegalArgumentException("본인의 예약만 삭제할 수 있습니다.");
+        }
+
+        ReservationTime time = findTimeById(reservation.timeId());
+        validateReservationAvailable(reservation.date(), time.startAt());
+
+        deleteWithoutValidate(reservationId);
+    }
+
+    @Transactional
+    public void deleteWithoutValidate(EntityId reservationId) {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
@@ -107,6 +120,11 @@ public class ReservationService {
     private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {
         new ReservationDateTime(dateForReservation, timeForReservation)
                 .validateAvailable(LocalDateTime.now());
+    }
+
+    private Reservation findReservationById(EntityId reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException("예약을 조회할 수 없습니다. reservationId = " + reservationId));
     }
 
     private ReservationTime findTimeById(EntityId timeId) {

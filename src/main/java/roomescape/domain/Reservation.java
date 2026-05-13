@@ -50,6 +50,10 @@ public record Reservation(
         }
     }
 
+    public boolean hasDifferentName(String name) {
+        return !this.name.equals(name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

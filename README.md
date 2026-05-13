@@ -33,10 +33,10 @@
 
 ### 관리자 예약 (`/admin/reservations`)
 
-| 메서드 | 경로                    | 설명       |
-|--------|-----------------------|----------|
-| `GET` | `/admin/reservations` | 예약 목록 조회 |
-| `DELETE` | `/reservations/{id}`  | 예약 삭제    |
+| 메서드 | 경로                         | 설명       |
+|--------|----------------------------|----------|
+| `GET` | `/admin/reservations`      | 예약 목록 조회 |
+| `DELETE` | `/admin/reservations/{id}` | 예약 삭제    |
 
 ### 사용자 예약 (`/reservations`)
 
@@ -44,6 +44,7 @@
 |--------|------|----------|
 | `GET` | `/reservations` | 예약 목록 조회 |
 | `POST` | `/reservations` | 예약 생성    |
+| `DELETE` | `/reservations/{id}`  | 예약 삭제    |
 
 ### 예약 시간 (`/times`)
 
