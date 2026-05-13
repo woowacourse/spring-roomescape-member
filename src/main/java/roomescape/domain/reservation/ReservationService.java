@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.reservation.dto.ReservationFixRequest;
+import roomescape.domain.reservation.dto.ReservationsResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.domain.theme.Theme;
@@ -60,7 +62,6 @@ public class ReservationService {
             || (reservationDate.isEqual(LocalDate.now()) && reservationTime.isAfter(LocalTime.now()))) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
         }
-
     }
 
     private void validateDuplicateReservation(ReservationRequest request) {
@@ -92,6 +93,41 @@ public class ReservationService {
         boolean isValidId = reservationRepository.existsById(id);
         if (!isValidId) {
             throw new RoomescapeException(ErrorCode.RESERVATION_ID_NOT_FOUND);
+        }
+    }
+
+    public ReservationsResponse getMyReservations(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        return ReservationsResponse.from(reservations);
+    }
+
+    public void updateMyReservation(Long id, ReservationFixRequest fixRequest) {
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_ID_NOT_FOUND));
+        validateNewRequest(fixRequest);
+        ReservationTime reservationTime = reservationTimeRepository.findById(fixRequest.timeId())
+            .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
+
+        validateReservationOwner(fixRequest.name(), reservation.getName());
+
+        reservation.update(
+            fixRequest.date(),
+            reservationTime
+        );
+    }
+
+    private void validateNewRequest(ReservationFixRequest newRequest) {
+        if (newRequest.date().isBefore(LocalDate.now())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
+        }
+        if (!reservationTimeRepository.existsById(newRequest.timeId())) {
+            throw new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND);
+        }
+    }
+
+    private void validateReservationOwner(String requestName, String reservationName) {
+        if (!requestName.equals(reservationName)) {
+            throw new RoomescapeException(ErrorCode.UNAUTHORIZED_NAME);
         }
     }
 }

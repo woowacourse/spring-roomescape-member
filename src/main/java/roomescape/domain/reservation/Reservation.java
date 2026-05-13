@@ -8,8 +8,8 @@ public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
+    private LocalDate date;
+    private ReservationTime time;
     private final Theme theme;
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -46,5 +46,14 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public void update(LocalDate date, ReservationTime time) {
+        if (date != null) {
+            this.date = date;
+        }
+        if (time != null) {
+            this.time = time;
+        }
     }
 }

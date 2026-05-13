@@ -3,6 +3,7 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -59,6 +60,16 @@ public class ReservationRepository {
             reservation.getTheme());
     }
 
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String query = """
+            SELECT COUNT(*)
+            FROM reservation
+            WHERE date = ? AND time_id = ? AND theme_id = ?
+            """;
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
+        return count != null && count > 0;
+    }
+
     public List<Long> findTimeByDateAndThemeId(LocalDate date, Long themeId) {
         String query = """
             SELECT                                                                                                                                                                                                                                \s
@@ -72,16 +83,6 @@ public class ReservationRepository {
     public void deleteById(Long id) {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
-    }
-
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String query = """
-            SELECT COUNT(*)
-            FROM reservation
-            WHERE date = ? AND time_id = ? AND theme_id = ?
-            """;
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
-        return count != null && count > 0;
     }
 
     public boolean existsByThemeId(Long themeId) {
@@ -116,5 +117,26 @@ public class ReservationRepository {
             """;
 
         return jdbcTemplate.query(query, idRowMapper, startDate, endDate);
+    }
+
+    public List<Reservation> findByName(String name) {
+        String query = """
+            SELECT *
+            FROM reservation as r                                                                                                                                                                               \s
+            WHERE r.name = ?
+            """;
+
+        return jdbcTemplate.query(query, rowMapper, name);
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        String query = """
+            SELECT *
+            FROM reservation as r
+            WHERE r.id = ?
+            """;
+
+        return jdbcTemplate.query(query, rowMapper, id).stream()
+            .findFirst();
     }
 }
