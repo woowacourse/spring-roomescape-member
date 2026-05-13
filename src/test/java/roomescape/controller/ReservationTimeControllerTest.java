@@ -22,10 +22,10 @@ public class ReservationTimeControllerTest {
 
     @Test
     void 시간_조회() {
-        long reservationTimeId = createTime("09:00");
+        long reservationTimeId = createTime("22:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        LocalDate date = LocalDate.of(2026, 5, 5);
+        LocalDate date = LocalDate.now();
         createReservation("러키", date, reservationTimeId, themeId);
 
         List<AvailableReservationTimeResponse> responses = RestAssured.given().log().all()
@@ -39,7 +39,7 @@ public class ReservationTimeControllerTest {
         assertThat(responses)
                 .extracting("startAt", "reserved")
                 .contains(
-                        tuple(LocalTime.of(9, 0), true)
+                        tuple(LocalTime.of(22, 0), true)
                 );
     }
 

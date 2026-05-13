@@ -22,8 +22,10 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ReservationTimeErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
@@ -64,10 +66,23 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void 이미_존재하는_예약_시간을_저장_시_예외를_반환한다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        saveReservationTime(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.create(request))
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage(ReservationTimeErrorCode.RESERVATION_TIME_ALREADY_EXISTS.getMessage());
+    }
+
+    @Test
     void 테마_및_날짜에_따른_예약시간을_조회할_수_있다() {
         // given
         Theme theme = saveTheme("테마1");
-        LocalDate date = LocalDate.of(2026, 5, 8);
+        LocalDate date = LocalDate.now();
 
         ReservationTime reservedTime = saveReservationTime(LocalTime.of(10, 0));
         ReservationTime notReservedTime = saveReservationTime(LocalTime.of(11, 0));
@@ -100,8 +115,20 @@ class ReservationTimeServiceTest {
     @Test
     void 예약시간_조회시_테마가_존재하지_않으면_예외가_발생한다() {
         // given
+        Theme theme = saveTheme("테마1");
+        LocalDate invalidDate = LocalDate.now().minusDays(1);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.getReservationTimes(theme.getId(), invalidDate))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(ReservationErrorCode.PAST_DATE_NOT_ALLOWED.getMessage());
+    }
+
+    @Test
+    void 예약시간_조회시_날짜가_오늘_이전이면_예외가_발생한다() {
+        // given
         long invalidThemeId = 0L;
-        LocalDate date = LocalDate.of(2026, 5, 8);
+        LocalDate date = LocalDate.now().minusDays(1);
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.getReservationTimes(invalidThemeId, date))
@@ -110,23 +137,10 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 이미_존재하는_예약_시간을_저장_시_예외를_반환한다() {
-        // given
-        LocalTime startAt = LocalTime.of(10, 0);
-        saveReservationTime(startAt);
-        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
-
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.create(request))
-                .isInstanceOf(ReservationTimeException.class)
-                .hasMessage(ReservationTimeErrorCode.RESERVATION_TIME_ALREADY_EXISTS.getMessage());
-    }
-
-    @Test
     void 예약시간을_삭제할_수_있다() {
         // given
         Theme theme = saveTheme("테마1");
-        LocalDate date = LocalDate.of(2026, 5, 8);
+        LocalDate date = LocalDate.now();
         LocalTime startAt = LocalTime.of(10, 0);
 
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);

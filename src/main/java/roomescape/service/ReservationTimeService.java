@@ -12,8 +12,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ReservationTimeErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
@@ -45,10 +47,9 @@ public class ReservationTimeService {
         }
     }
 
-    //todo: 오늘 이전의 date 예외 처리
-    //todo: 관리자페이지에서는 예약 시간 조회를 어떻게 보여줄지 정하고, 정한 내용에 따라 api 추가 및 서비스 메서드 추가 등이 필요할 듯 (관리자는 테마별 시간만 조회하면 될 수도 있으니)
     public List<AvailableReservationTimeResponse> getReservationTimes(long themeId, LocalDate date) {
         validateTheme(themeId);
+        validateDate(date);
         List<ReservationTimeAvailability> timeAvailabilities = reservationTimeDao.findAvailabilitiesByThemeIdAndDate(themeId, date);
         return timeAvailabilities.stream()
                 .map(AvailableReservationTimeResponse::from)
@@ -59,6 +60,14 @@ public class ReservationTimeService {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
             throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
+        }
+    }
+
+    //todo: Date 객체로 생성?
+    private void validateDate(LocalDate date) {
+        boolean exists = date.isBefore(LocalDate.now());
+        if (exists) {
+            throw new ReservationException(ReservationErrorCode.PAST_DATE_NOT_ALLOWED);
         }
     }
 
