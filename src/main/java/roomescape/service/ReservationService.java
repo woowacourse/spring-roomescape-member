@@ -37,13 +37,17 @@ public class ReservationService {
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
-        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
+        if (isTodayButBeforeTime(date, time)) {
             throw new IllegalArgumentException("지난 시간은 예약할 수 없습니다.");
         }
 
         Theme theme = themeDao.findById(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
+    }
+
+    private boolean isTodayButBeforeTime(LocalDate date, ReservationTime time) {
+        return date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
     }
 
     public void deleteById(Long id) {
