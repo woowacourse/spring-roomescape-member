@@ -113,5 +113,4 @@ public class ThemeControllerTest {
                 new ThemeRequest("붉은 악마", "테스트입니다", "")
         );
     }
-
 }
