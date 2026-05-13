@@ -68,7 +68,9 @@ public class ReservationService {
     }
 
     public void delete(Long id) {
-        reservationRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.cancel(LocalDateTime.now(clock));
+        reservationRepository.update(reservation);
     }
 }
