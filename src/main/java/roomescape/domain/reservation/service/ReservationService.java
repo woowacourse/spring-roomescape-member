@@ -100,12 +100,6 @@ public class ReservationService {
         return reservation.get();
     }
 
-    private void validateOwner(String name, Reservation reservation) {
-        if (!reservation.isOwner(name)) {
-            throw new ForbiddenException(ErrorCode.RESERVATION_FORBIDDEN);
-        }
-    }
-
     private void validateTimeExists(Long timeId) {
         if (!timeRepository.existsById(timeId)) {
             throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
@@ -136,6 +130,18 @@ public class ReservationService {
     public void deleteReservationById(Long id) {
         if (reservationRepository.deleteReservationById(id) == 0) {
             throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+    }
+
+    public void deleteMemberReservationById(String name, Long id) {
+        Reservation reservation = getReservationById(id);
+        validateOwner(name, reservation);
+        reservationRepository.deleteReservationById(id);
+    }
+
+    private void validateOwner(String name, Reservation reservation) {
+        if (!reservation.isOwner(name)) {
+            throw new ForbiddenException(ErrorCode.RESERVATION_FORBIDDEN);
         }
     }
 }
