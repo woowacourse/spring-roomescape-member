@@ -102,6 +102,52 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("ID로 예약을 조회한다.")
+    void findByIdTest() {
+        // given
+        long generatedId = insertReservation(
+                "조이",
+                3L,
+                LocalDate.of(2026, 5, 10),
+                6L
+        );
+
+        // when
+        Reservation found = reservationRepository.findById(generatedId).orElse(null);
+
+        // then
+        assertThat(found).isNotNull();
+        assertThat(found.getUsername()).isEqualTo("조이");
+    }
+
+    @Test
+    @DisplayName("예약을 수정한다.")
+    void updateTest() {
+        // given
+        long generatedId = insertReservation(
+                "조이",
+                3L,
+                LocalDate.of(2026, 5, 10),
+                6L
+        );
+        Reservation reservation = Reservation.of(
+                generatedId,
+                "조이",
+                Theme.of(3L, "theme", "desc", "url"),
+                LocalDate.of(2026, 5, 11),
+                ReservationTime.of(1L, LocalTime.of(10, 0))
+        );
+
+        // when
+        reservationRepository.update(reservation);
+
+        // then
+        Map<String, Object> found = findReservationById(generatedId);
+        assertThat(found.get("date")).isEqualTo(java.sql.Date.valueOf(LocalDate.of(2026, 5, 11)));
+        assertThat(((Number) found.get("time_id")).longValue()).isEqualTo(1L);
+    }
+
+    @Test
     @DisplayName("ID로 예약을 삭제한다.")
     void deleteByIdTest() {
         // given

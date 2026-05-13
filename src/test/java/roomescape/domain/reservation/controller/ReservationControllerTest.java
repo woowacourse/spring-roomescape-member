@@ -184,11 +184,68 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("예약을 수정한다.")
+    void updateReservation() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-10");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("date", is("2026-05-10"))
+                .body("time.id", is(1));
+    }
+
+    @Test
+    @DisplayName("과거 날짜로 예약을 수정하면 에러가 발생한다.")
+    void updateReservationWithPastDateThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-05");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("중복된 시간으로 예약을 수정하면 에러가 발생한다.")
+    void updateReservationWithDuplicateThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-05");
+        params.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("지난 예약을 삭제하면 에러가 발생한다.")
+    void deletePastReservationThrowException() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(400);
     }
 }

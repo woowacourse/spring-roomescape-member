@@ -3,6 +3,7 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -134,6 +135,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
         reservation.assignId(generatedId);
 
         return reservation;
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(Reservation reservation) {
     }
 
     @Override

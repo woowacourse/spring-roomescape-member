@@ -124,6 +124,12 @@ public class ReservationService {
     }
 
     @Transactional
+    public ReservationResponse updateReservation(Long id,
+                                                 roomescape.domain.reservation.request.ReservationUpdateRequest request) {
+        return null;
+    }
+
+    @Transactional
     public void deleteReservationBy(Long id) {
         reservationRepository.deleteById(id);
     }
