@@ -3,13 +3,17 @@ package roomescape.reservationtime.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.TimeRequest;
 import roomescape.reservationtime.dto.TimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
@@ -18,6 +22,12 @@ public class ReservationTimeService {
         this.timeRepository = timeRepository;
     }
 
+    public ReservationTime getById(Long id) {
+        return timeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "존재하지 않는 시간대입니다."));
+    }
+
+    @Transactional
     public TimeResponse createTime(TimeRequest request) {
         ReservationTime time = ReservationTime.of(request.startAt(), request.finishAt());
         ReservationTime saved = timeRepository.save(time);
@@ -36,7 +46,11 @@ public class ReservationTimeService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteById(Long id) {
+        if (timeRepository.existsReservationByTimeId(id)) {
+            throw new BusinessException(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
         timeRepository.deleteById(id);
     }
 }
