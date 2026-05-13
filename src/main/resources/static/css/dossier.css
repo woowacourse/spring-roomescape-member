@@ -1111,6 +1111,64 @@ dialog.confirm-dialog[open] {
     background: var(--paper-soft);
 }
 
+dialog.edit-dialog {
+    max-width: 540px;
+}
+
+dialog.edit-dialog .dialog-body {
+    padding: 1.4rem 1.5rem 0.4rem;
+}
+
+dialog.edit-dialog .edit-hint {
+    margin-bottom: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+}
+
+dialog.edit-dialog .edit-hint strong {
+    color: var(--blood);
+    font-style: normal;
+}
+
+dialog.edit-dialog .field {
+    margin-bottom: 1.05rem;
+}
+
+dialog.edit-dialog .slot-grid {
+    margin-top: 0.4rem;
+}
+
+.slot-loading {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.6rem 0;
+}
+
+.col-actions {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+td.col-actions {
+    display: table-cell;
+}
+
+td.col-actions .btn {
+    margin-left: 0.3rem;
+}
+
+td.col-actions .btn:first-child {
+    margin-left: 0;
+}
+
 /* ----------- entrance motion ----------- */
 
 @keyframes inkdrop {
