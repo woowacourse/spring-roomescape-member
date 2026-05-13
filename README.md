@@ -60,8 +60,12 @@
 | 예약 시간 생성 | POST | `/user/times`                                                                 | 예약 시간 생성 |
 | 예약 시간 삭제 | DELETE | `/user/times/{id}`                                                            | 예약 시간 삭제 |
 | 전체 예약 조회 | GET | `/user/reservations`                                                          | 전체 예약 조회 |
+| 단일 예약 조회 | GET | `/user/reservations/{id}`                                                     | 단일 예약 조회 |
+| 내 예약 조회 | GET | `/user/reservations/list?name={name}`                                         | 이름 기준 예약 조회 |
 | 예약 생성 | POST | `/user/reservations`                                                          | 예약 생성 |
+| 내 예약 변경 | PATCH | `/user/reservations/{id}`                                                     | 이름 검증 후 예약 날짜/시간 변경 |
 | 예약 삭제 | DELETE | `/user/reservations/{id}`                                                     | 예약 삭제 |
+| 내 예약 취소 | DELETE | `/user/reservations/my/{id}?name={name}`                                      | 이름 검증 후 예약 취소 |
 | 인기 테마 조회 | GET | `/user/themes/trending?startDate={startDate}&endDate={endDate}&limit={limit}` | 인기 테마 조회 |
 
 ### 사용자 전체 테마 조회
@@ -307,4 +311,28 @@ Content-Type: application/json
 | 200 OK | 조회 성공 |
 | 201 Created | 생성 성공 |
 | 204 No Content | 삭제 성공 |
-| 500 Internal Server Error | 예약 불가 등 서버 처리 실패 |
+| 400 Bad Request | 요청 형식 오류, 유효하지 않은 입력, 지난 시간 예약 요청 |
+| 403 Forbidden | 다른 사람의 예약 변경 또는 취소 요청 |
+| 404 Not Found | 존재하지 않는 예약 요청 |
+| 409 Conflict | 중복 예약, 예약이 존재하는 시간 삭제 요청 |
+
+### 에러 응답 명세
+의도한 예외는 상태 코드와 함께 아래 JSON 형식으로 응답한다.
+
+```json
+{
+  "code": "ERROR_CODE",
+  "message": "무엇이 잘못되었는지 설명하는 메시지"
+}
+```
+
+| 에러 코드 | 상태 코드 | 본문 예시 |
+| --- | --- | --- |
+| `INVALID_NAME_FORMAT` | 400 Bad Request | `{ "code": "INVALID_NAME_FORMAT", "message": "이름은 필수입니다." }` |
+| `INVALID_DATE_FORMAT` | 400 Bad Request | `{ "code": "INVALID_DATE_FORMAT", "message": "날짜 형식이 잘못되었습니다. (yyyy-MM-dd)" }` |
+| `PAST_RESERVATION` | 400 Bad Request | `{ "code": "PAST_RESERVATION", "message": "지난 시간에는 예약할 수 없습니다." }` |
+| `CANNOT_MODIFY_OTHER_RESERVATION` | 403 Forbidden | `{ "code": "CANNOT_MODIFY_OTHER_RESERVATION", "message": "다른 사람 예약을 변경할 수 없습니다." }` |
+| `CANNOT_DELETE_OTHER_RESERVATION` | 403 Forbidden | `{ "code": "CANNOT_DELETE_OTHER_RESERVATION", "message": "다른 사람 예약을 취소할 수 없습니다." }` |
+| `RESERVATION_NOT_FOUND` | 404 Not Found | `{ "code": "RESERVATION_NOT_FOUND", "message": "예약을 찾을 수 없습니다." }` |
+| `RESERVATION_ALREADY_EXISTS` | 409 Conflict | `{ "code": "RESERVATION_ALREADY_EXISTS", "message": "이미 예약이 존재합니다." }` |
+| `CANNOT_DELETE_RESERVED_TIME` | 409 Conflict | `{ "code": "CANNOT_DELETE_RESERVED_TIME", "message": "이미 예약이 존재하는 시간대이므로 삭제할 수 없습니다." }` |

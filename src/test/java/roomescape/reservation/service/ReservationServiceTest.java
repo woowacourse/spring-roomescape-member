@@ -245,4 +245,28 @@ public class ReservationServiceTest {
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
+
+    @Test
+    void 지난_예약은_취소할_수_없다() {
+        Long pastReserved = 1L;
+
+        ReservationChangeRequest request = new ReservationChangeRequest(
+                "로치",
+                1L,
+                LocalDate.of(2026, 5, 5),
+                2L
+        );
+        Reservation reservation = new Reservation(
+                pastReserved,
+                "로치",
+                1L,
+                LocalDate.of(2026, 5, 5),
+                new ReservationTime(2L, LocalTime.of(11, 0))
+        );
+        given(reservationDao.selectById(pastReserved)).willReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> reservationService.deleteIdByName(pastReserved, request.name()))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining(ErrorCode.CANNOT_DELETE_PAST_RESERVATION.getMessage());
+    }
 }

@@ -82,7 +82,9 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.CANNOT_DELETE_OTHER_RESERVATION);
         }
 
-        validateDateTime(originReservation.getDate(), originReservation.getTime());
+        if (isBeforeDateTime(originReservation.getDate(), originReservation.getTime())) {
+            throw new RoomescapeException(ErrorCode.CANNOT_DELETE_PAST_RESERVATION);
+        }
 
         reservationDao.deleteById(id);
     }
