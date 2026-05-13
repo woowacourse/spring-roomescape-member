@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 import roomescape.dto.response.AvailableTimeResponseDto;
+import roomescape.dto.response.TimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
@@ -77,8 +78,8 @@ class ThemeControllerTest {
         @DisplayName("테마의 이용 가능한 시간 목록을 조회하면 200을 반환한다")
         void returnsAvailableTimes() {
             List<AvailableTimeResponseDto> expected = List.of(
-                    new AvailableTimeResponseDto(1L, LocalTime.of(13, 0), false),
-                    new AvailableTimeResponseDto(2L, LocalTime.of(14, 0), true)
+                    new AvailableTimeResponseDto(new TimeResponseDto(1L, LocalTime.of(13, 0)), false),
+                    new AvailableTimeResponseDto(new TimeResponseDto(2L, LocalTime.of(14, 0)), true)
             );
             given(themeService.findAvailableTimesById(eq(theme.getId()), any(LocalDate.class))).willReturn(expected);
 

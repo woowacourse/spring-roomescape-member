@@ -403,8 +403,8 @@ async function loadReservations() {
         <td class="td-id">${rv.id}</td>
         <td>${rv.name}</td>
         <td>${rv.date || ''}</td>
-        <td>${rv.themeResponseDto?.name || ''}</td>
-        <td>${fmt(rv.timeDto?.startAt)}</td>
+        <td>${rv.theme?.name || ''}</td>
+        <td>${fmt(rv.time?.startAt)}</td>
         <td><button class="td-del" onclick="delReservation(${rv.id},'${(rv.name||'').replace(/'/g,"\\'")}')">×</button></td>
       `;
       tbody.appendChild(tr);
