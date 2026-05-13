@@ -18,6 +18,7 @@ import roomescape.domain.theme.ReservationThemeCommand;
 import roomescape.domain.theme.ReservationThemeWithCount;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -35,20 +36,21 @@ public class ThemeServiceTest {
         };
     }
 
-    private ThemeRepository createThemeRepository(Runnable runnable) {
+    private ThemeRepository createThemeRepository(boolean isExist, Runnable runnable) {
         return new ThemeRepository() {
             @Override public Theme addTheme(ReservationThemeCommand command) { return null; }
             @Override public List<Theme> getAllTheme() { return List.of(); }
             @Override public Optional<Theme> getTheme(long id) { return Optional.empty(); }
             @Override public void deleteTheme(long id) { runnable.run(); }
             @Override public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition condition) { return List.of(); }
+            @Override public boolean isExistsById(long id) {return isExist;}
         };
     }
 
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteThemeTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(false));
+        ThemeService themeService = new ThemeService(createThemeRepository(true, () -> {}), createReservationRepository(false));
 
         assertThatCode(() -> themeService.deleteTheme(1L)).doesNotThrowAnyException();
     }
@@ -56,7 +58,7 @@ public class ThemeServiceTest {
     @Test
     @DisplayName("테마를 참조하는 예약이 존재하면 ConflictException 예외 발생")
     void deleteFailedWhenInUseTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(true));
+        ThemeService themeService = new ThemeService(createThemeRepository(true, () -> {}), createReservationRepository(true));
 
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isExactlyInstanceOf(ConflictException.class)
@@ -64,10 +66,23 @@ public class ThemeServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 테마 ID 삭제 시 NotFoundResourceException 발생")
+    void deleteFailedByNotFoundTest() {
+        ThemeService themeService = new ThemeService(
+                createThemeRepository(false, () -> {}),
+                createReservationRepository(false)
+        );
+
+        assertThatThrownBy(() -> themeService.deleteTheme(2))
+                .isExactlyInstanceOf(NotFoundResourceException.class)
+                .hasMessage("존재하지 않은 테마 id입니다.");
+    }
+
+    @Test
     @DisplayName("삭제 시점에 DB 제약조건 위반이 발생하면 ConflictException 예외 발생")
     void deleteFailedByIntegrityTest() {
         ThemeService themeService = new ThemeService(
-                createThemeRepository(() -> {
+                createThemeRepository(true, () -> {
                     throw new DataIntegrityViolationException("데이터 무결성 위반");
                 }),
                 createReservationRepository(false)

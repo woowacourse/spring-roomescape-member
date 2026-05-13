@@ -51,8 +51,8 @@ public class ReservationTimeServiceTest {
     @DisplayName("정상적으로 예약 시간을 삭제한다")
     void deleteReservationTimeTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(true, () -> {}), // 시간 존재함
-                createReservationRepository(false)              // 예약에 사용 안 됨
+                createReservationTimeRepository(true, () -> {}),
+                createReservationRepository(false)
         );
 
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1L))
@@ -63,7 +63,7 @@ public class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 시간 ID 삭제 시 NotFoundResourceException 발생")
     void deleteFailedByNotFoundTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(false, () -> {}), // 시간 존재 안 함
+                createReservationTimeRepository(false, () -> {}),
                 createReservationRepository(false)
         );
 
@@ -76,8 +76,8 @@ public class ReservationTimeServiceTest {
     @DisplayName("이미 예약에 사용 중인 시간인 경우 ConflictException 발생")
     void deleteFailedWhenInUseTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(true, () -> {}), // 시간 존재함
-                createReservationRepository(true)               // 예약에 사용 중
+                createReservationTimeRepository(true, () -> {}),
+                createReservationRepository(true)
         );
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))

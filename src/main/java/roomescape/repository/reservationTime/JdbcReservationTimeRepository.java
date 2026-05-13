@@ -27,7 +27,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final String EXIST_BY_ID_SQL = """
             SELECT EXISTS (\s
                 SELECT 1 \s
-                    FROM reservation \s
+                    FROM reservation_time \s
                     WHERE id = ?\s
             )
     """;

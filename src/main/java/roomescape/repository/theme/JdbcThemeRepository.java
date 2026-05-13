@@ -28,6 +28,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM theme WHERE id = ?";
 
+    private static final String EXIST_BY_ID_SQL = """
+            SELECT EXISTS (\s
+                SELECT 1 \s
+                    FROM theme \s
+                    WHERE id = ?\s
+            )
+    """;
+
     private static final RowMapper<Theme> MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
@@ -82,6 +90,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ),
                 queryWithParams.params().toArray()
         );
+    }
+
+    @Override
+    public boolean isExistsById(long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_ID_SQL, Boolean.class, id));
     }
 
     private QueryWithParams getPopularThemQuery(PopularThemeCondition popularThemeCondition) {

@@ -113,4 +113,14 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         deleteReservationTable();
         deleteReservationTimeTable();
     }
+
+    @Test
+    @DisplayName("예약 테이블에 특정 시간 ID가 존재하는지 확인한다")
+    void isExistsByIdTest() {
+        boolean exists = themeRepository.isExistsById(1);
+        boolean notExists = themeRepository.isExistsById(99);
+
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
 }

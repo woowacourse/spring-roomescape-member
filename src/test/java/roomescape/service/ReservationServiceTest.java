@@ -61,6 +61,7 @@ public class ReservationServiceTest {
             @Override public Optional<Theme> getTheme(long id) { return Optional.ofNullable(theme); }
             @Override public void deleteTheme(long id) {}
             @Override public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition cond) { return List.of(); }
+            @Override public boolean isExistsById(long id) {return true;}
         };
     }
 
