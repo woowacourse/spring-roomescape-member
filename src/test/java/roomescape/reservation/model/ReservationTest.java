@@ -9,8 +9,7 @@ import roomescape.user.model.User;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class ReservationTest {
 
@@ -31,5 +30,17 @@ class ReservationTest {
 
         assertThatThrownBy(() -> new Reservation(user, schedule, null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 본인의_아이디면_참을_반환한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        assertThat(reservation.isOwnedBy(1L)).isTrue();
+    }
+
+    @Test
+    void 본인의_아이디가_아니면_거짓을_반환한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        assertThat(reservation.isOwnedBy(2L)).isFalse();
     }
 }
