@@ -3,8 +3,6 @@ package roomescape.domain;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ReservationTime {
     private Long id;
@@ -25,12 +23,6 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    private Set<Long> extractReservedTimeIds(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
     }
 
     public boolean isNotReserved(List<Reservation> reservations) {
