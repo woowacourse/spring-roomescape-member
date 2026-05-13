@@ -40,7 +40,7 @@ public class AdminReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancel(
             @PathVariable
-            @Positive(message = "예약 취소 식별자는 양수여야 합니다.") Long id
+            @Positive(message = "예약 식별자는 양수여야 합니다.") Long id
     ) {
         reservationService.cancel(id);
 

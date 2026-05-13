@@ -1,6 +1,5 @@
 package roomescape.global;
 
-
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -13,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(DummyController.class)
-public class RestExceptionHandlerTest {
+class RestExceptionHandlerTest {
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext) {
@@ -21,8 +20,8 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 정확한_요청시_200_OK() {
-        // given: 올바른 요청
+    void 정확한_요청이면_200_OK를_응답한다() {
+        // given
         String body = """
                 {
                     "testField": "1234"
@@ -40,8 +39,8 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 잘못된_요청_형식_테스트() {
-        // given: 요청 형식에 comma 포함
+    void 요청_JSON_형식이_잘못되면_400_BAD_REQUEST를_응답한다() {
+        // given
         String body = """
                 {
                     "testField": "1234",
@@ -59,8 +58,8 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 필드가_누락된_경우_null_체크_검증() {
-        // given: 요청 형식에 필드 누락
+    void 필수_필드가_누락되면_400_BAD_REQUEST를_응답한다() {
+        // given
         String body = """
                 {
                 }
@@ -77,15 +76,15 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 존재하지_않는_Method로_API_요청() {
-        // given: 올바른 요청
+    void 지원하지_않는_HTTP_메서드로_요청하면_405_METHOD_NOT_ALLOWED를_응답한다() {
+        // given
         String body = """
                 {
                     "testField": "1234"
                 }
                 """;
 
-        // when & then: post 메서드가 아닌 deleteById 메서드로 요청
+        // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
@@ -96,7 +95,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void constraint_테스트() {
+    void 경로_변수_검증에_실패하면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +106,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void path_variable_타입_변환_실패() {
+    void 경로_변수_타입_변환에_실패하면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +128,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 일반_잘못된_요청_예외는_400으로_응답한다() {
+    void 일반_잘못된_요청_예외는_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -140,7 +139,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 잘못된_상태_예외는_400으로_응답한다() {
+    void 잘못된_상태_예외는_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +150,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 접근_권한_예외는_403으로_응답한다() {
+    void 접근_권한_예외는_403_FORBIDDEN을_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -162,7 +161,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 엔티티_못찾을_경우_상태_404() {
+    void 엔티티를_찾지_못하면_404_NOT_FOUND를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -173,7 +172,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 엔티티_충돌할_경우_409() {
+    void 엔티티가_충돌하면_409_CONFLICT를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -184,7 +183,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 파라미터가_누락된_경우_400() {
+    void 파라미터가_누락되면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -195,7 +194,7 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
-    void 나머지_예외는_서버_예외() {
+    void 처리하지_않은_예외는_500_INTERNAL_SERVER_ERROR를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)

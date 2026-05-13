@@ -42,7 +42,7 @@ public class AdminReservationTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> remove(
             @PathVariable
-            @Positive(message = "예약 시간 제거 식별자는 양수여야 합니다.") Long id
+            @Positive(message = "예약 시간 식별자는 양수여야 합니다.") Long id
     ) {
         reservationTimeService.remove(id);
 

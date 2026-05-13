@@ -14,8 +14,8 @@ import roomescape.domain.fixture.ThemeFixture;
 
 class ReservationTest {
 
-    private ReservationTime reservationTime = ReservationTimeFixture.createDefaultReservationTime();
-    private Theme theme = ThemeFixture.createDefaultTheme();
+    private final ReservationTime reservationTime = ReservationTimeFixture.createDefaultReservationTime();
+    private final Theme theme = ThemeFixture.createDefaultTheme();
 
     @Test
     void 정상적인_예약_정보를_생성한다() {
@@ -29,7 +29,7 @@ class ReservationTest {
         // then
         assertThat(reservation)
                 .extracting(Reservation::getName, Reservation::getDate, Reservation::getTime)
-                .containsExactly(name,  date, reservationTime);
+                .containsExactly(name, date, reservationTime);
     }
 
     @ParameterizedTest
@@ -47,7 +47,12 @@ class ReservationTest {
 
     @ParameterizedTest(name = "날짜 {0}, 테마 {1}, 시간 {2} 일 때, {3} 예외가 발생한다")
     @MethodSource("roomescape.domain.fixture.ReservationFixture#invalidReservationConstructor")
-    void 예약_일시와_테마_검증_통합_테스트(LocalDate date, Theme theme, ReservationTime reservationTime, String expectedMessage) {
+    void 유효하지_않은_예약_일시와_테마로_예약을_생성하면_예외가_발생한다(
+            LocalDate date,
+            Theme theme,
+            ReservationTime reservationTime,
+            String expectedMessage
+    ) {
         // when & then
         assertThatThrownBy(() -> Reservation.of("이프", date, theme, reservationTime))
                 .isInstanceOf(IllegalArgumentException.class)

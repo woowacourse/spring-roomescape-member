@@ -22,7 +22,7 @@ class ThemeTest {
         // when
         Theme theme = new Theme(name, description, thumbnailImageUrl);
 
-        // then: 기본 생성 시 삭제되지 않은 상태이다.
+        // then
         assertThat(theme)
                 .extracting(Theme::getName, Theme::getDescription, Theme::getThumbnailImageUrl, Theme::isActive)
                 .containsExactly(name, description, thumbnailImageUrl, true);
@@ -61,11 +61,11 @@ class ThemeTest {
             "null",
             "''",
             "' '",
-            "문자열",                       // 순수 문자열
-            "ftp://image.com/test.png",   // 다른 프로토콜 스킴
-            "htts://image.com/test.png"   // 오탈자
+            "문자열",
+            "ftp://image.com/test.png",
+            "htts://image.com/test.png"
     }, nullValues = "null")
-    void 썸네일_이미지_주소_검증_통합_테스트(String invalidUrl) {
+    void 썸네일_이미지_주소가_올바른_URL_형식이_아니면_예외가_발생한다(String invalidUrl) {
         // given
         String name = "테마 이름";
         String description = "설명";

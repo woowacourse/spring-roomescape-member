@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class ReservationTimeTest {
 
     @Test
-    void 예약_시간을_생성_할_때_시작_시간_정보가_없다면_예외가_발생한다() {
+    void 예약_시간을_생성할_때_시작_시간_정보가_없다면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -31,7 +31,7 @@ class ReservationTimeTest {
     }
 
     @Test
-    void 예약_시간은_날짜_정보를_통해_예약_일자를_생성_할_수_있다() {
+    void 예약_시간은_날짜_정보를_통해_예약_일자를_생성할_수_있다() {
         // given
         LocalDate reservationDate = LocalDate.of(2026, 1, 1);
         LocalTime startAt = LocalTime.of(10, 0);

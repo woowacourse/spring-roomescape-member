@@ -5,21 +5,24 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 import roomescape.web.dto.reservation.ReservationRequest;
 
-public class ReservationRequestFixture {
+public final class ReservationRequestFixture {
+
+    private ReservationRequestFixture() {
+    }
 
     public static Stream<Arguments> reserveFailRequestFixture() {
         return Stream.of(
                 Arguments.of(
                         new ReservationRequest(null, LocalDate.now().plusDays(1), 1L, 1L),
-                        "예약자 이름 정보는 비어있을 수 없습니다."
+                        "예약자 이름 정보는 필수 값입니다."
                 ),
                 Arguments.of(
                         new ReservationRequest("", LocalDate.now().plusDays(1), 1L, 1L),
-                        "예약자 이름 정보는 비어있을 수 없습니다."
+                        "예약자 이름 정보는 필수 값입니다."
                 ),
                 Arguments.of(
                         new ReservationRequest(" ", LocalDate.now().plusDays(1), 1L, 1L),
-                        "예약자 이름 정보는 비어있을 수 없습니다."
+                        "예약자 이름 정보는 필수 값입니다."
                 ),
                 Arguments.of(
                         new ReservationRequest("이프", null, 1L, 1L),

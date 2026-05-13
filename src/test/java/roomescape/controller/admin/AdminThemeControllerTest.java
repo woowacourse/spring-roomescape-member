@@ -33,19 +33,19 @@ class AdminThemeControllerTest extends BaseControllerUnitTest {
     private ThemeService themeService;
 
     @BeforeEach
-    public void setUp(WebApplicationContext webApplicationContext) {
+    void setUp(WebApplicationContext webApplicationContext) {
         mockMvcSetting(webApplicationContext);
     }
 
     @Test
-    void 관리자가_테마_정보로_테마_추가_요청_시_성공한다() {
+    void 관리자가_테마_추가_요청에_성공하면_201_CREATED와_정상_응답을_반환한다() {
         // given
         ThemeRequest request = new ThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
 
         ThemeResponse expected = new ThemeResponse(1L, "공포", "공포 방탈출입니다.", "http://image.com/image.png");
         when(themeService.register(any(ThemeRequest.class))).thenReturn(expected);
 
-        // when : admin 헤더를 포함해서 요청한다.
+        // when
         ThemeResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(request)
                 .when().post("/api/admin/themes")
@@ -55,16 +55,16 @@ class AdminThemeControllerTest extends BaseControllerUnitTest {
                 .extract().as(new TypeRef<>() {
                 });
 
-        // then: 요청 성공 시 테마 등록 비즈니스 로직을 수행한다.
+        // then
         assertThat(response).isEqualTo(expected);
     }
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.fixture.AdminThemeRequestFixture#themeFailRequestFixture")
     void 관리자가_테마_추가_요청_시_형식_검증에_실패하면_예외가_발생한다(ThemeRequest body, String exceptionMessage) {
-        // given: 실패하는 request body가 주어짐
+        // given
 
-        // when & then: validation 위반으로 400 Bad Request가 발생한다.
+        // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(body)
                 .when().post("/api/admin/themes")
@@ -74,8 +74,8 @@ class AdminThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 관리자가_특정_테마_삭제_요청_시_204_NoContent를_응답한다() {
-        // when & then: 관리자 헤더를 포함해서 요청했을 때, 삭제 로직을 수행한다.
+    void 관리자가_특정_테마_삭제_요청_시_204_NO_CONTENT를_응답한다() {
+        // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")
@@ -89,13 +89,13 @@ class AdminThemeControllerTest extends BaseControllerUnitTest {
     @ParameterizedTest
     @ValueSource(longs = {0, -1})
     void 관리자가_잘못된_테마_식별자로_삭제_요청_시_예외가_발생한다(Long invalidId) {
-        // when & then: 관리자 헤더를 포함해서 음수 식별자로 요청했을 때, 예외 발생
+        // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")
                 .when().delete("/api/admin/themes/" + invalidId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("테마 삭제 식별자는 양수여야 합니다."));
+                .body(containsString("테마 식별자는 양수여야 합니다."));
     }
 }

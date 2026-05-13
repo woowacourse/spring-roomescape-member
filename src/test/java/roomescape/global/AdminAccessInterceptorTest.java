@@ -19,7 +19,7 @@ class AdminAccessInterceptorTest {
     }
 
     @Test
-    void 관리자_Prefix_Api로_요청시_헤더에_관리자_권한_정보가_없는_경우_예외가_발생한다() {
+    void 관리자_API로_요청_시_헤더에_관리자_권한_정보가_없으면_예외가_발생한다() {
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .when().get("/api/admin")
@@ -29,7 +29,7 @@ class AdminAccessInterceptorTest {
     }
 
     @Test
-    void 관리자_Prefix_Api로_요청시_헤더에_관리자가_아닌_일반_권한_정보가_있는_경우_예외가_발생한다() {
+    void 관리자_API로_요청_시_헤더에_일반_권한_정보가_있으면_예외가_발생한다() {
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "USER")
@@ -40,7 +40,7 @@ class AdminAccessInterceptorTest {
     }
 
     @Test
-    void 관리자_Prefix_Api로_요청시_헤더에_관리자_권한_정보가_있다면_200OK_정상_응답을_한다() {
+    void 관리자_API로_요청_시_헤더에_관리자_권한_정보가_있으면_200_OK를_응답한다() {
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")

@@ -2,7 +2,10 @@ package roomescape.domain.fixture;
 
 import roomescape.domain.Theme;
 
-public class ThemeFixture {
+public final class ThemeFixture {
+
+    private ThemeFixture() {
+    }
 
     public static Theme createDefaultTheme() {
         return new Theme("공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png");
@@ -10,6 +13,14 @@ public class ThemeFixture {
 
     public static Theme createThemeWithId() {
         return new Theme(1L, "공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png", true);
+    }
+
+    public static Theme createTheme(String name, String description, String thumbnailImageUrl) {
+        return new Theme(name, description, thumbnailImageUrl);
+    }
+
+    public static Theme createInactiveTheme(String name, String description, String thumbnailImageUrl) {
+        return new Theme(1L, name, description, thumbnailImageUrl, false);
     }
 
     public static Theme createThemeWithImageUrl(String imageUrl) {

@@ -39,7 +39,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 테마_시간대_조회_요청에_성공하면_정상_응답이_반환된다() {
+    void 테마_시간대_조회_요청에_성공하면_200_OK와_정상_응답이_반환된다() {
         // given
         ThemeTimeResponses expected = new ThemeTimeResponses(
                 List.of(
@@ -63,7 +63,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest
     @ValueSource(longs = {-1, 0})
-    void 테마_조회_요청시_테마_식별자가_양수가_아니라면_400_BAD_REQUEST(Long invalidThemeId) {
+    void 테마_조회_요청_시_테마_식별자가_양수가_아니라면_400_BAD_REQUEST를_응답한다(Long invalidThemeId) {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("date", "2026-05-06")
@@ -74,7 +74,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 테마_시간대_조회_요청_시_날짜가_없으면_400_BAD_REQUEST() {
+    void 테마_시간대_조회_요청_시_날짜가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .when().get("/api/themes/1/times")
@@ -84,7 +84,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
+    void 테마_목록_조회_요청에_성공하면_200_OK와_정상_응답이_반환된다() {
         // given
         ThemeResponses expected = new ThemeResponses(
                 List.of(
@@ -109,7 +109,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 테마_목록_조회_요청_시_페이지가_없으면_400_BAD_REQUEST() {
+    void 테마_목록_조회_요청_시_페이지가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("size", "1")
@@ -120,7 +120,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST() {
+    void 테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("page", "0")
@@ -131,7 +131,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 인기_테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
+    void 인기_테마_목록_조회_요청에_성공하면_200_OK와_정상_응답이_반환된다() {
         // given
         ThemeResponses expected = new ThemeResponses(
                 List.of(
@@ -157,7 +157,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 인기_테마_목록_조회_요청_시_시작일이_없으면_400_BAD_REQUEST() {
+    void 인기_테마_목록_조회_요청_시_시작일이_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("endDate", "2026-05-06")
@@ -168,7 +168,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 인기_테마_목록_조회_요청_시_종료일이_없으면_400_BAD_REQUEST() {
+    void 인기_테마_목록_조회_요청_시_종료일이_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("startDate", "2026-05-06")
@@ -179,7 +179,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 인기_테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST() {
+    void 인기_테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("startDate", "2026-05-06")

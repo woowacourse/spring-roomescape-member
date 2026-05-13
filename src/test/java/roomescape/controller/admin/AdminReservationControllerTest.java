@@ -46,7 +46,7 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.fixture.ReservationRequestFixture#reserveFailRequestFixture")
     void 예약_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationRequest body, String exceptionMessage) {
-        // given: 실패하는 request body가 주어짐
+        // given
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(body)
@@ -57,7 +57,7 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
+    void 예약_요청에_성공하면_201_CREATED와_정상_응답이_반환된다() {
         // given
         ReservationRequest request = ReservationRequestFixture.reserveSuccessRequestFixture();
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
@@ -81,17 +81,17 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
-    void 예약_취소를_요청하는_예약_Id가_양수가_아니라면_예외가_발생한다(int reservationId) {
+    void 예약_취소를_요청하는_예약_ID가_양수가_아니라면_예외가_발생한다(int reservationId) {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .when().delete("/api/admin/reservations/" + reservationId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("예약 취소 식별자는 양수여야 합니다."));
+                .body(containsString("예약 식별자는 양수여야 합니다."));
     }
 
     @Test
-    void 정상적인_예약_ID로_예약_취소_요청시_204_응답을_한다() {
+    void 정상적인_예약_ID로_예약_취소_요청_시_204_NO_CONTENT를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .when().delete("/api/admin/reservations/1")
@@ -101,7 +101,7 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_예약_정보_조회_요청시_200OK와_예약_정보들을_응답한다() {
+    void 전체_예약_정보_조회_요청에_성공하면_200_OK와_예약_정보들을_응답한다() {
         // given
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "바니의 집", "바니의 테마입니다.", "http://image.png.image.com");
@@ -126,7 +126,7 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_예약_정보_조회_요청시_페이지가_없으면_400_BAD_REQUEST() {
+    void 전체_예약_정보_조회_요청_시_페이지가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .queryParam("size", "10")
@@ -137,7 +137,7 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_예약_정보_조회_요청시_조회_개수가_없으면_400_BAD_REQUEST() {
+    void 전체_예약_정보_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .queryParam("page", "0")

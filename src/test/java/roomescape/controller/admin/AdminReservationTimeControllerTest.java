@@ -52,7 +52,7 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 시간_등록에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
+    void 시간_등록에_성공하면_201_CREATED와_정상_응답이_반환된다() {
         // given
         ReservationTimeRequest request = ReservationTimeRequestFixture.registerSuccessRequestFixture();
 
@@ -80,11 +80,11 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
                 .when().delete("/api/admin/times/" + timeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("예약 시간 제거 식별자는 양수여야 합니다."));
+                .body(containsString("예약 시간 식별자는 양수여야 합니다."));
     }
 
     @Test
-    void 정상적인_ID로_시간_삭제_요청시_204_응답을_한다() {
+    void 정상적인_ID로_시간_삭제_요청_시_204_NO_CONTENT를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .when().delete("/api/admin/times/1")
@@ -94,7 +94,7 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_시간_조회_요청시_200OK와_시간_정보들을_응답한다() {
+    void 전체_시간_조회_요청에_성공하면_200_OK와_시간_정보들을_응답한다() {
         // given
         ReservationTimeResponses expected = new ReservationTimeResponses(
                 List.of(
@@ -119,7 +119,7 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_시간_조회_요청시_페이지가_없으면_400_BAD_REQUEST() {
+    void 전체_시간_조회_요청_시_페이지가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .queryParam("size", "1")
@@ -130,7 +130,7 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 전체_시간_조회_요청시_조회_개수가_없으면_400_BAD_REQUEST() {
+    void 전체_시간_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .queryParam("page", "0")

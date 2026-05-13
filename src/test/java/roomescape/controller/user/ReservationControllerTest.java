@@ -44,7 +44,7 @@ class ReservationControllerTest extends BaseControllerUnitTest {
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.fixture.ReservationRequestFixture#reserveFailRequestFixture")
     void 예약_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationRequest body, String exceptionMessage) {
-        // given: 실패하는 request body가 주어짐
+        // given
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .body(body)
@@ -55,7 +55,7 @@ class ReservationControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
+    void 예약_요청에_성공하면_201_CREATED와_정상_응답이_반환된다() {
         // given
         ReservationRequest request = ReservationRequestFixture.reserveSuccessRequestFixture();
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
