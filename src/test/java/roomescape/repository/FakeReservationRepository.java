@@ -1,12 +1,11 @@
 package roomescape.repository;
 
-import roomescape.domain.Reservation;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import roomescape.domain.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -25,12 +24,17 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByName(String name) {
-        return List.copyOf(storage.values());
+        return storage.values().stream()
+                .filter(reservation -> reservation.name().equals(name))
+                .toList();
     }
 
     @Override
     public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
-        return List.of();
+        return storage.values().stream()
+                .filter(reservation -> reservation.theme().id().equals(themeId) && reservation.date().equals(date))
+                .map(reservation -> reservation.timeSlot().id())
+                .toList();
     }
 
     @Override
@@ -49,14 +53,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(Long id, LocalDate date, Long timeId, Long themeId) {
+    public Optional<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         return storage.values().stream()
-                .filter(reservation -> !reservation.id().equals(id))
-                .anyMatch(reservation -> isDuplicate(reservation, date, timeId, themeId));
+                .filter(reservation -> isDuplicate(reservation, date, timeId, themeId))
+                .findAny();
     }
 
     @Override
     public int update(Reservation reservation) {
+        if (!storage.containsKey(reservation.id())) {
+            return 0;
+        }
+        storage.put(reservation.id(), reservation);
         return 1;
     }
 

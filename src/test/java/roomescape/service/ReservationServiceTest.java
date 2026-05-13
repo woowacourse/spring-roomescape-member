@@ -1,5 +1,11 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,13 +16,6 @@ import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.FakeTimeSlotRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
@@ -44,7 +43,8 @@ class ReservationServiceTest {
     @DisplayName("원시값을 받아 연관된 객체를 조회하여 조립한 뒤 예약을 생성한다.")
     void saveReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+        Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(),
+                savedTheme.id());
         assertThat(reservation.timeSlot().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -64,7 +64,8 @@ class ReservationServiceTest {
     @DisplayName("존재하는 예약을 식별자를 통해 삭제하면 목록에서 사라진다.")
     void removeReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+        Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(),
+                savedTheme.id());
         reservationService.removeReservation(reservation.id(), "브라운");
         assertThat(reservationService.allReservations()).isEmpty();
     }
@@ -82,7 +83,8 @@ class ReservationServiceTest {
     @DisplayName("식별자를 통해 특정 예약 객체를 조회한다.")
     void findReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+        Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(),
+                savedTheme.id());
         Reservation foundReservation = reservationService.findReservationById(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
@@ -179,7 +181,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("자기 자신의 예약 시간을 그대로 유지한 채 이름만 수정(PUT)하면 정상 통과해야 한다.")
+    @DisplayName("자기 자신의 예약 시간을 그대로 유지한 채 이름만 수정(PUT)한다.")
     void putReservation_SelfDuplicate_Bug() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation target = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());

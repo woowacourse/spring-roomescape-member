@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,12 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -118,9 +117,26 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(Long id, LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ? AND id != ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, themeId, timeId, id));
+    public Optional<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT
+                    r.id AS r_id,
+                    r.name,
+                    r.date,
+                    t.id AS t_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                INNER JOIN time_slot t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.date = ? 
+                  AND r.time_id = ? 
+                  AND r.theme_id = ?
+                """;
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), date, timeId, themeId));
     }
 
     @Override

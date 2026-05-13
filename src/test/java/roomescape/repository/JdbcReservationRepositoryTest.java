@@ -1,5 +1,13 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,15 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -93,12 +92,18 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 날짜, 시간, 테마에 해당하는 예약이 이미 존재하면 true를 반환한다.")
-    void existsByDateAndTimeIdAndThemeId() {
+    @DisplayName("특정 날짜, 시간, 테마에 해당하는 예약이 이미 존재하면 해당 예약을 반환한다.")
+    void findByDateAndTimeIdAndThemeId() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
         jdbcReservationRepository.save(reservation);
-        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(null, LocalDate.now(), savedTimeSlot.id(), savedTheme.id());
-        assertThat(exists).isTrue();
+        Optional<Reservation> existingReservation = jdbcReservationRepository.findByDateAndTimeIdAndThemeId(
+                LocalDate.now(),
+                savedTimeSlot.id(),
+                savedTheme.id()
+        );
+
+        assertThat(existingReservation).isPresent();
+        assertThat(existingReservation.get().name()).isEqualTo("브라운");
     }
 
     @Test
@@ -136,7 +141,8 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("존재하는 예약을 삭제한다.")
     void deleteExisting() {
-        Reservation saved = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme));
+        Reservation saved = jdbcReservationRepository.save(
+                Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme));
         jdbcReservationRepository.deleteById(saved.id());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
