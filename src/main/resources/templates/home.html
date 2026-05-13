@@ -488,47 +488,6 @@
             line-height: 1.7;
         }
 
-        .booking-steps-preview {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .booking-step-item {
-            background: var(--surface);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .booking-step-num {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--accent);
-            opacity: 0.4;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .booking-step-name {
-            font-size: 0.72rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-
-        .booking-step-desc {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-            line-height: 1.5;
-        }
-
         /* ─── 인기 테마 ─── */
         .popular-list {
             display: flex;
@@ -569,8 +528,6 @@
         .popular-item:nth-child(2) .popular-rank { color: var(--accent); opacity: 0.5; }
         .popular-item:nth-child(3) .popular-rank { color: var(--accent); opacity: 0.3; }
 
-        .popular-info {}
-
         .popular-name {
             font-size: 0.92rem;
             font-weight: 400;
@@ -587,23 +544,6 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 4px;
-        }
-
-        .popular-badge {
-            font-size: 0.6rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 3px 8px;
-            border-radius: 2px;
-        }
-
-        .badge-hot { background: rgba(224,82,82,0.12); color: #e05252; }
-        .badge-new { background: rgba(76,175,125,0.12); color: #4caf7d; }
-        .badge-sold { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-
-        .popular-count {
-            font-size: 0.7rem;
-            color: var(--text-muted);
         }
 
         .popular-arrow {
@@ -661,7 +601,6 @@
             .nav-tabs { display: none; }
             section { padding: 4rem 1.25rem; }
             .booking-banner { grid-template-columns: 1fr; }
-            .booking-steps-preview { grid-template-columns: repeat(2, 1fr); }
             footer { flex-direction: column; gap: 1rem; text-align: center; }
         }
 
@@ -754,6 +693,7 @@
         <li><a href="#themes" class="nav-link">테마 소개</a></li>
         <li><a href="#booking" class="nav-link">예약하기</a></li>
         <li><a href="#popular" class="nav-link">인기 테마</a></li>
+        <li><a href="/my-reservation">내 예약</a></li>
     </ul>
     <a href="/reservation" class="nav-reserve">예약하기</a>
 </nav>
@@ -770,6 +710,7 @@
     <div class="hero-cta">
         <a href="/reservation" class="btn-primary">지금 예약하기</a>
         <a href="#themes" class="btn-ghost">테마 둘러보기</a>
+        <a href="/my-reservation" class="btn-ghost">내 예약 보기</a>
     </div>
     <div class="hero-scroll">
         <div class="scroll-line"></div>
@@ -844,25 +785,16 @@
 </div>
 
 <script th:inline="none">
-    // ─── ERROR MODAL 제어 ───
     function showErrorAlert(errorResponse) {
-        const statusEl = document.getElementById('error-status');
-        const messageEl = document.getElementById('error-message');
-        const modalEl = document.getElementById('error-modal');
-
-        // 백엔드 DTO(ErrorResponse) 데이터 매핑
-        statusEl.innerText = `ERROR ${errorResponse.status || 500}`;
-        messageEl.innerText = errorResponse.message || '서버와 통신 중 문제가 발생했습니다.';
-
-        // 모달 표시
-        modalEl.classList.add('active');
+        document.getElementById('error-status').innerText = `ERROR ${errorResponse.status || 500}`;
+        document.getElementById('error-message').innerText = errorResponse.message || '서버와 통신 중 문제가 발생했습니다.';
+        document.getElementById('error-modal').classList.add('active');
     }
 
     function closeErrorAlert() {
         document.getElementById('error-modal').classList.remove('active');
     }
 
-    // ─── 탭 전환 ───
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -873,7 +805,6 @@
         });
     });
 
-    // ─── 네비 링크 클릭 시 탭 전환 ───
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
@@ -890,13 +821,11 @@
         });
     });
 
-    // ─── 스크롤 네비 하이라이트 ───
     window.addEventListener('scroll', () => {
         const nav = document.getElementById('navbar');
         nav.style.padding = window.scrollY > 60 ? '1rem 3rem' : '1.5rem 3rem';
     });
 
-    // ─── fade-in 애니메이션 ───
     function triggerFadeIns() {
         setTimeout(() => {
             document.querySelectorAll('.fade-in').forEach((el, i) => {
@@ -911,7 +840,6 @@
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // ─── 테마 데이터 로드 ───
     const emojis = ['👻', '🚀', '🧙‍♂️', '🔍', '🏴‍☠️', '🎭', '🕵️', '⚗️'];
     const difficulties = ['입문', '보통', '어려움', '매우 어려움'];
     const genres = [['공포', '미스터리'], ['SF', '탈출'], ['판타지', '모험'], ['추리', '스릴러'], ['해적', '탐험'], ['드라마', '심리'], ['추리', '범죄'], ['공포', '실험']];
@@ -957,15 +885,11 @@
         triggerFadeIns();
     }
 
-    function getPopularTitle() {
-        return '최근 1주일 인기 테마 TOP 10';
-    }
-
     function renderPopularList(themes) {
         const list = document.getElementById('popular-list');
         list.innerHTML = '';
         const titleEl = document.getElementById('popular-title');
-        if (titleEl) titleEl.innerHTML = getPopularTitle();
+        if (titleEl) titleEl.innerHTML = '최근 1주일 인기 테마 TOP 10';
         themes.forEach((t, i) => {
             const item = document.createElement('a');
             item.href = `/reservation?themeId=${t.id}`;
@@ -985,7 +909,6 @@
         triggerFadeIns();
     }
 
-    // API 호출 — 테마 소개 / 인기 테마 분리
     const dummyThemes = [
         { id: 1, name: '저주받은 저택', description: '오래된 저택에 숨겨진 100년의 비밀을 밝혀라. 공포와 미스터리가 교차하는 극한의 체험.', thumbnail: '' },
         { id: 2, name: '우주 정거장 X9', description: '고장난 우주선에서 산소가 떨어지기 전에 지구로 귀환하라. SF 어드벤처의 정수.', thumbnail: '' },
@@ -997,16 +920,12 @@
     fetch('/themes')
         .then(res => res.json())
         .then(themes => renderThemeIntroGrid(themes))
-        .catch(err => {
-            // 통신 에러 발생 시 더미 데이터 렌더링 대신 에러 알럿을 띄우고 싶다면 아래 코드를 사용할 수 있습니다.
-            // showErrorAlert({ status: 500, message: "테마 목록을 불러오는데 실패했습니다." });
-            renderThemeIntroGrid(dummyThemes);
-        });
+        .catch(() => renderThemeIntroGrid(dummyThemes));
 
     fetch('/themes/weekly-top')
         .then(res => res.json())
         .then(themes => renderPopularList(themes))
-        .catch(err => renderPopularList(dummyThemes));
+        .catch(() => renderPopularList(dummyThemes));
 </script>
 </body>
 </html>
