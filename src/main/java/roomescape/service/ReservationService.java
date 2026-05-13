@@ -5,12 +5,14 @@ import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,13 +38,13 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public Reservation saveReservation(ReservationSaveCommand command, ReservationSavePolicy policy) {
-        policy.validate(command);
-
+    public Reservation saveReservation(ReservationSaveCommand command, LocalDateTime now, ReservationSavePolicy policy) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new NotFoundException("reservation"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new NotFoundException("theme"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
+
+        policy.validate(command, reservationTime, now);
 
         return reservationRepository.addReservation(Reservation.forSave(command, reservationTime, theme));
     }

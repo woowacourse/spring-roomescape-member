@@ -1,18 +1,8 @@
 package roomescape.exception;
 
-public class DuplicationException extends RuntimeException {
-    private String action = "";
+public class DuplicationException extends BaseException {
 
-    public DuplicationException(String message) {
-        super(message);
-    }
-
-    public DuplicationException(String message, String action) {
-        super(message);
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
+    public DuplicationException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }
