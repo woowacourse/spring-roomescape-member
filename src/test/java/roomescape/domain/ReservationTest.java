@@ -89,7 +89,7 @@ class ReservationTest {
         Theme theme = new Theme("테마 이름", "테마 설명", "썸네일");
 
         // when
-        Reservation result = new Reservation(name, TEST_DATE, time, theme, FUTURE_DATE_TIME);
+        Reservation result = new Reservation(name, TEST_DATE, time, theme, PAST_DATE_TIME);
 
         // then
         assertThat(result.getName()).isEqualTo(name);
