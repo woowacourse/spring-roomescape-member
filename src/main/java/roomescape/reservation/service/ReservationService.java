@@ -11,6 +11,7 @@ import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
+import roomescape.reservation.repository.dto.DuplicateReservationCondition;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 
