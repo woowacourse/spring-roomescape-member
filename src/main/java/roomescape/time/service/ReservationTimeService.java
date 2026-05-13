@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.policy.ReservationTimeDeletionNotAllowedException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.controller.dto.request.CreateReservationTimeRequest;
@@ -53,7 +54,7 @@ public class ReservationTimeService {
                 .toList();
 
         if(reservedTimes.contains(reservationTime)) {
-            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new ReservationTimeDeletionNotAllowedException();
         }
     }
 }
