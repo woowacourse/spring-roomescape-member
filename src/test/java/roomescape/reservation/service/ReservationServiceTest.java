@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.global.exception.policy.PastReservationCancelNotAllowedException;
 import roomescape.global.exception.policy.ReservationConflictException;
 import roomescape.global.exception.policy.PastReservationNotAllowedException;
+import roomescape.global.exception.validation.ReservationNotFoundException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -52,11 +53,11 @@ class ReservationServiceTest {
             // given
             Long id = 1L;
 
-            when(reservationRepository.findById(id)).thenThrow(new IllegalArgumentException());
+            when(reservationRepository.findById(id)).thenThrow(new ReservationNotFoundException());
 
             // when & then
             Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(id))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(ReservationNotFoundException.class);
         }
 
         @Test
