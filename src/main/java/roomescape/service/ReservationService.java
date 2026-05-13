@@ -41,11 +41,6 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(Long id) {
-        reservationRepository.deleteById(id);
-    }
-
-    @Transactional
     public void cancel(Long id, ReservationCancelRequest request) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));

@@ -150,18 +150,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 식별자를_이용해_예약을_취소한다() {
-        // given
-        Reservation saved = reservationRepository.save(ReservationFixture.createDefaultReservationWithName("웨지"));
-
-        // when
-        reservationService.cancel(saved.getId());
-
-        // then
-        assertThat(reservationService.getAllReservationsByPaging(0, 10)).isEmpty();
-    }
-
-    @Test
     void 사용자_이름으로_예약_내역을_조회한다() {
         // given
         Reservation reservation = reservationRepository.save(
