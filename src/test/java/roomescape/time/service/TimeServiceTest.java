@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.ReservationTime;
@@ -41,8 +43,8 @@ class TimeServiceTest {
         when(reservationDao.selectByTimeId(anyLong())).thenReturn(reservations);
 
         assertThatThrownBy(() -> timeService.deleteById(time.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약이 있는 시간은 삭제할 수 없습니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(ErrorCode.CANNOT_DELETE_RESERVED_TIME.getMessage());
     }
 
     @Test
@@ -53,10 +55,8 @@ class TimeServiceTest {
         reservations.add(new Reservation("초록", 1L, LocalDate.now().minusDays(1), time));
         when(reservationDao.selectByTimeId(anyLong())).thenReturn(reservations);
 
-        // 2. When: 삭제 기능 실행
         timeService.deleteById(time.getId());
 
-        // 3. Then: 검증 (delete가 1번 호출되었는지 확인)
         verify(timeDao, times(1)).deleteById(time.getId());
     }
 
@@ -69,8 +69,8 @@ class TimeServiceTest {
         when(reservationDao.selectByTimeId(anyLong())).thenReturn(reservations);
 
         assertThatThrownBy(() -> timeService.deleteById(time.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약이 있는 시간은 삭제할 수 없습니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(ErrorCode.CANNOT_DELETE_RESERVED_TIME.getMessage());
     }
 
     @Test
@@ -81,10 +81,8 @@ class TimeServiceTest {
         reservations.add(new Reservation("초록", 1L, LocalDate.now(), time));
         when(reservationDao.selectByTimeId(anyLong())).thenReturn(reservations);
 
-        // 2. When: 삭제 기능 실행
         timeService.deleteById(time.getId());
 
-        // 3. Then: 검증 (delete가 1번 호출되었는지 확인)
         verify(timeDao, times(1)).deleteById(time.getId());
     }
 }

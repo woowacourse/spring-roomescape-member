@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.AvailableTime;
@@ -49,7 +51,7 @@ public class TimeService {
 
     private void validateExistTimeByReservation(LocalDate date, ReservationTime time, Long timeId) {
         if (!isBeforeDateTime(date, time) && time.getId().equals(timeId)) {
-            throw new IllegalArgumentException("예약이 있는 시간은 삭제할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.CANNOT_DELETE_RESERVED_TIME);
         }
     }
 
