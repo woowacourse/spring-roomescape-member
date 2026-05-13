@@ -87,18 +87,6 @@ public class ThemeService {
     }
 
     @Transactional
-    public void deleteThemeById(Long themeId) {
-        try {
-            int deletedCount = themeRepository.deleteById(themeId);
-            if (deletedCount == 0) {
-                throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
-            }
-        } catch (DataIntegrityViolationException exception) {
-            throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
-        }
-    }
-
-    @Transactional
     public ThemeResponse updateTheme(Long id, ThemeUpdateRequest request) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
@@ -115,5 +103,17 @@ public class ThemeService {
         }
 
         return ThemeResponse.from(updatedTheme);
+    }
+
+    @Transactional
+    public void deleteThemeById(Long themeId) {
+        try {
+            int deletedCount = themeRepository.deleteById(themeId);
+            if (deletedCount == 0) {
+                throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
+            }
+        } catch (DataIntegrityViolationException exception) {
+            throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
+        }
     }
 }

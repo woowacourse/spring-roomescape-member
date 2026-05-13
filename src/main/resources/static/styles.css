@@ -21,9 +21,8 @@
 
 body {
     margin: 0;
-    background:
-            radial-gradient(circle at 16px 16px, rgba(17, 17, 17, 0.05) 2px, transparent 3px),
-            var(--bg);
+    background: radial-gradient(circle at 16px 16px, rgba(17, 17, 17, 0.05) 2px, transparent 3px),
+    var(--bg);
     background-size: 30px 30px;
     color: var(--text);
     font-family: "Arial Rounded MT Bold", "Segoe UI", "Noto Sans KR", Arial, sans-serif;

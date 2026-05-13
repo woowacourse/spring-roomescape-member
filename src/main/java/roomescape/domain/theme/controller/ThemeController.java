@@ -26,7 +26,6 @@ public class ThemeController {
         return ResponseEntity.ok(themes);
     }
 
-    // TODO: ReservationTimeController로 이동 (/times?themeId=*&date=*)
     @GetMapping("/themes/{themeId}/times")
     public ResponseEntity<ThemeReservationTimesResponse> getAllThemeReservationTimes(
             @PathVariable Long themeId,

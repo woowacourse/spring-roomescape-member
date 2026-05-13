@@ -42,27 +42,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
             ORDER BY rt.start_at ASC;
             """;
 
-    private static final String DELETE_THEME_BY_ID_QUERY = """
-            DELETE FROM theme
-            WHERE id = :id;
-            """;
-
-    private static final String UPDATE_THEME_QUERY = """
-            UPDATE theme
-            SET name = :name,
-                description = :description,
-                thumbnail_url = :thumbnailUrl
-            WHERE id = :id;
-            """;
-
-    private static final String EXISTS_BY_NAME_QUERY = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM theme
-                WHERE name = :name
-            );
-            """;
-
     private static final String FIND_POPULAR_THEMES_QUERY = """
             SELECT
                 t.id,
@@ -76,6 +55,27 @@ public class ThemeJdbcRepository implements ThemeRepository {
             GROUP BY t.id, t.name, t.description, t.thumbnail_url
             ORDER BY rank, t.id
             LIMIT :limit;
+            """;
+
+    private static final String UPDATE_THEME_QUERY = """
+            UPDATE theme
+            SET name = :name,
+                description = :description,
+                thumbnail_url = :thumbnailUrl
+            WHERE id = :id;
+            """;
+
+    private static final String DELETE_THEME_BY_ID_QUERY = """
+            DELETE FROM theme
+            WHERE id = :id;
+            """;
+
+    private static final String EXISTS_BY_NAME_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+            );
             """;
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) -> Theme.of(

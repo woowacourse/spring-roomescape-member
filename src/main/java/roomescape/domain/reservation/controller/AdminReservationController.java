@@ -40,7 +40,6 @@ public class AdminReservationController {
                 .body(response);
     }
 
-    // TODO: 예약 수정 추가 patch
     @PatchMapping("/{reservationId}")
     public ResponseEntity<ReservationResponse> update(
             @PathVariable Long reservationId,

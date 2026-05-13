@@ -26,14 +26,14 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             WHERE id = :id
             """;
 
-    private static final String DELETE_RESERVATION_TIME_BY_ID_QUERY = """
-            DELETE FROM reservation_time
-            WHERE id = :id
-            """;
-
     private static final String UPDATE_RESERVATION_TIME_QUERY = """
             UPDATE reservation_time
             SET start_at = :start_at
+            WHERE id = :id
+            """;
+
+    private static final String DELETE_RESERVATION_TIME_BY_ID_QUERY = """
+            DELETE FROM reservation_time
             WHERE id = :id
             """;
 
