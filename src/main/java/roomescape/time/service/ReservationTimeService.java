@@ -31,8 +31,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime save(ReservationTimeRequest request) {
         validateDuplicateTime(request);
-
-        ReservationTime reservationTime = ReservationTime.create(request.startAt());
+        ReservationTime reservationTime = ReservationTime.fromValidTimeUnit(request.startAt());
         return reservationTimeRepository.save(reservationTime);
     }
 

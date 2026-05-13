@@ -2,6 +2,7 @@ package roomescape.time.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.InvalidRequestException;
 
 import java.time.LocalTime;
@@ -32,7 +33,7 @@ class ReservationTimeTest {
         LocalTime startAt = LocalTime.of(15, 30);
 
         // when
-        ReservationTime reservationTime = ReservationTime.create(startAt);
+        ReservationTime reservationTime = ReservationTime.fromValidTimeUnit(startAt);
 
         // then
         assertThat(reservationTime.getId()).isNull();
@@ -45,5 +46,18 @@ class ReservationTimeTest {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("예약 시간은 반드시 입력해야 합니다.");
+    }
+
+
+    @Test
+    @DisplayName("예약을 30분 단위로 추가하지 않으면 BusinessRuleViolationException 이 발생한다.")
+    void validTimeUnit() {
+        // given
+        LocalTime inValidStartAt = LocalTime.of(12, 24);
+
+        // when & then
+        assertThatThrownBy(() -> ReservationTime.fromValidTimeUnit(inValidStartAt))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessageContaining("예약은 30분 단위로 입력해야 합니다.");
     }
 }

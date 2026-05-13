@@ -10,7 +10,6 @@ import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,16 +22,13 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
     public ThemeService(
             ThemeRepository themeRepository,
-            ReservationRepository reservationRepository,
-            Clock clock
+            ReservationRepository reservationRepository
     ) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     @Transactional
@@ -57,7 +53,7 @@ public class ThemeService {
     }
 
     public List<Theme> findPopularThemes() {
-        LocalDate endDate = LocalDate.now(clock);
+        LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(DEFAULT_POPULAR_PERIOD);
 
         return themeRepository.findPopularThemes(
