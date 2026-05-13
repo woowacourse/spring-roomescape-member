@@ -24,15 +24,19 @@ public class Time {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Time time) || id == null) return false;
-
-        return Objects.equals(id, time.id);
+    public int hashCode() {
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(startAt);
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public final boolean equals(Object o) {
+        if (!(o instanceof Time time)) {
+            return false;
+        }
+
+        return Objects.equals(id, time.id) && Objects.equals(startAt, time.startAt);
     }
 
     public Long getId() {

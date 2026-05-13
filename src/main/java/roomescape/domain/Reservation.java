@@ -24,16 +24,23 @@ public class Reservation {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(date);
+        result = 31 * result + Objects.hashCode(time);
+        result = 31 * result + Objects.hashCode(theme);
+        return result;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Reservation that) || id == null) {
+    public final boolean equals(Object o) {
+        if (!(o instanceof Reservation that)) {
             return false;
         }
 
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(date, that.date) && Objects.equals(time, that.time)
+                && Objects.equals(theme, that.theme);
     }
 
     public Long getId() {

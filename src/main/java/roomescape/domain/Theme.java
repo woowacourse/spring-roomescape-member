@@ -1,8 +1,7 @@
 package roomescape.domain;
 
-import roomescape.domain.vo.Name;
-
 import java.util.Objects;
+import roomescape.domain.vo.Name;
 
 public class Theme {
     private final Long id;
@@ -23,16 +22,22 @@ public class Theme {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(thumbnailUrl);
+        result = 31 * result + Objects.hashCode(description);
+        return result;
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof Theme theme) || id == null) {
+        if (!(o instanceof Theme theme)) {
             return false;
         }
 
-        return Objects.equals(id, theme.id);
+        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name)
+                && Objects.equals(thumbnailUrl, theme.thumbnailUrl) && Objects.equals(description,
+                theme.description);
     }
 
     public Long getId() {
