@@ -45,6 +45,10 @@ public class TimeService {
 
     public void removeTime(long timeId) {
         getTimeOrElseThrow(timeId);
+        if (timeRepository.existsByReferencedId(timeId)) {
+            throw new CustomException(ErrorCode.TIME_IS_REFERENCED);
+        }
+
         timeRepository.deleteById(timeId);
     }
 

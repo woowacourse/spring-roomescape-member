@@ -14,4 +14,6 @@ public interface TimeRepository {
     Time save(Time time);
 
     void deleteById(long id);
+
+    boolean existsByReferencedId(long timeId);
 }

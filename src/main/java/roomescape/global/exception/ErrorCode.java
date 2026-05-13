@@ -23,7 +23,7 @@ public enum ErrorCode {
 
     // time
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "시간이 존재하지 않습니다."),
-    TIME_HAS_RESERVATION(HttpStatus.UNPROCESSABLE_ENTITY, "예약에 해당하는 시간이 존재합니다."),
+    TIME_IS_REFERENCED(HttpStatus.UNPROCESSABLE_ENTITY, "예약에 해당하는 시간이 존재합니다."),
 
     // theme
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "테마가 존재하지 않습니다.");
