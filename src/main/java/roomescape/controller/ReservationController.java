@@ -7,11 +7,13 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.dto.Response;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.service.RoomReservationService;
 
 @RestController
@@ -44,6 +46,15 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id) {
         roomReservationService.deleteReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8));
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<Response> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
+                                                      @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
+        ReservationCommand reservationCommand = updateReservationRequest.to();
+        roomReservationService.updateReservation(id, name, reservationCommand);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
