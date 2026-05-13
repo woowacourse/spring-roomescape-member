@@ -4,6 +4,7 @@ import static roomescape.dao.FakeReservationDao.RESERVATION_TABLE;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -27,8 +28,8 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime read(Long id) {
-        return fakeDatabase.read(RESERVATION_TIME_TABLE, id, ReservationTime.class);
+    public Optional<ReservationTime> read(Long id) {
+        return Optional.ofNullable(fakeDatabase.read(RESERVATION_TIME_TABLE, id, ReservationTime.class));
     }
 
     @Override

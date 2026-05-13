@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
@@ -30,8 +31,15 @@ public class ReservationService {
 
     @Transactional
     public ServiceReservationResponse create(ServiceReservationRequest requestDto) {
-        ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
-        Theme theme = themeDao.read(requestDto.themeId());
+        Optional<ReservationTime> reservationTime = reservationTimeDao.read(requestDto.timeId());
+        if (reservationTime.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+        }
+
+        Optional<Theme> theme = themeDao.read(requestDto.themeId());
+        if (theme.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_THEME);
+        }
 
         boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(requestDto.date(), requestDto.timeId(),
                 requestDto.themeId());
@@ -39,7 +47,7 @@ public class ReservationService {
             throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
+        Reservation reservationWithoutId = requestDto.toEntity(reservationTime.get(), theme.get());
         Reservation reservation = reservationDao.create(reservationWithoutId);
 
         return ServiceReservationResponse.from(reservation);

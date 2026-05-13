@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,8 +13,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.CustomException;
-import roomescape.exception.ErrorCode;
 
 @Primary
 @Repository
@@ -42,16 +41,17 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime read(Long id) {
+    public Optional<ReservationTime> read(Long id) {
         String sql = "SELECT * FROM `reservation_time` WHERE `id` = (?)";
 
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-                LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
-                return new ReservationTime(id, startAt);
-            }, id);
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
+                        LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
+                        return new ReservationTime(id, startAt);
+                    }, id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+            return Optional.empty();
         }
     }
 

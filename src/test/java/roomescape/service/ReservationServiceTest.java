@@ -43,6 +43,28 @@ public class ReservationServiceTest {
     }
 
     @Test
+    void createNotFoundReservationTimeExceptionTest() {
+        themeDao.create(new Theme("피즈의 모험", "설명", "url.jpg"));
+        ServiceReservationRequest serviceReservationRequest = new ServiceReservationRequest("fizz",
+                LocalDate.of(2026, 5, 2), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.create(serviceReservationRequest))
+                .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
+    void createNotFoundThemeTimeExceptionTest() {
+        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
+        ServiceReservationRequest serviceReservationRequest = new ServiceReservationRequest("fizz",
+                LocalDate.of(2026, 5, 2), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.create(serviceReservationRequest))
+                .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
     void duplicatedReservationExceptionTest() {
         reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
         themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));

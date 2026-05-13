@@ -1,11 +1,11 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.CustomException;
 import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -29,13 +28,6 @@ public class ReservationTimeDaoTest {
     private ReservationTimeDao reservationTimeDao;
 
     @Test
-    void readNotFoundReservationTimeExceptionTest() {
-        assertThatThrownBy(() -> reservationTimeDao.read(1L))
-                .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
-                .isInstanceOf(CustomException.class);
-    }
-
-    @Test
     void createTest() {
         ReservationTime reservationTimeWithoutId = new ReservationTime(LocalTime.of(10, 0));
         ReservationTime reservationTime = reservationTimeDao.create(reservationTimeWithoutId);
@@ -48,9 +40,9 @@ public class ReservationTimeDaoTest {
         String sql = "INSERT INTO `reservation_time` (`start_at`) VALUES (?)";
         jdbcTemplate.update(sql, "10:00");
 
-        ReservationTime reservationTime = reservationTimeDao.read(1L);
+        Optional<ReservationTime> reservationTime = reservationTimeDao.read(1L);
 
-        assertThat(reservationTime.getId()).isEqualTo(1L);
+        assertThat(reservationTime.orElseThrow().getId()).isEqualTo(1L);
     }
 
     @Test

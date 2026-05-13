@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
@@ -30,8 +31,8 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme read(Long id) {
-        return fakeDatabase.read(THEME_TABLE, id, Theme.class);
+    public Optional<Theme> read(Long id) {
+        return Optional.ofNullable(fakeDatabase.read(THEME_TABLE, id, Theme.class));
     }
 
     @Override

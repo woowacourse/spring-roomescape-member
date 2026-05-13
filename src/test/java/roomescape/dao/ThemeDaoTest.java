@@ -1,10 +1,10 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
 import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -34,13 +33,6 @@ public class ThemeDaoTest {
     }
 
     @Test
-    void readNotFoundReservationTimeExceptionTest() {
-        assertThatThrownBy(() -> themeDao.read(1L))
-                .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
-                .isInstanceOf(CustomException.class);
-    }
-
-    @Test
     void createTest() {
         Theme themeWithoutId = new Theme("방탈출", "설명", "url.jpg");
         Theme theme = themeDao.create(themeWithoutId);
@@ -53,9 +45,9 @@ public class ThemeDaoTest {
         String sql = "INSERT INTO `theme` (`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
         jdbcTemplate.update(sql, "방탈출1", "방탈출1 설명", "url.jpg");
 
-        Theme theme = themeDao.read(1L);
+        Optional<Theme> theme = themeDao.read(1L);
 
-        Assertions.assertThat(theme.getId()).isEqualTo(1L);
+        Assertions.assertThat(theme.orElseThrow().getId()).isEqualTo(1L);
     }
 
     @Test

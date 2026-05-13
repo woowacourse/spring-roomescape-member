@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,8 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
-import roomescape.exception.ErrorCode;
 
 @Primary
 @Repository
@@ -42,22 +41,19 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme read(Long id) {
+    public Optional<Theme> read(Long id) {
         String sql = "SELECT * FROM `theme` WHERE `id` = (?)";
 
         try {
-            return jdbcTemplate.queryForObject(
-                    sql,
-                    (resultSet, rowNumber) -> {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, (resultSet, rowNumber) -> {
                         String name = resultSet.getString("name");
                         String description = resultSet.getString("description");
                         String thumbnailUrl = resultSet.getString("thumbnail_url");
                         return new Theme(id, name, description, thumbnailUrl);
-                    },
-                    id
-            );
+                    }, id));
         } catch (EmptyResultDataAccessException exception) {
-            throw new CustomException(ErrorCode.NOT_FOUND_THEME);
+            return Optional.empty();
         }
     }
 
