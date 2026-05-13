@@ -1,17 +1,48 @@
 ## 방탈출 API 명세
-| 기능              | 메서드 / URL                               | 요청                                  | 응답                                          | 상태 코드 |
-|-----------------|-----------------------------------------|-------------------------------------|---------------------------------------------| ----- |
-| 예약 조회           | GET `/reservations`                     | —                                   | `[{id, name, date, time, theme}, ...]`      | 200   |
-| 예약 등록           | POST `/reservations`                    | `{name, date, timeId, themeId}`     | `{id, name, date, time, theme}`             | 201   |
-| 예약 삭제           | DELETE `/reservations/{id}`             | —                                   |                                             | 204   |
-| 시간 조회           | GET `/times`                            | —                                   | `[{id, startAt}, ...]`                      | 200   |
-| 시간 등록           | POST `/times`                           | `{startAt}`                         | `{id, startAt}`                             | 201   |
-| 시간 삭제           | DELETE `/times/{id}`                    | —                                   |                                             | 204   |
-| 테마 조회           | GET `/themes`                           | —                                   | `[{id, name, description, thumbnail}, ...]` | 200   |
-| 테마 등록           | POST `/themes`                          | `{name, description, thumbnail}`    | `{id, name, description, thumbnail}`        | 201   |
-| 테마 삭제           | DELETE `/themes/{id}`                   | —                                   |                                             | 204   |
-| 예약 가능 시간 조회     | GET `/themes/{id}/times?date=2026-05-08` | —                                   | `[{time, available}, ...]`                  | 200   |
-| 인기 테마 상위 10개 조회 | GET `/themes/popular`                   | —                                   | `[{id, name, description, thumbnail, reservationCount}, ...]` | 200   |
+| 기능              | 메서드 / URL                                      | 요청                               | 응답                                                           | 상태 코드 |
+|-----------------|------------------------------------------------|----------------------------------|--------------------------------------------------------------|-------|
+| 사용자 예약 등록      | POST `/reservations`                           | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
+| 관리자 예약 조회      | GET `/admin/reservations`                      | —                                | `[{id, name, date, time, theme}, ...]`                       | 200   |
+| 관리자 예약 등록      | POST `/admin/reservations`                     | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
+| 관리자 예약 삭제      | DELETE `/admin/reservations/{id}`              | —                                | —                                                            | 204   |
+| 관리자 시간 조회      | GET `/admin/times`                             | —                                | `[{id, startAt}, ...]`                                       | 200   |
+| 관리자 시간 등록      | POST `/admin/times`                            | `{startAt}`                      | `{id, startAt}`                                              | 201   |
+| 관리자 시간 삭제      | DELETE `/admin/times/{id}`                     | —                                | —                                                            | 204   |
+| 사용자 테마 조회      | GET `/themes`                                  | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
+| 관리자 테마 조회      | GET `/admin/themes`                            | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
+| 관리자 테마 등록      | POST `/admin/themes`                           | `{name, description, thumbnail}` | `{id, name, description, thumbnail}`                         | 201   |
+| 관리자 테마 삭제      | DELETE `/admin/themes/{id}`                    | —                                | —                                                            | 204   |
+| 예약 가능 시간 조회    | GET `/themes/{id}/times?date=2026-05-08`       | —                                | `[{time, available}, ...]`                                   | 200   |
+| 인기 테마 상위 10개 조회 | GET `/themes/popular`                          | —                                | `[{id, name, description, thumbnail, reservationCount}, ...]` | 200   |
+
+## 에러 응답 명세
+
+모든 에러 응답은 JSON 객체로 반환한다.
+
+```json
+{
+  "code": "ERROR_CODE",
+  "detail": "에러 상세 설명"
+}
+```
+
+`code`는 클라이언트가 분기하기 위한 안정적인 값이다. `detail`은 API 소비자가 에러 원인을 이해하기 위한 설명이며, 클라이언트는 `detail`이 아닌 `code`를 기준으로 처리한다.
+
+| error code | detail | 상태 코드 | 상황 |
+|------------|--------|----------|------|
+| INVALID_INPUT | 이름은 비어 있을 수 없습니다. | 400 | 요청 본문의 필수 값이 비어 있음 |
+| INVALID_INPUT | 이름은 255자를 넘을 수 없습니다. | 400 | 요청 본문의 문자열 길이가 허용 범위를 초과함 |
+| INVALID_INPUT | 시간ID는 양수이어야 합니다. | 400 | 요청 본문의 ID 값이 양수가 아님 |
+| INVALID_INPUT | 날짜 또는 시간 형식이 올바르지 않습니다. | 400 | 요청 본문 또는 요청 파라미터의 날짜/시간 형식이 올바르지 않음 |
+| INVALID_INPUT | 필수 요청값이 누락되었습니다. | 400 | 필수 요청 파라미터가 누락됨 |
+| PAST_RESERVATION | 이미 지난 시간으로는 예약할 수 없습니다. | 400 | 사용자가 지난 날짜·시간으로 예약 생성을 요청함 |
+| NOT_FOUND | 존재하지 않는 예약 시간입니다. | 404 | 존재하지 않는 예약 시간 ID로 요청함 |
+| NOT_FOUND | 존재하지 않는 테마입니다. | 404 | 존재하지 않는 테마 ID로 요청함 |
+| NOT_FOUND | 존재하지 않는 리소스입니다. | 404 | 존재하지 않는 URL로 요청함 |
+| DUPLICATE_RESERVATION | 이미 예약된 시간입니다. | 409 | 같은 날짜·시간·테마에 이미 예약이 존재함 |
+| RESOURCE_IN_USE | 예약이 존재하는 시간은 삭제할 수 없습니다. | 409 | 예약이 연결된 예약 시간 삭제를 요청함 |
+| RESOURCE_IN_USE | 예약이 존재하는 테마는 삭제할 수 없습니다. | 409 | 예약이 연결된 테마 삭제를 요청함 |
+| INTERNAL_SERVER_ERROR | 서버에 문제가 발생했습니다. | 500 | 예상하지 못한 서버 오류가 발생함 |
 
 ---
 
@@ -58,6 +89,16 @@
   - [X] 테마 이름이 비어 있거나 255자를 초과하면 거부한다.
   - [X] 테마 설명, 썸네일 경로가 255자를 초과하면 거부한다.
 - [X] 삭제 요청의 ID가 유효하지 않으면 거부한다.
+
+### 2단계 - 에러 응답 설계
+- [ ] 공통 에러 응답 객체를 추가
+- [ ] INVALID_INPUT 에러 응답 적용
+- [ ] PAST_RESERVATION 에러 응답 적용
+- [ ] NOT_FOUND 에러 응답 적용
+- [ ] DUPLICATE_RESERVATION 에러 응답 적용
+- [ ] RESOURCE_IN_USE 에러 응답 적용
+- [ ] INTERNAL_SERVER_ERROR 에러 응답 적용
+- [ ] 에러 응답 테스트 추가
 
 ---
 
