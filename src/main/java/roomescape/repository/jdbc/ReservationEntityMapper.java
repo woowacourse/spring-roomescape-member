@@ -2,6 +2,7 @@ package roomescape.repository.jdbc;
 
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -24,7 +25,8 @@ public final class ReservationEntityMapper {
                 rs.getString("res_name"),
                 rs.getDate("res_date").toLocalDate(),
                 theme,
-                time
+                time,
+                ReservationStatus.valueOf(rs.getString("res_status"))
         );
     };
 

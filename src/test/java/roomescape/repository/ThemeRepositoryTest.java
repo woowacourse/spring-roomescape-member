@@ -125,9 +125,9 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         Long mostReservedThemeId = 2L;
         Long secondReservedThemeId = 1L;
         Long thirdReservedThemeId = 3L;
-        dataSource.insertReservationByTheme(mostReservedThemeId, 3);
-        dataSource.insertReservationByTheme(secondReservedThemeId, 2);
-        dataSource.insertReservationByTheme(thirdReservedThemeId, 1);
+        dataSource.insertReservedReservationByTheme(mostReservedThemeId, 3);
+        dataSource.insertReservedReservationByTheme(secondReservedThemeId, 2);
+        dataSource.insertReservedReservationByTheme(thirdReservedThemeId, 1);
 
         // when
         LocalDate now = LocalDate.now();
@@ -146,12 +146,13 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         // given
         dataSource.insertThemesByCount(3);
         dataSource.insertTimeByStartToEndWithOneHourRotation(10, 12);
-        dataSource.insertReservation("바니", LocalDate.now(), 2L, 1L);
-        dataSource.insertReservation("이프", LocalDate.now(), 1L, 2L);
+        dataSource.insertReservedReservation("바니", LocalDate.now(), 2L, 1L);
+        dataSource.insertReservedReservation("이프", LocalDate.now(), 1L, 2L);
 
         // when
         LocalDate now = LocalDate.now();
-        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(1), now.plusDays(1), 3);
+        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(1), now.plusDays(1),
+                3);
 
         // then
         assertThat(popularThemes)

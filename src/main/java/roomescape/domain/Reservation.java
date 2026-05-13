@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -13,8 +14,10 @@ public class Reservation {
     private final LocalDate date;
     private final Theme theme;
     private final ReservationTime time;
+    private ReservationStatus status;
 
-    public Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
+                       ReservationStatus status) {
         validate(name, date, theme, time);
 
         this.id = id;
@@ -22,10 +25,11 @@ public class Reservation {
         this.date = date;
         this.theme = theme;
         this.time = time;
+        this.status = status;
     }
 
     public static Reservation of(String name, LocalDate date, Theme theme, ReservationTime time) {
-        Reservation reservation = new Reservation(null, name, date, theme, time);
+        Reservation reservation = new Reservation(null, name, date, theme, time, ReservationStatus.RESERVED);
 
         if (!time.isAvailableAt(date)) {
             throw new IllegalArgumentException("현재보다 이전 시간대로 예약할 수 없습니다.");
@@ -56,5 +60,14 @@ public class Reservation {
         if (date == null || time == null) {
             throw new IllegalArgumentException("예약 날짜 및 시간 정보는 비어있을 수 없습니다.");
         }
+    }
+
+    public void cancel() {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isAfter(time.toReservationDateTime(date))) {
+            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+        this.status = ReservationStatus.CANCELED;
     }
 }

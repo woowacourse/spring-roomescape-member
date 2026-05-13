@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import roomescape.domain.ReservationStatus;
 
 @Component
 public class ReservationDataSource {
@@ -33,9 +34,9 @@ public class ReservationDataSource {
                 name, description, thumbnailImageUrl);
     }
 
-    public void insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                name, date, themeId, timeId);
+    public void insertReservedReservation(String name, LocalDate date, Long themeId, Long timeId) {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id, status) VALUES (?, ?, ?, ?, ?)",
+                name, date, themeId, timeId, ReservationStatus.RESERVED.toString());
     }
 
     public void insertReservationTime(LocalTime reservationTime) {

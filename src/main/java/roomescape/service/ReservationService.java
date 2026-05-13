@@ -10,10 +10,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ForbiddenException;
 import roomescape.global.exception.InactiveException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.web.dto.reservation.ReservationCancelRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 
@@ -41,6 +43,19 @@ public class ReservationService {
     @Transactional
     public void cancel(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void cancel(Long id, ReservationCancelRequest request) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+
+        if (!request.name().equals(reservation.getName())) {
+            throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
+        }
+
+        reservation.cancel();
+        reservationRepository.update(reservation);
     }
 
     public List<ReservationResponse> getAllReservationsByPaging(int page, int size) {

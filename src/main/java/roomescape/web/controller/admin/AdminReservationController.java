@@ -54,7 +54,8 @@ public class AdminReservationController {
             @RequestParam
             @Positive(message = "조회 개수는 양수여야 합니다.") int size
     ) {
-        ReservationResponses response = new ReservationResponses(reservationService.getAllReservationsByPaging(page, size));
+        ReservationResponses response = new ReservationResponses(
+                reservationService.getAllReservationsByPaging(page, size));
 
         return ResponseEntity.ok(response);
     }

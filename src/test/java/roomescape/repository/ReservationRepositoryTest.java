@@ -21,14 +21,12 @@ import roomescape.service.BaseIntegrationTest;
 
 class ReservationRepositoryTest extends BaseIntegrationTest {
 
-    @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
-    private ReservationDataSource dataSource;
-
     private final ReservationTime reservationTime = ReservationTimeFixture.createDefaultReservationTime();
     private final Theme theme = ThemeFixture.createThemeWithId();
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private ReservationDataSource dataSource;
 
     @BeforeEach
     void setUp() {
@@ -117,9 +115,9 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 페이징_조건에_맞는_예약_목록을_조회한다() {
         // given
-        dataSource.insertReservation("이프", LocalDate.now().minusDays(1), 1L, 1L);
-        dataSource.insertReservation("이프", LocalDate.now(), 1L, 1L);
-        dataSource.insertReservation("이프", LocalDate.now().plusDays(1), 1L, 1L);
+        dataSource.insertReservedReservation("이프", LocalDate.now().minusDays(1), 1L, 1L);
+        dataSource.insertReservedReservation("이프", LocalDate.now(), 1L, 1L);
+        dataSource.insertReservedReservation("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when
         List<Reservation> reservations = reservationRepository.findAllByPaging(0, 10);
@@ -131,9 +129,9 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 예약_목록을_최신_등록순으로_페이징_조회한다() {
         // given
-        dataSource.insertReservation("첫번째", LocalDate.now().minusDays(2), 1L, 1L);
-        dataSource.insertReservation("두번째", LocalDate.now().minusDays(1), 1L, 1L);
-        dataSource.insertReservation("세번째", LocalDate.now(), 1L, 1L);
+        dataSource.insertReservedReservation("첫번째", LocalDate.now().minusDays(2), 1L, 1L);
+        dataSource.insertReservedReservation("두번째", LocalDate.now().minusDays(1), 1L, 1L);
+        dataSource.insertReservedReservation("세번째", LocalDate.now(), 1L, 1L);
 
         // when
         List<Reservation> reservations = reservationRepository.findAllByPaging(1, 1);

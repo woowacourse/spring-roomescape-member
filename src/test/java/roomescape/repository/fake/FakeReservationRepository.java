@@ -3,6 +3,7 @@ package roomescape.repository.fake;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,10 +24,31 @@ public class FakeReservationRepository implements ReservationRepository {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTheme(),
-                reservation.getTime()
+                reservation.getTime(),
+                reservation.getStatus()
         );
         reservations.add(saved);
         return saved;
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        for (int i = 0; i < reservations.size(); i++) {
+            Reservation savedReservation = reservations.get(i);
+
+            if (savedReservation.getId().equals(reservation.getId())) {
+                reservations.set(i, reservation);
+                return;
+            }
+        }
+
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getId().equals(id))
+                .findFirst();
     }
 
     @Override

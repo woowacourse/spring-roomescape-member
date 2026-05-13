@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import roomescape.domain.ReservationStatus;
 
 @Component
 public class ThemeDataSource {
@@ -25,15 +26,16 @@ public class ThemeDataSource {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
     }
 
-    public void insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                name, date, themeId, timeId);
+    public void insertReservedReservation(String name, LocalDate date, Long themeId, Long timeId) {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id, status) VALUES (?, ?, ?, ?, ?)",
+                name, date,
+                themeId, timeId, ReservationStatus.RESERVED.toString());
     }
 
     public void insertThemesByCount(int count) {
         for (int i = 0; i < count; i++) {
-            jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)",
-                    "테마" + i, "설명" + i, "https://image.com/image" + i + ".png");
+            jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)", "테마" + i,
+                    "설명" + i, "https://image.com/image" + i + ".png");
         }
     }
 
@@ -44,10 +46,11 @@ public class ThemeDataSource {
         }
     }
 
-    public void insertReservationByTheme(long themeId, int reservationCount) {
+    public void insertReservedReservationByTheme(long themeId, int reservationCount) {
         for (long timeId = 1L; timeId <= reservationCount; timeId++) {
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                    "바니", LocalDate.now(), themeId, timeId);
+            jdbcTemplate.update(
+                    "INSERT INTO reservation (name, date, theme_id, time_id, status) VALUES (?, ?, ?, ?, ?)",
+                    "바니", LocalDate.now(), themeId, timeId, ReservationStatus.RESERVED.toString());
         }
     }
 }
