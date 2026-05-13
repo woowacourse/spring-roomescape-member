@@ -15,6 +15,7 @@ import static roomescape.exception.ErrorCode.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler({
             NotFoundResourceException.class,
             DataReferencedException.class,
@@ -22,14 +23,21 @@ public class GlobalExceptionHandler {
             ReservationTimeConditionException.class,
             DuplicatedReservationRequestException.class
     })
-    public ResponseEntity<String> handleCustomException(CustomException customException) {
-        return new ResponseEntity<>(customException.getMessage(), HttpErrorMapping.getHttpStatus(customException.getErrorMessage()));
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(
+                errorCode.getCode(),
+                errorCode.getMessage(),
+                List.of()
+        );
+
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException e) {
-
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<FieldErrorResponse> fieldErrors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -39,26 +47,27 @@ public class GlobalExceptionHandler {
                 ))
                 .toList();
 
-        ErrorResponse response = new ErrorResponse(
-                VALIDATION_ERROR.getCode(),
-                VALIDATION_ERROR.getMessage(),
+        ErrorResponse errorResponse = new ErrorResponse(
+                INVALID_INPUT.getCode(),
+                INVALID_INPUT.getMessage(),
                 fieldErrors
         );
 
         return ResponseEntity
-                .badRequest()
-                .body(response);
+                .status(INVALID_INPUT.getStatus())
+                .body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-
-        return ResponseEntity.badRequest().body(
-                new ErrorResponse(
-                        INVALID_REQUEST_FORMAT.getCode(),
-                        INVALID_REQUEST_FORMAT.getMessage(),
-                        List.of()
-                )
+        ErrorResponse errorResponse = new ErrorResponse(
+                INVALID_REQUEST_FORMAT.getCode(),
+                INVALID_REQUEST_FORMAT.getMessage(),
+                List.of()
         );
+
+        return ResponseEntity
+                .status(INVALID_REQUEST_FORMAT.getStatus())
+                .body(errorResponse);
     }
 }

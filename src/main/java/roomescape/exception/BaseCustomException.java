@@ -9,7 +9,7 @@ public class BaseCustomException extends RuntimeException implements CustomExcep
     }
 
     @Override
-    public ErrorCode getErrorMessage() {
+    public ErrorCode getErrorCode() {
         return errorCode;
     }
 }

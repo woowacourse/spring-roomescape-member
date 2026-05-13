@@ -17,6 +17,8 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
+import static roomescape.exception.ErrorCode.*;
+
 @Service
 public class RoomReservationService {
     private final ReservationRepository reservationRepository;
@@ -42,17 +44,17 @@ public class RoomReservationService {
         validateDate(addReservationRequest.date());
 
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(addReservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundResourceException(ErrorCode.INVALID_RESERVATION_TIME_ID));
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
 
         if (addReservationRequest.date().isEqual(LocalDate.now())) {
             validateTime(reservationTime.startAt());
         }
 
         Theme theme = themeRepository.getTheme(addReservationRequest.themeId())
-                .orElseThrow(() -> new NotFoundResourceException(ErrorCode.INVALID_THEME_ID));
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_THEME));
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(addReservationRequest.timeId(), addReservationRequest.themeId(), addReservationRequest.date())) {
-            throw new DuplicatedReservationRequestException(ErrorCode.DUPLICATED_RESERVATION_REQUEST);
+            throw new DuplicatedReservationRequestException(DUPLICATED_RESERVATION_REQUEST);
         }
 
         return reservationRepository.addReservation(addReservationRequest.toEntity(reservationTime, theme));

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -217,7 +218,7 @@ public class RoomReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
-                .hasMessage(ErrorCode.INVALID_RESERVATION_TIME_ID.getMessage());
+                .hasMessage(ErrorCode.NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
     @Test
@@ -230,7 +231,7 @@ public class RoomReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
-                .hasMessage(ErrorCode.INVALID_THEME_ID.getMessage());
+                .hasMessage(NOT_FOUND_THEME.getMessage());
     }
 
     @Test
