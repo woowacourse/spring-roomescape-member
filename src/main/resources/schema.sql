@@ -28,4 +28,8 @@ CREATE TABLE reservation (
 );
 
 CREATE UNIQUE INDEX unique_active_reservation
-ON reservation (date, time_id, theme_id, deleted_at);
+    ON reservation (date, time_id, theme_id, deleted_at);
+CREATE UNIQUE INDEX unique_theme_name
+    ON theme (name, deleted_at);
+CREATE UNIQUE INDEX unique_time_start
+    ON reservation_time (start_at, deleted_at);
