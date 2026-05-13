@@ -10,7 +10,7 @@ import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.reservation.repository.entity.ReservationEntity;
-import roomescape.reservation.service.DuplicateReservationCondition;
+import roomescape.reservation.repository.dto.DuplicateReservationCondition;
 import roomescape.theme.repository.dao.ThemeDao;
 import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.time.repository.dao.ReservationTimeDao;
