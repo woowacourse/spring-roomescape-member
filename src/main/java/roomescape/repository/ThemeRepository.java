@@ -75,4 +75,9 @@ public class ThemeRepository {
                 """;
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
+
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
 }

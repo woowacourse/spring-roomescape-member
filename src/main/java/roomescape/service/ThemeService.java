@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
 
@@ -21,6 +23,9 @@ public class ThemeService {
     }
 
     public ThemeResponse register(ThemeRequest themeRequest) {
+        if (themeRepository.existsByName(themeRequest.name())) {
+            throw new RoomescapeException(ErrorCode.THEME_DUPLICATED);
+        }
         Theme theme = themeRepository.save(themeRequest.name(), themeRequest.description(), themeRequest.url());
         return ThemeResponse.from(theme);
     }
