@@ -65,6 +65,11 @@ public class ReservationService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     @Transactional
     public void delete(Long id) {
         if (!reservationRepository.deleteById(id)) {

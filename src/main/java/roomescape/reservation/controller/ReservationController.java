@@ -1,15 +1,21 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.service.ReservationService;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -35,5 +41,16 @@ public class ReservationController {
         return ResponseEntity.status(CREATED)
                 .body(ReservationResponse.from(reservation));
     }
+    @GetMapping
+    public ResponseEntity<ReservationsResponse> listByName(
+            @NotBlank(message = "예약자 이름은 비어 있을 수 없습니다.")
+            @RequestParam("name") String name
+    ) {
+        List<ReservationResponse> reservations = reservationService.findByName(name)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
 
+        return ResponseEntity.ok(ReservationsResponse.from(reservations));
+    }
 }

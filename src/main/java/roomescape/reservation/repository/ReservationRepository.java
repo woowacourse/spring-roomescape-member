@@ -8,6 +8,8 @@ import java.util.List;
 public interface ReservationRepository {
     List<Reservation> findAll();
 
+    List<Reservation> findByName(String name);
+
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
     Reservation save(Reservation reservation);
