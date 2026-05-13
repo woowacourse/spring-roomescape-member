@@ -14,15 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(statements = {
-        "SET REFERENTIAL_INTEGRITY FALSE",
-        "TRUNCATE TABLE reservation RESTART IDENTITY",
-        "TRUNCATE TABLE reservation_time RESTART IDENTITY",
-        "TRUNCATE TABLE theme RESTART IDENTITY",
-        "SET REFERENTIAL_INTEGRITY TRUE"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-
+@Sql(scripts = {"/truncate.sql", "/mockData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationControllerTest {
 
     @LocalServerPort
@@ -40,7 +32,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(17));
+                .body("reservations.size()", is(17));
     }
 
     @Test
@@ -53,8 +45,18 @@ public class ReservationControllerTest {
     }
 
     @Test
+    public void 존재하지_않는_예약_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/reservations/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("RESERVATION_NOT_FOUND"));
+    }
+
+    @Test
     public void 예약_생성_API() {
-        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 6), 2L, 2L);
+        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.now().plusDays(3), 2L, 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -63,5 +65,72 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("size()", is(5));
+    }
+
+    @Test
+    public void 이미_존재하는_예약_생성_API() {
+        ReservationRequest reservationRequest = new ReservationRequest("새로운사용자", LocalDate.now().plusDays(3), 10L, 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESERVATION_DUPLICATE"));
+    }
+
+    @Test
+    public void 잘못된_형식의_날짜_입력시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"name\": \"포비\", \"date\": \"abc\", \"timeId\": 2, \"themeId\": 2}")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
+
+    @Test
+    public void 사용자_이름으로_예약을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", "루팡4")
+                .when().get("/reservations/user")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(4));
+    }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2027-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/11")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있지만_예전_날짜로_변경할_수_없다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2025-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/11")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("RESERVATION_WRONG_DATE"));
+    }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있지만_이미_지난_예약은_변경할_수_없다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2027-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("RESERVATION_WRONG_DATE"));
     }
 }

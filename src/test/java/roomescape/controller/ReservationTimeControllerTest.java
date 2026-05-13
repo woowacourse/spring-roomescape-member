@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,14 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.TimeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(statements = {
-        "SET REFERENTIAL_INTEGRITY FALSE",
-        "TRUNCATE TABLE reservation RESTART IDENTITY",
-        "TRUNCATE TABLE reservation_time RESTART IDENTITY",
-        "TRUNCATE TABLE theme RESTART IDENTITY",
-        "SET REFERENTIAL_INTEGRITY TRUE"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/truncate.sql", "/mockData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
 public class ReservationTimeControllerTest {
 
@@ -41,17 +35,19 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(14));
+                .body("times.size()", is(14));
     }
 
     @Test
     public void 테마_별_예약가능한_시간_조회_API() {
+        LocalDate date = LocalDate.now().minusDays(2);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/times/2?date=2026-05-04")
+                .queryParam("date", date.toString())
+                .when().get("/times/2")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(12));
+                .body("times.size()", is(12));
     }
 
     @Test
@@ -61,6 +57,16 @@ public class ReservationTimeControllerTest {
                 .when().delete("/times/11")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    public void 존재하지_않는_시간_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("TIME_NOT_FOUND"));
     }
 
     @Test
@@ -74,5 +80,16 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("size()", is(2));
+    }
+
+    @Test
+    public void 잘못된_형식의_시간_입력시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"startAt\": \"abc\"}")
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
     }
 }

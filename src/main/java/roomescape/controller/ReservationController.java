@@ -1,15 +1,18 @@
 package roomescape.controller;
 
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.ReservationAllResponse;
+import roomescape.dto.ReservationPatchRequest;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -25,8 +28,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> read() {
-        List<ReservationResponse> reservations = reservationService.read();
+    public ResponseEntity<ReservationAllResponse> read() {
+        ReservationAllResponse reservations = reservationService.read();
         return ResponseEntity.ok(reservations);
     }
 
@@ -40,5 +43,18 @@ public class ReservationController {
     public ResponseEntity<Void> removeById(@PathVariable Long id) {
         reservationService.removeById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<ReservationAllResponse> readReservationByName(@RequestParam String name) {
+        ReservationAllResponse reservations = reservationService.readByName(name);
+        return ResponseEntity.ok(reservations);
+    }
+
+    @PatchMapping("/user/{id}")
+    public ResponseEntity<ReservationResponse> patchReservation(@PathVariable Long id,
+                                                                @RequestBody ReservationPatchRequest reservationPatchRequest) {
+        ReservationResponse reservationResponse = reservationService.patchById(id, reservationPatchRequest);
+        return ResponseEntity.ok(reservationResponse);
     }
 }

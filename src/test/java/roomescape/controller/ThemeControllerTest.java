@@ -13,14 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(statements = {
-        "SET REFERENTIAL_INTEGRITY FALSE",
-        "TRUNCATE TABLE reservation RESTART IDENTITY",
-        "TRUNCATE TABLE reservation_time RESTART IDENTITY",
-        "TRUNCATE TABLE theme RESTART IDENTITY",
-        "SET REFERENTIAL_INTEGRITY TRUE"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/truncate.sql", "/mockData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
 public class ThemeControllerTest {
 
@@ -39,7 +32,7 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(17));
+                .body("themes.size()", is(17));
     }
 
     @Test
@@ -62,5 +55,47 @@ public class ThemeControllerTest {
                 .when().delete("/themes/7")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    public void 존재하지_않는_테마_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("THEME_NOT_FOUND"));
+    }
+
+    @Test
+    public void 인기_테마_조회_API의_limit값_1() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("limit", 31)
+                .when().get("/themes/ranks")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("THEME_RANK_INVALID_LIMIT"));
+    }
+
+    @Test
+    public void 인기_테마_조회_API의_limit값_2() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("limit", 0)
+                .when().get("/themes/ranks")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("THEME_RANK_INVALID_LIMIT"));
+    }
+
+    @Test
+    public void 인기_테마_조회_API의_limit값이_없을_때() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes/ranks")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_QUERY_STRING"));
     }
 }

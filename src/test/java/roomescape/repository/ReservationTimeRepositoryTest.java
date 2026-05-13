@@ -1,28 +1,22 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.model.ReservationTime;
 
 @JdbcTest
+@Import(TimeRepository.class)
 public class ReservationTimeRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private TimeRepository timeRepository;
-
-    @BeforeEach
-    public void setUp() {
-        timeRepository = new TimeRepository(jdbcTemplate);
-    }
 
     @Test
     void 전쳬_시간_조회를_할_수_있다() {
@@ -45,7 +39,7 @@ public class ReservationTimeRepositoryTest {
         // when
         Optional<ReservationTime> time = timeRepository.findById(2L);
         // then
-        Assertions.assertEquals(LocalTime.of(11, 0), time.get().getStartAt());
+        Assertions.assertEquals(LocalTime.of(11, 0), time.get().startAt());
     }
 
     @Test
@@ -62,9 +56,9 @@ public class ReservationTimeRepositoryTest {
     void 테마ID와_날짜로_예약_가능한_시간을_조회할_수_있다() {
         // given
         Long themeId = 2L;
-        String date = "2026-05-04";
+        LocalDate date = LocalDate.now().minusDays(2);
         // when
-        List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
+        List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date.toString());
         // then
         Assertions.assertEquals(12, times.size());
     }

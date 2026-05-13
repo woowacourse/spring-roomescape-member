@@ -1,37 +1,32 @@
 package roomescape.repository;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 @JdbcTest
+@Import(ReservationRepository.class)
 public class ReservationRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private ReservationRepository reservationRepository;
-
-    @BeforeEach
-    public void setUp() {
-        reservationRepository = new ReservationRepository(jdbcTemplate);
-    }
 
     @Test
     void 모든_예약을_조회한다() {
         // when
         List<Reservation> reservations = reservationRepository.findAll();
         // then
-        Assertions.assertEquals(17, reservations.size());
+        assertEquals(17, reservations.size());
     }
 
     @Test
@@ -39,7 +34,7 @@ public class ReservationRepositoryTest {
         // when
         reservationRepository.deleteById(2L);
         // then
-        Assertions.assertEquals(16, reservationRepository.findAll().size());
+        assertEquals(16, reservationRepository.findAll().size());
     }
 
     @Test
@@ -55,11 +50,13 @@ public class ReservationRepositoryTest {
         Reservation saved = reservationRepository.save(reservation);
 
         // then
-        Assertions.assertEquals(18, reservationRepository.findAll().size());
-        Assertions.assertEquals(18L, saved.getId());
-        Assertions.assertEquals("포비", saved.getName());
-        Assertions.assertEquals(LocalDate.of(2026, 5, 5), saved.getDate());
-        Assertions.assertEquals(1L, saved.getTime().getId());
-        Assertions.assertEquals(1L, saved.getTheme().getId());
+        assertAll(
+                () -> assertEquals(18, reservationRepository.findAll().size()),
+                () -> assertEquals(18L, saved.id()),
+                () -> assertEquals("포비", saved.name()),
+                () -> assertEquals(LocalDate.of(2026, 5, 5), saved.date()),
+                () -> assertEquals(1L, saved.time().id()),
+                () -> assertEquals(1L, saved.theme().getId())
+        );
     }
 }

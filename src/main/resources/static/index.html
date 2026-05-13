@@ -11,9 +11,17 @@
         header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white; padding: 20px 0; text-align: center;
+            position: relative;
         }
         header h1 { font-size: 1.8rem; }
         header p { margin-top: 4px; opacity: 0.8; font-size: 0.9rem; }
+        .admin-link {
+            position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
+            color: white; text-decoration: none; font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.5); padding: 6px 14px; border-radius: 20px;
+            transition: background 0.2s;
+        }
+        .admin-link:hover { background: rgba(255,255,255,0.15); }
 
         nav {
             display: flex; justify-content: center; gap: 12px;
@@ -94,13 +102,35 @@
         .btn-primary:hover { background: #2980b9; }
         .btn-primary:disabled { background: #bdc3c7; cursor: not-allowed; }
 
+        .btn-sm {
+            padding: 6px 14px; border: none; border-radius: 6px;
+            font-size: 0.82rem; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-edit:hover { background: #d68910; }
+        .btn-cancel { background: #e74c3c; color: white; }
+        .btn-cancel:hover { background: #c0392b; }
+        .btn-cancel-action { background: #95a5a6; color: white; }
+        .btn-cancel-action:hover { background: #7f8c8d; }
+
         .message {
             padding: 12px 16px; border-radius: 8px; margin-top: 16px; display: none;
         }
         .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; white-space: pre-line; }
+        .message .action { font-size: 0.85rem; margin-top: 4px; opacity: 0.85; }
 
         .empty { text-align: center; padding: 40px; color: #999; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; }
+        tr:hover { background: #fafafa; }
+
+        .search-row { display: flex; gap: 12px; align-items: flex-end; }
+        .search-row .form-group { flex: 1; margin: 0; }
+        .edit-card { border-left: 4px solid #f39c12; }
+        .edit-card h3 { color: #f39c12; }
     </style>
 </head>
 <body>
@@ -108,12 +138,14 @@
 <header>
     <h1>방탈출 예약</h1>
     <p>테마를 고르고, 탈출에 도전하세요!</p>
+    <a href="/admin.html" class="admin-link">관리자 페이지</a>
 </header>
 
 <nav>
-    <button class="active" onclick="showSection('popular')">인기 테마</button>
-    <button onclick="showSection('themes')">전체 테마</button>
-    <button onclick="showSection('reservation')">예약하기</button>
+    <button class="active" onclick="showSection('popular', this)">인기 테마</button>
+    <button onclick="showSection('themes', this)">전체 테마</button>
+    <button onclick="showSection('reservation', this)">예약하기</button>
+    <button onclick="showSection('my-reservations', this)">내 예약</button>
 </nav>
 
 <div class="container">
@@ -168,20 +200,73 @@
         </div>
     </div>
 
+    <div id="my-reservations" class="section">
+        <div class="card">
+            <h3>내 예약 조회</h3>
+            <div class="search-row">
+                <div class="form-group">
+                    <label for="my-name">이름</label>
+                    <input type="text" id="my-name" placeholder="예약 시 입력한 이름">
+                </div>
+                <button class="btn-primary" onclick="loadMyReservations()" style="margin-bottom:0; white-space:nowrap;">조회</button>
+            </div>
+            <div id="my-message" class="message"></div>
+        </div>
+
+        <div id="edit-card" class="card edit-card" style="display:none;">
+            <h3>예약 변경</h3>
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-theme-id">
+            <div class="form-group">
+                <label for="edit-date">변경할 날짜</label>
+                <input type="date" id="edit-date">
+            </div>
+            <div class="form-group">
+                <label>변경할 시간</label>
+                <div id="edit-time-slots" class="time-slots">
+                    <p class="empty">날짜를 먼저 선택해주세요</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-primary" id="btn-patch" onclick="patchReservation()" disabled>변경하기</button>
+                <button class="btn-sm btn-cancel-action" onclick="closeEditCard()" style="padding:12px 20px; font-size:1rem;">취소</button>
+            </div>
+            <div id="edit-message" class="message"></div>
+        </div>
+
+        <div id="my-reservation-list"></div>
+    </div>
+
 </div>
 
 <script>
     let selectedTimeId = null;
+    let editSelectedTimeId = null;
 
-    function showSection(id) {
+    function showSection(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        event.target.classList.add('active');
+        btn.classList.add('active');
 
         if (id === 'popular') loadPopularThemes();
         if (id === 'themes') loadAllThemes();
         if (id === 'reservation') loadThemeOptions();
+    }
+
+    function showMessage(el, type, text) {
+        el.className = `message ${type}`;
+        el.textContent = text;
+        el.style.display = 'block';
+    }
+
+    async function parseError(res) {
+        try {
+            const data = await res.json();
+            return data.message + (data.action ? '\n' + data.action : '');
+        } catch {
+            return '오류가 발생했습니다.';
+        }
     }
 
     function renderThemeCard(theme, rank) {
@@ -204,8 +289,9 @@
         const grid = document.getElementById('popular-grid');
         grid.innerHTML = '';
         try {
-            const res = await fetch('/themes/ranks');
-            const themes = await res.json();
+            const res = await fetch('/themes/ranks?limit=10');
+            const data = await res.json();
+            const themes = data.themes;
             if (themes.length === 0) {
                 grid.innerHTML = '<p class="empty">아직 인기 테마가 없습니다</p>';
                 return;
@@ -221,7 +307,8 @@
         grid.innerHTML = '';
         try {
             const res = await fetch('/themes');
-            const themes = await res.json();
+            const data = await res.json();
+            const themes = data.themes;
             if (themes.length === 0) {
                 grid.innerHTML = '<p class="empty">등록된 테마가 없습니다</p>';
                 return;
@@ -238,7 +325,8 @@
         select.innerHTML = '<option value="">-- 테마를 선택하세요 --</option>';
         try {
             const res = await fetch('/themes');
-            const themes = await res.json();
+            const data = await res.json();
+            const themes = data.themes;
             themes.forEach(theme => {
                 const opt = document.createElement('option');
                 opt.value = theme.id;
@@ -263,7 +351,8 @@
 
         try {
             const res = await fetch(`/times/${themeId}?date=${date}`);
-            const times = await res.json();
+            const data = await res.json();
+            const times = data.times;
             if (times.length === 0) {
                 container.innerHTML = '<p class="empty">예약 가능한 시간이 없습니다</p>';
                 return;
@@ -283,7 +372,7 @@
     }
 
     function selectTime(timeId, btn) {
-        document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#time-slots .time-slot').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedTimeId = timeId;
         document.getElementById('btn-reserve').disabled = false;
@@ -295,7 +384,6 @@
         const themeId = document.getElementById('res-theme').value;
         const msgEl = document.getElementById('res-message');
 
-        msgEl.className = 'message';
         msgEl.style.display = 'none';
 
         if (!name || name.length < 2 || name.length > 10) {
@@ -320,24 +408,166 @@
                 document.getElementById('btn-reserve').disabled = true;
                 loadAvailableTimes();
             } else {
-                const text = await res.text();
-                showMessage(msgEl, 'error', text || '예약에 실패했습니다.');
+                showMessage(msgEl, 'error', await parseError(res));
             }
         } catch (e) {
             showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
         }
     }
 
-    function showMessage(el, type, text) {
-        el.className = `message ${type}`;
-        el.textContent = text;
-        el.style.display = 'block';
+    // ---- 내 예약 ----
+
+    async function loadMyReservations() {
+        const name = document.getElementById('my-name').value.trim();
+        const msgEl = document.getElementById('my-message');
+        const listEl = document.getElementById('my-reservation-list');
+
+        msgEl.style.display = 'none';
+        listEl.innerHTML = '';
+
+        if (!name) {
+            showMessage(msgEl, 'error', '이름을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/reservations/user?name=${encodeURIComponent(name)}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                showMessage(msgEl, 'error', data.message + (data.action ? '\n' + data.action : ''));
+                return;
+            }
+
+            const reservations = data.reservations;
+            if (reservations.length === 0) {
+                listEl.innerHTML = '<div class="card"><p class="empty">예약 내역이 없습니다</p></div>';
+                return;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <table>
+                    <thead>
+                        <tr><th>날짜</th><th>시간</th><th>테마</th><th></th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        ${reservations.map(r => `
+                            <tr>
+                                <td>${r.date}</td>
+                                <td>${r.time ? r.time.startAt : '-'}</td>
+                                <td>${r.theme ? r.theme.name : '-'}</td>
+                                <td><button class="btn-sm btn-edit" onclick="showEditCard(${r.id}, ${r.theme ? r.theme.id : 0})">변경</button></td>
+                                <td><button class="btn-sm btn-cancel" onclick="cancelMyReservation(${r.id})">취소</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            listEl.appendChild(card);
+        } catch (e) {
+            showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다.');
+        }
+    }
+
+    async function cancelMyReservation(id) {
+        if (!confirm('예약을 취소하시겠습니까?')) return;
+        try {
+            const res = await fetch(`/reservations/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                loadMyReservations();
+            } else {
+                const msg = await parseError(res);
+                alert(msg);
+            }
+        } catch (e) {
+            alert('네트워크 오류가 발생했습니다.');
+        }
+    }
+
+    function showEditCard(reservationId, themeId) {
+        editSelectedTimeId = null;
+        document.getElementById('edit-id').value = reservationId;
+        document.getElementById('edit-theme-id').value = themeId;
+        document.getElementById('edit-date').value = '';
+        document.getElementById('edit-date').min = new Date().toISOString().split('T')[0];
+        document.getElementById('edit-time-slots').innerHTML = '<p class="empty">날짜를 먼저 선택해주세요</p>';
+        document.getElementById('btn-patch').disabled = true;
+        document.getElementById('edit-message').style.display = 'none';
+        document.getElementById('edit-card').style.display = 'block';
+        document.getElementById('edit-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeEditCard() {
+        document.getElementById('edit-card').style.display = 'none';
+    }
+
+    async function loadEditTimes() {
+        const date = document.getElementById('edit-date').value;
+        const themeId = document.getElementById('edit-theme-id').value;
+        const container = document.getElementById('edit-time-slots');
+        editSelectedTimeId = null;
+        document.getElementById('btn-patch').disabled = true;
+
+        if (!date) return;
+
+        try {
+            const res = await fetch(`/times/${themeId}?date=${date}`);
+            const data = await res.json();
+            const times = data.times;
+            if (times.length === 0) {
+                container.innerHTML = '<p class="empty">예약 가능한 시간이 없습니다</p>';
+                return;
+            }
+            container.innerHTML = '';
+            times.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'time-slot';
+                btn.textContent = time.startAt;
+                btn.onclick = () => selectEditTime(time.id, btn);
+                container.appendChild(btn);
+            });
+        } catch (e) {
+            container.innerHTML = '<p class="empty">시간을 불러오지 못했습니다</p>';
+        }
+    }
+
+    function selectEditTime(timeId, btn) {
+        document.querySelectorAll('#edit-time-slots .time-slot').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        editSelectedTimeId = timeId;
+        document.getElementById('btn-patch').disabled = false;
+    }
+
+    async function patchReservation() {
+        const id = document.getElementById('edit-id').value;
+        const date = document.getElementById('edit-date').value;
+        const msgEl = document.getElementById('edit-message');
+
+        try {
+            const res = await fetch(`/reservations/user/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, timeId: editSelectedTimeId })
+            });
+
+            if (res.ok) {
+                closeEditCard();
+                loadMyReservations();
+            } else {
+                showMessage(msgEl, 'error', await parseError(res));
+            }
+        } catch (e) {
+            showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다.');
+        }
     }
 
     document.getElementById('res-date').addEventListener('change', loadAvailableTimes);
     document.getElementById('res-theme').addEventListener('change', loadAvailableTimes);
-
     document.getElementById('res-date').min = new Date().toISOString().split('T')[0];
+    document.getElementById('edit-date').addEventListener('change', loadEditTimes);
 
     loadPopularThemes();
 </script>
