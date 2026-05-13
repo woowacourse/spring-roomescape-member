@@ -1,6 +1,11 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
@@ -20,6 +25,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Logger logger = LoggerFactory.getLogger(ReservationTimeRepository.class);
+
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
@@ -41,12 +48,23 @@ public class ReservationService {
                     throw new ReservationDuplicatedException(request.date(), request.timeId(), request.themeId());
                 });
 
+        if (isPassed(request.date(), reservationTime.getStartAt())) {
+            throw new IllegalArgumentException("과거로 예약할 수 없습니다.");
+        }
+
         Reservation reservation = Reservation.of(
                 request.name(),
                 request.date(),
                 reservationTime,
                 theme);
         return reservationRepository.save(reservation);
+    }
+
+    private Boolean isPassed(LocalDate date, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+        logger.info("현재 시각 - %s".formatted(now));
+        return localDateTime.isBefore(now);
     }
 
     @Transactional(readOnly = true)
