@@ -78,7 +78,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 테마_정보가_수정이_된다() {
+    void 테마_정보를_수정한다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
         Theme savedTheme = themeRepository.save(theme);

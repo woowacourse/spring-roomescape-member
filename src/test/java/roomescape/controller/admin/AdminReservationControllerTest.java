@@ -24,6 +24,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.fixture.ReservationRequestFixture;
+import roomescape.domain.ReservationStatus;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.admin.AdminReservationController;
 import roomescape.web.dto.reservation.ReservationRequest;
@@ -63,7 +64,8 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
         ThemeResponse themeResponse = new ThemeResponse(1L, "바니의 집", "바니의 테마입니다.", "http://image.png.image.com");
 
-        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse, themeResponse);
+        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse, themeResponse,
+                ReservationStatus.RESERVED);
         when(reservationService.reserve(any(ReservationRequest.class))).thenReturn(expected);
 
         // when & then
@@ -106,10 +108,13 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "바니의 집", "바니의 테마입니다.", "http://image.png.image.com");
 
-        ReservationResponses expected = new ReservationResponses(List.of(
-                new ReservationResponse(1L, "웨지", LocalDate.of(2028, 5, 9), timeResponse, themeResponse),
-                new ReservationResponse(2L, "바니", LocalDate.of(2028, 5, 10), timeResponse, themeResponse)
-        ));
+        ReservationResponses expected = new ReservationResponses(
+                List.of(
+                        new ReservationResponse(1L, "웨지", LocalDate.of(2028, 5, 9),
+                                timeResponse, themeResponse, ReservationStatus.RESERVED),
+                        new ReservationResponse(2L, "바니", LocalDate.of(2028, 5, 10),
+                                timeResponse, themeResponse, ReservationStatus.RESERVED)
+                ));
         when(reservationService.getAllReservationsByPaging(0, 10)).thenReturn(expected.responses());
 
         // when & then

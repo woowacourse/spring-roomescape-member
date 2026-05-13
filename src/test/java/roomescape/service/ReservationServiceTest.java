@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ForbiddenException;
 import roomescape.global.exception.InactiveException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -23,6 +25,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
+import roomescape.web.dto.reservation.ReservationCancelRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
@@ -161,7 +164,7 @@ class ReservationServiceTest {
     @Test
     void 사용자_이름으로_예약_내역을_조회한다() {
         // given
-        Reservation bunnyReservation = reservationRepository.save(
+        Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니"));
         reservationRepository.save(ReservationFixture.createDefaultReservationWithName("웨지"));
 
@@ -169,6 +172,28 @@ class ReservationServiceTest {
         List<ReservationResponse> response = reservationService.getReservationsByUser("바니");
 
         // then
-        assertThat(response).containsOnly(ReservationResponse.from(bunnyReservation));
+        assertThat(response).containsOnly(ReservationResponse.from(reservation));
+    }
+
+    @Test
+    void 사용자_이름으로_예약을_취소한다() {
+        // given
+        Reservation reservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithName("바니"));
+
+        // when & then
+        assertThatCode(() -> reservationService.cancel(reservation.getId(), new ReservationCancelRequest("바니")))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 사용자_이름이_일치하지_않는_예약을_취소하면_예외가_발생한다() {
+        // given
+        Reservation reservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithName("바니"));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), new ReservationCancelRequest("웨지")))
+                .isInstanceOf(ForbiddenException.class);
     }
 }

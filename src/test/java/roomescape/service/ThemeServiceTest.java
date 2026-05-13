@@ -19,6 +19,7 @@ import roomescape.domain.fixture.ReservationFixture;
 import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -38,11 +39,8 @@ class ThemeServiceTest {
 
     static Stream<Arguments> provideReservationStatusScenarios() {
         LocalDate today = LocalDate.now();
-        return Stream.of(
-                Arguments.of(today.minusDays(7), false, false),
-                Arguments.of(today, false, true),
-                Arguments.of(today.plusDays(7), true, true)
-        );
+        return Stream.of(Arguments.of(today.minusDays(7), false, false), Arguments.of(today, false, true),
+                Arguments.of(today.plusDays(7), true, true));
     }
 
     @BeforeEach
@@ -62,14 +60,8 @@ class ThemeServiceTest {
         ThemeResponse response = themeService.register(request);
 
         // then
-        assertThat(response)
-                .extracting(
-                        ThemeResponse::id,
-                        ThemeResponse::name,
-                        ThemeResponse::description,
-                        ThemeResponse::thumbnailImageUrl
-                )
-                .containsExactly(1L, "공포테마", "무서운 테마입니다.", "http://image.png");
+        assertThat(response).extracting(ThemeResponse::id, ThemeResponse::name, ThemeResponse::description,
+                ThemeResponse::thumbnailImageUrl).containsExactly(1L, "공포테마", "무서운 테마입니다.", "http://image.png");
     }
 
     @Test
@@ -80,8 +72,7 @@ class ThemeServiceTest {
         ThemeRequest duplicateRequest = new ThemeRequest("공포테마", "다른 설명", "http://image2.png");
 
         // when & then
-        assertThatThrownBy(() -> themeService.register(duplicateRequest))
-                .isInstanceOf(DuplicateEntityException.class)
+        assertThatThrownBy(() -> themeService.register(duplicateRequest)).isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 존재하는 테마입니다. 테마 명: 공포테마");
     }
 
@@ -95,8 +86,7 @@ class ThemeServiceTest {
         themeService.remove(response.id());
 
         // then
-        assertThatCode(() -> themeService.register(request))
-                .doesNotThrowAnyException();
+        assertThatCode(() -> themeService.register(request)).doesNotThrowAnyException();
     }
 
     @Test
@@ -111,9 +101,7 @@ class ThemeServiceTest {
         List<ThemeResponse> responses = themeService.getAllActiveThemesByPaging(0, 10);
 
         // then
-        assertThat(responses)
-                .extracting(ThemeResponse::id)
-                .containsExactly(first.id(), second.id());
+        assertThat(responses).extracting(ThemeResponse::id).containsExactly(first.id(), second.id());
     }
 
     @Test
@@ -128,18 +116,13 @@ class ThemeServiceTest {
         List<ThemeResponse> responses = themeService.getPopularThemes(LocalDate.now().minusDays(7), LocalDate.now(), 1);
 
         // then
-        assertThat(responses)
-                .extracting(ThemeResponse::id)
-                .containsExactly(first.id());
-        assertThat(responses)
-                .extracting(ThemeResponse::id)
-                .doesNotContain(second.id(), inactive.id());
+        assertThat(responses).extracting(ThemeResponse::id).containsExactly(first.id());
+        assertThat(responses).extracting(ThemeResponse::id).doesNotContain(second.id(), inactive.id());
     }
 
     @ParameterizedTest
     @MethodSource("provideReservationStatusScenarios")
-    void 테마별_예약_가능한_시간_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime,
-                                                        boolean expectedForLateTime) {
+    void 테마별_예약_가능한_시간_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime, boolean expectedForLateTime) {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
         for (int hour = 0; hour <= 23; hour++) {
@@ -152,12 +135,10 @@ class ThemeServiceTest {
         List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
 
         // then
-        assertThat(response)
-                .filteredOn(time -> time.startAt().isBefore(nowTime))
+        assertThat(response).filteredOn(time -> time.startAt().isBefore(nowTime))
                 .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForEarlyTime));
 
-        assertThat(response)
-                .filteredOn(time -> time.startAt().isAfter(nowTime))
+        assertThat(response).filteredOn(time -> time.startAt().isAfter(nowTime))
                 .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForLateTime));
     }
 
@@ -169,17 +150,25 @@ class ThemeServiceTest {
         ReservationTime reservedTime = reservationTimeRepository.save(
                 ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
         reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
-        reservationRepository.save(ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
-                reservedTime));
+        reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme, reservedTime));
 
         // when
         List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
 
         // then
-        assertThat(response)
-                .filteredOn(time -> time.id().equals(reservedTime.getId()))
-                .singleElement()
-                .extracting(ThemeTimesResponse::isReservable)
-                .isEqualTo(false);
+        assertThat(response).filteredOn(time -> time.id().equals(reservedTime.getId())).singleElement()
+                .extracting(ThemeTimesResponse::isReservable).isEqualTo(false);
+    }
+
+    @Test
+    void 존재하지_않는_테마_정보로_예약_가능한_시간_조회_시_예외가_발생한다() {
+        // given
+        Long id = 999L;
+        LocalDate date = LocalDate.now();
+
+        // when & then
+        assertThatThrownBy(() -> themeService.getThemeReservationStatus(id, date)).isInstanceOf(
+                EntityNotFoundException.class).hasMessage("존재하지 않는 테마 정보입니다.");
     }
 }

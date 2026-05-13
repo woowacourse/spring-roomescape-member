@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.fixture.ReservationFixture;
@@ -99,6 +101,23 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(dataSource.hasReservationById(saved.getId())).isFalse();
+    }
+
+    @Test
+    void 예약_정보를_수정한다() {
+        // given
+        Reservation reservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithName("바니", theme, reservationTime)
+        );
+
+        // when
+        reservation.cancel();
+        reservationRepository.update(reservation);
+
+        // then
+        Optional<Reservation> found = reservationRepository.findById(reservation.getId());
+        assertThat(found).isPresent();
+        assertThat(found.get().getStatus()).isEqualTo(ReservationStatus.CANCELED);
     }
 
     @Test

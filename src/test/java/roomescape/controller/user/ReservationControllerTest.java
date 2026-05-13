@@ -3,6 +3,9 @@ package roomescape.controller.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.restassured.common.mapper.TypeRef;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,9 +25,11 @@ import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.fixture.ReservationRequestFixture;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.fixture.ReservationFixture;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.user.ReservationController;
+import roomescape.web.dto.reservation.ReservationCancelRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservation.ReservationResponses;
@@ -61,7 +67,8 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
         ThemeResponse themeResponse = new ThemeResponse(1L, "바니의 집", "바니의 테마입니다.", "http://image.png.image.com");
 
-        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse, themeResponse);
+        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse, themeResponse,
+                ReservationStatus.RESERVED);
         when(reservationService.reserve(any(ReservationRequest.class))).thenReturn(expected);
 
         // when & then
@@ -94,5 +101,51 @@ class ReservationControllerTest extends BaseControllerUnitTest {
                 });
 
         assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
+    void 정상적인_예약_ID로_예약_취소_요청_시_204_NO_CONTENT를_응답한다() {
+        // given
+        ReservationCancelRequest request = new ReservationCancelRequest("바니");
+
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .body(request)
+                .when().patch("/api/reservations/1")
+                .then().log().all()
+                .status(HttpStatus.NO_CONTENT);
+
+        verify(reservationService, times(1))
+                .cancel(anyLong(), any(ReservationCancelRequest.class));
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 예약_취소를_요청하는_예약_ID가_양수가_아니라면_예외가_발생한다(int reservationId) {
+        // given
+        ReservationCancelRequest request = new ReservationCancelRequest("바니");
+
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .body(request)
+                .when().patch("/api/reservations/" + reservationId)
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("예약 식별자는 양수여야 합니다."));
+    }
+
+    @Test
+    void 예약_취소_요청_시_예약자_명이_빈_값이면_예외가_발생한다() {
+        // given
+        ReservationCancelRequest request = new ReservationCancelRequest(" ");
+
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .body(request)
+                .when().patch("/api/reservations/1")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("예약자 이름 정보는 필수 값입니다."));
     }
 }

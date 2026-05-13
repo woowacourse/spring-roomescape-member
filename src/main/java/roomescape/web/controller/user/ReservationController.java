@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import roomescape.web.dto.reservation.ReservationResponses;
 
 @RestController
 @RequestMapping("/api/reservations")
+@Validated
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -46,7 +48,7 @@ public class ReservationController {
     public ResponseEntity<Void> cancel(
             @PathVariable
             @Positive(message = "예약 식별자는 양수여야 합니다.") Long id,
-            @RequestBody ReservationCancelRequest request
+            @Valid @RequestBody ReservationCancelRequest request
     ) {
         reservationService.cancel(id, request);
 
