@@ -76,6 +76,8 @@ public class ReservationService {
             throw new AuthorizationException("예약을 취소할 권한이 없습니다.");
         }
 
+        reservation.validateCancelOrChangeable(LocalDateTime.now());
+
         reservationRepository.delete(reservationId);
     }
 
@@ -87,6 +89,8 @@ public class ReservationService {
         if (!reservation.isOwnedBy(currentUserId)) {
             throw new AuthorizationException("예약을 변경할 권한이 없습니다.");
         }
+
+        reservation.validateCancelOrChangeable(LocalDateTime.now());
 
         if (reservation.getSchedule().getId().equals(newScheduleId)) {
             throw new SameScheduleException("기존과 동일한 스케줄로 변경할 수 없습니다.");
