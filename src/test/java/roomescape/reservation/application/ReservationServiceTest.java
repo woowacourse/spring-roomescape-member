@@ -73,4 +73,30 @@ class ReservationServiceTest {
                 .build()
         )).doesNotThrowAnyException();
     }
+
+    @Test
+    @DisplayName("자신의 ID를 시간 변경 없이 그대로 수정해도 수정된다.")
+    void canChangeTest() {
+        ReservationTime time = reservationTimeService.addReservationTime(ReservationTime.builder()
+                .startAt(LocalTime.now(clock))
+                .build()
+        );
+        Theme theme = themeService.addTheme(Theme.builder()
+                .name("포비")
+                .durationTime(LocalTime.now(clock))
+                .thumbnailImageUrl("https://~~~")
+                .description("포비가 나와요")
+                .build()
+        );
+        Reservation reservation = reservationService.addReservation(ReservationCreateCommand.builder()
+                .name("리사")
+                .date(LocalDate.now(clock))
+                .timeId(time.getId())
+                .themeId(theme.getId())
+                .build()
+        );
+        Assertions.assertThatCode(() -> reservation.changeTime(
+                reservation.getDate(), reservation.getTime(), reservation.getTheme()))
+                .doesNotThrowAnyException();
+    }
 }
