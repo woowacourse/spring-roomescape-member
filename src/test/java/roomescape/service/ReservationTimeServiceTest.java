@@ -33,8 +33,8 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository(reservationRepository);
         themeRepository = new FakeThemeRepository();
         reservationTimeService = new ReservationTimeService(
                 reservationTimeRepository,
@@ -88,7 +88,6 @@ class ReservationTimeServiceTest {
         ReservationTime time1 = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
         ReservationTime time2 = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(11, 0), theme));
 
-
         LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.save(Reservation.createNew("쿠다", date, time1));
 
@@ -97,7 +96,7 @@ class ReservationTimeServiceTest {
 
         // then
         assertThat(availableTimes).hasSize(1);
-        assertThat(availableTimes.get(0).id()).isEqualTo(time2.getId());
+        assertThat(availableTimes.getFirst().id()).isEqualTo(time2.getId());
     }
 
 }

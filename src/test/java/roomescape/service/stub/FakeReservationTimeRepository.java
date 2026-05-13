@@ -6,13 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
+    private final ReservationRepository reservationRepository;
+
     private final List<ReservationTime> storage = new ArrayList<>();
     private long sequence = 1L;
+
+    public FakeReservationTimeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public List<ReservationTime> findAll() {
@@ -37,6 +44,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAvailableTimes(LocalDate date, Long themeId) {
         return storage.stream()
                 .filter(time -> Objects.equals(time.getTheme().getId(), themeId))
+                .filter(time -> !reservationRepository.existsByDateAndTimeId(date, time.getId()))
                 .toList();
     }
 
