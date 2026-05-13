@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,9 +16,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.CannotDeleteReservationException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
+import roomescape.exception.ReservationDoesNotExistsException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
@@ -125,9 +128,57 @@ class ReservationServiceTest {
                 new ReservationRequestDTO("루드비코", LocalDate.now().plusDays(1), 1L, 1L)
         );
 
-        reservationService.deleteReservation(addedReservation.id());
+        reservationService.deleteReservationById(addedReservation.id());
 
         assertThat(reservationService.readAllReservation()).isEmpty();
+    }
+
+    @DisplayName("사용자가 본인의 예약을 취소한다")
+    @Test
+    void 사용자_이름과_날짜와_시간과_테마가_일치하는_예약을_취소한다() {
+        // given
+        ReservationRequestDTO reservationRequestDTO = new ReservationRequestDTO(
+                "루드비코", LocalDate.now().plusDays(1), 1L, 1L
+        );
+
+        ReservationResponseDTO addedReservation = reservationService.addReservation(reservationRequestDTO);
+
+        // when
+        reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(reservationRequestDTO);
+
+        // then
+        assertThatThrownBy(() -> reservationService.findById(addedReservation.id()))
+                .isExactlyInstanceOf(NoSuchElementException.class);
+    }
+
+    @DisplayName("과거 시점의 예약은 취소할 수 없다")
+    @Sql("/data.sql")
+    @Test
+    void 과거_시점의_예약을_취소하면_CannotDeleteReservationException을_던진다() {
+        // when and then
+        assertThatThrownBy(() -> reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(
+                new ReservationRequestDTO(
+                        "루드비코",
+                        LocalDate.now().minusDays(7),
+                        1L,
+                        1L
+                )
+        )).isExactlyInstanceOf(CannotDeleteReservationException.class)
+                .hasMessageContaining("과거");
+    }
+
+    @DisplayName("존재하지 않는 예약은 취소할 수 없다")
+    @Test
+    void 존재하지_않는_예약을_취소하면_ReservationDoesNotExistsException을_던진다() {
+        // when and then
+        assertThatThrownBy(() -> reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(
+                new ReservationRequestDTO(
+                        "루드비코",
+                        LocalDate.now().plusDays(1),
+                        Long.MAX_VALUE,
+                        Long.MAX_VALUE
+                )
+        )).isExactlyInstanceOf(ReservationDoesNotExistsException.class);
     }
 
     @DisplayName("사용자 이름으로 예약을 조회한다")

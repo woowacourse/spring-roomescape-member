@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteByNameAndDateAndTimeIdAndThemeId(
+    public int deleteByNameAndDateAndTimeIdAndThemeId(
             String name,
             LocalDate date,
             Long timeId,
@@ -145,7 +145,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 AND time_id = ?
                 AND theme_id = ?
                 """;
-        jdbcTemplate.update(
+
+        return jdbcTemplate.update(
                 sql,
                 name, date, timeId, themeId
         );
