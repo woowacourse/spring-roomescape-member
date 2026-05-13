@@ -106,7 +106,7 @@ class JdbcThemeRepositoryTest {
 
         for (int i = 0; i < tenPopularThemesOrderByRank.size(); i++) {
             for (int j = 0; j < i + 1; j++) {
-                reservationRepository.createReservation(new Reservation(
+                reservationRepository.createReservation(Reservation.create(
                     "name", LocalDate.now().minusDays(1), times.get(j), tenPopularThemesOrderByRank.get(i)
                 ));
             }

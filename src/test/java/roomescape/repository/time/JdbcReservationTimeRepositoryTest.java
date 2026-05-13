@@ -110,7 +110,7 @@ class JdbcReservationTimeRepositoryTest {
         Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", ThemeImageUrl.defaultImageUrl().value()));
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationRepository.createReservation(new Reservation("브라운", tomorrow, bookedTime, theme));
+        reservationRepository.createReservation(Reservation.create("브라운", tomorrow, bookedTime, theme));
 
         // when
         List<ReservationTime> availableTimes = timeRepository.findTimesByDateAndThemeId(tomorrow, theme.getId());

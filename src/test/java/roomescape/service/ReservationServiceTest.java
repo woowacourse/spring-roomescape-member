@@ -97,7 +97,7 @@ class ReservationServiceTest {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("이름", tomorrow, SAVED_TIME, otherTheme);
+        Reservation reservation = Reservation.create("이름", tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));

@@ -31,7 +31,7 @@ class ReservationControllerTest {
 
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
     private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", ThemeImageUrl.defaultImageUrl());
-    private static final Reservation RESERVATION = new Reservation(
+    private static final Reservation RESERVATION = Reservation.create(
             "이름",
             LocalDate.now().plusDays(1L),
             TIME,
