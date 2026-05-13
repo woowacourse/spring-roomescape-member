@@ -26,50 +26,68 @@ export const getNextThemeThumbnail = (seed = '') => {
 };
 
 const handleResponse = async (response) => {
-  if (!response.ok) {
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-      throw new Error(error.message || 'Network response was not ok');
-    }
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
 
-    const message = await response.text().catch(() => '');
-    throw new Error(message || 'Network response was not ok');
+  if (!response.ok) {
+    if (isJson) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || '서버 오류가 발생했습니다.');
+    }
+    const errorText = await response.text().catch(() => '네트워크 오류가 발생했습니다.');
+    throw new Error(errorText);
   }
+
   if (response.status === 204) return null;
-  return response.json();
+
+  if (isJson) {
+    try {
+      const data = await response.json();
+      return Array.isArray(data) ? data : data || {};
+    } catch (e) {
+      return [];
+    }
+  }
+
+  const text = await response.text();
+  // Project-specific: 200 OK with error message in body (text/plain)
+  const errorKeywords = ['확인해주세요', '존재합니다', '선택해주세요', '입력해주세요', '권한이 필요합니다', '비어있습니다', '없습니다', '불가능합니다', '불일치'];
+  if (errorKeywords.some(keyword => text.includes(keyword)) && text.length < 200) {
+    throw new Error(text);
+  }
+  
+  // If it's not JSON and not an error, return empty array as fallback for list methods
+  return [];
 };
 
 export const api = {
   // Reservations
-  async getReservations({ date, themeId } = {}) {
+  async getReservations({ date, themeId, name } = {}) {
     const query = new URLSearchParams();
     if (date) query.set('date', date);
     if (themeId) query.set('themeId', themeId);
+    if (name) query.set('name', name);
 
-    const path = query.size > 0 ? `/reservations?${query}` : '/reservations';
+    const queryString = query.toString();
+    const path = queryString ? `/reservations?${queryString}` : '/reservations';
     const response = await fetch(`${BASE_URL}${path}`);
     return handleResponse(response);
   },
 
   async getReservableTimes(date, themeId) {
-    const [times, reservations] = await Promise.all([
+    if (!date || !themeId) return [];
+
+    const [allTimes, reservations] = await Promise.all([
       this.getTimes(),
-      themeId ? this.getReservations({ date, themeId }) : this.getReservations()
+      this.getReservations({ date, themeId })
     ]);
 
-    const reservedTimeIds = new Set(
-      reservations
-        .filter(reservation => reservation.date === date)
-        .filter(reservation => !themeId || String(reservation.theme?.id) === String(themeId))
-        .filter(reservation => reservation.isAvailable === undefined || reservation.isAvailable === false)
-        .map(reservation => String(reservation.time.id))
-    );
+    const bookedTimeIds = new Set(reservations.map(res => String(res.time.id)));
 
-    return times.map(time => ({
+    return allTimes.map(time => ({
       timeId: time.id,
       startAt: time.startAt,
-      available: !reservedTimeIds.has(String(time.id))
+      available: !bookedTimeIds.has(String(time.id))
     }));
   },
 
@@ -87,10 +105,26 @@ export const api = {
     return handleResponse(response);
   },
 
+  async updateReservation(id, { date, timeId }, name) {
+    const response = await fetch(`${BASE_URL}/reservations/${id}?name=${encodeURIComponent(name)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, timeId: timeId ? Number(timeId) : undefined })
+    });
+    return handleResponse(response);
+  },
+
   async deleteReservation(id) {
     const response = await fetch(`${BASE_URL}/reservations/${id}`, {
       method: 'DELETE',
       headers: { Authorization: ADMIN_TOKEN }
+    });
+    return handleResponse(response);
+  },
+
+  async deleteReservationSelf(id, name) {
+    const response = await fetch(`${BASE_URL}/reservations/${id}?name=${encodeURIComponent(name)}`, {
+      method: 'DELETE'
     });
     return handleResponse(response);
   },
@@ -149,7 +183,7 @@ export const api = {
 
   async getPopularThemes({ from, to, limit = 10 } = {}) {
     const query = new URLSearchParams({
-      sortType: 'POPULAR',
+      sortType: 'popularity',
       from,
       to,
       limit

@@ -11,11 +11,11 @@
   <nav class="nav-bar">
     <div class="nav-content">
       <div class="logo">
-        <a href="../user/index.html" style="font-weight: 600; color: white;">방탈출 예약</a>
+        <a href="../user/index.html" class="nav-logo">방탈출 예약</a>
       </div>
       <div class="nav-links">
         <a href="../user/index.html">사용자 화면</a>
-        <a href="index.html" style="opacity: 1;">관리자</a>
+        <a href="index.html">관리자</a>
       </div>
     </div>
   </nav>
@@ -29,35 +29,71 @@
     </section>
 
     <section class="white">
-      <div class="container">
-        <div class="admin-grid">
-          <div class="admin-card">
-            <h2 class="card-title">테마</h2>
-            <div id="theme-list" class="item-list"></div>
-            <div class="add-form">
-              <h3>새 테마 추가</h3>
+      <div class="container admin-container">
+        <div class="admin-card">
+          <h2 class="card-title">테마 관리</h2>
+          <div id="theme-list" class="item-list"></div>
+          <div class="add-form">
+            <h3>새 테마 추가</h3>
+            <div class="form-grid">
               <input type="text" id="theme-name" placeholder="테마 이름">
-              <textarea id="theme-description" placeholder="테마 설명"></textarea>
               <input type="text" id="theme-thumbnail" placeholder="썸네일 이미지 주소">
-              <button id="add-theme-btn" class="btn-primary">테마 추가</button>
+              <textarea id="theme-description" placeholder="테마 설명"></textarea>
+            </div>
+            <button id="add-theme-btn" class="btn-primary">테마 추가</button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2 class="card-title">예약 시간 관리</h2>
+          <div id="time-list" class="item-list"></div>
+          <div class="add-form">
+            <h3>새 시간 추가</h3>
+            <div class="form-row">
+              <button id="open-time-overlay" class="btn-primary">시간 선택하여 추가</button>
             </div>
           </div>
-          <div class="admin-card">
-            <h2 class="card-title">예약 시간</h2>
-            <div id="time-list" class="item-list"></div>
-            <div class="add-form">
-              <h3>새 시간 추가</h3>
-              <input type="time" id="time-start">
-              <button id="add-time-btn" class="btn-primary">시간 추가</button>
-            </div>
-          </div>
-          <div class="admin-card">
-            <h2 class="card-title">예약 내역</h2>
-            <div id="reservation-list" class="item-list"></div>
-          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2 class="card-title">예약 내역 관리</h2>
+          <div id="reservation-list" class="item-list"></div>
         </div>
       </div>
     </section>
+
+    <!-- Time Selector Overlay -->
+    <div id="time-overlay" class="booking-overlay" style="display: none;">
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-content">
+        <button id="close-time-overlay" class="close-btn">&times;</button>
+        <div class="theme-mini-info">
+          <h2>시간 추가</h2>
+          <p>시스템에 등록할 새로운 예약 시간을 선택하세요.</p>
+        </div>
+        <div class="time-picker-wrapper">
+          <div class="time-display-header">
+            <span id="display-hour" class="active">12</span>
+            <span class="separator">:</span>
+            <span id="display-minute">00</span>
+          </div>
+          
+          <div class="clock-face-container">
+            <div id="clock-face" class="clock-face">
+              <!-- Radial numbers will be injected here -->
+              <div class="clock-hand" id="clock-hand"></div>
+              <div class="clock-center"></div>
+            </div>
+          </div>
+          
+          <div class="picker-mode-toggle">
+            <button id="mode-hour" class="btn-mode active">시</button>
+            <button id="mode-minute" class="btn-mode">분</button>
+          </div>
+        </div>
+        <button id="confirm-time-btn" class="btn-primary full-width glow-effect">시스템에 시간 등록</button>
+      </div>
+    </div>
   </main>
 
   <script type="module" src="../shared/js/admin.js"></script>

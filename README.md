@@ -31,8 +31,10 @@ cd FE
 node dev-server.mjs
 ```
 
-- 사용자 페이지: `http://localhost:3000/user/index.html` (또는 `http://localhost:3000/`)
-- 관리자 페이지: `http://localhost:3000/admin/index.html`
+실행 후 브라우저에서 아래 주소로 접속할 수 있습니다:
+
+- **사용자 페이지**: [http://localhost:3000/user/index.html](http://localhost:3000/user/index.html)
+- **관리자 페이지**: [http://localhost:3000/admin/index.html](http://localhost:3000/admin/index.html)
 
 ### 테스트
 
