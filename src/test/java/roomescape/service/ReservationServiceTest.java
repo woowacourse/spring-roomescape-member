@@ -11,12 +11,14 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicationException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableException;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,7 @@ class ReservationServiceTest {
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
+    private static final LocalDateTime now = LocalDateTime.of(FIXED_TODAY, LocalTime.of(12, 0));
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -45,7 +48,7 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy(FIXED_TODAY);
+    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
 
     private ReservationService reservationService;
 
@@ -68,7 +71,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
-        Reservation saved = reservationService.saveReservation(saveCommand, userPolicy);
+        Reservation saved = reservationService.saveReservation(saveCommand, now, userPolicy);
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
@@ -82,7 +85,7 @@ class ReservationServiceTest {
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -93,7 +96,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -146,8 +149,8 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(pastTime));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+                .isInstanceOf(UnprocessableException.class);
     }
 
     @Test
@@ -162,7 +165,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.findAllReservations()).willReturn(List.of(existing));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
                 .isInstanceOf(DuplicationException.class);
     }
 
@@ -175,7 +178,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

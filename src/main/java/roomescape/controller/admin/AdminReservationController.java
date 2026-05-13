@@ -17,6 +17,8 @@ import roomescape.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,10 +27,13 @@ public class AdminReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
     public static final AdminReservationSavePolicy POLICY = new AdminReservationSavePolicy();
     private final ReservationService reservationService;
+    private final Clock clock;
 
     public AdminReservationController(
-            ReservationService reservationService) {
+            ReservationService reservationService,
+            Clock clock) {
         this.reservationService = reservationService;
+        this.clock = clock;
     }
 
     @GetMapping
@@ -38,7 +43,8 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), POLICY);
+        LocalDateTime now = LocalDateTime.now(clock);
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), now, POLICY);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);

@@ -1,21 +1,23 @@
 package roomescape.policy;
 
 import roomescape.command.ReservationSaveCommand;
+import roomescape.domain.ReservationTime;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.UnprocessableException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UserReservationSavePolicy implements ReservationSavePolicy {
 
-    private final LocalDate today;
-
-    public UserReservationSavePolicy(LocalDate today) {
-        this.today = today;
-    }
-
     @Override
-    public void validate(ReservationSaveCommand command) {
+    public void validate(ReservationSaveCommand command, ReservationTime reservationTime, LocalDateTime now) {
+        LocalDate today = now.toLocalDate();
         if (command.date().isBefore(today)) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+            throw new UnprocessableException(ErrorCode.RESERVATION_PAST_DATE);
+        }
+        if (command.date().isEqual(today) && reservationTime.isBefore(now.toLocalTime())) {
+            throw new UnprocessableException(ErrorCode.RESERVATION_PAST_TIME);
         }
     }
 }

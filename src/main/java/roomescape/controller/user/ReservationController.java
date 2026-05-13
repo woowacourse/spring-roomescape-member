@@ -19,13 +19,14 @@ import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
+    private static final UserReservationSavePolicy POLICY = new UserReservationSavePolicy();
     private final ReservationService reservationService;
     private final Clock clock;
 
@@ -44,8 +45,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
-        UserReservationSavePolicy policy = new UserReservationSavePolicy(LocalDate.now(clock));
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), policy);
+        LocalDateTime now = LocalDateTime.now(clock);
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), now, POLICY);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
