@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
+import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
@@ -66,7 +66,7 @@ class ReservationAvailabilityFlowTest {
 
         given()
             .contentType(ContentType.JSON)
-            .body(new ReservationCreateRequestDTO("예약자", date, time1.getId(), theme.getId()))
+            .body(new ReservationCreateRequestDto("예약자", date, time1.getId(), theme.getId()))
             .when().post("/api/reservations")
             .then()
             .statusCode(201)

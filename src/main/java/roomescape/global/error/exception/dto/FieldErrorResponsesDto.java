@@ -2,9 +2,9 @@ package roomescape.global.error.exception.dto;
 
 import java.util.List;
 
-public record FieldErrorResponsesDTO(
+public record FieldErrorResponsesDto(
     String message,
-    List<FieldErrorResponseDTO> fieldErrors
+    List<FieldErrorResponseDto> fieldErrors
 ) {
 
 }

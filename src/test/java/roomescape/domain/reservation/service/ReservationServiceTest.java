@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
-import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
-import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
+import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.error.exception.ReservationException;
 import roomescape.domain.reservation.error.exception.ReservationNotFoundException;
@@ -29,7 +29,7 @@ import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.error.exception.dto.FieldErrorResponseDTO;
+import roomescape.global.error.exception.dto.FieldErrorResponseDto;
 
 class ReservationServiceTest {
 
@@ -73,16 +73,16 @@ class ReservationServiceTest {
             reservationRepository.save(Reservation.create("티모", date.plusDays(2), time3, theme));
 
             // when
-            List<ReservationResponseDTO> actual = reservationService.getReservations();
+            List<ReservationResponseDto> actual = reservationService.getReservations();
 
             // then
             assertThat(actual).containsExactly(
-                new ReservationResponseDTO(1L, "제이콥", date, TimeMapper.toResponseDTO(time1),
-                    ThemeMapper.toResponseDTO(theme)),
-                new ReservationResponseDTO(2L, "라이", date.plusDays(1), TimeMapper.toResponseDTO(time2),
-                    ThemeMapper.toResponseDTO(theme)),
-                new ReservationResponseDTO(3L, "티모", date.plusDays(2), TimeMapper.toResponseDTO(time3),
-                    ThemeMapper.toResponseDTO(theme))
+                new ReservationResponseDto(1L, "제이콥", date, TimeMapper.toResponseDto(time1),
+                    ThemeMapper.toResponseDto(theme)),
+                new ReservationResponseDto(2L, "라이", date.plusDays(1), TimeMapper.toResponseDto(time2),
+                    ThemeMapper.toResponseDto(theme)),
+                new ReservationResponseDto(3L, "티모", date.plusDays(2), TimeMapper.toResponseDto(time3),
+                    ThemeMapper.toResponseDto(theme))
             );
         }
     }
@@ -99,7 +99,7 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     LocalDate.of(2026, 5, 1),
                     time.getId(),
@@ -107,11 +107,11 @@ class ReservationServiceTest {
                 );
 
                 // when
-                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+                ReservationCreateResponseDto actual = reservationService.saveReservation(request);
 
                 // then
                 assertThat(actual).isEqualTo(
-                    new ReservationCreateResponseDTO(1L, "보예", LocalDate.of(2026, 5, 1), time.getId(), theme.getId()));
+                    new ReservationCreateResponseDto(1L, "보예", LocalDate.of(2026, 5, 1), time.getId(), theme.getId()));
                 assertThat(reservationRepository.findAllReservations()).hasSize(1);
             }
 
@@ -125,7 +125,7 @@ class ReservationServiceTest {
                 Theme otherTheme = themeRepository.save(
                     Theme.create("다른 테마", "다른 설명", "https://roomescape.com/images/themes/other-banner.png"));
                 reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     date,
                     time.getId(),
@@ -133,10 +133,10 @@ class ReservationServiceTest {
                 );
 
                 // when
-                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+                ReservationCreateResponseDto actual = reservationService.saveReservation(request);
 
                 // then
-                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDto(
                     2L,
                     "보예",
                     date,
@@ -155,7 +155,7 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     date,
                     otherTime.getId(),
@@ -163,10 +163,10 @@ class ReservationServiceTest {
                 );
 
                 // when
-                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+                ReservationCreateResponseDto actual = reservationService.saveReservation(request);
 
                 // then
-                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDto(
                     2L,
                     "보예",
                     date,
@@ -184,7 +184,7 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     date.plusDays(1),
                     time.getId(),
@@ -192,10 +192,10 @@ class ReservationServiceTest {
                 );
 
                 // when
-                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+                ReservationCreateResponseDto actual = reservationService.saveReservation(request);
 
                 // then
-                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDto(
                     2L,
                     "보예",
                     date.plusDays(1),
@@ -217,7 +217,7 @@ class ReservationServiceTest {
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
                 reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO("보예", date, time.getId(),
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto("보예", date, time.getId(),
                     theme.getId());
 
                 // when & then
@@ -232,7 +232,7 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png")
                 );
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     LocalDate.of(2026, 5, 1),
                     999L,
@@ -249,7 +249,7 @@ class ReservationServiceTest {
             void R4_2_themeId가_존재하지_않으면_예외가_발생한다() {
                 // given
                 Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     LocalDate.of(2026, 5, 1),
                     time.getId(),
@@ -265,7 +265,7 @@ class ReservationServiceTest {
             @Test
             void R4_timeId와_themeId가_모두_존재하지_않으면_필드_에러를_모두_포함한다() {
                 // given
-                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
                     LocalDate.of(2026, 5, 1),
                     999L,
@@ -276,10 +276,10 @@ class ReservationServiceTest {
                 assertThatThrownBy(() -> reservationService.saveReservation(request))
                     .isInstanceOfSatisfying(ReservationNotFoundException.class, exception -> {
                         assertThat(exception.getFieldErrors())
-                            .extracting(FieldErrorResponseDTO::field)
+                            .extracting(FieldErrorResponseDto::field)
                             .containsExactly("timeId", "themeId");
                         assertThat(exception.getFieldErrors())
-                            .extracting(FieldErrorResponseDTO::message)
+                            .extracting(FieldErrorResponseDto::message)
                             .containsExactly("존재 하지 않는 시간대입니다.", "존재 하지 않는 테마입니다.");
                     });
             }
@@ -304,10 +304,10 @@ class ReservationServiceTest {
             reservationService.deleteReservationById(savedReservation.getId());
 
             // then
-            List<ReservationResponseDTO> actual = reservationService.getReservations();
+            List<ReservationResponseDto> actual = reservationService.getReservations();
             assertThat(actual)
                 .hasSize(1)
-                .extracting(ReservationResponseDTO::name)
+                .extracting(ReservationResponseDto::name)
                 .containsExactly("시오");
         }
     }

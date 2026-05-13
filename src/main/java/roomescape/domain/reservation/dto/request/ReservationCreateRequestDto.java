@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
-public record ReservationCreateRequestDTO(
+public record ReservationCreateRequestDto(
     @NotBlank(message = "예약자명은 필수입니다.")
     @Size(max = 20, message = "예약자명의 길이는 1이상 20이하 입니다.")
     String name,

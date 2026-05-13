@@ -3,9 +3,9 @@ package roomescape.domain.reservation.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
-import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
-import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
+import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.error.exception.ReservationException;
 import roomescape.domain.reservation.error.exception.ReservationNotFoundException;
@@ -16,7 +16,7 @@ import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.error.exception.dto.FieldErrorResponseDTO;
+import roomescape.global.error.exception.dto.FieldErrorResponseDto;
 
 @Service
 public class ReservationService {
@@ -32,47 +32,47 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponseDTO> getReservations() {
+    public List<ReservationResponseDto> getReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
-        return convertReservationsToDTO(reservations);
+        return convertReservationsToDto(reservations);
     }
 
-    private List<ReservationResponseDTO> convertReservationsToDTO(List<Reservation> reservations) {
+    private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
         return reservations.stream()
-            .map(ReservationMapper::toResponseDTO)
+            .map(ReservationMapper::toResponseDto)
             .toList();
     }
 
-    public ReservationCreateResponseDTO saveReservation(ReservationCreateRequestDTO requestDTO) {
-        Reservation reservation = createReservation(requestDTO);
+    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
+        Reservation reservation = createReservation(requestDto);
 
         if (reservationRepository.existsReservationByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(),
             reservation.getTheme())) {
             throw new ReservationException(ReservationErrorType.ALREADY_RESERVED);
         }
 
-        return ReservationMapper.toCreateResponseDTO(reservationRepository.save(reservation));
+        return ReservationMapper.toCreateResponseDto(reservationRepository.save(reservation));
     }
 
-    private Reservation createReservation(ReservationCreateRequestDTO requestDTO) {
+    private Reservation createReservation(ReservationCreateRequestDto requestDto) {
 
-        List<FieldErrorResponseDTO> fieldErrorResponses = new ArrayList<>();
+        List<FieldErrorResponseDto> fieldErrorResponses = new ArrayList<>();
 
-        Time time = timeRepository.findTimeById(requestDTO.timeId()).orElse(null);
+        Time time = timeRepository.findTimeById(requestDto.timeId()).orElse(null);
         if (time == null) {
-            fieldErrorResponses.add(new FieldErrorResponseDTO("timeId", "존재 하지 않는 시간대입니다."));
+            fieldErrorResponses.add(new FieldErrorResponseDto("timeId", "존재 하지 않는 시간대입니다."));
         }
 
-        Theme theme = themeRepository.findThemeById(requestDTO.themeId()).orElse(null);
+        Theme theme = themeRepository.findThemeById(requestDto.themeId()).orElse(null);
         if (theme == null) {
-            fieldErrorResponses.add(new FieldErrorResponseDTO("themeId", "존재 하지 않는 테마입니다."));
+            fieldErrorResponses.add(new FieldErrorResponseDto("themeId", "존재 하지 않는 테마입니다."));
         }
 
         if (!fieldErrorResponses.isEmpty()) {
             throw new ReservationNotFoundException(ReservationErrorType.FIELD_RESOURCE_NOT_FOUND, fieldErrorResponses);
         }
 
-        return Reservation.create(requestDTO.name(), requestDTO.date(), time, theme);
+        return Reservation.create(requestDto.name(), requestDto.date(), time, theme);
     }
 
     public void deleteReservationById(Long id) {

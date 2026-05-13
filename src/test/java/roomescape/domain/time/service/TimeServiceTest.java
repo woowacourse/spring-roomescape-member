@@ -18,8 +18,8 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
-import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.request.TimeCreateRequestDto;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
@@ -62,13 +62,13 @@ class TimeServiceTest {
             timeRepository.save(Time.create(startAt.plusHours(2)));
 
             // when
-            List<TimeResponseDTO> actual = timeService.getTimes();
+            List<TimeResponseDto> actual = timeService.getTimes();
 
             // then
             assertThat(actual).containsExactly(
-                new TimeResponseDTO(1L, startAt),
-                new TimeResponseDTO(2L, startAt.plusHours(1)),
-                new TimeResponseDTO(3L, startAt.plusHours(2))
+                new TimeResponseDto(1L, startAt),
+                new TimeResponseDto(2L, startAt.plusHours(1)),
+                new TimeResponseDto(3L, startAt.plusHours(2))
             );
         }
     }
@@ -79,13 +79,13 @@ class TimeServiceTest {
         @Test
         void 성공() {
             // given
-            TimeCreateRequestDTO request = new TimeCreateRequestDTO(LocalTime.of(15, 30));
+            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
 
             // when
-            TimeResponseDTO actual = timeService.saveTime(request);
+            TimeResponseDto actual = timeService.saveTime(request);
 
             // then
-            assertThat(actual).isEqualTo(new TimeResponseDTO(1L, LocalTime.of(15, 30)));
+            assertThat(actual).isEqualTo(new TimeResponseDto(1L, LocalTime.of(15, 30)));
             assertThat(timeService.getTimes()).containsExactly(actual);
         }
     }
@@ -103,8 +103,8 @@ class TimeServiceTest {
             timeService.deleteTimeById(savedTime.getId());
 
             // then
-            List<TimeResponseDTO> actual = timeService.getTimes();
-            assertThat(actual).containsExactly(new TimeResponseDTO(2L, LocalTime.of(13, 0)));
+            List<TimeResponseDto> actual = timeService.getTimes();
+            assertThat(actual).containsExactly(new TimeResponseDto(2L, LocalTime.of(13, 0)));
         }
     }
 
@@ -147,11 +147,11 @@ class TimeServiceTest {
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
-            List<TimeResponseDTO> expected = List.of(TimeMapper.toResponseDTO(time2), TimeMapper.toResponseDTO(time3),
-                TimeMapper.toResponseDTO(time4));
+            List<TimeResponseDto> expected = List.of(TimeMapper.toResponseDto(time2), TimeMapper.toResponseDto(time3),
+                TimeMapper.toResponseDto(time4));
 
             // when
-            List<TimeResponseDTO> actual = timeService.getAvailableTimes(date, themeId);
+            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
 
             // then
             assertThat(actual).isEqualTo(expected);

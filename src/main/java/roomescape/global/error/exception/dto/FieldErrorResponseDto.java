@@ -1,6 +1,6 @@
 package roomescape.global.error.exception.dto;
 
-public record FieldErrorResponseDTO(
+public record FieldErrorResponseDto(
     String field,
     String message
 ) {

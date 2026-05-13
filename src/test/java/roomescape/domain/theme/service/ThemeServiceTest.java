@@ -18,8 +18,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
-import roomescape.domain.theme.dto.response.ThemeResponseDTO;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
+import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -57,7 +57,7 @@ class ThemeServiceTest {
         @Test
         void 성공() {
             // when
-            List<ThemeResponseDTO> actual = themeService.getThemes();
+            List<ThemeResponseDto> actual = themeService.getThemes();
 
             // then
             assertThat(actual).isEmpty();
@@ -90,11 +90,11 @@ class ThemeServiceTest {
             saveReservations(lessPopularTheme, today.minusDays(1), 1);
 
             // when
-            List<ThemeResponseDTO> actual = themeService.getPopularThemes();
+            List<ThemeResponseDto> actual = themeService.getPopularThemes();
 
             // then
             assertThat(actual)
-                .extracting(ThemeResponseDTO::name)
+                .extracting(ThemeResponseDto::name)
                 .containsExactly("직전 7일 포함 테마", "예약 적은 테마");
         }
     }
@@ -105,17 +105,17 @@ class ThemeServiceTest {
         @Test
         void 성공() {
             // given
-            ThemeCreateRequestDTO request = new ThemeCreateRequestDTO(
+            ThemeCreateRequestDto request = new ThemeCreateRequestDto(
                 "피온",
                 "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"
             );
 
             // when
-            ThemeResponseDTO actual = themeService.saveTheme(request);
+            ThemeResponseDto actual = themeService.saveTheme(request);
 
             // then
-            assertThat(actual).isEqualTo(new ThemeResponseDTO(
+            assertThat(actual).isEqualTo(new ThemeResponseDto(
                 1L,
                 "피온",
                 "테마 설명",
@@ -134,7 +134,7 @@ class ThemeServiceTest {
 
             // when
             themeService.deleteThemeById(1L);
-            List<ThemeResponseDTO> actual = themeService.getThemes();
+            List<ThemeResponseDto> actual = themeService.getThemes();
 
             // then
             assertThat(actual).isEmpty();
