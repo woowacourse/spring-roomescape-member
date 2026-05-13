@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.reservation.ReservationResponse;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStep2Test {
+class MissionStep2Test {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

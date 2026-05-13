@@ -10,10 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.Matchers.is;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UserReservationTest {
+class UserReservationTest {
 
     @Test
     void 사용자_예약__API() {

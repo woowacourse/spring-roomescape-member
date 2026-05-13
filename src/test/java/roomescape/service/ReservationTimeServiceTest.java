@@ -17,7 +17,6 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
@@ -32,11 +31,11 @@ class ReservationTimeServiceTest {
 
     @Test
     void 시간_생성_성공() {
-        // when
+        // given
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeRequest request = new ReservationTimeRequest(time);
 
-        // given
+        // when
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(request);
 
         // then
@@ -45,11 +44,11 @@ class ReservationTimeServiceTest {
 
     @Test
     void 시간_조회_성공() {
-        // when
+        // given
         LocalTime time = LocalTime.of(10, 0);
         ReservationTime reservationTime = new ReservationTime(1L, time);
 
-        // given
+        // when
         when(reservationTimeQueryingDao.findAllReservationTime(null, null))
                 .thenReturn(List.of(reservationTime));
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.read(null, null);
