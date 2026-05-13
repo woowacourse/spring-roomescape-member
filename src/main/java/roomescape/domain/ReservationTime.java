@@ -40,4 +40,8 @@ public class ReservationTime {
                 endAt
         );
     }
+
+    public boolean isBefore(final LocalTime now) {
+        return startAt.isBefore(now);
+    }
 }

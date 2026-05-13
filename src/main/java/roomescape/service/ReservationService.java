@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -49,22 +50,39 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationCreateRequest data) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(data.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-
-        final Theme theme = themeRepository.findById(data.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-        final Reservation reservation = Reservation.create(
-                data.name(),
-                data.date(),
-                reservationTime,
-                theme
-        );
+        final LocalDate date = data.date();
+        validateDate(date);
+        final ReservationTime reservationTime = getReservationTime(data);
+        validateReservationTime(reservationTime);
+        final Theme theme = getTheme(data);
+        final Reservation reservation = Reservation.create(data.name(), date, reservationTime, theme);
 
         final Reservation savedReservation = reservationRepository.save(reservation);
-
         return mapDomainToDto(savedReservation);
+    }
+
+    private void validateReservationTime(final ReservationTime reservationTime) {
+        final LocalTime now = LocalTime.now(clock);
+        if (reservationTime.isBefore(now)) {
+            throw new IllegalArgumentException("지난 시간대로 예약이 불가합니다.");
+        }
+    }
+
+    private void validateDate(final LocalDate date) {
+        final LocalDate today = LocalDate.now(clock);
+        if (date.isBefore(today)) {
+            throw new IllegalArgumentException("지난 날짜로 예약이 불가합니다.");
+        }
+    }
+
+    private ReservationTime getReservationTime(final ReservationCreateRequest data) {
+        return reservationTimeRepository.findById(data.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+    }
+
+    private Theme getTheme(final ReservationCreateRequest data) {
+        return themeRepository.findById(data.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
     public void delete(final Long reservationId) {
