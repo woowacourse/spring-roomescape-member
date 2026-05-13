@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,8 @@ class ReservationControllerTest {
 
     @Test
     void 예약_삭제() throws Exception {
-        willDoNothing().given(reservationService).delete(1L);
+        LocalDateTime now = LocalDateTime.now();
+        willDoNothing().given(reservationService).delete(1L, now);
 
         mockMvc.perform(delete("/api/reservations/1"))
                 .andExpect(status().isNoContent());

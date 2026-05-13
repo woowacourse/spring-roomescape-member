@@ -1,10 +1,11 @@
 package roomescape.reservation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.InvalidStateException;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -31,10 +32,10 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
 
         Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
 
         Reservation reservation = new Reservation(
                 reservationRequest.userName(),
@@ -63,7 +64,14 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new InvalidStateException("이미 지난 날짜와 시간의 예약은 삭제할 수 없습니다.");
+        }
         reservationRepository.deleteById(id);
     }
 }
