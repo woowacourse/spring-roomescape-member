@@ -292,16 +292,13 @@ erDiagram
 <summary>2단계 - 에러 응답 설계</summary>
 
 - **서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환**
-- [ ] 현재 IllegalArgumentException만 잡는 GlobalExceptionHandler에서 분리
-- [ ] ㅇ
+- [x] 현재 IllegalArgumentException만 잡는 GlobalExceptionHandler에서 분리
 
 - **500(서버 에러)이 사용자에게 노출되지 않도록 한다**
-- [ ] `GlobalExceptionHandler`에 500에러 처리 구현
-- [ ] ㅇ
+- [x] `GlobalExceptionHandler`에 500에러 처리 구현
 
 - **에러 응답 본문에 어떤 정보를 담을지 결정**
 - [ ] 에러 응답에 message말고도 상태코드, 서비스 전용 에러코드 추가
-- [ ] 
 
 - **에러 응답 본문에 어떤 정보를 담을지 결정**
 - [ ] 상태 코드와 에러 원인을 제공 (행동 가이드는 미제공)
