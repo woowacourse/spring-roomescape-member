@@ -14,8 +14,8 @@ public class ReservationMapper {
         return new ReservationCreateCommand(
                 request.name(),
                 request.date(),
-                EntityId.fromString(request.timeId().toString()),
-                EntityId.fromString(request.themeId().toString())
+                EntityId.fromUuid(request.timeId()),
+                EntityId.fromUuid(request.themeId())
         );
     }
 }

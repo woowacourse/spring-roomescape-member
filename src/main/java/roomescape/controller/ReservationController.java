@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,9 +46,9 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable String id
+            @PathVariable UUID id
     ) {
-        service.delete(EntityId.fromString(id));
+        service.delete(EntityId.fromUuid(id));
 
         return ResponseEntity.ok().build();
     }

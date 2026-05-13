@@ -132,6 +132,6 @@ public class ReservationRepository {
     private EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
         UUID uuid = resultSet.getObject(column, UUID.class);
 
-        return EntityId.fromString(uuid.toString());
+        return EntityId.fromUuid(uuid);
     }
 }

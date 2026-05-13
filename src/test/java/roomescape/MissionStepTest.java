@@ -31,13 +31,13 @@ public class MissionStepTest {
     private static final int INITIALIZED_RESERVATION_COUNT = 3;
     private static final int INITIALIZED_TIME_COUNT = 2;
 
-    private static final EntityId MORNING_TIME_ID = EntityId.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01");
-    private static final EntityId AFTERNOON_TIME_ID = EntityId.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02");
+    private static final EntityId MORNING_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01"));
+    private static final EntityId AFTERNOON_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02"));
 
-    private static final EntityId WESTERN_THEME_ID = EntityId.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01");
+    private static final EntityId WESTERN_THEME_ID = EntityId.fromUuid(UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01"));
 
-    private static final EntityId TEST_TIME_ID = EntityId.fromString("dddddddd-dddd-dddd-dddd-dddddddddd01");
-    private static final EntityId TEST_THEME_ID = EntityId.fromString("eeeeeeee-eeee-eeee-eeee-eeeeeeeeee01");
+    private static final EntityId TEST_TIME_ID = EntityId.fromUuid(UUID.fromString("dddddddd-dddd-dddd-dddd-dddddddddd01"));
+    private static final EntityId TEST_THEME_ID = EntityId.fromUuid(UUID.fromString("eeeeeeee-eeee-eeee-eeee-eeeeeeeeee01"));
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
