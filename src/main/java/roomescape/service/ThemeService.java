@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +16,11 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    private final Clock clock;
+
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -43,8 +47,8 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ThemeResponseDTO> getPopularThemes(Long weeks, Long limit) {
         return themeRepository.findPopularThemes(
-                LocalDate.now().minusWeeks(weeks),
-                LocalDate.now(),
+                LocalDate.now(clock).minusWeeks(weeks),
+                LocalDate.now(clock),
                 limit
         )
                 .stream()
