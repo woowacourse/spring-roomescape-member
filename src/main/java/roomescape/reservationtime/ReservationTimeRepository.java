@@ -10,5 +10,5 @@ public interface ReservationTimeRepository {
     ReservationTime save(LocalTime startAt);
     void delete(long id);
     Optional<ReservationTime> findById(long id);
-    List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId);
+    List<AvailableTime> findAvailableTimes(Long themeId, LocalDate date);
 }

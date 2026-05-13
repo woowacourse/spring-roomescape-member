@@ -45,8 +45,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId) {
-        return reservationTimeDao.findAvailableTimes(date, themeId).stream()
+    public List<AvailableTime> findAvailableTimes(Long themeId, LocalDate date) {
+        return reservationTimeDao.findAvailableTimes(themeId, date).stream()
                 .map(row -> new AvailableTime(
                         (Long) row.get("timeId"),
                         ((java.sql.Time) row.get("time")).toLocalTime(),

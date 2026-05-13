@@ -18,8 +18,8 @@ public class UserReservationTimeService {
     }
 
 
-    public ScheduleResponse getSchedules(LocalDate date, Long themeId) {
-        List<AvailableTime> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
+    public ScheduleResponse getSchedules(Long themeId, LocalDate date) {
+        List<AvailableTime> schedules = reservationTimeRepository.findAvailableTimes(themeId, date);
         return new ScheduleResponse(themeId, date, schedules);
     }
 }

@@ -30,9 +30,7 @@ public class UserReservationTimeController {
     public ResponseEntity<ScheduleResponse> getSchedules(@PathVariable long themeId,
                                                          @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
-        ScheduleResponse response = userReservationTimeService.getSchedules(date, themeId);
+        ScheduleResponse response = userReservationTimeService.getSchedules(themeId, date);
         return ResponseEntity.ok().body(response);
     }
-
-
 }

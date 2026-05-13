@@ -71,15 +71,15 @@ public class ReservationTimeDao {
         }
     }
 
-    public List<Map<String, Object>> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<Map<String, Object>> findAvailableTimes(Long themeId, LocalDate date) {
         String sql = """
                 SELECT rt.id AS timeId, rt.start_at AS time,
                        CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable
                 FROM reservation_time rt
-                LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?
+                LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.theme_id = ? AND r.date = ?
                 ORDER BY rt.id
                 """;
 
-        return jdbcTemplate.queryForList(sql, date, themeId);
+        return jdbcTemplate.queryForList(sql, themeId, date);
     }
 }
