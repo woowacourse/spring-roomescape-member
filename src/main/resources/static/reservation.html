@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방탈출 예약하기</title>
+  <link rel="stylesheet" href="/style.css?v=3">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="/" class="logo">RoomEscape</a>
+      <nav class="nav-links">
+        <a href="/">홈</a>
+        <a href="/reservation.html" class="active">예약하기</a>
+        <a href="/admin.html">관리자 모드</a>
+      </nav>
+    </header>
+
+    <section class="glass-card" style="max-width: 600px; margin: 0 auto;">
+      <h2 class="section-title" style="text-align:center; font-size: 1.8rem; margin-bottom: 2rem;">🗓️ 방문하실 테마와 날짜를 골라주세요</h2>
+      <form id="reservation-form">
+        <div class="form-group">
+          <label class="form-label">테마 선택</label>
+          <select id="res-theme" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">예약 날짜</label>
+          <input type="date" id="res-date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">예약 시간</label>
+          <select id="res-time" class="form-control" required disabled>
+            <option value="">날짜와 테마를 먼저 선택하세요</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">예약자 이름</label>
+          <input type="text" id="res-name" class="form-control" placeholder="예약자명 (2~10자)" minlength="2" maxlength="10" required>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">예약 완료하기</button>
+      </form>
+    </section>
+  </div>
+  <script src="/reservation.js?v=3"></script>
+</body>
+</html>
