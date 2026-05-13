@@ -1,5 +1,7 @@
 package roomescape.exception.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +20,9 @@ import static roomescape.exception.dto.ErrorCode.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
 
     @ExceptionHandler(BaseCustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
@@ -73,10 +78,11 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error", e);  // 서버 로그에는 상세히 기록
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(SERVER_ERROR.getStatus())
                 .body(new ErrorResponse(
-                        "INTERNAL_SERVER_ERROR",
-                        "서버 오류가 발생했습니다."  // 클라이언트엔 추상화된 메시지만
+                        SERVER_ERROR.getCode(),
+                        SERVER_ERROR.getMessage(),
+                        List.of()
                 ));
     }
 }

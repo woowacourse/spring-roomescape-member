@@ -24,6 +24,10 @@ public enum ErrorCode {
     INTEGRITY_VIOLATION_ON_DELETE(CONFLICT, "INTEGRITY_VIOLATION_ON_DELETE", "데이터 무결성 위반으로 삭제에 실패했습니다."),
     INVALID_INPUT(BAD_REQUEST, "INVALID_INPUT", "입력값이 올바르지 않습니다."),
     INVALID_REQUEST_FORMAT(BAD_REQUEST, "INVALID_REQUEST_FORMAT", "입력값의 형식이 올바르지 않습니다."),
+    SERVER_ERROR(INTERNAL_SERVER_ERROR, "SERVER_ERROR", """
+            서버 오류
+            죄송합니다. 요청을 처리하는 중에 내부 서버 오류가 발생한 것으로 보입니다. 이 문제는 현재 엔지니어 팀에 전달되어 해결 중입니다.
+            나중에 다시 시도해 주세요."""),
     ;
 
     private final HttpStatus status;
