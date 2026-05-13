@@ -10,7 +10,8 @@ public enum BadRequestCode implements ErrorCode {
     BLANK_RESERVATION_NAME("이름은 공백일 수 없습니다.", "이름을 다시 확인해주세요."),
     INVALID_RESERVATION_DATE("유효하지 않은 날짜입니다.", "날짜 형식을 다시 확인해주세요."),
     INVALID_RESERVATION_TIME("유효하지 않은 시간입니다.", "시간을 다시 확인해주세요."),
-    INVALID_RESERVATION_THEME("유효하지 않은 테마입니다.", "테마를 다시 확인해주세요.");
+    INVALID_RESERVATION_THEME("유효하지 않은 테마입니다.", "테마를 다시 확인해주세요."),
+    OMITTED_QUERY_PARAM("쿼리 파라미터 %s(이)가 누락되었습니다.", "누락된 파라미터를 포함하여 다시 시도해주세요.");
 
     private final String message;
     private final String action;
