@@ -1,4 +1,4 @@
-package roomescape.exception.advice;
+package roomescape.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
