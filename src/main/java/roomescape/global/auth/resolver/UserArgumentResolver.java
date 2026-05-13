@@ -17,6 +17,9 @@ import roomescape.global.exception.exception.InvalidException;
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(CurrentUser.class);
@@ -24,15 +27,34 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String encodedName = webRequest.getHeader("Authorization");
-        String name = URLDecoder.decode(encodedName, StandardCharsets.UTF_8);
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        String authorization = webRequest.getHeader(AUTHORIZATION_HEADER);
 
-        if (name == null || name.isBlank()) {
-            List<String> errors = List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
-            throw new InvalidException(errors);
+        validateAuthorizationHeader(authorization);
+
+        String encodedName = authorization.substring(AUTHORIZATION_HEADER_PREFIX.length()).trim();
+
+        try {
+            String name = URLDecoder.decode(encodedName, StandardCharsets.UTF_8);
+
+            validateName(name);
+
+            return new UserInfo(name);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidException(List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()));
         }
-
-        return new UserInfo(name);
     }
+
+    private void validateAuthorizationHeader(final String authorization) {
+        if (authorization == null || authorization.isBlank() || !authorization.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
+            throw new InvalidException(List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()));
+        }
+    }
+
+    private void validateName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidException(List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()));
+        }
+    }
+
 }

@@ -34,11 +34,10 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 2L);
         acceptanceTestFixture.createReservation("코니", acceptanceTestFixture.reservationDate(), 3L);
 
-        String encodedName = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
 
         // when & then
         RestAssured.given().log().all()
-                .header("Authorization", encodedName)
+                .header("Authorization", authorizationHeader("브라운"))
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -56,7 +55,7 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 1L);
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 2L);
 
-        String encodedName = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
+        String encodedName = authorizationHeader("브라운");
 
         // when
         RestAssured.given().log().all()
@@ -82,11 +81,10 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservationTime("15:40", 1L);
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate().minusDays(1), 1L);
 
-        String encodedName = URLEncoder.encode("쿠다", StandardCharsets.UTF_8);
 
         // when & then
         RestAssured.given().log().all()
-                .header("Authorization", encodedName)
+                .header("Authorization", authorizationHeader("쿠다"))
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(400);
@@ -100,13 +98,12 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservationTime("15:40", 1L);
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 1L);
 
-        String encodedName = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
         LocalDate newDate = acceptanceTestFixture.reservationDate().plusDays(7);
         ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, 1L);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("Authorization", encodedName)
+                .header("Authorization", authorizationHeader("브라운"))
                 .body(request)
                 .when().patch("/reservations/1")
                 .then().log().all()
@@ -121,13 +118,12 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservationTime("15:40", 1L);
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 1L);
 
-        String encodedName = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
         LocalDate newDate = acceptanceTestFixture.reservationDate().minusDays(2);
         ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, 1L);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("Authorization", encodedName)
+                .header("Authorization", authorizationHeader("브라운"))
                 .body(request)
                 .when().patch("/reservations/1")
                 .then().log().all()
@@ -143,17 +139,20 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 1L);
         acceptanceTestFixture.createReservation("쿠다", acceptanceTestFixture.reservationDate().plusDays(1), 1L);
 
-        String encodedName = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
         LocalDate newDate = acceptanceTestFixture.reservationDate().plusDays(1);
         ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, 1L);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("Authorization", encodedName)
+                .header("Authorization", authorizationHeader("브라운"))
                 .body(request)
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    private String authorizationHeader(final String name) {
+        return "Bearer " + URLEncoder.encode(name, StandardCharsets.UTF_8);
     }
 
 }
