@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -79,6 +81,11 @@ public class Reservation {
 
     public Reservation modify(final LocalDate newDate, final ReservationTime newTime) {
         return new Reservation(id, name, newDate, newTime);
+    }
+
+
+    public boolean isPastTime(LocalTime time, LocalDateTime now) {
+        return LocalDateTime.of(date, time).isBefore(now);
     }
 
 }
