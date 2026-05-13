@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.ReservationTime;
@@ -48,13 +50,13 @@ public class ReservationService {
 
     private void validateReserved(Long timeId, ReservationTime reservedTime) {
         if (timeId.equals(reservedTime.getId())) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {
         if (isBeforeDateTime(date, time)) {
-            throw new IllegalArgumentException("[ERROR] 지난 시간은 예약할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
         }
     }
 

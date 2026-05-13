@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.ReservationTime;
@@ -40,12 +42,12 @@ public class ReservationServiceTest {
         when(reservationDao.selectByThemeIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(reservations);
 
         assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 10), 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 지난 시간은 예약할 수 없습니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(ErrorCode.PAST_RESERVATION.getMessage());
 
         assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.now(), mockTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 지난 시간은 예약할 수 없습니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(ErrorCode.PAST_RESERVATION.getMessage());
     }
 
     @Test
@@ -59,7 +61,7 @@ public class ReservationServiceTest {
         when(reservationDao.selectByThemeIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(reservations);
 
         assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 20), mockTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약이 존재합니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.getMessage());
     }
 }
