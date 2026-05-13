@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ class ReservationServiceTest {
 
         given(reservationTimeService.find(1L)).willReturn(time);
         given(themeService.find(1L)).willReturn(theme);
-        given(reservationRepository.findByDateAndTimeAndTheme(any(), any(), any())).willReturn(Optional.empty());
+        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of());
         given(reservationRepository.save(any())).willReturn(saved);
 
         Reservation result = reservationService.reserve(request);
@@ -61,8 +62,7 @@ class ReservationServiceTest {
 
         given(reservationTimeService.find(1L)).willReturn(time);
         given(themeService.find(1L)).willReturn(theme);
-        given(reservationRepository.findByDateAndTimeAndTheme(any(), any(), any()))
-                .willReturn(Optional.of(existing));
+        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of(existing));
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(IllegalArgumentException.class)
