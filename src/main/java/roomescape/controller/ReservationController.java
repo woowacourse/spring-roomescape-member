@@ -1,8 +1,6 @@
 package roomescape.controller;
 
 import java.net.URI;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,9 +35,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
-        Clock clock = Clock.systemDefaultZone();
-        Instant now = clock.instant();
-        ReservationResponse response = reservationService.save(request, now);
+        ReservationResponse response = reservationService.save(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
