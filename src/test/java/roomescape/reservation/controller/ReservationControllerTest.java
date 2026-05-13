@@ -99,6 +99,15 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 경로_변수_형식이_올바르지_않으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/abc")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("id: 입력 형식이 잘못되었습니다."));
+    }
+
+    @Test
     void 날짜_시간_테마가_같은_예약을_등록요청하면_409를_응답한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");

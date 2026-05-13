@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.ResourceInUseException;
@@ -71,9 +73,24 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(this::resolveFieldErrorMessage)
                 .collect(Collectors.joining(", "));
         return new ErrorResponse(message);
+    }
+
+    private String resolveFieldErrorMessage(FieldError error) {
+        if ("typeMismatch".equals(error.getCode())) {
+            return error.getField() + ": 입력 형식이 잘못되었습니다.";
+        }
+        return error.getField() + ": " + error.getDefaultMessage();
+    }
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        logger.info("에러 핸들링 - {}", e.getClass());
+        return new ErrorResponse("%s: 입력 형식이 잘못되었습니다.".formatted(e.getName()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -85,7 +102,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllException(Exception e) {
-        logger.error("서버 에러 발생 : {} {}", e.getClass(), e.getMessage());
+        logger.error("서버 에러 발생({}) - {}", e.getClass(), e.getMessage());
         return new ErrorResponse("예상하지 못한 오류가 발생했습니다.");
     }
 }

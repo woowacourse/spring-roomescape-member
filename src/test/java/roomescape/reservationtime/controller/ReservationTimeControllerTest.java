@@ -1,6 +1,7 @@
 package roomescape.reservationtime.controller;
 
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import io.restassured.RestAssured;
@@ -54,5 +55,16 @@ class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    void 날짜_형식이_올바르지_않으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .queryParam("date", "abc")
+                .queryParam("themeId", 1)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("date: 입력 형식이 잘못되었습니다."));
     }
 }
