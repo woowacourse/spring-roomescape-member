@@ -131,12 +131,12 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(long timeId) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_SQL, Boolean.class, timeId));
+        return jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_SQL, Boolean.class, timeId) == Boolean.TRUE;
     }
 
     @Override
     public boolean existsByThemeId(long themeId) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId));
+        return jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId) == Boolean.TRUE;
     }
 
     @Override
