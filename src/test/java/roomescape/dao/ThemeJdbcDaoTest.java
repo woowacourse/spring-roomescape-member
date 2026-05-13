@@ -1,10 +1,13 @@
 package roomescape.dao;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ReservationRow;
@@ -13,10 +16,13 @@ import roomescape.dao.row.TimeRow;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
 @JdbcTest
 @Import({
@@ -26,122 +32,219 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @ActiveProfiles("test")
 class ThemeJdbcDaoTest {
-    private static final int DELETED = 1;
+    
+    private static final LocalDate DATE = LocalDate.of(2026, 5, 10);
+    private static final Long NOT_EXISTS_ID = Long.MAX_VALUE;
 
-    @Autowired
-    private ThemeDao themeDao;
-    @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private TimeDao timeDao;
+    @Autowired private ThemeDao themeDao;
+    @Autowired private ReservationDao reservationDao;
+    @Autowired private TimeDao timeDao;
 
-    private ThemeRow theme1;
-    private ThemeRow theme2;
-
-    private TimeRow time1;
-    private TimeRow time2;
-
-    @BeforeEach
-    void setUp() {
-        time1 = timeDao.create(new TimeRow(LocalTime.parse("10:00")));
-        time2 = timeDao.create(new TimeRow(LocalTime.parse("12:00")));
-
-        theme1 = new ThemeRow("방 이름", "url", "설명");
-        theme2 = new ThemeRow("두번째 방이름", "url2", "설명2");
+    private TimeRow givenTime(int hour) {
+        return timeDao.create(new TimeRow(LocalTime.of(hour, 0)));
     }
 
-    @Test
-    void findAll() {
-        List<ThemeRow> saved = insertThemesHandler(theme1, theme2);
-        List<ThemeRow> find = themeDao.findAll();
-
-        assertThat(find).hasSize(saved.size())
-                .containsAll(saved);
+    private ThemeRow givenTheme(String name) {
+        return themeDao.create(new ThemeRow(name, "url", "desc"));
     }
 
-    @Test
-    void findById() {
-        ThemeRow saved = createThemeHandler(theme1);
-
-        assertThat(themeDao.findById(saved.id()))
-                .isPresent()
-                .get().isEqualTo(saved);
+    private ReservationRow givenReservation(String name, LocalDate date, TimeRow time, ThemeRow theme) {
+        return reservationDao.create(new ReservationRow(name, date, time, theme));
     }
 
-    @Test
-    void create() {
-        ThemeRow saved = createThemeHandler(theme1);
-        assertThat(saved).isNotNull();
+    private ThemeRow themeRow(String name, String thumbnailUrl, String description) {
+        return new ThemeRow(name, thumbnailUrl, description);
     }
 
-    @Test
-    void delete() {
-        ThemeRow saved = createThemeHandler(theme1);
-        assertThat(themeDao.delete(saved.id())).isEqualTo(DELETED);
+    @Nested
+    @DisplayName("create는 ")
+    class Create {
+
+        @Test
+        void 저장_후_ID가_채워진_객체를_반환한다() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+
+            ThemeRow saved = themeDao.create(theme);
+
+            assertThat(saved.id()).isNotNull();
+            assertThat(saved.name()).isEqualTo("테마");
+        }
+
+        @Test
+        void 같은_name이면_DuplicateException() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+
+            themeDao.create(theme);
+
+            assertThatThrownBy(() -> themeDao.create(theme))
+                    .isInstanceOf(DuplicateKeyException.class);
+        }
     }
 
-    @Test
-    void existsByName() {
-        ThemeRow saved = createThemeHandler(theme1);
-        ThemeRow notExists = theme2;
+    @Nested
+    @DisplayName("findById는 ")
+    class FindById {
 
-        assertThat(themeDao.existsByName(saved.name())).isTrue();
-        assertThat(themeDao.existsByName(notExists.name())).isFalse();
+        @Test
+        void 존재하면_Optinal로_감싸_반환한다() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+            ThemeRow saved = themeDao.create(theme);
+
+            Optional<ThemeRow> found = themeDao.findById(saved.id());
+
+            assertThat(found).isPresent()
+                    .get()
+                    .isEqualTo(saved);
+        }
+
+        @Test
+        void 존재하지_않으면_Optional_empty() {
+            assertThat(themeDao.findById(NOT_EXISTS_ID)).isEmpty();
+        }
     }
 
-    @Test
-    void findAvailableTimesById() {
-        ThemeRow saved = createThemeHandler(theme1);
-        ReservationRow reservaton = new ReservationRow("이름1", LocalDate.parse("2026-05-05"), time1, saved);
+    @Nested
+    @DisplayName("findAll은 ")
+    class FindAll {
 
-        reservationDao.create(reservaton);
+        @Test
+        void 저장된_모든_테마를_반환한다() {
+            ThemeRow theme1 = themeRow("테마1", "www.test1.com", "테스트 테마1입니다.");
+            ThemeRow theme2 = themeRow("테마2", "www.test2.com", "테스트 테마2입니다.");
 
-        Long themeId = saved.id();
-        LocalDate localDate = LocalDate.of(2026, 5, 5);
+            ThemeRow first = themeDao.create(theme1);
+            ThemeRow second = themeDao.create(theme2);
 
-        List<AvailableTimeRow> expected = List.of(
-                new AvailableTimeRow(time2.id(), time2.startAt(), false),
-                new AvailableTimeRow(time1.id(), time1.startAt(), true));
+            List<ThemeRow> all = themeDao.findAll();
 
-        List<AvailableTimeRow> availableTimesById = themeDao.findAvailableTimesById(themeId, localDate);
+            assertThat(all).hasSize(2).contains(first, second);
+        }
 
-        assertThat(availableTimesById).containsAll(expected);
+        @Test
+        void 비어있으면_빈_리스트() {
+            assertThat(themeDao.findAll()).isEmpty();
+        }
     }
 
-    @Test
-    void findPopulars() {
-        int limit = 1;
-        int days = 7;
-        LocalDate now = LocalDate.now();
+    @Nested
+    @DisplayName("delete는 ")
+    class Delete {
 
-        ThemeRow popular = createThemeHandler(theme1);
-        ThemeRow nonPopular = createThemeHandler(theme2);
+        @Test
+        void 존재하는_ID는_1를_반환하고_삭제한다() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+            ThemeRow saved = themeDao.create(theme);
 
-        reservationDao.create(new ReservationRow("이름1", LocalDate.parse("2026-05-05"), time1, popular));
-        List<ThemeRow> populars = themeDao.findPopulars(limit, days, now);
+            int affected = themeDao.delete(saved.id());
 
-        assertThat(populars)
-                .hasSize(limit)
-                .contains(popular);
+            assertThat(affected).isEqualTo(1);
+            assertThat(themeDao.findById(saved.id())).isEmpty();
+        }
+
+        @Test
+        void 존재하지_않는_ID는_0을_반환한다() {
+            assertThat(themeDao.delete(NOT_EXISTS_ID)).isZero();
+        }
+
+        @Test
+        void 삭제_후_같은_조합으로_재예약_가능() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+            ThemeRow saved = themeDao.create(theme);
+            themeDao.delete(saved.id());
+
+            assertThatCode(() -> themeDao.create(theme))
+                    .doesNotThrowAnyException();
+        }
     }
 
-    @Test
-    void existsById() {
-        ThemeRow saved = createThemeHandler(theme1);
-        Long notExists = 2L;
+    @Nested
+    @DisplayName("existBy는 ")
+    class ExistSBy {
 
-        assertThat(themeDao.existsById(saved.id())).isTrue();
-        assertThat(themeDao.existsById(notExists)).isFalse();
+        @Test
+        void existsById_저장된_ID는_true() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+            ThemeRow saved = themeDao.create(theme);
+
+            assertThat(themeDao.existsById(saved.id())).isTrue();
+        }
+
+        @Test
+        void existsById_없는_ID는_false() {
+            assertThat(themeDao.existsById(NOT_EXISTS_ID)).isFalse();
+        }
+
+        @Test
+        void existsByName_저장된_이름은_true() {
+            ThemeRow theme = themeRow("테마", "www.test.com", "테스트 테마입니다.");
+            ThemeRow saved = themeDao.create(theme);
+
+            assertThat(themeDao.existsByName(saved.name())).isTrue();
+        }
+
+        @Test
+        void existsByName_없는_이름은_false() {
+            assertThat(themeDao.existsByName("없는 테마 이름")).isFalse();
+        }
     }
 
-    private List<ThemeRow> insertThemesHandler(ThemeRow... themes) {
-        return Arrays.stream(themes)
-                .map(this::createThemeHandler)
-                .toList();
+    @Nested
+    @DisplayName("findAvailableTimesById는 ")
+    class FindAvailableTimesById {
+
+        @Test
+        void 다른_테마나_다른_날짜의_예약은_무시한다() {
+            TimeRow time10 = givenTime(10);
+            TimeRow time11 = givenTime(11);
+
+            ThemeRow targetTheme = givenTheme("타겟 테마");
+            ThemeRow otherTheme = givenTheme("다른 테마");
+
+            givenReservation("유저A", DATE, time10, otherTheme);
+            givenReservation("유저B", DATE.plusDays(1), time10, targetTheme);
+            givenReservation("유저C", DATE, time11, targetTheme);
+
+            List<AvailableTimeRow> result = themeDao.findAvailableTimesById(targetTheme.id(), DATE);
+
+            assertThat(result)
+                    .extracting(AvailableTimeRow::id, AvailableTimeRow::alreadyBooked)
+                    .containsExactly(
+                            tuple(time10.id(), false),
+                            tuple(time11.id(), true)
+                    );
+        }
     }
 
-    private ThemeRow createThemeHandler(ThemeRow theme) {
-        return themeDao.create(theme);
-    }
+    @Nested
+    @DisplayName("findPopulars는")
+    class FindPopulars {
 
+        @Test
+        void 기간_밖의_예약은_인기도_집계에서_제외한다() {
+            ThemeRow themeA = givenTheme("테마A");
+            ThemeRow themeB = givenTheme("테마B");
+
+            TimeRow time = givenTime(10);
+
+            int days = 7;
+            int limit = 10;
+
+            givenReservation("유저1", DATE.minusDays(3), time, themeA);
+            givenReservation("유저2", DATE.minusDays(30), time, themeA);
+            givenReservation("유저3", DATE.minusDays(31), time, themeA);
+            givenReservation("유저4", DATE.minusDays(32), time, themeA);
+            givenReservation("유저5", DATE.minusDays(33), time, themeA);
+            givenReservation("유저6", DATE.minusDays(34), time, themeA);
+
+            givenReservation("유저7", DATE.minusDays(1), time, themeB);
+            givenReservation("유저8", DATE.minusDays(2), time, themeB);
+            givenReservation("유저9", DATE.minusDays(3), time, themeB);
+
+            List<ThemeRow> result = themeDao.findPopulars(limit, days, DATE);
+
+            assertThat(result)
+                    .extracting(ThemeRow::name)
+                    .containsExactly("테마B", "테마A");
+        }
+    }
 }
