@@ -1,123 +1,95 @@
-// /Users/smini/Desktop/resunmini/우테코 8기/spring-roomescape-member/src/main/resources/static/app.js
+// C:/projects/woowatech/spring-roomescape-member/src/main/resources/static/app.js
 
-// 현재 로그인한 사용자 이름을 저장할 변수
 let currentUser = '';
 
-// 로그인 버튼 클릭 이벤트
+// 임시 유저 매핑
+function getMappedUserId() {
+    const userMap = {'루크': 1, '소낙눈': 2, '포비': 3};
+    return userMap[currentUser] || 1;
+}
+
 document.getElementById('login-btn').addEventListener('click', () => {
     const nameInput = document.getElementById('login-name').value.trim();
-
     if (!nameInput) {
         alert('이름을 입력해주세요.');
         return;
     }
-
-    // 이름이 '루크'인 경우 어드민 페이지로 리다이렉트
     if (nameInput === '루크') {
         alert('관리자님 환영합니다. 관리자 페이지로 이동합니다.');
-        window.location.href = '/admin.html'; // 어드민용 HTML을 따로 만드셔야 합니다!
+        window.location.href = '/admin.html';
         return;
     }
 
-    // 일반 사용자일 경우
     currentUser = nameInput;
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('reservation-section').classList.remove('hidden');
 
-    loadThemes(); // 일반 유저 화면이 뜨면 테마를 불러옵니다.
-    loadPopularThemes(); // 인기 테마 통계도 함께 불러옵니다.
+    loadThemes();
+    loadPopularThemes();
+    loadMyReservations(); // 💡 로그인 시 내 예약도 불러옵니다!
 });
 
-// 페이지 로드 시 날짜 입력 필드의 최소 날짜를 오늘로 설정
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date-input').min = today;
 });
 
-// 이름 입력창에서 엔터키를 눌렀을 때 '시작하기' 버튼 클릭 효과 주기
 document.getElementById('login-name').addEventListener('keyup', (event) => {
-    if (event.key === 'Enter') {
-        document.getElementById('login-btn').click();
-    }
+    if (event.key === 'Enter') document.getElementById('login-btn').click();
 });
 
-// =================================================================================================
-// ✅ TODO 1: 테마 목록을 API(GET /themes)로 가져와서 <select>에 채우기
-// API 명세: GET /themes -> [ { id, name, ... }, ... ]
-// =================================================================================================
+// 테마 목록 조회
 function loadThemes() {
     fetch('/themes')
         .then(response => {
-            if (!response.ok) throw new Error('서버에서 테마 목록을 불러오는데 실패했습니다.');
+            if (!response.ok) throw new Error('테마 로드 실패');
             return response.json();
         })
         .then(themes => {
             const themeContainer = document.getElementById('theme-list-container');
-            themeContainer.innerHTML = ''; // 기존 내용 초기화
-
-            // 받아온 themes 배열을 순회하면서 테마 카드를 만듭니다.
+            themeContainer.innerHTML = '';
             themes.forEach(theme => {
                 const card = document.createElement('div');
                 card.className = 'theme-card';
-                card.dataset.themeId = theme.id; // 데이터 속성에 ID 저장
+                card.dataset.themeId = theme.id;
                 card.innerHTML = `
                     <img src="${theme.imageUrl || 'https://i.imgur.com/5nL2kE7.png'}" alt="${theme.name}">
                     <h4>${theme.name}</h4>
                     <p class="theme-description">${theme.description}</p>
                     <p class="theme-time">🕒 ${theme.requiredTime}</p>
                 `;
-
-                // 카드 클릭 시 선택 효과를 주는 이벤트 리스너 추가
                 card.addEventListener('click', () => {
-                    // 모든 카드에서 'selected' 클래스 제거
                     document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
-                    // 클릭된 카드에만 'selected' 클래스 추가
                     card.classList.add('selected');
                 });
-
                 themeContainer.appendChild(card);
             });
-        })
-        .catch(error => console.error(error));
+        }).catch(e => console.error(e));
 }
 
-// =================================================================================================
-// ✅ 인기 테마 통계 조회
-// API 명세: GET /themes?sort=reservations&limit=10&days=7
-// =================================================================================================
+// 인기 테마 통계 조회
 function loadPopularThemes() {
     fetch('/themes?sort=reservations&limit=10&days=7')
-        .then(response => {
-            if (!response.ok) throw new Error('인기 테마 통계를 불러오는데 실패했습니다.');
-            return response.json();
-        })
+        .then(res => res.json())
         .then(popularThemes => {
             const popularList = document.getElementById('popular-themes-list');
-            popularList.innerHTML = ''; // 초기화
-
+            popularList.innerHTML = '';
             if (popularThemes.length === 0) {
-                popularList.innerHTML = '<li style="list-style:none; margin-left:-20px;" class="empty-message">최근 예약된 테마가 없습니다.</li>';
+                popularList.innerHTML = '<li class="empty-message" style="list-style:none; margin-left:-20px;">최근 예약된 테마가 없습니다.</li>';
                 return;
             }
-
             popularThemes.forEach(theme => {
                 const li = document.createElement('li');
                 li.innerHTML = `<strong>${theme.themeName}</strong> <span style="color: #e74c3c; font-size: 0.9em;">(예약 ${theme.reservationCount}건)</span>`;
                 popularList.appendChild(li);
             });
-        })
-        .catch(error => console.error(error));
+        }).catch(e => console.error(e));
 }
 
-// =================================================================================================
-// ✅ TODO 2: '스케줄 조회' 버튼 클릭 시 API(GET /schedules) 호출하여 결과 그리기
-// API 명세: GET /schedules?date={date}&themeId={themeId} -> [ { id, startAt, ... }, ... ]
-// =================================================================================================
+// 스케줄 조회 (백엔드 스펙에 맞춤)
 document.getElementById('search-schedule-btn').addEventListener('click', () => {
-    // 선택된 테마 카드의 ID를 가져옵니다.
     const selectedThemeCard = document.querySelector('.theme-card.selected');
     const themeId = selectedThemeCard ? selectedThemeCard.dataset.themeId : null;
-
     const date = document.getElementById('date-input').value;
 
     if (!themeId || !date) {
@@ -125,124 +97,170 @@ document.getElementById('search-schedule-btn').addEventListener('click', () => {
         return;
     }
 
-    // 백틱(`)을 사용해 쿼리 파라미터가 포함된 URL을 만듭니다.
-    const url = `/schedules?date=${date}&themeId=${themeId}`;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) throw new Error('스케줄을 조회하는데 실패했습니다.');
-            return response.json();
+    fetch(`/schedules?date=${date}&themeId=${themeId}`)
+        .then(res => {
+            if (!res.ok) throw new Error('스케줄 조회 실패');
+            return res.json();
         })
         .then(schedules => {
             const scheduleList = document.getElementById('schedule-list');
-            scheduleList.innerHTML = ''; // 이전 검색 결과가 있다면 초기화
+            scheduleList.innerHTML = '';
 
-            // 요구사항에 맞춰 10시부터 20시까지의 시간 배열 생성
-            const allHours = [];
-            for (let i = 10; i <= 20; i++) {
-                const hour = i < 10 ? `0${i}:00` : `${i}:00`;
-                allHours.push(hour);
+            // 💡 백엔드가 반환한 "예약되지 않은" 스케줄만 리스트로 그립니다.
+            if (schedules.length === 0) {
+                scheduleList.innerHTML = '<li class="empty-message">해당 날짜에 예약 가능한 스케줄이 없습니다.</li>';
+                return;
             }
 
-            // --- 💡 중복 시간 확인 로직 시작 💡 ---
-            // API에서 받아온 스케줄의 시작/종료 시간을 Date 객체로 변환해두면 비교가 편합니다.
-            const reservedSlots = schedules.map(s => ({
-                start: new Date(s.startAt.replace(' ', 'T')),
-                end: new Date(s.endAt.replace(' ', 'T'))
-            }));
-
-            // 생성한 모든 시간대(allHours)를 화면에 그립니다.
-            allHours.forEach(time => {
-                const [hour, minute] = time.split(':');
-                const currentDate = document.getElementById('date-input').value;
-                // 각 시간 슬롯을 Date 객체로 만듭니다.
-                const slotDateTime = new Date(`${currentDate}T${hour}:${minute}:00`);
-
-                // 이 시간 슬롯이 기존 예약에 의해 막혔는지 확인합니다.
-                // 조건: slotDateTime이 기존 예약의 [start, end) 시간 사이에 포함되는가?
-                const isBlocked = reservedSlots.some(slot =>
-                    slotDateTime >= slot.start && slotDateTime < slot.end
-                );
-
+            schedules.forEach(s => {
                 const li = document.createElement('li');
-
-                if (isBlocked) {
-                    // 예약이 겹쳐서 막힌 시간 (클릭 불가)
-                    li.style.backgroundColor = '#e2e8f0';
-                    li.style.color = '#94a3b8';
-                    li.innerHTML = `<label style="cursor: not-allowed;"><input type="radio" name="schedule" disabled> <del>${time}</del> - 예약 마감 🔴</label>`;
-                } else {
-                    // 예약 가능한 시간! (클릭 가능)
-                    li.innerHTML = `<label><input type="radio" name="schedule" value="${time}"> <strong>${time}</strong> - 예약 가능 🟢</label>`;
-                }
-
+                const startAtStr = s.startAt.replace(' ', 'T');
+                const timeStr = startAtStr.split('T')[1].substring(0, 5); // 10:00:00 -> 10:00
+                // value에 scheduleId를, data-start-at에 시간을 저장합니다.
+                li.innerHTML = `<label><input type="radio" name="schedule" value="${s.id}" data-start-at="${startAtStr}"> <strong>${timeStr}</strong> - 예약 가능 🟢</label>`;
                 scheduleList.appendChild(li);
             });
-            // --- 중복 시간 확인 로직 끝 ---
-        })
-        .catch(error => console.error(error));
+        }).catch(e => console.error(e));
 });
 
-
-// =================================================================================================
-// ✅ TODO 3: '예약하기' 버튼 클릭 시 API(POST /reservations) 호출
-// =================================================================================================
+// 예약 생성
 document.getElementById('reserve-btn').addEventListener('click', () => {
     const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
-
     if (!selectedScheduleRadio) {
         alert("예약할 시간을 선택해주세요.");
         return;
     }
 
-    const selectedTime = selectedScheduleRadio.value; // 예: "10:00"
-    const selectedThemeCard = document.querySelector('.theme-card.selected');
-    const themeId = selectedThemeCard ? selectedThemeCard.dataset.themeId : null;
+    const startAt = selectedScheduleRadio.dataset.startAt;
+    const themeId = document.querySelector('.theme-card.selected').dataset.themeId;
 
-    const date = document.getElementById('date-input').value;
-
-    // 💡 백엔드 테스트를 위한 임시 유저 ID 매핑 딕셔너리
-    // data.sql에 등록된 유저 데이터를 기준으로 매핑합니다.
-    const userMap = {
-        '루크': 1,
-        '소낙눈': 2,
-        '포비': 3
-    };
-    const mappedUserId = userMap[currentUser] || 1; // 매핑되지 않은 이름이면 기본값 1로 세팅
-
-    // 서버로 보낼 데이터 객체 (백엔드 DTO와 모양을 맞춰야 합니다)
     const reservationData = {
-        date: date,
-        time: selectedTime,
+        startAt: startAt,
         themeId: parseInt(themeId),
-        userId: mappedUserId // 💡 백엔드 변경 스펙에 맞추어 name 대신 userId를 전송합니다.
+        userId: getMappedUserId() // 예약 생성 명세(userId)
     };
 
     fetch('/reservations', {
         method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(reservationData),
+    }).then(res => {
+        if (res.status === 201) {
+            alert("예약이 완료되었습니다!");
+            loadPopularThemes();
+            document.getElementById('search-schedule-btn').click(); // 스케줄 새로고침
+            loadMyReservations(); // 내 예약 새로고침
+        } else {
+            // 💡 서버가 뱉어낸 의도된 에러(400)를 alert로 친절히 보여줍니다.
+            res.json().then(err => alert(`예약 실패: ${err.message}`));
+        }
+    });
+});
+
+// =================================================================================================
+// ✅ 신규 기능: 내 예약 관리
+// =================================================================================================
+
+// 1. 내 예약 불러오기
+function loadMyReservations() {
+    fetch('/reservations/my', {
+        headers: {'X-User-Id': getMappedUserId()} // 💡 서버와의 약속 헤더
+    })
+        .then(res => {
+            if (!res.ok) throw new Error('조회 실패');
+            return res.json();
+        })
+        .then(reservations => {
+            const list = document.getElementById('my-reservation-list');
+            list.innerHTML = '';
+            if (reservations.length === 0) {
+                list.innerHTML = '<li class="empty-message">예약 내역이 없습니다.</li>';
+                return;
+            }
+
+            reservations.forEach(r => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.padding = '10px';
+                li.style.borderBottom = '1px solid #eee';
+
+                const startAt = r.startAt.replace('T', ' ').substring(0, 16);
+                const info = document.createElement('div');
+                info.innerHTML = `<strong>[${r.themeName}]</strong> <br> <span style="font-size:0.9em; color:#666;">${startAt}</span>`;
+
+                const btnGroup = document.createElement('div');
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = '취소';
+                cancelBtn.className = 'delete-btn';
+                cancelBtn.style.marginRight = '5px';
+                cancelBtn.onclick = () => cancelReservation(r.reservationId);
+
+                const changeBtn = document.createElement('button');
+                changeBtn.textContent = '위에서 선택한 시간으로 변경';
+                changeBtn.className = 'primary-btn';
+                changeBtn.style.padding = '5px 10px';
+                changeBtn.style.fontSize = '0.8em';
+                changeBtn.onclick = () => changeReservation(r.reservationId);
+
+                btnGroup.appendChild(cancelBtn);
+                btnGroup.appendChild(changeBtn);
+                li.appendChild(info);
+                li.appendChild(btnGroup);
+                list.appendChild(li);
+            });
+        });
+}
+
+// 2. 예약 취소
+function cancelReservation(id) {
+    if (!confirm('정말로 이 예약을 취소하시겠습니까?')) return;
+
+    fetch(`/reservations/${id}`, {
+        method: 'DELETE',
+        headers: {'X-User-Id': getMappedUserId()}
+    }).then(res => {
+        if (res.status === 204 || res.ok) {
+            alert('취소되었습니다.');
+            loadMyReservations();
+            document.getElementById('search-schedule-btn').click();
+        } else {
+            res.json().then(err => alert(`취소 실패: ${err.message}`));
+        }
+    });
+}
+
+// 3. 예약 변경
+function changeReservation(id) {
+    const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
+    if (!selectedScheduleRadio) {
+        alert("위의 스케줄 목록에서 변경하고 싶은 '새로운 시간'을 먼저 선택해주세요!");
+        return;
+    }
+
+    const newScheduleId = selectedScheduleRadio.value; // 변경 API는 scheduleId를 보냅니다.
+
+    if (!confirm('선택한 시간으로 예약을 변경하시겠습니까?')) return;
+
+    fetch(`/reservations/${id}`, {
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
+            'X-User-Id': getMappedUserId()
         },
-        body: JSON.stringify(reservationData),
-    })
-        .then(response => {
-            if (response.status === 201) { // 201 Created
-                alert("예약이 완료되었습니다!");
-                // 페이지를 새로고침하는 대신, 변경된 부분만 다시 불러옵니다.
-                loadPopularThemes(); // 1. 인기 테마 목록 새로고침
-                document.getElementById('search-schedule-btn').click(); // 2. 현재 날짜/테마의 스케줄 목록 새로고침
-            } else {
-                // 서버 응답이 JSON이 아닐 수도 있으므로 텍스트로 먼저 받아서 처리합니다.
-                response.text().then(text => {
-                    try {
-                        const errorBody = JSON.parse(text);
-                        alert(`예약에 실패했습니다: ${errorBody.message || '알 수 없는 오류'}`);
-                    } catch (e) {
-                        alert(`예약에 실패했습니다. (상태 코드: ${response.status})`);
-                        console.error("서버 에러 응답 내용:", text);
-                    }
-                });
-            }
-        })
-        .catch(error => console.error('예약 요청 중 에러 발생:', error));
-});
+        body: JSON.stringify({scheduleId: parseInt(newScheduleId)})
+    }).then(res => {
+        if (res.ok) {
+            alert('예약이 성공적으로 변경되었습니다!');
+            loadMyReservations();
+            document.getElementById('search-schedule-btn').click();
+        } else {
+            // 💡 시간 제한 초과, 권한 등 백엔드 에러를 표시합니다.
+            res.json().then(err => alert(`변경 실패: ${err.message}`));
+        }
+    });
+}
+
+document.getElementById('load-my-reservations-btn').addEventListener('click', loadMyReservations);
