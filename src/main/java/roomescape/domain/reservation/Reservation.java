@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.InvalidInputException;
 
 public class Reservation {
 
@@ -38,25 +39,25 @@ public class Reservation {
 
     private static void validateId(final Long id){
         if(id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_ID", "Id는 비어있을 수 없습니다.");
         }
     }
 
     private void validate(final String name, final LocalDate date, final Theme theme, final ReservationTime time) {
         if (name == null || name.length() >= 10 || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 잘못된 이름 입력입니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_NAME", "잘못된 이름 입력입니다.");
         }
 
         if(date == null) {
-            throw new IllegalArgumentException("[ERROR] 날짜는 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_DATE", "날짜는 비어있을 수 없습니다.");
         }
 
         if(theme == null) {
-            throw new IllegalArgumentException("[ERROR] 테마는 비어있으면 안됩니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_THEME", "테마는 비어있으면 안됩니다.");
         }
 
         if(time == null) {
-            throw new IllegalArgumentException("[ERROR] 시간은 비어있으면 안됩니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_TIME", "시간은 비어있으면 안됩니다.");
         }
     }
 

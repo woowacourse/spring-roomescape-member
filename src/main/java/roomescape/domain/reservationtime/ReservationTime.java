@@ -2,6 +2,7 @@ package roomescape.domain.reservationtime;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.InvalidInputException;
 
 public class ReservationTime {
     private final Long id;
@@ -16,7 +17,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간을 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_TIME", "예약 시간을 비어있을 수 없습니다.");
         }
     }
 
@@ -36,7 +37,7 @@ public class ReservationTime {
 
     private static void validateId(final Long id){
         if(id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_RESERVATION_TIME_ID", "Id는 비어있을 수 없습니다.");
         }
     }
 

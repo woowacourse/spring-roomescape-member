@@ -22,40 +22,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(final ApiException exception) {
-        return ResponseEntity.status(exception.getStatus())
-                .body(new ErrorResponse(
-                        exception.getCode(),
-                        exception.getStatus().value(),
-                        exception.getMessage()
-                ));
+        return errorResponse(exception.getStatus(), exception.getCode(), exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
             final MethodArgumentNotValidException exception
     ) {
-        FieldError fieldError = exception.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .orElse(null);
-        String message = Objects.isNull(fieldError) ? "유효하지 않은 입력입니다." : fieldError.getDefaultMessage();
-        String code = Objects.isNull(fieldError) ? "INVALID_INPUT" : resolveValidationCode(fieldError);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(code, HttpStatus.BAD_REQUEST.value(), message));
+        FieldError fieldError = findFirstFieldError(exception);
+        return buildValidationErrorResponse(fieldError);
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ErrorResponse> handleBindException(final BindException exception) {
-        FieldError fieldError = exception.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .orElse(null);
-        String message = Objects.isNull(fieldError) ? "유효하지 않은 입력입니다." : fieldError.getDefaultMessage();
-        String code = Objects.isNull(fieldError)
-                ? "INVALID_INPUT"
-                : resolveBindingCode(fieldError);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(code, HttpStatus.BAD_REQUEST.value(), message));
+        FieldError fieldError = findFirstFieldError(exception);
+        return buildBindingErrorResponse(fieldError);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -72,18 +53,16 @@ public class GlobalExceptionHandler {
         String code = resolveTypeMismatchCode(exception.getRequiredType());
         String message = resolveTypeMismatchMessage(exception.getRequiredType());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(code, HttpStatus.BAD_REQUEST.value(), message));
+        return badRequest(code, message);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(
-                        "INTERNAL_SERVER_ERROR",
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        "서버 내부 오류가 발생했습니다."
-                ));
+        return errorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_SERVER_ERROR",
+                "서버 내부 오류가 발생했습니다."
+        );
     }
 
     private ResponseEntity<ErrorResponse> buildHttpMessageNotReadableResponse(
@@ -94,60 +73,80 @@ public class GlobalExceptionHandler {
         if (cause instanceof InvalidFormatException invalidFormatException) {
             Class<?> targetType = invalidFormatException.getTargetType();
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(
-                            resolveTypeMismatchCode(targetType),
-                            HttpStatus.BAD_REQUEST.value(),
-                            resolveTypeMismatchMessage(targetType)
-                    ));
+            return badRequest(
+                    resolveTypeMismatchCode(targetType),
+                    resolveTypeMismatchMessage(targetType)
+            );
         }
 
         if (cause instanceof DateTimeParseException) {
             String message = exception.getMessage();
 
             if (message.contains("java.time.LocalDate")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(
-                                "INVALID_DATE_FORMAT",
-                                HttpStatus.BAD_REQUEST.value(),
-                                "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식이어야 합니다."
-                        ));
+                return badRequest(
+                        "INVALID_DATE_FORMAT",
+                        "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식이어야 합니다."
+                );
             }
 
             if (message.contains("java.time.LocalTime")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(
-                                "INVALID_TIME_FORMAT",
-                                HttpStatus.BAD_REQUEST.value(),
-                                "시간 형식이 올바르지 않습니다. HH:mm 형식이어야 합니다."
-                        ));
+                return badRequest(
+                        "INVALID_TIME_FORMAT",
+                        "시간 형식이 올바르지 않습니다. HH:mm 형식이어야 합니다."
+                );
             }
         }
 
         if (cause instanceof JsonParseException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(
-                            "MALFORMED_JSON",
-                            HttpStatus.BAD_REQUEST.value(),
-                            "요청 본문 JSON 형식이 올바르지 않습니다."
-                    ));
+            return badRequest("MALFORMED_JSON", "요청 본문 JSON 형식이 올바르지 않습니다.");
         }
 
         if (cause instanceof MismatchedInputException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(
-                            "INVALID_TYPE_VALUE",
-                            HttpStatus.BAD_REQUEST.value(),
-                            "요청 값의 타입이 올바르지 않습니다."
-                    ));
+            return badRequest("INVALID_TYPE_VALUE", "요청 값의 타입이 올바르지 않습니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(
-                        "INVALID_INPUT",
-                        HttpStatus.BAD_REQUEST.value(),
-                        "요청 형식이 올바르지 않습니다."
-                ));
+        return badRequest("INVALID_INPUT", "요청 형식이 올바르지 않습니다.");
+    }
+
+    private ResponseEntity<ErrorResponse> buildValidationErrorResponse(final FieldError fieldError) {
+        if (Objects.isNull(fieldError)) {
+            return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
+        }
+
+        return badRequest(resolveValidationCode(fieldError), fieldError.getDefaultMessage());
+    }
+
+    private ResponseEntity<ErrorResponse> buildBindingErrorResponse(final FieldError fieldError) {
+        if (Objects.isNull(fieldError)) {
+            return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
+        }
+
+        return badRequest(resolveBindingCode(fieldError), fieldError.getDefaultMessage());
+    }
+
+    private FieldError findFirstFieldError(final MethodArgumentNotValidException exception) {
+        return exception.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    private FieldError findFirstFieldError(final BindException exception) {
+        return exception.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    private ResponseEntity<ErrorResponse> badRequest(final String code, final String message) {
+        return errorResponse(HttpStatus.BAD_REQUEST, code, message);
+    }
+
+    private ResponseEntity<ErrorResponse> errorResponse(
+            final HttpStatus status,
+            final String code,
+            final String message
+    ) {
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(code, status.value(), message));
     }
 
     private String resolveValidationCode(final FieldError fieldError) {
@@ -159,13 +158,23 @@ public class GlobalExceptionHandler {
         String field = fieldError.getField();
 
         if ("reservationCreateRequest".equals(objectName)) {
-            return switch (field) {
-                case "name" -> "INVALID_RESERVATION_NAME";
-                case "date" -> "RESERVATION_DATE_REQUIRED";
-                case "themeId" -> "THEME_ID_REQUIRED";
-                case "timeId" -> "RESERVATION_TIME_ID_REQUIRED";
-                default -> "INVALID_INPUT";
-            };
+            if ("name".equals(field)) {
+                return "INVALID_RESERVATION_NAME";
+            }
+
+            if ("date".equals(field)) {
+                return "RESERVATION_DATE_REQUIRED";
+            }
+
+            if ("themeId".equals(field)) {
+                return "THEME_ID_REQUIRED";
+            }
+
+            if ("timeId".equals(field)) {
+                return "RESERVATION_TIME_ID_REQUIRED";
+            }
+
+            return "INVALID_INPUT";
         }
 
         if ("themeCreateRequest".equals(objectName) && "name".equals(field)) {

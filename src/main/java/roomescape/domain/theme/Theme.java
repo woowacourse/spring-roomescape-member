@@ -1,6 +1,7 @@
 package roomescape.domain.theme;
 
 import java.util.Objects;
+import roomescape.exception.InvalidInputException;
 
 public class Theme {
 
@@ -19,7 +20,7 @@ public class Theme {
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 테마 이름은 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_THEME_NAME", "테마 이름은 비어있을 수 없습니다.");
         }
     }
 
@@ -39,7 +40,7 @@ public class Theme {
 
     private static void validateId(final Long id){
         if(id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
+            throw new InvalidInputException("INVALID_THEME_ID", "Id는 비어있을 수 없습니다.");
         }
     }
 

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +42,11 @@ class ReservationApiTest {
     void 예약_추가_및_삭제() {
         createTheme();
         createReservationTime("15:40");
+        LocalDate futureDate = LocalDate.now().plusDays(1);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", futureDate.toString());
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -63,7 +65,7 @@ class ReservationApiTest {
                 .body("size()", is(1))
                 .body("[0].id", is(1))
                 .body("[0].name", is("브라운"))
-                .body("[0].date", is("2023-08-05"))
+                .body("[0].date", is(futureDate.toString()))
                 .body("[0].theme.id", is(1))
                 .body("[0].theme.name", is("미술관의 밤"))
                 .body("[0].time.id", is(1))
@@ -104,10 +106,11 @@ class ReservationApiTest {
     void DB_추가_삭제_API_전환() {
         createTheme();
         createReservationTime("10:00");
+        LocalDate futureDate = LocalDate.now().plusDays(1);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", futureDate.toString());
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -134,10 +137,11 @@ class ReservationApiTest {
     void 예약과_시간_연결() {
         createTheme();
         createReservationTime("10:00");
+        LocalDate futureDate = LocalDate.now().plusDays(1);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", futureDate.toString());
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -164,16 +168,85 @@ class ReservationApiTest {
         createTheme();
         createReservationTime("10:00");
         createReservationTime("11:00");
+        LocalDate futureDate = LocalDate.now().plusDays(1);
 
-        createReservation("브라운", "2026-05-10", 1L, 1L);
+        createReservation("브라운", futureDate.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
-                .queryParam("date", "2026-05-10")
+                .queryParam("date", futureDate.toString())
                 .when().get("/themes/1/times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
                 .body("[0].startAt", is("11:00:00"));
+    }
+
+    @Test
+    void 예약_추가_시_themeId가_없으면_400을_반환한다() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", futureDate.toString());
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("THEME_ID_REQUIRED"))
+                .body("status", is(400));
+    }
+
+    @Test
+    void 예약_추가_시_날짜_형식이_잘못되면_400을_반환한다() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2026/05/20");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_DATE_FORMAT"))
+                .body("status", is(400));
+    }
+
+    @Test
+    void 예약_추가_시_themeId_타입이_잘못되면_400을_반환한다() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", futureDate.toString());
+        reservation.put("themeId", "wrong");
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_TYPE_VALUE"))
+                .body("status", is(400));
+    }
+
+    @Test
+    void 예약_가능_시간_조회_시_날짜_형식이_잘못되면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .queryParam("date", "2026/05/20")
+                .when().get("/themes/1/times/available")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_DATE_FORMAT"))
+                .body("status", is(400));
     }
 
     @Test
@@ -187,16 +260,15 @@ class ReservationApiTest {
         createReservationTime("10:00");
         createReservationTime("11:00");
         createReservationTime("12:00");
+        insertReservation("쿠다", today.minusDays(1), 1L, 1L);
+        insertReservation("아루", today.minusDays(2), 1L, 1L);
+        insertReservation("도기", today.minusDays(3), 1L, 1L);
 
-        createReservation("쿠다", today.minusDays(1).toString(), 1L, 1L);
-        createReservation("아루", today.minusDays(2).toString(), 1L, 1L);
-        createReservation("도기", today.minusDays(3).toString(), 1L, 1L);
+        insertReservation("포비", today.minusDays(1), 2L, 2L);
+        insertReservation("솔라", today.minusDays(2), 2L, 2L);
 
-        createReservation("포비", today.minusDays(1).toString(), 2L, 2L);
-        createReservation("솔라", today.minusDays(2).toString(), 2L, 2L);
-
-        createReservation("레오", today.minusDays(1).toString(), 3L, 3L);
-        createReservation("오래된예약", today.minusDays(10).toString(), 3L, 3L);
+        insertReservation("레오", today.minusDays(1), 3L, 3L);
+        insertReservation("오래된예약", today.minusDays(10), 3L, 3L);
 
         RestAssured.given().log().all()
                 .queryParam("period", 7)
@@ -280,6 +352,16 @@ class ReservationApiTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    private void insertReservation(final String name, final LocalDate date, final Long themeId, final Long timeId) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                name,
+                java.sql.Date.valueOf(date),
+                themeId,
+                timeId
+        );
     }
 
     private void clearTables() {

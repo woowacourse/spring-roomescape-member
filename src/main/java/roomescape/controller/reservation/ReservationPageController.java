@@ -52,7 +52,7 @@ public class ReservationPageController {
                 .map(ThemeResponse::from)
                 .toList());
         model.addAttribute("selectedThemeId", themeId);
-        model.addAttribute("selectedTheme", themeId == null ? null : ThemeResponse.from(themeService.getById(themeId)));
+        model.addAttribute("selectedTheme", getSelectedTheme(themeId));
         model.addAttribute("selectedDate", date);
         model.addAttribute("period", period);
         model.addAttribute("limit", limit);
@@ -83,5 +83,13 @@ public class ReservationPageController {
     public String deleteReservation(@PathVariable final Long id) {
         reservationService.deleteById(id);
         return "redirect:/pages/user/reservations";
+    }
+
+    private ThemeResponse getSelectedTheme(final Long themeId) {
+        if (themeId == null) {
+            return null;
+        }
+
+        return ThemeResponse.from(themeService.getById(themeId));
     }
 }

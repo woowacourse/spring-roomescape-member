@@ -14,6 +14,8 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.MemoryReservationRepository;
 import roomescape.service.reservation.ReservationService;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.InvalidInputException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
@@ -46,7 +48,7 @@ class ReservationServiceTest {
         fixture.reservationService.save("쿠다", date, theme.getId(), time.getId());
 
         assertThrows(
-                IllegalArgumentException.class,
+                ConflictException.class,
                 () -> fixture.reservationService.save("아루", date, theme.getId(), time.getId())
         );
     }
@@ -59,7 +61,7 @@ class ReservationServiceTest {
         ReservationTime time = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
 
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidInputException.class,
                 () -> fixture.reservationService.save("쿠다", LocalDate.now().minusDays(1), theme.getId(), time.getId())
         );
     }
@@ -74,7 +76,7 @@ class ReservationServiceTest {
         ReservationTime time = fixture.reservationTimeService.save(pastTime);
 
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidInputException.class,
                 () -> fixture.reservationService.save("쿠다", LocalDate.now(), theme.getId(), time.getId())
         );
     }

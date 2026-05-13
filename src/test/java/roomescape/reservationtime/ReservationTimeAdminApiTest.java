@@ -55,6 +55,21 @@ class ReservationTimeAdminApiTest {
                 .body("size()", is(0));
     }
 
+    @Test
+    void 예약_시간_추가_시_시간_형식이_잘못되면_400을_반환한다() {
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10-00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/admin/reservation-times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_TIME_FORMAT"))
+                .body("status", is(400));
+    }
+
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");

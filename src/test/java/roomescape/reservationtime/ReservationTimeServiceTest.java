@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.MemoryReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
@@ -42,7 +44,7 @@ class ReservationTimeServiceTest {
         );
         reservationTimeService.save(LocalTime.parse("10:00"));
 
-        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.save(LocalTime.parse("10:00")));
+        assertThrows(ConflictException.class, () -> reservationTimeService.save(LocalTime.parse("10:00")));
     }
 
     @Test
@@ -85,7 +87,7 @@ class ReservationTimeServiceTest {
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
         reservationRepository.save(Reservation.createNew("쿠다", LocalDate.parse("2026-08-06"), theme, savedTime));
 
-        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.deleteById(savedTime.getId()));
+        assertThrows(ConflictException.class, () -> reservationTimeService.deleteById(savedTime.getId()));
     }
 
     @Test
@@ -110,7 +112,7 @@ class ReservationTimeServiceTest {
                 new MemoryReservationRepository()
         );
 
-        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.getById(1L));
+        assertThrows(ResourceNotFoundException.class, () -> reservationTimeService.getById(1L));
     }
 
     private static class TestReservationTimeRepository implements ReservationTimeRepository {

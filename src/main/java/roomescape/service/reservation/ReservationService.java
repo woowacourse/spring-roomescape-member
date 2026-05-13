@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.InvalidInputException;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
 import roomescape.service.theme.ThemeService;
@@ -37,11 +39,11 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 과거 날짜와 시간으로는 예약을 할 수 없습니다.");
+            throw new InvalidInputException("RESERVATION_DATE_TIME_IN_PAST", "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
         }
 
         if(reservationRepository.existsByDateAndThemeIdAndTimeId(date, themeId, timeId)){
-            throw new IllegalArgumentException("[ERROR] 동일한 시기에 예약을 할 수 없습니다.");
+            throw new ConflictException("RESERVATION_DUPLICATED", "동일한 시기에 예약을 할 수 없습니다.");
         }
 
         Reservation nonIdReservation = Reservation.createNew(name, date, theme, reservationTime);

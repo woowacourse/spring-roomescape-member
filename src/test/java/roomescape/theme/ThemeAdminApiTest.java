@@ -57,6 +57,22 @@ class ThemeAdminApiTest {
                 .body("size()", is(0));
     }
 
+    @Test
+    void 테마_추가_시_이름이_없으면_400을_반환한다() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("description", "추리 테마");
+        theme.put("thumbnailUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_THEME_NAME"))
+                .body("status", is(400));
+    }
+
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
