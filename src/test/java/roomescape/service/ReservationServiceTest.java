@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
+import roomescape.exception.RoomescapeException;
 
 @SpringBootTest
 @Transactional
@@ -38,16 +39,44 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
     void 존재하지_않는_예약을_정상적으로_추가할_수_있다() {
         // given
-        ReservationRequest reservationRequest = new ReservationRequest("무빙", LocalDate.of(2026, 5, 3), 2L, 2L);
+        ReservationRequest reservationRequest = new ReservationRequest("무빙", LocalDate.now().plusDays(1L), 2L, 2L);
 
         // when
         Assertions.assertThatCode(() -> reservationService.register(reservationRequest))
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    public void 이미_지난_날짜_시간으로_예약할_경우_예외가_발생한다() {
+        // given
+        ReservationRequest reservationRequest = new ReservationRequest("토리", LocalDate.of(2026, 5, 1), 2L, 2L);
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 존재하지_않는_예약_시간으로_예약은_예외가_발생한다() {
+        // given
+        ReservationRequest reservationRequest = new ReservationRequest("토리임", LocalDate.now().plusDays(1L), -1L, 2L);
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 존재하지_않는_테마로의_예약은_예외가_발생한다() {
+        // given
+        ReservationRequest reservationRequest = new ReservationRequest("토리임", LocalDate.now().plusDays(1L), 1L, -2L);
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
 }

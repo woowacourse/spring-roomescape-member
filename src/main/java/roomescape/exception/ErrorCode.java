@@ -30,8 +30,6 @@ public enum ErrorCode {
     RESERVATION_TIME_NULL(HttpStatus.BAD_REQUEST, "예약 시간은 필수입니다.", "timeId에 값을 채워서 다시 요청해주세요."),
     RESERVATION_THEME_NULL(HttpStatus.BAD_REQUEST, "예약 테마는 필수입니다.", "themeId에 값을 채워서 다시 요청해주세요."),
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 예약입니다.", "다른 테마, 날짜, 시간으로 예약을 시도해주세요."),
-    RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다.", null),
-    RESERVATION_THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다.", null),
     RESERVATION_PAST_DATE(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 날짜·시간으로는 예약할 수 없습니다.", null),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다.", null),
     RESERVATION_PAST_UPDATE(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 예약은 변경할 수 없습니다.", null),
