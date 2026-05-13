@@ -90,4 +90,15 @@ public class ReservationControllerTest {
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST_BODY"));
     }
+
+    @Test
+    public void 사용자_이름으로_예약을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", "루팡4")
+                .when().get("/reservations/user")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(4));
+    }
 }

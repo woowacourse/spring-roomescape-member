@@ -90,4 +90,12 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_TIMEID);
         }
     }
+
+    public ReservationAllResponse readByName(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        List<ReservationResponse> responses = reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return new ReservationAllResponse(responses);
+    }
 }

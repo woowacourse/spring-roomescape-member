@@ -84,4 +84,15 @@ public class ReservationRepository {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, themeId) > 0;
     }
+
+    public List<Reservation> findByName(String name) {
+        String selectSql =
+                "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
+                        +
+                        "FROM reservation r " +
+                        "INNER JOIN reservation_time t ON r.time_id = t.id " +
+                        "INNER JOIN theme m ON r.theme_id = m.id " +
+                        "WHERE r.username = ?";
+        return jdbcTemplate.query(selectSql, reservationMapper, name);
+    }
 }
