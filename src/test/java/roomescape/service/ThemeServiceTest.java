@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
@@ -38,13 +39,13 @@ public class ThemeServiceTest {
     void 존재하지_않는_테마를_삭제하는경우_예외가_발생한다() {
         // then
         Assertions.assertThatThrownBy(() -> themeService.removeById(-1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
-    void 존재하는_테마를_삭제하는경우_삭제된다() {
+    void 예약이_존재하지_않는_테마를_삭제하는경우_삭제된다() {
         // then
-        Assertions.assertThatCode(() -> themeService.removeById(1L))
+        Assertions.assertThatCode(() -> themeService.removeById(14L))
                 .doesNotThrowAnyException();
     }
 

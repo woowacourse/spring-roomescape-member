@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.TimeRequest;
+import roomescape.exception.RoomescapeException;
 
 @SpringBootTest
 @Transactional
@@ -19,7 +20,7 @@ public class TimeServiceTest {
     public void 존재하지_않는_시간를_삭제하는경우_예외가_발생한다() {
         // then
         Assertions.assertThatThrownBy(() -> timeService.removeById(-1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
@@ -39,13 +40,13 @@ public class TimeServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
     public void 예약이_존재하는_시간에_대한_삭제는_예외가_발생한다() {
         // when
         Assertions.assertThatThrownBy(() -> timeService.removeById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 }
