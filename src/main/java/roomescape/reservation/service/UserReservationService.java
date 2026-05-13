@@ -35,7 +35,7 @@ public class UserReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
 
@@ -46,9 +46,9 @@ public class UserReservationService {
         try {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다");
+            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         } catch (DataIntegrityViolationException e) {
-            throw new ApiException("요청이 데이터 무결성 조건을 위반했습니다");
+            throw new ApiException("요청이 데이터 무결성 조건을 위반했습니다.");
         }
     }
 
@@ -66,15 +66,7 @@ public class UserReservationService {
     public void deleteReservation(long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
-
-        if (!reservation.getName().equals(name)) {
-            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
-        }
-
-        if (LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt()).isBefore(LocalDateTime.now())) {
-            throw new ApiException("이미 지난 예약은 취소할 수 없습니다.");
-        }
-
+        validateOwnerAndActive(reservation, name);
         reservationRepository.delete(id);
     }
 
@@ -82,28 +74,30 @@ public class UserReservationService {
     public Reservation updateReservation(long id, String name, LocalDate newDate, long newTimeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
-
-        if (!reservation.getName().equals(name)) {
-            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
-        }
-
-        if (LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt()).isBefore(LocalDateTime.now())) {
-            throw new ApiException("이미 지난 예약은 변경할 수 없습니다.");
-        }
+        validateOwnerAndActive(reservation, name);
 
         ReservationTime newTime = reservationTimeRepository.findById(newTimeId)
-                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
 
         if (LocalDateTime.of(newDate, newTime.startAt()).isBefore(LocalDateTime.now())) {
             throw new ApiException("지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
-        if (takenTimeIds.stream().anyMatch(tid -> tid == newTimeId)) {
-            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다");
+        if (takenTimeIds.stream().anyMatch(tid -> tid.equals(newTimeId))) {
+            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 
         reservationRepository.update(id, newDate, newTimeId);
         return new Reservation(id, name, newDate, newTime, reservation.getTheme());
+    }
+
+    private void validateOwnerAndActive(Reservation reservation, String name) {
+        if (!reservation.getName().equals(name)) {
+            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
+        }
+        if (LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt()).isBefore(LocalDateTime.now())) {
+            throw new ApiException("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
+        }
     }
 }

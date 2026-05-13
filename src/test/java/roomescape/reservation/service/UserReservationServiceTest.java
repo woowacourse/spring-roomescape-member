@@ -98,7 +98,7 @@ class UserReservationServiceTest {
         assertThatThrownBy(
                 () -> userReservationService.createReservation("코니", LocalDate.of(2099, 12, 31), 1L, 1L))
                 .isInstanceOf(DuplicateException.class)
-                .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다");
+                .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다.");
     }
 
     @Test
@@ -128,7 +128,7 @@ class UserReservationServiceTest {
         // reservation(id=2): User1, 2026-05-01(과거), time=2
         assertThatThrownBy(() -> userReservationService.deleteReservation(2L, "User1"))
                 .isInstanceOf(ApiException.class)
-                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+                .hasMessage("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
     }
 
     @Test
@@ -169,7 +169,7 @@ class UserReservationServiceTest {
         assertThatThrownBy(
                 () -> userReservationService.updateReservation(2L, "User1", LocalDate.now().plusDays(1), 1L))
                 .isInstanceOf(ApiException.class)
-                .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+                .hasMessage("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
     }
 
     @Test
@@ -180,7 +180,7 @@ class UserReservationServiceTest {
         assertThatThrownBy(
                 () -> userReservationService.updateReservation(1L, "ScheduleTest", LocalDate.of(2099, 12, 31), 2L))
                 .isInstanceOf(DuplicateException.class)
-                .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다");
+                .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다.");
     }
 
     @Test

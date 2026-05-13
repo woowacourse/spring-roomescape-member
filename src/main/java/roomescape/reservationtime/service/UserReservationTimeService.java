@@ -28,21 +28,17 @@ public class UserReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-
     @Transactional(readOnly = true)
-    public List<AvailableTime> getSchedules(LocalDate date, Long themeId) {
+    public List<AvailableTime> getSchedules(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-
-        List<Long> reservedTimeIds = reservationRepository.findByDateAndTheme(date, themeId);
-        Set<Long> reservedIdSet = new HashSet<>(reservedTimeIds);
+        Set<Long> reservedIdSet = new HashSet<>(reservationRepository.findByDateAndTheme(date, themeId));
 
         return allTimes.stream()
-                .map(time -> new AvailableTime(
-                        time.id(),
-                        time.startAt(),
-                        !reservedIdSet.contains(time.id()) && LocalDateTime.of(date, time.startAt())
-                                .isAfter(LocalDateTime.now())
-                ))
+                .map(time -> {
+                    boolean notReserved = !reservedIdSet.contains(time.id());
+                    boolean notPast = LocalDateTime.of(date, time.startAt()).isAfter(LocalDateTime.now());
+                    return new AvailableTime(time.id(), time.startAt(), notReserved && notPast);
+                })
                 .toList();
     }
 }

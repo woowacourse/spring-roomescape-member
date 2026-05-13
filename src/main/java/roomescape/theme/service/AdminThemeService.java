@@ -35,7 +35,7 @@ public class AdminThemeService {
         int reservationCount = reservationRepository.countByThemeId(id);
 
         if (reservationCount > 0) {
-            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다");
+            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다.");
         }
 
         themeRepository.delete(id);

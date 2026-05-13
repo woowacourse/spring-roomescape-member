@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .findFirst()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .orElse("유효하지 않은 요청입니다");
+                .orElse("유효하지 않은 요청입니다.");
 
         ErrorResponse response = new ErrorResponse(message);
 
