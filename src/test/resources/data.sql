@@ -67,4 +67,6 @@ VALUES
     -- 15일 전
     ('나그네', DATEADD('DAY', -15, CURRENT_DATE), 1, 11),
     -- 오늘
-    ('방문객', CURRENT_DATE, 2, 11);
+    ('방문객', CURRENT_DATE, 2, 11),
+    -- 미래
+    ('루드비코', DATEADD('DAY', 1, CURRENT_DATE), 1, 1);

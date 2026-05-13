@@ -61,8 +61,7 @@ class ReservationControllerE2ETest {
         @DisplayName("지난 시점으로 예약하면 422 Unprocessable Entity를 응답한다")
         @Sql("/initialize_theme_and_time.sql")
         @Test
-        // TODO: 오타 수정(시잠 -> 시점)
-        void 지난_시잠을_예약하면_422를_응답한다() {
+        void 지난_시점을_예약하면_422를_응답한다() {
             Map<String, Object> requestBodyWithPastDateTime = Map.of(
                     "name", "",
                     "date", PAST_DATE,
@@ -154,6 +153,63 @@ class ReservationControllerE2ETest {
                 .when().get(requestParamFormat.formatted("루드비코"))
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
+    }
+
+    @Nested
+    class 예약_취소_케이스 {
+
+        final String requestParamFormat = "/api/reservations?name=%s&date=%s&timeId=%s&themeId=%s";
+
+        @DisplayName("예약 취소에 성공하면 204 No Content를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 예약을_성공적으로_취소하면_204를_응답한다() {
+            RestAssured.given().log().all()
+                    .when().delete(
+                            requestParamFormat.formatted(
+                                    "루드비코",
+                                    LocalDate.now().plusDays(1),
+                                    1,
+                                    1
+                            )
+                    )
+                    .then().log().all()
+                    .statusCode(204);
+        }
+
+        @DisplayName("이전 시점의 예약 취소를 요청하면 422 Unprocessable Entity를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 이전_시점의_예약_취소를_요청하면_422를_응답한다() {
+            RestAssured.given().log().all()
+                    .when().delete(
+                            requestParamFormat.formatted(
+                                    "루드비코",
+                                    LocalDate.now().minusDays(7),
+                                    1,
+                                    1
+                            )
+                    )
+                    .then().log().all()
+                    .statusCode(422);
+        }
+
+        @DisplayName("존재하지 않는 예약 취소를 요청하면 404 Not Found를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 존재하지_않는_예약_취소를_요청하면_404를_응답한다() {
+            RestAssured.given().log().all()
+                    .when().delete(
+                            requestParamFormat.formatted(
+                                    "루드비코",
+                                    LocalDate.now().plusDays(1),
+                                    Long.MAX_VALUE,
+                                    Long.MAX_VALUE
+                            )
+                    )
+                    .then().log().all()
+                    .statusCode(404);
+        }
     }
 }

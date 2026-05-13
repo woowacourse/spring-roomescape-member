@@ -5,10 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.CannotDeleteReservationException;
 import roomescape.exception.CannotDeleteReservationTimeException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
+import roomescape.exception.ReservationDoesNotExistsException;
 import roomescape.exception.ReservationTimeDoesNotExistsException;
 import roomescape.exception.ThemeDoesNotExistsException;
 
@@ -63,6 +65,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleThemeDoesNotExistsException(
             ThemeDoesNotExistsException ex
     ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CannotDeleteReservationException.class)
+    public ResponseEntity<String> handleCannotDeleteReservationException(CannotDeleteReservationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ReservationDoesNotExistsException.class)
+    public ResponseEntity<String> handleReservationDoesNotExistsException(ReservationDoesNotExistsException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND.value())
                 .body(ex.getMessage());
