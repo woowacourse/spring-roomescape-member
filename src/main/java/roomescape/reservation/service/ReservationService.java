@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -61,7 +62,7 @@ public class ReservationService {
         if (themeRepository.existsById(id)) {
             return;
         }
-        throw new IllegalArgumentException("테마 정보가 유효하지 않습니다");
+        throw new ThemeNotFoundException();
     }
 
     @Transactional
