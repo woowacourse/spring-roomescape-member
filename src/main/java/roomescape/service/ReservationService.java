@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import static roomescape.service.ReservationTimeService.TIME_SLOT_DOES_NOT_EXIST;
+import static roomescape.service.ThemeService.THEME_DOES_NOT_EXISTS;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,8 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -18,15 +23,14 @@ public class ReservationService {
     private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService,
-                              ThemeService themeService) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAll() {
@@ -40,8 +44,10 @@ public class ReservationService {
 
     @Transactional
     public Reservation reserve(ReservationCreateRequest request, LocalDateTime now) {
-        ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
-        Theme theme = themeService.find(request.getThemeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId())
+                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+        Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(
+                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS));
 
         Reservation reservation = Reservation.reserve(Name.from(request.getName()),
                 ReservationDate.from(request.getDate()),
@@ -57,9 +63,9 @@ public class ReservationService {
 
     @Transactional
     public void cancel(long reservationId) {
-        reservationRepository.findById(reservationId).orElseThrow(
-                () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
-
+        if (!reservationRepository.existsById(reservationId)) {
+            throw new IllegalArgumentException(INVALID_RESERVATION_ID);
+        }
         reservationRepository.deleteById(reservationId);
     }
 }

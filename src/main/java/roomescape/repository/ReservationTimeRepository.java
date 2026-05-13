@@ -14,6 +14,13 @@ import roomescape.domain.ReservationTime;
 public class ReservationTimeRepository {
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) ->
             ReservationTime.of(resultSet.getLong("id"), resultSet.getTime("start_at").toLocalTime());
+    private static final String EXISTS_BY_ID = """
+            SELECT EXISTS (
+                SELECT 1 
+                    FROM reservation_time
+                    WHERE id = ?
+                    )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -63,5 +70,10 @@ public class ReservationTimeRepository {
                 )
                 """;
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, date, themeId);
+    }
+
+    public boolean existsById(long reservationTimeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, reservationTimeId));
     }
 }

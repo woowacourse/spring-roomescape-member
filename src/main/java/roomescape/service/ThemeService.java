@@ -14,7 +14,7 @@ import roomescape.repository.ThemeRepository;
 public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
-    private static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
+    public static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
     private static final String THEME_ID_DOES_NOT_EXIST = "존재하지 않는 ID입니다.";
 
     private final ThemeRepository themeRepository;

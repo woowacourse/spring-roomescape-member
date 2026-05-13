@@ -45,6 +45,20 @@ public class ReservationRepository {
                 WHERE date = ? AND time_id = ? AND theme_id = ?
             )
             """;
+    private static final String EXISTS_BY_ID = """
+            SELECT EXISTS (
+                SELECT 1 
+                    FROM reservation
+                    WHERE id = ?
+                    )
+            """;
+    private static final String EXISTS_BY_TIME_ID = """
+            SELECT EXISTS (
+                SELECT 1 
+                    FROM reservation
+                    WHERE time_id = ?
+                    )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -89,5 +103,15 @@ public class ReservationRepository {
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(EXISTS_BY_DATE_AND_TIME_AND_THEME_ID, Boolean.class, date, timeId,
                         themeId));
+    }
+
+    public boolean existsById(long reservationId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, reservationId));
+    }
+
+    public boolean existsByTimeId(long reservationTimeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
     }
 }

@@ -13,12 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -27,22 +26,17 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
 
     @Mock
-    private ReservationTimeService reservationTimeService;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Mock
-    private ThemeService themeService;
+    private ThemeRepository themeRepository;
 
     @InjectMocks
     private ReservationService reservationService;
 
     @Test
     void 예약_취소_성공() {
-        ReservationTime reservationTime = ReservationTime.of("10:00");
-        ReservationDate reservationDate = ReservationDate.from("2026-05-03");
-        Theme theme = Theme.of(1L, "공포", "무서워요", "https://zeze.com");
-        Reservation reservation = Reservation.of(1L, Name.from("zeze"), reservationDate, reservationTime, theme);
-
-        given(reservationRepository.findById(1L)).willReturn(Optional.of(reservation));
+        given(reservationRepository.existsById(1L)).willReturn(true);
 
         reservationService.cancel(1L);
 
@@ -51,7 +45,7 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_예약_취소시_예외_발생() {
-        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
+        given(reservationRepository.existsById(999L)).willReturn(false);
 
         Assertions.assertThatThrownBy(() -> reservationService.cancel(999L))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -59,7 +53,7 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_시간으로_예약시_예외() {
-        given(reservationTimeService.find(999L)).willThrow(new IllegalArgumentException());
+        given(reservationTimeRepository.findById(999L)).willReturn(Optional.empty());
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-05-03"), 999L,
                 1L);
@@ -74,8 +68,8 @@ class ReservationServiceTest {
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
-        given(reservationTimeService.find(1L)).willReturn(reservationTime);
-        given(themeService.find(1L)).willReturn(theme);
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
 
         Assertions.assertThatThrownBy(() -> reservationService.reserve(request, LocalDateTime.MAX));
     }
@@ -86,8 +80,8 @@ class ReservationServiceTest {
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
-        given(reservationTimeService.find(1L)).willReturn(reservationTime);
-        given(themeService.find(1L)).willReturn(theme);
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
 
         Assertions.assertThatNoException()
                 .isThrownBy(() -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 10, 59, 59)));
@@ -99,8 +93,8 @@ class ReservationServiceTest {
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
-        given(reservationTimeService.find(1L)).willReturn(reservationTime);
-        given(themeService.find(1L)).willReturn(theme);
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
 
         Assertions.assertThatThrownBy(
                 () -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 11, 0, 1)));
@@ -112,8 +106,8 @@ class ReservationServiceTest {
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
-        given(reservationTimeService.find(1L)).willReturn(reservationTime);
-        given(themeService.find(1L)).willReturn(theme);
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
 
         Assertions.assertThatNoException().isThrownBy(
                 () -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 11, 0, 1)));

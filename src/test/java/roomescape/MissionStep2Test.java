@@ -62,7 +62,7 @@ public class MissionStep2Test {
     void DB_추가_삭제_API_전환() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
