@@ -67,6 +67,8 @@ class ReservationDAOTest {
             // then
             assertThat(saved.getId()).isNotNull();
             assertThat(saved.getName()).isEqualTo("브라운");
+            assertThat(saved.getTime().getId()).isEqualTo(time.id());
+            assertThat(saved.getTheme().getId()).isEqualTo(theme.getId());
         }
 
         @Test
