@@ -81,7 +81,7 @@
 - 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
     - [x] 예약 목록이 없다면 빈 리스트를 반환한다.
 - 사용자가 본인의 예약을 취소할 수 있다.
-    - [ ] 날짜, 시간이 지난 예약을 취소 요청할 경우 예외를 발생시킨다.
+    - [x] 날짜, 시간이 지난 예약을 취소 요청할 경우 예외를 발생시킨다.
 - 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
     - [x] 변경하려는 날짜, 시간이 이미 지난 경우 예외를 발생시킨다.
     - [x] 변경하려는 날짜, 시간에 예약이 이미 존재할 경우 예외를 발생시킨다.
@@ -445,7 +445,15 @@
     - Response
         - [x] 정상적으로 삭제된 경우: `Http Status: 204 No Content`
 
-        - [ ] 이미 지나간 시간의 예약을 삭제할 경우: `Http Status: 422 Unprocessable Entity`
+        - [x] 예약 ID로 기존 예약을 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
+        {
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."
+        }
+        ```
+
+        - [x] 이미 지나간 시간의 예약을 삭제할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
             "status": "UNPROCESSABLE_ENTITY",

@@ -7,6 +7,7 @@ import static roomescape.exception.ErrorCode.NOT_FOUND_RESERVATION;
 import static roomescape.exception.ErrorCode.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
 import static roomescape.exception.ErrorCode.PAST_TIME_RESERVATION;
+import static roomescape.exception.ErrorCode.PAST_TIME_RESERVATION_DELETE;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -159,6 +160,27 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.update(1L, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(DUPLICATED_RESERVATION.getMessage());
+    }
+
+    @Test
+    void deleteNotFoundReservationExceptionTest() {
+        assertThatThrownBy(() -> reservationService.delete(1L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(NOT_FOUND_RESERVATION.getMessage());
+    }
+
+    @Test
+    void deletePastReservationExceptionTest() {
+        LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
+
+        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(pastDate.toLocalTime()));
+        Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+
+        reservationRepository.create(new Reservation("fizz", pastDate.toLocalDate(), reservationTime, theme));
+
+        assertThatThrownBy(() -> reservationService.delete(1L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(PAST_TIME_RESERVATION_DELETE.getMessage());
     }
 
     @Test

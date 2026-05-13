@@ -105,6 +105,14 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
+        Optional<Reservation> reservation = reservationRepository.readById(id);
+        if (reservation.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION);
+        }
+        if (reservation.get().isPast(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION_DELETE);
+        }
+
         reservationRepository.delete(id);
     }
 }
