@@ -1,10 +1,5 @@
 package roomescape.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,24 +11,35 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.exception.ResponseErrorMessage;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(BusinessException.class)
+    protected ResponseEntity<ResponseErrorMessage> handleBusinessException(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        ResponseErrorMessage response = ResponseErrorMessage.of(errorCode);
+
+        return new ResponseEntity<>(response, errorCode.getStatus());
+    }
+
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseErrorMessage handleException(Exception e) {
+    public ResponseEntity<String> handleException(Exception e) {
         log.error("Unexpected error [Exception]", e);
-        return new ResponseErrorMessage("서버 내부 오류가 발생했습니다.");
+        return ResponseEntity.badRequest().body("서버 내부 오류가 발생했습니다.");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseErrorMessage handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+    public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         log.error("[HttpMessageNotReadableException] ", e);
 
         String message = "요청 형식이 올바르지 않습니다.";
@@ -43,38 +49,34 @@ public class GlobalExceptionHandler {
             message = String.format("필드 '%s'의 형식이 잘못되었습니다.", fieldName);
         }
 
-        return new ResponseErrorMessage(message);
+        return ResponseEntity.badRequest().body(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseErrorMessage handleValidation(MethodArgumentNotValidException e) {
+    public ResponseEntity<List<String>> handleValidation(MethodArgumentNotValidException e) {
         log.error("[MethodArgumentNotValidException] ", e);
         List<String> messages = e.getBindingResult().getFieldErrors().stream()
-            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .toList();
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
 
-        return new ResponseErrorMessage(messages);
+        return ResponseEntity.badRequest().body(messages);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseErrorMessage handleIllegalArgument(IllegalArgumentException e) {
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
         log.error("[IllegalArgumentException] ", e);
-        return new ResponseErrorMessage(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseErrorMessage handleNoSuchElement(NoSuchElementException e) {
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException e) {
         log.error("[NoSuchElementException] ", e);
-        return new ResponseErrorMessage(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
-    
+
     @ExceptionHandler(ForbiddenAccessException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseErrorMessage handleIForbiddenAccessException(ForbiddenAccessException e) {
+    public ResponseEntity<String> handleIForbiddenAccessException(ForbiddenAccessException e) {
         log.error("[ForbiddenAccessException] ", e);
-        return new ResponseErrorMessage(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 }
