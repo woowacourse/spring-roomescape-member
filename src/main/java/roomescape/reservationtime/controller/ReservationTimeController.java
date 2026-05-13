@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservationtime.dto.AvailableTimesResponse;
@@ -33,6 +34,7 @@ public class ReservationTimeController {
 
     @GetMapping("/availability")
     public ResponseEntity<AvailableTimesResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
+                                                                    @Positive(message = "테마 id는 1 이상의 숫자여야 합니다.")
                                                                     @RequestParam("themeId") Long themeId) {
         List<ReservationTimeAvailability> timeAvailabilities =
                 reservationTimeService.findAvailableTimes(date, themeId);

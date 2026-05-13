@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -25,7 +26,7 @@ public class ReservationAdminController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@Positive(message = "예약 id는 1 이상의 숫자여야 합니다.") @PathVariable Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
