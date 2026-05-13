@@ -16,9 +16,16 @@ public class Reservation {
     private Reservation(final Long id, final PersonName name, final LocalDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;
+        validateDate(date);
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validateDate(final LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 비어있을 수 없습니다.");
+        }
     }
 
     public static Reservation create(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {

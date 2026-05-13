@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.format.DateTimeParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +38,9 @@ public class ReservationController {
     }
 
     @PostMapping
+    @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody ReservationCreateRequest request
+            @Valid @RequestBody ReservationCreateRequest request
     ) {
         final ReservationResponse result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
