@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.policy.ReservationConflictException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -48,7 +49,7 @@ public class ReservationService {
         validateDateTimeIsNotPast(reservationDateTime);
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 new DuplicateReservationCondition(date, timeId, themeId))) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new ReservationConflictException();
         }
     }
 
