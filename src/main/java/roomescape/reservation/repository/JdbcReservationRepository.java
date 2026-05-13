@@ -89,6 +89,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         return affectedRows > 0;
     }
 
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        Integer exists = jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)",
+                Integer.class,
+                timeId
+        );
+        return exists != null && exists == 1;
+    }
+
     private static class ReservationRowMapper implements RowMapper<Reservation> {
         @Override
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {

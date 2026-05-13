@@ -2,6 +2,7 @@ package roomescape.error;
 
 public enum ErrorCode {
   TIME_NOT_FOUND,
+  TIME_IN_USE,
   RESERVATION_NOT_FOUND,
   DUPLICATE_RESERVATION,
   PAST_RESERVATION,
