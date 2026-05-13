@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,19 +39,19 @@ class AdminReservationControllerTest {
                     ZoneId.systemDefault()
             );
         }
-
-
     }
 
     @Autowired
     private Clock fixedClock;
-    
+
     @LocalServerPort
     int port;
 
     LocalDate nowDate;
     LocalDate pastDate;
     LocalDate futureDate;
+    LocalTime pastTime;
+    LocalTime futureTime;
 
     @BeforeEach
     void setUp() {
@@ -59,6 +60,8 @@ class AdminReservationControllerTest {
         nowDate = LocalDate.now(fixedClock);
         pastDate = nowDate.minusDays(1);
         futureDate = nowDate.plusDays(1);
+        pastTime = LocalTime.now(fixedClock).minusHours(1);
+        futureTime = LocalTime.now(fixedClock).plusHours(1);
     }
 
     @Test
@@ -75,7 +78,7 @@ class AdminReservationControllerTest {
                 .body("reservations[0].theme.name", is("워너비"))
                 .body("reservations[0].theme.description", is("워너비 테마입니다."))
                 .body("reservations[0].theme.thumbnailUrl", is("https://example.com/wannabe.png"))
-                .body("reservations[0].date", is("2026-05-05"))
+                .body("reservations[0].date", is(pastDate.toString()))
                 .body("reservations[0].time.id", is(1))
                 .body("reservations[0].time.startAt", is("10:00"));
     }
@@ -87,7 +90,7 @@ class AdminReservationControllerTest {
         params.put("username", "관리자");
         params.put("themeId", 1);
         params.put("date", futureDate);
-        params.put("timeId", 1);
+        params.put("timeId", 6); // 15:00 (futureTime)
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -105,7 +108,7 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "관리자");
         params.put("themeId", 1);
-        params.put("date", "2000-07-16");
+        params.put("date", futureDate);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -115,7 +118,7 @@ class AdminReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("username", is("관리자"))
-                .body("date", is("2000-07-16"));
+                .body("date", is(futureDate.toString()));
     }
 
     @Test
@@ -126,8 +129,8 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "관리자");
         params.put("themeId", 4);
-        params.put("date", today);
-        params.put("timeId", 1);
+        params.put("date", nowDate);
+        params.put("timeId", 4); // 13:00 (pastTime)
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -136,20 +139,18 @@ class AdminReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("username", is("관리자"))
-                .body("date", is(today))
-                .body("time.startAt", is("10:00"));
+                .body("date", is(nowDate.toString()))
+                .body("time.startAt", is(pastTime.toString()));
     }
 
     @Test
     @DisplayName("관리자도 중복된 예약을 생성하면 에러가 발생한다.")
     void createDuplicateReservationByAdminThrowException() {
-        String today = LocalDate.now(fixedClock).toString();
-
         Map<String, Object> params = new HashMap<>();
         params.put("username", "관리자");
         params.put("themeId", 4);
-        params.put("date", today);
-        params.put("timeId", 1);
+        params.put("date", nowDate);
+        params.put("timeId", 4);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -172,7 +173,7 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "");
         params.put("themeId", 1);
-        params.put("date", "2026-05-10");
+        params.put("date", futureDate);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -189,18 +190,18 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("themeId", 2L);
         params.put("date", futureDate);
-        params.put("timeId", 2L);
+        params.put("timeId", 6L); // 15:00 (futureTime)
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().put("/admin/reservations/1")
+                .when().patch("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(1))
                 .body("theme.id", is(2))
                 .body("date", is(futureDate.toString()))
-                .body("time.id", is(2));
+                .body("time.id", is(6));
     }
 
     @Test
@@ -214,7 +215,7 @@ class AdminReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().put("/admin/reservations/9999")
+                .when().patch("/admin/reservations/9999")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -230,7 +231,7 @@ class AdminReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().put("/admin/reservations/1")
+                .when().patch("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -246,7 +247,7 @@ class AdminReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().put("/admin/reservations/1")
+                .when().patch("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -254,16 +255,22 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("같은 테마 + 날짜 + 시간 중복 예약으로 수정 불가")
     void updateReservationByAdmin_throwsException_whenDuplicate() {
-        // 이미 2026-05-05 10:00 (1번 시간) 예약이 있음 (id=1, 흑곰)
         Map<String, Object> params = new HashMap<>();
+        params.put("username", "포비");
         params.put("themeId", 1L);
-        params.put("date", "2026-05-05");
+        params.put("date", futureDate);
         params.put("timeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().put("/admin/reservations/2")
+                .when().post("/admin/reservations")
+                .then().log().all();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(409);
     }
