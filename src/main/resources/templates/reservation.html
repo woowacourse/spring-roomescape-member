@@ -101,6 +101,27 @@
         </div>
     </section>
 
+    <section class="panel">
+        <div class="panel-header">
+            <p class="eyebrow">My Reservations</p>
+            <h2>내 예약</h2>
+        </div>
+
+        <div id="my-reservations-feedback" class="feedback" hidden></div>
+
+        <form id="my-reservations-form" class="stack-form">
+            <label class="field">
+                <span>예약자 이름</span>
+                <input id="my-reservations-name" name="name" type="text" placeholder="예: 포비" required>
+            </label>
+            <button class="button primary" type="submit">내 예약 조회</button>
+        </form>
+
+        <div id="my-reservations-list" class="reservation-list empty-state">
+            이름으로 조회한 예약이 여기에 표시됩니다.
+        </div>
+    </section>
+
     <section id="popular-themes" class="panel">
         <div class="panel-header">
             <p class="eyebrow">Weekly Top 10</p>
