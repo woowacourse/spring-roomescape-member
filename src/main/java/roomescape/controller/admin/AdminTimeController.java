@@ -38,9 +38,10 @@ public class AdminTimeController {
     @GetMapping
     public ResponseEntity<List<TimeResponseDto>> findAll() {
         List<Time> times = timeService.findAll();
-        return ResponseEntity.ok(times.stream()
+        List<TimeResponseDto> responses = times.stream()
                 .map(TimeResponseDto::from)
-                .toList());
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")

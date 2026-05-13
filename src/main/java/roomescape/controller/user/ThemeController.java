@@ -29,9 +29,10 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
         List<Theme> themes = themeService.findAll();
-        return ResponseEntity.ok(themes.stream()
+        List<ThemeResponseDto> responses = themes.stream()
                 .map(ThemeResponseDto::from)
-                .toList());
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
@@ -49,9 +50,9 @@ public class ThemeController {
     @GetMapping("/populars")
     public ResponseEntity<List<ThemeResponseDto>> findPopulars(
             @Valid @ModelAttribute PopularThemeRequestDto popularThemeRequestDto) {
-        return ResponseEntity.ok(themeService.findPopulars(popularThemeRequestDto)
-                .stream()
+        List<ThemeResponseDto> responses = themeService.findPopulars(popularThemeRequestDto).stream()
                 .map(ThemeResponseDto::from)
-                .toList());
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 }

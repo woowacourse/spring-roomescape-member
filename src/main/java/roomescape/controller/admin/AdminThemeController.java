@@ -38,9 +38,10 @@ public class AdminThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
         List<Theme> themes = themeService.findAll();
-        return ResponseEntity.ok(themes.stream()
+        List<ThemeResponseDto> responses = themes.stream()
                 .map(ThemeResponseDto::from)
-                .toList());
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
