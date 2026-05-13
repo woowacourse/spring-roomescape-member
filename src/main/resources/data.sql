@@ -49,3 +49,5 @@ INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUE
 INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (1001, 101, '2026-06-02 10:00:00', '2026-06-02 11:00:00');
 INSERT IGNORE INTO `user` (id, name, role) VALUES (101, '테스트유저', 'USER');
 INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (10000, 101, 1001);
+
+INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (13, 1, '2026-06-25 10:00:00', '2026-06-25 12:00:00');
