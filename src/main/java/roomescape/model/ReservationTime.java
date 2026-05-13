@@ -19,4 +19,8 @@ public record ReservationTime(Long id, LocalTime startAt) {
             throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
         }
     }
+
+    public LocalTime startAt() {
+        return startAt;
+    }
 }

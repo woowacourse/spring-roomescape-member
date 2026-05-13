@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationAllResponse;
@@ -47,6 +49,7 @@ public class ReservationService {
         reservationRequestValidate(reservationRequest);
         ReservationTime time = timeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
+        reservationRequestDayCheck(reservationRequest.date(), time);
         Theme theme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_THEMEID_NOT_FOUND));
 
@@ -60,6 +63,17 @@ public class ReservationService {
                 time, theme);
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
+    }
+
+    private void reservationRequestDayCheck(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_DATE);
+        }
+        if (date.isEqual(LocalDate.now())) {
+            if (time.startAt().getHour() <= LocalTime.now().getHour()) {
+                throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_TIME);
+            }
+        }
     }
 
     private void reservationRequestValidate(ReservationRequest reservationRequest) {

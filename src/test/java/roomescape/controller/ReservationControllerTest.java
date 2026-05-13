@@ -56,7 +56,7 @@ public class ReservationControllerTest {
 
     @Test
     public void 예약_생성_API() {
-        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 6), 2L, 2L);
+        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.now().plusDays(3), 2L, 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
