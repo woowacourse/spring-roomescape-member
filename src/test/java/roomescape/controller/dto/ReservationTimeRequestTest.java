@@ -1,6 +1,7 @@
 package roomescape.controller.dto;
 
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidInputException;
 
 import java.time.LocalTime;
 
@@ -13,8 +14,8 @@ class ReservationTimeRequestTest {
     void null로_생성시_예외() {
         // when & then
         assertThatThrownBy(() -> new ReservationTimeRequest(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 시간은 비어 있을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("시간은 비어 있을 수 없습니다.");
     }
 
     @Test

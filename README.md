@@ -92,7 +92,7 @@
 
 ### 2단계 - 에러 응답 설계
 - [X] 공통 에러 응답 객체를 추가
-- [ ] INVALID_INPUT 에러 응답 적용
+- [X] INVALID_INPUT 에러 응답 적용
 - [ ] PAST_RESERVATION 에러 응답 적용
 - [ ] NOT_FOUND 에러 응답 적용
 - [ ] DUPLICATE_RESERVATION 에러 응답 적용

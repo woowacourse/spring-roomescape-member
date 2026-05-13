@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.InvalidInputException;
 
 import java.time.LocalDate;
 
@@ -18,8 +19,8 @@ class ReservationRequestTest {
     void 이름이_null이면_예외() {
         // when & then
         assertThatThrownBy(() -> new ReservationRequest(null, date, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 비어 있을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("이름은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -29,16 +30,16 @@ class ReservationRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ReservationRequest(name, date, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 255자를 넘을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("이름은 255자를 넘을 수 없습니다.");
     }
 
     @Test
     void 날짜를_null_로_생성시_예외() {
         // when & then
         assertThatThrownBy(() -> new ReservationRequest("구구", null, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("날짜는 비어 있을 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -47,8 +48,8 @@ class ReservationRequestTest {
     void timeId가_양수가_아니면_예외_발생(Long timeId) {
         // when & then
         assertThatThrownBy(() -> new ReservationRequest("홍길동", date, timeId, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 시간ID는 양수이어야 합니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("시간ID는 양수이어야 합니다.");
     }
 
     @ParameterizedTest
@@ -57,8 +58,8 @@ class ReservationRequestTest {
     void themeId가_양수가_아니면_예외_발생(Long themeId) {
         // when & then
         assertThatThrownBy(() -> new ReservationRequest("홍길동", date, 1L, themeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마ID는 양수이어야 합니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("테마ID는 양수이어야 합니다.");
     }
 
     @Test

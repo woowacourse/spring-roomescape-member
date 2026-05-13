@@ -7,9 +7,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.controller.dto.ErrorResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidInputException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidInput(InvalidInputException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.from(e));
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
@@ -20,13 +28,15 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<String> handleInvalidDateTimeFormat() {
-        return ResponseEntity.badRequest().body("[ERROR] 날짜 또는 시간 형식이 올바르지 않습니다.");
+    public ResponseEntity<ErrorResponse> handleInvalidDateTimeFormat() {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(ErrorCode.INVALID_INPUT.name(), "날짜 또는 시간 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingRequestParameter() {
-        return ResponseEntity.badRequest().body("[ERROR] 필수 요청값이 누락되었습니다.");
+    public ResponseEntity<ErrorResponse> handleMissingRequestParameter() {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(ErrorCode.INVALID_INPUT.name(), "필수 요청값이 누락되었습니다."));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

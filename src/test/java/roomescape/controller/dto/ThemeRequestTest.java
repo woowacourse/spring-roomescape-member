@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.InvalidInputException;
 
 import java.util.stream.Stream;
 
@@ -20,8 +21,8 @@ class ThemeRequestTest {
     void 이름이_null_또는_blank이면_예외(String name) {
         // when & then
         assertThatThrownBy(() -> new ThemeRequest(name, "설명", "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 비어 있을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("테마 이름은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -31,8 +32,8 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest(name, "설명", "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 255자를 넘을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("테마 이름은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -42,8 +43,8 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest("테마이름", description, "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 설명은 255자를 넘을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("테마 설명은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -53,8 +54,8 @@ class ThemeRequestTest {
 
         // when & then
         assertThatThrownBy(() -> new ThemeRequest("테마이름", "설명", thumbnail))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 썸네일 경로는 255자를 넘을 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("썸네일 경로는 255자를 넘을 수 없습니다.");
     }
 
     @ParameterizedTest

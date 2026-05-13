@@ -1,5 +1,7 @@
 package roomescape.controller.dto;
 
+import roomescape.exception.InvalidInputException;
+
 import java.time.LocalTime;
 
 public record ReservationTimeRequest(LocalTime startAt) {
@@ -10,7 +12,7 @@ public record ReservationTimeRequest(LocalTime startAt) {
 
     private void validateTime(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 시간은 비어 있을 수 없습니다.");
+            throw new InvalidInputException("시간은 비어 있을 수 없습니다.");
         }
     }
 }
