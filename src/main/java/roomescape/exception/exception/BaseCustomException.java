@@ -1,5 +1,7 @@
 package roomescape.exception.exception;
 
+import roomescape.exception.dto.ErrorCode;
+
 public class BaseCustomException extends RuntimeException implements CustomException {
     private final ErrorCode errorCode;
 

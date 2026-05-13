@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.exception.exception.ErrorCode.*;
+import static roomescape.exception.dto.ErrorCode.*;
 
 public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {

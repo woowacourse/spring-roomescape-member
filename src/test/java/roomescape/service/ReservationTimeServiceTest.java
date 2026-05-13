@@ -10,7 +10,7 @@ import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservationTime.AddReservationTimeRequest;
 import roomescape.exception.exception.DataReferencedException;
 import roomescape.exception.exception.DuplicatedResourceException;
-import roomescape.exception.exception.ErrorCode;
+import roomescape.exception.dto.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.exception.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
+import static roomescape.exception.dto.ErrorCode.DUPLICATED_RESERVATION_TIME;
 
 public class ReservationTimeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTime) {

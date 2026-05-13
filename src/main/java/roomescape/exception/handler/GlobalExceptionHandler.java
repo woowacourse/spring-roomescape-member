@@ -1,5 +1,6 @@
 package roomescape.exception.handler;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,11 +10,11 @@ import roomescape.exception.dto.ErrorResponse;
 import roomescape.exception.dto.FieldErrorResponse;
 import roomescape.exception.exception.BaseCustomException;
 import roomescape.exception.exception.CustomException;
-import roomescape.exception.exception.ErrorCode;
+import roomescape.exception.dto.ErrorCode;
 
 import java.util.List;
 
-import static roomescape.exception.exception.ErrorCode.*;
+import static roomescape.exception.dto.ErrorCode.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -65,5 +66,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(INVALID_REQUEST_FORMAT.getStatus())
                 .body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
+        log.error("Unexpected error", e);  // 서버 로그에는 상세히 기록
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        "INTERNAL_SERVER_ERROR",
+                        "서버 오류가 발생했습니다."  // 클라이언트엔 추상화된 메시지만
+                ));
     }
 }

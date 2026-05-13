@@ -14,8 +14,8 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import java.util.List;
 
-import static roomescape.exception.exception.ErrorCode.*;
-import static roomescape.exception.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
+import static roomescape.exception.dto.ErrorCode.*;
+import static roomescape.exception.dto.ErrorCode.DUPLICATED_RESERVATION_TIME;
 
 @Service
 public class ReservationTimeService {
