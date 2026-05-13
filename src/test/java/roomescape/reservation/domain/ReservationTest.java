@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.exception.InvalidReservationRequestException;
+import roomescape.reservation.exception.InvalidReservationRequestValueException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -40,7 +40,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.of("", LocalDate.of(2024, 5, 1), reservationTime, theme))
-                .isInstanceOf(InvalidReservationRequestException.class);
+                .isInstanceOf(InvalidReservationRequestValueException.class);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package roomescape.theme.domain;
 
 import java.util.Objects;
-import roomescape.theme.exception.InvalidThemeRequestException;
+import roomescape.theme.exception.InvalidThemeRequestValueException;
 
 public class Theme {
 
@@ -25,7 +25,7 @@ public class Theme {
 
     private void validate(String name, String description, String thumbnailUrl) {
         if (name.isBlank() || description.isBlank() || thumbnailUrl.isBlank()) {
-            throw new InvalidThemeRequestException();
+            throw new InvalidThemeRequestValueException();
         }
     }
 

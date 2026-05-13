@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.exception.InvalidReservationDateException;
+import roomescape.reservation.exception.InvalidReservationDateValueException;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.AvailableTimesResult;
@@ -52,7 +52,7 @@ public class ReservationTimeService {
 
     public AvailableTimesResult findAvailableReservationTimes(Long themeId, LocalDate date) {
         if (LocalDate.now(clock).isAfter(date)) {
-            throw new InvalidReservationDateException();
+            throw new InvalidReservationDateValueException();
         }
 
         if (themeRepository.findById(themeId).isEmpty()) {

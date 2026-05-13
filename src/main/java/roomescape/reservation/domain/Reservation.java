@@ -2,7 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import roomescape.reservation.exception.InvalidReservationRequestException;
+import roomescape.reservation.exception.InvalidReservationRequestValueException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -30,7 +30,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.isBlank()) {
-            throw new InvalidReservationRequestException();
+            throw new InvalidReservationRequestValueException();
         }
     }
 

@@ -3,7 +3,7 @@ package roomescape.global.exception;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.base.BusinessException;
-import roomescape.global.exception.common.InvalidFormatException;
+import roomescape.global.exception.common.InvalidRequestFormatException;
 
 @Component
 public class HttpMessageNotReadableExceptionMapper {
@@ -21,6 +21,6 @@ public class HttpMessageNotReadableExceptionMapper {
             cause = cause.getCause();
         }
 
-        return new InvalidFormatException();
+        return new InvalidRequestFormatException();
     }
 }

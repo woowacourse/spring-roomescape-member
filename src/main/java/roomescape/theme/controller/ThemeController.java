@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.exception.common.InvalidRequestValueException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
@@ -42,6 +43,10 @@ public class ThemeController {
             @RequestParam("period") int period,
             @RequestParam("limit") int limit
     ) {
+        if (period < 1 || limit < 1) {
+            throw new InvalidRequestValueException();
+        }
+
         List<ThemeResponse> responses = reservationService.findPopularThemes(period, limit).popularThemes()
                 .stream()
                 .map(ThemeResponse::from)

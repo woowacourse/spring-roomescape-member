@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.DuplicateReservationException;
-import roomescape.reservation.exception.InvalidReservationDateException;
+import roomescape.reservation.exception.InvalidReservationDateValueException;
 import roomescape.reservation.exception.NotReservationOwnerException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
@@ -19,7 +19,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.InvalidTimeStartAtException;
+import roomescape.time.exception.InvalidTimeStartAtValueException;
 import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -42,7 +42,11 @@ public class ReservationService {
 
     @Transactional
     public Reservation makeReservation(ReservationCommand command) {
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(command.date(), command.timeId(), command.themeId())) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(
+                command.date(),
+                command.timeId(),
+                command.themeId())
+        ) {
             throw new DuplicateReservationException();
         }
 
@@ -53,7 +57,12 @@ public class ReservationService {
                 .orElseThrow(ThemeNotFoundException::new);
 
         return reservationRepository.save(
-                Reservation.of(command.name(), command.date(), time, theme)
+                Reservation.of(
+                        command.name(),
+                        command.date(),
+                        time,
+                        theme
+                )
         );
     }
 
@@ -66,11 +75,11 @@ public class ReservationService {
         LocalDate nowDate = LocalDate.now(clock);
 
         if (nowDate.isAfter(date)) {
-            throw new InvalidReservationDateException();
+            throw new InvalidReservationDateValueException();
         }
 
         if (nowDate.equals(date) && LocalTime.now(clock).isAfter(startAt)) {
-            throw new InvalidTimeStartAtException();
+            throw new InvalidTimeStartAtValueException();
         }
     }
 
@@ -81,8 +90,16 @@ public class ReservationService {
         }
 
         Reservation reservation = getReservation(id);
-        validateExpiry(reservation.getDate(), reservation.getTime().getStartAt());
+        validateExpiry(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
+        );
         reservationRepository.deleteById(id);
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFoundException::new);
     }
 
     @Transactional
@@ -120,11 +137,6 @@ public class ReservationService {
         return result;
     }
 
-    private Reservation getReservation(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
-    }
-
     public List<Reservation> findReservationsByName(String name) {
         return reservationRepository.findAllByName(name);
     }
@@ -134,8 +146,10 @@ public class ReservationService {
     }
 
     public PopularThemesResult findPopularThemes(int period, int limit) {
-        LocalDate to = LocalDate.now(clock).minusDays(1);
-        LocalDate from = to.minusDays(period - 1);
+        int oneDayDifference = 1;
+
+        LocalDate to = LocalDate.now(clock).minusDays(oneDayDifference);
+        LocalDate from = to.minusDays(period).plusDays(oneDayDifference);
 
         return new PopularThemesResult(
                 reservationRepository.findPopularThemes(from, to, limit)
