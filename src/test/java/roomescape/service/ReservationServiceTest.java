@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.dto.ReservationRequest;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,7 +38,8 @@ class ReservationServiceTest {
         LocalDateTime now = LocalDateTime.now();
         ReservationRequest request = new ReservationRequest("김철수", now.toLocalDate().minusDays(1), 1L, 1L);
         assertThatThrownBy(() -> reservationService.save(now, request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.PAST_DATE_RESERVATION.getMessage());
     }
 
     @DisplayName("지나간 시간에 대한 예약 생성은 불가능하다.")
@@ -46,7 +49,8 @@ class ReservationServiceTest {
 
         ReservationRequest request = new ReservationRequest("김철수", mockToday.toLocalDate(), 1L, 1L);
         assertThatThrownBy(() -> reservationService.save(mockToday, request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.PAST_DATE_RESERVATION.getMessage());
     }
 
     @DisplayName("같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.")
@@ -58,7 +62,8 @@ class ReservationServiceTest {
         reservationService.save(today, request);
 
         assertThatThrownBy(() -> reservationService.save(today, request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.DUPLICATE_RESERVATION.getMessage());
     }
 
 }

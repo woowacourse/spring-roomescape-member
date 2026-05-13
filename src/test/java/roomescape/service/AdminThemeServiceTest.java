@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.dto.ThemeRequest;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,7 +24,8 @@ class AdminThemeServiceTest {
     void 테마_삭제_예외_테스트(){
         long themeId = 1L;
         assertThatThrownBy(() -> adminThemeService.delete(themeId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.UNALLOWED_DELETE_EXISTS_THEME.getMessage());
 
     }
 
@@ -32,8 +35,8 @@ class AdminThemeServiceTest {
         long themeId = 1L;
         ThemeRequest themeRequest = new ThemeRequest("공포의 저택","무서워요","url");
         assertThatThrownBy(() -> adminThemeService.save(themeRequest))
-                .isInstanceOf(IllegalArgumentException.class);
-
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.ALREADY_EXISTS_THEME.getMessage());
     }
 
 }

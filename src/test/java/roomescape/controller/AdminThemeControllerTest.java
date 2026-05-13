@@ -82,7 +82,7 @@ class AdminThemeControllerTest {
                 .pathParam("id", 1)
                 .when().delete("/admin/themes/{id}")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
     @DisplayName("관리자 테마 삭제 API - parameter가 이상값일 때")

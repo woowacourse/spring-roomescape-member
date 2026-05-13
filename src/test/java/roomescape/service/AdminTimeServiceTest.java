@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.dto.ReservationTimeRequest;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -25,7 +27,8 @@ class AdminTimeServiceTest {
     void 시간_삭제_예외_테스트(){
         long timeId = 1L;
         assertThatThrownBy(() -> adminTimeService.delete(timeId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.UNALLOWED_DELETE_RESERVED_TIME.getMessage());
 
     }
 
@@ -35,7 +38,8 @@ class AdminTimeServiceTest {
         LocalTime startAt = LocalTime.of(10,0,0);
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
         assertThatThrownBy(() -> adminTimeService.save(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.ALREADY_EXISTS_TIME.getMessage());
 
     }
 }
