@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,6 @@ public class UserReservationController {
     }
 
     private static String decodeName(String raw) {
-        return new String(raw.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        return URLDecoder.decode(raw, StandardCharsets.UTF_8);
     }
 }

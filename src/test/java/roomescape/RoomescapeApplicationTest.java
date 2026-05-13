@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -211,6 +213,46 @@ class RoomescapeApplicationTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(1));
+    }
+
+    @Test
+    void 한글_이름으로_본인의_예약_목록을_조회할_수_있다() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("themeId", 1);
+        request.put("name", "홍길동");
+        request.put("date", LocalDate.now().plusDays(1).toString());
+        request.put("timeId", 3);
+        RestAssured.given().contentType(ContentType.JSON).body(request)
+                .when().post("/reservations").then().statusCode(HttpStatus.CREATED.value());
+
+        RestAssured.given().log().all()
+                .header("X-User-Name", encodeHeader("홍길동"))
+                .when().get("/reservations/my")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1))
+                .body("[0].name", is("홍길동"));
+    }
+
+    @Test
+    void 한글_이름으로_본인의_예약을_취소할_수_있다() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("themeId", 1);
+        request.put("name", "홍길동");
+        request.put("date", LocalDate.now().plusDays(1).toString());
+        request.put("timeId", 3);
+        long id = RestAssured.given().contentType(ContentType.JSON).body(request)
+                .when().post("/reservations").jsonPath().getLong("id");
+
+        RestAssured.given().log().all()
+                .header("X-User-Name", encodeHeader("홍길동"))
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private static String encodeHeader(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     @Test
