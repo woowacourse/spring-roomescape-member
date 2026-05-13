@@ -162,8 +162,8 @@ public class ScheduleRepository {
         }, themeId, startOfDay, endOfDay);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "DELETE FROM schedule WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }
