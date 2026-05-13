@@ -28,4 +28,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.INVALID_REQUEST_FORMAT.status())
                 .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST_FORMAT));
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessError(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
+    }
 }
