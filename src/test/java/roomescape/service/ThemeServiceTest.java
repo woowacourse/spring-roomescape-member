@@ -59,6 +59,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
-                .isInstanceOf(ThemeConstraintException.class);
+                .isInstanceOf(ThemeConstraintException.class)
+                .hasMessageContaining("예약이 존재하는 테마는 삭제할 수 없습니다.");
     }
 }

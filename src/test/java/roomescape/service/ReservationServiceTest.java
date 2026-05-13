@@ -41,18 +41,22 @@ class ReservationServiceTest {
     @Test
     @DisplayName("과거 날짜/시간 예약 예외")
     void save_whenPastDateTime_throws() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save("쿠다", LocalDate.now().minusDays(1), time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class);
+                .isInstanceOf(ReservationBadRequestException.class)
+                .hasMessageContaining("예약 날짜는 과거일 수 없습니다.");
     }
 
     @Test
     @DisplayName("같은 날짜/시간 중복 예약 예외 발생")
     void save_whenDuplicateDateTime_throws() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
@@ -61,20 +65,25 @@ class ReservationServiceTest {
 
         reservationRepository.save(Reservation.createNew("기존예약", date, time));
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save("신규예약", date, time.getId()))
-                .isInstanceOf(ReservationDuplicateException.class);
+                .isInstanceOf(ReservationDuplicateException.class)
+                .hasMessageContaining("이미 같은 날짜와 시간에 예약이 존재합니다.");
     }
 
     @Test
     @DisplayName("정상 케이스 예약 저장")
     void save_success() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
 
+        //when
         Reservation saved = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
+        //then
         assertThat(saved.getId()).isNotNull();
         assertThat(reservationRepository.findAll()).hasSize(1);
     }
@@ -113,7 +122,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
-                .isInstanceOf(ReservationBadRequestException.class);
+                .isInstanceOf(ReservationBadRequestException.class)
+                .hasMessageContaining("예약자 이름이 일치하지 않습니다.");
     }
 
     @Test
@@ -155,7 +165,8 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class);
+                .isInstanceOf(ReservationBadRequestException.class)
+                .hasMessageContaining("예약자 이름이 일치하지 않습니다.");
     }
 
     @Test
@@ -171,9 +182,10 @@ class ReservationServiceTest {
                 Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().minusDays(10),
+        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "쿠다", LocalDate.now().minusDays(10),
                 time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class);
+                .isInstanceOf(ReservationBadRequestException.class)
+                .hasMessageContaining("예약 날짜는 과거일 수 없습니다.");
     }
 
     @Test
@@ -195,7 +207,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.update(reservation1.getId(), "쿠다", reservation2.getDate(),
-                time2.getId())).isInstanceOf(ReservationDuplicateException.class);
+                time2.getId())).isInstanceOf(ReservationDuplicateException.class)
+                .hasMessageContaining("이미 같은 날짜와 시간에 예약이 존재합니다.");
     }
 
 

@@ -52,7 +52,8 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.save(LocalTime.of(10, 0), theme.getId()))
-                .isInstanceOf(ReservationTimeDuplicateException.class);
+                .isInstanceOf(ReservationTimeDuplicateException.class)
+                .hasMessageContaining("같은 테마 내 같은 시작 시간은 중복될 수 없습니다.");
     }
 
     @Test
@@ -68,7 +69,8 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(time.getId()))
-                .isInstanceOf(ReservationTimeConstraintException.class);
+                .isInstanceOf(ReservationTimeConstraintException.class)
+                .hasMessageContaining("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 
     @Test

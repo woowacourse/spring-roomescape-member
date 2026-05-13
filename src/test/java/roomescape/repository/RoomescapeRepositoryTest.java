@@ -6,12 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
-import roomescape.DatabaseInitializeTest;
 import roomescape.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.testexecutionlistener.TestPortInitializer;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @JdbcTest
-@DatabaseInitializeTest
+@TestExecutionListeners(
+        listeners = TestDatabaseInitializer.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
 public @interface RoomescapeRepositoryTest {
 }

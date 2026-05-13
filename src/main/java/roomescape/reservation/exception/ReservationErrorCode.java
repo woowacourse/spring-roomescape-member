@@ -10,7 +10,7 @@ public enum ReservationErrorCode {
     RESERVATION_DATE_NOT_NULL("예약 날짜는 비어있을 수 없습니다."),
     RESERVATION_PAST_DATE("예약 날짜는 과거일 수 없습니다."),
     RESERVATION_TIME_NOT_NULL("예약 시간 정보가 없습니다."),
-    RESERVATION_DUPLICATE("예약은 중복 생성이 불가능합니다."),
+    RESERVATION_DUPLICATE("이미 같은 날짜와 시간에 예약이 존재합니다."),
     RESERVATION_NOT_FOUND("찾는 예약이 없습니다.");
 
     private final String message;
