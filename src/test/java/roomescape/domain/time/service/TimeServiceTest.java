@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
 import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.custom.NotFoundException;
 import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
@@ -232,6 +233,18 @@ class TimeServiceTest {
                 () -> timeService.deleteTimeById(time.getId()),
                 ConflictException.class,
                 ErrorCode.TIME_REFERENCED_BY_RESERVATION
+            );
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 시간 id인 경우 예외가 발생한다.")
+        void 실패2() {
+            Long wrongId = 99999L;
+
+            ExceptionAssertions.assertErrorCode(
+                () -> timeService.deleteTimeById(wrongId),
+                NotFoundException.class,
+                ErrorCode.TIME_NOT_FOUND
             );
         }
     }
