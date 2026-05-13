@@ -8,8 +8,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public record ReservationRequest(
-        @NotBlank String name,
-        @NotNull LocalDate date,
+        @NotBlank(message = "예약자명은 필수값 입니다.")
+        String name,
+
+        @NotNull(message = "예약 날짜는 필수값 입니다.")
+        LocalDate date,
+
         long timeId,
         long themeId
 
