@@ -24,6 +24,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservations() {
@@ -34,9 +35,10 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
-        validateNoDuplicate(request);
         ReservationTime time = findReservationTime(request.timeId());
         Theme theme = findTheme(request.themeId());
+        reservationSchedulePolicy.validateReservable(request.date(), time.getStartAt());
+        validateNoDuplicate(request);
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
     }
 

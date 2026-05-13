@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.ReservationSchedulePolicy;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -28,6 +29,7 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
     public List<ReservationTimeResponse> getReservationTimes() {
@@ -63,6 +65,7 @@ public class ReservationTimeService {
                 .collect(Collectors.toSet());
         List<ReservationTime> availableTime = allTimes.stream()
                 .filter(time -> !reservedTimes.contains(time))
+                .filter(time -> reservationSchedulePolicy.canReserve(request.date(), time.getStartAt()))
                 .toList();
         return AvailableReservationTimeResponse.from(theme, availableTime);
     }

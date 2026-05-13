@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -23,6 +23,21 @@ import roomescape.common.dto.ErrorResponse;
 public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String INVALID_REQUEST_VALUE_MESSAGE = "요청 값이 올바르지 않습니다.";
+    private static final String INVALID_REQUEST_BODY_MESSAGE = "요청 본문 형식이 올바르지 않습니다.";
+    private static final String DEFAULT_FORMAT_MESSAGE = "요청 값 형식이 올바르지 않습니다.";
+    private static final String DATE_FORMAT_MESSAGE = "날짜는 yyyy-MM-dd 형식이어야 합니다.";
+    private static final String TIME_FORMAT_MESSAGE = "예약 시간은 HH:mm 형식이어야 합니다.";
+    private static final String DURATION_TIME_FORMAT_MESSAGE = "진행 시간은 HH:mm:ss 형식이어야 합니다.";
+    private static final Map<String, String> FIELD_FORMAT_MESSAGES = Map.of(
+            "date", DATE_FORMAT_MESSAGE,
+            "startAt", TIME_FORMAT_MESSAGE,
+            "time.startAt", TIME_FORMAT_MESSAGE,
+            "durationTime", DURATION_TIME_FORMAT_MESSAGE,
+            "themeId", "테마 ID는 숫자여야 합니다.",
+            "timeId", "예약 시간 ID는 숫자여야 합니다.",
+            "id", "ID는 숫자여야 합니다."
+    );
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
@@ -31,7 +46,7 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
                 .map(this::toValidationMessage)
                 .collect(Collectors.joining(", "));
         if (message.isBlank()) {
-            message = "요청 값이 올바르지 않습니다.";
+            message = INVALID_REQUEST_VALUE_MESSAGE;
         }
         log.warn(
                 "Validation error [{} {}]: {}",
@@ -49,7 +64,7 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
                 .map(this::toValidationMessage)
                 .collect(Collectors.joining(", "));
         if (message.isBlank()) {
-            message = "요청 값이 올바르지 않습니다.";
+            message = INVALID_REQUEST_VALUE_MESSAGE;
         }
         log.warn(
                 "Binding error [{} {}]: {}",
@@ -64,7 +79,7 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(
             HttpMessageNotReadableException e, HttpServletRequest request) {
-        String message = "요청 본문 형식이 올바르지 않습니다.";
+        String message = INVALID_REQUEST_BODY_MESSAGE;
         if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
             message = toFormatMessage(extractFieldName(invalidFormatException), invalidFormatException.getTargetType());
         }
@@ -105,17 +120,6 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
         return badRequest(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnhandledException(Exception e, HttpServletRequest request) {
-        log.error(
-                "Unhandled exception [{} {}]",
-                request.getMethod(),
-                request.getRequestURI(),
-                e
-        );
-        return response(HttpStatus.INTERNAL_SERVER_ERROR, "요청 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-    }
-
     private String toValidationMessage(FieldError error) {
         if (error.isBindingFailure()) {
             return toFormatMessage(error.getField(), null);
@@ -128,27 +132,19 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
                 .map(reference -> reference.getFieldName())
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElse("요청 값이 올바르지 않습니다.");
+                .orElse(INVALID_REQUEST_VALUE_MESSAGE);
     }
 
     private String toFormatMessage(String fieldName, Class<?> targetType) {
         if (targetType != null && LocalDate.class.isAssignableFrom(targetType)) {
-            return "날짜는 yyyy-MM-dd 형식이어야 합니다.";
+            return DATE_FORMAT_MESSAGE;
         }
         if (targetType != null && LocalTime.class.isAssignableFrom(targetType)) {
             if ("durationTime".equals(fieldName)) {
-                return "진행 시간은 HH:mm:ss 형식이어야 합니다.";
+                return DURATION_TIME_FORMAT_MESSAGE;
             }
-            return "예약 시간은 HH:mm 형식이어야 합니다.";
+            return TIME_FORMAT_MESSAGE;
         }
-        return switch (fieldName) {
-            case "date" -> "날짜는 yyyy-MM-dd 형식이어야 합니다.";
-            case "startAt", "time.startAt" -> "예약 시간은 HH:mm 형식이어야 합니다.";
-            case "durationTime" -> "진행 시간은 HH:mm:ss 형식이어야 합니다.";
-            case "themeId" -> "테마 ID는 숫자여야 합니다.";
-            case "timeId" -> "예약 시간 ID는 숫자여야 합니다.";
-            case "id" -> "ID는 숫자여야 합니다.";
-            default -> "요청 값 형식이 올바르지 않습니다.";
-        };
+        return FIELD_FORMAT_MESSAGES.getOrDefault(fieldName, DEFAULT_FORMAT_MESSAGE);
     }
 }

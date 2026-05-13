@@ -10,6 +10,7 @@ import roomescape.common.advice.ApiExceptionHandlerSupport;
 import roomescape.common.dto.ErrorResponse;
 import roomescape.common.exception.RoomescapeException;
 import roomescape.reservation.domain.exception.DuplicateReservationException;
+import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
 
 @RestControllerAdvice
@@ -19,6 +20,7 @@ public class ReservationExceptionHandler extends ApiExceptionHandlerSupport {
 
     @ExceptionHandler({
             ReservationNotFoundException.class,
+            PastReservationException.class,
             DuplicateReservationException.class
     })
     public ResponseEntity<ErrorResponse> handleReservationException(
