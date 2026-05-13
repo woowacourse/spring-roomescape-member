@@ -11,11 +11,11 @@ public class Reservation {
 
     private final String username;
 
-    private final Theme theme;
+    private Theme theme;
 
-    private final LocalDate date;
+    private LocalDate date;
 
-    private final ReservationTime time;
+    private ReservationTime time;
 
     private Reservation(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
         this.id = id;
@@ -46,6 +46,12 @@ public class Reservation {
         if (this.id != null) {
             throw new IllegalStateException("이미 id가 할당된 예약입니다.");
         }
+    }
+
+    public void update(Theme theme, LocalDate date, ReservationTime time) {
+        this.theme = theme;
+        this.date = date;
+        this.time = time;
     }
 
     public Long getId() {

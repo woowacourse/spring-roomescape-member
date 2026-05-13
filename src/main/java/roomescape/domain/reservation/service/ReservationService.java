@@ -12,6 +12,7 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.exception.ReservationErrorCode;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
+import roomescape.domain.reservation.request.ReservationUpdateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.reservationtime.entity.ReservationTime;
@@ -124,13 +125,41 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse updateReservation(Long id,
-                                                 roomescape.domain.reservation.request.ReservationUpdateRequest request) {
-        return null;
+    public ReservationResponse updateReservation(Long id, ReservationUpdateRequest request) {
+        if (request.date().isBefore(LocalDate.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+        Theme newTheme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+
+        ReservationTime newTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        if (request.date().isEqual(LocalDate.now(clock)) && newTime.getStartAt().isBefore(LocalTime.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(newTheme.getId(), request.date(), newTime.getId())) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
+
+        reservation.update(newTheme, request.date(), newTime);
+
+        reservationRepository.update(id, reservation);
+
+        return ReservationResponse.from(reservation);
     }
 
     @Transactional
-    public void deleteReservationBy(Long id) {
-        reservationRepository.deleteById(id);
+    public void deleteReservationById(Long id) {
+        int deletedCount = reservationRepository.deleteById(id);
+
+        if (deletedCount == 0) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 }

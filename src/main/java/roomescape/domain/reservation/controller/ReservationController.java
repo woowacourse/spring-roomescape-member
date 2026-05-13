@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +44,7 @@ public class ReservationController {
                 .body(response);
     }
 
-    @PutMapping("/{reservationId}")
+    @PatchMapping("/{reservationId}")
     public ResponseEntity<ReservationResponse> update(
             @PathVariable Long reservationId,
             @RequestBody @Valid ReservationUpdateRequest request
@@ -55,7 +55,7 @@ public class ReservationController {
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long reservationId) {
-        reservationService.deleteReservationBy(reservationId);
+        reservationService.deleteReservationById(reservationId);
         return ResponseEntity.noContent().build();
     }
 }
