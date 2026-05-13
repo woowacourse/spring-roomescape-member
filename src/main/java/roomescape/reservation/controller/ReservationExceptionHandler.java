@@ -3,10 +3,11 @@ package roomescape.reservation.controller;
 import java.time.format.DateTimeParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.dto.ErrorResponse;
 
 @Order(100)
 @Slf4j
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ReservationExceptionHandler {
 
     @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<String> handleDateTimeParseException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
         log.warn(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("날짜 시간이 형식이 유효하지 않습니다.");
+        return ResponseEntity.status(ErrorCode.INVALID_DATE_FORMAT.getStatus())
+                .body(ErrorResponse.of(ErrorCode.INVALID_DATE_FORMAT, e.getMessage()));
     }
 }
