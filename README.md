@@ -40,11 +40,12 @@
 
 ### 사용자 예약 (`/reservations`)
 
-| 메서드 | 경로 | 설명       |
-|--------|------|----------|
-| `GET` | `/reservations` | 예약 목록 조회 |
-| `POST` | `/reservations` | 예약 생성    |
-| `DELETE` | `/reservations/{id}`  | 예약 삭제    |
+| 메서드      | 경로                   | 설명       |
+|----------|----------------------|----------|
+| `GET`    | `/reservations`      | 예약 목록 조회 |
+| `POST`   | `/reservations`      | 예약 생성    |
+| `PATCH`  | `/reservations/{id}` | 예약 수정    |
+| `DELETE` | `/reservations/{id}` | 예약 삭제    |
 
 ### 예약 시간 (`/times`)
 

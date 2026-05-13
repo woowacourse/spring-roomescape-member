@@ -21,6 +21,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.AssembledReservation;
 import roomescape.service.dto.ReservationCreateCommand;
+import roomescape.service.dto.ReservationUpdateCommand;
 import roomescape.service.mapper.ReservationResponseMapper;
 
 @Service
@@ -37,6 +38,8 @@ public class ReservationService {
     public ReservationSummaryResponse create(
             ReservationCreateCommand command
     ) {
+        validateReservationNotDuplicate(command.date(), command.themeId(), command.timeId());
+
         ReservationTime time = findTimeById(command.timeId());
         validateReservationAvailable(command.date(), time.startAt());
 
@@ -66,6 +69,31 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByName(name);
 
         return mapToDetailResponses(reservations);
+    }
+
+    @Transactional
+    public ReservationSummaryResponse update(
+            ReservationUpdateCommand command
+    ) {
+        Reservation reservation = findReservationById(command.reservationId());
+        if (reservation.hasDifferentName(command.name())) {
+            throw new IllegalArgumentException("본인의 예약만 수정할 수 있습니다.");
+        }
+
+        ReservationTime existTime = findTimeById(reservation.timeId());
+        validateReservationAvailable(reservation.date(), existTime.startAt());
+
+        ReservationTime timeToUpdate = findTimeById(command.timeId());
+        validateReservationAvailable(command.date(), timeToUpdate.startAt());
+        validateReservationNotDuplicate(command.date(), reservation.themeId(), timeToUpdate.id());
+
+        Reservation updatedReservation = reservationRepository.updateDateAndTimeId(
+                reservation,
+                command.date(),
+                command.timeId()
+        );
+
+        return reservationResponseMapper.mapToSummaryResponse(updatedReservation);
     }
 
     @Transactional
@@ -115,6 +143,20 @@ public class ReservationService {
                 assembledReservation,
                 cancelable
         );
+    }
+
+    private void validateReservationNotDuplicate(
+            LocalDate date,
+            EntityId themeId,
+            EntityId timeId
+    ) {
+        if (reservationRepository.existByDateAndThemeIdAndTimeId(date, themeId, timeId)) {
+            throw new IllegalStateException("같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
+                    + " 요청한 날짜: " + date
+                    + ", 요청한 테마 ID: " + themeId
+                    + ", 요청한 시간 ID: " + timeId
+            );
+        }
     }
 
     private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {

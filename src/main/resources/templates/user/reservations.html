@@ -19,7 +19,8 @@
             </label>
             <button type="button" class="btn btn-primary" id="searchBtn">조회</button>
         </div>
-        <p class="muted">이름으로 <code>GET /reservations?name=...</code>를 호출합니다.</p>
+        <p class="muted">조회: <code>GET /reservations?name=...</code> · 일정 변경: <code>PATCH /reservations/{id}?name=...</code> · 취소:
+            <code>DELETE /reservations/{id}?name=...</code></p>
         <p id="status" class="status-msg" style="display:none;"></p>
     </div>
     <div class="panel">
@@ -40,6 +41,22 @@
         </table>
         <p id="empty" class="muted" style="display:none;">조회 결과가 없습니다.</p>
     </div>
+    <div id="editPanel" class="panel" style="display:none;">
+        <h2>예약 일정 변경</h2>
+        <p id="editSummary" class="muted"></p>
+        <div class="form-row">
+            <label>변경할 게임 날짜
+                <input type="date" id="editDate"/>
+            </label>
+        </div>
+        <p class="muted">선택한 날짜·테마에 대해 <code>GET /times/available-times</code>로 예약 가능한 시간만 표시합니다.</p>
+        <div id="editTimeChips" class="time-chips"></div>
+        <p id="editTimeHint" class="muted">날짜를 선택하면 시간 목록이 표시됩니다.</p>
+        <div class="form-row" style="margin-top:0.75rem;">
+            <button type="button" class="btn btn-primary" id="editApplyBtn" disabled>변경 적용</button>
+            <button type="button" class="btn" id="editCancelBtn">닫기</button>
+        </div>
+    </div>
 </main>
 <script>
     const memberName = document.getElementById('memberName');
@@ -47,6 +64,19 @@
     const status = document.getElementById('status');
     const rows = document.getElementById('rows');
     const empty = document.getElementById('empty');
+    const editPanel = document.getElementById('editPanel');
+    const editSummary = document.getElementById('editSummary');
+    const editDate = document.getElementById('editDate');
+    const editTimeChips = document.getElementById('editTimeChips');
+    const editTimeHint = document.getElementById('editTimeHint');
+    const editApplyBtn = document.getElementById('editApplyBtn');
+    const editCancelBtn = document.getElementById('editCancelBtn');
+
+    let lastList = [];
+    /** @type {{ id: string, themeId: string, themeName: string, origDate: string, origTimeId: string } | null} */
+    let editing = null;
+    let selectedEditTimeId = null;
+    let editTimesAbort = null;
 
     function showStatus(message, ok) {
         status.textContent = message;
@@ -60,11 +90,32 @@
         }[c]));
     }
 
+    function timeChipLabel(startAt) {
+        if (typeof startAt === 'string') return startAt.slice(0, 5);
+        if (Array.isArray(startAt) && startAt.length >= 2) {
+            return String(startAt[0]).padStart(2, '0') + ':' + String(startAt[1]).padStart(2, '0');
+        }
+        return String(startAt).slice(0, 5);
+    }
+
+    async function readApiError(res) {
+        const text = await res.text();
+        if (!text) return '요청 실패 (' + res.status + ')';
+        try {
+            const j = JSON.parse(text);
+            if (j && j.message) return j.message;
+        } catch (_) {
+            /* ignore */
+        }
+        return text;
+    }
+
     function renderReservations(list) {
+        lastList = list;
         rows.innerHTML = '';
         empty.style.display = list.length ? 'none' : 'block';
         for (const r of list) {
-            const canCancel = !!r.cancelable;
+            const canAct = !!r.cancelable;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${r.id}</td>
@@ -73,17 +124,28 @@
                 <td>${r.time.id}</td>
                 <td>${r.time.startAt}</td>
                 <td>${escapeHtml(r.theme.name)}</td>
-                <td>${canCancel ? '가능' : '불가'}</td>
-                <td><button type="button" class="btn btn-danger" data-id="${r.id}" ${canCancel ? '' : 'disabled'}>취소</button></td>
-            `;
+                <td>${canAct ? '가능' : '불가'}</td>
+                <td style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">
+                    <button type="button" class="btn" data-action="change" data-id="${r.id}" ${canAct ? '' : 'disabled'}>변경</button>
+                    <button type="button" class="btn btn-danger" data-action="cancel" data-id="${r.id}" ${canAct ? '' : 'disabled'}>취소</button>
+                </td>`;
             rows.appendChild(tr);
         }
-        rows.querySelectorAll('button[data-id]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                void cancelReservation(btn.dataset.id);
-            });
-        });
     }
+
+    rows.addEventListener('click', e => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        if (btn.dataset.action === 'cancel') {
+            void cancelReservation(id);
+            return;
+        }
+        if (btn.dataset.action === 'change') {
+            const r = lastList.find(x => x.id === id);
+            if (r) openEditPanel(r);
+        }
+    });
 
     async function cancelReservation(id) {
         const name = memberName.value.trim();
@@ -98,7 +160,7 @@
             const res = await fetch('/reservations/' + id + '?' + params.toString(), {
                 method: 'DELETE'
             });
-            if (!res.ok) throw new Error('취소 실패');
+            if (!res.ok) throw new Error(await readApiError(res));
             showStatus('예약이 취소되었습니다.', true);
             await searchReservations();
         } catch (e) {
@@ -106,11 +168,132 @@
         }
     }
 
+    function closeEditPanel() {
+        editPanel.style.display = 'none';
+        editing = null;
+        selectedEditTimeId = null;
+        editApplyBtn.disabled = true;
+        editTimeChips.innerHTML = '';
+        if (editTimesAbort) {
+            editTimesAbort.abort();
+            editTimesAbort = null;
+        }
+    }
+
+    function openEditPanel(r) {
+        editing = {
+            id: r.id,
+            themeId: r.theme.id,
+            themeName: r.theme.name,
+            origDate: r.date,
+            origTimeId: r.time.id
+        };
+        editSummary.textContent = '테마: ' + r.theme.name + ' · 예약 ID: ' + r.id;
+        editDate.value = r.date;
+        selectedEditTimeId = null;
+        editApplyBtn.disabled = true;
+        editPanel.style.display = 'block';
+        editPanel.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        void loadEditAvailableTimes();
+    }
+
+    async function loadEditAvailableTimes() {
+        if (!editing) return;
+        const dateStr = editDate.value;
+        editTimeChips.innerHTML = '';
+        selectedEditTimeId = null;
+        editApplyBtn.disabled = true;
+        if (!dateStr) {
+            editTimeHint.textContent = '날짜를 선택하세요.';
+            return;
+        }
+        if (editTimesAbort) {
+            editTimesAbort.abort();
+        }
+        editTimesAbort = new AbortController();
+        const { signal } = editTimesAbort;
+        editTimeHint.textContent = '예약 가능한 시간을 불러오는 중…';
+        try {
+            const params = new URLSearchParams({
+                themeId: String(editing.themeId),
+                date: dateStr
+            });
+            const res = await fetch('/times/available-times?' + params.toString(), {signal});
+            if (!res.ok) throw new Error(await readApiError(res));
+            const list = await res.json();
+            editTimeHint.textContent = list.length
+                ? '변경할 시간을 선택하세요.'
+                : '이 날짜·테마에 예약 가능한 시간이 없습니다.';
+            for (const t of list) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'time-chip';
+                chip.textContent = timeChipLabel(t.startAt);
+                chip.addEventListener('click', () => {
+                    selectedEditTimeId = t.id;
+                    editTimeChips.querySelectorAll('.time-chip').forEach(b => b.classList.remove('selected'));
+                    chip.classList.add('selected');
+                    editApplyBtn.disabled = false;
+                });
+                editTimeChips.appendChild(chip);
+            }
+        } catch (e) {
+            if (e.name === 'AbortError') return;
+            editTimeHint.textContent = e.message;
+        }
+    }
+
+    editDate.addEventListener('change', () => {
+        void loadEditAvailableTimes();
+    });
+
+    editCancelBtn.addEventListener('click', () => {
+        closeEditPanel();
+    });
+
+    editApplyBtn.addEventListener('click', async () => {
+        const name = memberName.value.trim();
+        if (!editing) return;
+        if (!name) {
+            showStatus('일정을 변경하려면 조회에 사용한 이름이 입력되어 있어야 합니다.', false);
+            return;
+        }
+        if (!selectedEditTimeId) {
+            showStatus('변경할 시간을 선택하세요.', false);
+            return;
+        }
+        const newDate = editDate.value;
+        if (newDate === editing.origDate && selectedEditTimeId === editing.origTimeId) {
+            showStatus('날짜와 시간이 기존과 동일합니다. 다른 시간을 선택하세요.', false);
+            return;
+        }
+        if (!confirm('예약 일정을 이대로 변경할까요?')) return;
+        status.style.display = 'none';
+        try {
+            const params = new URLSearchParams({name});
+            const res = await fetch('/reservations/' + editing.id + '?' + params.toString(), {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    date: newDate,
+                    timeId: selectedEditTimeId
+                })
+            });
+            if (!res.ok) throw new Error(await readApiError(res));
+            showStatus('예약 일정이 변경되었습니다.', true);
+            closeEditPanel();
+            await searchReservations();
+        } catch (e) {
+            showStatus(e.message, false);
+        }
+    });
+
     async function searchReservations() {
         const name = memberName.value.trim();
         status.style.display = 'none';
         rows.innerHTML = '';
         empty.style.display = 'none';
+        closeEditPanel();
         if (!name) {
             showStatus('조회할 이름을 입력하세요.', false);
             return;
@@ -118,11 +301,11 @@
         try {
             const params = new URLSearchParams({name});
             const res = await fetch('/reservations?' + params.toString());
-            if (!res.ok) throw new Error('예약 조회에 실패했습니다.');
+            if (!res.ok) throw new Error(await readApiError(res));
             const list = await res.json();
             renderReservations(list);
             if (list.length) {
-                showStatus(`${list.length}건의 예약을 찾았습니다.`, true);
+                showStatus(list.length + '건의 예약을 찾았습니다.', true);
             }
         } catch (e) {
             showStatus(e.message, false);

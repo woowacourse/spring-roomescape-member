@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationDetailResponse;
 import roomescape.controller.dto.ReservationSummaryResponse;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.controller.mapper.ReservationMapper;
 import roomescape.domain.EntityId;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationCreateCommand;
+import roomescape.service.dto.ReservationUpdateCommand;
 
 @RestController
 @RequestMapping("/reservations")
@@ -32,7 +35,7 @@ public class ReservationController {
     public ResponseEntity<ReservationSummaryResponse> create(
             @RequestBody ReservationCreateRequest createRequest
     ) {
-        ReservationCreateCommand createCommand = mapper.mapToCommand(createRequest);
+        ReservationCreateCommand createCommand = mapper.mapToCreateCommand(createRequest);
         ReservationSummaryResponse response = service.create(createCommand);
 
         return ResponseEntity.ok(response);
@@ -45,6 +48,22 @@ public class ReservationController {
         List<ReservationDetailResponse> responses = service.findAllIncludeDetail(name);
 
         return ResponseEntity.ok(responses);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationSummaryResponse> updateDateTime(
+            @RequestParam String name,
+            @PathVariable UUID id,
+            @RequestBody ReservationUpdateRequest updateRequest
+    ) {
+        ReservationUpdateCommand updateCommand = mapper.mapToUpdateCommand(
+                EntityId.fromUuid(id),
+                name,
+                updateRequest
+        );
+        ReservationSummaryResponse response = service.update(updateCommand);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")

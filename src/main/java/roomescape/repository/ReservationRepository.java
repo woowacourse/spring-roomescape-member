@@ -138,6 +138,52 @@ public class ReservationRepository {
                 && count > 0;
     }
 
+    public boolean existByDateAndThemeIdAndTimeId(
+            LocalDate date,
+            EntityId themeId,
+            EntityId timeId
+    ) {
+        String countSql = "SELECT count(*)"
+                + " FROM reservation"
+                + " WHERE date = ? AND theme_id = ? AND time_id = ?";
+
+        Integer reservationCount = jdbcTemplate.queryForObject(
+                countSql,
+                Integer.class,
+                date,
+                themeId.getValueAsUuid(),
+                timeId.getValueAsUuid()
+        );
+
+        return reservationCount != null
+                && reservationCount > 0;
+    }
+
+    public Reservation updateDateAndTimeId(
+            Reservation reservation,
+            LocalDate date,
+            EntityId timeId
+    ) {
+        String updateSql = "UPDATE reservation"
+                + " SET date = ?, time_id = ?"
+                + " WHERE id = ?";
+
+        jdbcTemplate.update(
+                updateSql,
+                date,
+                timeId.getValueAsUuid(),
+                reservation.id().getValueAsUuid()
+        );
+
+        return new Reservation(
+                reservation.id(),
+                reservation.name(),
+                date,
+                timeId,
+                reservation.themeId()
+        );
+    }
+
     public boolean delete(EntityId reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
