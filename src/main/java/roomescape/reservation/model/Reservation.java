@@ -28,6 +28,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public boolean isOwnedBy(Long userId) {
+        return this.user.getId().equals(userId);
+    }
+
     public Long getId() {
         return id;
     }
