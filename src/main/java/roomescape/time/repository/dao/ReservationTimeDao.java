@@ -33,36 +33,40 @@ public class ReservationTimeDao {
 
     public Long insert(LocalTime startAt) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("startAt", startAt);
+                .addValue("startAt", startAt)
+                .addValue("is_deleted", false);
+
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     public Optional<ReservationTimeEntity> findById(Long id) {
-        String sql = "select * from reservation_time where id = ?;";
+        String sql = "SELECT * FROM reservation_time WHERE id = ? AND is_deleted = FALSE;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
     }
 
     public ReservationTimeEntity getById(Long id) {
-        String sql = "select * from reservation_time where id = ?;";
+        String sql = "SELECT * FROM reservation_time WHERE id = ? AND is_deleted = FALSE;";
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
-    
+
     public List<ReservationTimeEntity> findAll() {
-        String sql = "select * from reservation_time;";
+        String sql = "SELECT * FROM reservation_time WHERE is_deleted = FALSE;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     public int deleteById(Long id) {
-        String sql = "delete from reservation_time where id = ?;";
+        String sql = "UPDATE reservation_time SET is_deleted = TRUE WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
     }
 
     public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
-        String sql = "select time_id " +
-                "from reservation " +
-                "where theme_id = ? and date = ?;";
+        String sql = """
+                 SELECT time_id
+                 FROM reservation 
+                 WHERE theme_id = ? AND date = ? AND is_deleted = FALSE;
+                """;
 
         return jdbcTemplate.queryForList(sql, Long.class, themeId, date.toString());
     }
@@ -71,7 +75,7 @@ public class ReservationTimeDao {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation_time
-                WHERE id = ?
+                WHERE id = ? AND is_deleted = FALSE;
                 """;
 
         Integer count = jdbcTemplate.queryForObject(
