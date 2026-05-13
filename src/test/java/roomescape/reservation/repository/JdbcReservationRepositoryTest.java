@@ -33,7 +33,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_저장하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2099, 5, 6);
         ReservationTime reservationTime = reservationTimeRepository.findById(1L)
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
@@ -50,7 +50,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 모든_예약을_조회하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2099, 5, 6);
         ReservationTime reservationTime = reservationTimeRepository.findById(1L)
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
@@ -65,7 +65,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_취소하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2099, 5, 6);
         ReservationTime reservationTime = reservationTimeRepository.findById(1L)
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
@@ -81,7 +81,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 있는_예약을_날짜_시간_테마로_조회하는_경우_예약을_반환한다() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2099, 5, 6);
         long time_id = 1L;
         ReservationTime reservationTime = reservationTimeRepository.findById(time_id)
                 .orElseThrow(() -> new ReservationTimeNotFoundException(time_id));
@@ -99,7 +99,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 없는_예약을_날짜_시간_테마로_조회하는_경우_Empty를_반환한다() {
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2099, 5, 6);
         long time_id = 1L;
         long theme_id = 1L;
 

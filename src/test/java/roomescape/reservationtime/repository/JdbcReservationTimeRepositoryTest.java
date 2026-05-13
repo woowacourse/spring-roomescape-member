@@ -1,6 +1,7 @@
 package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.exception.ReservationTimeResourceInUseException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -75,18 +77,16 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
+    void 예약이_존재하는_예약_시간은_삭제할_수_없다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 40));
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(1));
         Theme savedTheme = themeRepository.save(theme);
-        Reservation reservation = Reservation.of("밀란", LocalDate.of(2026, 5, 6), savedReservationTime, savedTheme);
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation reservation = Reservation.of("밀란", LocalDate.of(2099, 5, 6), savedReservationTime, savedTheme);
+        reservationRepository.save(reservation);
 
-        reservationTimeRepository.deleteById(savedReservationTime.getId());
-
-        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
-        assertThat(foundReservation).isEmpty();
+        assertThatThrownBy(() -> reservationTimeRepository.deleteById(savedReservationTime.getId()))
+                .isInstanceOf(ReservationTimeResourceInUseException.class);
     }
 
 }

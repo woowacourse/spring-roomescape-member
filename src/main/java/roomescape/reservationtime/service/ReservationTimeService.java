@@ -2,6 +2,8 @@ package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservationtime.entity.ReservationTime;
@@ -12,6 +14,7 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final Logger logger = LoggerFactory.getLogger(ReservationTimeRepository.class);
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
@@ -35,6 +38,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(Long id) {
+        logger.info("delete time %d".formatted(id));
         reservationTimeRepository.deleteById(id);
     }
 }

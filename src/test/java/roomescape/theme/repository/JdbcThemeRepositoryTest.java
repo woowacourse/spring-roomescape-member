@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeResourceInUseException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class JdbcThemeRepositoryTest {
@@ -86,18 +88,16 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
+    void 예약이_존재하는_테마는_삭제할_수_없다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(0));
         Theme savedTheme = themeRepository.save(theme);
-        Reservation reservation = Reservation.of("밀란", LocalDate.of(2026, 5, 6), savedReservationTime, savedTheme);
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation reservation = Reservation.of("밀란", LocalDate.of(2099, 5, 6), savedReservationTime, savedTheme);
+        reservationRepository.save(reservation);
 
-        themeRepository.deleteById(savedTheme.getId());
-
-        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
-        assertThat(foundReservation).isEmpty();
+        assertThatThrownBy(() -> themeRepository.deleteById(savedTheme.getId()))
+                .isInstanceOf(ThemeResourceInUseException.class);
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")
