@@ -46,6 +46,10 @@ public class ThemeRepository {
         return ThemeMapper.toTheme(themeEntity);
     }
 
+    public boolean existsById(Long id) {
+        return themeDao.existsById(id);
+    }
+
     public List<Theme> findThemesOrderedByReservationCount(GetThemeRankingsInRecentDaysParams params) {
         return themeDao.findThemesOrderByReservationCountDesc(params.startDate(), params.endDate(), params.limit())
                 .stream()

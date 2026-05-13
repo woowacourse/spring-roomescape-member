@@ -49,4 +49,24 @@ public class ReservationDao {
         String sql = "delete from reservation where id = ?;";
         return jdbcTemplate.update(sql, id);
     }
+
+    public boolean existsReservationAt(Long themeId, LocalDate date, Long timeId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE theme_id = ?
+                  AND date = ?
+                  AND time_id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                themeId,
+                date,
+                timeId
+        );
+
+        return count != null && count > 0;
+    }
 }

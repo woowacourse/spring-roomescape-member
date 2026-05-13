@@ -83,4 +83,20 @@ public class ThemeDao {
 
         return jdbcTemplate.query(sql, themeEntityRowMapper, startDate, endDate, limit);
     }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM theme
+                WHERE id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                id
+        );
+
+        return count != null && count > 0;
+    }
 }

@@ -49,4 +49,8 @@ public class ReservationTimeRepository {
     public List<Long> findIdByCondition(FindReservedTimeParams params) {
         return reservationTimeDao.findReservedTimeIds(params.themeId(), params.date());
     }
+
+    public boolean existsById(Long id) {
+        return reservationTimeDao.existsById(id);
+    }
 }
