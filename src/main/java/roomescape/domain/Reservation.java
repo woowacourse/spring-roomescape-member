@@ -27,7 +27,7 @@ public class Reservation {
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
         this(null, name, date, time, theme);
-        validateDateTime(date, time, now);
+        validateCreatable(date, time, now);
     }
 
     public Long getId() {
@@ -50,6 +50,28 @@ public class Reservation {
         return theme;
     }
 
+    public Reservation update(LocalDate updateDate, ReservationTime updateTime, LocalDateTime now) {
+        LocalDateTime updateDateAndTime = LocalDateTime.of(updateDate, updateTime.getStartAt());
+        if (updateDateAndTime.isBefore(now)) {
+            throw new UnprocessableException("지난 날짜로 예약을 변경할 수 없습니다.");
+        }
+        return new Reservation(this.id, this.name, updateDate, updateTime, this.theme);
+    }
+
+    public void validateCancelable(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new UnprocessableException("지난 예약은 취소할 수 없습니다.");
+        }
+    }
+
+    private void validateCreatable(LocalDate date, ReservationTime time, LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new UnprocessableException("지난 시간으로는 예약할 수 없습니다.");
+        }
+    }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
@@ -68,13 +90,6 @@ public class Reservation {
     private void validateTime(ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
-        }
-    }
-
-    private void validateDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new UnprocessableException("지난 시간으로는 예약할 수 없습니다.");
         }
     }
 

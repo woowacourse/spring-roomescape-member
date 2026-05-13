@@ -154,6 +154,11 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public void updateByDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, id);
+    }
+
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
