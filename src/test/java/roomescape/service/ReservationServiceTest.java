@@ -141,6 +141,23 @@ public class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("예약 수정 시 이미 지난 날짜의 예약이면 InvalidRequestValueException 발생")
+    void updateReservationFailByPastDateTest() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation pastReservation = new Reservation(1, "브라운", pastDate, 1, 1);
+
+        ReservationService reservationService = new ReservationService(
+                createReservationRepository(pastReservation, false, 0), null, null
+        );
+
+        ReservationCommand updateCommand = new ReservationCommand("브라운", LocalDate.now().plusDays(1), 1, 1);
+
+        assertThatThrownBy(() -> reservationService.updateReservation(1, "브라운", updateCommand))
+                .isExactlyInstanceOf(InvalidRequestValueException.class)
+                .hasMessage("이미 지난 예약은 수정할 수 없습니다.");
+    }
+
+    @Test
     @DisplayName("예약 수정 시 본인의 예약이 아니면 UnauthorizedException 발생")
     void updateReservationFailByUnauthorizedTest() {
         Reservation reservation = new Reservation(1, "브라운", LocalDate.now().plusDays(1), 1, 1);

@@ -25,6 +25,7 @@ public class ReservationService {
     private static final String INVALID_RESERVATION_TIME_ID = "존재하지 않은 시간 id입니다.";
     private static final String INVALID_RESERVATION_ID = "존재하지 않는 예약 id입니다.";
     private static final String CANNOT_DELETE_PAST_RESERVATION = "이미 지난 예약은 삭제할 수 없습니다.";
+    private static final String CANNOT_UPDATE_PAST_RESERVATION = "이미 지난 예약은 수정할 수 없습니다.";
     private static final String UNAUTHORIZED_DELETE_RESERVATION_REQUEST = "해당 예약을 삭제할 권한이 없습니다.";
     private static final String UNAUTHORIZED_UPDATE_RESERVATION_REQUEST = "해당 예약을 수정할 권한이 없습니다.";
     private static final String CANNOT_UPDATE_SAME_VALUE = "기존 정보와 동일하여 수정할 내용이 없습니다.";
@@ -85,6 +86,10 @@ public class ReservationService {
 
         if (reservation.isEqualValue(reservationCommand)) {
             throw new InvalidRequestValueException(CANNOT_UPDATE_SAME_VALUE);
+        }
+
+        if(reservation.date().isBefore(LocalDate.now())) {
+            throw new InvalidRequestValueException(CANNOT_UPDATE_PAST_RESERVATION);
         }
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand.timeId(),
