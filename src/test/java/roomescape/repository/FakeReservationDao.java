@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 import roomescape.domain.Reservation;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 
 public class FakeReservationDao implements ReservationRepository {
 
@@ -42,14 +44,17 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId) {
-        // TODO
-        return true;
+        return storage.values().stream()
+                .anyMatch(reservation ->
+                        Objects.equals(reservation.getTime().getId(), reservationTimeId) ||
+                                Objects.equals(reservation.getTheme().getId(), themeId) ||
+                                reservation.getDate().equals(date)
+                );
     }
 
     @Override
     public boolean isExistBy(Long reservationId) {
-        // TODO
-        return true;
+        return storage.containsKey(reservationId);
     }
 
     @Override
@@ -61,11 +66,32 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public void updateStatus(Reservation reservation) {
+        Long id = reservation.getId();
+        if (!storage.containsKey(id)) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
 
+        Reservation getReservation = storage.get(id);
+        getReservation.changeStatus(reservation.getReservationStatus());
     }
 
     @Override
     public void updateDateAndTimeAndTheme(Reservation reservation) {
+        Long id = reservation.getId();
+        if (!storage.containsKey(id)) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
 
+        Reservation getReservation = storage.get(id);
+        Reservation newReservation = new Reservation(
+                getReservation.getId(),
+                getReservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                getReservation.getReservationStatus()
+        );
+        storage.remove(id);
+        storage.put(id, newReservation);
     }
 }
