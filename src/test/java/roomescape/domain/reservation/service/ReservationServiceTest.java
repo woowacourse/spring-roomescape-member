@@ -17,6 +17,8 @@ import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
 import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.error.exception.ReservationException;
+import roomescape.domain.reservation.error.exception.ReservationNotFoundException;
 import roomescape.domain.reservation.repository.JdbcReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
@@ -27,6 +29,7 @@ import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.error.exception.dto.FieldErrorResponseDTO;
 
 class ReservationServiceTest {
 
@@ -87,42 +90,199 @@ class ReservationServiceTest {
     @Nested
     class SaveReservationTest {
 
-        @Test
-        void 성공() {
-            // given
-            Theme theme = themeRepository.save(
-                Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
-            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
-            ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
-                "보예",
-                LocalDate.of(2026, 5, 1),
-                time.getId(),
-                theme.getId()
-            );
+        @Nested
+        class Success {
 
-            // when
-            ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+            @Test
+            void 성공() {
+                // given
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    LocalDate.of(2026, 5, 1),
+                    time.getId(),
+                    theme.getId()
+                );
 
-            // then
-            assertThat(actual).isEqualTo(
-                new ReservationCreateResponseDTO(1L, "보예", LocalDate.of(2026, 5, 1), time.getId(), theme.getId()));
-            assertThat(reservationRepository.findAllReservations()).hasSize(1);
+                // when
+                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+
+                // then
+                assertThat(actual).isEqualTo(
+                    new ReservationCreateResponseDTO(1L, "보예", LocalDate.of(2026, 5, 1), time.getId(), theme.getId()));
+                assertThat(reservationRepository.findAllReservations()).hasSize(1);
+            }
+
+            @Test
+            void 같은_날짜_시간이어도_테마가_다르면_예약할_수_있다() {
+                // given
+                LocalDate date = LocalDate.of(2026, 5, 1);
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                Theme otherTheme = themeRepository.save(
+                    Theme.create("다른 테마", "다른 설명", "https://roomescape.com/images/themes/other-banner.png"));
+                reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    date,
+                    time.getId(),
+                    otherTheme.getId()
+                );
+
+                // when
+                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+
+                // then
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                    2L,
+                    "보예",
+                    date,
+                    time.getId(),
+                    otherTheme.getId()
+                ));
+                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+            }
+
+            @Test
+            void 같은_날짜_테마여도_시간이_다르면_예약할_수_있다() {
+                // given
+                LocalDate date = LocalDate.of(2026, 5, 1);
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                Time otherTime = timeRepository.save(Time.create(LocalTime.of(16, 30)));
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    date,
+                    otherTime.getId(),
+                    theme.getId()
+                );
+
+                // when
+                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+
+                // then
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                    2L,
+                    "보예",
+                    date,
+                    otherTime.getId(),
+                    theme.getId()
+                ));
+                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+            }
+
+            @Test
+            void 같은_시간_테마여도_날짜가_다르면_예약할_수_있다() {
+                // given
+                LocalDate date = LocalDate.of(2026, 5, 1);
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    date.plusDays(1),
+                    time.getId(),
+                    theme.getId()
+                );
+
+                // when
+                ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+
+                // then
+                assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(
+                    2L,
+                    "보예",
+                    date.plusDays(1),
+                    time.getId(),
+                    theme.getId()
+                ));
+                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+            }
         }
 
-        @Test
-        void 같은_날짜_시간_테마에_이미_예약이_있으면_예외가_발생한다() {
-            // given
-            LocalDate date = LocalDate.of(2026, 5, 1);
-            Theme theme = themeRepository.save(
-                Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
-            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
-            reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
-            ReservationCreateRequestDTO request = new ReservationCreateRequestDTO("보예", date, time.getId(),
-                theme.getId());
+        @Nested
+        class Failed {
 
-            // when & then
-            assertThatThrownBy(() -> reservationService.saveReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+            @Test
+            void R5_같은_날짜_시간_테마에_이미_예약이_있으면_예외가_발생한다() {
+                // given
+                LocalDate date = LocalDate.of(2026, 5, 1);
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                reservationRepository.save(Reservation.create("기존 예약자", date, time, theme));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO("보예", date, time.getId(),
+                    theme.getId());
+
+                // when & then
+                assertThatThrownBy(() -> reservationService.saveReservation(request))
+                    .isInstanceOf(ReservationException.class)
+                    .hasMessage("이미 예약된 날짜, 시간, 테마입니다.");
+            }
+
+            @Test
+            void R4_1_timeId가_존재하지_않으면_예외가_발생한다() {
+                // given
+                Theme theme = themeRepository.save(
+                    Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png")
+                );
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    LocalDate.of(2026, 5, 1),
+                    999L,
+                    theme.getId()
+                );
+
+                // when & then
+                assertThatThrownBy(() -> reservationService.saveReservation(request))
+                    .isInstanceOf(ReservationNotFoundException.class)
+                    .hasMessage("조회할 자원이 존재하지 않습니다.");
+            }
+
+            @Test
+            void R4_2_themeId가_존재하지_않으면_예외가_발생한다() {
+                // given
+                Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    LocalDate.of(2026, 5, 1),
+                    time.getId(),
+                    999L
+                );
+
+                // when & then
+                assertThatThrownBy(() -> reservationService.saveReservation(request))
+                    .isInstanceOf(ReservationNotFoundException.class)
+                    .hasMessage("조회할 자원이 존재하지 않습니다.");
+            }
+
+            @Test
+            void R4_timeId와_themeId가_모두_존재하지_않으면_필드_에러를_모두_포함한다() {
+                // given
+                ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+                    "보예",
+                    LocalDate.of(2026, 5, 1),
+                    999L,
+                    999L
+                );
+
+                // when & then
+                assertThatThrownBy(() -> reservationService.saveReservation(request))
+                    .isInstanceOfSatisfying(ReservationNotFoundException.class, exception -> {
+                        assertThat(exception.getFieldErrors())
+                            .extracting(FieldErrorResponseDTO::field)
+                            .containsExactly("timeId", "themeId");
+                        assertThat(exception.getFieldErrors())
+                            .extracting(FieldErrorResponseDTO::message)
+                            .containsExactly("존재 하지 않는 시간대입니다.", "존재 하지 않는 테마입니다.");
+                    });
+            }
         }
     }
 
