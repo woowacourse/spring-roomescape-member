@@ -31,7 +31,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 })
 @ActiveProfiles("test")
 class ReservationJdbcDaoTest {
-    private static final int DELETED = 1;
 
     private static final LocalDate DATE = LocalDate.of(2026, 5, 10);
     private static final Long NOT_EXISTS_ID = Long.MAX_VALUE;
