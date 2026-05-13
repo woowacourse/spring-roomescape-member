@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
@@ -82,28 +83,6 @@ class ReservationControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
-
-    // TODO 이름 검증이 포함된 사용자 예약 취소 API로 변경
-//    @Test
-//    @DisplayName("사용자는 자신의 예약을 취소한다.")
-//    void cancel_reservation() {
-//        Integer dateId = createReservationDate(date);
-//        Integer timeId = createReservationTime(startAt);
-//        Integer themeId = createTheme(themeName);
-//
-//        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
-//
-//        RestAssured.given().log().all()
-//                .when().patch("/member/reservations/" + reservationId + "/cancel")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/member/reservations/" + reservationName)
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//    }
 
     @Test
     @DisplayName("예약이 없는 이름으로 조회하면 빈 목록을 반환한다.")
@@ -228,7 +207,7 @@ class ReservationControllerTest {
         Integer themeId = createTheme(themeName);
 
         Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
-        cancelReservation(reservationId);
+        cancelReservation(reservationId, reservationName);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservationName);
@@ -252,7 +231,7 @@ class ReservationControllerTest {
         Integer themeId = createTheme(themeName);
 
         Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
-        cancelReservation(reservationId);
+        cancelReservation(reservationId, reservationName);
 
         String anotherName = "다른사람";
         Map<String, Object> params = new HashMap<>();
@@ -269,11 +248,91 @@ class ReservationControllerTest {
                 .statusCode(200);
     }
 
-    private void cancelReservation(Integer reservationId) {
+    @Test
+    @DisplayName("사용자는 자신의 예약을 취소한다.")
+    void cancel() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", reservationName);
+
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/cancel")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("status", is("CANCELED"));
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아닌데 취소하면 예외가 발생한다.")
+    void cancel_not_owner() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        String anotherName = "다른사람";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", anotherName);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("이미 취소된 예약을 취소하면 예외가 발생한다.")
+    void cancel_already_canceled() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        cancelReservation(reservationId, reservationName);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", reservationName);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 취소된 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
+    @Sql(
+            scripts = "classpath:past-reservation.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    void cancel_not_past() {
+        String sqlRequsterName = "송송";
+        Long sqlSavedId = 1L;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", sqlRequsterName);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + sqlSavedId + "/cancel")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 지난 예약은 취소할 수 없습니다."));
     }
 
 }

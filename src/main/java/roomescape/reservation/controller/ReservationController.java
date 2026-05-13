@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.request.ReservationCancelDto;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.dto.response.ReservationDetailDto;
 import roomescape.reservation.service.ReservationService;
@@ -35,11 +36,11 @@ public class ReservationController {
         return ResponseEntity.ok(responseData);
     }
 
-//    @PatchMapping("/reservations/{id}/cancel")
-//    public ResponseEntity<ReservationDetailDto> cancel(@PathVariable Long id) {
-//        Reservation reservation = reservationService.cancelByManager(id);
-//        ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
-//        return ResponseEntity.ok(responseData);
-//    }
+    @PatchMapping("/reservations/{id}/cancel")
+    public ResponseEntity<ReservationDetailDto> cancel(@PathVariable Long id, @RequestBody ReservationCancelDto dto) {
+        Reservation reservation = reservationService.cancel(id, dto.name());
+        ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
+        return ResponseEntity.ok(responseData);
+    }
 
 }
