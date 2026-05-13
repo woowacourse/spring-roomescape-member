@@ -1,4 +1,4 @@
-package integration.reservation;
+package integration.reservationtime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
