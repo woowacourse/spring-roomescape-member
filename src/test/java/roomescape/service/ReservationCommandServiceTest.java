@@ -2,7 +2,6 @@ package roomescape.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.ErrorMessage;
-import roomescape.exception.PastReservationTimeException;
+import roomescape.exception.custom.PastReservationTimeException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationCommandServiceTest {

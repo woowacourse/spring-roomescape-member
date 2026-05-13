@@ -1,4 +1,6 @@
-package roomescape.exception;
+package roomescape.exception.custom;
+
+import roomescape.exception.ErrorMessage;
 
 public class PastReservationTimeException extends RuntimeException {
     public PastReservationTimeException(String message) {

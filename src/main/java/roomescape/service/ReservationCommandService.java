@@ -8,7 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ErrorMessage;
-import roomescape.exception.PastReservationTimeException;
+import roomescape.exception.custom.PastReservationTimeException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
