@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.service.dto.response.ReservationOptionResponse;
+import roomescape.service.dto.response.ReservationResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -109,6 +110,26 @@ class ReservationControllerTest {
         List<ReservationTimesWithStatus> timeStatusesAfterReservation = getReservationTimeStatusResponses();
         assertThat(timeStatusesAfterReservation.size()).isEqualTo(5);
         assertThat(countReservableTimes(timeStatusesAfterReservation)).isEqualTo(4);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약자_이름으로_예약_목록을_조회한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "초코칩", "2026-05-13", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "재키", "2026-05-13", "2", "1");
+
+        List<ReservationResponse> responses = RestAssured.given().log().all()
+                .queryParam("customerName", "초코칩")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().name()).isEqualTo("초코칩");
     }
 
     @Test

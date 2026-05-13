@@ -1,5 +1,6 @@
 package roomescape.service.support;
 
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
@@ -48,6 +49,13 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(final LocalDate date, final Long themeId) {
         return List.of();
+    }
+
+    @Override
+    public List<Reservation> findAllByCustomerName(final Name customerName) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getCustomerName().equals(customerName.getName()))
+                .toList();
     }
 
     public Reservation savedReservation() {

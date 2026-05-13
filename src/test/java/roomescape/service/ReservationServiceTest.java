@@ -18,6 +18,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -65,6 +66,32 @@ class ReservationServiceTest {
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("브라운");
         assertThat(reservationRepository.savedReservation().getCustomerName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 예약자_이름으로_예약_목록을_조회한다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+        reservationRepository.add(Reservation.of(
+                2L,
+                "제임스",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+
+        // when
+        List<ReservationResponse> responses = reservationService.getReservationsByCustomerName("브라운");
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().name()).isEqualTo("브라운");
     }
 
     @Test

@@ -20,10 +20,18 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    @GetMapping(params = "customerName")
+    public ResponseEntity<List<ReservationResponse>> getReservationsByCustomerName(
+            @RequestParam("customerName") String customerName
+    ) {
+        final List<ReservationResponse> results = reservationService.getReservationsByCustomerName(customerName);
+        return ResponseEntity.ok(results);
+    }
+
     @GetMapping(path = "/available-times", params = {"date", "themeId"})
     public ResponseEntity<List<ReservationTimesWithStatus>> getReservationTimeStatuses(
-            @RequestParam(value = "date", required = false) LocalDate date,
-            @RequestParam(value = "themeId", required = false) Long themeId
+            @RequestParam(value = "date") LocalDate date,
+            @RequestParam(value = "themeId") Long themeId
     ) {
         final List<ReservationTimesWithStatus> results = reservationService.getReservationTimeStatuses(date, themeId);
         return ResponseEntity.ok(results);

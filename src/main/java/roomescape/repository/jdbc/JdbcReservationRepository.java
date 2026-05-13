@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.ConflictException;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -51,6 +52,32 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, this::mapToDomain)
+                .stream()
+                .toList();
+    }
+
+    @Override
+    public List<Reservation> findAllByCustomerName(final Name customerName) {
+        final String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    r.theme_id AS theme_id,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    t.end_at AS time_end_at,
+                    h.name AS theme_name,
+                    h.description AS theme_description,
+                    h.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme h ON r.theme_id = h.id
+                WHERE r.name = ?
+                ORDER BY r.id
+                """;
+
+        return jdbcTemplate.query(sql, this::mapToDomain, customerName.getName())
                 .stream()
                 .toList();
     }

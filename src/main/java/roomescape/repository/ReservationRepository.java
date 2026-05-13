@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 
@@ -18,4 +19,6 @@ public interface ReservationRepository {
     void deleteById(Long reservationId);
 
     List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(LocalDate date, Long themeId);
+
+    List<Reservation> findAllByCustomerName(Name customerName);
 }

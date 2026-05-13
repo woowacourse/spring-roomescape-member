@@ -2,6 +2,7 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -32,8 +33,15 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationResponse> getAllReservations() {
         return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> getReservationsByCustomerName(final String customerName) {
+        return reservationRepository.findAllByCustomerName(Name.from(customerName))
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

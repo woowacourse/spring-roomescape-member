@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -65,6 +66,20 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservation).isPresent();
         assertThat(reservation.get().getCustomerName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 예약자_이름으로_예약_목록을_조회한다() {
+        insertReservationTime("10:00", "10:30");
+        insertReservationTime("11:00", "11:30");
+        insertTheme("링", "공포 테마", "http:~");
+        insertReservation("초코칩", "2026-08-05", 1L, 1L);
+        insertReservation("재키", "2026-08-05", 2L, 1L);
+
+        List<Reservation> reservations = reservationRepository.findAllByCustomerName(Name.from("초코칩"));
+
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations.getFirst().getCustomerName()).isEqualTo("초코칩");
     }
 
     @Test

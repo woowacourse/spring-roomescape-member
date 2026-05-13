@@ -18,8 +18,8 @@ public class AdminReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        final List<ReservationResponse> results = reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+        final List<ReservationResponse> results = reservationService.getAllReservations();
         return ResponseEntity.ok(results);
     }
 }
