@@ -13,6 +13,7 @@ import roomescape.common.exception.ResourceInUseException;
 import roomescape.common.payload.ErrorResponse;
 import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
+import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @RestControllerAdvice
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReservationDuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleReservationAlreadyExists(ReservationDuplicatedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(ReservationTimeDuplicatedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleReservationTimeDuplicated(ReservationTimeDuplicatedException e) {
         return new ErrorResponse(e.getMessage());
     }
 

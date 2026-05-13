@@ -31,6 +31,20 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
+    void 이미_존재하는_예약_시간을_추가하면_409를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is("이미 존재하는 예약 시간입니다."));
+    }
+
+    @Test
     void 예약_시간을_삭제한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "11:00");
