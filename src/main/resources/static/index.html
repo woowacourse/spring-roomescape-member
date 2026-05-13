@@ -33,6 +33,21 @@
         <h2 class="text-3xl font-extrabold text-gray-800">전체 테마</h2>
         <div id="theme-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
+        <!-- Theme Detail Modal -->
+        <div id="theme-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+            <div class="bg-white rounded-xl max-w-lg w-full shadow-2xl overflow-hidden">
+                <img id="detail-thumbnail" src="" class="w-full h-56 object-cover">
+                <div class="p-6 space-y-3">
+                    <div class="flex justify-between items-start">
+                        <h3 id="detail-name" class="text-2xl font-extrabold text-gray-800"></h3>
+                        <button onclick="closeThemeDetail()" class="text-gray-400 hover:text-black font-bold text-xl ml-4">✕</button>
+                    </div>
+                    <p id="detail-description" class="text-gray-600 leading-relaxed"></p>
+                    <button id="detail-book-btn" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">이 테마 예약하기</button>
+                </div>
+            </div>
+        </div>
+
         <div id="schedule-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
                 <div class="flex justify-between items-center">
@@ -141,6 +156,7 @@
     const API_BASE_URL = '';
     let selectedThemeId = null;
     let selectedTimeId = null;
+    let themeCache = {};
     let updateReservationId = null;
     let updateThemeId = null;
     let updateUserName = null;
@@ -222,15 +238,35 @@
         try {
             const res = await fetch(`${API_BASE_URL}/themes`);
             const data = await res.json();
+            data.forEach(t => themeCache[t.id] = t);
             document.getElementById('theme-list').innerHTML = data.map(theme => `
-                <div class="bg-white rounded-xl shadow p-4 space-y-4 border border-gray-100">
-                    <img src="${theme.thumbnail}" class="w-full h-48 object-cover rounded-lg">
-                    <h3 class="font-bold text-xl">${theme.name}</h3>
-                    <button onclick="openBookingModal(${theme.id}, '${theme.name}')"
-                            class="w-full bg-gray-800 text-white py-2 rounded font-medium hover:bg-gray-900 transition">예약하기</button>
+                <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden cursor-pointer hover:shadow-lg transition"
+                     onclick="openThemeDetail(${theme.id})">
+                    <img src="${theme.thumbnail}" class="w-full h-48 object-cover">
+                    <div class="p-4 space-y-2">
+                        <h3 class="font-bold text-xl">${theme.name}</h3>
+                        <p class="text-gray-500 text-sm line-clamp-2">${theme.description}</p>
+                    </div>
                 </div>
             `).join('');
         } catch (e) { console.error(e); }
+    }
+
+    function openThemeDetail(id) {
+        const theme = themeCache[id];
+        if (!theme) return;
+        document.getElementById('detail-thumbnail').src = theme.thumbnail;
+        document.getElementById('detail-name').innerText = theme.name;
+        document.getElementById('detail-description').innerText = theme.description;
+        document.getElementById('detail-book-btn').onclick = () => {
+            closeThemeDetail();
+            openBookingModal(theme.id, theme.name);
+        };
+        document.getElementById('theme-detail-modal').classList.remove('hidden');
+    }
+
+    function closeThemeDetail() {
+        document.getElementById('theme-detail-modal').classList.add('hidden');
     }
 
     function openBookingModal(id, name) {
