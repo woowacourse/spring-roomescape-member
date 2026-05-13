@@ -53,14 +53,14 @@ class AdminReservationTimeServiceTest {
     void 예약_시간이_중복되면_예외가_발생한다() {
         assertThatThrownBy(() -> adminReservationTimeService.createReservationTime(LocalTime.of(10, 0)))
                 .isInstanceOf(DuplicateException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다");
+                .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
     @Test
     void 예약이_있으면_예약_시간을_삭제할_수_없다() {
         assertThatThrownBy(() -> adminReservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(ResourceInUseException.class)
-                .hasMessage("예약이 있어 삭제할 수 없습니다");
+                .hasMessage("예약이 있어 삭제할 수 없습니다.");
     }
 
     @Test

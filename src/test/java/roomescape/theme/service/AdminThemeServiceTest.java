@@ -64,7 +64,7 @@ class AdminThemeServiceTest {
     void 예약이_있으면_테마를_삭제할_수_없다() {
         assertThatThrownBy(() -> adminThemeService.delete(1L))
                 .isInstanceOf(ResourceInUseException.class)
-                .hasMessage("예약이 있어 삭제할 수 없습니다");
+                .hasMessage("예약이 있어 삭제할 수 없습니다.");
     }
 
     @Test
