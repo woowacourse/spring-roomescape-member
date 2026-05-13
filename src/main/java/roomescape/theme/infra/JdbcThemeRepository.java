@@ -48,22 +48,20 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int delete(Long id) {
-        String sql = "DELETE FROM theme WHERE id = :id";
-        return jdbcTemplate.update(sql, Map.of("id", id));
+    public int delete(Theme theme) {
+        String sql = "UPDATE theme SET deleted_at=:date WHERE id = :id";
+        return jdbcTemplate.update(sql, Map.of("id", theme.getId(), "date", theme.getDeletedAt()));
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme WHERE id = :id";
-
-        List<Theme> themes = jdbcTemplate.query(sql, Map.of("id", id), rowMapper);
-        return themes.stream().findFirst();
+        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme WHERE id = :id AND deleted_at IS NULL";
+        return jdbcTemplate.query(sql, Map.of("id", id), rowMapper).stream().findFirst();
     }
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme";
+        String sql = "SELECT id, name, description, thumbnail_image_url, duration_time FROM theme WHERE deleted_at IS NULL";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -71,10 +69,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findByReservationCountWithLimit(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time "
                 + "FROM theme t "
-                + "INNER JOIN reservation r ON t.id = r.theme_id " // 올바른 FK 조인
-                + "WHERE r.date BETWEEN :startDate AND :endDate "  // 날짜 필터링
-                + "GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time " // 표준 SQL 그룹화
-                + "ORDER BY COUNT(r.id) DESC " // 예약 건수가 많은 순으로 정렬
+                + "INNER JOIN reservation r ON t.id = r.theme_id "
+                + "WHERE r.date BETWEEN :startDate AND :endDate AND t.deleted_at IS NULL AND r.deleted_at IS NULL "
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time "
+                + "ORDER BY COUNT(r.id) DESC "
                 + "LIMIT :limit";
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -83,5 +81,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("limit", limit);
 
         return jdbcTemplate.query(sql, params, rowMapper);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name=:name AND deleted_at IS NULL)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("name", name), Boolean.class));
     }
 }

@@ -1,22 +1,84 @@
 package roomescape.common.advice;
 
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.common.exception.AlreadyInUseException;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.IllegalDateTimeException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnauthorizedException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnhandledException(Exception e) {
-        return ResponseEntity.internalServerError().body("서버 내부에서 예상치 못한 문제가 발생했습니다. " + e.getMessage());
+        String traceId = UUID.randomUUID().toString().substring(0, 8);
+        log.error("[TraceID: {}] Unhandled Exception 발생 : ", traceId, e);
+        return ResponseEntity.internalServerError().body("일시적인 서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
 
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<String> handleValidationException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 파라미터가 누락되었거나 형식이 잘못되었습니다." + e.getMessage());
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<String> handleValidationException(BindException e) {
+        log.error("Bind Exception 발생 : {}", e.getMessage());
+        return getStringResponseEntity(e.getBindingResult());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValid Exception 발생 : {}", e.getMessage());
+        return getStringResponseEntity(e.getBindingResult());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleReservationNotFoundException(NotFoundException e) {
+        log.error("Reservation Not Found Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyInUseException.class)
+    public ResponseEntity<String> handleReservationTimeInUseException(AlreadyInUseException e) {
+        log.error("Reservation Already In Use Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        log.error("Illegal State Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<String> handleDuplicateException(DuplicateException e) {
+        log.error("Duplicate Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalDateTimeException.class)
+    public ResponseEntity<String> handleIllegalDateTimeException(IllegalDateTimeException e) {
+        log.error("Illegal Date Time Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedReservationChangeException(UnauthorizedException e) {
+        log.error("Unauthorized Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    private ResponseEntity<String> getStringResponseEntity(BindingResult e) {
+        String message = e
+                .getAllErrors()
+                .getFirst()
+                .getDefaultMessage();
+        return ResponseEntity.badRequest().body(message);
     }
 }

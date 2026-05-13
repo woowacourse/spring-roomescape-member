@@ -1,5 +1,6 @@
 package roomescape.time.application;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,9 +13,10 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.application.dto.AvailableReservationTimeFindCommand;
 import roomescape.time.application.dto.AvailableReservationTimeInfo;
+import roomescape.time.application.dto.ReservationTimeCommand;
+import roomescape.time.application.exception.DuplicateReservationTimeException;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.exception.ReservationTimeInUseException;
-import roomescape.time.domain.exception.ReservationTimeNotFoundException;
+import roomescape.time.application.exception.ReservationTimeInUseException;
 import roomescape.time.domain.ReservationTimeRepository;
 
 @Service
@@ -22,6 +24,7 @@ import roomescape.time.domain.ReservationTimeRepository;
 @RequiredArgsConstructor
 public class ReservationTimeService {
 
+    private final Clock clock;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
@@ -31,17 +34,20 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationTime addReservationTime(ReservationTime time) {
-        return reservationTimeRepository.save(time);
+    public ReservationTime addReservationTime(ReservationTimeCommand time) {
+        if (reservationTimeRepository.existsByStartAt(time.startAt())) {
+            throw new DuplicateReservationTimeException("이미 존재하는 시간입니다.");
+        }
+        return reservationTimeRepository.save(time.toEntity());
     }
 
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByReservationTime(id)) {
             throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
         }
-        if (reservationTimeRepository.deleteById(id) < 1) {
-            throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
-        }
+        ReservationTime time = reservationTimeRepository.getById(id)
+                .delete(clock);
+        reservationTimeRepository.delete(time);
     }
 
     @Transactional(readOnly = true)

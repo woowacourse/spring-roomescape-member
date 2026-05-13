@@ -127,7 +127,7 @@ function renderThemes(themes) {
 }
 
 async function refreshReservations() {
-    const reservations = await request("/reservations", { method: "GET" });
+    const reservations = await request("/admin/reservations", { method: "GET" });
     renderReservations(reservations);
 }
 
@@ -150,7 +150,7 @@ timeForm.addEventListener("submit", async (event) => {
     };
 
     try {
-        await request("/times", {
+        await request("/admin/times", {
             method: "POST",
             body: JSON.stringify(payload)
         });
@@ -199,7 +199,7 @@ reservationList.addEventListener("click", async (event) => {
     clearFeedback(reservationFeedback);
 
     try {
-        await request(`/reservations/${target.dataset.id}`, { method: "DELETE" });
+        await request(`/admin/reservations/${target.dataset.id}`, { method: "DELETE" });
         await refreshReservations();
         showFeedback(reservationFeedback, "success", "예약이 취소되었습니다.");
     } catch (error) {
@@ -220,7 +220,7 @@ timeList.addEventListener("click", async (event) => {
     clearFeedback(timeFeedback);
 
     try {
-        await request(`/times/${target.dataset.id}`, { method: "DELETE" });
+        await request(`/admin/times/${target.dataset.id}`, { method: "DELETE" });
         await refreshTimes();
         showFeedback(timeFeedback, "success", "예약 시간이 삭제되었습니다.");
     } catch (error) {

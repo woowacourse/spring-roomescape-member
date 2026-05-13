@@ -4,12 +4,14 @@ CREATE TABLE theme(
                     thumbnail_image_url VARCHAR(255) NOT NULL,
                     description VARCHAR(255) NOT NULL,
                     duration_time VARCHAR(255) NOT NULL,
+                    deleted_at TIMESTAMP,
                     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation_time (
                                   id       BIGINT       NOT NULL AUTO_INCREMENT,
                                   start_at VARCHAR(255) NOT NULL,
+                                  deleted_at TIMESTAMP,
                                   PRIMARY KEY (id)
 );
 CREATE TABLE reservation (
@@ -18,8 +20,16 @@ CREATE TABLE reservation (
                              date    VARCHAR(255) NOT NULL,
                              time_id BIGINT,
                              theme_id BIGINT,
+                             status  VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+                             deleted_at TIMESTAMP,
                              PRIMARY KEY (id),
                              FOREIGN KEY (time_id) REFERENCES reservation_time (id),
                              FOREIGN KEY (theme_id) REFERENCES theme (id)
-
 );
+
+CREATE UNIQUE INDEX unique_active_reservation
+    ON reservation (date, time_id, theme_id, deleted_at);
+CREATE UNIQUE INDEX unique_theme_name
+    ON theme (name, deleted_at);
+CREATE UNIQUE INDEX unique_time_start
+    ON reservation_time (start_at, deleted_at);

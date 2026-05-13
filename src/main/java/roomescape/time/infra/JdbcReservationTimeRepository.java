@@ -1,5 +1,6 @@
 package roomescape.time.infra;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,20 +41,26 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time ORDER BY start_at ASC";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE deleted_at IS NULL ORDER BY start_at ASC";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id=:id";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id=:id AND deleted_at IS NULL";
         List<ReservationTime> results = jdbcTemplate.query(sql, Map.of("id", id), rowMapper);
         return results.stream().findFirst();
     }
 
     @Override
-    public int deleteById(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id=:id";
-        return jdbcTemplate.update(sql, Map.of("id", id));
+    public boolean existsByStartAt(LocalTime time) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at=:startAt AND deleted_at IS NULL)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("startAt", time), Boolean.class));
+    }
+
+    @Override
+    public int delete(ReservationTime time) {
+        String sql = "UPDATE reservation_time SET deleted_at=:date WHERE id=:id";
+        return jdbcTemplate.update(sql, Map.of("id", time.getId(), "date", time.getDeletedAt()));
     }
 }

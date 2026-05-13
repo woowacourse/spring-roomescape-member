@@ -1,4 +1,4 @@
-package roomescape.theme.presentation.controller;
+package roomescape.theme.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,8 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addTheme(ThemeRequest.toEntity(request)));
+        ThemeResponse response = ThemeResponse.from(service.addTheme(request.toCommand()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")

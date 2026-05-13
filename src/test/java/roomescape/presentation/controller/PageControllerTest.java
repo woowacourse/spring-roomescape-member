@@ -6,14 +6,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.config.TestTimeConfig;
+import roomescape.presentation.PageController;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.application.ThemeService;
@@ -22,6 +26,7 @@ import roomescape.time.application.ReservationTimeService;
 import roomescape.time.domain.ReservationTime;
 
 @WebMvcTest(PageController.class)
+@Import(TestTimeConfig.class)
 class PageControllerTest {
 
     @Autowired

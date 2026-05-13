@@ -75,6 +75,27 @@
 
                 <button id="reservation-submit" class="button primary" type="submit" disabled>예약 확정</button>
             </form>
+            <hr style="margin: 2.5rem 0 1.5rem; border: none; border-top: 1px solid #e2e8f0;">
+            <div class="panel-header">
+                <p class="eyebrow">My Reservations</p>
+                <h2>내 예약 확인 및 취소</h2>
+            </div>
+
+            <div id="check-feedback" class="feedback" hidden></div>
+
+            <form id="check-form" class="stack-form" style="margin-bottom: 1rem;">
+                <label class="field">
+                    <span>예약자 이름</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input id="check-name" type="text" placeholder="조회할 이름을 입력하세요" required style="flex: 1;">
+                        <button type="submit" class="button secondary">조회</button>
+                    </div>
+                </label>
+            </form>
+
+            <div id="my-reservation-list" class="empty-state" style="padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                이름을 입력하고 조회 버튼을 눌러주세요.
+            </div>
         </div>
 
         <div class="panel">
