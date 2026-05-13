@@ -67,6 +67,20 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 사용자_이름으로_예약_조회_테스트() {
+        // given
+        reservationService.create("브라운", date, 1L, 1L);
+        reservationService.create("브라운", date, 2L, 1L);
+        reservationService.create("브라운", date, 3L, 1L);
+
+        // when
+        List<Reservation> result = reservationService.findByName("브라운");
+
+        // then
+        assertThat(result).hasSize(3);
+    }
+
+    @Test
     void 예약_삭제_테스트() {
         // given
         Reservation created = reservationService.create("브라운", date, 1L, 1L);

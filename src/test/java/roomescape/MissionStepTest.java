@@ -183,6 +183,35 @@ public class MissionStepTest {
     }
 
     @Test
+    void 예약변경_테스트() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-06");
+        params.put("timeId", "3");
+        params.put("themeId", "2");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
@@ -243,6 +272,16 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/my-reservation")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -516,6 +555,95 @@ public class MissionStepTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(409);
+    }
 
+    @Test
+    void 지난_날짜의_예약_삭제_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2020-08-05", 1, 1
+        );
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2025-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 지난_시간으로의_예약변경_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2030-08-05", 1, 1
+        );
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2000-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 지난_날짜의_예약_변경_요청_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2000-08-05", 1, 1
+        );
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2099-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 변경하려는_시간이_이미_예약되어있는_경우_409_에러_발생() {
+        // 1. 기존 예약
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2030-08-05", 1, 1
+        );
+
+        // 2. 변경할 기존 예약
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "대길", "2030-08-05", 2, 1
+        );
+
+        // 3. 예약 변경 (1번 예약과 중복)
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "대길");
+        params.put("date", "2030-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/2")
+                .then().log().all()
+                .statusCode(409);
     }
 }
