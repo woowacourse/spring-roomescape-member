@@ -35,4 +35,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode));
     }
+
+    @ExceptionHandler(DomainNotValidValueException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(DomainNotValidValueException e) {
+        String message = e.getMessage();
+        ErrorCode error = ErrorCode.INVALID_VALUE;
+        return ResponseEntity.status(error.status())
+                .body(ErrorResponse.of(error, message));
+    }
 }

@@ -1,7 +1,6 @@
 package roomescape.theme.domain;
 
-import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.DomainNotValidValueException;
 
 public class Theme {
 
@@ -22,20 +21,20 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new DomainNotValidValueException("테마 이름은 비어있을 수 없습니다.");
         }
     }
 
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new DomainNotValidValueException("테마 설명은 비어있을 수 없습니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT);
+            throw new DomainNotValidValueException("테마 썸네일은 비어있을 수 없습니다.");
         }
     }
 
