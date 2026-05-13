@@ -83,6 +83,22 @@ class ThemeControllerTest {
     }
 
     @Test
+    @Sql("/clear.sql")
+    void 테마_설명이_비어있으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "링",
+                        "description", "",
+                        "thumbnailUrl", "https://~"
+                ))
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("테마 설명을 입력해야 합니다."));
+    }
+
+    @Test
     @Sql(scripts = {
             "/clear.sql",
             "/popular-themes-test-data.sql"
@@ -108,5 +124,19 @@ class ThemeControllerTest {
                 .when().delete("/themes/999")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 해당_테마에_예약이_있으면_테마_삭제시_409를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", org.hamcrest.Matchers.is("해당 테마에 예약이 존재하여 삭제할 수 없습니다."));
     }
 }
