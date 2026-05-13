@@ -278,15 +278,17 @@
 
 **에러 코드 목록**
 
-| code                      | HTTP 상태 | 발생 상황                     |
-|---------------------------|---------|---------------------------|
-| `INVALID_INPUT`           | 400     | 필수값 누락, 잘못된 형식            |
-| `NOT_FOUND`               | 404     | 존재하지 않는 리소스 요청            |
-| `DUPLICATED_RESERVATION`  | 409     | 같은 날짜, 시간, 테마 예약이 이미 존재   |
-| `PAST_DATE_RESERVATION`   | 422     | 요청한 날짜 자체가 과거 (생성, 변경 공통) |
-| `PAST_RESERVATION_CANCEL` | 422     | 이미 지난 예약 취소 시도            |
-| `PAST_RESERVATION_UPDATE` | 422     | 이미 지난 예약 변경 시도            |
-| `INTERNAL_SERVER_ERROR`   | 500     | 예상치 못한 서버 오류 (사용자 노출 X)   |
+| code                      | HTTP 상태 | 발생 상황                                        |
+|---------------------------|---------|----------------------------------------------|
+| `INVALID_REQUEST_FORMAT`  | 400     | JSON 파싱 실패, URL 경로 변수 타입 오류                  |
+| `VALIDATION_FAILED`       | 400     | 필수값 누락, 필드 유효성 검증 실패 (`@NotBlank`, `@NotNull` 등) |
+| `NOT_FOUND`               | 404     | 존재하지 않는 리소스 요청                               |
+| `FORBIDDEN`               | 403     | 접근 권한 없음                                     |
+| `DUPLICATED_RESERVATION`  | 409     | 같은 날짜, 시간, 테마 예약이 이미 존재                      |
+| `PAST_DATE_RESERVATION`   | 422     | 요청한 날짜 자체가 과거 (생성, 변경 공통)                    |
+| `PAST_RESERVATION_CANCEL` | 422     | 이미 지난 예약 취소 시도                               |
+| `PAST_RESERVATION_UPDATE` | 422     | 이미 지난 예약 변경 시도                               |
+| `INTERNAL_SERVER_ERROR`   | 500     | 예상치 못한 서버 오류 (사용자 노출 X)                      |
 
 ---
 
