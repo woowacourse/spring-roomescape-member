@@ -21,7 +21,7 @@ class ReservationControllerTest {
     void 예약을_추가한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
-        params.put("date", "2026-05-03");
+        params.put("date", "2099-05-03");
         params.put("timeId", 1L);
         params.put("themeId", 1L);
 
@@ -32,7 +32,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("name", is("밀란"))
-                .body("date", is("2026-05-03"))
+                .body("date", is("2099-05-03"))
                 .body("time.id", is(1))
                 .body("theme.id", is(1));
     }
@@ -41,7 +41,7 @@ class ReservationControllerTest {
     void 예약_목록을_조회한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
-        params.put("date", "2026-05-03");
+        params.put("date", "2099-05-03");
         params.put("timeId", 1L);
         params.put("themeId", 1L);
 
@@ -57,7 +57,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("name", hasItem("밀란"))
-                .body("date", hasItem("2026-05-03"))
+                .body("date", hasItem("2099-05-03"))
                 .body("time.id", hasItem(1));
     }
 
@@ -65,7 +65,7 @@ class ReservationControllerTest {
     void 예약을_삭제한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
-        params.put("date", "2026-05-03");
+        params.put("date", "2099-05-03");
         params.put("timeId", 1L);
         params.put("themeId", 1L);
 
@@ -102,7 +102,7 @@ class ReservationControllerTest {
     void 날짜_시간_테마가_같은_예약을_등록요청하면_409를_응답한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
-        params.put("date", "2026-05-06");
+        params.put("date", "2099-05-06");
         params.put("timeId", 1L);
         params.put("themeId", 1L);
 
@@ -126,7 +126,7 @@ class ReservationControllerTest {
     void 예약을_추가할_때_이름이_1자에서_10자이내가_아니면_400을_응답한다(String name) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
 
         RestAssured.given().log().all()

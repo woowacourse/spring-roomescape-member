@@ -1,4 +1,7 @@
 DELETE
+FROM reservation;
+
+DELETE
 FROM theme;
 
 ALTER TABLE theme

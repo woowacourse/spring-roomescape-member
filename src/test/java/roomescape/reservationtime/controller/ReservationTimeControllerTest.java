@@ -29,7 +29,7 @@ class ReservationTimeControllerTest {
                 .body("""
                         {
                           "name": "봉구스",
-                          "date": "2026-05-06",
+                          "date": "2099-05-06",
                           "timeId": 1,
                           "themeId": 1
                         }
@@ -39,7 +39,7 @@ class ReservationTimeControllerTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .queryParam("date", "2026-05-06")
+                .queryParam("date", "2099-05-06")
                 .queryParam("themeId", 1)
                 .when().get("/times")
                 .then().log().all()
@@ -50,7 +50,7 @@ class ReservationTimeControllerTest {
     @Test
     void 날짜와_테마_중_하나만_있으면_400을_응답한다() {
         RestAssured.given().log().all()
-                .queryParam("date", "2026-05-06")
+                .queryParam("date", "2099-05-06")
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(400);

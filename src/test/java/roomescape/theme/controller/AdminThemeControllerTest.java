@@ -54,4 +54,26 @@ class AdminThemeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @Sql("/create_reservation_time.sql")
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_409를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "봉구스");
+        params.put("date", "2099-05-06");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }
