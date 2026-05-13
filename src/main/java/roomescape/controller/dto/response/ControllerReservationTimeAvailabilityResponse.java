@@ -1,6 +1,6 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.response;
 
-import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
+import roomescape.service.dto.response.ServiceReservationTimeAvailabilityResponse;
 
 public record ControllerReservationTimeAvailabilityResponse(
         ControllerReservationTimeResponse time,

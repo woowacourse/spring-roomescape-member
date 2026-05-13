@@ -21,10 +21,10 @@ import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.ServiceReservationRequest;
-import roomescape.service.dto.ServiceReservationResponse;
-import roomescape.service.dto.ServiceReservationTimeResponse;
-import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.service.dto.request.ServiceReservationRequest;
+import roomescape.service.dto.response.ServiceReservationResponse;
+import roomescape.service.dto.response.ServiceReservationTimeResponse;
+import roomescape.service.dto.response.ServiceThemeResponse;
 
 public class ReservationServiceTest {
 

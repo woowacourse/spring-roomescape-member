@@ -1,13 +1,11 @@
-package roomescape.service.dto;
+package roomescape.controller.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.service.dto.request.ServiceReservationRequest;
 
-public record ServiceReservationRequest(
+public record ControllerReservationRequest(
         @NotBlank(message = "[ERROR] 이름은 비어 있을 수 없습니다.")
         String name,
 
@@ -20,7 +18,7 @@ public record ServiceReservationRequest(
         @NotNull(message = "[ERROR] 테마의 id는 비어 있을 수 없습니다.")
         Long themeId
 ) {
-    public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(name, date, reservationTime, theme);
+    public ServiceReservationRequest toServiceReservationRequest() {
+        return new ServiceReservationRequest(name, date, timeId, themeId);
     }
 }

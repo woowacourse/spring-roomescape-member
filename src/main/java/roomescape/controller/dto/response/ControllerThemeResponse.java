@@ -1,6 +1,6 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.response;
 
-import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.service.dto.response.ServiceThemeResponse;
 
 public record ControllerThemeResponse(
         Long id,

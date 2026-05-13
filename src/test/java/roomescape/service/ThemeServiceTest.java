@@ -25,8 +25,8 @@ import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.ServiceThemeRequest;
-import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.service.dto.request.ServiceThemeRequest;
+import roomescape.service.dto.response.ServiceThemeResponse;
 
 public class ThemeServiceTest {
 
