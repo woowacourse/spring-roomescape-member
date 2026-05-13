@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.dto.ReservationCreateData;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -57,12 +56,10 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         final Reservation reservation = Reservation.create(
-                new ReservationCreateData(
-                        data.name(),
-                        data.date(),
-                        reservationTime,
-                        theme
-                )
+                data.name(),
+                data.date(),
+                reservationTime,
+                theme
         );
 
         final Reservation savedReservation = reservationRepository.save(reservation);

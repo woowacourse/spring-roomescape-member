@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import lombok.Getter;
-import roomescape.domain.dto.ThemeCreateData;
 
 @Getter
 public class Theme {
@@ -18,12 +17,12 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static Theme create(final ThemeCreateData data) {
+    public static Theme create(final String name, final String description, final String thumbnailUrl) {
         return new Theme(
                 null,
-                new ThemeName(data.name()),
-                data.description(),
-                data.thumbnailUrl()
+                new ThemeName(name),
+                description,
+                thumbnailUrl
         );
     }
 
