@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.dao.dto.ReservationTimeAvailability;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -92,18 +94,19 @@ class ReservationTimeDaoTest {
         saveReservation("러로", date.plusDays(1), otherDateReservationTime, savedTheme);
 
         // when
-        List<ReservationTime> reservationTimesOnCondition = timeDao.findByThemeIdAndDate(savedTheme.getId(), date);
+        List<ReservationTimeAvailability> reservationTimesOnCondition = timeDao.findAvailabilitiesByThemeIdAndDate(savedTheme.getId(), date);
 
         // then
-        assertAll(
-                () -> assertThat(reservationTimesOnCondition).hasSize(1),
-                () -> assertThat(reservationTimesOnCondition)
-                        .extracting(ReservationTime::getId)
-                        .containsExactly(savedReservationTime.getId()),
-                () -> assertThat(reservationTimesOnCondition)
-                        .extracting(ReservationTime::getId)
-                        .doesNotContain(otherReservationTime.getId(), otherDateReservationTime.getId())
-        );
+        assertThat(reservationTimesOnCondition)
+                .extracting(
+                        ReservationTimeAvailability::startAt,
+                        ReservationTimeAvailability::reserved
+                )
+                .containsExactly(
+                        tuple(LocalTime.of(10, 0), true),
+                        tuple(LocalTime.of(11, 0), false),
+                        tuple(LocalTime.of(12, 0), false)
+                );
     }
 
     @Test
@@ -116,7 +119,7 @@ class ReservationTimeDaoTest {
 
         // then
         List<ReservationTime> reservationTimes = timeDao.findAll();
-        assertThat(reservationTimes).hasSize(0);
+        assertThat(reservationTimes).isEmpty();
     }
 
     private ReservationTime saveReservationTime(LocalTime startAt) {

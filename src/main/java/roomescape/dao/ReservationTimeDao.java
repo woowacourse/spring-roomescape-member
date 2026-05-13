@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dao.dto.ReservationTimeAvailability;
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -19,6 +20,13 @@ public class ReservationTimeDao {
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getTime("start_at").toLocalTime()
+            );
+
+    private static final RowMapper<ReservationTimeAvailability> TIME_AVAILABILITY_ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTimeAvailability(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime(),
+                    resultSet.getBoolean("reserved")
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -63,18 +71,24 @@ public class ReservationTimeDao {
         }
     }
 
-    public List<ReservationTime> findByThemeIdAndDate(long themeId, LocalDate date) {
+    public List<ReservationTimeAvailability> findAvailabilitiesByThemeIdAndDate(long themeId, LocalDate date) {
         String sql = """
                 SELECT rt.id,
-                       rt.start_at
+                       rt.start_at,
+                       CASE
+                           WHEN r.id IS NULL THEN false
+                           ELSE true
+                       END AS reserved
                 FROM reservation_time AS rt
-                INNER JOIN reservation AS r
+                LEFT JOIN reservation AS r
                     ON r.time_id = rt.id
-                WHERE r.theme_id = ?
-                  AND r.date = ?
+                   AND r.theme_id = ?
+                   AND r.date = ?
+                ORDER BY rt.start_at
                 """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, themeId, date);
+        return jdbcTemplate.query(sql, TIME_AVAILABILITY_ROW_MAPPER, themeId, date);
     }
+
 
     public int delete(long id) {
         String sql = """

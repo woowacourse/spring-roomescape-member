@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
                 .extracting(
                         AvailableReservationTimeResponse::id,
                         AvailableReservationTimeResponse::startAt,
-                        AvailableReservationTimeResponse::isReserved
+                        AvailableReservationTimeResponse::reserved
                 )
                 .containsExactlyInAnyOrder(
                         tuple(reservedTime.getId(), reservedTime.getStartAt(), true),
