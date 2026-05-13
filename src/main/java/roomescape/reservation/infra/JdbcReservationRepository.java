@@ -51,8 +51,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) "
-                + "VALUES(:name, :date, :timeId, :themeId)";
+        String sql = "INSERT INTO reservation(name, date, time_id, theme_id, status) "
+                + "VALUES(:name, :date, :timeId, :themeId, :status)";
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
