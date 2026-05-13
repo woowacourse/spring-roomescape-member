@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -9,8 +9,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.DuplicationException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.BadRequestCode;
 import roomescape.exception.code.ErrorCode;
+import roomescape.exception.code.NotFoundCode;
 import roomescape.exception.code.ServerErrorCode;
 import roomescape.response.ErrorResponse;
 
@@ -64,6 +70,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
         LOGGER.warn("요청 본문 파싱 실패: {} {}: {}", request.getMethod(), request.getRequestURI(), e.getMostSpecificCause().getMessage());
         BadRequestCode code = BadRequestCode.VALIDATION_FAILED;
+        return toResponse(code, request, code.getMessage());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e, HttpServletRequest request) {
+        NotFoundCode code = NotFoundCode.RESOURCE_NOT_FOUND;
         return toResponse(code, request, code.getMessage());
     }
 
