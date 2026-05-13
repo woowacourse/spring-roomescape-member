@@ -86,6 +86,12 @@ public class ReservationRepository {
         return row != null && row > 0;
     }
 
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return row != null && row > 0;
+    }
+
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id          AS reservation_id,

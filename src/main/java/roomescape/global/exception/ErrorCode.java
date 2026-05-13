@@ -11,6 +11,9 @@ public enum ErrorCode {
 
     RESERVATION_DUPLICATE(HttpStatus.CONFLICT, "이미 예약된 일정입니다."),
     RESERVATION_PAST_DATETIME(HttpStatus.BAD_REQUEST, "과거 날짜, 시간으로 예약할 수 없습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
+    RESERVATION_FORBIDDEN(HttpStatus.FORBIDDEN, "예약을 변경 및 취소할 권한이 없습니다."),
+    RESERVATION_EXPIRED(HttpStatus.BAD_REQUEST, "이미 시간이 지난 예약은 변경하거나 취소할 수 없습니다."),
 
     RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다."),
     RESERVATION_TIME_IN_USE(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다."),

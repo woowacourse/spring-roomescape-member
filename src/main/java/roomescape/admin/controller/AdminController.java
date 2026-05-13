@@ -41,7 +41,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTheme(@PathVariable("id") Long id) {
         themeService.removeTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -55,7 +55,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> removeTime(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTime(@PathVariable("id") Long id) {
         reservationTimeService.removeTime(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -67,5 +67,11 @@ public class AdminController {
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
+        reservationService.deleteReservation(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

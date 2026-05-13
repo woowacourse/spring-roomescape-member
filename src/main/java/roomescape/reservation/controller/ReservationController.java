@@ -33,12 +33,6 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.getReservation(id);
@@ -53,5 +47,14 @@ public class ReservationController {
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelUserReservation(
+            @PathVariable("id") Long id,
+            @RequestParam("name") String name
+    ) {
+        reservationService.cancelUserReservation(id, name);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

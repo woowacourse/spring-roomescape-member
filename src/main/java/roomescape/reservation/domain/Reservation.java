@@ -5,6 +5,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -47,6 +48,10 @@ public class Reservation {
         return theme;
     }
 
+    public boolean isOwnedBy(String name) {
+        return this.name.equals(name);
+    }
+
     private void validateTheme(Theme theme) {
         if (theme == null) {
             throw new DomainNotValidValueException("예약 테마는 비어있을 수 없습니다.");
@@ -69,5 +74,9 @@ public class Reservation {
         if (name == null || name.isBlank()) {
             throw new DomainNotValidValueException("예약자 이름은 비어있을 수 없습니다.");
         }
+    }
+
+    public boolean isExpired(LocalDateTime dateTime) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(dateTime);
     }
 }

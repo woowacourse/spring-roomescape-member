@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -51,14 +50,32 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservation(Long id) {
-        if (reservationRepository.deleteById(id) == 0) {
-            throw new ReservationNotFoundException(id);
+        if (!reservationRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
+        reservationRepository.deleteById(id);
     }
 
     public Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    public List<Reservation> getUserReservations(String name) {
+        return reservationRepository.findByName(name);
+    }
+
+    @Transactional
+    public void cancelUserReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        if (!reservation.isOwnedBy(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+        if (reservation.isExpired(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
+        }
+        reservationRepository.deleteById(id);
     }
 
     private void validatePastDateTime(LocalDate date, ReservationTime time) {
@@ -66,9 +83,5 @@ public class ReservationService {
         if (request.isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.RESERVATION_PAST_DATETIME);
         }
-    }
-
-    public List<Reservation> getUserReservations(String name) {
-        return reservationRepository.findByName(name);
     }
 }
