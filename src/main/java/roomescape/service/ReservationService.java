@@ -68,7 +68,7 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, time.getId(), theme.getId())) {
+        if (reservationRepository.existsReservedReservation(date, time.getId(), theme.getId())) {
             throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", date, time.getStartAt());
         }
     }

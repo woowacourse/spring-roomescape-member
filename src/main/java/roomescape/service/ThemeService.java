@@ -37,7 +37,7 @@ public class ThemeService {
 
     @Transactional
     public void remove(Long id) {
-        Theme theme = themeRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
+        Theme theme = themeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
 
         theme.deactivate();
         themeRepository.update(theme);
@@ -48,7 +48,7 @@ public class ThemeService {
             throw new EntityNotFoundException("존재하지 않는 테마 정보입니다.");
         }
 
-        Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByThemeIdAndDate(id, date);
+        Set<Long> reservedTimeIds = reservationRepository.findUnavailableTimeIdsByThemeIdAndDate(id, date);
 
         List<ThemeTimesResponse> responses = new ArrayList<>();
         reservationTimeRepository.findTimeSlotsForReservationStatus().forEach(

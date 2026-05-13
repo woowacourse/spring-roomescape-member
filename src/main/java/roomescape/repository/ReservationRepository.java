@@ -16,11 +16,11 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsReservedReservation(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByPaging(int page, int size);
 
-    Set<Long> findReservedTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
+    Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
 
     List<Reservation> findAllByUserName(String name);
 }

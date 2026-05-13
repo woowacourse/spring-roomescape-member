@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 
@@ -60,12 +61,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsReservedReservation(LocalDate date, Long timeId, Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getDate().equals(date)
                                 && reservation.getTime().getId().equals(timeId)
                                 && reservation.getTheme().getId().equals(themeId)
+                                && reservation.getStatus().equals(ReservationStatus.RESERVED)
                 );
     }
 
@@ -81,8 +83,9 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Set<Long> findReservedTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
+    public Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
         return reservations.stream()
+                .filter(reservation -> reservation.getStatus().equals(ReservationStatus.RESERVED))
                 .filter(reservation -> reservation.getTheme().getId().equals(themeId))
                 .filter(reservation -> reservation.getDate().equals(date))
                 .map(reservation -> reservation.getTime().getId())

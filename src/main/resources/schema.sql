@@ -10,22 +10,25 @@ CREATE TABLE theme
     CONSTRAINT uk_active_name UNIQUE (active_name)
 );
 
-CREATE TABLE reservation_time (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at TIME         NOT NULL,
+CREATE TABLE reservation_time
+(
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    start_at TIME   NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT uk_reservation_time_start_at UNIQUE (start_at)
 );
 
-CREATE TABLE reservation (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(20) NOT NULL,
-    date    DATE         NOT NULL,
-    theme_id BIGINT,
-    time_id BIGINT,
-    status VARCHAR(20) NOT NULL,
+CREATE TABLE reservation
+(
+    id          BIGINT      NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(20) NOT NULL,
+    date        DATE        NOT NULL,
+    theme_id    BIGINT,
+    time_id     BIGINT,
+    status      VARCHAR(20) NOT NULL,
+    active_name VARCHAR(20) AS (CASE WHEN status = 'RESERVED' THEN name ELSE NULL END),
     PRIMARY KEY (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    CONSTRAINT uk_reservation_date_theme_time UNIQUE (date, theme_id, time_id)
+    CONSTRAINT uk_reservation_date_theme_time_status UNIQUE (date, theme_id, time_id, status)
 );
