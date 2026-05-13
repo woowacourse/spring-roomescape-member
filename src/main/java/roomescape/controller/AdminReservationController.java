@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +35,7 @@ public class AdminReservationController {
     }
 
     @PostMapping()
-    public ReservationResponse create(@RequestBody ReservationRequest request) {
+    public ReservationResponse create(@RequestBody @Valid ReservationRequest request) {
         ReservationResult saved = reservationService.create(request.toCommand());
         return ReservationResponse.from(saved);
     }

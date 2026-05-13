@@ -1,37 +1,21 @@
 package roomescape.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
-import roomescape.controller.exception.InvalidRequestException;
 import roomescape.service.dto.ReservationCreateCommand;
 
 public record ReservationRequest(
-        String name,
+        @NotBlank(message = "예약자 이름은 필수입니다") String name,
+        @NotNull(message = "예약 날짜는 필수입니다")
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
-        Long timeId,
-        Long themeId
+        @NotNull(message = "시간 ID는 필수입니다")
+        @Positive(message = "시간 ID는 1 이상이여야 합니다") Long timeId,
+        @NotNull(message = "테마 ID는 필수입니다")
+        @Positive(message = "테마 ID는 1 이상이여야 합니다") Long themeId
 ) {
-    public ReservationRequest {
-        if (name == null || name.isBlank()) {
-            throw new InvalidRequestException("예약자 이름은 필수입니다");
-        }
-        if (date == null) {
-            throw new InvalidRequestException("예약 날짜는 필수입니다");
-        }
-        if (timeId == null) {
-            throw new InvalidRequestException("시간 ID는 필수입니다");
-        }
-        if (timeId <= 0) {
-            throw new InvalidRequestException("시간 ID는 1 이상이여야 합니다");
-        }
-        if (themeId == null) {
-            throw new InvalidRequestException("테마 ID는 필수입니다");
-        }
-        if (themeId <= 0) {
-            throw new InvalidRequestException("테마 ID는 1 이상이여야 합니다");
-        }
-    }
-
     public ReservationCreateCommand toCommand() {
         return new ReservationCreateCommand(name, date, timeId, themeId);
     }

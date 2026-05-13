@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +35,7 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ThemeResponse create(@RequestBody ThemeRequest request) {
+    public ThemeResponse create(@RequestBody @Valid ThemeRequest request) {
         ThemeResult saved = themeService.create(request.toCommand());
         return ThemeResponse.from(saved);
     }
