@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.repository.TimeRepository;
@@ -12,9 +15,11 @@ import roomescape.time.repository.TimeRepository;
 @Service
 public class TimeServiceImpl implements TimeService {
   private final TimeRepository timeRepository;
+  private final ReservationRepository reservationRepository;
 
-  public TimeServiceImpl(TimeRepository timeRepository) {
+  public TimeServiceImpl(TimeRepository timeRepository, ReservationRepository reservationRepository) {
     this.timeRepository = timeRepository;
+    this.reservationRepository = reservationRepository;
   }
 
   @Override
@@ -46,10 +51,12 @@ public class TimeServiceImpl implements TimeService {
 
   @Override
   public void deleteById(Long id) {
-    boolean deleted = timeRepository.deleteById(id);
-    if (!deleted) {
+    if (!timeRepository.existsById(id)) {
       throw new TimeNotFoundException(id);
     }
+    if (reservationRepository.existsByTimeId(id)) {
+      throw new RoomescapeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
+    }
+    timeRepository.deleteById(id);
   }
-
 }
