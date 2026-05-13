@@ -11,6 +11,9 @@ public class Theme {
     private final String thumbnailUrl;
 
     private Theme(final Long id, final Name name, final String description, final String thumbnailUrl) {
+        validateDescription(description);
+        validateThumbnailUrl(thumbnailUrl);
+
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,5 +45,17 @@ public class Theme {
 
     public String getName() {
         return name.getName();
+    }
+
+    private void validateDescription(final String description) {
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("테마 설명을 입력해야 합니다.");
+        }
+    }
+
+    private void validateThumbnailUrl(final String thumbnailUrl) {
+        if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
+            throw new IllegalArgumentException("썸네일 URL을 입력해야 합니다.");
+        }
     }
 }
