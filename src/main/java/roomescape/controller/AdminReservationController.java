@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.Positive;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import roomescape.service.dto.ReservationResult;
 
 @RequestMapping("/admin/reservations")
 @RestController
+@Validated
 public class AdminReservationController {
 
     private final AdminReservationService reservationService;
@@ -37,7 +40,9 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable
+                       @Positive(message = "id는 0보다 커야합니다.")
+                       Long id) {
         reservationService.delete(id);
     }
 }
