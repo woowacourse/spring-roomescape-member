@@ -4,6 +4,7 @@ import java.net.URI;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import roomescape.global.exception.InactiveException;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -63,5 +64,11 @@ public class Theme {
             throw new IllegalArgumentException("이미 비활성화 된 테마입니다.");
         }
         this.isActive = false;
+    }
+
+    public void validateInactive() {
+        if (!isActive()) {
+            throw new InactiveException("비활성화 된 테마는 예약할 수 없습니다.");
+        }
     }
 }

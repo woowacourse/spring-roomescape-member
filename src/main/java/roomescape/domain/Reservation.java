@@ -2,8 +2,10 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.global.exception.ForbiddenException;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -59,6 +61,12 @@ public class Reservation {
     private static void validateDateTime(LocalDate date, ReservationTime time) {
         if (date == null || time == null) {
             throw new IllegalArgumentException("예약 날짜 및 시간 정보는 비어있을 수 없습니다.");
+        }
+    }
+
+    public void validateOwner(String name) {
+        if (!Objects.equals(this.name, name)) {
+            throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
         }
     }
 

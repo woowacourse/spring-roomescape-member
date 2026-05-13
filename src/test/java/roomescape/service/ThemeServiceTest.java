@@ -5,50 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.fixture.ReservationFixture;
-import roomescape.domain.fixture.ReservationTimeFixture;
-import roomescape.domain.fixture.ThemeFixture;
 import roomescape.global.exception.DuplicateEntityException;
-import roomescape.global.exception.EntityNotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.fake.FakeReservationRepository;
-import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
 import roomescape.web.dto.theme.ThemeRequest;
 import roomescape.web.dto.theme.ThemeResponse;
-import roomescape.web.dto.theme.ThemeTimesResponse;
 
 class ThemeServiceTest {
 
     private ThemeRepository themeRepository;
-    private ReservationRepository reservationRepository;
-    private ReservationTimeRepository reservationTimeRepository;
     private ThemeService themeService;
-
-    static Stream<Arguments> provideReservationStatusScenarios() {
-        LocalDate today = LocalDate.now();
-        return Stream.of(Arguments.of(today.minusDays(7), false, false), Arguments.of(today, false, true),
-                Arguments.of(today.plusDays(7), true, true));
-    }
 
     @BeforeEach
     void setUp() {
         this.themeRepository = new FakeThemeRepository();
-        this.reservationRepository = new FakeReservationRepository();
-        this.reservationTimeRepository = new FakeReservationTimeRepository();
-        this.themeService = new ThemeService(themeRepository, reservationRepository, reservationTimeRepository);
+        this.themeService = new ThemeService(themeRepository);
     }
 
     @Test
@@ -120,76 +94,4 @@ class ThemeServiceTest {
         assertThat(responses).extracting(ThemeResponse::id).doesNotContain(second.id(), inactive.id());
     }
 
-    @ParameterizedTest
-    @MethodSource("provideReservationStatusScenarios")
-    void 테마별_예약_가능한_시간_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime, boolean expectedForLateTime) {
-        // given
-        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        for (int hour = 0; hour <= 23; hour++) {
-            reservationTimeRepository.save(
-                    ReservationTimeFixture.createReservationTimeWithId(null, LocalTime.of(hour, 0)));
-        }
-        LocalTime nowTime = LocalTime.now();
-
-        // when
-        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
-
-        // then
-        assertThat(response).filteredOn(time -> time.startAt().isBefore(nowTime))
-                .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForEarlyTime));
-
-        assertThat(response).filteredOn(time -> time.startAt().isAfter(nowTime))
-                .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForLateTime));
-    }
-
-    @Test
-    void 테마별_예약_가능한_시간_조회_시_이미_예약된_시간은_예약_불가능하다() {
-        // given
-        LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime reservedTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
-        reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme, reservedTime));
-
-        // when
-        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
-
-        // then
-        assertThat(response).filteredOn(time -> time.id().equals(reservedTime.getId())).singleElement()
-                .extracting(ThemeTimesResponse::isReservable).isEqualTo(false);
-    }
-
-    @Test
-    void 테마별_예약_가능한_시간_조회_시_비활성화된_시간은_예약_불가능하다() {
-        // given
-        LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime activeTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0));
-        inactiveTime.deactivate();
-        ReservationTime savedInactiveTime = reservationTimeRepository.save(inactiveTime);
-
-        // when
-        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
-
-        // then
-        assertThat(response).filteredOn(time -> time.id().equals(activeTime.getId())).singleElement()
-                .extracting(ThemeTimesResponse::isReservable).isEqualTo(true);
-        assertThat(response).filteredOn(time -> time.id().equals(savedInactiveTime.getId())).singleElement()
-                .extracting(ThemeTimesResponse::isReservable).isEqualTo(false);
-    }
-
-    @Test
-    void 존재하지_않는_테마_정보로_예약_가능한_시간_조회_시_예외가_발생한다() {
-        // given
-        Long id = 999L;
-        LocalDate date = LocalDate.now();
-
-        // when & then
-        assertThatThrownBy(() -> themeService.getThemeReservationStatus(id, date)).isInstanceOf(
-                EntityNotFoundException.class).hasMessage("존재하지 않는 테마 정보입니다.");
-    }
 }

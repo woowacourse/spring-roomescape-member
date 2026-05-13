@@ -7,8 +7,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
@@ -31,6 +35,7 @@ import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
+import roomescape.web.dto.theme.ReservationTimeStatusResponse;
 import roomescape.web.dto.theme.ThemeResponse;
 
 class ReservationServiceTest {
@@ -39,6 +44,12 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
     private ReservationService reservationService;
+
+    static Stream<Arguments> provideReservationStatusScenarios() {
+        LocalDate today = LocalDate.now();
+        return Stream.of(Arguments.of(today.minusDays(7), false, false), Arguments.of(today, false, true),
+                Arguments.of(today.plusDays(7), true, true));
+    }
 
     @BeforeEach
     void setUp() {
@@ -201,6 +212,86 @@ class ReservationServiceTest {
 
         // then
         assertThatCode(() -> reservationService.reserve(request)).doesNotThrowAnyException();
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideReservationStatusScenarios")
+    void 테마별_예약_가능한_시간_조회_시_시점에_따라_상태를_처리한다(
+            LocalDate date,
+            boolean expectedForEarlyTime,
+            boolean expectedForLateTime
+    ) {
+        // given
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        for (int hour = 0; hour <= 23; hour++) {
+            reservationTimeRepository.save(
+                    ReservationTimeFixture.createReservationTimeWithId(null, LocalTime.of(hour, 0)));
+        }
+        LocalTime nowTime = LocalTime.now();
+
+        // when
+        List<ReservationTimeStatusResponse> response = reservationService.getReservationStatusByTheme(theme.getId(),
+                date);
+
+        // then
+        assertThat(response).filteredOn(time -> time.startAt().isBefore(nowTime))
+                .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForEarlyTime));
+
+        assertThat(response).filteredOn(time -> time.startAt().isAfter(nowTime))
+                .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForLateTime));
+    }
+
+    @Test
+    void 테마별_예약_가능한_시간_조회_시_이미_예약된_시간은_예약_불가능하다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime reservedTime = reservationTimeRepository.save(
+                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme, reservedTime));
+
+        // when
+        List<ReservationTimeStatusResponse> response = reservationService.getReservationStatusByTheme(theme.getId(),
+                date);
+
+        // then
+        assertThat(response).filteredOn(time -> time.id().equals(reservedTime.getId())).singleElement()
+                .extracting(ReservationTimeStatusResponse::isReservable).isEqualTo(false);
+    }
+
+    @Test
+    void 테마별_예약_가능한_시간_조회_시_비활성화된_시간은_예약_불가능하다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime activeTime = reservationTimeRepository.save(
+                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0));
+        inactiveTime.deactivate();
+        ReservationTime savedInactiveTime = reservationTimeRepository.save(inactiveTime);
+
+        // when
+        List<ReservationTimeStatusResponse> response = reservationService.getReservationStatusByTheme(theme.getId(),
+                date);
+
+        // then
+        assertThat(response).filteredOn(time -> time.id().equals(activeTime.getId())).singleElement()
+                .extracting(ReservationTimeStatusResponse::isReservable).isEqualTo(true);
+        assertThat(response).filteredOn(time -> time.id().equals(savedInactiveTime.getId())).singleElement()
+                .extracting(ReservationTimeStatusResponse::isReservable).isEqualTo(false);
+    }
+
+    @Test
+    void 존재하지_않는_테마_정보로_예약_가능한_시간_조회_시_예외가_발생한다() {
+        // given
+        Long id = 999L;
+        LocalDate date = LocalDate.now();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.getReservationStatusByTheme(id, date)).isInstanceOf(
+                EntityNotFoundException.class).hasMessage("존재하지 않는 테마 정보입니다.");
     }
 
     @Test

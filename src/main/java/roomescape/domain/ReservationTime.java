@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import roomescape.global.exception.InactiveException;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -35,6 +36,12 @@ public class ReservationTime {
 
     public boolean isAvailableAt(LocalDate date) {
         return !toReservationDateTime(date).isBefore(LocalDateTime.now());
+    }
+
+    public void validateInactiveTime() {
+        if (!isActive()) {
+            throw new InactiveException("비활성화 된 시간대는 예약할 수 없습니다.");
+        }
     }
 
     public void deactivate() {

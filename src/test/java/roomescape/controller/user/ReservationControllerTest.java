@@ -35,6 +35,8 @@ import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservation.ReservationResponses;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
+import roomescape.web.dto.theme.ReservationTimeStatusResponse;
+import roomescape.web.dto.theme.ReservationTimeStatusResponses;
 import roomescape.web.dto.theme.ThemeResponse;
 
 @WebMvcTest(ReservationController.class)
@@ -91,6 +93,52 @@ class ReservationControllerTest extends BaseControllerUnitTest {
                 });
 
         assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
+    void 테마_시간대_조회_요청에_성공하면_200_OK와_정상_응답이_반환된다() {
+        // given
+        ReservationTimeStatusResponses expected = new ReservationTimeStatusResponses(
+                List.of(
+                        new ReservationTimeStatusResponse(1L, LocalTime.of(10, 0), true),
+                        new ReservationTimeStatusResponse(2L, LocalTime.of(11, 0), true)
+                )
+        );
+        when(reservationService.getReservationStatusByTheme(anyLong(), any(LocalDate.class))).thenReturn(
+                expected.responses());
+
+        // when & then
+        ReservationTimeStatusResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("date", "2026-05-06")
+                .when().get("/api/reservations/themes/1/times")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract().as(new TypeRef<>() {
+                });
+
+        assertThat(response).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {-1, 0})
+    void 테마_조회_요청_시_테마_식별자가_양수가_아니라면_400_BAD_REQUEST를_응답한다(Long invalidThemeId) {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("date", "2026-05-06")
+                .when().get("/api/reservations/themes/" + invalidThemeId + "/times")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("테마 조회 식별자는 양수여야 합니다."));
+    }
+
+    @Test
+    void 테마_시간대_조회_요청_시_날짜가_없으면_400_BAD_REQUEST를_응답한다() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().get("/api/reservations/themes/1/times")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("date 파라미터가 누락 되었습니다."));
     }
 
     @Test

@@ -3,6 +3,7 @@ package roomescape.web.controller.user;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.net.URI;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservation.ReservationResponses;
+import roomescape.web.dto.theme.ReservationTimeStatusResponses;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -43,6 +45,18 @@ public class ReservationController {
         ReservationResponses response = new ReservationResponses(reservationService.getReservationsByUser(name));
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("themes/{id}/times")
+    public ResponseEntity<ReservationTimeStatusResponses> getReservationStatusByTheme(
+            @PathVariable
+            @Positive(message = "테마 조회 식별자는 양수여야 합니다.") Long id,
+            @RequestParam LocalDate date
+    ) {
+        ReservationTimeStatusResponses response = new ReservationTimeStatusResponses(
+                reservationService.getReservationStatusByTheme(id, date));
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PatchMapping("/{id}/cancel")

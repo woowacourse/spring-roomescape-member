@@ -37,10 +37,10 @@ public class ReservationTimeService {
         ReservationTime time = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
 
-        time.deactivate();
         if (reservationRepository.existsByTimeId(id)) {
             throw new ForbiddenException("예약이 존재하는 시간대는 삭제할 수 없습니다.");
         }
+        time.deactivate();
         reservationTimeRepository.update(time);
     }
 

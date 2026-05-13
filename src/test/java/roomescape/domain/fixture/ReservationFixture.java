@@ -42,7 +42,7 @@ public final class ReservationFixture {
                 Arguments.of(
                         LocalDate.now(),
                         ThemeFixture.createDefaultTheme(),
-                        new ReservationTime(LocalTime.now().minusHours(1)),
+                        new ReservationTime(LocalTime.MIN),
                         "현재보다 이전 시간대로 예약할 수 없습니다."
                 )
         );
