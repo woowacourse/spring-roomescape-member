@@ -49,14 +49,32 @@ public class GlobalExceptionHandler {
                 .orElse("잘못된 요청입니다.");
     }
 
-    @ExceptionHandler({
-            MissingServletRequestParameterException.class,
-            MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class
-    })
-    public ResponseEntity<ErrorResponse> handleBadRequestException(Exception exception) {
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException exception
+    ) {
+        String message = exception.getParameterName() + "은(는) 필수 요청 파라미터입니다.";
+
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("잘못된 요청입니다."));
+                .body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException exception
+    ) {
+        String message = exception.getName() + " 입력값 형식이 올바르지 않습니다.";
+
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("요청 본문 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(InvalidRequestException.class)
