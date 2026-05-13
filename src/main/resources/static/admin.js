@@ -82,15 +82,15 @@ async function deleteReservation(id) {
 // ===== Times =====
 async function loadTimes() {
   const tbody = $('admin-times-tbody');
-  tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
   const data = await api.get('/times');
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted)">등록된 시간대가 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">등록된 시간대가 없습니다.</td></tr>`;
     return;
   }
   tbody.innerHTML = data.map(t => `
     <tr>
-      <td>${t.id}</td><td>${formatTime(t.startAt)}</td>
+      <td>${t.id}</td><td>${formatTime(t.startAt)}</td><td>${formatTime(t.endAt)}</td>
       <td><button class="btn-delete" onclick="deleteTime(${t.id})">삭제</button></td>
     </tr>
   `).join('');
@@ -98,10 +98,18 @@ async function loadTimes() {
 
 async function addTime() {
   const startAt = $('new-time-start').value;
-  if (!startAt) { showToast('시작 시간을 입력해주세요.', 'error'); return; }
-  await api.post('/times', { startAt });
+  const endAt = $('new-time-end').value;
+
+  if (!startAt || !endAt) {
+    showToast('시작 시간과 종료 시간을 모두 입력해주세요.', 'error');
+    return;
+  }
+
+  await api.post('/times', { startAt, endAt });
   showToast('시간대가 추가되었습니다.', 'success');
+
   $('new-time-start').value = '';
+  $('new-time-end').value = '';
   loadTimes();
 }
 

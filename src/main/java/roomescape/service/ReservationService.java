@@ -95,7 +95,8 @@ public class ReservationService {
                 reservation.getDate(),
                 new ReservationTimeResponse(
                         reservationTime.getId(),
-                        reservationTime.getStartAt()
+                        reservationTime.getStartAt(),
+                        reservationTime.getEndAt()
                 ),
                 new ThemeResponse(
                         theme.getId(),

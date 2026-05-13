@@ -47,7 +47,8 @@ public class ReservationTimeService {
     private static ReservationTimeResponse mapDomainToDto(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
                 reservationTime.getId(),
-                reservationTime.getStartAt()
+                reservationTime.getStartAt(),
+                reservationTime.getEndAt()
         );
     }
 }

@@ -61,14 +61,18 @@
             <label class="form-label" for="new-time-start">시작 시간</label>
             <input class="form-input" type="time" id="new-time-start" />
           </div>
+          <div class="admin-form-group">
+            <label class="form-label" for="new-time-end">종료 시간</label>
+            <input class="form-input" type="time" id="new-time-end" />
+          </div>
           <button class="btn-add" id="btn-add-time">추가</button>
         </div>
       </div>
       <div class="data-table-wrap">
         <table class="data-table" aria-label="시간대 목록">
-          <thead><tr><th>#</th><th>시작 시간</th><th></th></tr></thead>
+          <thead><tr><th>#</th><th>시작 시간</th><th>종료 시간</th><th></th></tr></thead>
           <tbody id="admin-times-tbody">
-            <tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted)">불러오는 중...</td></tr>
+          <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)">불러오는 중...</td></tr>
           </tbody>
         </table>
       </div>
