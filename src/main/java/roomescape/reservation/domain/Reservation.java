@@ -12,9 +12,6 @@ public class Reservation {
     private ReservationTime time;
     private Theme theme;
 
-    public Reservation() {
-    }
-
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         this.id = id;
@@ -28,13 +25,6 @@ public class Reservation {
         if (name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 예약자 이름은 공백일 수 없습니다.");
         }
-    }
-
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        validateName(name);
-        this.name = name;
-        this.date = date;
-        this.time = time;
     }
 
     public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {

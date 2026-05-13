@@ -7,17 +7,9 @@ public class ReservationTime {
     private Long id;
     private LocalTime startAt;
 
-    public ReservationTime() {
-    }
-
     private ReservationTime(Long id, LocalTime startAt) {
         validateStartAt(startAt);
         this.id = id;
-        this.startAt = startAt;
-    }
-
-    public ReservationTime(LocalTime startAt) {
-        validateStartAt(startAt);
         this.startAt = startAt;
     }
 

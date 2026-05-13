@@ -29,7 +29,7 @@ public class ReservationFacade {
 
     public void deleteReservationTime(Long id) {
         if (reservationService.existsByTimeId(id)) {
-            throw new DataIntegrityViolationException("[ERROR] 해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalStateException("[ERROR] 해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
 
         reservationTimeService.delete(id);

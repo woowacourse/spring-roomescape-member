@@ -32,7 +32,7 @@ class ThemeDAOTest {
         @Test
         void 새로운_테마를_저장한다() {
             // given
-            Theme theme = new Theme("테마이름", "테마설명", "https://image.url");
+            Theme theme = Theme.of(1L, "테마이름", "테마설명", "https://image.url");
 
             // when
             Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
@@ -45,7 +45,7 @@ class ThemeDAOTest {
         @Test
         void 저장_후_ID가_부여된_테마를_반환한다() {
             // given
-            Theme theme = new Theme("테마이름", "테마설명", "https://image.url");
+            Theme theme = Theme.of(1L, "테마이름", "테마설명", "https://image.url");
 
             // when
             Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));

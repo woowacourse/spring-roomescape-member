@@ -45,7 +45,7 @@ class ReservationDAOTest {
     private ReservationTimeCreateResponse createTime() {
         ReservationTime reservationTime = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        return ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 10, 10));
+        return ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 10));
     }
 
     private Theme createTheme() {

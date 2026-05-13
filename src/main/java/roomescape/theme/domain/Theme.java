@@ -10,23 +10,11 @@ public class Theme {
     private String description;
     private String imageUrl;
 
-    public Theme() {
-    }
-
     private Theme(Long id, String name, String description, String imageUrl) {
         validateName(name);
         validateDescription(description);
         validateImageUrl(imageUrl);
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
-    }
-
-    public Theme(String name, String description, String imageUrl) {
-        validateName(name);
-        validateDescription(description);
-        validateImageUrl(imageUrl);
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
