@@ -16,21 +16,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import roomescape.availability.service.AvailabilityService;
 import roomescape.holiday.controller.dto.HolidayResponseDto;
-import roomescape.holiday.exception.HolidayNotFoundException;
+import roomescape.holiday.exception.HolidayException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.holiday.service.dto.HolidaySaveServiceDto;
 import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
 import roomescape.reservation.controller.dto.ReservationResponseDto;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.service.ThemeService;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.controller.dto.TimeResponseDto;
 import roomescape.time.service.TimeService;
 
@@ -128,7 +128,7 @@ public class RoomescapePageController {
         try {
             reservationService.cancel(id);
             addSuccessMessage(redirectAttributes, "예약을 취소했습니다.");
-        } catch (ReservationNotFoundException e) {
+        } catch (ReservationException e) {
             addExpectedErrorMessage(redirectAttributes, "취소할 예약을 찾지 못했습니다.", e);
         }
         return "redirect:/dashboard/reservations";
@@ -144,8 +144,8 @@ public class RoomescapePageController {
         try {
             themeService.create(new ThemeSaveServiceDto(name, description, imageUrl));
             addSuccessMessage(redirectAttributes, "테마를 생성했습니다.");
-        } catch (IllegalArgumentException e) {
-            addExpectedErrorMessage(redirectAttributes, "테마 생성에 실패했습니다. 입력값을 다시 확인해 주세요.", e);
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/themes";
     }
@@ -155,7 +155,7 @@ public class RoomescapePageController {
         try {
             themeService.deleteById(id);
             addSuccessMessage(redirectAttributes, "테마를 삭제했습니다.");
-        } catch (ThemeNotFoundException e) {
+        } catch (ThemeException e) {
             addExpectedErrorMessage(redirectAttributes, "삭제할 테마를 찾지 못했습니다.", e);
         }
         return "redirect:/dashboard/themes";
@@ -197,8 +197,8 @@ public class RoomescapePageController {
         try {
             holidayService.create(new HolidaySaveServiceDto(date));
             addSuccessMessage(redirectAttributes, "휴일을 추가했습니다.");
-        } catch (IllegalArgumentException e) {
-            addExpectedErrorMessage(redirectAttributes, "휴일 추가에 실패했습니다. 입력값을 다시 확인해 주세요.", e);
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/holidays";
     }
@@ -208,7 +208,7 @@ public class RoomescapePageController {
         try {
             holidayService.delete(id);
             addSuccessMessage(redirectAttributes, "휴일을 삭제했습니다.");
-        } catch (HolidayNotFoundException e) {
+        } catch (HolidayException e) {
             addExpectedErrorMessage(redirectAttributes, "삭제할 휴일을 찾지 못했습니다.", e);
         }
         return "redirect:/dashboard/holidays";
@@ -223,7 +223,7 @@ public class RoomescapePageController {
                     .stream()
                     .map(ThemeAvailableTimeResponseDto::from)
                     .toList();
-        } catch (IllegalArgumentException | ThemeNotFoundException e) {
+        } catch (RoomescapeException e) {
             log.info("Failed to load available times for themeId={} date={}: {}", availableThemeId, availableDate, e.getMessage());
             model.addAttribute("availableTimeErrorMessage", "예약 가능 시간을 조회하지 못했습니다. 조회 조건을 확인해 주세요.");
             return List.of();

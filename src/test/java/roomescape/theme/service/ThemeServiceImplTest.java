@@ -19,7 +19,8 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
@@ -88,10 +89,8 @@ class ThemeServiceImplTest {
         when(themeRepository.deleteById(99L)).thenReturn(false);
 
         assertThatThrownBy(() -> themeService.deleteById(99L))
-                .isInstanceOf(ThemeNotFoundException.class)
-                .hasMessage("테마가 존재하지 않습니다. id=99")
-                .extracting(e -> ((ThemeNotFoundException) e).getId())
-                .isEqualTo(99L);
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(ErrorCode.THEME_NOT_FOUND.getDefaultMessage());
     }
 
     @Test

@@ -6,7 +6,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
 
 import java.sql.ResultSet;
@@ -50,7 +51,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 id
         );
         if (themes.isEmpty()) {
-            throw new ThemeNotFoundException(id);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
         }
         return themes.get(0);
     }

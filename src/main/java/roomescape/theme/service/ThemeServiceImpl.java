@@ -7,7 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
@@ -50,7 +51,7 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public void deleteById(Long id) {
         if (!themeRepository.deleteById(id)) {
-            throw new ThemeNotFoundException(id);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
         }
     }
 

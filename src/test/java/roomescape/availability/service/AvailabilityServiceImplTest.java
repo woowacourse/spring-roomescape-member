@@ -17,7 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.TimeRepository;
@@ -55,8 +56,8 @@ class AvailabilityServiceImplTest {
         when(themeRepository.existsById(999L)).thenReturn(false);
 
         assertThatThrownBy(() -> availabilityService.getAvailableTimes(999L, date))
-                .isInstanceOf(ThemeNotFoundException.class)
-                .hasMessage("테마가 존재하지 않습니다. id=999");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(ErrorCode.THEME_NOT_FOUND.getDefaultMessage());
 
         verifyNoInteractions(timeRepository, holidayRepository, reservationRepository);
     }

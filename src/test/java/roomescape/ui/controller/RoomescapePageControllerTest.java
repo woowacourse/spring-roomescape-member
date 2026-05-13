@@ -21,17 +21,17 @@ import roomescape.availability.service.AvailabilityService;
 import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
 import roomescape.holiday.domain.Holiday;
-import roomescape.holiday.exception.HolidayNotFoundException;
+import roomescape.holiday.exception.HolidayException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.service.TimeService;
 
 @WebMvcTest(RoomescapePageController.class)
@@ -139,7 +139,7 @@ class RoomescapePageControllerTest {
 
     @Test
     void deleteTheme_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new ThemeNotFoundException(99L))
+        Mockito.doThrow(new ThemeException(ErrorCode.THEME_NOT_FOUND))
                 .when(themeService).deleteById(99L);
 
         mockMvc.perform(post("/dashboard/themes/99/delete"))
@@ -150,7 +150,7 @@ class RoomescapePageControllerTest {
 
     @Test
     void deleteTime_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new TimeNotFoundException(12L))
+        Mockito.doThrow(new TimeException(ErrorCode.TIME_NOT_FOUND))
                 .when(timeService).deleteById(12L);
 
         mockMvc.perform(post("/dashboard/times/12/delete"))
@@ -160,7 +160,7 @@ class RoomescapePageControllerTest {
 
     @Test
     void cancelReservation_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new ReservationNotFoundException(21L))
+        Mockito.doThrow(new ReservationException(ErrorCode.RESERVATION_NOT_FOUND))
                 .when(reservationService).cancel(21L);
 
         mockMvc.perform(post("/dashboard/reservations/21/cancel"))
@@ -170,7 +170,7 @@ class RoomescapePageControllerTest {
 
     @Test
     void deleteHoliday_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new HolidayNotFoundException(7L))
+        Mockito.doThrow(new HolidayException(ErrorCode.HOLIDAY_NOT_FOUND))
                 .when(holidayService).delete(7L);
 
         mockMvc.perform(post("/dashboard/holidays/7/delete"))

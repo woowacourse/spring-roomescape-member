@@ -20,7 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.availability.service.AvailabilityService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.service.ThemeService;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 
@@ -81,7 +82,7 @@ class ThemeControllerTest {
     @Test
     void deleteById_없으면_404() throws Exception {
         Long id = 999L;
-        Mockito.doThrow(new ThemeNotFoundException(id))
+        Mockito.doThrow(new ThemeException(ErrorCode.THEME_NOT_FOUND))
                 .when(themeService).deleteById(id);
 
         mockMvc.perform(delete("/themes/{id}", id))

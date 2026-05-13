@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.repository.TimeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +38,7 @@ class TimeServiceImplTest {
         when(timeRepository.existsById(1L)).thenReturn(false);
 
         assertThatThrownBy(() -> timeService.deleteById(1L))
-                .isInstanceOf(TimeNotFoundException.class);
+                .isInstanceOf(TimeException.class);
 
         verify(reservationRepository, never()).existsByTimeId(1L);
     }
@@ -49,7 +49,7 @@ class TimeServiceImplTest {
         when(reservationRepository.existsByTimeId(1L)).thenReturn(true);
 
         assertThatThrownBy(() -> timeService.deleteById(1L))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(TimeException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
 

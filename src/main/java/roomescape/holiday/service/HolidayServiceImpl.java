@@ -3,7 +3,8 @@ package roomescape.holiday.service;
 import org.springframework.stereotype.Service;
 
 import roomescape.holiday.domain.Holiday;
-import roomescape.holiday.exception.HolidayNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.holiday.exception.HolidayException;
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.holiday.service.dto.HolidaySaveServiceDto;
 
@@ -33,7 +34,7 @@ public class HolidayServiceImpl implements HolidayService {
     public void delete(Long id) {
         boolean deleted = holidayRepository.deleteById(id);
         if (!deleted) {
-            throw new HolidayNotFoundException(id);
+            throw new HolidayException(ErrorCode.HOLIDAY_NOT_FOUND);
         }
     }
 

@@ -9,7 +9,7 @@ import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.repository.TimeRepository;
 
 @Service
@@ -36,26 +36,26 @@ public class TimeServiceImpl implements TimeService {
   @Override
   public ReservationTime findById(Long id) {
     return timeRepository.findById(id)
-        .orElseThrow(() -> new TimeNotFoundException(id));
+        .orElseThrow(() -> new TimeException(id));
   }
 
   @Override
   public ReservationTime findByStartAt(String startAt) {
     if (startAt == null || startAt.isBlank()) {
-      throw new IllegalArgumentException("예약 시간은 필수입니다.");
+      throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
     }
     LocalTime startTime = ReservationTime.parse(startAt);
     return timeRepository.findByStartAt(startTime)
-        .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다. startAt=" + startAt));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND));
   }
 
   @Override
   public void deleteById(Long id) {
     if (!timeRepository.existsById(id)) {
-      throw new TimeNotFoundException(id);
+      throw new TimeException(id);
     }
     if (reservationRepository.existsByTimeId(id)) {
-      throw new RoomescapeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
+      throw new TimeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
     }
     timeRepository.deleteById(id);
   }

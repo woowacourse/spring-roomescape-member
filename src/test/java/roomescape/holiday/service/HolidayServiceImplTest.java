@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.holiday.exception.HolidayNotFoundException;
+import roomescape.holiday.exception.HolidayException;
 import roomescape.holiday.repository.HolidayRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,7 +26,7 @@ class HolidayServiceImplTest {
         HolidayService holidayService = new HolidayServiceImpl(holidayRepository);
 
         assertThatThrownBy(() -> holidayService.delete(id))
-                .isInstanceOf(HolidayNotFoundException.class);
+                .isInstanceOf(HolidayException.class);
 
         verify(holidayRepository).deleteById(id);
     }
