@@ -20,7 +20,7 @@ public class ReservationTimeControllerTest {
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2026-05-05");
+        params.put("date", "2026-12-31");
         params.put("timeId", 1);
         params.put("themeId", 1);
         return params;
@@ -103,7 +103,7 @@ public class ReservationTimeControllerTest {
                 .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservations/available-times?date=2026-05-05&themeId=1")
+                .when().get("/api/v1/reservations/available-times?date=2026-12-31&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))

@@ -13,6 +13,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
+    @ExceptionHandler(PastReservationTimeException.class)
+    public ResponseEntity<Void> handlePastReservationTime() {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(ReservationTimeInUseException.class)
     public ResponseEntity<Void> handleReservationTimeInUse() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();

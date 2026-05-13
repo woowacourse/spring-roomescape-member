@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -55,5 +57,11 @@ public class ReservationTimeDaoTest {
 
         assertThat(actual.getId()).isNotNull();
         assertThat(actual.getStartAt()).isEqualTo(startTime);
+    }
+
+    @Test
+    void 존재하지_않은_시간을_조회하면_예외가_발생한다() {
+        assertThatThrownBy(() -> reservationTimeDao.findById(1L))
+                .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 }

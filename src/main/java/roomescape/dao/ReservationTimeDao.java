@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 @Repository
 public class ReservationTimeDao {
@@ -23,8 +25,12 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime findById(Long id) {
-        String sql = "SELECT id, start_at from reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
+        try {
+            String sql = "SELECT id, start_at from reservation_time WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReservationTimeNotFoundException();
+        }
     }
 
     public List<ReservationTime> findAllReservationTimes() {

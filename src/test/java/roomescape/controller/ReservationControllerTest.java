@@ -21,7 +21,7 @@ public class ReservationControllerTest {
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2026-12-31");
         params.put("timeId", 1);
         params.put("themeId", 1);
         return params;
@@ -98,13 +98,13 @@ public class ReservationControllerTest {
                 .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].name", is("브라운"))
-                .body("[0].date", is("2023-08-05"))
+                .body("[0].date", is("2026-12-31"))
                 .body("[0].time.id", is(1))
                 .body("[0].time.startAt", is("10:00"))
                 .body("[0].themeId", is(1))
                 .body("[1].id", is(2))
                 .body("[1].name", is("브리"))
-                .body("[1].date", is("2023-08-05"))
+                .body("[1].date", is("2026-12-31"))
                 .body("[1].time.id", is(2))
                 .body("[1].time.startAt", is("11:00"))
                 .body("[1].themeId", is(1));

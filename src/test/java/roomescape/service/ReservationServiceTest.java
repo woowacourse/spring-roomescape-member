@@ -9,8 +9,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.PastReservationTimeException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -35,11 +37,15 @@ public class ReservationServiceTest {
 
     @Test
     void 중복_예약_생성_예외_테스트() {
-        when(reservationDao.insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L))
+        LocalDate date = LocalDate.of(2026, 12, 31);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        when(reservationTimeDao.findById(1L)).thenReturn(reservationTime);
+        when(reservationDao.insertReservation("이든", date, 1L, 1L))
                 .thenThrow(new ReservationAlreadyExistsException());
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
-                        "이든", LocalDate.of(2026, 05, 06), 1L, 1L
+                        "이든", date, 1L, 1L
                 )))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
     }
@@ -47,19 +53,20 @@ public class ReservationServiceTest {
     @Test
     void 예약_생성_테스트() {
         Long generatedId = 1L;
-        Reservation expected = new Reservation(generatedId, "이든", LocalDate.of(2026, 05, 06),
-                new ReservationTime(1L, LocalTime.of(10, 0)), 1L);
+        LocalDate date = LocalDate.of(2026, 12, 31);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation expected = new Reservation(generatedId, "이든", date, time, 1L);
 
-        when(reservationDao.insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L))
-                .thenReturn(generatedId);
+        when(reservationTimeDao.findById(1L)).thenReturn(time);
+        when(reservationDao.insertReservation("이든", date, 1L, 1L)).thenReturn(generatedId);
         when(reservationDao.findReservationById(generatedId)).thenReturn(expected);
 
         ReservationResponse actual = reservationService.createReservation(new ReservationCreateRequest(
-                "이든", LocalDate.of(2026, 05, 06), 1L, 1L
+                "이든", date, 1L, 1L
         ));
 
         assertThat(actual).isEqualTo(ReservationResponse.from(expected));
-        verify(reservationDao).insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L);
+        verify(reservationDao).insertReservation("이든", date, 1L, 1L);
         verify(reservationDao).findReservationById(generatedId);
     }
 
@@ -104,5 +111,28 @@ public class ReservationServiceTest {
 
         assertThat(actual.get(2).id()).isEqualTo(3L);
         assertThat(actual.get(2).available()).isFalse();
+    }
+
+    @Test
+    void 존재하지_않는_시간에_대한_예약_생성은_불가능하다() {
+        LocalDate date = LocalDate.of(2026, 12, 31);
+
+        when(reservationTimeDao.findById(1L)).thenThrow(new ReservationTimeNotFoundException());
+
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
+                "이든", date, 1L, 1L
+        ))).isInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @Test
+    void 지나간_날짜와_시간에_대한_예약_생성은_불가능하다() {
+        LocalDate date = LocalDate.of(2026, 1, 1);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        when(reservationTimeDao.findById(1L)).thenReturn(reservationTime);
+
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
+                "이든", date, 1L, 1L
+        ))).isInstanceOf(PastReservationTimeException.class);
     }
 }

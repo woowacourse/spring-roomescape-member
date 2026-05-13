@@ -9,9 +9,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.PastReservationTimeException;
 import roomescape.exception.ReservationNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createReservation(ReservationCreateRequest request) {
+        LocalTime time = reservationTimeDao.findById(request.timeId()).getStartAt();
+        LocalDateTime dateTime = LocalDateTime.of(request.date(), time);
+        validateNotPastDate(dateTime);
         Long id = reservationDao.insertReservation(request.name(), request.date(),
                 request.timeId(), request.themeId());
         return ReservationResponse.from(reservationDao.findReservationById(id));
@@ -59,6 +65,12 @@ public class ReservationService {
                         LinkedHashMap::new
                 ));
         return AvailableTimeResponse.from(reservationTimeMap);
+    }
+
+    private void validateNotPastDate(LocalDateTime dateTime) {
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new PastReservationTimeException();
+        }
     }
 
     private void validateDelete(int deleteCount) {
