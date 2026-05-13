@@ -129,4 +129,22 @@ class ReservationServiceTest {
 
         assertThat(reservationService.readAllReservation()).isEmpty();
     }
+
+    @DisplayName("사용자 이름으로 예약을 조회한다")
+    @Test
+    void 사용자_이름이_일치하는_모든_예약의_ReservationResponseDTO가_담긴_리스트를_리턴한다() {
+        // given
+        ReservationRequestDTO rudevicoReservationRequestDTO =
+                new ReservationRequestDTO("루드비코", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequestDTO echoReservationRequestDTO =
+                new ReservationRequestDTO("에코", LocalDate.now().plusDays(1), 2L, 1L);
+
+        ReservationResponseDTO rudevicoReservation = reservationService.addReservation(rudevicoReservationRequestDTO);
+        ReservationResponseDTO echoReservation = reservationService.addReservation(echoReservationRequestDTO);
+
+        // when and then
+        assertThat(reservationService.findAllByUsername("루드비코"))
+                .hasSize(1)
+                .containsExactlyInAnyOrder(rudevicoReservation);
+    }
 }

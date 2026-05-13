@@ -40,6 +40,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponseDTO> findAllByUsername(String username) {
+        return reservationRepository.findAllByUsername(username)
+                .stream()
+                .map(ReservationResponseDTO::from)
+                .toList();
+    }
+
     public ReservationResponseDTO findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow();
