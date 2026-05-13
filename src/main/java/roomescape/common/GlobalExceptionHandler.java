@@ -11,7 +11,9 @@ import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.theme.exception.ThemeInUseException;
 import roomescape.theme.exception.ThemeNotFoundException;
 
 @RestControllerAdvice
@@ -32,6 +34,15 @@ public class GlobalExceptionHandler {
             ReservationTimeDuplicatedException.class
     })
     public ResponseEntity<String> handleDuplicatedException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            ReservationTimeInUseException.class,
+            ThemeInUseException.class
+    })
+    public ResponseEntity<String> handleEntityInUseException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }

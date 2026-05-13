@@ -6,12 +6,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeInUseException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -102,7 +104,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ThemeInUseException(id);
+        }
     }
 
 }

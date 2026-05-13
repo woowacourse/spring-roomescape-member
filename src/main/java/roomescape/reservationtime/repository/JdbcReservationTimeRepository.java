@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -82,7 +84,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ReservationTimeInUseException(id);
+        }
     }
 
 }
