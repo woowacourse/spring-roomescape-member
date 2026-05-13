@@ -47,11 +47,25 @@
 - [ ] ErrorCode 및 ErrorResponse 정의
 - [ ] 기존 예외 제거 및 BusinessException 추가
 - [ ] 전역 예외 핸들러 추가
+
 모든 에러 응답은 일관된 JSON 형식으로 내려갑니다.
+- 모든 에러 응답은 다음 필드를 포함한다. 
 ```json
 {
   "errorCode": "RESERVATION_NOT_FOUND",
   "message": "존재하지 않는 예약입니다."
+}
+```
+- 다음 필드는 특정 케이스에서만 포함된다.
+  - `fieldErrors`: 입력 유효성 위반 시에만 
+```json
+{
+  "errorCode": "INVALID_INPUT",
+  "message": "입력값이 적절하지 않습니다.",
+  "fieldErrors" : [{
+    "field" : "name",
+    "message" : "예약자 이름은 필수입니다."
+  }]
 }
 ```
 
@@ -88,7 +102,7 @@
 | METHOD_NOT_ALLOWED     | 405  | 허용되지 않는 HTTP 메서드 입니다. | 허용되지 않는 HTTP 메서드          |
 | INVALID_PATH_VARIABLE  | 400  | 경로 변수가 올바르지 않습니다.  | 잘못된 PathVariable 타입 사용 시  |
 | INTERNAL_SERVER_ERROR  | 500  | 서버 내부 오류가 발생했습니다.  | 예상 못한 예외들...              |
-
+| INVALID_VALUE | 400 | 잘못된 값입니다. | 도메인 필드 검증 실패 시 |
 
 
 ### 3단계 - 내 예약 조회/변경/취소
