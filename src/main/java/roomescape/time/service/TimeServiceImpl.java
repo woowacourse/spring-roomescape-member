@@ -11,33 +11,33 @@ import roomescape.time.repository.TimeRepository;
 
 @Service
 public class TimeServiceImpl implements TimeService {
-  private final TimeRepository timeRepository;
+    private final TimeRepository timeRepository;
 
-  public TimeServiceImpl(TimeRepository timeRepository) {
-    this.timeRepository = timeRepository;
-  }
-
-  @Override
-  public ReservationTime create(LocalTime startAt, LocalTime endAt) {
-    return timeRepository.save(startAt, endAt);
-  }
-
-  @Override
-  public List<ReservationTime> findAll() {
-    return timeRepository.findAll();
-  }
-
-  @Override
-  public ReservationTime findById(Long id) {
-    return timeRepository.findById(id)
-        .orElseThrow(() -> new TimeNotFoundException(id));
-  }
-
-  @Override
-  public void deleteById(Long id) {
-    boolean deleted = timeRepository.deleteById(id);
-    if (!deleted) {
-      throw new TimeNotFoundException(id);
+    public TimeServiceImpl(TimeRepository timeRepository) {
+        this.timeRepository = timeRepository;
     }
-  }
+
+    @Override
+    public ReservationTime create(LocalTime startAt, LocalTime endAt) {
+        return timeRepository.save(startAt, endAt);
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        return timeRepository.findAll();
+    }
+
+    @Override
+    public ReservationTime findById(Long id) {
+        return timeRepository.findById(id)
+                .orElseThrow(() -> new TimeNotFoundException(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        boolean deleted = timeRepository.deleteById(id);
+        if (!deleted) {
+            throw new TimeNotFoundException(id);
+        }
+    }
 }

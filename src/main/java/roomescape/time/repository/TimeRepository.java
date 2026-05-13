@@ -7,11 +7,11 @@ import java.util.Optional;
 import roomescape.reservation.domain.ReservationTime;
 
 public interface TimeRepository {
-  List<ReservationTime> findAll();
+    List<ReservationTime> findAll();
 
-  ReservationTime save(LocalTime startAt, LocalTime endAt);
+    ReservationTime save(LocalTime startAt, LocalTime endAt);
 
-  Optional<ReservationTime> findById(Long id);
+    Optional<ReservationTime> findById(Long id);
 
-  boolean deleteById(Long id);
+    boolean deleteById(Long id);
 }

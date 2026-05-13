@@ -21,43 +21,43 @@ import roomescape.time.service.TimeService;
 
 @RestController
 public class TimeController {
-  private final TimeService timeService;
-  private final ThemeService themeService;
+    private final TimeService timeService;
+    private final ThemeService themeService;
 
-  public TimeController(TimeService timeService, ThemeService themeService) {
-    this.timeService = timeService;
-    this.themeService = themeService;
-  }
+    public TimeController(TimeService timeService, ThemeService themeService) {
+        this.timeService = timeService;
+        this.themeService = themeService;
+    }
 
-  @PostMapping("/times")
-  public ResponseEntity<TimeResponseDto> create(@RequestBody TimeSaveRequestDto request) {
-    TimeResponseDto body = TimeResponseDto.from(timeService.create(request.startAt(), request.endAt()));
-    return ResponseEntity.status(HttpStatus.CREATED).body(body);
-  }
+    @PostMapping("/times")
+    public ResponseEntity<TimeResponseDto> create(@RequestBody TimeSaveRequestDto request) {
+        TimeResponseDto body = TimeResponseDto.from(timeService.create(request.startAt(), request.endAt()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
 
-  @GetMapping("/times")
-  public ResponseEntity<List<TimeResponseDto>> findAll() {
-    List<TimeResponseDto> body = timeService.findAll()
-        .stream()
-        .map(TimeResponseDto::from)
-        .collect(Collectors.toList());
-    return ResponseEntity.ok(body);
-  }
+    @GetMapping("/times")
+    public ResponseEntity<List<TimeResponseDto>> findAll() {
+        List<TimeResponseDto> body = timeService.findAll()
+                .stream()
+                .map(TimeResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(body);
+    }
 
-  @GetMapping(value = "/times", params = {"themeId", "date"})
-  public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
-      @RequestParam Long themeId,
-      @RequestParam LocalDate date
-  ) {
-    List<TimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
-        .map(TimeResponseDto::from)
-        .collect(Collectors.toList());
-    return ResponseEntity.ok(body);
-  }
+    @GetMapping(value = "/times", params = {"themeId", "date"})
+    public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
+            @RequestParam Long themeId,
+            @RequestParam LocalDate date
+    ) {
+        List<TimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
+                .map(TimeResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(body);
+    }
 
-  @DeleteMapping("/times/{id}")
-  public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-    timeService.deleteById(id);
-    return ResponseEntity.noContent().build();
-  }
+    @DeleteMapping("/times/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        timeService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
