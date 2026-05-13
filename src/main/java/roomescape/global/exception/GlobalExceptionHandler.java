@@ -2,116 +2,87 @@ package roomescape.global.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.util.List;
-import java.util.Objects;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String SERVER_ERROR_MESSAGE = "서버 내부에서 문제가 발생했습니다.";
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException exception
-    ) {
-        String message = firstErrorMessage(exception.getBindingResult().getAllErrors());
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "입력값이 올바르지 않습니다.");
+        problemDetail.setProperty("errors", exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
+                .toList());
 
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(message));
+        return handleExceptionInternal(exception, problemDetail, headers, status, request);
     }
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(
-            HandlerMethodValidationException exception
-    ) {
-        String message = firstErrorMessage(exception.getAllErrors());
-
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(message));
-    }
-
-    private String firstErrorMessage(List<? extends MessageSourceResolvable> errors) {
-        return errors.stream()
-                .map(MessageSourceResolvable::getDefaultMessage)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse("잘못된 요청입니다.");
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
-            MissingServletRequestParameterException exception
-    ) {
-        String message = exception.getParameterName() + "은(는) 필수 요청 파라미터입니다.";
-
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(message));
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException exception
-    ) {
-        String message = exception.getName() + " 입력값 형식이 올바르지 않습니다.";
-
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(message));
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException exception
-    ) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("요청 본문 형식이 올바르지 않습니다."));
+    @Override
+    protected ProblemDetail createProblemDetail(Exception exception,
+                                                HttpStatusCode status,
+                                                String defaultDetail,
+                                                String detailMessageCode,
+                                                Object[] detailMessageArguments,
+                                                WebRequest request) {
+        if (status.is5xxServerError()) {
+            return ProblemDetail.forStatusAndDetail(status, SERVER_ERROR_MESSAGE);
+        }
+        return super.createProblemDetail(
+                exception,
+                status,
+                defaultDetail,
+                detailMessageCode,
+                detailMessageArguments,
+                request
+        );
     }
 
     @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException exception) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(exception.getMessage()));
+    public ResponseEntity<ProblemDetail> handleInvalidRequestException(InvalidRequestException exception) {
+        return problem(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(exception.getMessage()));
+    public ResponseEntity<ProblemDetail> handleNotFoundException(NotFoundException exception) {
+        return problem(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException exception) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(exception.getMessage()));
+    public ResponseEntity<ProblemDetail> handleConflictException(ConflictException exception) {
+        return problem(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler(InfrastructureException.class)
-    public ResponseEntity<ErrorResponse> handleInfrastructureException(InfrastructureException exception) {
-        return internalServerError();
+    public ResponseEntity<ProblemDetail> handleInfrastructureException(InfrastructureException exception) {
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, SERVER_ERROR_MESSAGE);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAllUncaughtException(Exception exception) {
+    public ResponseEntity<ProblemDetail> handleAllUncaughtException(Exception exception) {
         log.error("Unexpected exception occurred", exception);
-        return internalServerError();
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, SERVER_ERROR_MESSAGE);
     }
 
-    private ResponseEntity<ErrorResponse> internalServerError() {
+    private ResponseEntity<ProblemDetail> problem(HttpStatus status, String detail) {
         return ResponseEntity
-                .internalServerError()
-                .body(new ErrorResponse("서버 내부에서 문제가 발생했습니다."));
+                .status(status)
+                .body(ProblemDetail.forStatusAndDetail(status, detail));
     }
 }
