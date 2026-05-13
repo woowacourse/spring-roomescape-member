@@ -70,6 +70,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse("기존과 동일한 스케줄로 변경할 수 없습니다."));
     }
 
+    @ExceptionHandler(ReservationDeadlineException.class)
+    public ResponseEntity<ErrorResponse> handleReservationDeadlineExceptions(ReservationDeadlineException ex) {
+        log.warn("취소 및 변경 마감 기한 초과: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse("방탈출 시작 1시간 전부터는 예약을 취소하거나 변경할 수 없습니다."));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("예상치 못한 서버 내부 에러 발생!", ex);
