@@ -1,17 +1,16 @@
-package roomescape.repository;
+package roomescape.service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.DatabaseInitializeTest;
-import roomescape.testexecutionlistener.TestDatabaseInitializer;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@JdbcTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DatabaseInitializeTest
-public @interface RoomescapeRepositoryTest {
+public @interface RoomescapeServiceTest {
 }

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
@@ -16,22 +16,20 @@ import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.service.stub.FakeReservationRepository;
-import roomescape.service.stub.FakeReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
+@RoomescapeServiceTest
 class ReservationServiceTest {
 
+    @Autowired
     private ReservationService reservationService;
+    @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    @BeforeEach
-    void setUp() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository(reservationRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
-    }
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("없는 예약 시간 ID 예약 예외")
@@ -43,7 +41,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("과거 날짜/시간 예약 예외")
     void save_whenPastDateTime_throws() {
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -55,7 +53,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("같은 날짜/시간 중복 예약 예외 발생")
     void save_whenDuplicateDateTime_throws() {
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -70,7 +68,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("정상 케이스 예약 저장")
     void save_success() {
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -86,7 +84,7 @@ class ReservationServiceTest {
     @DisplayName("예약 정상 삭제")
     void deleteById_success() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -105,7 +103,7 @@ class ReservationServiceTest {
     @DisplayName("이름이 다른 예약 삭제 예외")
     void deleteById_whenNameMismatch_throws() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -122,7 +120,7 @@ class ReservationServiceTest {
     @DisplayName("예약 수정 성공")
     void update_success() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time1 = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -146,7 +144,7 @@ class ReservationServiceTest {
     @DisplayName("예약 수정 시 이름이 다른 경우 예외")
     void update_whenNameMismatch_throws() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -164,7 +162,7 @@ class ReservationServiceTest {
     @DisplayName("예약 수정 시 과거 날짜/시간 예외")
     void update_whenPastDateTime_throws() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
@@ -182,7 +180,7 @@ class ReservationServiceTest {
     @DisplayName("예약 수정 시 같은 날짜/시간 중복 예외")
     void update_whenDuplicateDateTime_throws() {
         // given
-        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         ReservationTime time1 = reservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
