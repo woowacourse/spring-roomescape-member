@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -97,14 +98,14 @@ public class AdminThemeControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "이든의 공포 하우스");
         params.put("description", "이든이 귀신으로 나옴");
-        params.put("imgUrl", "링크~");
+        params.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
         return params;
     }
 
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1L);
         params.put("themeId", 1L);
         return params;

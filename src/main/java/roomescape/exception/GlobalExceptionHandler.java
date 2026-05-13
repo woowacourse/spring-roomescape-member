@@ -46,6 +46,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ERROR_PREFIX + "예약이 존재하는 테마는 삭제할 수 없습니다."));
     }
 
+    @ExceptionHandler(PastReservationNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handlePastReservation() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ERROR_PREFIX + "지나간 날짜와 시간으로는 예약할 수 없습니다."));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

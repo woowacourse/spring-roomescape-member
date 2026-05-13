@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
+    private static final String AVAILABLE_TIME_TEST_DATE = "2099-05-05";
 
     @Test
     void 시간_조회() {
@@ -39,7 +40,7 @@ public class ReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times?date=2026-05-05&themeId=1")
+                .when().get("/api/v1/reservation/times?date=" + AVAILABLE_TIME_TEST_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))
@@ -98,7 +99,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> themeParams = new HashMap<>();
         themeParams.put("name", "이든의 공포 하우스");
         themeParams.put("description", "이든이 귀신으로 나옴");
-        themeParams.put("imgUrl", "링크~");
+        themeParams.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
@@ -108,7 +109,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> themeParams2 = new HashMap<>();
         themeParams2.put("name", "정콩이의 방탈출");
         themeParams2.put("description", "니는 못나간다");
-        themeParams2.put("imgUrl", "링크~");
+        themeParams2.put("imgUrl", "https://images.example.com/themes/jungkong-room.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -120,7 +121,7 @@ public class ReservationTimeControllerTest {
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2026-05-05");
+        params.put("date", AVAILABLE_TIME_TEST_DATE);
         params.put("timeId", 1L);
         params.put("themeId", 1L);
         return params;

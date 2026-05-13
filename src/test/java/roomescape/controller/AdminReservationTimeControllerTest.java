@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -112,7 +113,7 @@ public class AdminReservationTimeControllerTest {
         Map<String, Object> themeParams = new HashMap<>();
         themeParams.put("name", "이든의 공포 하우스");
         themeParams.put("description", "이든이 귀신으로 나옴");
-        themeParams.put("imgUrl", "링크~");
+        themeParams.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
@@ -122,7 +123,7 @@ public class AdminReservationTimeControllerTest {
         Map<String, Object> themeParams2 = new HashMap<>();
         themeParams2.put("name", "정콩이의 방탈출");
         themeParams2.put("description", "니는 못나간다");
-        themeParams2.put("imgUrl", "링크~");
+        themeParams2.put("imgUrl", "https://images.example.com/themes/jungkong-room.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -134,7 +135,7 @@ public class AdminReservationTimeControllerTest {
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2026-05-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1L);
         params.put("themeId", 1L);
         return params;

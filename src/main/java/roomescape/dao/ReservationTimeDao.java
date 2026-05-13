@@ -32,6 +32,16 @@ public class ReservationTimeDao {
         return reservationTimeList;
     }
 
+    public ReservationTime findReservationTimeById(Long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        ReservationTime reservationTime = jdbcTemplate.queryForObject(
+                sql,
+                getReservationTimeRowMapper(),
+                id
+        );
+        return reservationTime;
+    }
+
     public Long insertWithKeyHolder(LocalTime time) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
