@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.exception.DuplicateReservationException;
+import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
+import roomescape.reservation.domain.exception.ReservationOwnerMismatchException;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -50,14 +52,23 @@ public class ReservationService {
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
     }
 
-    public void cancelReservation(Long id) {
-        validateDeletable(id);
+    public void cancelReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약ID 입니다."));
+        validateOwner(reservation, name);
+        validateNotPast(reservation);
         reservationRepository.deleteById(id);
     }
 
-    private void validateDeletable(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new ReservationNotFoundException("존재하지 않는 예약ID 입니다.");
+    private void validateOwner(Reservation reservation, String name) {
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationOwnerMismatchException("본인의 예약만 취소할 수 있습니다.");
+        }
+    }
+
+    private void validateNotPast(Reservation reservation) {
+        if (!reservationSchedulePolicy.canReserve(reservation.getDate(), reservation.getTime().getStartAt())) {
+            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
         }
     }
 
