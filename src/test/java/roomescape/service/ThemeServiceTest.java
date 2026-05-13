@@ -2,6 +2,9 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.FUTURE_RANKING_PERIOD;
+import static roomescape.exception.ErrorCode.INVALID_RANKING_PERIOD;
+import static roomescape.exception.ErrorCode.LONG_RANKING_PERIOD;
 import static roomescape.exception.ErrorCode.REFERENCED_THEME;
 
 import java.time.LocalDate;
@@ -9,6 +12,8 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -40,6 +45,37 @@ public class ThemeServiceTest {
         themeRepository = new FakeThemeRepository(fakeDatabase);
 
         themeService = new ThemeService(themeRepository, reservationRepository);
+    }
+
+    @Test
+    void readFutureRankingPeriodExceptionTest() {
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(2);
+
+        assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(FUTURE_RANKING_PERIOD.getMessage());
+    }
+
+    @Test
+    void readInvalidRankingPeriodExceptionTest() {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now().minusDays(1);
+
+        assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(INVALID_RANKING_PERIOD.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {367, 1000})
+    void readLongRankingPeriodExceptionTest(int period) {
+        LocalDate startDate = LocalDate.now().minusDays(period);
+        LocalDate endDate = LocalDate.now();
+
+        assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(LONG_RANKING_PERIOD.getMessage());
     }
 
     @Test
