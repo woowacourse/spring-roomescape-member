@@ -63,4 +63,26 @@ public class ReservationDaoTest {
 
         assertThat(times.size()).isEqualTo(3);
     }
+
+    @Test
+    void 이름으로_예약_조회_성공() {
+        List<Reservation> reservations = reservationDao.selectByName("로치");
+
+        assertThat(reservations.size()).isEqualTo(13);
+    }
+
+    @Test
+    void 예약의_날짜와_시간을_수정한다() {
+        Long reservationId = 1L;
+        LocalDate changedDate = LocalDate.of(2026, 5, 20);
+        Long changedTimeId = 2L;
+
+        reservationDao.updateDateTimeById(reservationId, changedDate, changedTimeId);
+
+        Reservation reservation = reservationDao.selectById(reservationId)
+                .orElseThrow();
+
+        assertThat(reservation.getDate()).isEqualTo(changedDate);
+        assertThat(reservation.getTime().getId()).isEqualTo(changedTimeId);
+    }
 }

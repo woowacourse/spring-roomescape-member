@@ -2,6 +2,7 @@ package roomescape.reservation.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -41,16 +42,17 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Reservation selectById(Long id) {
+    public Optional<Reservation> selectById(Long id) {
         String sql =
                 """
                         select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
                         from reservation r
                         inner join reservation_time t
                         on r.time_id = t.id
-                        and r.id = ?
+                        where r.id = ?
                         """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper, id);
+        return reservations.stream().findAny();
     }
 
     public List<Reservation> selectByThemeIdAndDate(Long themeId, LocalDate date) {
@@ -60,7 +62,7 @@ public class ReservationDao {
                         from reservation r
                         inner join reservation_time t
                         on r.time_id = t.id
-                        and r.theme_id = ?
+                        where r.theme_id = ?
                         and r.date = ?
                         """;
         return jdbcTemplate.query(sql, rowMapper, themeId, date);
@@ -73,7 +75,7 @@ public class ReservationDao {
                         from reservation r
                         inner join reservation_time t
                         on r.time_id = t.id
-                        and r.time_id = ?
+                        where r.time_id = ?
                         """;
         return jdbcTemplate.query(sql, rowMapper, timeId);
     }
@@ -89,16 +91,35 @@ public class ReservationDao {
         return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
     }
 
+    public List<Reservation> selectByName(String name) {
+        String sql =
+                """
+                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        where r.name = ?
+                        """;
+        return jdbcTemplate.query(sql, rowMapper, name);
+    }
+
     public Reservation insert(Reservation reservation) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
+                .addValue("theme_id", reservation.getThemeId())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getThemeId());
+                .addValue("time_id", reservation.getTime().getId());
 
         Long id = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
         return new Reservation(id, reservation.getName(), reservation.getThemeId(), reservation.getDate(),
                 reservation.getTime());
+    }
+
+    public Optional<Reservation> updateDateTimeById(Long id, LocalDate date, Long timeId) {
+       String sql = "update reservation set date = ?, time_id = ? where id = ?";
+       jdbcTemplate.update(sql, date, timeId, id);
+
+       return selectById(id);
     }
 
     public void delete(Long id) {

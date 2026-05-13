@@ -27,21 +27,47 @@ public class ReservationService {
     }
 
     public Reservation findById(Long id) {
-        return reservationDao.selectById(id);
+        return reservationDao.selectById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    public List<Reservation> findByName(String name) {
+        return reservationDao.selectByName(name);
     }
 
     @Transactional
     public Reservation add(String name, Long themeId, LocalDate date, Long timeId) {
         ReservationTime time = timeDao.selectById(timeId);
-        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
-
         validateDateTime(date, time);
+
+        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
         for (Reservation reserved : reservedList) {
             validateReserved(timeId, reserved.getTime());
         }
 
         Reservation newReservation = new Reservation(name, themeId, date, time);
         return reservationDao.insert(newReservation);
+    }
+
+    @Transactional
+    public Reservation modifyDateTimeByName(Long id, String name, Long themeId, LocalDate date, Long timeId) {
+        Reservation originReservation = reservationDao.selectById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!originReservation.getName().equals(name)) {
+            throw new RoomescapeException(ErrorCode.CANNOT_MODIFY_OTHER_RESERVATION);
+        }
+
+        ReservationTime time = timeDao.selectById(timeId);
+        validateDateTime(date, time);
+
+        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
+        for (Reservation reserved : reservedList) {
+            validateReserved(timeId, reserved.getTime());
+        }
+
+        return reservationDao.updateDateTimeById(id, date, timeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
     public void delete(Long id) {
