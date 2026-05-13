@@ -14,13 +14,14 @@ import roomescape.domain.Theme;
 
 @Repository
 public class ReservationRepository {
-    public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getString("date"),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getString("start_at")),
             Theme.of(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("description"), resultSet.getString("thumbnail_url")));
+
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,
                    r.name,

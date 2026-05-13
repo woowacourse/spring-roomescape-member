@@ -20,7 +20,7 @@ import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTimeIntegrationTest {
+public class MissionStep3Test {
 
     @LocalServerPort
     private int port;
