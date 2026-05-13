@@ -32,14 +32,10 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+        Reservation reservation = reservationService.saveReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

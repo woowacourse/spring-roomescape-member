@@ -28,25 +28,18 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam("name") String name) {
-        try {
-            List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
+        List<Reservation> reservations = reservationService.findReservationsByName(name);
+        List<ReservationResponse> responses = ReservationResponse.from(reservations);
 
-            return ResponseEntity.ok(responses);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+        Reservation reservation = reservationService.saveReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,7 @@
 package roomescape.controller.admin;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -10,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(AdminReservationController.class)
@@ -99,5 +103,24 @@ class AdminReservationControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("중복 예약인 경우 의도된 에러 응답을 반환한다.")
+    void failCreate_WhenReservationDuplicated() throws Exception {
+        given(reservationService.saveReservation(any()))
+                .willThrow(new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED));
+
+        mockMvc.perform(post("/admin/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "브라운",
+                                  "date": "2026-05-14",
+                                  "timeId": 1,
+                                  "themeId": 1
+                                }
+                                """))
+                .andExpect(status().isConflict());
     }
 }
