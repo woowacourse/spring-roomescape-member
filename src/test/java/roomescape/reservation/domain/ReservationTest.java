@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
+import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -19,6 +21,7 @@ class ReservationTest {
     private final String name = "한다";
     private final LocalDate date = LocalDate.now().plusMonths(1);
     private final ReservationDate reservationDate = ReservationDate.create(date);
+    private final ReservationDate pastDate = ReservationDate.load(2L, LocalDate.now().minusDays(1), true);
     private final LocalTime startAt = LocalTime.of(15, 40);
     private final ReservationTime reservationTime = ReservationTime.create(startAt);
     private final Theme theme = Theme.load(1L, "테마", "설명", "썸네일", true);
@@ -151,4 +154,61 @@ class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 ID는 필수입니다.");
     }
+
+    @Test
+    @DisplayName("아직 지나지 않은 본인의 예약은 취소할 수 있다.")
+    void cancel() {
+        // given
+        String reservationName = "송송";
+        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+
+        // when
+        reserved.cancel(reservationName);
+
+        // then
+        assertThat(reserved.status())
+                .isEqualTo(CANCELED);
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아닌데 취소를하면 예외가 발생한다.")
+    void cancel_not_owner() {
+        // given
+        String reservationName = "송송";
+        String anotherName = "주주";
+        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+
+        // when & then
+        assertThatThrownBy(() -> reserved.cancel(anotherName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("본인의 예약만 취소할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 취소된 예약을 취소하면 예외가 발생한다.")
+    void cancel_already_canceled() {
+        // given
+        String reservationName = "송송";
+        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+        reserved.updateStatus(CANCELED);
+
+        // when & then
+        assertThatThrownBy(() -> reserved.cancel(reservationName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 취소된 예약입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
+    void cancel_not_past() {
+        // given
+        String reservationName = "송송";
+        Reservation reserved = Reservation.load(2L, reservationName, pastDate, reservationTime, theme, RESERVED);
+
+        // when & then
+        assertThatThrownBy(() -> reserved.cancel(reservationName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+    }
+
 }
