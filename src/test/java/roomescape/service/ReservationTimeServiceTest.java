@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ConflictException;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
@@ -14,6 +16,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +38,11 @@ class ReservationTimeServiceTest {
     void 예약이_존재하는_시간은_삭제할_수_없다() {
         Long timeId = 1L;
 
+        doThrow(IllegalStateException.class)
+                .when(reservationTimeRepository)
+                .deleteTime(timeId);
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test

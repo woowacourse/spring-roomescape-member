@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -48,7 +49,11 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
 
     @Override
     public void deleteTime(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ? ", id);
+        try {
+            jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ? ", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException();
+        }
     }
 
     @Override

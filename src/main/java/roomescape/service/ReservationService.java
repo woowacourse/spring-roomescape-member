@@ -5,7 +5,7 @@ import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicationException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.code.ConflictCode;
 import roomescape.exception.code.NotFoundCode;
@@ -54,7 +54,7 @@ public class ReservationService {
 
     private void checkIfReservationPossible(ReservationSaveCommand command) {
         if (reservationRepository.countReservationsOf(command.date(), command.timeId(), command.themeId()) > 0) {
-            throw new DuplicationException(ConflictCode.RESERVATION_DUPLICATED);
+            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
         }
     }
 

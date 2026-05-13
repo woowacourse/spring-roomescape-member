@@ -10,7 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.DuplicationException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.BadRequestCode;
@@ -159,7 +159,7 @@ class ReservationServiceTest {
         given(reservationRepository.countReservationsOf(date, TIME_ID, THEME_ID)).willReturn(1);
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
-                .isInstanceOf(DuplicationException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
     }
 

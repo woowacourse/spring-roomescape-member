@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.DuplicationException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.BadRequestCode;
@@ -49,24 +49,14 @@ public class GlobalExceptionHandler {
         return toResponse(e.getCode(), request, e.getMessage());
     }
 
-    @ExceptionHandler(DuplicationException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicationException(DuplicationException e, HttpServletRequest request) {
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicationException(ConflictException e, HttpServletRequest request) {
         return toResponse(e.getCode(), request, e.getMessage());
     }
 
     @ExceptionHandler(UnprocessableException.class)
     public ResponseEntity<ErrorResponse> handleUnprocessableException(UnprocessableException e, HttpServletRequest request) {
         return toResponse(e.getCode(), request, e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        BadRequestCode code = BadRequestCode.INVALID_REQUEST;
-        String message = e.getMessage();
-        if (message == null || message.isBlank()) {
-            message = code.getMessage();
-        }
-        return toResponse(code, request, message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
