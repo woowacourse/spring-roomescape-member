@@ -36,11 +36,13 @@ reservation_time ||--o{ reservation : "has (1:N)"
         VARCHAR thumbnail_image_url
         VARCHAR description
         VARCHAR duration_time
+        TIMESTAMP deleted_at
     }
 
     reservation_time {
         BIGINT id PK
         VARCHAR start_at
+        TIMESTAMP deleted_at
     }
 
     reservation {
@@ -48,6 +50,7 @@ reservation_time ||--o{ reservation : "has (1:N)"
         VARCHAR name
         VARCHAR date
         VARCHAR status
+        TIMESTAMP deleted_at
         BIGINT time_id FK
         BIGINT theme_id FK
     }
