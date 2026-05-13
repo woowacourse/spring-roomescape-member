@@ -22,7 +22,7 @@ class ReservationInfoTest {
     @BeforeEach
     void setUp() {
         testTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        testTheme = new Theme(1L, "우테코 방탈출", "재밌어요", "https://image.com");
+        testTheme = new Theme(1L, "이름", "설명", "https://image.com");
     }
 
     @Test

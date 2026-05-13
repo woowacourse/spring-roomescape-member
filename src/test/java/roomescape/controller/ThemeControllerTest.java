@@ -46,7 +46,7 @@ class ThemeControllerTest {
     @DisplayName("테마 생성에서 필수값이 누락되면 400 에러를 반환한다")
     void addThemeWithBlankValue() throws Exception {
         Map<String, String> params = Map.of(
-                "name", " ", // @NotBlank 위반
+                "name", " ",
                 "description", "설명",
                 "imageUrl", "이미지"
         );
@@ -100,7 +100,7 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 조회에서 날짜 형식이 올바르지 않으면 400 에러를 반환한다")
     void getPopularThemesWithInvalidDate() throws Exception {
         mockMvc.perform(get("/themes/popular")
-                        .param("startDate", "26/05/01") // 잘못된 형식
+                        .param("startDate", "26/05/01")
                         .param("endDate", "2026-05-31")
                         .param("size", "5"))
                 .andExpect(status().isBadRequest())
