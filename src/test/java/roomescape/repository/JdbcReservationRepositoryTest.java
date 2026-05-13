@@ -101,6 +101,38 @@ class JdbcReservationRepositoryTest {
                 .containsExactlyInAnyOrder(savedRudevicoReservation, savedCocoReservation);
     }
 
+    @DisplayName("특정 사용자에 대한 모든 예약을 조회한다")
+    @Test
+    void 사용자_이름을_조건으로_모든_예약을_조회한다() {
+        // given
+        ReservationTime reservationTime1 = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation rudevicoReservation =
+                Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime1, theme);
+
+        ReservationTime reservationTime2 = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.parse("11:20:30"))
+        );
+        Reservation cocoReservation =
+                Reservation.withoutId("코코", LocalDate.parse("2026-05-06"), reservationTime2, theme);
+
+        Reservation savedRudevicoReservation = reservationRepository.save(rudevicoReservation);
+        Reservation savedCocoReservation = reservationRepository.save(cocoReservation);
+
+        // when
+        List<Reservation> foundReservations = reservationRepository.findAllByUsername("루드비코");
+
+        // then
+        assertThat(foundReservations)
+                .hasSize(1)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrder(savedRudevicoReservation);
+    }
+
     @DisplayName("id에 해당하는 예약을 삭제한다")
     @Test
     void 예약을_삭제한다() {

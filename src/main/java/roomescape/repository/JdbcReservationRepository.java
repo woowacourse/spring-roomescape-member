@@ -53,6 +53,25 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme as th
                 ON r.theme_id = th.id
             """;
+    private static final String FIND_ALL_RESERVATIONS_BY_USERNAME = """
+                SELECT r.id AS reservation_id,
+                r.name, r.date,
+                t.id AS reservation_time_id,
+                t.start_at AS time_value,
+                th.id AS reservation_theme_id,
+                th.name AS reservation_theme_name,
+                th.description AS reservation_theme_description,
+                th.image_url AS reservation_theme_image_url
+            
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+            
+                INNER JOIN theme as th
+                ON r.theme_id = th.id
+            
+                WHERE r.name = ?
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -84,6 +103,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATIONS,
                 getReservationRowMapper()
+        );
+    }
+
+    @Override
+    public List<Reservation> findAllByUsername(String username) {
+        return jdbcTemplate.query(
+                FIND_ALL_RESERVATIONS_BY_USERNAME,
+                getReservationRowMapper(),
+                username
         );
     }
 
