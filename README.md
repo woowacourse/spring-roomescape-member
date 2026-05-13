@@ -83,9 +83,8 @@
 - 사용자가 본인의 예약을 취소할 수 있다.
     - [ ] 날짜, 시간이 지난 예약을 취소 요청할 경우 예외를 발생시킨다.
 - 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
-    - [ ] 날짜, 시간 이외의 것들의 변경을 요청할 경우 예외를 발생시킨다.
-    - [ ] 변경하려는 날짜, 시간이 이미 지난 경우 예외를 발생시킨다.
-    - [ ] 변경하려는 날짜, 시간에 예약이 이미 존재할 경우 예외를 발생시킨다.
+    - [x] 변경하려는 날짜, 시간이 이미 지난 경우 예외를 발생시킨다.
+    - [x] 변경하려는 날짜, 시간에 예약이 이미 존재할 경우 예외를 발생시킨다.
 - 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
 
 ## API URL
@@ -408,7 +407,15 @@
         }
         ```
 
-        - [ ] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        - [x] 예약 ID로 기존 예약을 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        ```text
+        {
+            "status": "NOT_FOUND",
+            "message": "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."
+        }
+        ```
+
+        - [x] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
             "status": "NOT_FOUND",
@@ -416,7 +423,7 @@
         }
         ```
 
-        - [ ] 이미 지나간 날짜, 시간으로 예약을 변경할 경우: `Http Status: 422 Unprocessable Entity`
+        - [x] 이미 지나간 날짜, 시간으로 예약을 변경할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
             "status": "UNPROCESSABLE_ENTITY",
@@ -424,19 +431,11 @@
         }
         ```
 
-        - [ ] 예약이 이미 존재하는 시간으로 변경할 경우: `Http Status: 409 Conflict`
+        - [x] 예약이 이미 존재하는 시간으로 변경할 경우: `Http Status: 409 Conflict`
         ```text
         {
             "status": "CONFLICT",
             "message": "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."
-        }
-        ```
-
-        - [ ] 날짜, 시간이 아닌 변경을 요청할 경우: `Http Status: 422 Unprocessable Entity`
-        ```text
-        {
-            "status": "UNPROCESSABLE_ENTITY",
-            "message": "[ERROR] 날짜, 시간만 변경할 수 있습니다. 변경할 수 없는 값을 제외하고 다시 시도해 주세요."
         }
         ```
 
