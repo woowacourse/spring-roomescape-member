@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setToday();
   renderTimeSelects();
   bindEvents();
-  await loadAll();
+  await runSafely(loadAll);
   route();
 });
 
@@ -28,32 +28,32 @@ function setToday() {
 function bindEvents() {
   $("#availability-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await loadAvailableTimes();
+    await runSafely(loadAvailableTimes);
   });
 
   $("#popular-theme-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await loadPopularThemes();
+    await runSafely(loadPopularThemes);
   });
 
   $("#reservation-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createReservation();
+    await runSafely(createReservation);
   });
 
   $("#theme-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createTheme();
+    await runSafely(createTheme);
   });
 
   $("#time-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createTime();
+    await runSafely(createTime);
   });
 
-  $("[data-refresh='reservations']").addEventListener("click", loadReservations);
-  $("[data-refresh='themes']").addEventListener("click", loadThemes);
-  $("[data-refresh='times']").addEventListener("click", loadTimes);
+  $("[data-refresh='reservations']").addEventListener("click", () => runSafely(loadReservations));
+  $("[data-refresh='themes']").addEventListener("click", () => runSafely(loadThemes));
+  $("[data-refresh='times']").addEventListener("click", () => runSafely(loadTimes));
 
   $("#selected-date").addEventListener("change", syncAvailabilityInputs);
   $("#selected-theme").addEventListener("change", syncAvailabilityInputs);
@@ -164,21 +164,27 @@ async function createTime() {
 }
 
 async function deleteReservation(id) {
-  await request(`/reservations/${id}`, { method: "DELETE" });
-  await loadReservations();
-  showNotice("예약이 삭제되었습니다.");
+  await runSafely(async () => {
+    await request(`/reservations/${id}`, { method: "DELETE" });
+    await loadReservations();
+    showNotice("예약이 삭제되었습니다.");
+  });
 }
 
 async function deleteTheme(id) {
-  await request(`/admin/themes/${id}`, { method: "DELETE" });
-  await loadThemes();
-  showNotice("테마가 삭제되었습니다.");
+  await runSafely(async () => {
+    await request(`/admin/themes/${id}`, { method: "DELETE" });
+    await loadThemes();
+    showNotice("테마가 삭제되었습니다.");
+  });
 }
 
 async function deleteTime(id) {
-  await request(`/admin/times/${id}`, { method: "DELETE" });
-  await loadTimes();
-  showNotice("시간이 삭제되었습니다.");
+  await runSafely(async () => {
+    await request(`/admin/times/${id}`, { method: "DELETE" });
+    await loadTimes();
+    showNotice("시간이 삭제되었습니다.");
+  });
 }
 
 async function request(path, options = {}) {
@@ -191,9 +197,11 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    showNotice(message || `요청 실패: ${response.status}`, true);
-    throw new Error(message || `HTTP ${response.status}`);
+    const message = await readErrorMessage(response);
+    showNotice(message, true);
+    const error = new Error(message);
+    error.noticeShown = true;
+    throw error;
   }
 
   if (response.status === 204) {
@@ -201,6 +209,30 @@ async function request(path, options = {}) {
   }
 
   return response.json();
+}
+
+async function runSafely(action) {
+  try {
+    await action();
+  } catch (error) {
+    if (!error.noticeShown) {
+      showNotice(error.message || "요청을 처리할 수 없습니다.", true);
+    }
+    console.error(error);
+  }
+}
+
+async function readErrorMessage(response) {
+  const fallbackMessage = `요청 실패: ${response.status}`;
+  const contentType = response.headers.get("Content-Type") || "";
+
+  if (contentType.includes("application/json")) {
+    const body = await response.json().catch(() => null);
+    return body?.message || fallbackMessage;
+  }
+
+  const body = await response.text().catch(() => "");
+  return body || fallbackMessage;
 }
 
 function route() {
