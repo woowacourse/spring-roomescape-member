@@ -1,5 +1,6 @@
 package roomescape.domain.reservation;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.dto.ReservationCreationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -62,6 +64,22 @@ public class ReservationService {
     }
 
     public void cancelReservation(Long id) {
+        validateModifiable(id);
+        reservationRepository.deleteById(id);
+    }
+
+    public ReservationResponse updateReservation(Long id, @Valid ReservationUpdateRequest request) {
+        validateModifiable(id);
+        int updatedCount = reservationRepository.updateReservation(id, request.dateId(), request.timeId());
+        if (updatedCount == 0) {
+            log.warn(" 수정할 예약 건이 없습니다. reservationId={}", id);
+        }
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        return ReservationResponse.from(reservation);
+    }
+
+    private void validateModifiable(Long id) {
         LocalDate today = LocalDate.now();
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
@@ -69,6 +87,5 @@ public class ReservationService {
         if (playDay.isBefore(today) || playDay.isEqual(today)) {
             throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_CANCEL);
         }
-        reservationRepository.deleteById(id);
     }
 }

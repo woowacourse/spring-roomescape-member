@@ -88,6 +88,13 @@ public class JdbcReservationRepository implements ReservationRepository {
             where r.id  = ?
             """;
 
+    private static final String UPDATE_DATE_TIME_SQL =
+        """
+            update reservation
+            set date_id = ?, time_id = ?
+            where id = ?
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -163,6 +170,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(FIND_BY_ID_SQL, reservationRowMapper(), id)
             .stream()
             .findFirst();
+    }
+
+    @Override
+    public int updateReservation(Long id, Long dateId, Long timeId) {
+        return jdbcTemplate.update(UPDATE_DATE_TIME_SQL, dateId, timeId, id);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

@@ -22,4 +22,6 @@ public interface ReservationRepository {
     List<Reservation> findByName(String name);
 
     Optional<Reservation> findById(Long id);
+
+    int updateReservation(Long id, Long dateId, Long timeId);
 }
