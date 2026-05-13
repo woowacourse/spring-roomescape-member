@@ -34,22 +34,48 @@
 
 ### 공통 에러 응답
 
+에러 응답은 RFC 7807 `ProblemDetail` 형식을 따른다.
+
 **Response**
 
 ```
 Content-Type: application/json
 
 {
-  "message": "에러 메시지"
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "에러 메시지"
+}
+```
+
+요청 본문 검증에 실패한 경우에는 `errors` 필드에 잘못된 필드와 사유가 함께 포함된다.
+
+```
+Content-Type: application/json
+
+{
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "입력값이 올바르지 않습니다.",
+  "errors": [
+    {
+      "field": "name",
+      "reason": "예약자 이름은 비어 있을 수 없습니다."
+    }
+  ]
 }
 ```
 
 | statusCode | 상황 |
 | --- | --- |
-| 400 Bad Request | 요청 본문, 쿼리 파라미터, path variable의 형식이 잘못된 경우, 필수값이 누락된 경우, 빈 문자열처럼 유효하지 않은 값이 전달된 경우, 지나간 날짜와 시간으로 예약을 요청한 경우 |
+| 400 Bad Request | 요청 본문, 쿼리 파라미터, path variable의 형식이 잘못된 경우, 필수값이 누락된 경우, 빈 문자열이나 양수가 아닌 id처럼 유효하지 않은 값이 전달된 경우, 지나간 날짜와 시간으로 예약을 요청한 경우 |
 | 404 Not Found | 요청에서 조회, 삭제, 참조한 예약, 예약 시간 또는 테마가 존재하지 않는 경우 |
-| 409 Conflict | 이미 존재하는 자원을 생성하려는 경우, 같은 날짜+시간+테마에 예약이 이미 존재하는 경우, 예약이 존재하는 시간 또는 테마를 삭제하려는 경우 |
-| 500 Internal Server Error | 서버 내부 오류가 발생한 경우 |
+| 405 Method Not Allowed | 지원하지 않는 HTTP 메서드로 요청한 경우 |
+| 415 Unsupported Media Type | 지원하지 않는 Content-Type으로 요청한 경우 |
+| 409 Conflict | 이미 존재하는 자원을 생성하려는 경우, 같은 날짜+시간+테마에 예약이 이미 존재하는 경우, 예약이 존재하는 예약 시간을 삭제하려는 경우 |
+| 500 Internal Server Error | 서버 내부 오류가 발생한 경우. 내부 오류 상세는 응답에 노출하지 않는다. |
 
 ### 예약 API
 
@@ -62,7 +88,7 @@ POST /reservations HTTP/1.1
 content-type: application/json
 
 {
-    "date": "2023-08-05",
+    "date": "2026-05-14",
     "name": "브라운",
     "timeId": 1,
     "themeId": 1
@@ -79,7 +105,7 @@ Content-Type: application/json
 {
     "id": 1,
     "name": "브라운",
-    "date": "2023-08-05",
+    "date": "2026-05-14",
     "time" : {
         "id": 1,
         "startAt" : "10:00"
@@ -99,7 +125,7 @@ Content-Type: application/json
 | statusCode | 상황 |
 | --- | --- |
 | 201 Created | 예약 생성 성공 |
-| 400 Bad Request | 예약자 이름이 비어 있거나 255자를 초과한 경우, 날짜 형식이 `yyyy-MM-dd`가 아닌 경우, 필수값이 누락된 경우, 지나간 날짜와 시간에 대한 예약인 경우 |
+| 400 Bad Request | 예약자 이름이 비어 있거나 255자를 초과한 경우, 날짜 형식이 `yyyy-MM-dd`가 아닌 경우, 필수값이 누락된 경우, `timeId` 또는 `themeId`가 양수가 아닌 경우, 지나간 날짜와 시간에 대한 예약인 경우 |
 | 404 Not Found | `timeId` 또는 `themeId`에 해당하는 예약 시간 또는 테마가 존재하지 않는 경우 |
 | 409 Conflict | 같은 날짜, 시간, 테마에 이미 예약이 존재하는 경우 |
 
@@ -119,7 +145,7 @@ GET /admin/reservations HTTP/1.1
     {
       "id": 1,
       "name": "브라운",
-      "date": "2023-08-05",
+      "date": "2026-05-14",
       "time": {
         "id": 1,
         "startAt": "10:00"
@@ -160,6 +186,7 @@ HTTP/1.1 204
 | statusCode | 상황 |
 | --- | --- |
 | 204 No Content | 예약 삭제 성공 |
+| 400 Bad Request | 예약 id가 양수가 아닌 경우 |
 | 404 Not Found | 삭제하려는 예약이 존재하지 않는 경우 |
 
 ### 시간 API
@@ -246,6 +273,7 @@ HTTP/1.1 204
 | statusCode | 상황 |
 | --- | --- |
 | 204 No Content | 예약 시간 삭제 성공 |
+| 400 Bad Request | 예약 시간 id가 양수가 아닌 경우 |
 | 404 Not Found | 삭제하려는 예약 시간이 존재하지 않는 경우 |
 | 409 Conflict | 해당 예약 시간에 연결된 예약이 존재하는 경우 |
 
@@ -253,7 +281,7 @@ HTTP/1.1 204
 
 **Request**
 ```
-GET /times/availability?date=2026-05-04&themeId=1 HTTP/1.1
+GET /times/availability?date=2026-05-14&themeId=1 HTTP/1.1
 ```
 
 **Response**
@@ -278,7 +306,7 @@ Content-Type: application/json
 | statusCode | 상황 |
 | --- | --- |
 | 200 OK | 예약 가능 시간 조회 성공 |
-| 400 Bad Request | `date` 형식이 `yyyy-MM-dd`가 아니거나 필수 쿼리 파라미터가 누락된 경우 |
+| 400 Bad Request | `date` 형식이 `yyyy-MM-dd`가 아니거나 필수 쿼리 파라미터가 누락된 경우, `themeId`가 양수가 아닌 경우 |
 | 404 Not Found | `themeId`에 해당하는 테마가 존재하지 않는 경우 |
 
 ### 테마 API
@@ -371,8 +399,8 @@ HTTP/1.1 204
 | statusCode | 상황 |
 | --- | --- |
 | 204 No Content | 테마 삭제 성공 |
+| 400 Bad Request | 테마 id가 양수가 아닌 경우 |
 | 404 Not Found | 삭제하려는 테마가 존재하지 않는 경우 |
-| 409 Conflict | 해당 테마에 연결된 예약이 존재하는 경우 |
 
 #### 인기 테마 조회
 
