@@ -71,8 +71,7 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
-
-
+    
     @Test
     public void 테마_등록_시_이름이_중복이면_409를_반환한다() {
         ThemeRequest themeRequest = new ThemeRequest("붉은 요람", "테스트입니다", "url");
