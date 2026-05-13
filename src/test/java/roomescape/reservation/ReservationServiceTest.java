@@ -62,7 +62,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(time));
         given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
         given(reservationRepository.save(any()))
-                .willReturn(new Reservation(1L, "동키", theme, date, time));
+                .willReturn(new Reservation(1L, "동키", theme, date, time, null));
 
         ReservationResponse response = reservationService.create(request);
 

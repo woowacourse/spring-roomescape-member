@@ -47,9 +47,9 @@ class ReservationTimeServiceTest {
 
         given(reservationRepository.findByThemeAndDate(themeId, date))
                 .willReturn(List.of(
-                        new Reservation(1L, "동키", theme, date, time1),
-                        new Reservation(2L, "그해", theme, date, time3),
-                        new Reservation(3L, "아루", theme, date, time5)
+                        new Reservation(1L, "동키", theme, date, time1, null),
+                        new Reservation(2L, "그해", theme, date, time3, null),
+                        new Reservation(3L, "아루", theme, date, time5, null)
                 ));
 
         given(reservationTimeRepository.findAll())
@@ -86,11 +86,11 @@ class ReservationTimeServiceTest {
 
         given(reservationRepository.findByThemeAndDate(themeId, date))
                 .willReturn(List.of(
-                        new Reservation(1L, "동키", theme, date, time1),
-                        new Reservation(2L, "그해", theme, date, time2),
-                        new Reservation(3L, "아루", theme, date, time3),
-                        new Reservation(4L, "매트", theme, date, time4),
-                        new Reservation(5L, "동키", theme, date, time5)
+                        new Reservation(1L, "동키", theme, date, time1, null),
+                        new Reservation(2L, "그해", theme, date, time2, null),
+                        new Reservation(3L, "아루", theme, date, time3, null),
+                        new Reservation(4L, "매트", theme, date, time4, null),
+                        new Reservation(5L, "동키", theme, date, time5, null)
                 ));
 
         given(reservationTimeRepository.findAll())

@@ -9,11 +9,11 @@
 
 ### 2단계 - 에러 응답 설계
 
-- [ ] 500 사용자 노출 방지
-- [ ] 응답 본문 구조화
-- [ ] MethodArgumentNotValidException 응답 정리
-- [ ] GlobalExceptionHandler 일관성 정리
-- [ ] 브라우저에서 의미 있는 메시지 표시
+- [x] 500 사용자 노출 방지
+- [x] 응답 본문 구조화
+- [x] MethodArgumentNotValidException 응답 정리
+- [x] GlobalExceptionHandler 일관성 정리
+- [x] 브라우저에서 의미 있는 메시지 표시
 
 ### 3단계 - 내 예약 조회/변경/취소
 

@@ -14,13 +14,16 @@ public class Reservation {
     private final Theme theme;
     private final LocalDate date;
     private final ReservationTime time;
+    private LocalDateTime deletedAt;
 
-    public Reservation(Long id, String userName, Theme theme, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String userName, Theme theme, LocalDate date, ReservationTime time,
+                       LocalDateTime deletedAt) {
         this.id = id;
         this.userName = userName;
         this.theme = theme;
         this.date = date;
         this.time = time;
+        this.deletedAt = deletedAt;
     }
 
     public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time, LocalDateTime now) {
@@ -50,6 +53,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 
     private void validateReservationTime(LocalDateTime reservationDateTime, LocalDateTime now) {
