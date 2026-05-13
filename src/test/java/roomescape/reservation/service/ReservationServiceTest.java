@@ -165,6 +165,20 @@ class ReservationServiceTest {
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
+    @Test
+    @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
+    void reserved_duplicated() {
+        // given
+        Reservation reservation = reservation(name, reservationDate1, reservationTime1, theme1);
+        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
+        save(reservation);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.reserve(duplicated))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
+    }
+
     private Reservation save(Reservation reservation) {
         return reservationRepository.save(reservation);
     }

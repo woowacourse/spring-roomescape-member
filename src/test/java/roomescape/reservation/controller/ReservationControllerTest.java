@@ -195,4 +195,28 @@ class ReservationControllerTest {
                 .statusCode(400);
     }
 
+    @Test
+    @DisplayName("예약된 날짜/시간/테마를 중복 예약하면 예외가 발생한다.")
+    void reserved_duplicated() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+
+        createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("해당 날짜/시간/테마는 이미 예약되었습니다."));
+    }
+
 }

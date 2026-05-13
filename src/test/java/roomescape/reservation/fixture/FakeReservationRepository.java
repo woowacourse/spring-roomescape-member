@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -51,7 +52,8 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(reservation ->
                         reservation.date().id().equals(dateId) &&
                                 reservation.time().id().equals(timeId) &&
-                                reservation.theme().id().equals(themeId)
+                                reservation.theme().id().equals(themeId) &&
+                                reservation.status() == ReservationStatus.RESERVED
                 );
     }
 
