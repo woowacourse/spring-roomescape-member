@@ -182,4 +182,9 @@ public class ReservationRepository {
             return Optional.empty();
         }
     }
+
+    public void updateSchedule(Long reservationId, Long newScheduleId) {
+        String sql = "UPDATE reservation SET schedule_id=? WHERE id=?";
+        jdbcTemplate.update(sql, newScheduleId, reservationId);
+    }
 }
