@@ -1,11 +1,9 @@
 package roomescape.service.dto.request;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 
-public record ServiceReservationTimeRequest(
-        @NotNull(message = "[ERROR] 시간은 비어 있을 수 없습니다.")
+public record ServiceReservationTimeCreateRequest(
         LocalTime startAt
 ) {
     public ReservationTime toEntity() {

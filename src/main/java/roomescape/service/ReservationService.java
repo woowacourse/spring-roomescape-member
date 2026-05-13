@@ -13,7 +13,8 @@ import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.ServiceReservationRequest;
+import roomescape.service.dto.request.ServiceReservationCreateRequest;
+import roomescape.service.dto.request.ServiceReservationUpdateRequest;
 import roomescape.service.dto.response.ServiceReservationResponse;
 
 @Service
@@ -32,25 +33,25 @@ public class ReservationService {
     }
 
     @Transactional
-    public ServiceReservationResponse create(ServiceReservationRequest requestDto) {
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(requestDto.timeId());
+    public ServiceReservationResponse create(ServiceReservationCreateRequest request) {
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
         if (reservationTime.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
-        Optional<Theme> theme = themeRepository.read(requestDto.themeId());
+        Optional<Theme> theme = themeRepository.read(request.themeId());
         if (theme.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_THEME);
         }
 
-        boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(requestDto.date(),
-                requestDto.timeId(),
-                requestDto.themeId());
+        boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(request.date(),
+                request.timeId(),
+                request.themeId());
         if (existReservation) {
             throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        Reservation reservationWithoutId = requestDto.toEntity(reservationTime.get(), theme.get());
+        Reservation reservationWithoutId = request.toEntity(reservationTime.get(), theme.get());
         if (reservationWithoutId.isPast(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.PAST_TIME_RESERVATION);
         }
@@ -74,6 +75,32 @@ public class ReservationService {
         return reservations.stream()
                 .map(ServiceReservationResponse::from)
                 .toList();
+    }
+
+    public ServiceReservationResponse update(Long id, ServiceReservationUpdateRequest request) {
+        Optional<Reservation> beforeReservation = reservationRepository.readById(id);
+        if (beforeReservation.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION);
+        }
+
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
+        if (reservationTime.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+        }
+
+        Reservation newReservation = request.toEntity(beforeReservation.get(), reservationTime.get());
+        if (newReservation.isPast(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION);
+        }
+
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(newReservation.getDate(),
+                newReservation.getTime().getId(), newReservation.getTheme().getId())) {
+            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
+        }
+
+        reservationRepository.update(id, request.date(), request.timeId());
+
+        return ServiceReservationResponse.from(newReservation);
     }
 
     @Transactional

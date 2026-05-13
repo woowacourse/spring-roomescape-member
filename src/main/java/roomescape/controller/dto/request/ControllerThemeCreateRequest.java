@@ -1,9 +1,9 @@
-package roomescape.service.dto.request;
+package roomescape.controller.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import roomescape.domain.Theme;
+import roomescape.service.dto.request.ServiceThemeCreateRequest;
 
-public record ServiceThemeRequest(
+public record ControllerThemeCreateRequest(
         @NotBlank(message = "[ERROR] 이름은 비어 있을 수 없습니다.")
         String name,
 
@@ -13,7 +13,7 @@ public record ServiceThemeRequest(
         @NotBlank(message = "[ERROR] 썸네일은 비어 있을 수 없습니다.")
         String thumbnailUrl
 ) {
-    public Theme toEntity() {
-        return new Theme(name, description, thumbnailUrl);
+    public ServiceThemeCreateRequest toServiceThemeRequest() {
+        return new ServiceThemeCreateRequest(name, description, thumbnailUrl);
     }
 }

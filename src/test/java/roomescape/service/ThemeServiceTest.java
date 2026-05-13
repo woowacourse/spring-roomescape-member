@@ -25,7 +25,7 @@ import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.ServiceThemeRequest;
+import roomescape.service.dto.request.ServiceThemeCreateRequest;
 import roomescape.service.dto.response.ServiceThemeResponse;
 
 public class ThemeServiceTest {
@@ -95,7 +95,7 @@ public class ThemeServiceTest {
         String name = "피즈의 모험";
         String description = "모험 이야기";
         String thumbnailUrl = "url.jpg";
-        ServiceThemeRequest requestDto = new ServiceThemeRequest(name, description, thumbnailUrl);
+        ServiceThemeCreateRequest requestDto = new ServiceThemeCreateRequest(name, description, thumbnailUrl);
 
         ServiceThemeResponse responseDto = themeService.create(requestDto);
 
@@ -111,12 +111,12 @@ public class ThemeServiceTest {
 
     @Test
     void readAllTest() {
-        themeService.create(new ServiceThemeRequest(
+        themeService.create(new ServiceThemeCreateRequest(
                 "피즈의 모험",
                 "모험 이야기",
                 "url.jpg"
         ));
-        themeService.create(new ServiceThemeRequest(
+        themeService.create(new ServiceThemeCreateRequest(
                 "나무의 일대기",
                 "모험 이야기",
                 "url.jpg"
@@ -141,7 +141,7 @@ public class ThemeServiceTest {
 
     @Test
     void deleteTest() {
-        themeService.create(new ServiceThemeRequest(
+        themeService.create(new ServiceThemeCreateRequest(
                 "피즈의 모험",
                 "모험 이야기",
                 "url.jpg"

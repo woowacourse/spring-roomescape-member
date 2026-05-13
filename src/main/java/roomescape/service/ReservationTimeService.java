@@ -10,7 +10,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.ServiceReservationTimeRequest;
+import roomescape.service.dto.request.ServiceReservationTimeCreateRequest;
 import roomescape.service.dto.response.ServiceReservationTimeAvailabilityResponse;
 import roomescape.service.dto.response.ServiceReservationTimeResponse;
 
@@ -30,7 +30,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ServiceReservationTimeResponse create(ServiceReservationTimeRequest requestDto) {
+    public ServiceReservationTimeResponse create(ServiceReservationTimeCreateRequest requestDto) {
         ReservationTime reservationTime = reservationTimeRepository.create(requestDto.toEntity());
         return ServiceReservationTimeResponse.from(reservationTime);
     }

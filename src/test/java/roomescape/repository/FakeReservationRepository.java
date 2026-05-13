@@ -1,8 +1,12 @@
 package roomescape.repository;
 
+import static roomescape.repository.FakeReservationTimeRepository.RESERVATION_TIME_TABLE;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -23,6 +27,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> readById(Long id) {
+        return Optional.ofNullable(fakeDatabase.read(RESERVATION_TABLE, id, Reservation.class));
+    }
+
+    @Override
     public List<Reservation> readByName(String name) {
         return fakeDatabase.readAll(RESERVATION_TABLE, Reservation.class).stream()
                 .filter(reservation -> reservation.getName().equals(name))
@@ -33,6 +42,18 @@ public class FakeReservationRepository implements ReservationRepository {
     public List<Reservation> readAll() {
         return fakeDatabase.readAll(RESERVATION_TABLE, Reservation.class).stream()
                 .toList();
+    }
+
+    @Override
+    public void update(Long id, LocalDate newDate, Long newTimeId) {
+        Reservation reservation = fakeDatabase.read(RESERVATION_TABLE, id, Reservation.class);
+        ReservationTime newReservationTime = fakeDatabase.read(RESERVATION_TIME_TABLE, newTimeId,
+                ReservationTime.class);
+
+        Reservation updatedReservation = new Reservation(id, reservation.getName(), newDate, newReservationTime,
+                reservation.getTheme());
+
+        fakeDatabase.create(RESERVATION_TABLE, updatedReservation.getId(), Reservation.class);
     }
 
     @Override

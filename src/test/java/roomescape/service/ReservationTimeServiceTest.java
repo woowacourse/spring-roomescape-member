@@ -20,7 +20,7 @@ import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.ServiceReservationTimeRequest;
+import roomescape.service.dto.request.ServiceReservationTimeCreateRequest;
 import roomescape.service.dto.response.ServiceReservationTimeAvailabilityResponse;
 import roomescape.service.dto.response.ServiceReservationTimeResponse;
 
@@ -59,7 +59,7 @@ public class ReservationTimeServiceTest {
     @Test
     void createTest() {
         ServiceReservationTimeResponse responseDto = reservationTimeService.create(
-                new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
+                new ServiceReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         assertThat(responseDto).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
     }

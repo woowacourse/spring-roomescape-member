@@ -21,7 +21,8 @@ public enum ErrorCode {
     LONG_RANKING_PERIOD(HttpStatus.UNPROCESSABLE_ENTITY,
             String.format("[ERROR] 조회 기간이 최대 기간을 초과했습니다. 기간이 1년(%s일) 이내가 되도록 다시 요청해 주세요.", MAX_RANKING_PERIOD)),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "[ERROR] 서버 내부에서 에러가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "[ERROR] 서버 내부에서 에러가 발생했습니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;

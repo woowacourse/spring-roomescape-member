@@ -10,7 +10,7 @@ import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.ServiceThemeRequest;
+import roomescape.service.dto.request.ServiceThemeCreateRequest;
 import roomescape.service.dto.response.ServiceThemeResponse;
 
 @Service
@@ -29,7 +29,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public ServiceThemeResponse create(ServiceThemeRequest requestDto) {
+    public ServiceThemeResponse create(ServiceThemeCreateRequest requestDto) {
         Theme theme = requestDto.toEntity();
         return ServiceThemeResponse.from(themeRepository.create(theme));
     }
