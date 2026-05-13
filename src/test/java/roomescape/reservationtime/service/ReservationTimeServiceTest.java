@@ -75,6 +75,22 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약이 존재하는 예약 시간을 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenReservationExists() {
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        reservationRepository.save(new Reservation("브라운", LocalDate.of(2026, 5, 14), reservationTime, theme));
+
+        // when, then
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+
+        assertThat(reservationTimeService.findAll()).containsExactly(reservationTime);
+    }
+
+    @Test
     @DisplayName("특정 날짜 및 테마의 예약 가능한 시간들을 반환한다.")
     public void findAvailableTimes_success() {
         // given

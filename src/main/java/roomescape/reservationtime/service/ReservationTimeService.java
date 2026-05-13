@@ -53,7 +53,14 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
+        validateNoReservation(id);
         reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateNoReservation(Long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+        }
     }
 
     @Transactional(readOnly = true)
