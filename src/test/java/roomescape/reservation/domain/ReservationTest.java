@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.global.exception.validation.InvalidIdException;
 import roomescape.global.exception.validation.InvalidNameException;
 import roomescape.global.exception.validation.InvalidNameLengthException;
 import roomescape.theme.domain.Theme;
@@ -64,7 +65,7 @@ class ReservationTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> new Reservation(id, "userA", LocalDate.now(), reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidIdException.class);
     }
 
     @Test
@@ -75,6 +76,6 @@ class ReservationTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> new Reservation(null, "userA", LocalDate.now(), reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidIdException.class);
     }
 }
