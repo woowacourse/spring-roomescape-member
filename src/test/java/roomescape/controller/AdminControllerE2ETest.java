@@ -6,6 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -72,6 +73,45 @@ class AdminControllerE2ETest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("테마를 생성한다")
+    @Test
+    void 테마_생성에_성공하면_201_Created를_응답한다() {
+        Map<String, String> requestBody = Map.of(
+                "name", "귀신찾기",
+                "description", "귀신을 찾는 테마입니다.",
+                "imageUrl", "https://image.png"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201)
+                .header(HttpHeaders.LOCATION, "/themes/1");
+    }
+
+    @DisplayName("테마 삭제에 성공하면 204 No Content를 응답한다")
+    @Sql("/initialize_theme_and_time.sql")
+    @Test
+    void 테마_삭제에_성공하면_204를_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @DisplayName("존재하지 않는 테마 삭제 요청 시 404 Not Found를 응답한다")
+    @Test
+    void 삭제하려는_테마가_존재하지_않는다면_404를_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(404);
     }

@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.ThemeDoesNotExistsException;
 import roomescape.repository.JdbcThemeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -47,6 +49,9 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
+        if (themeRepository.findById(id).isEmpty()) {
+            throw new ThemeDoesNotExistsException();
+        }
         themeRepository.delete(id);
     }
 }

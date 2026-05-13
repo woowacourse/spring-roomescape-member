@@ -10,6 +10,7 @@ import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.ThemeDoesNotExistsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,6 +53,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReservationTimeDoesNotExistsException.class)
     public ResponseEntity<String> handleReservationTimeDoesNotExistsException(
             ReservationTimeDoesNotExistsException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ThemeDoesNotExistsException.class)
+    public ResponseEntity<String> handleThemeDoesNotExistsException(
+            ThemeDoesNotExistsException ex
     ) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND.value())
