@@ -18,25 +18,14 @@
 
 ```
 src/main/java/roomescape/
-├── controller/              # REST API 엔드포인트
-│   ├── ReservationController.java          # 예약 관련 API
-│   └── ReservationTimeController.java      # 예약 가능 시간 관련 API
-├── service/                 # 비즈니스 로직
-│   ├── RoomReservationService.java         # 예약 서비스 (메인)
-│   └── ReservationTimeService.java         # 예약 시간 서비스
-├── dao/                     # 데이터 접근 계층
-│   ├── ReservationDao.java                 # 예약 데이터 접근
-│   └── ReservationTimeDao.java             # 예약 시간 데이터 접근
-├── repository/              # Repository 패턴 구현
-├── domain/                  # 도메인 모델 (비즈니스 엔티티)
-│   ├── Reservation.java                    # 예약 정보 (id, name, date, time)
-│   ├── ReservationTime.java                # 예약 시간 정보 (id, startAt)
-│   ├── ReservationCommand.java             # 예약 생성 요청
-│   └── ReservationTimeCommand.java         # 예약 시간 생성 요청
-├── dto/                     # 요청/응답 데이터 전송 객체
-│   ├── AddReservationRequest.java          # 예약 추가 요청
-│   └── AddReservationTimeRequest.java      # 예약 시간 추가 요청
-├── exception/               # 커스텀 예외 클래스
+src/main/java/roomescape/
+├── controller/              # REST API 엔드포인트 (Reservation, Time, Theme)
+├── service/                 # 비즈니스 로직 및 예외 처리
+├── repository/              # 데이터 접근 계층 (JdbcTemplate 기반)
+├── domain/                  # 도메인 모델 및 Value Object (Command 포함)
+├── dto/                     # 데이터 전송 객체 (Request/Response)
+├── exception/               # 커스텀 예외 (Conflict, NotFound, Unauthorized 등)
+└── config/                  # 설정 클래스 (CORS, WebMvc)
 └── RoomescapeApplication.java               # 애플리케이션 진입점
 ```
 
@@ -47,27 +36,45 @@ src/main/java/roomescape/
 - **예약 시간 추가**: 새로운 예약 시간대 생성
 - **예약 시간 삭제**: 기존 예약 시간대 삭제
 
-### 2. 예약 관리
+### 2. 테마 관리
+- **테마 목록 조회**: 현재 운영 중인 모든 방탈출 테마 조회
+- **테마 추가**: 새로운 테마(이름, 설명, 이미지 URL) 생성
+- **테마 삭제**: 테마 삭제 (단, 해당 테마에 예약이 존재하는 경우 삭제 불가)
+- **인기 테마 조회**: 예약 건수를 기반으로 한 인기 테마 랭킹 조회
+
+### 3. 예약 관리
 - **예약 조회**: 현재 예약된 모든 정보 조회
 - **예약 생성**: 특정 날짜/시간에 방탈출 게임 예약
 - **예약 삭제**: 예약된 게임 삭제
+- **예약 수정**: 기존 예약의 정보를 변경 (날짜, 시간, 테마 등)
 
 
 ## 데이터 모델
 
 ### Reservation (예약)
-| 필드 | 설명 |
-|------|------|
-| id | 예약 고유 ID |
-| name | 예약자 이름 |
-| date | 예약 날짜 |
-| time | 예약 시간 (ReservationTime 객체) |
+| 필드       | 설명                         |
+|----------|----------------------------|
+| id       | 예약 고유 ID                   |
+| name     | 예약자 이름                     |
+| date     | 예약 날짜                      |
+| time_id  | 예약 시간 (ReservationTime 객체) |
+| theme_id | 테마 (Theme 객체)              |
+
 
 ### ReservationTime (예약 시간)
 | 필드 | 설명 |
 |------|------|
 | id | 예약 시간 고유 ID |
 | startAt | 시작 시간 |
+
+### Theme (테마)
+| 필드          | 설명                             |
+|-------------|--------------------------------|
+| id          | 테마 고유 ID                       |
+| name        | 테마 이름                          |
+| description | 테마 설명                          |
+| image_url   | 테마 대표 이미지 |
+
 
 
 ## API 엔드포인트
@@ -77,10 +84,16 @@ src/main/java/roomescape/
 - `POST /times` - 새로운 예약 시간 추가
 - `DELETE /times/[id]` - 예약 시간 삭제
 
+### 테마 관련
+- `GET /themes` - 모든 테마 조회
+- `POST /themes` - 새로운 테마 추가
+- `DELETE /themes/{id}` - 테마 삭제
+
 ### 예약 관련
 - `GET /reservations` - 모든 예약 조회
 - `POST /reservations` - 새로운 예약 생성
 - `DELETE /reservations/[id]` - 예약 삭제
+- `POST /reservations/{id}` - 기존 예약 정보 수정
 
 ## 데이터베이스
 
