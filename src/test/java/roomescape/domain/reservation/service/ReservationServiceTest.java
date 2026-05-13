@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +43,8 @@ class ReservationServiceTest {
 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
     private static final LocalDate FIXED_DATE = LocalDate.of(2026, 5, 6);
+    private static final LocalDate PAST_DATE = FIXED_DATE.minusDays(1);
+    private static final LocalDate FUTURE_DATE = FIXED_DATE.plusDays(1);
 
     @Mock
     ReservationRepository reservationRepository;
@@ -187,6 +190,24 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 테마로 예약 시 예외가 발생한다.")
+    void saveReservation_ByUser_throwsException_whenThemeNotFound() {
+        // given
+        Long invalidThemeId = 999L;
+        ReservationCreateRequest request = new ReservationCreateRequest("브라운", invalidThemeId, FIXED_DATE.plusDays(1),
+                1L);
+
+        when(reservationTimeRepository.findById(anyLong())).thenReturn(
+                Optional.of(ReservationTime.of(1L, LocalTime.of(10, 0))));
+        when(themeRepository.findById(invalidThemeId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(roomescape.domain.theme.exception.ThemeErrorCode.THEME_NOT_FOUND.getMessage());
+    }
+
+    @Test
     @DisplayName("존재하지 않는 시간으로 예약 시 예외가 발생한다.")
     void saveReservation_ByUser_throwsException_whenTimeNotFound() {
         // given
@@ -294,19 +315,19 @@ class ReservationServiceTest {
     void updateReservation() {
         // given
         Long reservationId = 1L;
-        Long themeId = 1L;
-        Long newTimeId = 2L;
+        Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
         LocalDate newDate = FIXED_DATE.plusDays(1);
-        ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, newTimeId);
+        ReservationTime newTime = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        Theme theme = Theme.of(themeId, "theme", "desc", "url");
-        ReservationTime oldTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationTime newTime = ReservationTime.of(newTimeId, LocalTime.of(11, 0));
-        Reservation reservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE, oldTime);
+        Reservation existingReservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE,
+                ReservationTime.of(1L, LocalTime.of(10, 0)));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), newDate, newTime.getId());
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(reservationTimeRepository.findById(newTimeId)).thenReturn(Optional.of(newTime));
-        when(reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, newDate, newTimeId)).thenReturn(false);
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
+        when(reservationRepository.existsByThemeIdAndDateAndTimeId(theme.getId(), newDate, newTime.getId()))
+                .thenReturn(false);
 
         // when
         ReservationResponse response = reservationService.updateReservation(reservationId, request);
@@ -314,9 +335,10 @@ class ReservationServiceTest {
         // then
         assertThat(response.id()).isEqualTo(reservationId);
         assertThat(response.date()).isEqualTo(newDate);
-        assertThat(response.time().id()).isEqualTo(newTimeId);
+        assertThat(response.time().id()).isEqualTo(newTime.getId());
+        assertThat(response.username()).isEqualTo("브라운");
 
-        verify(reservationRepository).update(any(Reservation.class));
+        verify(reservationRepository).update(anyLong(), any(Reservation.class));
     }
 
     @Test
@@ -324,14 +346,40 @@ class ReservationServiceTest {
     void updateReservationWithPastDateThrowException() {
         // given
         Long reservationId = 1L;
-        LocalDate pastDate = FIXED_DATE.minusDays(1);
-        ReservationUpdateRequest request = new ReservationUpdateRequest(pastDate, 1L);
+        Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
+        LocalDate newDate = FIXED_DATE.minusDays(1);
+        ReservationTime newTime = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(reservationId, "브라운", Theme.of(1L, "t", "d", "u"), FIXED_DATE, time);
+        Reservation existingReservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE,
+                ReservationTime.of(1L, LocalTime.of(10, 0)));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), newDate, newTime.getId());
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(time));
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservation(reservationId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.PAST_RESERVATION.getMessage());
+    }
+
+    @Test
+    @DisplayName("오늘 날짜 + 과거 시간으로 예약 수정하면 예외 발생한다.")
+    void updateReservationWithPastTimeOnSameDateThrowException() {
+        // given
+        Long reservationId = 1L;
+        Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
+        LocalTime pastTime = LocalTime.of(13, 0);
+        ReservationTime newTime = ReservationTime.of(2L, pastTime);
+
+        Reservation existingReservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE,
+                ReservationTime.of(1L, LocalTime.of(10, 0)));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), FIXED_DATE, newTime.getId());
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
 
         // when & then
         assertThatThrownBy(() -> reservationService.updateReservation(reservationId, request))
@@ -344,18 +392,19 @@ class ReservationServiceTest {
     void updateReservationWithDuplicateThrowException() {
         // given
         Long reservationId = 1L;
-        LocalDate date = FIXED_DATE.plusDays(1);
-        Long timeId = 2L;
-        ReservationUpdateRequest request = new ReservationUpdateRequest(date, timeId);
+        Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
+        LocalDate newDate = FIXED_DATE.plusDays(1);
+        ReservationTime newTime = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        Theme theme = Theme.of(1L, "t", "d", "u");
-        ReservationTime time = ReservationTime.of(timeId, LocalTime.of(11, 0));
-        Reservation reservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE,
+        Reservation existingReservation = Reservation.of(reservationId, "브라운", theme, FIXED_DATE,
                 ReservationTime.of(1L, LocalTime.of(10, 0)));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), newDate, newTime.getId());
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(time));
-        when(reservationRepository.existsByThemeIdAndDateAndTimeId(1L, date, timeId)).thenReturn(true);
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
+        when(reservationRepository.existsByThemeIdAndDateAndTimeId(theme.getId(), newDate, newTime.getId()))
+                .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationService.updateReservation(reservationId, request))
@@ -377,14 +426,41 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("지난 예약을 삭제하면 예외가 발생한다.")
-    void deleteReservationByPastDateThrowException() {
+    @DisplayName("존재하지 않는 예약 삭제 불가")
+    void deleteReservation_throwsException_whenReservationNotFound() {
+        // given
+        Long invalidReservationId = 999L;
+        when(reservationRepository.findById(invalidReservationId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservationBy(invalidReservationId))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("사용자는 과거 날짜 예약 삭제 불가")
+    void deleteReservation_throwsException_whenPastDate() {
         // given
         Long reservationId = 1L;
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         Reservation reservation = Reservation.of(reservationId, "브라운", Theme.of(1L, "t", "d", "u"),
-                FIXED_DATE.minusDays(1), time);
+                FIXED_DATE.minusDays(1), ReservationTime.of(1L, LocalTime.of(10, 0)));
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
 
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservationBy(reservationId))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.PAST_RESERVATION.getMessage());
+    }
+
+    @Test
+    @DisplayName("사용자는 오늘 + 과거 시간 예약 삭제 불가")
+    void deleteReservation_throwsException_whenPastTimeOnSameDate() {
+        // given
+        Long reservationId = 1L;
+        ReservationTime pastTime = ReservationTime.of(1L, LocalTime.of(13, 0));
+        Reservation reservation = Reservation.of(reservationId, "브라운", Theme.of(1L, "t", "d", "u"), FIXED_DATE,
+                pastTime);
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
 
         // when & then

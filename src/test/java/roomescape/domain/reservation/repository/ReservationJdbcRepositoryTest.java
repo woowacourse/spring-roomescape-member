@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.repository;
 
+import static java.sql.Date.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -72,6 +73,25 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("ID로 예약을 조회한다.")
+    void findByIdTest() {
+        // given
+        long generatedId = insertReservation(
+                "조이",
+                3L,
+                LocalDate.of(2026, 5, 10),
+                6L
+        );
+
+        // when
+        Reservation found = reservationRepository.findById(generatedId).orElse(null);
+
+        // then
+        assertThat(found).isNotNull();
+        assertThat(found.getUsername()).isEqualTo("조이");
+    }
+
+    @Test
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given
@@ -102,25 +122,6 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
-    @DisplayName("ID로 예약을 조회한다.")
-    void findByIdTest() {
-        // given
-        long generatedId = insertReservation(
-                "조이",
-                3L,
-                LocalDate.of(2026, 5, 10),
-                6L
-        );
-
-        // when
-        Reservation found = reservationRepository.findById(generatedId).orElse(null);
-
-        // then
-        assertThat(found).isNotNull();
-        assertThat(found.getUsername()).isEqualTo("조이");
-    }
-
-    @Test
     @DisplayName("예약을 수정한다.")
     void updateTest() {
         // given
@@ -139,12 +140,12 @@ class ReservationJdbcRepositoryTest {
         );
 
         // when
-        reservationRepository.update(reservation);
+        reservationRepository.update(generatedId, reservation);
 
         // then
         Map<String, Object> found = findReservationById(generatedId);
-        assertThat(found.get("date")).isEqualTo(java.sql.Date.valueOf(LocalDate.of(2026, 5, 11)));
-        assertThat(((Number) found.get("time_id")).longValue()).isEqualTo(1L);
+        assertThat(found.get("date")).isEqualTo(valueOf(LocalDate.of(2026, 5, 11)));
+        assertThat(((Long) found.get("time_id"))).isEqualTo(1L);
     }
 
     @Test
