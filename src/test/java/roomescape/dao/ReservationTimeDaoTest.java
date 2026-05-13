@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ResourceNotFoundException;
 
 @JdbcTest
 @Import({ReservationTimeDao.class})
@@ -53,7 +54,7 @@ class ReservationTimeDaoTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeDao.findById(3L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("[ERROR]");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("존재하지 않는");
     }
 }

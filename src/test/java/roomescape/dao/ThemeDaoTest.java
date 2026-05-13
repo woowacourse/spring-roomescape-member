@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResult;
+import roomescape.exception.ResourceNotFoundException;
 
 @JdbcTest
 @Import({ThemeDao.class, ReservationDao.class, ReservationTimeDao.class})
@@ -88,7 +89,7 @@ class ThemeDaoTest {
 
         //when & then
         assertThatThrownBy(() -> themeDao.findById(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("[ERROR]");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("존재하지 않는");
     }
 }

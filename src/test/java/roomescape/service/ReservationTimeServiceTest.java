@@ -18,6 +18,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicatedResourceException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
@@ -57,7 +58,7 @@ class ReservationTimeServiceTest {
 
         //then
         assertThatThrownBy(() -> reservationTimeService.save(newTime))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약시간입니다.");
     }
 

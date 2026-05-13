@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.ResourceNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class ReservationServiceTest {
@@ -46,7 +48,7 @@ class ReservationServiceTest {
 
         //when&then
         assertThatThrownBy(() -> reservationService.deleteById(fakeId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 예약");
     }
 
@@ -94,7 +96,7 @@ class ReservationServiceTest {
                 LocalDate.of(2030, 5, 6),
                 savedTime.getId(),
                 savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약");
     }
 }
