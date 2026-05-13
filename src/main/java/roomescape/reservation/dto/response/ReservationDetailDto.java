@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.dto.response.ThemeDetailDto;
 
-public record ReservationResponse(
+public record ReservationDetailDto(
         Long id,
         String name,
         LocalDate date,
@@ -15,8 +15,8 @@ public record ReservationResponse(
         ReservationStatus status
 ) {
 
-    public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(
+    public static ReservationDetailDto from(Reservation reservation) {
+        return new ReservationDetailDto(
                 reservation.id(),
                 reservation.name(),
                 reservation.date(),
