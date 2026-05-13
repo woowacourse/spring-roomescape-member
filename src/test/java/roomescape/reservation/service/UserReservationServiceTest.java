@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.exception.ApiException;
+import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
@@ -79,7 +80,7 @@ class UserReservationServiceTest {
     void 지나간_날짜에_예약하면_예외가_발생한다() {
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now().minusDays(1), 1L, 1L))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -89,7 +90,7 @@ class UserReservationServiceTest {
 
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now(), 99L, 1L))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -127,7 +128,7 @@ class UserReservationServiceTest {
     void 이미_지난_예약을_취소하면_예외가_발생한다() {
         // reservation(id=2): User1, 2026-05-01(과거), time=2
         assertThatThrownBy(() -> userReservationService.deleteReservation(2L, "User1"))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
     }
 
@@ -168,7 +169,7 @@ class UserReservationServiceTest {
         // reservation(id=2): User1, 2026-05-01(과거)
         assertThatThrownBy(
                 () -> userReservationService.updateReservation(2L, "User1", LocalDate.now().plusDays(1), 1L))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
     }
 

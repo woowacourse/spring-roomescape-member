@@ -7,8 +7,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ApiException;
+import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
@@ -40,7 +41,7 @@ public class UserReservationService {
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
 
         if (LocalDateTime.of(date, reservationTime.startAt()).isBefore(LocalDateTime.now())) {
-            throw new ApiException("지나간 날짜·시간에는 예약할 수 없습니다.");
+            throw new InvalidRequestException("지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
         try {
@@ -48,7 +49,7 @@ public class UserReservationService {
         } catch (DuplicateKeyException e) {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         } catch (DataIntegrityViolationException e) {
-            throw new ApiException("요청이 데이터 무결성 조건을 위반했습니다.");
+            throw new InvalidRequestException("요청이 데이터 무결성 조건을 위반했습니다.");
         }
     }
 
@@ -80,7 +81,7 @@ public class UserReservationService {
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
 
         if (LocalDateTime.of(newDate, newTime.startAt()).isBefore(LocalDateTime.now())) {
-            throw new ApiException("지나간 날짜·시간에는 예약할 수 없습니다.");
+            throw new InvalidRequestException("지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
@@ -97,7 +98,7 @@ public class UserReservationService {
             throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
         }
         if (LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt()).isBefore(LocalDateTime.now())) {
-            throw new ApiException("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
+            throw new BusinessRuleException("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
         }
     }
 }

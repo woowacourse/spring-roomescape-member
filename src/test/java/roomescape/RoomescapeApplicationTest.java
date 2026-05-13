@@ -256,12 +256,12 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 이미_지난_예약을_취소하려_하면_400이_반환된다() {
+    void 이미_지난_예약을_취소하려_하면_422가_반환된다() {
         RestAssured.given().log().all()
                 .header("X-User-Name", "User1")
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
