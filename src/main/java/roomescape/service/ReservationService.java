@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -94,12 +95,12 @@ public class ReservationService {
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
     }
 
     private void validateId(Long id) {

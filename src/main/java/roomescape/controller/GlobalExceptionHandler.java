@@ -10,6 +10,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.RoomescapeException;
 
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+        return ResponseEntity.status(404).body(ErrorResponse.from(e));
+    }
+
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
@@ -45,8 +51,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<String> handleNoResource() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ErrorResponse> handleNoResource() {
+        return ResponseEntity.status(404)
+                .body(new ErrorResponse(ErrorCode.NOT_FOUND.name(), "존재하지 않는 리소스입니다."));
     }
 
     @ExceptionHandler(Exception.class)

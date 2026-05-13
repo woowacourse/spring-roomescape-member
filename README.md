@@ -94,7 +94,7 @@
 - [X] 공통 에러 응답 객체를 추가
 - [X] INVALID_INPUT 에러 응답 적용
 - [X] PAST_RESERVATION 에러 응답 적용
-- [ ] NOT_FOUND 에러 응답 적용
+- [X] NOT_FOUND 에러 응답 적용
 - [ ] DUPLICATE_RESERVATION 에러 응답 적용
 - [ ] RESOURCE_IN_USE 에러 응답 적용
 - [ ] INTERNAL_SERVER_ERROR 에러 응답 적용
