@@ -8,6 +8,8 @@ public final class EntityId {
     private final UUID uuid;
 
     private EntityId(UUID uuid) {
+        validateValueExist(uuid);
+
         this.uuid = uuid;
     }
 
@@ -16,7 +18,15 @@ public final class EntityId {
     }
 
     public static EntityId fromString(String value) {
+        validateValueExist(value);
+
         return new EntityId(UUID.fromString(value));
+    }
+
+    private static void validateValueExist(Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException("EntityId는 빈 값을 지닐 수 없습니다.");
+        }
     }
 
     public UUID getValueAsUuid() {
