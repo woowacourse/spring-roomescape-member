@@ -189,7 +189,7 @@ class ReservationServiceTest {
 
         @Test
         @DisplayName("날짜, 시간과 테마가 모두 같은 예약이 존재하는 경우 예외가 발생한다.")
-        void 실패() {
+        void 실패1() {
             Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
             Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
                 "https://roomescape.com/images/themes/ring-banner.png"));
@@ -205,6 +205,85 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(ConflictException.class);
         }
+
+        @Test
+        @DisplayName("요청한 시간 id가 존재하지 않으면 예외가 발생한다.")
+        void 실패2() {
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png"));
+            Long wrongTimeId = 99999L;
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
+                "보예",
+                LocalDate.of(2026, 5, 1),
+                wrongTimeId,
+                theme.getId()
+            );
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.saveReservation(request),
+                BadRequestException.class,
+                ErrorCode.TIME_NOT_FOUND
+            );
+        }
+
+        @Test
+        @DisplayName("요청한 테마 id가 존재하지 않으면 예외가 발생한다.")
+        void 실패3() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            Long wrongThemeId = 99999L;
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
+                "보예",
+                LocalDate.of(2026, 5, 1),
+                time.getId(),
+                wrongThemeId
+            );
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.saveReservation(request),
+                BadRequestException.class,
+                ErrorCode.THEME_NOT_FOUND
+            );
+        }
+
+        @Test
+        @DisplayName("지난 날짜와 시간으로 예약을 생성하려고 하면 예외가 발생한다.")
+        void 실패4() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png"));
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
+                "보예",
+                LocalDate.of(2025, 12, 31),
+                time.getId(),
+                theme.getId()
+            );
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.saveReservation(request),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_ALREADY_PASSED
+            );
+        }
+
+        @Test
+        @DisplayName("이름이 빈 문자열이면 예외가 발생한다.")
+        void 실패5() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png"));
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
+                "",
+                LocalDate.of(2026, 5, 1),
+                time.getId(),
+                theme.getId()
+            );
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.saveReservation(request),
+                BadRequestException.class,
+                ErrorCode.COMMON_INVALID_REQUEST
+            );
+        }
     }
 
     @Nested
@@ -213,7 +292,7 @@ class ReservationServiceTest {
 
         @Test
         @DisplayName("주어진 예약의 날짜와 시간을 변경한다.")
-        void 성공() {
+        void 성공1() {
             String name = "시오";
             Reservation savedReservation = reservationRepository.save(
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
@@ -238,10 +317,33 @@ class ReservationServiceTest {
         }
 
         @Test
+        @DisplayName("기존 날짜와 시간 그대로 변경 요청하면 자기 자신을 중복 예약으로 보지 않는다.")
+        void 성공2() {
+            String name = "시오";
+            Time time = timeRepository.save(Time.create(LocalTime.of(13, 0)));
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3), time,
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                savedReservation.getDate(), time.getId());
+
+            reservationService.updateReservation(name, savedReservation.getId(), request);
+
+            Optional<Reservation> actual = reservationRepository.findReservationById(
+                savedReservation.getId());
+            assertAll(
+                () -> assertThat(actual).isPresent(),
+                () -> assertThat(actual.get().getDate()).isEqualTo(savedReservation.getDate()),
+                () -> assertThat(actual.get().getTime().getId()).isEqualTo(time.getId())
+            );
+        }
+
+        @Test
         @DisplayName("요청한 시간 id가 존재하지 않으면 예외가 발생한다.")
         void 실패1() {
             String name = "시오";
-                Reservation savedReservation = reservationRepository.save(
+            Reservation savedReservation = reservationRepository.save(
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
@@ -349,6 +451,21 @@ class ReservationServiceTest {
                 () -> reservationService.updateReservation(name, id, request),
                 UnprocessableEntityException.class,
                 ErrorCode.RESERVATION_TIME_ALREADY_PASSED
+            );
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 예약을 변경하려고 하면 예외가 발생한다.")
+        void 실패6() {
+            Long notFoundId = 99999L;
+            Long timeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                LocalDate.of(2026, 5, 2), timeId);
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.updateReservation("시오", notFoundId, request),
+                NotFoundException.class,
+                ErrorCode.RESERVATION_NOT_FOUND
             );
         }
 
