@@ -18,11 +18,17 @@ public record ReservationRequest(
         if (date == null) {
             throw new InvalidRequestException("예약 날짜는 필수입니다");
         }
-        if (timeId == null || timeId <= 0) {
-            throw new InvalidRequestException("시간 ID는 양수여야 합니다");
+        if (timeId == null) {
+            throw new InvalidRequestException("시간 ID는 필수입니다");
         }
-        if (themeId == null || themeId <= 0) {
-            throw new InvalidRequestException("테마 ID는 양수여야 합니다");
+        if (timeId <= 0) {
+            throw new InvalidRequestException("시간 ID는 1 이상이여야 합니다");
+        }
+        if (themeId == null) {
+            throw new InvalidRequestException("테마 ID는 필수입니다");
+        }
+        if (themeId <= 0) {
+            throw new InvalidRequestException("테마 ID는 1 이상이여야 합니다");
         }
     }
 
