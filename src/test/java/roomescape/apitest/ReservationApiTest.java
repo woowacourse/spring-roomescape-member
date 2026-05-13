@@ -36,6 +36,39 @@ class ReservationApiTest {
     }
 
     @Test
+    @DisplayName("예약 날짜가 null이면 상태코드 400을 반환한다.")
+    void 요청_날짜_null_테스트() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 날짜의 형식이 올바르지 않으면 상태코드 400을 반환한다.")
+    void 요청_날짜_형식_불일치_테스트() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "26-01-01");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     @DisplayName("시간 식별자가 null이면 상태코드 400을 반환한다.")
     void 요청_시간_식별자_null_테스트() {
         Map<String, Object> params = new HashMap<>();
