@@ -13,5 +13,7 @@ public interface ReservationDao {
 
     boolean existsBy(LocalDate date, Long timeId, Long themeId);
 
+    boolean existsByTimeId(Long timeId);
+
     List<Reservation> findByName(String name);
 }

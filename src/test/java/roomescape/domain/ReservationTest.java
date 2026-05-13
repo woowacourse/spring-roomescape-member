@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -10,26 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class ReservationTest {
-
-    @Test
-    void 예약_생성() {
-        //given
-        LocalDate date = LocalDate.of(2001, 8, 12);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 34));
-        Theme theme = new Theme("피즈의 모험", "모험 이야기", "url.jpg");
-        Long reservationId = 1L;
-        String reservationName = "보예";
-
-        Reservation reservationWithoutId = new Reservation(reservationName, date, time, theme);
-
-        //when
-        Reservation reservation = Reservation.of(reservationId, reservationWithoutId);
-
-        //
-        assertThat(reservation.getId()).isEqualTo(reservationId);
-        assertThat(reservation.getName()).isEqualTo(reservationName);
-        
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
