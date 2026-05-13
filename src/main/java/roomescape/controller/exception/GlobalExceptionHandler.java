@@ -20,6 +20,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingPathVariable(
             MissingPathVariableException exception
     ) {
+        log.warn("[Missing Path Variable]", exception);
+
         String message = "필수 경로 변수가 누락되었습니다: "
                 + exception.getVariableName();
         ErrorResponse response = new ErrorResponse(message);
