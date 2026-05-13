@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -82,7 +83,7 @@ public class ReservationService {
     private void validateNotPast(LocalDate date, ReservationTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+            throw new PastReservationException("이미 지난 시간으로는 예약할 수 없습니다.");
         }
     }
 

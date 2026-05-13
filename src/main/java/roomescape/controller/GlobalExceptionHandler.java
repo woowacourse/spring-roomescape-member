@@ -10,12 +10,17 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidInput(InvalidInputException e) {
+    @ExceptionHandler({
+            InvalidInputException.class,
+            PastReservationException.class
+    })
+    public ResponseEntity<ErrorResponse> handleBadRequest(RoomescapeException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }
 

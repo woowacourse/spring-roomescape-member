@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -175,8 +176,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.createUserReservation("브라운", date, timeId, themeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+                .isInstanceOf(PastReservationException.class)
+                .hasMessage("이미 지난 시간으로는 예약할 수 없습니다.");
 
         verify(reservationTimeRepository).findBy(timeId);
         verifyNoInteractions(themeRepository);
