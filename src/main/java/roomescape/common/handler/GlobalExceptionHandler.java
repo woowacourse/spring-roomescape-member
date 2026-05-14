@@ -1,9 +1,12 @@
 package roomescape.common.handler;
 
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.dto.ErrorDetailDto;
@@ -13,6 +16,17 @@ import roomescape.common.exception.NotFoundException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDetailDto> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("유효하지 않은 입력값입니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorDetailDto.of(HttpStatus.BAD_REQUEST.value(), message));
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorDetailDto> handleNotFound(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
