@@ -18,16 +18,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final String FIND_RESERVATION_BY_ID = """
                 SELECT
-                    r.id as reservation_id, 
+                    r.id AS reservation_id, 
                     r.name, r.date, 
-                    t.id as reservation_time_id,
-                    t.start_at as time_value,
-                    th.id as reservation_theme_id,
-                    th.name as reservation_theme_name,
-                    th.description as reservation_theme_description,
-                    th.image_url as reservation_theme_image_url
+                    t.id AS reservation_time_id,
+                    t.start_at AS time_value,
+                    th.id AS reservation_theme_id,
+                    th.name AS reservation_theme_name,
+                    th.description AS reservation_theme_description,
+                    th.image_url AS reservation_theme_image_url
             
-                FROM reservation as r 
+                FROM reservation AS r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id 
             
@@ -50,7 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id 
             
-                INNER JOIN theme as th
+                INNER JOIN theme AS th
                 ON r.theme_id = th.id
             """;
     private static final String FIND_ALL_RESERVATIONS_BY_USERNAME = """
@@ -67,7 +67,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
             
-                INNER JOIN theme as th
+                INNER JOIN theme AS th
                 ON r.theme_id = th.id
             
                 WHERE r.name = ?
@@ -143,7 +143,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation where id = ?", id);
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByTimeId(Long timeId) {
-        String sql = "select count(*) from reservation where time_id = ?";
+        String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
     }
