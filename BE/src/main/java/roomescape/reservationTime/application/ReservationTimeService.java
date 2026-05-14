@@ -11,6 +11,7 @@ import roomescape.global.exception.ReservationTimeErrorCode;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 
@@ -28,8 +29,8 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime saveTime(LocalTime startAt) {
-        ReservationTime reservationTime = ReservationTime.create(startAt);
+    public ReservationTime saveTime(ReservationTimeCreateCommand timeCreateCommand) {
+        ReservationTime reservationTime = ReservationTime.create(timeCreateCommand.startAt());
         return reservationTimeRepository.save(reservationTime);
     }
 
