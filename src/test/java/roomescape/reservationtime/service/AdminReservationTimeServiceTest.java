@@ -37,9 +37,11 @@ class AdminReservationTimeServiceTest {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
 
         // time(id=1)=10:00 — 예약이 연결되어 있음
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 1, 1)");
     }
 
     @Test

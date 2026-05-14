@@ -36,27 +36,42 @@ class UserThemeServiceTest {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
 
         // 5개 테마 (id=1~5), time(id=1)
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme B', 'Desc', 'https://b.png')");
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme C', 'Desc', 'https://c.png')");
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme D', 'Desc', 'https://d.png')");
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme E', 'Desc', 'https://e.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme B', 'Desc', 'https://b.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme C', 'Desc', 'https://c.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme D', 'Desc', 'https://d.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme E', 'Desc', 'https://e.png')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
 
         // 랭킹 윈도우(2026-05-06 ~ 2026-05-12) 기준 예약 수: A(4) > B(3) > C(2) > D(1), E(0)
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-08', 1, 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-09', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-08', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-09', 1, 1)");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 2)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 2)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-08', 1, 2)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 2)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 2)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-08', 1, 2)");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 3)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 3)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 3)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-07', 1, 3)");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 4)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 4)");
     }
 
     @Test

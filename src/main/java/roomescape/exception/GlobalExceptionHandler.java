@@ -25,7 +25,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e) {
         ErrorResponse response = new ErrorResponse("잘못된 형식의 값입니다: " + e.getName());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

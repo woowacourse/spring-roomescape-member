@@ -57,7 +57,8 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate, Long limit) {
+    public List<Theme> findRanked(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate,
+                                  Long limit) {
         String sql = getReservationSortSql(sortColumn, sortOrder, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }

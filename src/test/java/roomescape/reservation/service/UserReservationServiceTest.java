@@ -40,15 +40,19 @@ class UserReservationServiceTest {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
 
         // Theme A(id=1), Theme B(id=2)
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
-        jdbcTemplate.update("INSERT INTO themes (name, description, thumbnail) VALUES ('Theme B', 'Desc', 'https://b.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme B', 'Desc', 'https://b.png')");
         // time(id=1)=10:00, time(id=2)=11:00
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00:00')");
         // reservation(id=1): 2099-12-31 / time=1 / theme=1  → 중복·삭제 테스트용
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('ScheduleTest', '2099-12-31', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('ScheduleTest', '2099-12-31', 1, 1)");
         // reservation(id=2): 2026-05-01 / time=2 / theme=1  → 이름 불일치 테스트용
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 2, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User1', '2026-05-01', 2, 1)");
     }
 
     @Test
@@ -176,7 +180,8 @@ class UserReservationServiceTest {
     @Test
     void 변경하려는_날짜와_시간이_이미_차있으면_예외가_발생한다() {
         // 2099-12-31 / time=2 / theme=1 을 미리 예약하여 슬롯 점유
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('Other', '2099-12-31', 2, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('Other', '2099-12-31', 2, 1)");
 
         assertThatThrownBy(
                 () -> userReservationService.updateReservation(1L, "ScheduleTest", LocalDate.of(2099, 12, 31), 2L))
