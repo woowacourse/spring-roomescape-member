@@ -37,12 +37,16 @@
 | INVALID_INPUT | name은 255자를 넘을 수 없습니다. | 400 | 요청 본문의 문자열 길이가 허용 범위를 초과함 |
 | INVALID_INPUT | timeId는 비어 있을 수 없습니다. | 400 | 요청 본문의 필수 ID 값이 누락됨 |
 | INVALID_INPUT | timeId는 양수이어야 합니다. | 400 | 요청 본문의 ID 값이 양수가 아님 |
+| INVALID_INPUT | themeId는 비어 있을 수 없습니다. | 400 | 요청 본문의 필수 ID 값이 누락됨 |
+| INVALID_INPUT | themeId는 양수이어야 합니다. | 400 | 요청 본문의 ID 값이 양수가 아님 |
 | INVALID_INPUT | startAt은 비어 있을 수 없습니다. | 400 | 예약 시간 생성 요청의 시작 시간이 누락됨 |
+| INVALID_INPUT | description은 255자를 넘을 수 없습니다. | 400 | 테마 설명 길이가 허용 범위를 초과함 |
+| INVALID_INPUT | thumbnail는 255자를 넘을 수 없습니다. | 400 | 테마 썸네일 경로 길이가 허용 범위를 초과함 |
 | INVALID_INPUT | id는 양수이어야 합니다. | 400 | 경로 변수 ID 값이 양수가 아님 |
 | INVALID_INPUT | 요청 본문 형식이 올바르지 않습니다. | 400 | JSON 형식이 잘못됐거나 요청 본문 타입 변환에 실패함 |
 | INVALID_INPUT | date 형식이 올바르지 않습니다. | 400 | 요청 파라미터의 날짜 형식이 올바르지 않음 |
 | INVALID_INPUT | id 형식이 올바르지 않습니다. | 400 | 경로 변수 ID 형식이 올바르지 않음 |
-| INVALID_INPUT | date는 필수입니다. | 400 | 필수 요청 파라미터가 누락됨 |
+| INVALID_INPUT | date는 필수입니다. | 400 | 예약 가능 시간 조회 요청의 date 파라미터가 누락됨 |
 | INVALID_INPUT | name는 필수입니다. | 400 | 내 예약 조회·취소 요청의 이름 파라미터가 누락됨 |
 | INVALID_INPUT | 변경할 날짜 또는 시간이 필요합니다. | 400 | 예약 변경 요청에 날짜와 시간 ID가 모두 누락됨 |
 | PAST_RESERVATION | 이미 지난 시간으로는 예약할 수 없습니다. | 400 | 사용자가 지난 날짜·시간으로 예약 생성·변경을 요청함 |
