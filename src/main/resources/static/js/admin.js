@@ -62,16 +62,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return text ? JSON.parse(text) : null;
     }
 
+    function getThemeImage() {
+        return "/images/theme-placeholder.svg";
+    }
+
     async function loadThemes() {
         const response = await adminFetch("/admin/themes", { method: "GET" });
-        if (response.status === 401) {
-            throw new Error("관리자 토큰이 올바르지 않습니다.");
+        if (!response.ok) {
+            const error = await parseResponse(response);
+            let message = error?.message || "테마 목록을 불러오지 못했습니다.";
+            if (error?.action) {
+                message += ` (${error.action})`;
+            }
+            throw new Error(message);
         }
         const themes = await parseResponse(response);
         themesList.innerHTML = themes.map((theme) => `
             <article class="admin-item">
                 <div class="theme-item">
-                    <img class="theme-thumb" src="/images/theme-placeholder.svg" alt="${theme.name}">
+                    <img class="theme-thumb" src="${getThemeImage()}" alt="${theme.name}">
                     <div class="item-main">
                         <h3 class="item-title">${theme.name}</h3>
                         <p class="item-subtext">${theme.content}</p>
@@ -87,8 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadDates() {
         const response = await adminFetch("/admin/reservation-dates", { method: "GET" });
-        if (response.status === 401) {
-            throw new Error("관리자 토큰이 올바르지 않습니다.");
+        if (!response.ok) {
+            const error = await parseResponse(response);
+            let message = error?.message || "날짜 목록을 불러오지 못했습니다.";
+            if (error?.action) {
+                message += ` (${error.action})`;
+            }
+            throw new Error(message);
         }
         const dates = await parseResponse(response);
         datesList.innerHTML = dates.map((date) => `
@@ -105,8 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadTimes() {
         const response = await adminFetch("/admin/times", { method: "GET" });
-        if (response.status === 401) {
-            throw new Error("관리자 토큰이 올바르지 않습니다.");
+        if (!response.ok) {
+            const error = await parseResponse(response);
+            let message = error?.message || "시간 목록을 불러오지 못했습니다.";
+            if (error?.action) {
+                message += ` (${error.action})`;
+            }
+            throw new Error(message);
         }
         const times = await parseResponse(response);
         timesList.innerHTML = times.map((time) => `
@@ -123,8 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadReservations() {
         const response = await adminFetch("/admin/reservations", { method: "GET" });
-        if (response.status === 401) {
-            throw new Error("관리자 토큰이 올바르지 않습니다.");
+        if (!response.ok) {
+            const error = await parseResponse(response);
+            let message = error?.message || "예약 목록을 불러오지 못했습니다.";
+            if (error?.action) {
+                message += ` (${error.action})`;
+            }
+            throw new Error(message);
         }
         const reservations = await parseResponse(response);
         reservationsList.innerHTML = reservations.map((reservation) => `
@@ -174,7 +198,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (!response.ok) {
                     const error = await parseResponse(response);
-                    openModal(error?.message || "삭제에 실패했습니다.");
+                    let errorMsg = error?.message || "삭제에 실패했습니다.";
+                    if (error?.action) {
+                        errorMsg += ` (${error.action})`;
+                    }
+                    openModal(errorMsg);
                     return;
                 }
 
@@ -232,7 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const result = await parseResponse(response);
         if (!response.ok) {
-            setMessage(document.getElementById("theme-form-message"), result?.message || "테마 추가에 실패했습니다.", "error");
+            let errorMsg = result?.message || "테마 추가에 실패했습니다.";
+            if (result?.action) {
+                errorMsg += ` (${result.action})`;
+            }
+            setMessage(document.getElementById("theme-form-message"), errorMsg, "error");
             return;
         }
         themeForm.reset();
@@ -253,7 +285,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const result = await parseResponse(response);
         if (!response.ok) {
-            setMessage(document.getElementById("date-form-message"), result?.message || "날짜 추가에 실패했습니다.", "error");
+            let errorMsg = result?.message || "날짜 추가에 실패했습니다.";
+            if (result?.action) {
+                errorMsg += ` (${result.action})`;
+            }
+            setMessage(document.getElementById("date-form-message"), errorMsg, "error");
             return;
         }
         dateForm.reset();
@@ -274,7 +310,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const result = await parseResponse(response);
         if (!response.ok) {
-            setMessage(document.getElementById("time-form-message"), result?.message || "시간 추가에 실패했습니다.", "error");
+            let errorMsg = result?.message || "시간 추가에 실패했습니다.";
+            if (result?.action) {
+                errorMsg += ` (${result.action})`;
+            }
+            setMessage(document.getElementById("time-form-message"), errorMsg, "error");
             return;
         }
         timeForm.reset();
