@@ -5,7 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ public class ThemeRepositoryTest {
 
         Optional<Theme> theme = themeRepository.read(1L);
 
-        Assertions.assertThat(theme.orElseThrow().getId()).isEqualTo(1L);
+        assertThat(theme.orElseThrow().getId()).isEqualTo(1L);
     }
 
     @Test
@@ -57,7 +56,7 @@ public class ThemeRepositoryTest {
         jdbcTemplate.update(sql, "방탈출2", "방탈출2 설명", "url.jpg");
 
         List<Theme> themes = themeRepository.readAll();
-        Assertions.assertThat(themes.size()).isEqualTo(2);
+        assertThat(themes.size()).isEqualTo(2);
     }
 
     @Test
@@ -77,8 +76,8 @@ public class ThemeRepositoryTest {
 
         List<Theme> themes = themeRepository.readRanking(LocalDate.of(2026, 5, 2), LocalDate.of(2026, 5, 3), 2);
 
-        Assertions.assertThat(themes.get(0).getId()).isEqualTo(1L);
-        Assertions.assertThat(themes.get(1).getId()).isEqualTo(2L);
+        assertThat(themes.get(0).getId()).isEqualTo(1L);
+        assertThat(themes.get(1).getId()).isEqualTo(2L);
     }
 
     @Test
@@ -91,6 +90,16 @@ public class ThemeRepositoryTest {
         String readAllThemeCountSql = "SELECT COUNT(*) FROM `theme`";
         int count = jdbcTemplate.queryForObject(readAllThemeCountSql, Integer.class);
 
-        Assertions.assertThat(count).isEqualTo(0);
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    void existByIdTest() {
+        assertThat(themeRepository.existById(1L)).isFalse();
+
+        String sql = "INSERT INTO `theme` (`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, "방탈출", "설명", "url.jpg");
+
+        assertThat(themeRepository.existById(1L)).isTrue();
     }
 }
