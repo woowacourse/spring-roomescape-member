@@ -33,7 +33,7 @@ public class ReservationService {
         this.adminThemeRepository = adminThemeRepository;
     }
 
-    public ReservationResponse createReservation(ReservationRequest request) {
+    public void createReservation(ReservationRequest request) {
         validateInvalidReservationTime(request);
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
@@ -47,9 +47,7 @@ public class ReservationService {
             time,
             theme
         );
-
-        Reservation saved = reservationRepository.save(reservation);
-        return ReservationResponse.from(saved);
+        reservationRepository.save(reservation);
     }
 
     private void validateInvalidReservationTime(ReservationRequest request) {

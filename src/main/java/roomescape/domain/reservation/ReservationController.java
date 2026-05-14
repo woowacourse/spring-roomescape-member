@@ -28,11 +28,11 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(
+    public ResponseEntity<Void> createReservation(
         @RequestBody @Valid ReservationRequest request
     ) {
-        ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        reservationService.createReservation(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/reservations")
