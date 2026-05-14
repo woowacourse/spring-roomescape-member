@@ -24,6 +24,17 @@ class ThemeControllerTest extends AcceptanceTest {
     private Clock clock;
 
     @Test
+    void 테마_목록을_조회한다() {
+        createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
+
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", hasItem("방탈출1"));
+    }
+
+    @Test
     void 최근_7일간_인기_테마_상위_10개를_조회한다() {
         // given
         createRankingData();
