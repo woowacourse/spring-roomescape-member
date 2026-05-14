@@ -61,6 +61,10 @@ public class TimeService {
     }
 
     public void deleteTimeById(Long id) {
+        if (!timeRepository.existsTimeById(id)) {
+            throw new GeneralException(TimeErrorType.TIME_NOT_FOUND);
+        }
+
         timeRepository.deleteTimeById(id);
     }
 }

@@ -1,9 +1,11 @@
 package roomescape.domain.time.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import roomescape.domain.time.service.TimeService;
 
 @RestController
 @RequestMapping("/api/admin/times")
+@Validated
 public class AdminTimeController {
 
     private final TimeService timeService;
@@ -36,8 +39,8 @@ public class AdminTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable @Positive(message = "id의 값은 양수여야 합니다.") Long id) {
         timeService.deleteTimeById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

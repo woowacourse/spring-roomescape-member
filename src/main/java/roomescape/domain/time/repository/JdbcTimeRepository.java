@@ -68,6 +68,21 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
+    public boolean existsTimeById(Long id) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE id = :id
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
     public boolean existsTimeByStartAt(LocalTime startAt) {
         String sql = """
             SELECT EXISTS (
