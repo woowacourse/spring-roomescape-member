@@ -10,7 +10,7 @@ class ThemeTest {
     private final Long id = 1L;
     private final ThemeName name = ThemeName.parse("공포");
     private final Description description = Description.parse("너무무서워");
-    private final String url = "/horror";
+    private final ThumbnailUrl url = ThumbnailUrl.parse("/images/horror");
 
     @Test
     @DisplayName("올바른 정보로 테마를 생성하면 성공한다.")
@@ -41,7 +41,7 @@ class ThemeTest {
     @Test
     @DisplayName("테마 썸네일 주소가 null이면 예외가 발생한다")
     void 썸네일_주소_null_예외_테스트() {
-        String url = null;
+        ThumbnailUrl url = null;
 
         assertThatThrownBy(() -> new Theme(id, name, description, url))
                 .isInstanceOf(NullPointerException.class)

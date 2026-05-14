@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.ThemeName;
+import roomescape.domain.reservation.theme.ThumbnailUrl;
 import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
 
@@ -21,7 +22,7 @@ class ReservationTest {
 
     private final ThemeName themeName = ThemeName.parse("공포");
     private final Description description = Description.parse("너무무서워");
-    private final String url = "/horror";
+    private final ThumbnailUrl url = ThumbnailUrl.parse("/images/horror");
     private final Theme theme = new Theme(1L, themeName, description, url);
 
     @Test
