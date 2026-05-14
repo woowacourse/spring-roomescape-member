@@ -89,6 +89,7 @@ public class ReservationService {
                 reservationTime
         );
 
+        validateNotPast(updateReservation);
         validateDuplicate(updateReservation);
 
         reservationRepository.update(updateReservation);
