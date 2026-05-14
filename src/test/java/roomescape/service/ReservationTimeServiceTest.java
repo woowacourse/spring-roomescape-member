@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간대입니다.");
+                .hasMessage("존재하지 않는 예약 시간대입니다. 다시 확인해주세요.");
     }
 
     @Test
@@ -92,7 +92,7 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다. 예약을 확인해주세요.");
     }
 
     private Long createTheme() {

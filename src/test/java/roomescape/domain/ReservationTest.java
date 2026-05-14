@@ -29,7 +29,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(name, TEST_DATE, time, theme, FUTURE_DATE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 비어 있을 수 없습니다.");
+                .hasMessage("이름은 비어 있을 수 없습니다. 이름을 입력해주세요.");
     }
 
     @Test
@@ -42,7 +42,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(name, TEST_DATE, time, theme, FUTURE_DATE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("이름은 255자를 넘을 수 없습니다. 255자 이내로 입력해주세요.");
     }
 
     @Test
@@ -54,7 +54,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation("구구", null, time, theme, FUTURE_DATE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("날짜는 비어 있을 수 없습니다.");
+                .hasMessage("날짜는 비어 있을 수 없습니다. 날짜를 입력해주세요.");
         ;
     }
 
@@ -66,7 +66,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation("홍길동", TEST_DATE, null, theme, FUTURE_DATE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시간은 비어있을 수 없습니다.");
+                .hasMessage("예약 시간은 비어있을 수 없습니다. 예약 시간을 선택해주세요.");
     }
 
     @Test
@@ -77,7 +77,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation("홍길동", TEST_DATE, time, null, FUTURE_DATE_TIME))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마는 비어있을 수 없습니다.");
+                .hasMessage("테마는 비어있을 수 없습니다. 테마를 선택해주세요.");
     }
 
     @ParameterizedTest
@@ -127,7 +127,7 @@ class ReservationTest {
         // then
         assertThatThrownBy(() -> before.update(updateDate, updateTime, FUTURE_DATE_TIME))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage("지난 날짜의 예약은 변경할 수 없습니다.");
+                .hasMessage("지난 날짜의 예약은 변경할 수 없습니다. 현재 이후의 예약을 선택해주세요.");
     }
 
     @Test
@@ -144,7 +144,7 @@ class ReservationTest {
         // then
         assertThatThrownBy(() -> before.update(updateDate, updateTime, PAST_DATE_TIME))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage("지난 날짜로 예약을 변경할 수 없습니다.");
+                .hasMessage("지난 날짜로 예약을 변경할 수 없습니다. 현재 이후의 날짜를 선택해주세요.");
     }
 
     @Test
@@ -157,7 +157,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> reservation.validateCancelable(FUTURE_DATE_TIME))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage("지난 예약은 취소할 수 없습니다.");
+                .hasMessage("지난 예약은 취소할 수 없습니다. 현재 이후의 예약을 선택해주세요.");
     }
 
     @Test
@@ -169,7 +169,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation("브라운", LocalDate.from(PAST_DATE_TIME), time, theme, FUTURE_DATE_TIME))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage("지난 시간으로는 예약할 수 없습니다.");
+                .hasMessage("지난 시간으로는 예약할 수 없습니다. 현재 이후의 시간으로 예약해주세요.");
 
     }
 }

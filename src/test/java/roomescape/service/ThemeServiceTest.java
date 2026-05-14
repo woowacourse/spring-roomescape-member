@@ -80,7 +80,7 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.delete(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .hasMessage("존재하지 않는 테마입니다. 테마를 확인해주세요.");
     }
 
     @Test
@@ -93,7 +93,7 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
+                .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다. 예약을 확인해주세요.");
     }
 
 

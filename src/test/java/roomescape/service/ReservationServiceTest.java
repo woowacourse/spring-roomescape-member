@@ -60,7 +60,7 @@ class ReservationServiceTest {
         reservationService.create("구구", date, 2L, 1L);
 
         // when
-        List<Reservation> result = reservationService.findAll();
+        List<Reservation> result = reservationService.findAll(null);
 
         // then
         assertThat(result).hasSize(2);
@@ -74,7 +74,7 @@ class ReservationServiceTest {
         reservationService.create("브라운", date, 3L, 1L);
 
         // when
-        List<Reservation> result = reservationService.findByName("브라운");
+        List<Reservation> result = reservationService.findAll("브라운");
 
         // then
         assertThat(result).hasSize(3);
@@ -89,7 +89,7 @@ class ReservationServiceTest {
         reservationService.delete(created.getId());
 
         // then
-        assertThat(reservationService.findAll()).isEmpty();
+        assertThat(reservationService.findAll(null)).isEmpty();
     }
 
     @Test
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.create("홍길동", date, 999L, 1L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .hasMessage("존재하지 않는 예약 시간입니다. 시간대를 확인해주세요.");
     }
 
     @Test
@@ -105,7 +105,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.create("홍길동", date, 1L, 999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .hasMessage("존재하지 않는 테마입니다. 테마를 확인해주세요.");
     }
 
     @Test
@@ -113,7 +113,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .hasMessage("존재하지 않는 예약입니다. 예약을 확인해주세요.");
     }
 
     @Test
@@ -124,6 +124,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.create("브라운", date, 1L, 1L))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 예약된 시간입니다.");
+                .hasMessage("이미 예약된 시간입니다. 다른 날짜 혹은 테마를 선택해주세요.");
     }
 }
