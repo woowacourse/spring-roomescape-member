@@ -13,8 +13,6 @@ public interface TimeRepository {
 
     Optional<Time> findTimeById(Long id);
 
-    boolean existsById(Long id);
-
     boolean existsByStartAt(LocalTime startAt);
 
     int deleteTimeById(Long id);
