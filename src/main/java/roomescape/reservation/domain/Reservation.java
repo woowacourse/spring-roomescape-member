@@ -93,7 +93,7 @@ public class Reservation {
         Objects.requireNonNull(name, "예약자 이름은 반드시 입력해야 합니다.");
 
         if (name.isBlank()) {
-            throw new NullPointerException("예약자 이름은 반드시 입력해야 합니다.");
+            throw new IllegalArgumentException("예약자 이름은 반드시 입력해야 합니다.");
         }
 
         if (name.length() > MAX_NAME_LENGTH) {

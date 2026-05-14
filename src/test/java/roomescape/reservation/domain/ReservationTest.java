@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.theme.domain.Theme;
@@ -35,13 +34,20 @@ class ReservationTest {
                     .doesNotThrowAnyException();
         }
 
+        @Test
+        @DisplayName("이름이 비어있으면 예외가 발생한다.")
+        void nullCheck() {
+            assertThatThrownBy(() -> new Reservation(1L, null, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
+        }
+
         @ParameterizedTest
-        @NullAndEmptySource
         @ValueSource(strings = {" ", "  "})
         @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
         void failWhenNameIsBlank(String name) {
             assertThatThrownBy(() -> new Reservation(1L, name, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(NullPointerException.class)
+                    .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
         }
 
@@ -101,7 +107,7 @@ class ReservationTest {
         @DisplayName("이름이 비어있으면 invariant 검증 이전에 NullPointerException 이 발생한다.")
         void createFailWhenNameBlank() {
             assertThatThrownBy(() -> Reservation.create(" ", futureDate, reservationTime, theme, today))
-                    .isInstanceOf(NullPointerException.class)
+                    .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
         }
     }

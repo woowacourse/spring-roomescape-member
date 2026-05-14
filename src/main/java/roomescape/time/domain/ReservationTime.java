@@ -2,7 +2,6 @@ package roomescape.time.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -22,10 +21,6 @@ public class ReservationTime {
     public static ReservationTime fromValidTimeUnit(LocalTime startAt) {
         validateStartAtUnit(startAt);
         return new ReservationTime(null, startAt);
-    }
-
-    public boolean isAvailable(LocalDateTime now) {
-        return !startAt.isBefore(now.toLocalTime());
     }
 
     private static void validateStartAtUnit(LocalTime startAt) {
