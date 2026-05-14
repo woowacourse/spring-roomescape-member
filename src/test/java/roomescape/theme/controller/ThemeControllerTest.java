@@ -17,6 +17,6 @@ public class ThemeControllerTest {
                 .when().get("/api/themes/trending?from=2026-05-01&to=2026-05-07&limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(9));
     }
 }

@@ -43,13 +43,31 @@ public class ReservationService {
         return reservationDao.insert(reservation);
     }
 
-    public void update(Long id, String name, LocalDate date, Long timeId) {
+    public void update(Long id, String name, LocalDate date, Long timeId, LocalDateTime now) {
+        Reservation reservation = reservationDao.selectById(id);
+        ReservationTime time = timeDao.selectById(timeId);
+
+        if (date.isBefore(now.toLocalDate()) || (date.equals(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
+            throw new BusinessException(ErrorCode.RESERVATION_UPDATE_TO_PAST);
+        }
+
+        validateReservationOwnerAndTime(name, now, reservation);
+
+        if (!reservationDao.isAvailable(reservation.getThemeId(), date, timeId)) {
+            throw new BusinessException(ErrorCode.RESERVATION_CONFLICT);
+        }
+
         reservationDao.update(id, name, date, timeId);
     }
 
     public void delete(Long id, String name, LocalDateTime now) {
         Reservation reservation = reservationDao.selectById(id);
 
+        validateReservationOwnerAndTime(name, now, reservation);
+        reservationDao.delete(id, name);
+    }
+
+    private static void validateReservationOwnerAndTime(String name, LocalDateTime now, Reservation reservation) {
         if (!reservation.getName().equals(name)) {
             throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
         }
@@ -57,6 +75,5 @@ public class ReservationService {
         if (reservation.isPast(now)) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PAST);
         }
-        reservationDao.delete(id, name);
     }
 }

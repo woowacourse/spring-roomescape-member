@@ -57,6 +57,26 @@ public class ReservationControllerTest {
     @Test
     void 예약_변경_성공() {
         Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-16");
+        params.put("timeId", 7L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/api/reservations/13?name=도우너")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/api/reservations?name=도우너")
+                .then().log().all()
+                .body("reservations[1].date", is("2026-05-16"))
+                .body("reservations[1].time.id", is(7));
+    }
+
+    @Test
+    void 과거로_예약_변경시_실패_테스트() {
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2026-05-14");
         params.put("timeId", 7L);
 
@@ -65,19 +85,27 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().patch("/api/reservations/2?name=도우너")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(422);
+    }
+
+    @Test
+    void 이미_예약된_시간에_예약_변경시_실패_테스트() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-20");
+        params.put("timeId", 1L);
 
         RestAssured.given().log().all()
-                .when().get("/api/reservations?name=도우너")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/api/reservations/13?name=도우너")
                 .then().log().all()
-                .body("reservations[0].date", is("2026-05-14"))
-                .body("reservations[0].time.id", is(7));
+                .statusCode(409);
     }
 
     @Test
     void 예약_삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/api/reservations/14?name=도우너")
+                .when().delete("/api/reservations/13?name=도우너")
                 .then().log().all()
                 .statusCode(204);
 

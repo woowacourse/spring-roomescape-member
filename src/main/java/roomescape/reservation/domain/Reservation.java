@@ -48,8 +48,8 @@ public class Reservation {
     }
 
     public boolean isPast(LocalDateTime now){
-        LocalDate nowDate = LocalDate.now();
-        LocalTime nowTime = LocalTime.now();
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
 
         if (date.isBefore(nowDate)) return true;
         if (date.equals(nowDate) && time.isBefore(nowTime)) return true;
