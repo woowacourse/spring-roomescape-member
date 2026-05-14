@@ -44,9 +44,9 @@ public class ReservationTimeRestController {
     }
 
     @PutMapping("/admin/times/{id}")
-    public ResponseEntity<Void> update(@RequestBody ReservationTimeUpdateRequest newReservationTimeReq, @PathVariable Long id) {
-        reservationTimeService.update(id, newReservationTimeReq);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ReservationTimeResponse> update(@RequestBody ReservationTimeUpdateRequest newReservationTimeReq, @PathVariable Long id) {
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.update(id, newReservationTimeReq);
+        return ResponseEntity.ok(reservationTimeResponse);
     }
 
     @DeleteMapping("/admin/times/{id}")

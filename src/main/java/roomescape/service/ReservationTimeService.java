@@ -14,6 +14,7 @@ import roomescape.repository.ReservationTimeUpdatingDao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -48,12 +49,17 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void update(Long id, ReservationTimeUpdateRequest newReservationTimeReq) {
+    public ReservationTimeResponse update(Long id, ReservationTimeUpdateRequest newReservationTimeReq) {
         if (!reservationTimeQueryingDao.existsById(id)) {
             throw new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND);
         }
 
         reservationTimeUpdatingDao.update(id, newReservationTimeReq);
+
+        ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(id)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+
+        return ReservationTimeResponse.from(findReservationTime);
     }
 
     @Transactional
