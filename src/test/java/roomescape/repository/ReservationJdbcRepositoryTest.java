@@ -45,7 +45,7 @@ class ReservationJdbcRepositoryTest {
         Long reservationId = jdbcTemplate.queryForObject(
                 "SELECT id FROM reservation ORDER BY id DESC LIMIT 1", Long.class);
 
-        Reservation found = repository.findById(reservationId);
+        Reservation found = repository.findById(reservationId).orElseThrow();
 
         assertThat(found.getId()).isEqualTo(reservationId);
         assertThat(found.getName()).isEqualTo("브라운");
@@ -54,6 +54,11 @@ class ReservationJdbcRepositoryTest {
         assertThat(found.getTheme().getName()).isEqualTo("공포");
         assertThat(found.getTime().getId()).isEqualTo(timeId);
         assertThat(found.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    void findById_없는_id이면_Optional_empty를_반환한다() {
+        assertThat(repository.findById(9999L)).isEmpty();
     }
 
     @Test

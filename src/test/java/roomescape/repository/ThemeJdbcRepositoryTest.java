@@ -35,12 +35,17 @@ class ThemeJdbcRepositoryTest {
     void findById_저장한_테마를_조회한다() {
         Long id = repository.save(new Theme(null, "공포", "무서움", "https://thumbnail.url"));
 
-        Theme found = repository.findById(id);
+        Theme found = repository.findById(id).orElseThrow();
 
         assertThat(found.getId()).isEqualTo(id);
         assertThat(found.getName()).isEqualTo("공포");
         assertThat(found.getDescription()).isEqualTo("무서움");
         assertThat(found.getThumbnailImageUrl()).isEqualTo("https://thumbnail.url");
+    }
+
+    @Test
+    void findById_없는_id이면_Optional_empty를_반환한다() {
+        assertThat(repository.findById(9999L)).isEmpty();
     }
 
     @Test

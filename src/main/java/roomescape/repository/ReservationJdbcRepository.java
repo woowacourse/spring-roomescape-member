@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -60,7 +62,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id, r.name, r.date,
                        t.id as time_id, t.start_at,
@@ -70,7 +72,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 join theme th on r.theme_id = th.id
                 where r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

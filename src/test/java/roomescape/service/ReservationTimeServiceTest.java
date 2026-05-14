@@ -50,6 +50,14 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void getReservationTime_없는_id이면_ResourceNotFoundException() {
+        assertThatThrownBy(() -> service.getReservationTime(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("예약 시간")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void getReservationTimes_다음_페이지가_있으면_hasNext가_true() {
         reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
         reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));

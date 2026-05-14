@@ -52,6 +52,16 @@ class ThemeControllerTest {
     }
 
     @Test
+    void GET_themes_id_서비스가_ResourceNotFoundException을_던지면_404과_메시지를_반환한다() throws Exception {
+        given(themeService.getTheme(9999L))
+                .willThrow(new roomescape.exception.ResourceNotFoundException("테마", 9999L));
+
+        mockMvc.perform(get("/themes/9999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("테마을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
     void GET_themes_id_times_예약된_시간은_isReserved_true_나머지는_false() throws Exception {
         given(themeService.getThemeTimes(1L, LocalDate.of(2026, 5, 6)))
                 .willReturn(List.of(

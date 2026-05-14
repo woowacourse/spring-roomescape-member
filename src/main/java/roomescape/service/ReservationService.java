@@ -10,6 +10,7 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -40,13 +41,16 @@ public class ReservationService {
     }
 
     public Reservation getReservation(Long id) {
-        return reservationRepository.findById(id);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약", id));
     }
 
     @Transactional
     public Reservation createReservation(CreateReservationRequest request) {
-        Theme theme = themeRepository.findById(request.themeId());
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new ResourceNotFoundException("테마", request.themeId()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ResourceNotFoundException("예약 시간", request.timeId()));
         Reservation newReservation = new Reservation(null, request.name(), theme, request.date(), reservationTime);
 
         validateNotPastDateTime(newReservation);

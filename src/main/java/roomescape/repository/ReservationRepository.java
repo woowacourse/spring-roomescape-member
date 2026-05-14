@@ -2,13 +2,14 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
 
     List<Reservation> findAll(int limit, int offset);
 
-    Reservation findById(Long id);
+    Optional<Reservation> findById(Long id);
 
     Long save(Reservation reservation);
 

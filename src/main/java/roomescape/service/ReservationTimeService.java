@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.CreateReservationTimeRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponses;
 import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -32,7 +33,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTime getReservationTime(Long id) {
-        return reservationTimeRepository.findById(id);
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약 시간", id));
     }
 
     @Transactional

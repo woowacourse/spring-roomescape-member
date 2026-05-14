@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import roomescape.domain.PopularTheme;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
@@ -29,8 +30,8 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(Long id) {
-        return store.get(id);
+    public Optional<Theme> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
     }
 
     @Override

@@ -15,6 +15,7 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
@@ -76,6 +77,28 @@ class ReservationServiceTest {
     }
 
     @Test
+    void createReservation_존재하지_않는_themeId이면_ResourceNotFoundException() {
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+
+        assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
+                "브라운", 9999L, LocalDate.of(2026, 5, 8), timeId)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("테마")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
+    void createReservation_존재하지_않는_timeId이면_ResourceNotFoundException() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "https://thumbnail.url"));
+
+        assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
+                "브라운", themeId, LocalDate.of(2026, 5, 8), 9999L)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("예약 시간")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void getReservations_다음_페이지가_있으면_hasNext가_true() {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
         Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
@@ -116,6 +139,14 @@ class ReservationServiceTest {
     }
 
     @Test
+    void getReservation_없는_id이면_ResourceNotFoundException() {
+        assertThatThrownBy(() -> service.getReservation(9999L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("예약")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void deleteReservation_삭제후_조회되지_않는다() {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
         Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
@@ -129,8 +160,8 @@ class ReservationServiceTest {
     }
 
     private Reservation buildReservation(String name, Long themeId, Long timeId, LocalDate date) {
-        Theme theme = themeRepository.findById(themeId);
-        ReservationTime time = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId).orElseThrow();
+        ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow();
         return new Reservation(null, name, theme, date, time);
     }
 }

@@ -48,4 +48,14 @@ class ReservationTimeControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00"));
     }
+
+    @Test
+    void GET_times_id_서비스가_ResourceNotFoundException을_던지면_404과_메시지를_반환한다() throws Exception {
+        given(reservationTimeService.getReservationTime(9999L))
+                .willThrow(new roomescape.exception.ResourceNotFoundException("예약 시간", 9999L));
+
+        mockMvc.perform(get("/times/9999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("예약 시간을(를) 찾을 수 없습니다. id=9999"));
+    }
 }

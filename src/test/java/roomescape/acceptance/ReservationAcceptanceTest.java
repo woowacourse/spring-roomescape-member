@@ -168,6 +168,15 @@ class ReservationAcceptanceTest {
     }
 
     @Test
+    void GET_reservations_id_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("예약을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
     void DELETE_reservations_id_예약을_삭제한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");

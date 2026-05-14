@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 
@@ -25,8 +26,8 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
-        return store.get(id);
+    public Optional<Reservation> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
     }
 
     @Override

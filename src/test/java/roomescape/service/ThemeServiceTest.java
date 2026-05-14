@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.TestClockConfig;
 import roomescape.domain.PopularTheme;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -14,7 +15,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponses;
-import roomescape.TestClockConfig;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
@@ -81,6 +81,14 @@ class ThemeServiceTest {
     }
 
     @Test
+    void getTheme_없는_id이면_ResourceNotFoundException() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getTheme(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("테마")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void deleteTheme_삭제후_조회되지_않는다() {
         Long id = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
 
@@ -127,8 +135,8 @@ class ThemeServiceTest {
     }
 
     private Reservation buildReservation(String name, Long themeId, Long timeId, LocalDate date) {
-        Theme theme = themeRepository.findById(themeId);
-        ReservationTime time = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId).orElseThrow();
+        ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow();
         return new Reservation(null, name, theme, date, time);
     }
 }
