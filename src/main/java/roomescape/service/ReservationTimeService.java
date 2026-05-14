@@ -14,7 +14,6 @@ import roomescape.repository.ReservationTimeUpdatingDao;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -69,7 +68,7 @@ public class ReservationTimeService {
         }
 
         if (reservationQueryingDao.existsReservationByTimeId(id)) {
-            throw new IllegalArgumentException("예약이 있는 시간은 삭제할 수 없습니다.");
+            throw new CustomException(CustomExceptionCode.RESERVATION_TIME_DELETE_CONFLICT);
         }
         reservationTimeUpdatingDao.delete(id);
     }

@@ -67,10 +67,9 @@ class ReservationTimeServiceTest {
     void 시간_삭제_성공() {
         // given
         Long reservationTimeId = 1L;
-        ReservationTime reservationTime = new ReservationTime(reservationTimeId, LocalTime.of(10, 0));
 
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
-                .thenReturn(Optional.of(reservationTime));
+        when(reservationTimeQueryingDao.existsById(reservationTimeId))
+                .thenReturn(true);
 
         when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
                 .thenReturn(false);
@@ -87,27 +86,27 @@ class ReservationTimeServiceTest {
         // given
         Long reservationTimeId = 1L;
 
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
-                .thenReturn(Optional.empty());
+        when(reservationTimeQueryingDao.existsById(reservationTimeId))
+                .thenReturn(false);
 
         // when && then
         Assertions.assertThrows(CustomException.class, () -> reservationTimeService.delete(reservationTimeId));
+        verify(reservationQueryingDao, never()).existsReservationByTimeId(reservationTimeId);
     }
 
     @Test
     void 시간_삭제_에러_예약이_있는_시간() {
         // given
         Long reservationTimeId = 1L;
-        ReservationTime reservationTime = new ReservationTime(reservationTimeId, LocalTime.of(10, 0));
 
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
-                .thenReturn(Optional.of(reservationTime));
+        when(reservationTimeQueryingDao.existsById(reservationTimeId))
+                .thenReturn(true);
 
         when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
                 .thenReturn(true);
 
         // when && then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> reservationTimeService.delete(reservationTimeId));
+        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.delete(reservationTimeId));
     }
 
 }

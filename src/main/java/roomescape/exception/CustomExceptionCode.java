@@ -11,6 +11,7 @@ public enum CustomExceptionCode {
 
     // 409
     RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 예약된 시간입니다."),
+    RESERVATION_TIME_DELETE_CONFLICT(HttpStatus.CONFLICT, "예약이 있는 시간은 삭제할 수 없습니다."),
 
     // 422
     PAST_RESERVATION_DATE(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다.");

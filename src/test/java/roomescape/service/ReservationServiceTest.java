@@ -134,7 +134,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(theme));
 
         // when & then
-        Assertions.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
         verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId));
     }
@@ -155,7 +155,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        Assertions.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
         verify(reservationUpdatingDao, never()).save(any());
     }
@@ -190,7 +190,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation2));
 
         // when & then
-        Assertions.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
     }
 
@@ -224,7 +224,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation2));
 
         // when & then
-        Assertions.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
     }
 
