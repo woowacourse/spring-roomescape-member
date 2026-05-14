@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularTheme;
+import roomescape.exception.ThemeInUseException;
 
 @Repository
 public class ThemeDao {
@@ -64,7 +66,11 @@ public class ThemeDao {
     }
 
     public int delete(Long id) {
-        return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        try {
+            return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ThemeInUseException();
+        }
     }
 
     public List<PopularTheme> findPopularThemes(LocalDate from, LocalDate to) {

@@ -1,4 +1,4 @@
 package roomescape.exception;
 
-public class ReservationTimeInUseException extends RuntimeException {
+public class ReservationTimeInUseException extends InUseException {
 }

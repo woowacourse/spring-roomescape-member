@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(ReservationTimeInUseException.class)
-    public ResponseEntity<Void> handleReservationTimeInUse() {
+    @ExceptionHandler(InUseException.class)
+    public ResponseEntity<Void> handleInUse() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
