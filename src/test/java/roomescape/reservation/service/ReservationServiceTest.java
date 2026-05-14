@@ -335,6 +335,20 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("일반유저가 이미 존재하는 날짜/시간으로 예약을 변경하면 예외가 발생한다.")
+    void changeSchedule_duplicated() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        save(reservation(name, reservationDate2, reservationTime2, theme1));
+
+        // when & then
+        assertThatThrownBy(() ->
+                reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId()))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_BOOKED.getMessage());
+    }
+
+    @Test
     @DisplayName("관리자는 예약자 확인 없이, 예약 날짜/시간을 변경할 수 있다.")
     void changeScheduleByManager() {
         // given
@@ -375,6 +389,20 @@ class ReservationServiceTest {
                         reservationService.changeScheduleByManager(saved.getId(), pastDate.getId(), pastTime.getId()))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage());
+    }
+
+    @Test
+    @DisplayName("관리자가 이미 존재하는 날짜/시간으로 예약을 변경하면 예외가 발생한다.")
+    void changeScheduleByManager_duplicated() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        save(reservation(name, reservationDate2, reservationTime2, theme1));
+
+        // when & then
+        assertThatThrownBy(() ->
+                reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId()))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_BOOKED.getMessage());
     }
 
     private Reservation save(Reservation reservation) {

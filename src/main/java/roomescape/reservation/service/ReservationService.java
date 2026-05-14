@@ -55,7 +55,7 @@ public class ReservationService {
         ReservationDate reservationDate = getReservationDate(dto.dateId());
         Theme theme = getTheme(dto.themeId());
 
-        validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme);
+        validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme.getId());
         return reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate, reservationTime, theme)
         );
@@ -83,6 +83,7 @@ public class ReservationService {
         Reservation reservation = getReservation(id);
         ReservationDate newDate = getReservationDate(dateId);
         ReservationTime newTime = getReservationTime(timeId);
+        validateNotAlreadyBookedByOthers(dateId, timeId, reservation.getTheme().getId());
 
         reservation.changeSchedule(requesterName, newDate, newTime);
         reservationRepository.updateSchedule(reservation);
@@ -94,6 +95,7 @@ public class ReservationService {
         Reservation reservation = getReservation(id);
         ReservationDate newDate = getReservationDate(dateId);
         ReservationTime newTime = getReservationTime(timeId);
+        validateNotAlreadyBookedByOthers(dateId, timeId, reservation.getTheme().getId());
 
         reservation.changeScheduleByManager(newDate, newTime);
         reservationRepository.updateSchedule(reservation);
@@ -120,8 +122,8 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationException(RESERVATION_NOT_FOUND));
     }
 
-    private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.getId())) {
+    private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, themeId)) {
             throw new ReservationException(RESERVATION_ALREADY_BOOKED);
         }
     }

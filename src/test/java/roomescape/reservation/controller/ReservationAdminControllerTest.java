@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.RESERVATION_ALREADY_BOOKED;
 import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -237,6 +239,30 @@ class ReservationAdminControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("이미 취소된 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("관리자가 이미 존재하는 날짜/시간으로 예약을 변경하면 예외가 발생한다.")
+    void updateScheduleByManager_duplicated() {
+        Integer dateId = createReservationDate(date);
+        Integer alreadyReservedDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer timeId = createReservationTime(startAt);
+        Integer alreadyReservedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        createReservation(reservationName, alreadyReservedDateId, alreadyReservedTimeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("dateId", alreadyReservedDateId);
+        params.put("timeId", alreadyReservedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(HttpStatus.CONFLICT.value())
+                .body("message", is(RESERVATION_ALREADY_BOOKED.getMessage()));
     }
 
     @Test
