@@ -10,6 +10,7 @@ public class Reservation {
     private final Theme theme;
     private LocalDate date;
     private Time time;
+    private ReservationStatus reservationStatus;
 
     public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
@@ -17,6 +18,7 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.reservationStatus = ReservationStatus.BOOKED;
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
@@ -30,11 +32,16 @@ public class Reservation {
         }
     }
 
+    public void cancel() {
+        reservationStatus = ReservationStatus.CANCELED;
+    }
+
     public void validateCancel(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
             throw new IllegalArgumentException("지난 예약은 취소 불가능합니다. 관리자에게 문의하세요");
         }
+        cancel();
     }
 
     public void update(LocalDate date, Time time) {
@@ -81,5 +88,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
     }
 }

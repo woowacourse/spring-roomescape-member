@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,16 +40,17 @@ class ReservationTest {
     }
 
     @Nested
-    class ValidateCancel {
+    class validateCancel {
 
         @Test
-        @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
+        @DisplayName("예약 시간이 과거가 아니면 취소에 성공한다.")
         void doesNotThrowWhenJustFuture() {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
             assertThatCode(() -> reservation.validateCancel(NOW))
                     .doesNotThrowAnyException();
+            assertThat(reservation.getReservationStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
 
         @Test
