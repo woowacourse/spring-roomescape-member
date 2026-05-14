@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import roomescape.exception.InvalidStateException;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
@@ -44,6 +45,14 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
+    }
+
+    public boolean isOwner(String userName) {
+        return this.userName.equals(userName);
     }
 
     private void validate(String userName, Theme theme, LocalDate date, ReservationTime time) {

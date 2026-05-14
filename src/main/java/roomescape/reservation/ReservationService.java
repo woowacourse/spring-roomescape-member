@@ -46,8 +46,11 @@ public class ReservationService {
                 reservationTime
         );
 
+        if (reservation.isPast(now)){
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
+
         validateDuplicate(reservation);
-        validateDateTime(now, reservation);
 
         Reservation saved = reservationRepository.save(reservation);
 
@@ -76,7 +79,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
-        if (!reservation.getUserName().equals(userName)) {
+        if (!reservation.isOwner(userName)) {
             throw new ForbiddenException("본인의 예약만 변경할 수 있습니다.");
         }
 
@@ -93,7 +96,10 @@ public class ReservationService {
                 reservationTime
         );
 
-        validateDateTime(now, updateReservation);
+        if (reservation.isPast(now)){
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
+
         validateDuplicate(updateReservation);
 
         reservationRepository.update(id, reservationRequest.themeId(), reservationRequest.date(),
@@ -107,7 +113,9 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
-        validateDateTime(now, reservation);
+        if (reservation.isPast(now)){
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
 
         reservationRepository.deleteById(id);
     }
@@ -117,11 +125,13 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
-        if (!reservation.getUserName().equals(userName)) {
+        if (!reservation.isOwner(userName)) {
             throw new ForbiddenException("본인의 예약만 삭제할 수 있습니다.");
         }
 
-        validateDateTime(now, reservation);
+        if (reservation.isPast(now)){
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
 
         reservationRepository.deleteById(id);
     }
@@ -133,14 +143,6 @@ public class ReservationService {
                 reservation.getTime().getId())
         ) {
             throw new AlreadyInUseException("이미 예약된 테마•날짜•시간입니다.");
-        }
-    }
-
-    private void validateDateTime(LocalDateTime now, Reservation reservation) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(),
-                reservation.getTime().getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
     }
 }
