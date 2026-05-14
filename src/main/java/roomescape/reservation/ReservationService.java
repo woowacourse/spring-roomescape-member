@@ -46,7 +46,7 @@ public class ReservationService {
                 reservationTime,
                 LocalDateTime.now(clock)
         );
-        if (reservationRepository.existsActiveByDateAndThemeAndTime(reservation.getDate(), theme.getId(),
+        if (reservationRepository.existsActiveByDateAndThemeAndTime(reservationRequest.date(), theme.getId(),
                 reservationTime.getId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
