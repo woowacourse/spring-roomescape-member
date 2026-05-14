@@ -46,7 +46,4 @@
   - `Clock` 빈 등록 (`Clock.systemDefaultZone()`)
   - `ReservationService`에 `Clock` 주입, `LocalDateTime.now(clock)`으로 교체
   - 테스트에서 `Clock.fixed()`로 고정 시간 사용 → 과거/미래 분기 테스트 가능
-- [ ] **13. schema.sql 유니크 제약 수정**
-  - 현재: `UNIQUE (date, time_id, theme_id)` — 같은 시간대에 다른 테마로 중복 예약 가능
-  - 변경: `UNIQUE (date, time_id)` — 시간당 한 팀만 예약 가능 (방 하나 기준)
-  - `ReservationService.existsByDateAndTimeIdAndThemeId()` → `existsByDateAndTimeId()`로 중복 체크 로직도 함께 수정
+- [ ] ~~**13. schema.sql 유니크 제약 수정**~~ ❌ 요구사항 오류 — 방 여러 개이므로 같은 시간에 다른 테마 예약 가능해야 함. 현재 `UNIQUE (date, time_id, theme_id)` 유지가 올바름.
