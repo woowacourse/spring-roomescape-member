@@ -28,12 +28,16 @@ public class ErrorResponse {
         return new ErrorResponse(path, errorCode.code(), errorCode.message(), null, LocalDateTime.now());
     }
 
+    public static ErrorResponse of(String path, String code, String message) {
+        return new ErrorResponse(path, code, message, null, LocalDateTime.now());
+    }
+
     public static ErrorResponse of(String path, String message) {
         return new ErrorResponse(path, null, message, null, LocalDateTime.now());
     }
 
     public static ErrorResponse of(String path, ErrorPolicy errorCode, List<String> messages) {
         List<String> copiedMessages = List.copyOf(messages);
-        return new ErrorResponse(path, errorCode.code(), errorCode.message(), copiedMessages, LocalDateTime.now());
+        return new ErrorResponse(path, errorCode.code(), null, copiedMessages, LocalDateTime.now());
     }
 }

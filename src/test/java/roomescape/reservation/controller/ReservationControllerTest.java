@@ -42,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER;
 import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER_PREFIX;
@@ -165,7 +166,20 @@ class ReservationControllerTest {
                                 .content(request)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("요청 본문 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("예약자 이름 쿼리 파라미터가 없으면 에러 응답을 반환한다.")
+    public void getListByGuestName_fail1() throws Exception {
+        // when then
+        mockMvc.perform(get("/reservations"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("guestName 파라미터는 필수입니다."));
     }
 
     @Test
@@ -292,7 +306,27 @@ class ReservationControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + "브라운"))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("요청 본문 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("예약 id 타입이 올바르지 않으면 에러 응답을 반환한다.")
+    public void editDateTime_fail3() throws Exception {
+        // given
+        ReservationEditRequest request = new ReservationEditRequest(LocalDate.of(2023, 8, 10), 1L);
+
+        // when then
+        mockMvc.perform(
+                        patch("/reservations/{id}", "abc")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + "브라운"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("id 값의 타입이 올바르지 않습니다."));
     }
 
     @Test
