@@ -121,6 +121,16 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+        String sql = """
+                SELECT COUNT(*) > 0
+                FROM reservation
+                WHERE date = ?
+                AND time_id = ?
+                AND theme_id = ?""";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+    }
+
     public int delete(Long reservationId) {
         String sql = """
                 DELETE FROM reservation
