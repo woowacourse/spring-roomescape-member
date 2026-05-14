@@ -27,13 +27,7 @@ public class TimeService {
     public TimeAllResponse readAll() {
         List<ReservationTime> times = timeRepository.findAll();
         List<TimeResponse> responses = times.stream()
-                .filter(time -> {
-                    if (time.startAt().getMinute() != 0) {
-                        log.warn("유효하지 않는 시간 데이터 발견: id:{}, startAt:{}", time.id(), time.startAt());
-                        return false;
-                    }
-                    return true;
-                })
+                .filter(this::isValidTime)
                 .map(TimeResponse::from)
                 .toList();
         return new TimeAllResponse(responses);
@@ -42,9 +36,18 @@ public class TimeService {
     public TimeAllResponse readAllByThemeIdAndDate(Long themeId, String date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         List<TimeResponse> responses = times.stream()
+                .filter(this::isValidTime)
                 .map(TimeResponse::from)
                 .toList();
         return new TimeAllResponse(responses);
+    }
+
+    private boolean isValidTime(ReservationTime time) {
+        if (time.startAt().getMinute() != 0) {
+            log.warn("유효하지 않는 시간 데이터 발견: id:{}, startAt:{}", time.id(), time.startAt());
+            return false;
+        }
+        return true;
     }
 
     public void removeById(Long id) {
