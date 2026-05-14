@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.Page;
 import roomescape.common.Pageable;
 import roomescape.controller.client.api.dto.ReservationChangeRequest;
+import roomescape.controller.client.api.dto.ReservationDetailResponse;
 import roomescape.controller.client.api.dto.ReservationRequest;
 import roomescape.controller.client.api.dto.ReservationResponse;
 import roomescape.query.ReservationQuery;
@@ -57,6 +58,12 @@ public class ReservationApiController {
     ) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationDetailResponse> getReservation(@PathVariable Long id) {
+        ReservationResult result = reservationService.getReservation(id);
+        return ResponseEntity.ok(ReservationDetailResponse.from(result));
     }
 
     @GetMapping

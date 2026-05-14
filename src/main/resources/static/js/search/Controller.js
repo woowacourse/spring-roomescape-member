@@ -22,7 +22,7 @@ export default class Controller {
         });
 
         this.views.resultView.on("@change", (event) => {
-            location.href = `/reservation?change=${event.detail.id}`;
+            location.href = `/reserve?id=${event.detail.id}`;
         });
 
         this.views.resultView.on("@cancel", async (event) => {

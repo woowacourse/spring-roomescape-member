@@ -1,13 +1,15 @@
 import View from "../../common/View.js";
-import { emit, formatDateInputValue, on, qs } from "../../common/helpers.js";
+import {emit, formatDateInputValue, on, qs} from "../../common/helpers.js";
 
 export default class ReservationFormView extends View {
   constructor(element) {
     super(element);
+
     this.themeSelect = qs("#themeSelect", element);
     this.nameInput = qs("#nameInput", element);
     this.dateInput = qs("#dateInput", element);
     this.submitButton = qs('[data-role="submit-button"]', element);
+
     this.bindEvents();
   }
 
@@ -15,12 +17,15 @@ export default class ReservationFormView extends View {
     on(this.themeSelect, "change", () => {
       this.emit("@themechange", { themeId: this.themeSelect.value });
     });
+
     on(this.dateInput, "change", () => {
       this.emit("@datechange", { date: this.dateInput.value });
     });
+
     on(this.nameInput, "input", () => {
       this.emit("@namechange", { name: this.nameInput.value });
     });
+
     on(this.element, "submit", (event) => {
       event.preventDefault();
       emit(this.element, "@submit");
@@ -49,10 +54,14 @@ export default class ReservationFormView extends View {
     }
   }
 
-  sync({ selectedThemeId, selectedDate, name, canSubmit }) {
+  sync({ selectedThemeId, selectedDate, name, canSubmit, readonly }) {
     this.themeSelect.value = selectedThemeId || "";
     this.dateInput.value = selectedDate || this.dateInput.value;
     this.nameInput.value = name;
+
+    this.themeSelect.disabled = readonly;
+    this.nameInput.disabled = readonly;
+
     this.submitButton.disabled = !canSubmit;
   }
 }

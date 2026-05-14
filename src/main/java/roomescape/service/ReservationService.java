@@ -84,4 +84,8 @@ public class ReservationService {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
     }
+
+    public ReservationResult getReservation(long id) {
+        return ReservationResult.from(findReservationWithThrow(id));
+    }
 }
