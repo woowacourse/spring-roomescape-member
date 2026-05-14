@@ -1,9 +1,10 @@
 package roomescape.exception.dto;
 
-public class ErrorDto {
+public class ExceptionResponse {
+
     private final String message;
 
-    public ErrorDto(String message) {
+    public ExceptionResponse(String message) {
         this.message = message;
     }
 }
