@@ -97,6 +97,10 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
+        if (newReservationReq.getDate().isBefore(LocalDate.now())) {
+            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+        }
+
         if (!reservationQueryingDao.existsById(id)) {
             throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
         }
@@ -104,6 +108,18 @@ public class ReservationService {
 
         Reservation findReservation = reservationQueryingDao.findReservationById(id)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
+
+        ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(newReservationReq.getTimeId())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+
+        LocalDateTime standard = LocalDateTime.of(
+                findReservation.getDate(),
+                findReservationTime.getStartAt()
+        );
+
+        if (!standard.isAfter(findReservation.getCreatedAt())) {
+            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+        }
         return ReservationResponse.from(findReservation);
     }
 

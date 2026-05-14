@@ -14,8 +14,9 @@ public class Reservation {
     private ReservationTime time;
     private Theme theme;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateName(name);
         this.id = id;
         this.name = name;
@@ -23,6 +24,7 @@ public class Reservation {
         this.time = time;
         this.theme = theme;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     private void validateName(String name) {

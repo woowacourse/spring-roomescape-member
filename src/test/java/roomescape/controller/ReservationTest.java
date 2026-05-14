@@ -65,6 +65,26 @@ class ReservationTest {
                 .then().log().all()
                 .body("size()", is(0))
                 .statusCode(200);
+
+        Map<String, String> updateRequest = new HashMap<>();
+        updateRequest.put("name", "은오");
+        updateRequest.put("date", "2026-08-04");
+        updateRequest.put("timeId", "1");
+        updateRequest.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/mine?name=은오")
+                .then().log().all()
+                .body("size()", is(1))
+                .statusCode(200);
     }
 
     @Test
