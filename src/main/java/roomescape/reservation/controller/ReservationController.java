@@ -54,9 +54,9 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+    @DeleteMapping(value = "/{id}", params = "name")
+    public ResponseEntity<Void> deleteUserReservation(@PathVariable Long id, @RequestParam String name) {
+        reservationService.deleteUserReservation(id, name);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

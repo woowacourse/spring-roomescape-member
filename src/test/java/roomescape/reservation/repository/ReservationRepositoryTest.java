@@ -141,4 +141,30 @@ class ReservationRepositoryTest {
         assertThat(deletedRows).isEqualTo(1);
         assertThat(count).isZero();
     }
+
+    @Test
+    void id와_이름이_일치하는_예약을_삭제한다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        int deletedRows = reservationRepository.deleteByIdAndName(savedReservation.getId(), "브라운");
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
+        assertThat(deletedRows).isEqualTo(1);
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void id와_이름이_일치하지_않으면_삭제하지_않는다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        int deletedRows = reservationRepository.deleteByIdAndName(savedReservation.getId(), "레서");
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
+        assertThat(deletedRows).isZero();
+        assertThat(count).isEqualTo(1);
+    }
 }

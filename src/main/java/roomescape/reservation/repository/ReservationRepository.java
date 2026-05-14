@@ -44,7 +44,6 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper(), size, offset);
     }
 
-
     public List<Reservation> findByName(String name, int page, int size) {
         String sql = """
                 SELECT r.id          AS reservation_id,
@@ -103,6 +102,11 @@ public class ReservationRepository {
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public int deleteByIdAndName(Long id, String name) {
+        String sql = "DELETE FROM reservation WHERE id = ? AND name = ?";
+        return jdbcTemplate.update(sql, id, name);
     }
 
     private RowMapper<Reservation> reservationRowsMapper() {

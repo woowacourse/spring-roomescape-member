@@ -149,20 +149,18 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_삭제를_요청하면_Repository_deleteById에_id를_전달한다() {
-        when(reservationRepository.deleteById(any())).thenReturn(1);
+    void 사용자_예약_삭제를_요청하면_Repository_deleteByIdAndName에_id와_이름을_전달한다() {
+        when(reservationRepository.deleteByIdAndName(any(), any())).thenReturn(1);
 
-        reservationService.deleteReservation(7L);
-
-        verify(reservationRepository).deleteById(7L);
+        reservationService.deleteUserReservation(7L, "레서");
+        verify(reservationRepository).deleteByIdAndName(7L, "레서");
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
-        when(reservationRepository.deleteById(any())).thenReturn(0);
+    void 사용자가_존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
+        when(reservationRepository.deleteByIdAndName(any(), any())).thenReturn(0);
 
-        reservationService.deleteReservation(999L);
-
-        verify(reservationRepository).deleteById(999L);
+        reservationService.deleteUserReservation(999L, "레서");
+        verify(reservationRepository).deleteByIdAndName(999L, "레서");
     }
 }

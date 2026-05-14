@@ -63,8 +63,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+    public void deleteUserReservation(Long id, String name) {
+        reservationRepository.deleteByIdAndName(id, name);
     }
 
     private void validateUnique(LocalDate date, Long timeId, Long themeId) {

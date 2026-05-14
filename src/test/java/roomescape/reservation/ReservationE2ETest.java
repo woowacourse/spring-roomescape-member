@@ -129,12 +129,13 @@ class ReservationE2ETest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/{id} - 예약을 삭제하면 목록에서 제거된다")
+    @DisplayName("DELETE /reservations/{id} - 사용자 예약을 삭제하면 목록에서 제거된다")
     void deleteReservation() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", "2025-12-25", 1L, 1L);
 
         RestAssured.given().log().all()
+                .queryParam("name", "브라운")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);

@@ -129,9 +129,10 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약_삭제_요청을_받으면_PathVariable_id를_Service에_전달한다() throws Exception {
-        mockMvc.perform(delete("/reservations/1"))
+    void 사용자_예약_삭제_요청을_받으면_PathVariable_id와_이름을_Service에_전달한다() throws Exception {
+        mockMvc.perform(delete("/reservations/1")
+                        .param("name", "레서"))
                 .andExpect(status().isNoContent());
-        verify(reservationService, times(1)).deleteReservation(any());
+        verify(reservationService, times(1)).deleteUserReservation(1L, "레서");
     }
 }
