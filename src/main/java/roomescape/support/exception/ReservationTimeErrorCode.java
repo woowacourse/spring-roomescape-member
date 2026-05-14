@@ -15,6 +15,8 @@ public enum ReservationTimeErrorCode implements ErrorCode {
         "해당 시간에 연결된 예약들을 먼저 취소하거나 변경한 뒤 다시 삭제해 주세요."),
     PAST_TIME_NOT_ALLOWED(HttpStatus.BAD_REQUEST,
         "과거 시간은 등록할 수 없습니다.", "현재 시간 이후의 시간을 선택해 주세요."),
+    RESERVATION_TIME_DUPLICATED(HttpStatus.CONFLICT,
+        "이미 등록된 시간입니다.", "목록에 없는 시간만 등록이 가능합니다."),
     ;
 
     private final HttpStatus httpStatus;

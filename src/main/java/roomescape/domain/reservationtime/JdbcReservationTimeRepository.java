@@ -20,6 +20,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final String FIND_ALL_SQL = "select id, start_at from reservation_time order by id";
     private static final String FIND_BY_ID_SQL = "select id, start_at from reservation_time where id = ?";
     private static final String DELETE_BY_ID_SQL = "delete from reservation_time where id = ?";
+    private static final String EXISTS_BY_START_AT_SQL =
+        """
+            select exists(
+            select 1
+            from reservation_time
+            where start_at = ?
+            )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -52,6 +60,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public int deleteById(Long id) {
         return jdbcTemplate.update(DELETE_BY_ID_SQL, id);
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return jdbcTemplate.queryForObject(EXISTS_BY_START_AT_SQL, Boolean.class, startAt);
     }
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {

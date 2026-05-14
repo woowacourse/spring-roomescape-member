@@ -27,6 +27,9 @@ public class ReservationTimeService {
     }
 
     public TimeCreationResponse createReservationTime(TimeCreationRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_DUPLICATED);
+        }
         ReservationTime reservationTime = reservationTimeRepository.save(request.toEntity());
         return TimeCreationResponse.from(reservationTime);
     }
