@@ -1,7 +1,8 @@
 package roomescape.theme.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.InvalidRequestException;
+
+import java.util.Objects;
 
 public class Theme {
 
@@ -33,8 +34,9 @@ public class Theme {
     }
 
     private void validateText(String value, String fieldName, int maxLength) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidRequestException(String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
+        Objects.requireNonNull(value, String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
+        if (value.isBlank()) {
+            throw new NullPointerException(String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
         }
 
         if (value.length() > maxLength) {

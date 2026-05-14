@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.InvalidRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -42,7 +41,7 @@ class ReservationTest {
         @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
         void failWhenNameIsBlank(String name) {
             assertThatThrownBy(() -> new Reservation(1L, name, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(InvalidRequestException.class)
+                    .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
         }
 
@@ -59,7 +58,7 @@ class ReservationTest {
         @DisplayName("필수 데이터(날짜, 시간, 테마)가 누락되면 예외가 발생한다.")
         void failWhenRequiredFieldIsNull() {
             assertThatThrownBy(() -> new Reservation(1L, "브라운", null, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(InvalidRequestException.class);
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
@@ -99,10 +98,10 @@ class ReservationTest {
         }
 
         @Test
-        @DisplayName("이름이 비어있으면 invariant 검증 이전에 InvalidRequestException 이 발생한다.")
+        @DisplayName("이름이 비어있으면 invariant 검증 이전에 NullPointerException 이 발생한다.")
         void createFailWhenNameBlank() {
             assertThatThrownBy(() -> Reservation.create(" ", futureDate, reservationTime, theme, today))
-                    .isInstanceOf(InvalidRequestException.class)
+                    .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
         }
     }

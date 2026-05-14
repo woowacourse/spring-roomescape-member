@@ -3,7 +3,6 @@ package roomescape.time.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.InvalidRequestException;
 
 import java.time.LocalTime;
 
@@ -41,10 +40,10 @@ class ReservationTimeTest {
     }
 
     @Test
-    @DisplayName("시작 시간이 null이면 InvalidRequestException이 발생한다.")
+    @DisplayName("시작 시간이 null이면 NullPointerException이 발생한다.")
     void failWhenStartAtIsNull() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(InvalidRequestException.class)
+                .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("예약 시간은 반드시 입력해야 합니다.");
     }
 

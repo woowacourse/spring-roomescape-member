@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.InvalidRequestException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,7 +30,7 @@ class ThemeTest {
         @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
         void failWhenNameIsBlank(String name) {
             assertThatThrownBy(() -> new Theme(null, name, "설명", "url"))
-                    .isInstanceOf(InvalidRequestException.class)
+                    .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("테마 이름은(는) 반드시 입력해야 합니다.");
         }
 
@@ -54,7 +53,7 @@ class ThemeTest {
         @DisplayName("설명이 비어있으면 예외가 발생한다.")
         void failWhenDescriptionIsBlank(String description) {
             assertThatThrownBy(() -> new Theme(null, "이름", description, "url"))
-                    .isInstanceOf(InvalidRequestException.class)
+                    .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("테마 설명은(는) 반드시 입력해야 합니다.");
         }
 
@@ -77,7 +76,7 @@ class ThemeTest {
         @DisplayName("썸네일 URL이 비어있으면 예외가 발생한다.")
         void failWhenUrlIsBlank(String url) {
             assertThatThrownBy(() -> new Theme(null, "이름", "설명", url))
-                    .isInstanceOf(InvalidRequestException.class)
+                    .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("테마 썸네일 URL은(는) 반드시 입력해야 합니다.");
         }
 

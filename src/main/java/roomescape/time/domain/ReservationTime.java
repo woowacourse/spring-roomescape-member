@@ -1,10 +1,10 @@
 package roomescape.time.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.InvalidRequestException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
 
@@ -35,9 +35,7 @@ public class ReservationTime {
     }
 
     private void validateStartAtNotNull(LocalTime startAt) {
-        if (startAt == null) {
-            throw new InvalidRequestException("예약 시간은 반드시 입력해야 합니다.");
-        }
+        Objects.requireNonNull(startAt, "예약 시간은 반드시 입력해야 합니다.");
     }
 
     public Long getId() {
