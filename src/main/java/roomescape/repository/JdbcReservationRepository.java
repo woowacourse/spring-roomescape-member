@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -74,9 +77,11 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override
@@ -130,14 +135,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public int update(Reservation reservation) {
         String sql = """
                 UPDATE reservation
-                SET date = ?,
-                    time_id = ?
-                WHERE id = ?
+                SET date = :date,
+                    time_id = :timeId
+                WHERE id = :id
                 """;
 
-        return jdbcTemplate.update(
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTimeId())
+                .addValue("id", reservation.getId());
+
+        return namedParameterJdbcTemplate.update(
                 sql,
-                reservation.getDate(), reservation.getTimeId(), reservation.getId()
+                parameterSource
         );
     }
 
@@ -155,15 +165,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     ) {
         String sql = """
                 DELETE FROM reservation
-                WHERE name = ?
-                AND date = ?
-                AND time_id = ?
-                AND theme_id = ?
+                WHERE name = :name
+                AND date = :date
+                AND time_id = :timeId
+                AND theme_id = :themeId
                 """;
 
-        return jdbcTemplate.update(
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+        return namedParameterJdbcTemplate.update(
                 sql,
-                name, date, timeId, themeId
+                parameterSource
         );
     }
 
@@ -179,12 +194,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE date = ?
-                AND time_id = ?
-                AND theme_id = ?
+                WHERE date = :date
+                AND time_id = :timeId
+                AND theme_id = :themeId
                 """;
 
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
         return count != null && count > 0;
     }
 
