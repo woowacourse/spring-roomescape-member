@@ -7,7 +7,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.lang.Nullable;
-import roomescape.global.exception.common.InvalidRequestFormatException;
+import roomescape.global.exception.InvalidRequestFormatException;
 
 public class BusinessExceptionMappingJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
