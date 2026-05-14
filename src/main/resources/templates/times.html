@@ -15,6 +15,7 @@
         <a href="/" class="brand">ROOM<span>ESCAPE</span></a>
         <nav class="main-nav">
             <button type="button" class="nav-link-button active">예약 진행</button>
+            <button type="button" class="nav-link-button" data-scroll-target="user-reservations-section">내 예약</button>
             <button type="button" class="nav-link-button" data-modal-open="popular-theme-modal">인기테마</button>
         </nav>
     </div>
@@ -89,6 +90,26 @@
                     <p id="reservation-message" class="form-message" aria-live="polite"></p>
                 </form>
             </div>
+        </section>
+
+        <section class="panel section-panel" id="user-reservations-section">
+            <div class="section-title">
+                <div>
+                    <span class="section-kicker">MY RESERVATIONS</span>
+                    <h2>내 예약 조회</h2>
+                    <p>예약자 이름으로 예약 목록을 확인하고, 취소하거나 날짜와 시간을 변경할 수 있습니다.</p>
+                </div>
+            </div>
+            <form id="user-reservation-search-form" class="reservation-lookup-form">
+                <label for="user-reservation-name">예약자 이름</label>
+                <div class="lookup-controls">
+                    <input id="user-reservation-name" name="name" type="text" maxlength="20"
+                           placeholder="예약자 이름을 입력하세요" required>
+                    <button type="submit" class="primary-button">조회</button>
+                </div>
+                <p id="user-reservation-message" class="form-message" aria-live="polite"></p>
+            </form>
+            <div id="user-reservation-list" class="user-reservation-list"></div>
         </section>
 
     </main>
