@@ -88,7 +88,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 ON rt.id = r.time_id
                 AND r.theme_id = ?
                 AND r.reservation_date = ?
-            WHERE r.id IS NULL
+            WHERE r.id IS NULL OR r.status = 'CANCELED'
             ORDER BY rt.start_at
             """;
 
