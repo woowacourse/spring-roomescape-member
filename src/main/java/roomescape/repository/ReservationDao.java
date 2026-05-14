@@ -98,6 +98,10 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, username);
     }
 
+    public void updateDateAndTimeById(long id, LocalDate date, long timeId) {
+        jdbcTemplate.update("UPDATE reservation SET date = ?, time_id = ? WHERE id = ?", date, timeId, id);
+    }
+
 
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);

@@ -20,11 +20,10 @@ public class Theme {
     }
 
     private void validateName(String name) {
-        if (name == null  || name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new CustomException(ErrorCode.THEME_NAME_BLANK);
         }
     }
-
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {

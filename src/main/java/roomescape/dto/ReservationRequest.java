@@ -10,7 +10,7 @@ public record ReservationRequest(
         @Size(max=255)
         @NotBlank(message = "255자 이하의 이름을 입력해주세요.")
         String name,
-        @NotNull(message = "날짜를 선택해주세요.")
+        @NotNull(message = "날짜를 입력해주세요.")
         LocalDate date,
         @NotNull(message = "시간을 입력해주세요.")
         Long timeId,

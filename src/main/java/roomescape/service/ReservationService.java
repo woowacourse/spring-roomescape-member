@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationDao;
@@ -28,7 +29,6 @@ public class ReservationService {
     public ReservationResponse save(LocalDateTime now, ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         LocalDateTime time = LocalDateTime.of(request.date(), reservationTime.getStartAt());
-
         validateDateAndTimeNotPast(now,time);
 
         try{
@@ -38,13 +38,25 @@ public class ReservationService {
         } catch (DuplicateKeyException e){
             throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
         }
-
     }
 
     public List<ReservationResponse> findAllByName(String username) {
         return reservationDao.findByUserName(username).stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    public void update(Long reservationId, LocalDateTime now, ReservationUpdateRequest request) {
+        try {
+            ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+            LocalDateTime targetDateTime = LocalDateTime.of(request.targetDate(), reservationTime.getStartAt());
+            validateDateAndTimeNotPast(now,targetDateTime);
+            reservationDao.updateDateAndTimeById(reservationId,request.targetDate(),reservationTime.getId());
+        } catch (DuplicateKeyException e){
+            throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
+        }
+
+
     }
 
     public void delete(Long id) {

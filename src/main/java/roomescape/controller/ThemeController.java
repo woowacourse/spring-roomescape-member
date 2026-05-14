@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;

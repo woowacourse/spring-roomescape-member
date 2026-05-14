@@ -21,7 +21,7 @@ public enum ErrorCode{
     RESERVATION_TIME_NULL("RESERVATION_400_5", "예약 시간은 null일 수 없습니다.", HttpStatus.BAD_REQUEST),
     RESERVATION_THEME_NULL("RESERVATION_400_6", "예약 테마는 null일 수 없습니다.", HttpStatus.BAD_REQUEST),
     RESERVATION_TIME_START_AT_NULL("TIME_400_7", "예약 시간은 null일 수 없습니다. ", HttpStatus.BAD_REQUEST),
-    DUPLICATE_RESERVATION("RESERVATION_409_1", "해당 조건으로 이미 예약 있습니다. 테마, 날짜, 시간 등을 다시 선택해주세요.", HttpStatus.CONFLICT),;
+    DUPLICATE_RESERVATION("RESERVATION_409_1", "해당 시간은 이미 예약이 마감되었습니다. 다른 시간을 선택해주세요. ", HttpStatus.CONFLICT),;
 
     private final String code;
     private final String message;

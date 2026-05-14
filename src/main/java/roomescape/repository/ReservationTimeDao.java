@@ -19,6 +19,7 @@ public class ReservationTimeDao {
             rs.getTime("start_at").toLocalTime()
     );
 
+
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -36,6 +37,10 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", timeRowMapper);
+    }
+
+    public ReservationTime findByTime(LocalTime time) {
+        return jdbcTemplate.queryForObject("select id, start_at from reservation_time where id = ?", timeRowMapper, time);
     }
 
     public void delete(Long id) {
