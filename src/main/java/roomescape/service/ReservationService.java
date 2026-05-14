@@ -67,7 +67,6 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationSaveCommand command, LocalDateTime now, ReservationSavePolicy policy) {
-        checkIfReservationPossible(command);
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(command.themeId())
@@ -78,27 +77,25 @@ public class ReservationService {
         return reservationRepository.addReservation(reservation);
     }
 
-    private void checkIfReservationPossible(ReservationSaveCommand command) {
-        if (reservationRepository.countReservationsOf(command.date(), command.timeId(), command.themeId()) > 0) {
-            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
-        }
-    }
-
     public List<Reservation> findReservationsByName(String name) {
         return reservationRepository.findReservationsByName(name);
     }
 
     public Reservation editReservation(Long id, ReservationEditCommand command, LocalDateTime now) {
         Reservation reservation = getValidReservation(id, now);
-        if (reservationRepository.countReservationsOf(command.date(), command.timeId(), reservation.themeId()) > 0) {
-            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
+        int reservationCount = reservationRepository.countReservationsOf(command.date(), command.timeId(),
+                reservation.themeId());
+        checkReservationDuplication(reservationCount);
+        try {
+            reservationRepository.updateReservation(id, command);
+            return getValidReservation(id, now);
+        } catch (IllegalStateException e) {
+            throw new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND);
         }
-        reservationRepository.updateReservation(id, command);
-        return getValidReservation(id, now);
     }
 
-    private void checkIfReservationPossible(Reservation reservation) {
-        if (reservationRepository.countReservationsOf(reservation.date(), reservation.timeId(), reservation.themeId()) > 0) {
+    private static void checkReservationDuplication(int reservationCount) {
+        if (reservationCount > 0) {
             throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
         }
     }

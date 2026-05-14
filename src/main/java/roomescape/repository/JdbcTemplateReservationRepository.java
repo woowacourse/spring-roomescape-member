@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -154,8 +155,12 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public void updateReservation(Long id, ReservationEditCommand command) {
-        jdbcTemplate.update(
-                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
-                command.date(), command.timeId(), id);
+        try {
+            jdbcTemplate.update(
+                    "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                    command.date(), command.timeId(), id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException();
+        }
     }
 }
