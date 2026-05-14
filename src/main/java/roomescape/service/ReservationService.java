@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -57,6 +58,14 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
+    @Transactional
+    public void deleteUserReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        validateOwner(reservation, name);
+        reservationRepository.delete(id);
+    }
+
     public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
@@ -99,6 +108,12 @@ public class ReservationService {
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existWith(date, timeId, themeId)) {
             throw new DuplicateReservationException("이미 예약된 시간입니다.");
+        }
+    }
+
+    private void validateOwner(Reservation reservation, String name) {
+        if (!reservation.getName().equals(name)) {
+            throw new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다.");
         }
     }
 

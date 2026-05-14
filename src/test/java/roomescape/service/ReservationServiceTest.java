@@ -9,6 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -288,6 +289,68 @@ class ReservationServiceTest {
 
         // then
         verify(reservationRepository).delete(id);
+    }
+
+    @Test
+    void 사용자_본인_예약_삭제_테스트() {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        Reservation reservation = new Reservation(
+                id,
+                name,
+                date,
+                new ReservationTime(1L, LocalTime.parse("08:00")),
+                new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소"));
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(reservation));
+
+        // when
+        service.deleteUserReservation(id, name);
+
+        // then
+        verify(reservationRepository).findById(id);
+        verify(reservationRepository).delete(id);
+    }
+
+    @Test
+    void 존재하지_않는_예약_삭제시_예외_발생() {
+        // given
+        Long id = 999L;
+        String name = "브라운";
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> service.deleteUserReservation(id, name))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+
+        verify(reservationRepository).findById(id);
+        verify(reservationRepository, never()).delete(id);
+    }
+
+    @Test
+    void 본인의_예약이_아니면_삭제시_예외_발생() {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        Reservation reservation = new Reservation(
+                id,
+                "구구",
+                date,
+                new ReservationTime(1L, LocalTime.parse("08:00")),
+                new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소"));
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> service.deleteUserReservation(id, name))
+                .isInstanceOf(ForbiddenReservationException.class)
+                .hasMessage("본인의 예약만 변경하거나 취소할 수 있습니다.");
+
+        verify(reservationRepository).findById(id);
+        verify(reservationRepository, never()).delete(id);
     }
 
     @Test

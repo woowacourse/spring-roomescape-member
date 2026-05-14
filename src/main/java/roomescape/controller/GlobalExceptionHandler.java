@@ -63,6 +63,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(ErrorResponse.from(e));
     }
 
+    @ExceptionHandler(ForbiddenReservationException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenReservationException e) {
+        return ResponseEntity.status(403).body(ErrorResponse.from(e));
+    }
+
     @ExceptionHandler({
             DuplicateReservationException.class,
             ResourceInUseException.class})

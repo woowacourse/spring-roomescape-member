@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.domain.Reservation;
@@ -19,7 +20,10 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -96,6 +100,75 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약을_취소한다() throws Exception {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+
+        // when & then
+        mockMvc.perform(delete("/reservations/{id}", id)
+                        .param("name", name))
+                .andExpect(status().isNoContent());
+
+        verify(reservationService).deleteUserReservation(id, name);
+    }
+
+    @Test
+    void 사용자_본인_예약_취소시_이름이_없으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(delete("/reservations/1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("name는 필수입니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_취소시_이름이_비어있으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(delete("/reservations/1")
+                        .param("name", ""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_취소시_id가_양수가_아니면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(delete("/reservations/0")
+                        .param("name", "브라운"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_취소시_id_형식이_올바르지_않으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(delete("/reservations/abc")
+                        .param("name", "브라운"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("id 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_취소시_본인의_예약이_아니면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        willThrow(new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다."))
+                .given(reservationService).deleteUserReservation(id, name);
+
+        // when & then
+        mockMvc.perform(delete("/reservations/{id}", id)
+                        .param("name", name))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("FORBIDDEN_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("본인의 예약만 변경하거나 취소할 수 있습니다."));
     }
 
     @Test

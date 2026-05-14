@@ -2,9 +2,12 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,5 +50,13 @@ public class ReservationController {
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(reservations);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id,
+            @RequestParam("name") @NotBlank(message = "name은 비어 있을 수 없습니다.") String name) {
+        service.deleteUserReservation(id, name);
+        return ResponseEntity.noContent().build();
     }
 }
