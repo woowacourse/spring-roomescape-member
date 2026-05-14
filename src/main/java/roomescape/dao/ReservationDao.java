@@ -17,7 +17,7 @@ public class ReservationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> Reservation.restore(
+    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> Reservation.create(
             rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
@@ -67,7 +67,7 @@ public class ReservationDao {
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
         )).longValue();
-        return Reservation.restore(id, reservation.getName(), reservation.getDate(),
+        return Reservation.create(id, reservation.getName(), reservation.getDate(),
                 reservation.getCreatedAt(), reservation.getTime(), reservation.getTheme());
     }
 

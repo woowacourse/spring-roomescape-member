@@ -15,7 +15,8 @@ public class Reservation {
     private final Theme theme;
 
     private Reservation(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+        validateFields(name, date, time, theme);
+        validateNotPast(date, time, createdAt);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -24,15 +25,18 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(createdAt)) {
-            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
-        }
-        return new Reservation(null, name, date, createdAt, time, theme);
+    public static Reservation create(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, createdAt, time, theme);
     }
 
-    public static Reservation restore(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
-        return new Reservation(id, name, date, createdAt, time, theme);
+    public Reservation withUpdated(LocalDate date, ReservationTime newTime, LocalDateTime now) {
+        return new Reservation(id, name, date, now, newTime, theme);
+    }
+
+    public void validateCancellable(LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -78,7 +82,7 @@ public class Reservation {
         return Objects.hash(name, date, time, theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validateFields(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("예약자 이름은 비어있을 수 없습니다.");
         }
@@ -90,6 +94,12 @@ public class Reservation {
         }
         if (theme == null) {
             throw new InvalidInputException("테마는 필수입니다.");
+        }
+    }
+
+    private void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime createdAt) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(createdAt)) {
+            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
     }
 }

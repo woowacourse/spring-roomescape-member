@@ -1,15 +1,16 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.exception.InvalidInputException;
-import roomescape.domain.exception.PastReservationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,11 +20,13 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final Clock clock;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, Clock clock) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.clock = clock;
     }
 
     @Transactional
@@ -35,7 +38,7 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
-        Reservation reservation = Reservation.create(name, date, LocalDateTime.now(), time, theme);
+        Reservation reservation = Reservation.create(null, name, date, LocalDateTime.now(clock), time, theme);
         return reservationDao.save(reservation);
     }
 
@@ -45,22 +48,20 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         ReservationTime newTime = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new InvalidInputException("존재하지 않는 예약 시간입니다."));
-        if (LocalDateTime.of(date, newTime.getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
-        }
+        Reservation updated = reservation.withUpdated(date, newTime, LocalDateTime.now(clock));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
-        return reservationDao.update(id, date, timeId);
+        return reservationDao.update(updated.getId(), date, timeId);
     }
 
     @Transactional
     public void delete(long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
-        if (LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
+        Optional<Reservation> found = reservationDao.findById(id);
+        if (found.isEmpty()) {
+            return;
         }
+        found.get().validateCancellable(LocalDateTime.now(clock));
         reservationDao.delete(id);
     }
 
