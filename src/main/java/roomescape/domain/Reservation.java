@@ -68,7 +68,7 @@ public class Reservation {
 
     public void validateCancelableByCustomer(final LocalDate today) {
         if (!canCancelByCustomer(today)) {
-            throw new ReservationCancellationException("예약일 이틀 전까지만 취소할 수 있습니다.");
+            throw new ReservationCancellationException();
         }
     }
 

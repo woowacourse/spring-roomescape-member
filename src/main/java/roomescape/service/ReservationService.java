@@ -6,12 +6,15 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.common.exception.NotFoundException;
+import roomescape.domain.exception.ReservationNotFoundException;
+import roomescape.domain.exception.ReservationTimeNotFoundException;
+import roomescape.domain.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.request.ReservationUpdateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ThemeResponse;
@@ -52,10 +55,10 @@ public class ReservationService {
 
     public ReservationResponse create(final ReservationCreateRequest data) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(data.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
         final Theme theme = themeRepository.findById(data.themeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(ThemeNotFoundException::new);
 
         final Reservation reservation = Reservation.create(
                 data.name(),
@@ -72,7 +75,7 @@ public class ReservationService {
 
     public void cancel(final Long reservationId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(ReservationNotFoundException::new);
 
         reservation.validateCancelableByCustomer(LocalDate.now(clock));
 
@@ -81,7 +84,7 @@ public class ReservationService {
 
     public void delete(final Long reservationId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(ReservationNotFoundException::new);
 
         reservationRepository.deleteById(reservation.getId());
     }

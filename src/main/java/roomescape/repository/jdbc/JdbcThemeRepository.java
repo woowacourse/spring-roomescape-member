@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.ConflictException;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ThemeInUseException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.entity.ThemeEntity;
 
@@ -81,7 +81,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             return jdbcTemplate.update(sql, themeId) > 0;
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.", exception);
+            throw new ThemeInUseException(exception);
         }
     }
 

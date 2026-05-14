@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.ConflictException;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.exception.ReservationTimeInUseException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.entity.ReservationTimeEntity;
 
@@ -83,7 +83,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             return jdbcTemplate.update(sql, timeId) > 0;
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.", exception);
+            throw new ReservationTimeInUseException(exception);
         }
     }
 

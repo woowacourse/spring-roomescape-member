@@ -7,11 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.ConflictException;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ReservationAlreadyExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.repository.entity.ReservationEntity;
@@ -185,7 +185,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 return preparedStatement;
             }, keyHolder);
         } catch (DuplicateKeyException exception) {
-            throw new ConflictException("이미 예약된 시간입니다.", exception);
+            throw new ReservationAlreadyExistsException(exception);
         }
 
         return generatedIdFrom(keyHolder);
