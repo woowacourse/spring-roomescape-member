@@ -121,7 +121,7 @@ class ReservationServiceTest {
                 // then
                 assertThat(actual).isEqualTo(
                     new ReservationCreateResponseDto(1L, "보예", LocalDate.of(2026, 5, 1), time.getId(), theme.getId()));
-                assertThat(reservationRepository.findAllReservations()).hasSize(1);
+                assertThat(reservationRepository.findReservationsByDeletedAtIsNull()).hasSize(1);
             }
 
             @Test
@@ -152,7 +152,7 @@ class ReservationServiceTest {
                     time.getId(),
                     otherTheme.getId()
                 ));
-                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+                assertThat(reservationRepository.findReservationsByDeletedAtIsNull()).hasSize(2);
             }
 
             @Test
@@ -182,7 +182,7 @@ class ReservationServiceTest {
                     otherTime.getId(),
                     theme.getId()
                 ));
-                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+                assertThat(reservationRepository.findReservationsByDeletedAtIsNull()).hasSize(2);
             }
 
             @Test
@@ -211,7 +211,7 @@ class ReservationServiceTest {
                     time.getId(),
                     theme.getId()
                 ));
-                assertThat(reservationRepository.findAllReservations()).hasSize(2);
+                assertThat(reservationRepository.findReservationsByDeletedAtIsNull()).hasSize(2);
             }
         }
 
