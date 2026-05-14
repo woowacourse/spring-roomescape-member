@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ReservationCreateRequest(
-        @NotBlank(message = "이름은 필수입니다.")
-        @Size(max = 9, message = "이름은 10자 미만이어야 합니다.")
+        @NotBlank(message = "예약자 이름은 비어 있을 수 없습니다.")
+        @Size(max = 9, message = "예약자 이름은 10자 미만이어야 합니다.")
         String name,
 
         @NotNull(message = "날짜는 필수입니다.")

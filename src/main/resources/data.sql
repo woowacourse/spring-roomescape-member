@@ -11,10 +11,14 @@ VALUES
     (9, '사막 열차', '사막 한가운데 멈춘 열차에서 범인을 찾는 추리 테마', 'https://example.com/themes/desert-train.png'),
     (10, '해커의 방', '침입당한 서버룸에서 시스템을 복구하는 현대 스릴러 테마', 'https://example.com/themes/hacker-room.png');
 
+ALTER TABLE theme ALTER COLUMN id RESTART WITH 11;
+
 INSERT INTO reservation_time (id, start_at)
 VALUES
     (1, '10:00:00'),
     (2, '11:30:00');
+
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 3;
 
 
 INSERT INTO reservation (id, name, date, theme_id, time_id)
@@ -48,3 +52,5 @@ VALUES
 
     (22, '미래예약1', DATE '2026-05-12', 1, 1),
     (23, '미래예약2', DATE '2026-05-12', 2, 1);
+
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 24;

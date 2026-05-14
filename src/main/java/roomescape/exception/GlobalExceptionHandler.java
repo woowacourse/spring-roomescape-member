@@ -7,11 +7,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,6 +57,36 @@ public class GlobalExceptionHandler {
         String message = resolveTypeMismatchMessage(exception.getRequiredType());
 
         return badRequest(code, message);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter(
+            final MissingServletRequestParameterException exception
+    ) {
+        return badRequest(
+                resolveMissingParameterCode(exception.getParameterName()),
+                resolveMissingParameterMessage(exception.getParameterName())
+        );
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(final NoResourceFoundException exception) {
+        return errorResponse(
+                HttpStatus.NOT_FOUND,
+                "RESOURCE_NOT_FOUND",
+                "요청한 리소스를 찾을 수 없습니다."
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            final DataIntegrityViolationException exception
+    ) {
+        return errorResponse(
+                HttpStatus.CONFLICT,
+                "DATA_CONFLICT",
+                "저장 중 충돌이 발생했습니다. 잠시 후 다시 시도해 주세요."
+        );
     }
 
     @ExceptionHandler(Exception.class)
@@ -159,6 +192,14 @@ public class GlobalExceptionHandler {
 
         if ("reservationCreateRequest".equals(objectName)) {
             if ("name".equals(field)) {
+                if ("NotBlank".equals(fieldError.getCode())) {
+                    return "RESERVATION_NAME_REQUIRED";
+                }
+
+                if ("Size".equals(fieldError.getCode())) {
+                    return "RESERVATION_NAME_TOO_LONG";
+                }
+
                 return "INVALID_RESERVATION_NAME";
             }
 
@@ -202,6 +243,54 @@ public class GlobalExceptionHandler {
         }
 
         return "INVALID_TYPE_VALUE";
+    }
+
+    private String resolveMissingParameterCode(final String parameterName) {
+        if ("name".equals(parameterName)) {
+            return "RESERVATION_NAME_REQUIRED";
+        }
+
+        if ("date".equals(parameterName)) {
+            return "RESERVATION_DATE_REQUIRED";
+        }
+
+        if ("themeId".equals(parameterName)) {
+            return "THEME_ID_REQUIRED";
+        }
+
+        if ("timeId".equals(parameterName)) {
+            return "RESERVATION_TIME_ID_REQUIRED";
+        }
+
+        if ("startAt".equals(parameterName)) {
+            return "RESERVATION_TIME_REQUIRED";
+        }
+
+        return "INVALID_INPUT";
+    }
+
+    private String resolveMissingParameterMessage(final String parameterName) {
+        if ("name".equals(parameterName)) {
+            return "예약자 이름은 비어 있을 수 없습니다.";
+        }
+
+        if ("date".equals(parameterName)) {
+            return "날짜는 필수입니다.";
+        }
+
+        if ("themeId".equals(parameterName)) {
+            return "themeId는 필수입니다.";
+        }
+
+        if ("timeId".equals(parameterName)) {
+            return "timeId는 필수입니다.";
+        }
+
+        if ("startAt".equals(parameterName)) {
+            return "예약 시간은 필수입니다.";
+        }
+
+        return "유효하지 않은 입력입니다.";
     }
 
     private String resolveTypeMismatchCode(final Class<?> targetType) {

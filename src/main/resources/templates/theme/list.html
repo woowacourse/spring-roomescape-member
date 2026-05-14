@@ -102,6 +102,25 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+        .feedback {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(196, 69, 54, 0.18);
+            background: rgba(255, 248, 246, 0.96);
+        }
+        .feedback.hidden {
+            display: none;
+        }
+        .feedback p,
+        .feedback small {
+            margin: 0;
+        }
+        .feedback small {
+            color: rgba(43, 33, 23, 0.7);
+        }
         .actions a {
             text-decoration: none;
             color: var(--text);
@@ -127,6 +146,14 @@
         <span class="eyebrow">ADMIN PAGE</span>
         <h1>테마 관리</h1>
         <p>관리자 영역입니다. 테마 생성과 삭제, 그리고 각 테마의 예약 시간 슬롯 관리로 이어지는 작업을 이 화면에서 시작할 수 있습니다.</p>
+    </section>
+
+    <section id="page-feedback"
+             class="feedback hidden"
+             th:attr="data-error-code=${errorCode}">
+        <strong id="feedback-title"></strong>
+        <p id="feedback-message"></p>
+        <small id="feedback-hint"></small>
     </section>
 
     <section class="layout">
@@ -170,5 +197,51 @@
         </article>
     </section>
 </div>
+<script>
+    const themeMessages = {
+        INVALID_THEME_NAME: {
+            title: "테마 이름을 먼저 다듬어볼게요",
+            message: "테마 이름은 비어 있을 수 없어서, 사용자가 바로 구분할 수 있는 이름이 필요해요.",
+            hint: "짧고 분명한 이름으로 저장하면 다음 작업까지 바로 이어갈 수 있어요."
+        },
+        THEME_NAME_DUPLICATED: {
+            title: "같은 이름의 테마가 이미 있어요",
+            message: "운영 중인 테마와 이름이 겹치면 목록에서 헷갈릴 수 있어 다른 이름으로 저장하는 편이 좋아요.",
+            hint: "비슷한 테마라면 설명이나 이름에 차이를 조금 더 넣어보세요."
+        },
+        THEME_IN_USE: {
+            title: "이 테마는 아직 예약에서 사용 중이에요",
+            message: "이미 예약이 연결된 테마는 바로 지우지 않고, 예약 정리 후에 삭제하는 편이 안전해요.",
+            hint: "현재 예약을 먼저 확인한 뒤, 더 이상 쓰지 않을 때 삭제할 수 있어요."
+        },
+        INVALID_INPUT: {
+            title: "입력 내용을 한 번만 더 볼게요",
+            message: "테마를 저장하거나 정리하는 데 필요한 정보가 일부 비어 있거나 형식이 맞지 않았어요.",
+            hint: "폼을 다시 확인하면 같은 화면에서 바로 이어서 처리할 수 있어요."
+        },
+        INTERNAL_SERVER_ERROR: {
+            title: "지금은 관리자 작업을 잠시 멈출게요",
+            message: "입력 문제보다는 시스템 상태 때문에 요청을 바로 반영하지 못했어요.",
+            hint: "잠시 후 다시 시도해보고, 계속 반복되면 서버 상태를 함께 확인하는 편이 좋아요."
+        }
+    };
+
+    function applyThemeFeedback() {
+        const feedback = document.getElementById("page-feedback");
+        const errorCode = feedback.dataset.errorCode;
+
+        if (!errorCode) {
+            return;
+        }
+
+        const message = themeMessages[errorCode] || themeMessages.INVALID_INPUT;
+        document.getElementById("feedback-title").textContent = message.title;
+        document.getElementById("feedback-message").textContent = message.message;
+        document.getElementById("feedback-hint").textContent = message.hint;
+        feedback.classList.remove("hidden");
+    }
+
+    applyThemeFeedback();
+</script>
 </body>
 </html>

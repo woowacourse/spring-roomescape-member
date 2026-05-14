@@ -5,12 +5,14 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.ConflictException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -47,7 +49,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void deleteById(final long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("THEME_IN_USE", "이미 예약된 테마는 삭제할 수 없습니다.");
+        }
     }
 
     @Override
@@ -55,13 +61,17 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, theme.getName());
-            preparedStatement.setString(2, theme.getDescription());
-            preparedStatement.setString(3, theme.getThumbnailUrl());
-            return preparedStatement;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+                preparedStatement.setString(1, theme.getName());
+                preparedStatement.setString(2, theme.getDescription());
+                preparedStatement.setString(3, theme.getThumbnailUrl());
+                return preparedStatement;
+            }, keyHolder);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException("THEME_NAME_DUPLICATED", "테마 이름 중복은 불가능합니다.");
+        }
 
         Number key = keyHolder.getKey();
         if (key == null) {

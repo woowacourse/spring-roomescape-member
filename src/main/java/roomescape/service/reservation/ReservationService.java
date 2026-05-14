@@ -34,6 +34,18 @@ public class ReservationService {
     }
 
     public Reservation save(final String name, final LocalDate date, final Long themeId, final Long timeId) {
+        if (themeId == null) {
+            throw new InvalidInputException("THEME_ID_REQUIRED", "themeId는 필수입니다.");
+        }
+
+        if (timeId == null) {
+            throw new InvalidInputException("RESERVATION_TIME_ID_REQUIRED", "timeId는 필수입니다.");
+        }
+
+        if (date == null) {
+            throw new InvalidInputException("RESERVATION_DATE_REQUIRED", "날짜는 필수입니다.");
+        }
+
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
         LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());

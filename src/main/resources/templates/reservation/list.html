@@ -199,6 +199,28 @@
             font-size: 13px;
             color: rgba(47, 36, 24, 0.68);
         }
+        .feedback {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(14, 116, 144, 0.18);
+            background: rgba(255, 250, 240, 0.95);
+        }
+        .feedback.hidden {
+            display: none;
+        }
+        .feedback strong {
+            font-size: 17px;
+        }
+        .feedback p {
+            margin: 0;
+            color: rgba(47, 36, 24, 0.78);
+        }
+        .feedback small {
+            color: rgba(47, 36, 24, 0.64);
+        }
         .popular-list {
             display: grid;
             gap: 12px;
@@ -260,6 +282,14 @@
         <a th:href="@{/pages/user/reservations}">예약 홈</a>
         <a th:href="@{/pages/admin/themes}" class="admin-link">관리자 콘솔로 이동</a>
     </nav>
+
+    <section id="page-feedback"
+             class="feedback hidden"
+             th:attr="data-error-code=${errorCode}">
+        <strong id="feedback-title"></strong>
+        <p id="feedback-message"></p>
+        <small id="feedback-hint"></small>
+    </section>
 
     <section class="top-grid">
         <article class="card">
@@ -395,6 +425,99 @@
     </section>
 </div>
 <script>
+    const reservationMessages = {
+        RESERVATION_NAME_REQUIRED: {
+            title: "이름을 먼저 입력해 주세요",
+            message: "예약자 이름이 비어 있으면 누구의 예약인지 확인할 수 없어요.",
+            hint: "이름 칸에 예약자 이름을 입력하면 바로 다시 저장할 수 있어요."
+        },
+        RESERVATION_NAME_TOO_LONG: {
+            title: "이름을 조금만 짧게 적어볼까요?",
+            message: "예약자 이름은 10자 미만으로 입력하면 목록에서 더 보기 쉽게 관리할 수 있어요.",
+            hint: "조금만 줄여서 입력하면 바로 같은 화면에서 다시 예약할 수 있어요."
+        },
+        INVALID_RESERVATION_NAME: {
+            title: "이름부터 다시 확인해볼게요",
+            message: "예약자 이름 형식이 맞지 않아 저장을 잠시 멈췄어요.",
+            hint: "이름 칸을 다시 확인한 뒤 한 번 더 시도해보세요."
+        },
+        RESERVATION_DATE_REQUIRED: {
+            title: "날짜를 먼저 골라주세요",
+            message: "예약 날짜가 없으면 가능한 시간을 확인할 수 없어요.",
+            hint: "원하는 날짜를 선택한 뒤 다시 진행해보세요."
+        },
+        THEME_ID_REQUIRED: {
+            title: "테마를 먼저 선택해볼까요?",
+            message: "어떤 테마를 예약할지 정해져야 가능한 시간을 찾아드릴 수 있어요.",
+            hint: "조회 카드에서 테마를 선택한 뒤 다시 예약하면 돼요."
+        },
+        RESERVATION_TIME_ID_REQUIRED: {
+            title: "시간을 하나 선택해 주세요",
+            message: "예약 가능한 시간 카드에서 원하는 슬롯을 먼저 골라야 저장할 수 있어요.",
+            hint: "왼쪽 조회 결과에서 시간을 누르면 예약 폼이 자동으로 채워져요."
+        },
+        INVALID_DATE_FORMAT: {
+            title: "날짜 형식을 다시 맞춰주세요",
+            message: "날짜는 달력에서 고르거나 yyyy-MM-dd 형식으로 맞춰야 정확하게 예약할 수 있어요.",
+            hint: "직접 입력했다면 날짜 형식을 다시 확인해보세요."
+        },
+        INVALID_TIME_FORMAT: {
+            title: "시간 형식을 다시 확인해 주세요",
+            message: "시간은 준비된 형식에 맞아야 가능한 시간 조회와 예약이 자연스럽게 이어져요.",
+            hint: "가능한 시간 카드를 눌러 자동으로 채우는 방법이 가장 안전해요."
+        },
+        INVALID_TYPE_VALUE: {
+            title: "선택 값을 다시 확인해 주세요",
+            message: "예약에 필요한 값 중 일부가 올바른 형식으로 전달되지 않았어요.",
+            hint: "테마와 시간을 다시 선택한 뒤 같은 화면에서 바로 시도할 수 있어요."
+        },
+        RESERVATION_DATE_TIME_IN_PAST: {
+            title: "이미 지난 시간은 예약할 수 없어요",
+            message: "지금보다 앞선 날짜나 시간은 선택할 수 없어서, 더 늦은 시간으로 안내해드릴게요.",
+            hint: "같은 날짜라면 더 뒤의 시간을, 아니면 다른 날짜를 골라보세요."
+        },
+        RESERVATION_DUPLICATED: {
+            title: "그 시간은 방금 사용 중이 되었어요",
+            message: "같은 테마의 같은 시간에는 이미 예약이 있어 다른 시간으로 선택해야 해요.",
+            hint: "조회된 가능 시간 중 다른 슬롯을 누르면 바로 이어서 예약할 수 있어요."
+        },
+        THEME_NOT_FOUND: {
+            title: "선택한 테마를 다시 불러올게요",
+            message: "방금 보던 테마 정보를 찾지 못해서 목록을 새로 확인하는 편이 안전해요.",
+            hint: "테마를 다시 선택하면 계속 진행할 수 있어요."
+        },
+        RESERVATION_TIME_NOT_FOUND: {
+            title: "선택한 시간이 더 이상 보이지 않아요",
+            message: "시간 슬롯이 바뀌었거나 이미 정리되어, 가능한 시간을 다시 조회하는 편이 좋아요.",
+            hint: "같은 날짜로 다시 조회하면 최신 시간 목록을 볼 수 있어요."
+        },
+        INVALID_INPUT: {
+            title: "입력 내용을 한 번만 더 볼게요",
+            message: "예약에 필요한 정보 중 일부가 비어 있거나 형식이 맞지 않았어요.",
+            hint: "폼을 다시 확인한 뒤 같은 화면에서 바로 재시도할 수 있어요."
+        },
+        INTERNAL_SERVER_ERROR: {
+            title: "지금은 저장을 잠시 멈출게요",
+            message: "입력 문제라기보다 시스템 쪽에서 바로 처리하지 못한 상황이에요.",
+            hint: "잠시 후 다시 시도하거나, 같은 문제가 반복되면 데이터를 새로고침한 뒤 다시 진행해보세요."
+        }
+    };
+
+    function applyPageFeedback() {
+        const feedback = document.getElementById("page-feedback");
+        const errorCode = feedback.dataset.errorCode;
+
+        if (!errorCode) {
+            return;
+        }
+
+        const message = reservationMessages[errorCode] || reservationMessages.INVALID_INPUT;
+        document.getElementById("feedback-title").textContent = message.title;
+        document.getElementById("feedback-message").textContent = message.message;
+        document.getElementById("feedback-hint").textContent = message.hint;
+        feedback.classList.remove("hidden");
+    }
+
     function selectTimeSlot(button) {
         const timeId = button.dataset.timeId;
         const date = button.dataset.date;
@@ -418,6 +541,8 @@
         formCard.scrollIntoView({behavior: "smooth", block: "center"});
         nameInput.focus();
     }
+
+    applyPageFeedback();
 </script>
 </body>
 </html>
