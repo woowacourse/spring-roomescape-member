@@ -296,7 +296,7 @@ async function cancelReservation(id) {
         return;
     }
 
-    await fetch(`/admin/reservations/${id}`, {
+    await fetch(`/admin/reservations/${id}/cancel`, {
         method: "PATCH"
     });
 

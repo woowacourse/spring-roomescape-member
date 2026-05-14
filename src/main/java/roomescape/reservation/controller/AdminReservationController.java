@@ -43,7 +43,7 @@ public class AdminReservationController {
         return ResponseEntity.status(CREATED).body(responseData);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/cancel")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationDetailDto> cancelReservation(@PathVariable Long id) {
         ReservationDetailDto responseData = ReservationDetailDto.from(reservationService.cancel(id));
