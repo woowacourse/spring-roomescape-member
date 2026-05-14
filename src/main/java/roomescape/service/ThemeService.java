@@ -3,7 +3,9 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Period;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.code.ConflictCode;
 import roomescape.exception.code.NotFoundCode;
 import roomescape.repository.ThemeRepository;
 
@@ -34,7 +36,11 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.delete(id);
+        try {
+            themeRepository.delete(id);
+        } catch (IllegalStateException e) {
+            throw new ConflictException(ConflictCode.THEME_IN_USE);
+        }
     }
 
     public List<Theme> findPopularThemes(Period period) {

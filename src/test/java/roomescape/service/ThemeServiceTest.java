@@ -7,7 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Period;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.code.ConflictCode;
 import roomescape.repository.ThemeRepository;
 
 import java.time.Clock;
@@ -21,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -115,5 +118,13 @@ class ThemeServiceTest {
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).isEqualTo(themes);
+    }
+
+    @Test
+    void 예약이_있는_테마_삭제시_conflict() {
+        doThrow(IllegalStateException.class).when(themeRepository).delete(1L);
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(ConflictCode.THEME_IN_USE.getMessage());
     }
 }

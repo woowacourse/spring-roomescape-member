@@ -73,6 +73,23 @@ DELETE /admin/themes/{themeId}
 
 Response `204 No Content`
 
+Error Response
+
+| 상태             | `code`         | 조건                          |
+|----------------|----------------|-----------------------------|
+| `409 Conflict` | `THEME_IN_USE` | 해당 테마를 참조하는 예약이 존재하여 삭제 불가 |
+
+`409 THEME_IN_USE` 응답 예
+
+```json
+{
+  "code": "THEME_IN_USE",
+  "path": "/admin/themes/1",
+  "message": "예약이 존재하는 테마는 삭제할 수 없습니다.",
+  "action": "해당 테마의 예약을 먼저 취소해주세요."
+}
+```
+
 ### 이용 가능 시간 조회
 
 ```http
