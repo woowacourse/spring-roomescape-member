@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UpdateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
@@ -86,6 +87,21 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    public ReservationResponse update(Long reservationId, UpdateReservationRequest request) {
+        Reservation reservation = getReservation(reservationId);
+        ReservationTime time = getTime(request.timeId());
+        validateUniqueReservation(request.date(), request.timeId(), reservation.getTheme().getId());
+        validatePastDatetime(request.date(), time);
+
+        Reservation updateReservation = reservationDao.update(reservationId, request.date(), request.timeId());
+        return ReservationResponse.from(updateReservation);
+    }
+
+    private Reservation getReservation(Long reservationId) {
+        return reservationDao.selectById(reservationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 
     public void delete(Long reservationId) {

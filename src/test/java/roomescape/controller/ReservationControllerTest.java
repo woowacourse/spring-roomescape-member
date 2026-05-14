@@ -101,6 +101,74 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 예약_날짜_시간을_변경한다() {
+        // given
+        int timeId1 = createTime("10:00");
+        int timeId2 = createTime("11:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+        int reservationId = createReservation("브라운", LocalDate.now().plusDays(1).toString(), timeId1, themeId)
+                .statusCode(201)
+                .extract().path("id");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("date", LocalDate.now().plusDays(2).toString(), "timeId", timeId2))
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is(LocalDate.now().plusDays(2).toString()));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하면_404를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("date", LocalDate.now().plusDays(1).toString(), "timeId", 1))
+                .when().patch("/reservations/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 지나간_날짜로_변경하면_422를_반환한다() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+        int reservationId = createReservation("브라운", LocalDate.now().plusDays(1).toString(), timeId, themeId)
+                .statusCode(201)
+                .extract().path("id");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("date", "2026-04-01", "timeId", timeId))
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 중복된_날짜_시간으로_변경하면_409를_반환한다() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+        String date = LocalDate.now().plusDays(1).toString();
+        createReservation("브라운", date, timeId, themeId).statusCode(201);
+        int reservationId2 = createReservation("로지", LocalDate.now().plusDays(2).toString(), timeId, themeId)
+                .statusCode(201)
+                .extract().path("id");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("date", date, "timeId", timeId))
+                .when().patch("/reservations/" + reservationId2)
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     void 예약_삭제() {
         // given
         int timeId = createTime("10:00");

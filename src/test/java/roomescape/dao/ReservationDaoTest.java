@@ -188,6 +188,25 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 예약을_수정한다() {
+        // given
+        ReservationTime time1 = saveTime(10, 0);
+        ReservationTime time2 = saveTime(11, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        Reservation saved = reservationDao.insert(
+                Reservation.createWithoutId("브라운", LocalDate.of(2026, 5, 5), time1, theme));
+
+        // when
+        Reservation updated = reservationDao.update(saved.getId(), LocalDate.of(2026, 5, 6), time2.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(updated.getDate()).isEqualTo(LocalDate.of(2026, 5, 6)),
+                () -> assertThat(updated.getTime().getId()).isEqualTo(time2.getId())
+        );
+    }
+
+    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime savedTime = saveTime(10, 0);

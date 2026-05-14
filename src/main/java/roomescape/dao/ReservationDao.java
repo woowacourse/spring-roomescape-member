@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -83,6 +85,30 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    public Optional<Reservation> selectById(long reservationId) {
+        try {
+            String sql = """
+                    SELECT r.id, 
+                           r.name as reservation_name, 
+                           r.date,
+                           rt.id as time_id,
+                           rt.start_at,
+                           t.id as theme_id,
+                           t.name as theme_name,
+                           t.description,
+                           t.thumbnail
+                    FROM reservation AS r
+                    INNER JOIN reservation_time AS rt 
+                    ON r.time_id = rt.id
+                    INNER JOIN theme AS t 
+                    ON r.theme_id = t.id
+                    WHERE r.id = ?""";
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<Reservation> selectByName(String name) {
         String sql = """
                 SELECT r.id, 
@@ -149,6 +175,16 @@ public class ReservationDao {
                 AND time_id = ?
                 AND theme_id = ?""";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+    }
+
+    public Reservation update(Long reservationId, LocalDate date, long timeId) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?""";
+        jdbcTemplate.update(sql, date, timeId, reservationId);
+
+        return selectById(reservationId).get();
     }
 
     public int delete(Long reservationId) {
