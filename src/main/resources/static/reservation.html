@@ -343,7 +343,11 @@
             });
 
             if (!res.ok) {
-                throw new Error(`서버 오류 (${res.status})`);
+                const body = await res.json().catch(() => ({}));
+                const msg = body.message || `서버 오류 (${res.status})`;
+                result.innerHTML = `<p class="error">예약에 실패했습니다. ${msg}</p>`;
+                submitBtn.disabled = false;
+                return;
             }
 
             const r = await res.json();
