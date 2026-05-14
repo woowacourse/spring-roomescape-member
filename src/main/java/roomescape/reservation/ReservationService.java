@@ -41,7 +41,7 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now(clock);
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
-        Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
 
         Reservation reservation = new Reservation(
@@ -51,7 +51,7 @@ public class ReservationService {
                 reservationTime
         );
 
-        if (reservation.isPast(now)){
+        if (reservation.isPast(now)) {
             throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
 
@@ -101,7 +101,7 @@ public class ReservationService {
                 reservationTime
         );
 
-        if (reservation.isPast(now)){
+        if (reservation.isPast(now)) {
             throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
 
@@ -118,7 +118,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
-        if (reservation.isPast(now)){
+        if (reservation.isPast(now)) {
             throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
 
@@ -135,7 +135,7 @@ public class ReservationService {
             throw new ForbiddenException("본인의 예약만 삭제할 수 있습니다.");
         }
 
-        if (reservation.isPast(now)){
+        if (reservation.isPast(now)) {
             throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
 

@@ -44,7 +44,8 @@ window.api = (function () {
             } else {
                 message = await res.text();
             }
-        } catch (_) {}
+        } catch (_) {
+        }
         const err = new Error(message || ('HTTP ' + res.status));
         err.status = res.status;
         return err;

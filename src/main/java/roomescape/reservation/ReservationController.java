@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,7 +58,8 @@ public class ReservationController {
             @RequestHeader("X-User-Name") String userName
     ) {
         String decodeUserName = URLDecoder.decode(userName, StandardCharsets.UTF_8);
-        return ResponseEntity.status(HttpStatus.OK).body(reservationService.update(id, reservationRequest, decodeUserName));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(reservationService.update(id, reservationRequest, decodeUserName));
     }
 
     @DeleteMapping("/{id}")

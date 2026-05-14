@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -114,7 +113,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void update(Reservation reservation) {
         String sql = "UPDATE reservation SET theme_id = ?, date = ?, time_id = ? WHERE id = ?";
-        jdbcTemplate.update(sql, reservation.getTheme().getId(),reservation.getDate(), reservation.getTime().getId(), reservation.getId());
+        jdbcTemplate.update(sql, reservation.getTheme().getId(), reservation.getDate(), reservation.getTime().getId(),
+                reservation.getId());
     }
 
     @Override
