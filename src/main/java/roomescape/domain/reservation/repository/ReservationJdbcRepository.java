@@ -36,6 +36,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 ON r.theme_id = t.id
             """;
 
+    private static final String FIND_RESERVATIONS_BY_USERNAME_QUERY = FIND_ALL_RESERVATIONS_WITH_TIME_QUERY + """
+            WHERE r.username = :username
+            """;
+
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
             DELETE FROM reservation
             WHERE id = :id
@@ -66,6 +70,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATIONS_WITH_TIME_QUERY,
+                reservationWithTimeRowMapper()
+        );
+    }
+
+    @Override
+    public List<Reservation> findByUsername(String username) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("username", username);
+
+        return jdbcTemplate.query(
+                FIND_RESERVATIONS_BY_USERNAME_QUERY,
+                parameters,
                 reservationWithTimeRowMapper()
         );
     }

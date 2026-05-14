@@ -229,6 +229,37 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("사용자 이름으로 예약 목록을 조회한다.")
+    void findReservationsByUsername() {
+        // given
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        List<Reservation> reservations = List.of(
+                new Reservation(1L, username, theme, LocalDate.of(2026, 4, 30), time)
+        );
+
+        when(reservationRepository.findByUsername(username)).thenReturn(reservations);
+
+        // when
+        List<ReservationResponse> responses = reservationService.findReservationsByUsername(username);
+
+        // then
+        assertThat(responses).hasSize(1)
+                .extracting("username", "theme", "date", "time")
+                .containsExactly(
+                        tuple(
+                                username,
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time)
+                        )
+                );
+
+        verify(reservationRepository).findByUsername(username);
+    }
+
+    @Test
     @DisplayName("예약을 삭제한다.")
     void deleteReservationBy() {
         // given

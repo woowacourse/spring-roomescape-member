@@ -47,6 +47,26 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("사용자는 이름으로 본인의 예약 목록을 조회한다.")
+    void findReservationsByUsername() {
+        RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].id", is(1))
+                .body("reservations[0].username", is("흑곰"))
+                .body("reservations[0].theme.id", is(1))
+                .body("reservations[0].theme.name", is("워너비"))
+                .body("reservations[0].theme.description", is("워너비 테마입니다."))
+                .body("reservations[0].theme.thumbnailUrl", is("https://example.com/wannabe.png"))
+                .body("reservations[0].date", is("2026-05-05"))
+                .body("reservations[0].time.id", is(1))
+                .body("reservations[0].time.startAt", is("10:00"));
+    }
+
+    @Test
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         Map<String, Object> params = new HashMap<>();

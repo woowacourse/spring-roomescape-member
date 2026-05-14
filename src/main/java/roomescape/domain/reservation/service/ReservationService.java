@@ -44,6 +44,12 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findReservationsByUsername(String username) {
+        return reservationRepository.findByUsername(username).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @Transactional
     public ReservationResponse saveReservation(ReservationCreateRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
