@@ -27,15 +27,22 @@ public class ReservationRestController {
         return ResponseEntity.created(uri).body(newReservation);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponse> read(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.read(id);
+        return ResponseEntity.ok(reservationResponse);
+    }
+
     @GetMapping
     public List<ReservationResponse> readAll() {
         return reservationService.readAll();
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ReservationResponse> read(@PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.read(id);
-        return ResponseEntity.ok(reservationResponse);
+    @GetMapping("/mine")
+    public List<ReservationResponse> readMyReservations(
+            @RequestParam String name
+    ) {
+        return reservationService.readMyReservations(name);
     }
 
     @PutMapping("/{id}")

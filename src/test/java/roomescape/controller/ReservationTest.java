@@ -8,14 +8,15 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class UserReservationTest {
+class ReservationTest {
 
     @Test
-    void 사용자_예약__API() {
+    void 예약_API() {
         Map<String, String> themes = new HashMap<>();
         themes.put("name", "무서운 이야기");
         themes.put("description", "공포");
@@ -50,6 +51,20 @@ class UserReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/mine?name=브라운")
+                .then().log().all()
+                .body("size()", is(1))
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/mine?name=은오")
+                .then().log().all()
+                .body("size()", is(0))
+                .statusCode(200);
     }
 
     @Test

@@ -88,6 +88,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> readMyReservations(String name) {
+        List<Reservation> reservations = reservationQueryingDao.findMyReservations(name);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
         if (!reservationQueryingDao.existsById(id)) {
