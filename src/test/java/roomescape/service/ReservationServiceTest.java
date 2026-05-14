@@ -141,25 +141,52 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("id로 예약을 삭제한다")
-    void deleteReservationById() {
+    @DisplayName("관리자는 id로 예약을 삭제한다")
+    void deleteReservationByAdmin() {
         long reservationId = 1L;
-        given(reservationRepository.existsById(reservationId)).willReturn(true);
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        reservationService.deleteById(reservationId);
+        reservationService.deleteReservationByAdmin(reservationId);
 
         verify(reservationRepository).deleteById(eq(reservationId));
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약은 삭제할 수 없다")
-    void throwException_WhenDeleteReservationNotFound() {
+    @DisplayName("관리자는 존재하지 않는 예약을 삭제할 수 없다")
+    void throwException_WhenAdminDeleteReservationNotFound() {
         long reservationId = 1L;
-        given(reservationRepository.existsById(reservationId)).willReturn(false);
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.deleteById(reservationId))
+        assertThatThrownBy(() -> reservationService.deleteReservationByAdmin(reservationId))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
+
+        verify(reservationRepository, never()).deleteById(reservationId);
+    }
+
+    @Test
+    @DisplayName("사용자는 본인 예약을 취소할 수 있다")
+    void cancelReservation() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+
+        reservationService.cancelReservation(reservationId, "브라운");
+
+        verify(reservationRepository).deleteById(eq(reservationId));
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약을 취소할 수 없다")
+    void throwException_WhenCancelOtherUserReservation() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> reservationService.cancelReservation(reservationId, "조이"))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_OWNER_MISMATCH));
 
         verify(reservationRepository, never()).deleteById(reservationId);
     }
@@ -247,5 +274,12 @@ class ReservationServiceTest {
         Reservation saved = reservationService.saveReservation(saveCommand);
 
         assertThat(saved).isEqualTo(savedReseravtion);
+    }
+
+    private Reservation createReservation(Long id, String name, LocalDate date) {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+
+        return new Reservation(id, name, date, time, theme);
     }
 }

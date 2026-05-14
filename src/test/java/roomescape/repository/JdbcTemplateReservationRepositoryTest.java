@@ -71,6 +71,26 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("id로 예약을 조회한다")
+    void findById() {
+        Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        Reservation reservation = reservationRepository.findById(saved.id()).get();
+
+        assertThat(reservation.id()).isEqualTo(saved.id());
+        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.date()).isEqualTo(LocalDate.of(2026, 5, 3));
+        assertThat(reservation.time().id()).isEqualTo(TIME_ID);
+        assertThat(reservation.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약이 없으면 빈 Optional을 반환한다")
+    void findById_WhenReservationDoesNotExist() {
+        assertThat(reservationRepository.findById(999L)).isEmpty();
+    }
+
+    @Test
     @DisplayName("예약이 없으면 빈 목록을 반환한다")
     void findEmptyReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();

@@ -132,7 +132,7 @@ class ReservationRequestParameterTest {
     void failDelete_WhenReservationNotFound() throws Exception {
         willThrow(new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND))
                 .given(reservationService)
-                .deleteById(1L);
+                .deleteReservationByAdmin(1L);
 
         mockMvc.perform(delete("/admin/reservations/1"))
                 .andExpect(status().isNotFound());

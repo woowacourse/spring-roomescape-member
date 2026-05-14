@@ -36,14 +36,6 @@ public class ReservationService {
         return reservationRepository.findAllReservations();
     }
 
-    public void deleteById(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
-
-        reservationRepository.deleteById(id);
-    }
-
     public Reservation saveReservation(ReservationSaveCommand command) {
         ReservationTime reservationTime = findReservationTime(command);
         validateReservableDateTime(command.date(), reservationTime.startAt());
@@ -98,5 +90,33 @@ public class ReservationService {
         }
 
         return reservations;
+    }
+
+    public void deleteReservationByAdmin(Long id) {
+        Reservation reservation = findReservation(id);
+
+        reservationRepository.deleteById(reservation.id());
+    }
+
+    public void cancelReservation(Long id, String name) {
+        Reservation reservation = findReservation(id);
+
+        validateReservationOwner(reservation, name);
+        reservationRepository.deleteById(reservation.id());
+    }
+
+    private void validateReservationOwner(Reservation reservation, String name) {
+        if (Objects.isNull(name) || name.isBlank()) {
+            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
+        }
+
+        if (!reservation.name().equals(name)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_OWNER_MISMATCH);
+        }
+    }
+
+    private Reservation findReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 }
