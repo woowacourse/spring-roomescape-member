@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>예약 관리</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body>
+<body class="admin-page">
 <header>
-    <div class="brand">
+    <a href="/admin" class="brand">
         <div class="header-title">예약 관리</div>
         <div class="header-sub">Admin</div>
-    </div>
+    </a>
     <nav class="admin-nav">
         <a href="/admin/reservation" class="active">예약</a>
         <a href="/admin/time">시간</a>
@@ -230,9 +230,13 @@
             if (response.status === 204) return null;
             return response.json();
         }
-        return response.text().then(message => {
-            throw new Error(message || '요청을 처리하지 못했습니다');
-        });
+        return response.json()
+            .then(error => {
+                throw new Error(error.detail || '요청을 처리하지 못했습니다');
+            })
+            .catch(error => {
+                throw new Error(error.message || '요청을 처리하지 못했습니다');
+            });
     }
 
     function showError(error) {

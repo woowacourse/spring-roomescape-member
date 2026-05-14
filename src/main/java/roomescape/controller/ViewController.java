@@ -16,6 +16,16 @@ public class ViewController {
         return "reservation";
     }
 
+    @GetMapping("/reservation/me")
+    public String getMyReservation() {
+        return "my-reservation";
+    }
+
+    @GetMapping("/admin")
+    public String getAdminHome() {
+        return "admin-home";
+    }
+
     @GetMapping("/admin/reservation")
     public String getAdminReservation() {
         return "admin-reservation";
