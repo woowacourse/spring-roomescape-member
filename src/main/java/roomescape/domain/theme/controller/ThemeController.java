@@ -30,8 +30,8 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponseDto>> getPopularThemes(
-        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-DD") LocalDate startDate,
-        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-DD") LocalDate endDate, @RequestParam Integer limit
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, @RequestParam Integer limit
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(themeService.getPopularThemes(startDate, endDate, limit));
