@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,15 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public ReservationCreationResponse createReservation(ReservationCreationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
         ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
             .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+            .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
+        LocalDateTime dateTime = LocalDateTime.of(reservationDate.getPlayDay(), reservationTime.getStartAt());
+
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(ReservationTimeErrorCode.PAST_TIME_NOT_ALLOWED);
+        }
         Theme theme = themeRepository.findById(request.themeId())
             .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
         Reservation savedReservation = reservationRepository.save(

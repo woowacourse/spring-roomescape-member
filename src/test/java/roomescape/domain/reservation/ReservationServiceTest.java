@@ -30,7 +30,7 @@ class ReservationServiceTest {
         FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
         FakeThemeRepository themeRepository = new FakeThemeRepository();
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationDate reservationDate = ReservationDate.of(2L, LocalDate.of(2026, 5, 4));
+        ReservationDate reservationDate = ReservationDate.of(2L, LocalDate.now().plusDays(1));
         Theme theme = Theme.of(3L, "공포", "무서운 테마", "theme-url");
         reservationTimeRepository.reservationTime = reservationTime;
         reservationDateRepository.reservationDate = reservationDate;
@@ -55,7 +55,7 @@ class ReservationServiceTest {
         assertSoftly(softly -> {
             assertThat(response.id()).isEqualTo(1L);
             assertThat(response.name()).isEqualTo("보예");
-            assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 4));
+            assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1));
             assertThat(response.time()).isEqualTo(LocalTime.of(10, 0));
             assertThat(response.theme().name()).isEqualTo("공포");
             assertThat(reservationRepository.savedReservation.getTime()).isEqualTo(reservationTime);
@@ -82,7 +82,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("존재하지 않는 예약 시간대 입니다.");
+            .hasMessage("존재하지 않는 날짜 입니다.");
     }
 
     @Test
@@ -90,8 +90,8 @@ class ReservationServiceTest {
         // given
         FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        reservationTimeRepository.reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationDateRepository.reservationDate = ReservationDate.of(2L, LocalDate.of(2026, 5, 4));
+        reservationTimeRepository.reservationTime = ReservationTime.of(1L, LocalTime.now().plusHours(1));
+        reservationDateRepository.reservationDate = ReservationDate.of(2L, LocalDate.now().plusDays(1));
         ReservationService reservationService = new ReservationService(
             new FakeReservationRepository(),
             reservationTimeRepository,
@@ -100,9 +100,9 @@ class ReservationServiceTest {
         );
         ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
-            2L,
+            7L,
             1L,
-            3L
+            300L
         );
 
         // when & then
@@ -187,6 +187,21 @@ class ReservationServiceTest {
 
         @Override
         public int countByThemeId(Long id) {
+            return 0;
+        }
+
+        @Override
+        public List<Reservation> findByName(String name) {
+            return List.of();
+        }
+
+        @Override
+        public Optional<Reservation> findById(Long id) {
+            return Optional.empty();
+        }
+
+        @Override
+        public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
         }
     }

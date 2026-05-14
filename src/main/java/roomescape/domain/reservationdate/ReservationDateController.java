@@ -15,7 +15,7 @@ public class ReservationDateController {
 
     @GetMapping("/reservation-dates")
     public ResponseEntity<List<ReservationDateResponse>> getAllReservationDates() {
-        List<ReservationDateResponse> responses = reservationDateService.getAllReservationDate();
+        List<ReservationDateResponse> responses = reservationDateService.getAllAvailableReservationDate();
         return ResponseEntity.ok(responses);
     }
 }

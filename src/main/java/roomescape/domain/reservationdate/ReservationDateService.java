@@ -1,5 +1,6 @@
 package roomescape.domain.reservationdate;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,9 @@ public class ReservationDateService {
         }
     }
 
-    public List<ReservationDateResponse> getAllReservationDate() {
+    public List<ReservationDateResponse> getAllAvailableReservationDate() {
         return reservationDateRepository.findAll().stream()
+            .filter(reservationDate -> reservationDate.isAvailable(LocalDate.now()))
             .map(ReservationDateResponse::from)
             .toList();
     }

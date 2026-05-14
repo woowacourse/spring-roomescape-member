@@ -12,6 +12,8 @@ public enum ReservationDateErrorCode implements ErrorCode {
         "해당 날짜에 연결된 예약들을 먼저 취소하거나 변경한 뒤 다시 삭제해 주세요."),
     INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST,
         "날짜는 비어 있을 수 없습니다.", "날짜를 입력해 주세요. (형식: yyyy-MM-dd"),
+    PAST_DATE_NOT_ALLOWED(HttpStatus.BAD_REQUEST,
+        "과거 날짜는 등록할 수 없습니다.", "오늘 이후의 날짜를 선택해 주세요."),
     ;
 
     private final HttpStatus httpStatus;

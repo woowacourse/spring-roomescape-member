@@ -13,6 +13,8 @@ public enum ReservationTimeErrorCode implements ErrorCode {
     RESERVATION_TIME_IN_USE(HttpStatus.CONFLICT,
         "이미 예약이 존재하는 시간대는 삭제할 수 없습니다.",
         "해당 시간에 연결된 예약들을 먼저 취소하거나 변경한 뒤 다시 삭제해 주세요."),
+    PAST_TIME_NOT_ALLOWED(HttpStatus.BAD_REQUEST,
+        "과거 시간은 등록할 수 없습니다.", "현재 시간 이후의 시간을 선택해 주세요."),
     ;
 
     private final HttpStatus httpStatus;

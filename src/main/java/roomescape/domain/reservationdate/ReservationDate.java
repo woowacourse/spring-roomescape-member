@@ -34,4 +34,8 @@ public class ReservationDate {
             throw new RoomescapeException(ReservationDateErrorCode.INVALID_RESERVATION_DATE);
         }
     }
+
+    public boolean isAvailable(LocalDate targetDate) {
+        return !playDay.isBefore(targetDate);
+    }
 }

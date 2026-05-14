@@ -10,9 +10,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.reservationtime.dto.TimeCreationRequest;
 import roomescape.domain.reservationtime.dto.TimeCreationResponse;
-import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationTimeServiceTest {
@@ -162,6 +162,21 @@ class ReservationTimeServiceTest {
 
         @Override
         public int countByThemeId(Long id) {
+            return 0;
+        }
+
+        @Override
+        public List<Reservation> findByName(String name) {
+            return List.of();
+        }
+
+        @Override
+        public Optional<Reservation> findById(Long id) {
+            return Optional.empty();
+        }
+
+        @Override
+        public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
         }
     }

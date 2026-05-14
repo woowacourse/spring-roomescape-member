@@ -24,7 +24,7 @@ class ThemeServiceTest {
         themeRepository.findAllResult = List.of(
             Theme.of(1L, "미스터리", "이게 뭘까? 바로바로 추리 테마", "theme/mystery")
         );
-        ThemeService themeService = new ThemeService(themeRepository,reservationRepository);
+        ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
         // when
         List<AdminThemeResponse> responses = themeService.getAllThemeForAdmin();
@@ -134,7 +134,7 @@ class ThemeServiceTest {
         }
     }
 
-    private static class FakeReservationRepository implements ReservationRepository{
+    private static class FakeReservationRepository implements ReservationRepository {
 
         @Override
         public Reservation save(Reservation reservation) {
@@ -168,6 +168,21 @@ class ThemeServiceTest {
 
         @Override
         public int countByThemeId(Long id) {
+            return 0;
+        }
+
+        @Override
+        public List<Reservation> findByName(String name) {
+            return List.of();
+        }
+
+        @Override
+        public Optional<Reservation> findById(Long id) {
+            return Optional.empty();
+        }
+
+        @Override
+        public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
         }
     }
