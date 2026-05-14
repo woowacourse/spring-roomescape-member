@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +31,31 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.DATA_CONFLICT;
 
         log.warn("데이터 충돌 예외가 발생했습니다. errorCode={}", errorCode, exception);
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode, errorCode.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception
+    ) {
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
+        log.warn("요청 값 검증 예외가 발생했습니다.", exception);
+
+        String message = exception.getBindingResult()
+                .getAllErrors()
+                .getFirst()
+                .getDefaultMessage();
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode, message));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
+        log.warn("요청 본문 변환 예외가 발생했습니다.", exception);
 
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ErrorResponse.of(errorCode, errorCode.getMessage()));

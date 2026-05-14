@@ -5,6 +5,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
@@ -52,6 +54,42 @@ class ReservationTimeControllerTest {
                 .header("Location", notNullValue())
                 .body("id", notNullValue())
                 .body("startAt", is("10:00"));
+    }
+
+    @Test
+    @DisplayName("예약 시간 생성 시 시간이 null이면 요청을 거부한다.")
+    void createReservationTime_throwsException_whenStartAtIsNull() {
+        String params = """
+                {
+                    "startAt": null
+                }
+                """;
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST"))
+                .body("message", is("예약 시간은 필수입니다."));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"abc", "99:99"})
+    @DisplayName("예약 시간 생성 시 시간 형식이 잘못되면 요청을 거부한다.")
+    void createReservationTime_throwsException_whenStartAtFormatInvalid(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"))
+                .body("message", is("요청 값이 올바르지 않습니다."));
     }
 
     @Test
