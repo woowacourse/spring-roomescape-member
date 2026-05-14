@@ -14,12 +14,13 @@ public enum SortOrder {
         return value;
     }
 
-    public static SortOrder fromString(String order) {
-        try {
-            return SortOrder.valueOf(order.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return DESC;
+    public static SortOrder fromString(String input) {
+        for (SortOrder order : values()) {
+            if (order.value.equalsIgnoreCase(input)) {
+                return order;
+            }
         }
+        throw new IllegalArgumentException("지원하지 않는 정렬 순서입니다: " + input);
     }
 }
 

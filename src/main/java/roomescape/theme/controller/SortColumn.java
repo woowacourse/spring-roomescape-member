@@ -15,11 +15,12 @@ public enum SortColumn {
         return value;
     }
 
-    public static SortColumn fromString(String sort) {
-        try {
-            return SortColumn.valueOf(sort.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return RESERVATION_COUNT;
+    public static SortColumn fromString(String input) {
+        for (SortColumn column : values()) {
+            if (column.value.equalsIgnoreCase(input)) {
+                return column;
+            }
         }
+        throw new IllegalArgumentException("지원하지 않는 정렬 기준입니다: " + input);
     }
 }
