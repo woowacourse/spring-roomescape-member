@@ -9,12 +9,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
+import roomescape.exception.CustomException;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
@@ -66,5 +67,31 @@ class ThemeServiceTest {
         Assertions.assertEquals(name, themes.getFirst().getName());
         Assertions.assertEquals(description, themes.getFirst().getDescription());
         Assertions.assertEquals(url, themes.getFirst().getUrl());
+    }
+
+    @Test
+    void 테마_삭제_성공() {
+        // given
+        Long themeId = 1L;
+        when(themeUpdatingDao.delete(themeId))
+                .thenReturn(1);
+
+        // when
+        themeService.delete(themeId);
+
+        // then
+        verify(themeUpdatingDao, times(1)).delete(themeId);
+    }
+
+
+    @Test
+    void 테마_삭제_에러_테마_없음() {
+        // given
+        Long themeId = 1L;
+        when(themeUpdatingDao.delete(themeId))
+                .thenReturn(0);
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> themeService.delete(themeId));
     }
 }
