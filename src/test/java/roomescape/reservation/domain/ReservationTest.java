@@ -37,7 +37,7 @@ class ReservationTest {
         Long expected = 1L;
 
         //when
-        Long actual = reservation.id();
+        Long actual = reservation.getId();
 
         //then
         assertEquals(expected, actual);
@@ -50,7 +50,7 @@ class ReservationTest {
         String expected = "한다";
 
         //when
-        String actual = reservation.name();
+        String actual = reservation.getName();
 
         //then
         assertEquals(expected, actual);
@@ -63,7 +63,7 @@ class ReservationTest {
         LocalDate expected = LocalDate.now().plusMonths(1);
 
         //when
-        LocalDate actual = reservation.date().date();
+        LocalDate actual = reservation.getDate().getDate();
 
         //then
         assertEquals(expected, actual);
@@ -76,7 +76,7 @@ class ReservationTest {
         LocalTime expected = startAt;
 
         //when
-        LocalTime actual = reservation.time().startAt();
+        LocalTime actual = reservation.getTime().getStartAt();
 
         //then
         assertEquals(expected, actual);
@@ -101,7 +101,7 @@ class ReservationTest {
         Reservation unpersistReservation = Reservation.create("한다", reservationDate, reservationTime, theme);
 
         // then
-        assertThat(unpersistReservation.id())
+        assertThat(unpersistReservation.getId())
                 .isNull();
     }
 
@@ -168,7 +168,7 @@ class ReservationTest {
         reserved.cancel(name);
 
         // then
-        assertThat(reserved.status())
+        assertThat(reserved.getStatus())
                 .isEqualTo(CANCELED);
     }
 
@@ -222,10 +222,10 @@ class ReservationTest {
         reserved.changeSchedule(name, changedDate, changedTime);
 
         // then
-        assertThat(reserved.date())
+        assertThat(reserved.getDate())
                 .usingRecursiveComparison()
                 .isEqualTo(changedDate);
-        assertThat(reserved.time())
+        assertThat(reserved.getTime())
                 .usingRecursiveComparison()
                 .isEqualTo(changedTime);
     }
@@ -295,10 +295,10 @@ class ReservationTest {
         reserved.changeScheduleByManager(changedDate, changedTime);
 
         // then
-        assertThat(reserved.date())
+        assertThat(reserved.getDate())
                 .usingRecursiveComparison()
                 .isEqualTo(changedDate);
-        assertThat(reserved.time())
+        assertThat(reserved.getTime())
                 .usingRecursiveComparison()
                 .isEqualTo(changedTime);
     }

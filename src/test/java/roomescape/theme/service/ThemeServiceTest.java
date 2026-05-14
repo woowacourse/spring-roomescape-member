@@ -55,7 +55,7 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
-        Theme actual = themeService.readTheme(savedTheme.id());
+        Theme actual = themeService.readTheme(savedTheme.getId());
 
         // then
         assertThat(actual)
@@ -84,7 +84,7 @@ class ThemeServiceTest {
                 ThemeFixture.activeTheme("나테마"),
                 ThemeFixture.activeTheme("가테마"))
         );
-        Collections.sort(themes, Comparator.comparing(Theme::name));
+        Collections.sort(themes, Comparator.comparing(Theme::getName));
 
         // when
         List<Theme> actual = themeService.readActiveThemes();
@@ -115,7 +115,7 @@ class ThemeServiceTest {
         // then
         assertThat(registeredTheme)
                 .usingRecursiveComparison()
-                .isEqualTo(themeService.readTheme(registeredTheme.id()));
+                .isEqualTo(themeService.readTheme(registeredTheme.getId()));
     }
 
     @Test
@@ -125,10 +125,10 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
-        themeService.updateStatus(savedTheme.id(), true);
+        themeService.updateStatus(savedTheme.getId(), true);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeRepository.findById(savedTheme.getId()).get().isActive())
                 .isTrue();
     }
 
@@ -140,10 +140,10 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.activeTheme());
 
         // when
-        themeService.updateStatus(savedTheme.id(), false);
+        themeService.updateStatus(savedTheme.getId(), false);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeRepository.findById(savedTheme.getId()).get().isActive())
                 .isFalse();
     }
 

@@ -15,7 +15,7 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     @Override
     public Optional<ReservationDate> findById(Long id) {
         return reservationDates.stream()
-                .filter(reservationDate -> reservationDate.id() == id)
+                .filter(reservationDate -> reservationDate.getId() == id)
                 .findFirst();
     }
 
@@ -32,7 +32,7 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     @Override
     public ReservationDate save(ReservationDate reservationDate) {
         autoIncrement();
-        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.date(), false);
+        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.getDate(), false);
         this.reservationDates.add(savedReservationDate);
         return savedReservationDate;
     }
@@ -48,7 +48,7 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     @Override
     public boolean updateStatus(ReservationDate reservationDate) {
         boolean isActive = reservationDate.isActive();
-        Optional<ReservationDate> target = findById(reservationDate.id());
+        Optional<ReservationDate> target = findById(reservationDate.getId());
         if (target.isEmpty()) {
             return false;
         }

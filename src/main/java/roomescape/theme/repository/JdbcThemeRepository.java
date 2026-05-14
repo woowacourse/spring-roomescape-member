@@ -63,12 +63,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.name())
-                .addValue("description", theme.description())
-                .addValue("thumbnail_url", theme.thumbnailUrl())
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail_url", theme.getThumbnailUrl())
                 .addValue("is_active", theme.isActive());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return Theme.load(id, theme.name(), theme.description(), theme.thumbnailUrl(), theme.isActive());
+        return Theme.load(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl(), theme.isActive());
     }
 
     @Override
@@ -81,10 +81,10 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", theme.id())
-                .addValue("name", theme.name())
-                .addValue("description", theme.description())
-                .addValue("thumbnail_url", theme.thumbnailUrl())
+                .addValue("id", theme.getId())
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail_url", theme.getThumbnailUrl())
                 .addValue("is_active", theme.isActive());
 
         int updateCount = jdbcTemplate.update(sql, params);

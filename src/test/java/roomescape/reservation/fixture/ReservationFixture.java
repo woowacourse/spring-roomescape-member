@@ -35,7 +35,7 @@ public class ReservationFixture {
             ReservationTime time,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, date.id(), time.id(), theme.id());
+        return new ReservationSaveDto(name, date.getId(), time.getId(), theme.getId());
     }
 
     public static ReservationSaveDto saveDto(
@@ -44,7 +44,7 @@ public class ReservationFixture {
             Long timeId,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, date.id(), timeId, theme.id());
+        return new ReservationSaveDto(name, date.getId(), timeId, theme.getId());
     }
 
     public static ReservationSaveDto saveDto(
@@ -53,7 +53,7 @@ public class ReservationFixture {
             ReservationTime time,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, dateId, time.id(), theme.id());
+        return new ReservationSaveDto(name, dateId, time.getId(), theme.getId());
     }
 
     public static ReservationSaveDto saveDto(
@@ -62,7 +62,7 @@ public class ReservationFixture {
             ReservationTime time,
             Long themeId
     ) {
-        return new ReservationSaveDto(name, date.id(), time.id(), themeId);
+        return new ReservationSaveDto(name, date.getId(), time.getId(), themeId);
     }
 
 }

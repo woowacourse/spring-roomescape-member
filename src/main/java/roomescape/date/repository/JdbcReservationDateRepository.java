@@ -69,10 +69,10 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     @Override
     public ReservationDate save(ReservationDate reservationDate) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", reservationDate.date())
+                .addValue("date", reservationDate.getDate())
                 .addValue("is_active", reservationDate.isActive());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationDate.load(id, reservationDate.date(), reservationDate.isActive());
+        return ReservationDate.load(id, reservationDate.getDate(), reservationDate.isActive());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
                 WHERE id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", reservationDate.id())
+                .addValue("id", reservationDate.getId())
                 .addValue("is_active", reservationDate.isActive());
 
         int updateCount = jdbcTemplate.update(sql, params);

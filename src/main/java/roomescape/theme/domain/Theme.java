@@ -1,5 +1,8 @@
 package roomescape.theme.domain;
 
+import lombok.Getter;
+
+@Getter
 public class Theme {
 
     public static final String DEFAULT_THUMBNAIL_URL = "dummy-url";
@@ -66,27 +69,8 @@ public class Theme {
         return thumbnailUrl;
     }
 
-    public Long id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public String description() {
-        return description;
-    }
-
-    public String thumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
     public void updateStatus(boolean isActive) {
         this.isActive = isActive;
     }
+
 }

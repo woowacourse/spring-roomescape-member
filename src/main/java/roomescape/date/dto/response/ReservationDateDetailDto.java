@@ -10,6 +10,6 @@ public record ReservationDateDetailDto(
         boolean isActive
 ) {
     public static ReservationDateDetailDto from(ReservationDate reservationDate) {
-        return new ReservationDateDetailDto(reservationDate.id(), reservationDate.date(), reservationDate.isActive());
+        return new ReservationDateDetailDto(reservationDate.getId(), reservationDate.getDate(), reservationDate.isActive());
     }
 }

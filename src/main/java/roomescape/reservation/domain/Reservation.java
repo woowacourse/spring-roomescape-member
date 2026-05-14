@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import lombok.Getter;
 import roomescape.date.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
+@Getter
 public class Reservation {
     private Long id;
     private String name;
@@ -27,7 +29,7 @@ public class Reservation {
 
     public static Reservation create(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
         validate(name, reservationDate, time, theme);
-        validatePast(reservationDate.date(), time.startAt());
+        validatePast(reservationDate.getDate(), time.getStartAt());
         return new Reservation(null, name, reservationDate, time, theme, ReservationStatus.RESERVED);
     }
 
@@ -40,7 +42,7 @@ public class Reservation {
     public void cancel(String requesterName) {
         validateOwner(requesterName);
         validateNotCanceled();
-        validateNotPast(date.date(), time.startAt());
+        validateNotPast(date.getDate(), time.getStartAt());
 
         this.status = ReservationStatus.CANCELED;
     }
@@ -48,8 +50,8 @@ public class Reservation {
     public void changeSchedule(String requesterName, ReservationDate newDate, ReservationTime newTime) {
         validateOwner(requesterName);
         validateNotCanceled();
-        validateNotPast(date.date(), time.startAt());
-        validateNewScheduleIsPast(newDate.date(), newTime.startAt());
+        validateNotPast(date.getDate(), time.getStartAt());
+        validateNewScheduleIsPast(newDate.getDate(), newTime.getStartAt());
 
         this.date = newDate;
         this.time = newTime;
@@ -57,8 +59,8 @@ public class Reservation {
 
     public void changeScheduleByManager(ReservationDate newDate, ReservationTime newTime) {
         validateNotCanceled();
-        validateNotPast(date.date(), time.startAt());
-        validateNewScheduleIsPast(newDate.date(), newTime.startAt());
+        validateNotPast(date.getDate(), time.getStartAt());
+        validateNewScheduleIsPast(newDate.getDate(), newTime.getStartAt());
 
         this.date = newDate;
         this.time = newTime;
@@ -141,30 +143,6 @@ public class Reservation {
 
     private static boolean isPast(LocalDate date, LocalTime time) {
         return LocalDateTime.of(date, time).isBefore(LocalDateTime.now());
-    }
-
-    public Long id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public ReservationDate date() {
-        return date;
-    }
-
-    public ReservationTime time() {
-        return time;
-    }
-
-    public Theme theme() {
-        return theme;
-    }
-
-    public ReservationStatus status() {
-        return status;
     }
 
 }

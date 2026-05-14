@@ -53,7 +53,7 @@ class ThemeRepositoryTest {
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.theme());
 
         // when
-        Theme actual = jdbcThemeRepository.findById(savedTheme.id()).get();
+        Theme actual = jdbcThemeRepository.findById(savedTheme.getId()).get();
 
         // then
         assertThat(actual)
@@ -84,7 +84,7 @@ class ThemeRepositoryTest {
                 ThemeFixture.activeTheme("나테마"),
                 ThemeFixture.activeTheme("가테마"))
         );
-        Collections.sort(themes, Comparator.comparing(Theme::name));
+        Collections.sort(themes, Comparator.comparing(Theme::getName));
 
         // when
         List<Theme> actual = jdbcThemeRepository.findByIsActive(true);
@@ -120,7 +120,7 @@ class ThemeRepositoryTest {
         jdbcThemeRepository.updateStatus(savedTheme);
 
         // then
-        assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(jdbcThemeRepository.findById(savedTheme.getId()).get().isActive())
                 .isTrue();
     }
 
@@ -136,7 +136,7 @@ class ThemeRepositoryTest {
         jdbcThemeRepository.updateStatus(savedTheme);
 
         // then
-        assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(jdbcThemeRepository.findById(savedTheme.getId()).get().isActive())
                 .isFalse();
     }
 

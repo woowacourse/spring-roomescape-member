@@ -46,7 +46,7 @@ public class ReservationService {
         ReservationDate reservationDate = getReservationDate(dto.dateId());
         Theme theme = getTheme(dto.themeId());
 
-        validateNotAlreadyBookedByOthers(reservationDate.id(), reservationTime.id(), theme);
+        validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme);
         return reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate, reservationTime, theme)
         );
@@ -112,7 +112,7 @@ public class ReservationService {
     }
 
     private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.id())) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.getId())) {
             throw new IllegalArgumentException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }

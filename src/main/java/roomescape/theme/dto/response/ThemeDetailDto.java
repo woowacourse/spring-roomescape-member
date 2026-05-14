@@ -12,10 +12,10 @@ public record ThemeDetailDto(
 ) {
     public static ThemeDetailDto from(Theme theme) {
         return new ThemeDetailDto(
-                theme.id(),
-                theme.name(),
-                theme.description(),
-                theme.thumbnailUrl(),
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl(),
                 theme.isActive()
         );
     }

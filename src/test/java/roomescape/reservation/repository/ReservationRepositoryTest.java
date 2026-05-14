@@ -56,8 +56,8 @@ class ReservationRepositoryTest {
 
         ReservationTime time1 = jdbcReservationTimeRepository.save(ReservationTimeFixture.time15());
         ReservationTime time2 = jdbcReservationTimeRepository.save(ReservationTimeFixture.time16());
-        reservationTime1 = jdbcReservationTimeRepository.findById(time1.id()).get();
-        reservationTime2 = jdbcReservationTimeRepository.findById(time2.id()).get();
+        reservationTime1 = jdbcReservationTimeRepository.findById(time1.getId()).get();
+        reservationTime2 = jdbcReservationTimeRepository.findById(time2.getId()).get();
 
         reservationDate1 = jdbcReservationDateRepository.save(ReservationDate.create(date1));
         reservationDate2 = jdbcReservationDateRepository.save(ReservationDate.create(date2));
@@ -71,7 +71,7 @@ class ReservationRepositoryTest {
         Reservation saved = save(Reservation.create(name, reservationDate1, reservationTime1, theme));
 
         // when
-        Reservation actual = jdbcReservationRepository.findById(saved.id()).get();
+        Reservation actual = jdbcReservationRepository.findById(saved.getId()).get();
 
         // then
         Assertions.assertThat(actual)
@@ -122,8 +122,8 @@ class ReservationRepositoryTest {
                 Reservation.create(name, reservationDate2, reservationTime2, theme))
         );
         reservations.sort(
-                Comparator.comparing((Reservation reservation) -> reservation.date().date(), Comparator.reverseOrder())
-                        .thenComparing(reservation -> reservation.time().startAt())
+                Comparator.comparing((Reservation reservation) -> reservation.getDate().getDate(), Comparator.reverseOrder())
+                        .thenComparing(reservation -> reservation.getTime().getStartAt())
         );
 
         // when
@@ -154,12 +154,12 @@ class ReservationRepositoryTest {
     void exitsByDateAndTimeId() {
         // given
         save(reservation(name, reservationDate1, reservationTime1, theme));
-        Long wrongDateId = reservationDate2.id();
+        Long wrongDateId = reservationDate2.getId();
 
         // when & then
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.id(), reservationTime1.id(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.getId(), reservationTime1.getId(), theme.getId()))
                 .isTrue();
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDateId, reservationTime1.id(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDateId, reservationTime1.getId(), theme.getId()))
                 .isFalse();
     }
 
@@ -171,10 +171,10 @@ class ReservationRepositoryTest {
         updateStatus(canceledReservation);
 
         // when
-        Reservation afterReservation = jdbcReservationRepository.findById(canceledReservation.id()).get();
+        Reservation afterReservation = jdbcReservationRepository.findById(canceledReservation.getId()).get();
 
         // then
-        Assertions.assertThat(afterReservation.status())
+        Assertions.assertThat(afterReservation.getStatus())
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
@@ -189,7 +189,7 @@ class ReservationRepositoryTest {
         jdbcReservationRepository.updateSchedule(saved);
 
         // then
-        Assertions.assertThat(jdbcReservationRepository.findById(saved.id()).get())
+        Assertions.assertThat(jdbcReservationRepository.findById(saved.getId()).get())
                 .usingRecursiveComparison()
                 .isEqualTo(saved);
     }

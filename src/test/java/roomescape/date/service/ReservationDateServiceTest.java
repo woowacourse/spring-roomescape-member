@@ -52,7 +52,7 @@ class ReservationDateServiceTest {
         ReservationDate saved = reservationDateRepository.save(ReservationDateFixture.oneWeekLater());
 
         // when
-        ReservationDate actual = reservationDateService.readDate(saved.id());
+        ReservationDate actual = reservationDateService.readDate(saved.getId());
 
         // then
         Assertions.assertThat(actual)
@@ -95,7 +95,7 @@ class ReservationDateServiceTest {
         // then
         assertThat(registered)
                 .usingRecursiveComparison()
-                .isEqualTo(reservationDateRepository.findById(registered.id()).get());
+                .isEqualTo(reservationDateRepository.findById(registered.getId()).get());
     }
 
     @Test

@@ -28,9 +28,9 @@ class ThemeTest {
 
         // then
         Assertions.assertThat(theme)
-                .returns(null, Theme::id)
-                .returns(name, Theme::name)
-                .returns(description, Theme::description)
+                .returns(null, Theme::getId)
+                .returns(name, Theme::getName)
+                .returns(description, Theme::getDescription)
                 .returns(false, Theme::isActive);
     }
 
@@ -144,6 +144,6 @@ class ThemeTest {
 
         //then
         assertThat(defaultThumbnailUrl)
-                .isEqualTo(theme.thumbnailUrl());
+                .isEqualTo(theme.getThumbnailUrl());
     }
 }

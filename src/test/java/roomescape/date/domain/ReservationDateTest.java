@@ -40,7 +40,7 @@ class ReservationDateTest {
         ReservationDate reservationDate = ReservationDate.create(validDate);
 
         // then
-        Assertions.assertThat(reservationDate.date())
+        Assertions.assertThat(reservationDate.getDate())
                 .isEqualTo(validDate);
     }
 

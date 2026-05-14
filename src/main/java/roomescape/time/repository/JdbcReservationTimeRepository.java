@@ -54,10 +54,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.startAt())
+                .addValue("start_at", reservationTime.getStartAt())
                 .addValue("is_active", reservationTime.isActive());
         Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.load(savedId, reservationTime.startAt(), reservationTime.isActive());
+        return ReservationTime.load(savedId, reservationTime.getStartAt(), reservationTime.isActive());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", reservationTime.id())
+                .addValue("id", reservationTime.getId())
                 .addValue("is_active", reservationTime.isActive());
 
         int updateCount = jdbcTemplate.update(sql, params);

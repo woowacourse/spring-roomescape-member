@@ -164,7 +164,7 @@ class ReservationServiceTest {
         Reservation actual = reservationService.reserve(duplicated);
 
         // then
-        Assertions.assertThat(actual.status())
+        Assertions.assertThat(actual.getStatus())
                 .isEqualTo(ReservationStatus.RESERVED);
     }
 
@@ -181,7 +181,7 @@ class ReservationServiceTest {
         Reservation actual = reservationService.reserve(duplicated);
 
         // then
-        Assertions.assertThat(actual.status())
+        Assertions.assertThat(actual.getStatus())
                 .isEqualTo(ReservationStatus.RESERVED);
     }
 
@@ -192,10 +192,10 @@ class ReservationServiceTest {
         Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
 
         // when
-        Reservation actual = reservationService.cancelByManager(savedReservation.id());
+        Reservation actual = reservationService.cancelByManager(savedReservation.getId());
 
         // then
-        Assertions.assertThat(actual.status())
+        Assertions.assertThat(actual.getStatus())
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
@@ -206,10 +206,10 @@ class ReservationServiceTest {
         Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
 
         // when
-        Reservation actual = reservationService.cancel(savedReservation.id(), name);
+        Reservation actual = reservationService.cancel(savedReservation.getId(), name);
 
         // then
-        Assertions.assertThat(actual.status())
+        Assertions.assertThat(actual.getStatus())
                 .isEqualTo(ReservationStatus.CANCELED);
     }
 
@@ -219,7 +219,7 @@ class ReservationServiceTest {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         String anotherName = "다른사람";
-        Long savedId = saved.id();
+        Long savedId = saved.getId();
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, anotherName))
@@ -234,7 +234,7 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         saved.updateStatus(ReservationStatus.CANCELED);
         reservationRepository.updateStatus(saved);
-        Long savedId = saved.id();
+        Long savedId = saved.getId();
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, name))
@@ -249,7 +249,7 @@ class ReservationServiceTest {
         ReservationDate pastDate = ReservationDate.load(1L, LocalDate.now().minusDays(1), true);
         Reservation saved =
                 save(Reservation.load(1L, name, pastDate, reservationTime1, theme1, ReservationStatus.RESERVED));
-        Long savedId = saved.id();
+        Long savedId = saved.getId();
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.cancel(savedId, name))
@@ -264,10 +264,10 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
 
         // when
-        reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id());
+        reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
 
         // then
-        Assertions.assertThat(reservationRepository.findById(saved.id()))
+        Assertions.assertThat(reservationRepository.findById(saved.getId()))
                 .contains(saved);
     }
 
@@ -280,7 +280,7 @@ class ReservationServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.id(), notOwerName, reservationDate2.id(), reservationTime2.id());
+                    reservationService.changeSchedule(saved.getId(), notOwerName, reservationDate2.getId(), reservationTime2.getId());
                 }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("본인의 예약만 취소할 수 있습니다.");
     }
@@ -294,7 +294,7 @@ class ReservationServiceTest {
         reservationRepository.updateStatus(saved);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id()))
+        Assertions.assertThatThrownBy(() -> reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 취소된 예약입니다.");
     }
@@ -309,7 +309,7 @@ class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id());
+                    reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
                 }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 예약입니다.");
     }
@@ -323,7 +323,7 @@ class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.id(), name, pastDate.id(), reservationTime2.id());
+                    reservationService.changeSchedule(saved.getId(), name, pastDate.getId(), reservationTime2.getId());
                 }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
     }
@@ -335,10 +335,10 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
 
         // when
-        reservationService.changeScheduleByManager(saved.id(), reservationDate2.id(), reservationTime2.id());
+        reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId());
 
         // then
-        Assertions.assertThat(reservationRepository.findById(saved.id()))
+        Assertions.assertThat(reservationRepository.findById(saved.getId()))
                 .contains(saved);
     }
 
@@ -351,7 +351,7 @@ class ReservationServiceTest {
         reservationRepository.updateStatus(saved);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.changeScheduleByManager(saved.id(), reservationDate2.id(), reservationTime2.id()))
+        Assertions.assertThatThrownBy(() -> reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 취소된 예약입니다.");
     }
@@ -366,7 +366,7 @@ class ReservationServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() ->
-                        reservationService.changeScheduleByManager(saved.id(), pastDate.id(), pastTime.id()))
+                        reservationService.changeScheduleByManager(saved.getId(), pastDate.getId(), pastTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
     }
@@ -376,7 +376,7 @@ class ReservationServiceTest {
     }
 
     private void cancelByManager(Reservation reservation) {
-        reservationService.cancelByManager(reservation.id());
+        reservationService.cancelByManager(reservation.getId());
     }
 
 }

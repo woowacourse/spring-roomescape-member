@@ -18,12 +18,12 @@ public record ReservationDetailDto(
 
     public static ReservationDetailDto from(Reservation reservation) {
         return new ReservationDetailDto(
-                reservation.id(),
-                reservation.name(),
-                reservation.date().date(),
-                reservation.time().startAt(),
-                ThemeDetailDto.from(reservation.theme()),
-                reservation.status()
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate().getDate(),
+                reservation.getTime().getStartAt(),
+                ThemeDetailDto.from(reservation.getTheme()),
+                reservation.getStatus()
         );
     }
 

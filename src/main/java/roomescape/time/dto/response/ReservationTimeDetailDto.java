@@ -10,6 +10,6 @@ public record ReservationTimeDetailDto(
         boolean isActive
 ) {
     public static ReservationTimeDetailDto from(ReservationTime reservationTime) {
-        return new ReservationTimeDetailDto(reservationTime.id(), reservationTime.startAt(), reservationTime.isActive());
+        return new ReservationTimeDetailDto(reservationTime.getId(), reservationTime.getStartAt(), reservationTime.isActive());
     }
 }

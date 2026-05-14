@@ -86,7 +86,7 @@ class ReservationTimeRepositoryTest {
         updateStatus(saved);
 
         // when
-        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.id()).get();
+        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.getId()).get();
 
         // then
         Assertions.assertThat(actual.isActive())
@@ -102,7 +102,7 @@ class ReservationTimeRepositoryTest {
         updateStatus(saved);
 
         // when
-        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.id()).get();
+        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.getId()).get();
 
         // then
         Assertions.assertThat(actual.isActive())
@@ -138,8 +138,8 @@ class ReservationTimeRepositoryTest {
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateIdAndThemeId(
-                date.id(),
-                theme.id()
+                date.getId(),
+                theme.getId()
         );
 
         // then

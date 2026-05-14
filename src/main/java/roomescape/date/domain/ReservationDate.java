@@ -1,7 +1,10 @@
 package roomescape.date.domain;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 
+@Getter
 public class ReservationDate {
 
     private Long id;
@@ -22,18 +25,6 @@ public class ReservationDate {
     public static ReservationDate load(Long id, LocalDate date, boolean isActive) {
         validateId(id);
         return new ReservationDate(id, date, isActive);
-    }
-
-    public Long id() {
-        return id;
-    }
-
-    public LocalDate date() {
-        return date;
-    }
-
-    public boolean isActive() {
-        return isActive;
     }
 
     public static void validateId(Long id) {

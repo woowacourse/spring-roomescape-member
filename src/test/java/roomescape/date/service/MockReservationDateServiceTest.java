@@ -67,7 +67,7 @@ class MockReservationDateServiceTest {
                 .thenReturn(Optional.of(saved));
 
         // when
-        ReservationDate actual = reservationDateService.readDate(saved.id());
+        ReservationDate actual = reservationDateService.readDate(saved.getId());
 
         // then
         Assertions.assertThat(actual)

@@ -20,7 +20,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByNameOrderByDateAndTime(String name) {
         return store.values().stream()
-                .filter(reservation -> reservation.name().equals(name))
+                .filter(reservation -> reservation.getName().equals(name))
                 .toList();
     }
 
@@ -32,8 +32,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.load(id, reservation.name(), reservation.date(), reservation.time(),
-                reservation.theme(), reservation.status());
+        Reservation saved = Reservation.load(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme(), reservation.getStatus());
         store.put(id, saved);
         return saved;
     }
@@ -50,10 +50,10 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existsByDateAndTimeAndThemeId(Long dateId, Long timeId, Long themeId) {
         return store.values().stream()
                 .anyMatch(reservation ->
-                        reservation.date().id().equals(dateId) &&
-                                reservation.time().id().equals(timeId) &&
-                                reservation.theme().id().equals(themeId) &&
-                                reservation.status() == ReservationStatus.RESERVED
+                        reservation.getDate().getId().equals(dateId) &&
+                                reservation.getTime().getId().equals(timeId) &&
+                                reservation.getTheme().getId().equals(themeId) &&
+                                reservation.getStatus() == ReservationStatus.RESERVED
                 );
     }
 
@@ -61,44 +61,44 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existsByNameAndDateAndTime(String name, Long dateId, Long timeId) {
         return store.values().stream()
                 .anyMatch(reservation ->
-                        reservation.name().equals(name) &&
-                                reservation.date().id().equals(dateId) &&
-                                reservation.time().id().equals(timeId) &&
-                                reservation.status() == ReservationStatus.RESERVED
+                        reservation.getName().equals(name) &&
+                                reservation.getDate().getId().equals(dateId) &&
+                                reservation.getTime().getId().equals(timeId) &&
+                                reservation.getStatus() == ReservationStatus.RESERVED
                 );
     }
 
     @Override
     public boolean existsByDateId(Long dateId) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.date().id().equals(dateId));
+                .anyMatch(reservation -> reservation.getDate().getId().equals(dateId));
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.time().id().equals(timeId));
+                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
     }
 
     @Override
     public boolean updateStatus(Reservation reservation) {
-        Optional<Reservation> findReservation = findById(reservation.id());
+        Optional<Reservation> findReservation = findById(reservation.getId());
         if (findReservation.isEmpty()) {
             return false;
         }
 
-        findReservation.get().updateStatus(reservation.status());
+        findReservation.get().updateStatus(reservation.getStatus());
         return true;
     }
 
     @Override
     public boolean updateSchedule(Reservation reservation) {
-        Optional<Reservation> findReservation = findById(reservation.id());
+        Optional<Reservation> findReservation = findById(reservation.getId());
         if (findReservation.isEmpty()) {
             return false;
         }
 
-        store.put(reservation.id(), reservation);
+        store.put(reservation.getId(), reservation);
         return true;
     }
 

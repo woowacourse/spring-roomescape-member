@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
     void register_already_exist() {
         // given
         ReservationTime saved = save(ReservationTimeFixture.time15());
-        ReservationTimeSaveDto duplicatedCommand = saveDto(saved.startAt());
+        ReservationTimeSaveDto duplicatedCommand = saveDto(saved.getStartAt());
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.register(duplicatedCommand))
@@ -79,10 +79,10 @@ class ReservationTimeServiceTest {
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.activeTime15());
 
         // when
-        reservationTimeService.updateStatus(saved.id(), false);
+        reservationTimeService.updateStatus(saved.getId(), false);
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.id()).get().isActive())
+        assertThat(reservationTimeRepository.findById(saved.getId()).get().isActive())
                 .isFalse();
     }
 
@@ -93,10 +93,10 @@ class ReservationTimeServiceTest {
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.activeTime15());
 
         // when
-        reservationTimeService.updateStatus(saved.id(), true);
+        reservationTimeService.updateStatus(saved.getId(), true);
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.id()).get().isActive())
+        assertThat(reservationTimeRepository.findById(saved.getId()).get().isActive())
                 .isTrue();
     }
 

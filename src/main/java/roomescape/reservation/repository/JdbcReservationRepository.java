@@ -143,19 +143,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date_id", reservation.date().id())
-                .addValue("time_id", reservation.time().id())
-                .addValue("theme_id", reservation.theme().id())
-                .addValue("status", reservation.status().name());
+                .addValue("name", reservation.getName())
+                .addValue("date_id", reservation.getDate().getId())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("status", reservation.getStatus().name());
         Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Reservation.load(
                 savedId,
-                reservation.name(),
-                reservation.date(),
-                reservation.time(),
-                reservation.theme(),
-                reservation.status()
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getStatus()
         );
     }
 
@@ -223,8 +223,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean updateStatus(Reservation reservation) {
         String sql = "UPDATE RESERVATION SET status = :status WHERE id = :id ";
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", reservation.id())
-                .addValue("status", reservation.status().name());
+                .addValue("id", reservation.getId())
+                .addValue("status", reservation.getStatus().name());
         int updatedCount = jdbcTemplate.update(sql, params);
         return updatedCount > 0;
     }
@@ -238,9 +238,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE id = :id
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("dateId", reservation.date().id())
-                .addValue("timeId", reservation.time().id())
-                .addValue("id", reservation.id());
+                .addValue("dateId", reservation.getDate().getId())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("id", reservation.getId());
 
         int updatedCount = jdbcTemplate.update(sql, params);
         return updatedCount > 0;
