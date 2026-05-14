@@ -14,6 +14,7 @@ import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
+import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 import roomescape.reservationTime.fake.FakeReservationTimeRepository;
@@ -24,13 +25,19 @@ class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
+    private ReservationTimeValidator reservationTimeValidator;
 
 
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+        reservationTimeValidator = new ReservationTimeValidator(reservationRepository);
+        reservationTimeService = new ReservationTimeService(
+                reservationTimeRepository,
+                reservationRepository,
+                reservationTimeValidator
+        );
     }
 
     @Test
@@ -40,7 +47,7 @@ class ReservationTimeServiceTest {
         LocalTime testStartAt = LocalTime.now();
 
         // when
-        ReservationTime reservationTime = reservationTimeService.saveTime(testStartAt);
+        ReservationTime reservationTime = saveTime(testStartAt);
 
         // then
         assertThat(reservationTime.getId()).isNotNull();
@@ -53,7 +60,7 @@ class ReservationTimeServiceTest {
     void getTimes_success() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        reservationTimeService.saveTime(testStartAt);
+        saveTime(testStartAt);
 
         // when
         List<ReservationTime> reservationTimes = reservationTimeService.getTimes();
@@ -78,8 +85,8 @@ class ReservationTimeServiceTest {
     @DisplayName("날짜와 테마 기준으로 예약된 시간을 조회한다")
     void getBookedTimes() {
         // given
-        ReservationTime bookedTime = reservationTimeService.saveTime(LocalTime.of(10, 0));
-        reservationTimeService.saveTime(LocalTime.of(11, 0));
+        ReservationTime bookedTime = saveTime(LocalTime.of(10, 0));
+        saveTime(LocalTime.of(11, 0));
         Theme theme = Theme.createRow(1L, "공포", "설명", "https://good.com/thumb-nail/1");
         LocalDate date = LocalDate.now();
         reservationRepository.save(Reservation.create("테스터", date, bookedTime, theme));
@@ -97,7 +104,7 @@ class ReservationTimeServiceTest {
     void deleteTime() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        ReservationTime saved = reservationTimeService.saveTime(testStartAt);
+        ReservationTime saved = saveTime(testStartAt);
 
         // when
         reservationTimeService.deleteTime(saved.getId());
@@ -121,12 +128,16 @@ class ReservationTimeServiceTest {
     void deleteTimeWithReferencedReservationTime() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        ReservationTime savedReservationTime = reservationTimeService.saveTime(testStartAt);
+        ReservationTime savedReservationTime = saveTime(testStartAt);
         reservationRepository.save(Reservation.create("테스터", LocalDate.now(), savedReservationTime, null));
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.getId()))
                 .isInstanceOf(BusinessException.class);
         assertThat(reservationTimeRepository.findById(savedReservationTime.getId())).contains(savedReservationTime);
+    }
+
+    private ReservationTime saveTime(LocalTime startAt) {
+        return reservationTimeService.saveTime(new ReservationTimeCreateCommand(startAt));
     }
 }

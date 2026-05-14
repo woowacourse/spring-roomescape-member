@@ -30,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.auth.AdminInterceptor;
 import roomescape.reservationTime.application.ReservationTimeService;
+import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationTime.domain.ReservationTime;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -61,7 +62,8 @@ class ReservationTimeControllerTest {
     void createReservationTimes_success() throws Exception {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        given(reservationTimeService.saveTime(startAt)).willReturn(ReservationTime.createRow(1L, startAt));
+        ReservationTimeCreateCommand createCommand = new ReservationTimeCreateCommand(startAt);
+        given(reservationTimeService.saveTime(createCommand)).willReturn(ReservationTime.createRow(1L, startAt));
 
         Map<String, Object> body = new HashMap<>();
         body.put("startAt", "10:00");
@@ -76,7 +78,7 @@ class ReservationTimeControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00"));
 
-        then(reservationTimeService).should().saveTime(startAt);
+        then(reservationTimeService).should().saveTime(createCommand);
     }
 
     @Test

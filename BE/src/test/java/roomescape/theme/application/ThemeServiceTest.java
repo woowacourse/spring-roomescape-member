@@ -15,6 +15,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.domain.PopularThemeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -32,6 +33,7 @@ class ThemeServiceTest {
     private PopularThemeRepository popularThemeRepository;
     private ThemeService themeService;
     private ReservationRepository reservationRepository;
+    private ThemeValidator themeValidator;
 
     @BeforeEach
     void setUp() {
@@ -42,14 +44,15 @@ class ThemeServiceTest {
                 themeRepository.findAll()
         );
         reservationRepository = new FakeReservationRepository();
-        themeService = new ThemeService(themeRepository, popularThemeRepository, reservationRepository);
+        themeValidator = new ThemeValidator(reservationRepository);
+        themeService = new ThemeService(themeValidator, themeRepository, popularThemeRepository);
     }
 
     @Test
     @DisplayName("저장 시도 시 오류가 발생하지 않는다")
     void save_success() {
         // when
-        Theme theme = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
 
         // then
         assertThat(theme.getId()).isNotNull();
@@ -63,7 +66,7 @@ class ThemeServiceTest {
     @DisplayName("아이디 기반으로 조회 시 오류가 발생하지 않음.")
     void findById_success() {
         // given
-        Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
 
         // when
         var theme = themeService.findById(saved.getId());
@@ -76,8 +79,8 @@ class ThemeServiceTest {
     @DisplayName("전부 다 잘 찾아오는 것 시도 시 오류 발생 안함.")
     void findAll_success() {
         // given
-        Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme saved2 = themeService.save(TEST_THEMA_NAME+"2", TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved2 = saveTheme(TEST_THEMA_NAME + "2", TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
 
         // when
         List<Theme> themes = themeService.findAll();
@@ -90,7 +93,7 @@ class ThemeServiceTest {
     @DisplayName("아이디 기반 삭제 시도 시 오류 발생 안함")
     void deleteById_success() {
         // given
-        Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
         Long deleteTagetId = saved.getId();
 
         // when
@@ -111,7 +114,7 @@ class ThemeServiceTest {
         reservations.add(Reservation.create("테스터2", today, null, firstTheme));
         reservations.add(Reservation.create("테스터3", today, null, secondTheme));
         popularThemeRepository = new FakePopularThemeRepository(reservations, themeRepository.findAll());
-        themeService = new ThemeService(themeRepository, popularThemeRepository, reservationRepository);
+        themeService = new ThemeService(themeValidator, themeRepository, popularThemeRepository);
 
         // when
         List<Theme> themes = themeService.findTopNByPeriod(
@@ -138,5 +141,9 @@ class ThemeServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("예약이 연결된 테마는 삭제할 수 없습니다.");
         assertThat(themeRepository.findById(theme.getId())).contains(theme);
+    }
+
+    private Theme saveTheme(String name, String description, String thumbnail) {
+        return themeService.save(new ThemeCreateCommand(name, description, thumbnail));
     }
 }

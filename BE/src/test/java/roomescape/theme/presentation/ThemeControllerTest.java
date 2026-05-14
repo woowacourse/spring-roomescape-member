@@ -28,6 +28,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.auth.AdminInterceptor;
 import roomescape.theme.application.ThemeService;
+import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.domain.Theme;
 
 @WebMvcTest(ThemeController.class)
@@ -59,7 +60,8 @@ class ThemeControllerTest {
     void addNewTheme_success() throws Exception {
         // given
         Theme theme = Theme.createRow(1L, "테마", "테마 설명", "https://image");
-        given(themeService.save("테마", "테마 설명", "https://image")).willReturn(theme);
+        ThemeCreateCommand createCommand = new ThemeCreateCommand("테마", "테마 설명", "https://image");
+        given(themeService.save(createCommand)).willReturn(theme);
 
         Map<String, Object> body = new HashMap<>();
         body.put("name", "테마");
@@ -79,7 +81,7 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$.description").value("테마 설명"))
                 .andExpect(jsonPath("$.thumbnail").value("https://image"));
 
-        then(themeService).should().save("테마", "테마 설명", "https://image");
+        then(themeService).should().save(createCommand);
     }
 
     @Test
