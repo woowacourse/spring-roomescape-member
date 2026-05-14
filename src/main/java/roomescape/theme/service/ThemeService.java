@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -13,9 +14,11 @@ import java.util.List;
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -47,8 +50,16 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
+        validateNoReservation(id);
+
         if (!themeRepository.deleteById(id)) {
             throw new NotFoundException("삭제할 테마가 존재하지 않습니다. 테마 목록을 확인해주세요.");
+        }
+    }
+
+    private void validateNoReservation(Long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
         }
     }
 }
