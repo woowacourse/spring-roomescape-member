@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.controller.dto.ThemeFamousFindRequest;
+import roomescape.controller.dto.request.ThemeFamousFindRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
