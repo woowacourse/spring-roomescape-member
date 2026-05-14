@@ -1,8 +1,10 @@
 package roomescape.domain.theme.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import roomescape.domain.theme.service.ThemeService;
 
 @RestController
 @RequestMapping("/api/admin/themes")
+@Validated
 public class AdminThemeController {
 
     private final ThemeService themeService;
@@ -30,8 +33,8 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable @Positive(message = "id의 값은 양수여야 합니다.") Long id) {
         themeService.deleteThemeById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

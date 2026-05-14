@@ -58,6 +58,10 @@ public class ThemeService {
     }
 
     public void deleteThemeById(Long id) {
+        if (!themeRepository.existsThemeByIdAndDeletedAtIsNull(id)) {
+            throw new GeneralException(ThemeErrorType.THEME_NOT_FOUND);
+        }
+
         themeRepository.deleteThemeById(id);
     }
 }
