@@ -22,37 +22,25 @@ public class Reservation {
         this.theme = Objects.requireNonNull(theme);
     }
 
-    public static Reservation of(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
-                                 Theme theme) {
+    public static Reservation load(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
+                                   Theme theme) {
         return new Reservation(id, reservationName, date, time, theme);
     }
 
-    public static Reservation of(ReservationName reservationName, ReservationDate date, ReservationTime time,
-                                 Theme theme) {
-        return new Reservation(0L, reservationName, date, time, theme);
-    }
-
     public static Reservation reserve(ReservationName reservationName, ReservationDate date, ReservationTime time,
-                                      Theme theme,
-                                      LocalDateTime now) {
+                                      Theme theme, LocalDateTime now) {
         Objects.requireNonNull(now);
-        validateAvailableDateTime(date, time, now);
-        return new Reservation(0L, reservationName, date, time, theme);
+        Reservation reservation = new Reservation(0L, reservationName, date, time, theme);
+        reservation.ensureNotPast(now);
+        return reservation;
     }
 
-    private static void validateAvailableDateTime(ReservationDate requestDate, ReservationTime requestTime,
-                                                  LocalDateTime now) {
-        if (requestDate.isBefore(now.toLocalDate())) {
+    public void ensureNotPast(LocalDateTime now) {
+        LocalDateTime requestDateTime = LocalDateTime.of(date.getDate(), time.getStartAt());
+
+        if (requestDateTime.isBefore(now)) {
             throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
-
-        if (requestDate.isEqual(now.toLocalDate()) && requestTime.isBefore(now.toLocalTime())) {
-            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
-        }
-    }
-
-    public void validateIsPast(LocalDateTime now) {
-        validateAvailableDateTime(date, time, now);
     }
 
     public long getId() {

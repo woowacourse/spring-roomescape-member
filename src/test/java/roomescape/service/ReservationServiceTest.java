@@ -31,7 +31,7 @@ import roomescape.repository.ThemeRepository;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
     private static final String URL = "https://zeze.com/thumb.jpg";
-    private static final Reservation DUMMY = Reservation.of(
+    private static final Reservation DUMMY = Reservation.load(
             1L,
             new ReservationName("anyone"),
             new ReservationDate(LocalDate.of(2099, 1, 1)),

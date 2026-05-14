@@ -69,7 +69,7 @@ public class ReservationService {
     public void cancel(long reservationId, LocalDateTime now) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.validateIsPast(now);
+        reservation.ensureNotPast(now);
 
         reservationRepository.deleteById(reservationId);
     }

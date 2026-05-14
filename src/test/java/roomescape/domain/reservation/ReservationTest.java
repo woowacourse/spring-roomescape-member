@@ -3,6 +3,7 @@ package roomescape.domain.reservation;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +18,7 @@ public class ReservationTest {
     @MethodSource("nullCases")
     void 매개변수에_NULL이_포함되면_예외가_발생한다(ReservationName reservationName, ReservationDate date, ReservationTime time,
                                    Theme theme) {
-        assertThatThrownBy(() -> Reservation.of(reservationName, date, time, theme))
+        assertThatThrownBy(() -> Reservation.reserve(reservationName, date, time, theme, LocalDateTime.MIN))
                 .isInstanceOf(NullPointerException.class);
     }
 

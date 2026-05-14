@@ -18,7 +18,7 @@ import roomescape.domain.theme.ThumbnailUrl;
 
 @Repository
 public class ReservationRepository {
-    public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
+    public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.load(
             resultSet.getLong("reservation_id"),
             new ReservationName(resultSet.getString("name")),
             new ReservationDate(resultSet.getDate("date").toLocalDate()),
@@ -101,7 +101,7 @@ public class ReservationRepository {
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(),
+        return Reservation.load(generatedKey, reservation.getName(), reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme());
     }
@@ -135,6 +135,6 @@ public class ReservationRepository {
         jdbcTemplate.update(UPDATE, target.getName().getValue(), target.getDate(), target.getTime().getId(),
                 target.getTheme().getId(), id);
 
-        return Reservation.of(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());
+        return Reservation.load(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());
     }
 }
