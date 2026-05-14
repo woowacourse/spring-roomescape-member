@@ -52,7 +52,7 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2027-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 
@@ -124,7 +124,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation1 = new HashMap<>();
         reservation1.put("name", "브라운");
-        reservation1.put("date", "2023-08-05");
+        reservation1.put("date", "2027-08-05");
         reservation1.put("themeId", 1);
         reservation1.put("timeId", 1);
 
@@ -138,7 +138,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation2 = new HashMap<>();
         reservation2.put("name", "초코");
-        reservation2.put("date", "2023-08-05");
+        reservation2.put("date", "2027-08-05");
         reservation2.put("themeId", 2);
         reservation2.put("timeId", 1);
 
@@ -158,11 +158,11 @@ public class MissionStepTest {
     }
 
     @Test
-    void 없는_예약_삭제시_204_응답() {
+    void 없는_예약_삭제시_404_응답() {
         RestAssured.given().log().all()
             .when().delete("/reservations/999")
             .then().log().all()
-            .statusCode(204);
+            .statusCode(404);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2027-08-05");
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -239,7 +239,7 @@ public class MissionStepTest {
     void 예약_시간이_없으면_400_에러_응답() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2027-08-05");
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -249,7 +249,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is("예약 시간은 필수입니다."));
+                .body("message", is("입력값이 유효하지 않습니다."));
     }
 
 }

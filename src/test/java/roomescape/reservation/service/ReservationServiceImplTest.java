@@ -218,7 +218,12 @@ class ReservationServiceImplTest {
 
     @DisplayName("예약을 취소하는 경우, repository의 deleteById가 호출된다.")
     @Test
-    void cancel() {
+    void cancel_정상_취소() {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        Reservation existing = new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L).withId(1L);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(existing));
+
         // when
         reservationService.cancel(1L);
 

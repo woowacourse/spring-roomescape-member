@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 
@@ -155,5 +156,17 @@ public class ReservationControllerTest {
                 .andExpect(status().isNoContent());
 
         Mockito.verify(reservationService).cancel(1L);
+    }
+
+    @DisplayName("존재하지 않는 예약을 취소하는 경우, 404를 반환한다.")
+    @Test
+    void 존재하지_않는_예약_취소_404_반환_테스트() throws Exception {
+        // given
+        Mockito.doThrow(new ReservationNotFoundException(999L))
+                .when(reservationService).cancel(999L);
+
+        // when & then
+        mockMvc.perform(delete("/reservations/{id}", 999L))
+                .andExpect(status().isNotFound());
     }
 }

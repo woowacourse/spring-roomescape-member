@@ -47,7 +47,7 @@ public class TimeTest {
         .then().log().all()
         .statusCode(404)
         .body("code", is("TIME_NOT_FOUND"))
-        .body("message", is("예약 시간이 존재하지 않습니다. id=999"));
+        .body("message", is("예약 시간을 찾을 수 없습니다."));
   }
 
   @Test
@@ -77,7 +77,7 @@ public class TimeTest {
 
     Map<String, Object> reservation = new HashMap<>();
     reservation.put("name", "브라운");
-    reservation.put("date", "2023-08-05");
+    reservation.put("date", "2027-08-05");
     reservation.put("themeId", 1);
     reservation.put("timeId", 1);
 
