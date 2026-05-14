@@ -40,7 +40,7 @@ public class ReservationService {
         return reservationDao.insert(reservation);
     }
 
-    public void deleteById(Long id) {
-        reservationDao.delete(id);
+    public void delete(Long id, String name) {
+        reservationDao.delete(id, name);
     }
 }

@@ -101,8 +101,8 @@ public class ReservationDao {
                 reservation.getThemeId());
     }
 
-    public void delete(Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+    public int delete(Long id, String name) {
+        String sql = "delete from reservation where id = ? AND name = ?";
+        return jdbcTemplate.update(sql, id, name);
     }
 }

@@ -89,4 +89,18 @@ public class ReservationDaoTest {
                 () -> assertThat(expected.getThemeId()).isEqualTo(actual.getThemeId())
         );
     }
+
+    @Test
+    void 본인_예약_삭제_성공() {
+        String name = "도우너";
+        int deleteCount = reservationDao.delete(2L, name);
+        assertThat(deleteCount).isEqualTo(1);
+    }
+
+    @Test
+    void 본인_예약_삭제_실패() {
+        String name = "도우너";
+        int deleteCount = reservationDao.delete(1L, name);
+        assertThat(deleteCount).isEqualTo(0);
+    }
 }

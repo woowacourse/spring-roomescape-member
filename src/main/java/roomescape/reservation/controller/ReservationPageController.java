@@ -53,8 +53,8 @@ public class ReservationPageController {
     }
 
     @PostMapping("/reservations/{id}/deleteById")
-    public String deleteReservation(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        reservationService.deleteById(id);
+    public String deleteReservation(@PathVariable Long id, @RequestParam String name, RedirectAttributes redirectAttributes) {
+        reservationService.delete(id, name);
         redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
         return "redirect:/";
     }

@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -37,7 +39,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약추가_시간없음_실패() {
+    void 예약_추가_시간없음_실패() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
         params.put("date", "2026-05-05");
@@ -53,10 +55,15 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약삭제_성공() {
+    void 예약_삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/api/reservations/1")
+                .when().delete("/api/reservations/2?name=도우너")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/api/reservations?name=도우너")
+                .then().log().all()
+                .body("count", is(0));
     }
 }
