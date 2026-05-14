@@ -1,0 +1,106 @@
+package roomescape.reservation.application;
+
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ReservationErrorCode;
+import roomescape.global.exception.ReservationTimeErrorCode;
+import roomescape.global.exception.ThemeErrorCode;
+import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationPolicy;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.domain.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
+
+@Service
+@Transactional(readOnly = true)
+public class ReservationService {
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationPolicy reservationPolicy;
+    private final ReservationValidator reservationValidator;
+
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            ReservationPolicy reservationPolicy,
+            ReservationValidator reservationValidator
+    ) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
+        this.reservationPolicy = reservationPolicy;
+        this.reservationValidator = reservationValidator;
+    }
+
+    @Transactional
+    public Reservation saveReservation(ReservationCreateCommand createCommand) {
+        ReservationTime time = reservationTimeRepository.findById(createCommand.timeId())
+                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+        Theme theme = themeRepository.findById(createCommand.themeId())
+                .orElseThrow(() -> new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND));
+
+        reservationValidator.validateAlreadyReservation(createCommand);
+        reservationPolicy.pastDateTime(createCommand.date(), time);
+        Reservation reservation = Reservation.create(
+                createCommand.name(),
+                createCommand.date(),
+                time,
+                theme
+        );
+        return reservationRepository.save(reservation);
+    }
+
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public List<Reservation> getReservationsByDateAndTheme(LocalDate date, Long themeId) {
+        return reservationRepository.findByDateAndThemeId(date, themeId);
+    }
+
+    public List<Reservation> getReservationsByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
+    @Transactional
+    public void updateReservationSchedule(ReservationUpdateCommand updateCommand) {
+        ReservationTime time = reservationTimeRepository.findById(updateCommand.timeId())
+                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+        Reservation targetReservation = reservationRepository.findById(updateCommand.id())
+                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+        targetReservation.validateOwner(updateCommand.name());
+        targetReservation.validatePast();
+        reservationValidator.validateAlreadyReservationExcludingSelf(updateCommand, targetReservation);
+        reservationRepository.updateScheduleByIdAndName(
+                updateCommand.date(),
+                updateCommand.timeId(),
+                updateCommand.id(),
+                updateCommand.name()
+        );
+    }
+
+    @Transactional
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteReservationByName(Long id, String name) {
+        Reservation targetReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        targetReservation.validateOwner(name);
+        targetReservation.validatePast();
+        reservationRepository.deleteByIdAndName(id, name);
+    }
+}
