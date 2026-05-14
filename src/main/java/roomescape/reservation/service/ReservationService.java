@@ -11,6 +11,7 @@ import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservation.payload.ReservationRequest;
+import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
@@ -55,6 +56,22 @@ public class ReservationService {
                 theme
         );
         return reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public Reservation update(Long id, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+
+        validatePastReservation(request.date(), reservationTime.getStartAt());
+
+        return reservationRepository.update(
+                reservation,
+                request.date(),
+                reservationTime
+        );
     }
 
     @Transactional(readOnly = true)

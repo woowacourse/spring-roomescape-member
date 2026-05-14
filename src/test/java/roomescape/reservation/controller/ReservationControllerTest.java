@@ -4,12 +4,14 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.config.TestFixture.reservationRequestBody;
 import static roomescape.config.TestFixture.reservationTimeRequest;
+import static roomescape.config.TestFixture.reservationUpdateRequestBody;
 import static roomescape.config.TestFixture.themeRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +70,35 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.date").value("2026-05-10"))
                 .andExpect(jsonPath("$.time.id").value(reservationTime.getId()))
                 .andExpect(jsonPath("$.theme.id").value(theme.getId()));
+    }
+
+    @Test
+    void 예약을_수정한다() throws Exception {
+        ReservationTime reservationTime1 = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        ReservationTime reservationTime2 = reservationTimeService.save(reservationTimeRequest(LocalTime.of(11, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        LocalDate reservationDate = LocalDate.of(2026, 5, 10);
+        Map<String, Object> request = reservationRequestBody(
+                "밀란",
+                reservationDate,
+                reservationTime1.getId(),
+                theme.getId()
+        );
+        int id = postReservation(request);
+
+        Map<String, Object> updateRequest = reservationUpdateRequestBody(
+                reservationDate.plusDays(1),
+                reservationTime2.getId()
+        );
+
+        mockMvc.perform(patch("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Location", containsString("/reservations/" + id)))
+                .andExpect(jsonPath("$.name").value("밀란"))
+                .andExpect(jsonPath("$.date").value(reservationDate.plusDays(1).toString()))
+                .andExpect(jsonPath("$.time.id").value(reservationTime2.getId().intValue()));
     }
 
     @Test

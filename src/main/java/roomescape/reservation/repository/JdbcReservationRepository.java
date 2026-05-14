@@ -96,6 +96,38 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(Reservation reservation, LocalDate date, ReservationTime reservationTime) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        try {
+            jdbcTemplate.update(
+                    sql,
+                    date,
+                    reservationTime.getId(),
+                    reservation.getId()
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ReservationDuplicatedException(
+                    date,
+                    reservationTime.getId(),
+                    reservation.getTheme().getId()
+            );
+        }
+
+        return Reservation.of(
+                reservation.getId(),
+                reservation.getName(),
+                date,
+                reservationTime,
+                reservation.getTheme()
+        );
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = ?";
 

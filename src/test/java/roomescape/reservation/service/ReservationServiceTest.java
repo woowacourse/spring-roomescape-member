@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.config.TestFixture.reservationRequest;
 import static roomescape.config.TestFixture.reservationTimeRequest;
+import static roomescape.config.TestFixture.reservationupdateRequest;
 import static roomescape.config.TestFixture.themeRequest;
 
 import java.time.LocalDate;
@@ -125,6 +126,28 @@ class ReservationServiceTest {
                 .isInstanceOf(ReservationDuplicatedException.class);
     }
 
+    @Test
+    void 예약_수정을_올바르게_수행하는_테스트() {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        LocalDate date1 = LocalDate.of(2026, 5, 10);
+        ReservationRequest reservationRequest = reservationRequest(
+                "봉구스",
+                date1,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation savedReservation = reservationService.save(reservationRequest);
+
+        LocalDate date2 = date1.plusDays(1);
+        Reservation updateReservation = reservationService.update(
+                savedReservation.getId(),
+                reservationupdateRequest(date2, reservationTime.getId())
+        );
+
+        assertThat(updateReservation.getDate()).isEqualTo(date2);
+        assertThat(updateReservation.getTime().getId()).isEqualTo(reservationTime.getId());
+    }
 
     @Test
     void 예약목록을_올바르게_조회하는지_확인하는_테스트() {
@@ -215,7 +238,6 @@ class ReservationServiceTest {
         List<Reservation> reservations = reservationService.findAllByName("밀란");
 
         assertThat(reservations).contains(savedReservation);
-
     }
 
 }

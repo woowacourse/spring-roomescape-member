@@ -51,6 +51,26 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 예약을_수정하는_테스트() {
+        String name = "봉구스";
+        LocalDate date1 = LocalDate.of(2026, 5, 10);
+        ReservationTime reservationTime1 = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(theme("테마"));
+        Reservation reservation = reservation(name, date1, reservationTime1, theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        LocalDate date2 = date1.plusDays(1);
+        ReservationTime reservationTime2 = reservationTimeRepository.save(reservationTime(LocalTime.of(11, 0)));
+        Reservation updatedReservation = reservationRepository.update(savedReservation, date2, reservationTime2);
+
+        assertThat(updatedReservation.getId()).isPositive();
+        assertThat(updatedReservation.getName()).isEqualTo(name);
+        assertThat(updatedReservation.getDate()).isEqualTo(date2);
+        assertThat(updatedReservation.getTime()).isEqualTo(reservationTime2);
+        assertThat(updatedReservation.getTheme()).isEqualTo(theme);
+    }
+
+    @Test
     void 모든_예약을_조회하는_테스트() {
         String name = "봉구스";
         LocalDate date = LocalDate.of(2026, 5, 10);

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.Map;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.payload.ReservationRequest;
+import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.theme.entity.Theme;
@@ -40,6 +41,13 @@ public final class TestFixture {
         return new ReservationRequest(name, date, timeId, themeId);
     }
 
+    public static ReservationUpdateRequest reservationupdateRequest(
+            LocalDate date,
+            Long timeId
+    ) {
+        return new ReservationUpdateRequest(date, timeId);
+    }
+
     public static Reservation reservation(
             String name,
             LocalDate date,
@@ -72,6 +80,16 @@ public final class TestFixture {
                 "date", date.toString(),
                 "timeId", timeId,
                 "themeId", themeId
+        );
+    }
+
+    public static Map<String, Object> reservationUpdateRequestBody(
+            LocalDate date,
+            Long timeId
+    ) {
+        return Map.of(
+                "date", date.toString(),
+                "timeId", timeId
         );
     }
 
