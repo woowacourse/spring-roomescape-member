@@ -38,11 +38,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
+        ReservationTime reservationTime = getReservationTime(reservationRequest);
+        Theme theme = getTheme(reservationRequest);
 
         Reservation reservation = new Reservation(
                 reservationRequest.userName(),
@@ -51,14 +48,10 @@ public class ReservationService {
                 reservationTime
         );
 
-        if (reservation.isPast(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
-        }
-
+        validateNotPast(reservation);
         validateDuplicate(reservation);
 
         Reservation saved = reservationRepository.save(reservation);
-
         return ReservationResponse.from(saved);
     }
 
@@ -80,18 +73,13 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse update(long id, ReservationRequest reservationRequest, String userName) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+        Reservation reservation = getReservation(id);
 
-        if (!reservation.isOwner(userName)) {
-            throw new ForbiddenException("본인의 예약만 변경할 수 있습니다.");
-        }
+        validateOwner(userName, reservation);
+        validateNotPast(reservation);
 
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
+        ReservationTime reservationTime = getReservationTime(reservationRequest);
+        Theme theme = getTheme(reservationRequest);
 
         Reservation updateReservation = new Reservation(
                 id,
@@ -101,45 +89,58 @@ public class ReservationService {
                 reservationTime
         );
 
-        if (reservation.isPast(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
-        }
-
         validateDuplicate(updateReservation);
 
         reservationRepository.update(updateReservation);
-
         return ReservationResponse.from(updateReservation);
     }
 
     @Transactional
     public void deleteByAdmin(Long id) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+        Reservation reservation = getReservation(id);
 
-        if (reservation.isPast(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
-        }
+        validateNotPast(reservation);
 
         reservationRepository.deleteById(id);
     }
 
     @Transactional
     public void delete(Long id, String userName) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+        Reservation reservation = getReservation(id);
 
-        if (!reservation.isOwner(userName)) {
-            throw new ForbiddenException("본인의 예약만 삭제할 수 있습니다.");
-        }
+        validateOwner(userName, reservation);
+        validateNotPast(reservation);
+
+        reservationRepository.deleteById(id);
+    }
+
+    private Reservation getReservation(long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+    }
+
+    private Theme getTheme(ReservationRequest reservationRequest) {
+        return themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
+    }
+
+    private ReservationTime getReservationTime(ReservationRequest reservationRequest) {
+        return reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
+    }
+
+    private void validateNotPast(Reservation reservation) {
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (reservation.isPast(now)) {
             throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
         }
+    }
 
-        reservationRepository.deleteById(id);
+    private void validateOwner(String userName, Reservation reservation) {
+        if (!reservation.isOwner(userName)) {
+            throw new ForbiddenException("본인의 예약만 변경•삭제할 수 있습니다.");
+        }
     }
 
     private void validateDuplicate(Reservation reservation) {
