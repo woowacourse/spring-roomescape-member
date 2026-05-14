@@ -6,9 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.TimeAvailability;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
+import roomescape.theme.service.TimeAvailability;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

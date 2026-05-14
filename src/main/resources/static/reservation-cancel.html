@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예약 취소 · 방탈출</title>
+    <title>내 예약 · 방탈출</title>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0f172a;
+            background:
+                radial-gradient(900px 500px at 100% -10%, #f59e0b14, transparent 60%),
+                radial-gradient(700px 400px at -10% 30%, #6366f114, transparent 60%),
+                #0b1220;
             color: #f1f5f9;
             min-height: 100vh;
         }
 
         header {
-            background: #1e293b;
-            border-bottom: 1px solid #334155;
+            background: #0b1220cc;
+            border-bottom: 1px solid #1f2a3d;
             padding: 1rem 2rem;
             display: flex;
             align-items: center;
@@ -24,12 +27,16 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            backdrop-filter: blur(12px);
         }
 
         .logo {
             font-size: 1.4rem;
             font-weight: 800;
-            color: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
         }
 
@@ -47,25 +54,60 @@
             padding: 3rem 2rem;
         }
 
-        .page-header {
-            margin-bottom: 1.75rem;
-        }
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.4rem;
-        }
-        .page-sub {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
+        .page-header { margin-bottom: 1.75rem; }
+        .page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .page-sub { color: #94a3b8; font-size: 0.9rem; }
 
-        /* ── 토스트 / 에러 ── */
+        /* ── 이름 검색 폼 ── */
+        .lookup-form {
+            background: linear-gradient(180deg, #1e293b 0%, #1a2438 100%);
+            border: 1px solid #2a3851;
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px #00000044;
+        }
+        .lookup-form input {
+            flex: 1;
+            background: #0b1220;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .lookup-form input::placeholder { color: #475569; }
+        .lookup-form input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px #f59e0b22;
+        }
+        .lookup-form button {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 0 1.5rem;
+            cursor: pointer;
+            transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 14px #f59e0b33;
+        }
+        .lookup-form button:hover { filter: brightness(1.08); box-shadow: 0 6px 20px #f59e0b55; }
+        .lookup-form button:active { transform: translateY(1px); }
+        .lookup-form button:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; filter: none; }
+
+        /* ── 토스트 ── */
         .toast {
             border-radius: 10px;
             padding: 0.85rem 1rem;
             font-size: 0.875rem;
             margin-bottom: 1.25rem;
+            line-height: 1.5;
         }
         .toast-success {
             background: #14532d33;
@@ -77,7 +119,6 @@
             border: 1px solid #ef444455;
             color: #fca5a5;
         }
-
         /* ── 예약 카드 ── */
         .res-list {
             display: flex;
@@ -86,17 +127,21 @@
         }
 
         .res-card {
-            background: #1e293b;
-            border: 1px solid #334155;
+            background: linear-gradient(180deg, #1e293b 0%, #1a2438 100%);
+            border: 1px solid #2a3851;
             border-radius: 14px;
             padding: 1.25rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            transition: border-color 0.2s;
+            transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
         }
-        .res-card:hover { border-color: #475569; }
+        .res-card:hover {
+            border-color: #f59e0b55;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px #00000055;
+        }
 
         .res-info {
             min-width: 0;
@@ -134,26 +179,31 @@
             font-weight: 700;
         }
 
-        .btn-cancel {
+        .res-actions {
+            display: flex;
+            gap: 0.5rem;
             flex-shrink: 0;
+        }
+
+        .btn-action {
             background: transparent;
-            border: 1px solid #ef4444aa;
-            color: #fca5a5;
-            padding: 0.5rem 1rem;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 0.5rem 0.9rem;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.15s, color 0.15s;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
         }
-        .btn-cancel:hover {
-            background: #ef4444;
-            color: #0f172a;
+        .btn-action:hover { border-color: #f59e0b; color: #f59e0b; }
+
+        .btn-action.danger {
+            border-color: #ef4444aa;
+            color: #fca5a5;
         }
-        .btn-cancel:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
+        .btn-action.danger:hover { background: #ef4444; color: #0f172a; }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .state-msg {
             text-align: center;
@@ -162,7 +212,7 @@
             font-size: 0.95rem;
         }
 
-        /* ── 확인 모달 ── */
+        /* ── 모달 공통 ── */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -180,7 +230,7 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            width: min(420px, 100%);
+            width: min(460px, 100%);
             padding: 1.75rem;
         }
 
@@ -189,13 +239,52 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        .modal p {
+        .modal .modal-target {
             color: #94a3b8;
             font-size: 0.9rem;
             line-height: 1.55;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+            padding: 0.85rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
         }
-        .modal p strong { color: #f1f5f9; }
+        .modal .modal-target strong { color: #f1f5f9; }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+        .form-row label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+        .form-row input[type="date"],
+        .form-row select {
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            padding: 0.6rem 0.85rem;
+            outline: none;
+        }
+        .form-row input[type="date"]:focus,
+        .form-row select:focus { border-color: #f59e0b; }
+
+        .modal-error {
+            margin-bottom: 1rem;
+            color: #fca5a5;
+            background: #7f1d1d33;
+            border: 1px solid #ef444455;
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
 
         .modal-actions {
             display: flex;
@@ -210,17 +299,24 @@
             font-weight: 700;
             cursor: pointer;
         }
-        .btn-secondary {
-            background: #334155;
-            color: #f1f5f9;
-        }
+        .btn-secondary { background: #334155; color: #f1f5f9; }
         .btn-secondary:hover { background: #475569; }
-        .btn-danger {
-            background: #ef4444;
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: #0f172a;
+            box-shadow: 0 4px 14px #f59e0b33;
+            transition: filter 0.15s, box-shadow 0.15s;
         }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 6px 20px #f59e0b55; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; box-shadow: none; }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: #0f172a;
+            box-shadow: 0 4px 14px #ef444433;
+            transition: filter 0.15s, box-shadow 0.15s;
+        }
+        .btn-danger:hover { filter: brightness(1.08); box-shadow: 0 6px 20px #ef444455; }
+        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; filter: none; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -232,31 +328,71 @@
 
 <main>
     <div class="page-header">
-        <h1 class="page-title">📂 예약 취소</h1>
-        <p class="page-sub">취소할 예약을 선택해주세요.</p>
+        <h1 class="page-title">📂 내 예약</h1>
+        <p class="page-sub">이름으로 예약을 조회하고, 변경하거나 취소할 수 있습니다.</p>
     </div>
+
+    <form class="lookup-form" id="lookup-form">
+        <input type="text" id="lookup-name" placeholder="예약자 이름을 입력하세요" maxlength="20" required>
+        <button type="submit" id="lookup-btn">조회</button>
+    </form>
 
     <div id="toast"></div>
 
     <div id="res-list" class="res-list">
-        <p class="state-msg">불러오는 중...</p>
+        <p class="state-msg">이름을 입력해 예약을 조회해주세요.</p>
     </div>
 </main>
 
-<!-- 취소 확인 모달 -->
-<div class="modal-backdrop" id="modal">
+<!-- 변경 모달 -->
+<div class="modal-backdrop" id="edit-modal">
+    <div class="modal">
+        <h3>예약 변경</h3>
+        <div class="modal-target" id="edit-target"></div>
+        <div class="modal-error" id="edit-error" style="display:none"></div>
+        <div class="form-row">
+            <label for="edit-date">날짜</label>
+            <input type="date" id="edit-date">
+        </div>
+        <div class="form-row">
+            <label for="edit-time">시간</label>
+            <select id="edit-time">
+                <option value="">날짜를 먼저 선택해주세요</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="edit-close">닫기</button>
+            <button class="btn-primary" id="edit-confirm" disabled>변경하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 취소 모달 -->
+<div class="modal-backdrop" id="cancel-modal">
     <div class="modal">
         <h3>예약을 취소하시겠습니까?</h3>
-        <p id="modal-text"></p>
+        <div class="modal-target" id="cancel-target"></div>
+        <div class="modal-error" id="cancel-error" style="display:none"></div>
         <div class="modal-actions">
-            <button class="btn-secondary" id="modal-close">닫기</button>
-            <button class="btn-danger" id="modal-confirm">취소하기</button>
+            <button class="btn-secondary" id="cancel-close">닫기</button>
+            <button class="btn-danger" id="cancel-confirm">취소하기</button>
         </div>
     </div>
 </div>
 
 <script>
-    let pending = null;
+    let currentName = '';
+    let editTarget = null;
+    let cancelTarget = null;
+
+    /* ── 공통: 에러 응답 파싱 (사용자에게는 message만 노출, code는 백엔드 식별용) ── */
+    async function readErrorMessage(res, fallback) {
+        try {
+            const body = await res.json();
+            if (body && body.message) return body.message;
+        } catch { /* ignore */ }
+        return fallback;
+    }
 
     function showToast(type, text) {
         document.getElementById('toast').innerHTML =
@@ -266,39 +402,42 @@
         document.getElementById('toast').innerHTML = '';
     }
 
-    function openModal(r) {
-        pending = r;
-        document.getElementById('modal-text').innerHTML = `
-            <strong>${r.theme.name}</strong> · ${r.name}<br>
-            ${r.date} · ${r.time.startAt}
-        `;
-        document.getElementById('modal-confirm').disabled = false;
-        document.getElementById('modal').classList.add('show');
-    }
-    function closeModal() {
-        pending = null;
-        document.getElementById('modal').classList.remove('show');
-    }
-
-    document.getElementById('modal-close').addEventListener('click', closeModal);
-    document.getElementById('modal').addEventListener('click', (e) => {
-        if (e.target.id === 'modal') closeModal();
+    /* ── 이름으로 예약 조회 ── */
+    document.getElementById('lookup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await load();
     });
-    document.getElementById('modal-confirm').addEventListener('click', confirmCancel);
 
     async function load() {
-        const c = document.getElementById('res-list');
+        const nameInput = document.getElementById('lookup-name');
+        const name = nameInput.value.trim();
+        if (!name) return;
+        currentName = name;
+
+        clearToast();
+        const container = document.getElementById('res-list');
+        container.innerHTML = '<p class="state-msg">불러오는 중...</p>';
+
         try {
-            const data = await fetch('/reservations').then(r => r.json());
-            const reservations = data.reservations;
-            if (!reservations.length) {
-                c.innerHTML = '<p class="state-msg">예약 내역이 없습니다.</p>';
+            const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+
+            if (!res.ok) {
+                const msg = await readErrorMessage(res, '예약을 불러오지 못했습니다.');
+                showToast('error', msg);
+                container.innerHTML = '<p class="state-msg">예약 내역이 없습니다.</p>';
                 return;
             }
-            c.innerHTML = '';
-            reservations.forEach(r => c.appendChild(createCard(r)));
+
+            const body = await res.json();
+            const reservations = body.reservations;
+            if (!reservations.length) {
+                container.innerHTML = '<p class="state-msg">예약 내역이 없습니다.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            reservations.forEach(r => container.appendChild(createCard(r)));
         } catch {
-            c.innerHTML = '<p class="state-msg">불러오기에 실패했습니다.</p>';
+            container.innerHTML = '<p class="state-msg">네트워크 오류로 불러오기에 실패했습니다.</p>';
         }
     }
 
@@ -316,34 +455,189 @@
                     <span>${r.time.startAt}</span>
                 </div>
             </div>
-            <button class="btn-cancel">취소</button>
+            <div class="res-actions">
+                <button class="btn-action edit">변경</button>
+                <button class="btn-action danger del">취소</button>
+            </div>
         `;
-        card.querySelector('.btn-cancel').addEventListener('click', () => openModal(r));
+        card.querySelector('.edit').addEventListener('click', () => openEditModal(r));
+        card.querySelector('.del').addEventListener('click', () => openCancelModal(r));
         return card;
     }
 
-    async function confirmCancel() {
-        if (!pending) return;
-        const r = pending;
-        const btn = document.getElementById('modal-confirm');
-        btn.disabled = true;
-        btn.textContent = '취소 중...';
-        clearToast();
+    /* ── 변경 모달 ── */
+    function openEditModal(r) {
+        editTarget = r;
+        document.getElementById('edit-target').innerHTML = `
+            <strong>${r.theme.name}</strong> · ${r.name}<br>
+            현재: ${r.date} · ${r.time.startAt}
+        `;
+        document.getElementById('edit-error').style.display = 'none';
+
+        const dateInput = document.getElementById('edit-date');
+        const today = new Date().toISOString().slice(0, 10);
+        dateInput.min = today;
+        dateInput.value = r.date >= today ? r.date : today;
+
+        document.getElementById('edit-confirm').disabled = true;
+        document.getElementById('edit-modal').classList.add('show');
+
+        loadAvailableTimes(r.theme.id, dateInput.value, r.time.id);
+    }
+
+    function closeEditModal() {
+        editTarget = null;
+        document.getElementById('edit-modal').classList.remove('show');
+    }
+
+    document.getElementById('edit-close').addEventListener('click', closeEditModal);
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'edit-modal') closeEditModal();
+    });
+
+    document.getElementById('edit-date').addEventListener('change', (e) => {
+        if (!editTarget) return;
+        loadAvailableTimes(editTarget.theme.id, e.target.value, editTarget.time.id);
+    });
+
+    async function loadAvailableTimes(themeId, date, currentTimeId) {
+        const select = document.getElementById('edit-time');
+        const confirmBtn = document.getElementById('edit-confirm');
+        select.innerHTML = '<option value="">불러오는 중...</option>';
+        confirmBtn.disabled = true;
+
         try {
-            const res = await fetch(`/reservations/${r.id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error(await res.text());
-            closeModal();
-            showToast('success', `#${r.id} 예약이 취소되었습니다.`);
-            await load();
+            const res = await fetch(`/themes/${themeId}/available-times?date=${date}`);
+            if (!res.ok) {
+                select.innerHTML = '<option value="">시간 조회 실패</option>';
+                return;
+            }
+            const body = await res.json();
+            const times = body.times;
+            if (!times.length) {
+                select.innerHTML = '<option value="">등록된 시간이 없습니다</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">시간을 선택해주세요</option>';
+            times.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                const isCurrent = t.id === currentTimeId;
+                const disabled = !t.isAvailable && !isCurrent;
+                opt.textContent = t.startAt + (disabled ? ' (예약됨)' : '') + (isCurrent ? ' (현재 예약)' : '');
+                opt.disabled = disabled;
+                select.appendChild(opt);
+            });
         } catch {
-            closeModal();
-            showToast('error', '취소에 실패했습니다. 다시 시도해주세요.');
-        } finally {
-            btn.textContent = '취소하기';
+            select.innerHTML = '<option value="">네트워크 오류</option>';
         }
     }
 
-    load();
+    document.getElementById('edit-time').addEventListener('change', (e) => {
+        document.getElementById('edit-confirm').disabled = !e.target.value;
+    });
+
+    document.getElementById('edit-confirm').addEventListener('click', async () => {
+        if (!editTarget) return;
+        const date = document.getElementById('edit-date').value;
+        const timeId = Number(document.getElementById('edit-time').value);
+        const btn = document.getElementById('edit-confirm');
+        const errEl = document.getElementById('edit-error');
+
+        btn.disabled = true;
+        btn.textContent = '변경 중...';
+        errEl.style.display = 'none';
+
+        try {
+            const res = await fetch(
+                `/reservations/${editTarget.id}?name=${encodeURIComponent(currentName)}`,
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, timeId }),
+                }
+            );
+
+            if (!res.ok) {
+                const msg = await readErrorMessage(res, '변경에 실패했습니다.');
+                errEl.textContent = msg;
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '변경하기';
+                return;
+            }
+
+            const id = editTarget.id;
+            closeEditModal();
+            showToast('success', `#${id} 예약이 변경되었습니다.`);
+            await load();
+        } catch {
+            errEl.textContent = '네트워크 오류가 발생했습니다.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '변경하기';
+        } finally {
+            btn.textContent = btn.textContent === '변경 중...' ? '변경하기' : btn.textContent;
+        }
+    });
+
+    /* ── 취소 모달 ── */
+    function openCancelModal(r) {
+        cancelTarget = r;
+        document.getElementById('cancel-target').innerHTML = `
+            <strong>${r.theme.name}</strong> · ${r.name}<br>
+            ${r.date} · ${r.time.startAt}
+        `;
+        document.getElementById('cancel-error').style.display = 'none';
+        document.getElementById('cancel-confirm').disabled = false;
+        document.getElementById('cancel-confirm').textContent = '취소하기';
+        document.getElementById('cancel-modal').classList.add('show');
+    }
+    function closeCancelModal() {
+        cancelTarget = null;
+        document.getElementById('cancel-modal').classList.remove('show');
+    }
+    document.getElementById('cancel-close').addEventListener('click', closeCancelModal);
+    document.getElementById('cancel-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'cancel-modal') closeCancelModal();
+    });
+
+    document.getElementById('cancel-confirm').addEventListener('click', async () => {
+        if (!cancelTarget) return;
+        const r = cancelTarget;
+        const btn = document.getElementById('cancel-confirm');
+        const errEl = document.getElementById('cancel-error');
+
+        btn.disabled = true;
+        btn.textContent = '취소 중...';
+        errEl.style.display = 'none';
+
+        try {
+            const res = await fetch(
+                `/reservations/${r.id}?name=${encodeURIComponent(currentName)}`,
+                { method: 'DELETE' }
+            );
+
+            if (!res.ok) {
+                const msg = await readErrorMessage(res, '취소에 실패했습니다.');
+                errEl.textContent = msg;
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '취소하기';
+                return;
+            }
+
+            closeCancelModal();
+            showToast('success', `#${r.id} 예약이 취소되었습니다.`);
+            await load();
+        } catch {
+            errEl.textContent = '네트워크 오류가 발생했습니다.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '취소하기';
+        }
+    });
 </script>
 
 </body>

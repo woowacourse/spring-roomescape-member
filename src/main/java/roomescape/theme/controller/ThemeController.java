@@ -3,11 +3,13 @@ package roomescape.theme.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.theme.controller.dto.*;
+import roomescape.theme.controller.dto.PopularThemesResponse;
+import roomescape.theme.controller.dto.ThemeAvailableTimesResponse;
+import roomescape.theme.controller.dto.ThemesResponse;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.TimeAvailability;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
+import roomescape.theme.service.TimeAvailability;
 
 import java.time.LocalDate;
 import java.util.List;
