@@ -22,4 +22,10 @@ public class ThemeController {
         List<ThemeResponse> responses = themeService.getTopThemes();
         return ResponseEntity.ok(responses);
     }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<ThemeResponse> responses = themeService.getAllThemes();
+        return ResponseEntity.ok(responses);
+    }
 }

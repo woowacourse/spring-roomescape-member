@@ -28,4 +28,10 @@ public class ThemeService {
             .map(ThemeResponse::of)
             .toList();
     }
+
+    public List<ThemeResponse> getAllThemes() {
+        return themeRepository.findAll().stream()
+            .map(ThemeResponse::of)
+            .toList();
+    }
 }
