@@ -198,7 +198,7 @@
   async function requestJson(url, options = {}) {
     const response = await fetch(url, options);
     if (!response.ok) {
-      throw new Error('요청 처리에 실패했습니다.');
+      throw new Error(await parseErrorMessage(response));
     }
     if (response.status === 204 || response.headers.get('content-length') === '0') {
       return null;
@@ -209,7 +209,20 @@
   async function requestOk(url, options = {}) {
     const response = await fetch(url, options);
     if (!response.ok) {
-      throw new Error('요청 처리에 실패했습니다.');
+      throw new Error(await parseErrorMessage(response));
+    }
+  }
+
+  async function parseErrorMessage(response) {
+    try {
+      const errorData = await response.json();
+      const details = Array.isArray(errorData.errors) ? errorData.errors : [];
+      if (details.length > 0) {
+        return details.map(error => error.message).join('\n');
+      }
+      return errorData.message || '요청 처리에 실패했습니다.';
+    } catch (error) {
+      return '요청 처리에 실패했습니다.';
     }
   }
 
@@ -377,7 +390,7 @@
       await loadReservations();
       await loadAvailableReservationTimes();
     } catch (error) {
-      alert('예약 삭제에 실패했습니다.');
+      alert('예약 삭제에 실패했습니다.\n' + error.message);
     }
   }
 
@@ -449,7 +462,7 @@
     };
 
     try {
-      await requestJson('/api/reservations', {
+      await requestJson('/api/admin/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -459,7 +472,7 @@
       currentReservationPage = 1;
       await loadReservations();
     } catch (error) {
-      alert('예약 추가에 실패했습니다.');
+      alert('예약 추가에 실패했습니다.\n' + error.message);
     }
   }
 
@@ -481,7 +494,7 @@
       event.target.reset();
       await loadThemes();
     } catch (error) {
-      alert('테마 추가에 실패했습니다.');
+      alert('테마 추가에 실패했습니다.\n' + error.message);
     }
   }
 
@@ -491,7 +504,7 @@
       await requestOk(`/api/admin/themes/${id}`, { method: 'DELETE' });
       await loadThemes();
     } catch (error) {
-      alert('테마 삭제에 실패했습니다.');
+      alert('테마 삭제에 실패했습니다.\n' + error.message);
     }
   }
 
@@ -530,7 +543,7 @@
       await loadTimes();
       await loadAvailableReservationTimes();
     } catch (error) {
-      alert('시간 추가에 실패했습니다.');
+      alert('시간 추가에 실패했습니다.\n' + error.message);
     }
   }
 
@@ -541,7 +554,7 @@
       await loadTimes();
       await loadAvailableReservationTimes();
     } catch (error) {
-      alert('시간 삭제에 실패했습니다.');
+      alert('시간 삭제에 실패했습니다.\n' + error.message);
     }
   }
 
