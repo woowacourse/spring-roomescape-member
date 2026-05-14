@@ -24,7 +24,36 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraintViolation(
             ConstraintViolationException e
     ) {
-        ErrorResponse errorResponse = new ErrorResponse("COMMON_400", e.getMessage(), HttpStatus.BAD_REQUEST);
+        ErrorCode errorCode = ErrorCode.COMMON_BAD_REQUEST;
+
+        String message = e.getConstraintViolations()
+                .stream()
+                .findFirst()
+                .map(violation -> violation.getMessage())
+                .orElse(errorCode.getMessage());
+
+
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), message, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity
+                .badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            MethodArgumentNotValidException e
+    ) {
+        ErrorCode errorCode = ErrorCode.COMMON_BAD_REQUEST;
+
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .orElse(ErrorCode.COMMON_BAD_REQUEST.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), message, HttpStatus.BAD_REQUEST);
 
         return ResponseEntity
                 .badRequest()
