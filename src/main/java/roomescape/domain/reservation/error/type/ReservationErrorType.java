@@ -1,7 +1,7 @@
 package roomescape.domain.reservation.error.type;
 
 import org.springframework.http.HttpStatus;
-import roomescape.global.error.exception.type.ErrorType;
+import roomescape.global.error.type.ErrorType;
 
 public enum ReservationErrorType implements ErrorType {
     ALREADY_RESERVED(HttpStatus.CONFLICT, "이미 예약된 날짜, 시간, 테마입니다."),

@@ -1,4 +1,4 @@
-package roomescape.global.error.exception.dto;
+package roomescape.global.error.dto;
 
 public record ErrorResponseDto(String message) {
 

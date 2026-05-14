@@ -15,5 +15,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findThemeById(Long id);
 
+    boolean existsThemeById(Long id);
+
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit);
 }

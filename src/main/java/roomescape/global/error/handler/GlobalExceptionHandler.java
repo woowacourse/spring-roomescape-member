@@ -1,22 +1,21 @@
-package roomescape.global.error.exception;
+package roomescape.global.error.handler;
 
-import java.util.List;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.domain.reservation.error.exception.ReservationException;
-import roomescape.domain.reservation.error.exception.ReservationNotFoundException;
-import roomescape.global.error.exception.dto.ErrorResponseDto;
-import roomescape.global.error.exception.dto.FieldErrorResponseDto;
-import roomescape.global.error.exception.dto.FieldErrorResponsesDto;
-import roomescape.global.error.exception.dto.ParameterErrorResponseDto;
-import roomescape.global.error.exception.dto.ParameterErrorResponsesDto;
+import roomescape.global.error.dto.ErrorResponseDto;
+import roomescape.global.error.dto.ParameterErrorResponseDto;
+import roomescape.global.error.dto.ParameterErrorResponsesDto;
+import roomescape.global.error.exception.GeneralException;
+import roomescape.global.error.exception.GeneralNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,15 +29,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ParameterErrorResponsesDto> handleMethodArgumentTypeMismatchException(
+    public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e
     ) {
-        List<ParameterErrorResponseDto> parameterErrors = List.of(
-            new ParameterErrorResponseDto(e.getName(), e.getName() + "의 값이 유효하지 않습니다.")
-        );
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청값이 올바르지 않습니다."));
+    }
 
-        return ResponseEntity.badRequest()
-            .body(new ParameterErrorResponsesDto("요청값이 올바르지 않습니다.", parameterErrors));
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingServletRequestParameterException(
+        MissingServletRequestParameterException e
+    ) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청값이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -68,30 +69,31 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<FieldErrorResponsesDto> handleValidationException(
+    public ResponseEntity<ParameterErrorResponsesDto> handleValidationException(
         MethodArgumentNotValidException exception
     ) {
-        List<FieldErrorResponseDto> fieldErrors = exception.getBindingResult()
+        List<ParameterErrorResponseDto> parameterErrors = exception.getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(error -> new FieldErrorResponseDto(
+            .map(error -> new ParameterErrorResponseDto(
                 error.getField(),
                 error.getDefaultMessage()
             ))
             .toList();
 
-        return ResponseEntity.badRequest().body(new FieldErrorResponsesDto("요청 값이 올바르지 않습니다.", fieldErrors));
+        return ResponseEntity.badRequest()
+            .body(new ParameterErrorResponsesDto("요청 값이 올바르지 않습니다.", parameterErrors));
     }
 
-    @ExceptionHandler(ReservationException.class)
-    public ResponseEntity<ErrorResponseDto> handleReservationException(ReservationException e) {
+    @ExceptionHandler(GeneralException.class)
+    public ResponseEntity<ErrorResponseDto> handleReservationException(GeneralException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponseDto(e.getMessage()));
     }
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<FieldErrorResponsesDto> handleReservationNotFoundException(ReservationNotFoundException e) {
+    @ExceptionHandler(GeneralNotFoundException.class)
+    public ResponseEntity<ParameterErrorResponsesDto> handleReservationNotFoundException(GeneralNotFoundException e) {
         return ResponseEntity.status(e.getStatus())
-            .body(new FieldErrorResponsesDto(e.getMessage(), e.getFieldErrors()));
+            .body(new ParameterErrorResponsesDto(e.getMessage(), e.getParameterErrors()));
     }
 
     @ExceptionHandler(Exception.class)
