@@ -26,6 +26,7 @@ import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
 import roomescape.global.error.dto.ParameterErrorResponseDto;
+import roomescape.global.error.exception.GeneralException;
 import roomescape.global.error.exception.GeneralNotFoundException;
 
 class TimeServiceTest {
@@ -88,17 +89,38 @@ class TimeServiceTest {
     @Nested
     class SaveTimeTest {
 
-        @Test
-        void 성공() {
-            // given
-            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
+        @Nested
+        class Success {
 
-            // when
-            TimeResponseDto actual = timeService.saveTime(request);
+            @Test
+            void 성공() {
+                // given
+                TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
 
-            // then
-            assertThat(actual).isEqualTo(new TimeResponseDto(1L, LocalTime.of(15, 30)));
-            assertThat(timeService.getTimes()).containsExactly(actual);
+                // when
+                TimeResponseDto actual = timeService.saveTime(request);
+
+                // then
+                assertThat(actual).isEqualTo(new TimeResponseDto(1L, LocalTime.of(15, 30)));
+                assertThat(timeService.getTimes()).containsExactly(actual);
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void 이미_등록된_예약_시간이면_예외가_발생한다() {
+                // given
+                LocalTime startAt = LocalTime.of(15, 30);
+                timeRepository.save(Time.create(startAt));
+                TimeCreateRequestDto request = new TimeCreateRequestDto(startAt);
+
+                // when & then
+                assertThatThrownBy(() -> timeService.saveTime(request))
+                    .isInstanceOf(GeneralException.class)
+                    .hasMessage("이미 등록된 예약 시간입니다.");
+            }
         }
     }
 
