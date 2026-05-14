@@ -63,7 +63,7 @@ public class ReservationController {
     public void update(
             @PathVariable Long id,
             @CurrentUser UserInfo userInfo,
-            @RequestBody ReservationUpdateRequest request
+            @Valid @RequestBody ReservationUpdateRequest request
     ) {
         reservationService.update(
                 id,

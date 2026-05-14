@@ -16,6 +16,13 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
+    @GetMapping
+    public List<ThemeResponse> readAll() {
+        return themeService.getAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     @GetMapping("/popular")
     public List<ThemeResponse> read(
             @RequestParam final int period,

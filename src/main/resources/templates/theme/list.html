@@ -30,7 +30,8 @@
         .actions a { text-decoration: none; color: var(--text); border: 1px solid var(--line); padding: 10px 12px; border-radius: 12px; background: white; }
         .message { margin: 0 0 14px; padding: 12px 14px; border-radius: 14px; background: rgba(29,111,95,.08); color: var(--point); }
         .message.error { background: rgba(196,69,54,.1); color: var(--warn); }
-        .empty { color: rgba(43,33,23,.64); }
+        .empty, code { color: rgba(43,33,23,.64); }
+        code { display: inline-block; padding: 3px 7px; border-radius: 8px; background: rgba(43,33,23,.07); }
         @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .user-link { margin-left: 0; } }
     </style>
 </head>
@@ -53,6 +54,7 @@
     <section class="layout">
         <article class="card">
             <h2>새 테마 추가</h2>
+            <p class="empty"><code>POST /admin/themes</code>를 사용합니다. 이름 중복은 409, 입력 오류는 400으로 안내합니다.</p>
             <form id="theme-form">
                 <label>테마 이름 <input id="name" required type="text"></label>
                 <label>설명 <textarea id="description" required></textarea></label>
@@ -63,6 +65,7 @@
 
         <article class="card">
             <h2>테마 목록</h2>
+            <p class="empty"><code>GET /admin/themes</code> 목록에서 시간 관리와 삭제 작업을 바로 실행합니다.</p>
             <div class="list" id="theme-list"></div>
             <p class="empty" hidden id="empty">등록된 테마가 없습니다.</p>
         </article>
@@ -87,7 +90,7 @@
         });
         if (!response.ok) {
             const body = await response.json().catch(() => ({}));
-            throw new Error(body.message || body.validationErrors?.join(', ') || `요청 실패 (${response.status})`);
+            throw new Error(`${body.message || '요청 처리 중 오류가 발생했습니다.'}${body.validationErrors?.length ? ` (${body.validationErrors.join(', ')})` : ''} [${response.status}]`);
         }
         return response.status === 204 ? null : response.json();
     };

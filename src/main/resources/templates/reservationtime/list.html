@@ -26,7 +26,8 @@
         .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: rgba(250,255,255,.9); }
         .message { margin: 0 0 14px; padding: 12px 14px; border-radius: 14px; background: rgba(15,118,110,.08); color: var(--point); }
         .message.error { background: rgba(214,40,40,.09); color: var(--danger); }
-        .empty { color: rgba(32,48,47,.64); }
+        .empty, code { color: rgba(32,48,47,.64); }
+        code { display: inline-block; padding: 3px 7px; border-radius: 8px; background: rgba(32,48,47,.07); }
         @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .user-link { margin-left: 0; } }
     </style>
 </head>
@@ -49,6 +50,7 @@
     <section class="layout">
         <article class="card">
             <h2>시간 슬롯 추가</h2>
+            <p class="empty"><code>POST /admin/themes/{themeId}/times</code>로 추가하고, 중복 시간은 409 안내를 표시합니다.</p>
             <form id="time-form">
                 <label>시작 시간 <input id="startAt" required type="time"></label>
                 <button type="submit">시간 추가</button>
@@ -57,6 +59,7 @@
 
         <article class="card">
             <h2>등록된 시간</h2>
+            <p class="empty"><code>GET /admin/themes/{themeId}/times</code> 응답의 <code>id</code>, <code>startAt</code> 기준으로 렌더링합니다.</p>
             <div class="list" id="time-list"></div>
             <p class="empty" hidden id="empty">등록된 시간이 없습니다.</p>
         </article>
@@ -85,7 +88,7 @@
         });
         if (!response.ok) {
             const body = await response.json().catch(() => ({}));
-            throw new Error(body.message || body.validationErrors?.join(', ') || `요청 실패 (${response.status})`);
+            throw new Error(`${body.message || '요청 처리 중 오류가 발생했습니다.'}${body.validationErrors?.length ? ` (${body.validationErrors.join(', ')})` : ''} [${response.status}]`);
         }
         return response.status === 204 ? null : response.json();
     };
@@ -113,7 +116,7 @@
             item.innerHTML = `
                 <div>
                     <strong>${time.startAt}</strong>
-                    <span>${time.theme.name}</span>
+                    <span>${pageTitle.textContent.replace(' 시간 관리', '')}</span>
                 </div>
                 <button class="delete" type="button" data-id="${time.id}">삭제</button>`;
             timeList.appendChild(item);
