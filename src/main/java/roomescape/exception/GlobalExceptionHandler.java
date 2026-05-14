@@ -40,6 +40,14 @@ public class GlobalExceptionHandler {
                         "RESERVATION400_001"));
     }
 
+    @ExceptionHandler(PastReservationCancelNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handlePastReservationCancel() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        ERROR_PREFIX + "이미 지난 예약은 취소할 수 없습니다.",
+                        "RESERVATION400_002"));
+    }
+
     @ExceptionHandler(ReservationTimeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleReservationTimeNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

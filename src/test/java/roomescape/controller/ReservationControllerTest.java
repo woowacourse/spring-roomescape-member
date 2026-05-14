@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -95,12 +96,6 @@ public class ReservationControllerTest {
 
     @Test
     void 예약_삭제시_존재하지_않는_예약이면_404를_반환한다() {
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-
         RestAssured.given().log().all()
                 .when().delete("/api/v1/reservations/1")
                 .then().log().all()
@@ -390,6 +385,20 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("COMMON400_006"));
+    }
+
+    @Test
+    @Sql(statements = {
+            "INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')",
+            "INSERT INTO theme (id, name, description, img_url) VALUES (1, '이든의 공포 하우스', '이든이 귀신으로 나옴', 'https://images.example.com/themes/horror-house.jpg')",
+            "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '브라운', DATEADD('DAY', -1, CURRENT_DATE()), 1, 1)"
+    })
+    void 이미_지난_예약을_삭제하면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/api/v1/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("RESERVATION400_002"));
     }
 
     private void createDefaultTimes() {

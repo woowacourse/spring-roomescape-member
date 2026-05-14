@@ -9,9 +9,12 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.PastReservationCancelNotAllowedException;
 import roomescape.exception.PastReservationNotAllowedException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
@@ -31,9 +34,10 @@ public class ReservationServiceTest {
 
     @Test
     void 존재하지않는_예약은_삭제할_수_없다() {
-        when(reservationDao.delete(1L)).thenReturn(0);
+        when(reservationDao.findReservationById(3L))
+                .thenThrow(new EmptyResultDataAccessException(1));
 
-        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
+        assertThatThrownBy(() -> reservationService.deleteReservation(3L))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
 
@@ -41,7 +45,10 @@ public class ReservationServiceTest {
     void 예약이_존재할_경우_새_예약을_생성할_수_없다() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         when(reservationTimeDao.findReservationTimeById(1L))
-                .thenReturn(new ReservationTime(1L, LocalTime.of(10, 0)));
+                .thenReturn(new ReservationTime(
+                        1L,
+                        LocalTime.of(10, 0)
+                ));
         when(reservationDao.insertWithKeyHolder("정콩이", futureDate, 1L, 1L))
                 .thenThrow(new DuplicateKeyException("Duplicate key exception"));
 
@@ -53,9 +60,28 @@ public class ReservationServiceTest {
     @Test
     void 지난_날짜로는_새_예약을_생성할_수_없다() {
         when(reservationTimeDao.findReservationTimeById(1L))
-                .thenReturn(new ReservationTime(1L, LocalTime.of(10, 0)));
+                .thenReturn(new ReservationTime(
+                        1L,
+                        LocalTime.of(10, 0)
+                ));
         assertThatThrownBy(
                 () -> reservationService.createReservation("정콩이", LocalDate.of(2025, 1, 1), 1L, 1L))
                 .isInstanceOf(PastReservationNotAllowedException.class);
+    }
+
+    @Test
+    void 이미_지난_예약은_취소할_수_없다() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        when(reservationDao.findReservationById(1L))
+                .thenReturn(new Reservation(
+                        1L,
+                        "정콩이",
+                        pastDate,
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        1L
+                ));
+        assertThatThrownBy(
+                () -> reservationService.deleteReservation(1L))
+                .isInstanceOf(PastReservationCancelNotAllowedException.class);
     }
 }
