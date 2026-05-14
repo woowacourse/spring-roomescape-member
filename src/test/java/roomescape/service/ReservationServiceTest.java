@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.command.ReservationEditCommand;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -225,5 +227,28 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.updateCancelled(7L, NOW))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage(UnprocessableCode.RESERVATION_ALREADY_STARTED.getMessage());
+    }
+
+    @Test
+    void 기존_예약과_겹치면_수정_불가() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme1 = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
+
+        Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme1);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY.plusDays(1), TIME_ID);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
+        given(reservationRepository.countReservationsOf(any(), anyLong(), anyLong())).willReturn(1);
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    void 과거_날짜로_수정_불가() {
+
+    }
+
+    @Test
+    void 과거_시간으로_수정_불가() {
+
     }
 }

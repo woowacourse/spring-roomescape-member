@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import roomescape.command.ReservationEditCommand;
 import roomescape.domain.Reservation;
 
 import java.time.LocalDate;
@@ -21,4 +22,6 @@ public interface ReservationRepository {
     List<Reservation> findReservationsByName(String name);
 
     int countReservationsOf(LocalDate date, long timeId, long themeId);
+
+    void updateReservation(Long id, ReservationEditCommand command);
 }

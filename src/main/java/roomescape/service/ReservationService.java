@@ -4,6 +4,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.command.ReservationEditCommand;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -21,7 +22,6 @@ import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -60,7 +60,7 @@ public class ReservationService {
     private Reservation getValidReservation(Long id, LocalDateTime now) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
-        if (reservation.isDateTimeBefore(now))  {
+        if (reservation.isDateTimeBefore(now)) {
             throw new UnprocessableException(UnprocessableCode.RESERVATION_ALREADY_STARTED);
         }
         return reservation;
@@ -72,7 +72,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.THEME_NOT_FOUND));
-        Reservation reservation =Reservation.forSave(command, reservationTime, theme);
+        Reservation reservation = Reservation.forSave(command, reservationTime, theme);
         policy.validate(reservation, now);
 
         return reservationRepository.addReservation(reservation);
@@ -86,5 +86,20 @@ public class ReservationService {
 
     public List<Reservation> findReservationsByName(String name) {
         return reservationRepository.findReservationsByName(name);
+    }
+
+    public Reservation editReservation(Long id, ReservationEditCommand command, LocalDateTime now) {
+        Reservation reservation = getValidReservation(id, now);
+        if (reservationRepository.countReservationsOf(command.date(), command.timeId(), reservation.themeId()) > 0) {
+            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
+        }
+        reservationRepository.updateReservation(id, command);
+        return getValidReservation(id, now);
+    }
+
+    private void checkIfReservationPossible(Reservation reservation) {
+        if (reservationRepository.countReservationsOf(reservation.date(), reservation.timeId(), reservation.themeId()) > 0) {
+            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
+        }
     }
 }

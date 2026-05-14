@@ -1,14 +1,18 @@
 package roomescape.repository;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.command.ReservationEditCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
+import roomescape.exception.code.ConflictCode;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -81,19 +85,23 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public Reservation addReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                conn -> {
-                    PreparedStatement preparedStatement = conn.prepareStatement(
-                            "INSERT INTO reservation(name, date, time_id, theme_id) " +
-                                    "VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
-                    preparedStatement.setString(1, reservation.name());
-                    preparedStatement.setDate(2, java.sql.Date.valueOf(reservation.date()));
-                    preparedStatement.setLong(3, reservation.timeId());
-                    preparedStatement.setLong(4, reservation.themeId());
+        try {
+            jdbcTemplate.update(
+                    conn -> {
+                        PreparedStatement preparedStatement = conn.prepareStatement(
+                                "INSERT INTO reservation(name, date, time_id, theme_id) " +
+                                        "VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+                        preparedStatement.setString(1, reservation.name());
+                        preparedStatement.setDate(2, java.sql.Date.valueOf(reservation.date()));
+                        preparedStatement.setLong(3, reservation.timeId());
+                        preparedStatement.setLong(4, reservation.themeId());
 
-                    return preparedStatement;
-                },
-                keyHolder);
+                        return preparedStatement;
+                    },
+                    keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException(ConflictCode.RESERVATION_DUPLICATED);
+        }
 
         return new Reservation(
                 Objects.requireNonNull(keyHolder.getKey()).longValue(),
@@ -142,5 +150,12 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 "SELECT COUNT(*) cnt FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
                 Integer.class,
                 date, timeId, themeId));
+    }
+
+    @Override
+    public void updateReservation(Long id, ReservationEditCommand command) {
+        jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                command.date(), command.timeId(), id);
     }
 }

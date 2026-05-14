@@ -133,7 +133,7 @@ Error Response
 DELETE /admin/reservations/{reservationId}
 ```
 
-> 행을 물리적으로 제거하는 **hard delete**다. 사용자의 `DELETE /reservations/{id}`(soft cancel: `isActive=false` 전이)와는 의도가 다르다.
+> 행을 물리적으로 제거하는 **hard delete**다. 사용자의 `DELETE /reservations/{id}`(soft cancel: `canceled_reservation` 으로 행 이동)와는 의도가 다르다.
 > 운영상 잘못 들어간 예약을 정정하기 위한 용도이므로 이력 보존이 필요 없을 때 사용한다. 삭제된 예약은 조회·집계 어디에도 남지 않는다.
 
 Response `204 No Content`
@@ -173,8 +173,7 @@ Response `200 OK`
       "name": "우주",
       "description": "우주 느낌의 몽환적인 방탈출!",
       "thumbnailUrl": "https://example.com/theme1.jpg"
-    },
-    "isActive": true
+    }
   },
   {
     "id": 8,
@@ -189,13 +188,12 @@ Response `200 OK`
       "name": "지하실",
       "description": "스산한 지하실에서 탈출해보세요!",
       "thumbnailUrl": "https://example.com/theme2.jpg"
-    },
-    "isActive": false
+    }
   }
 ]
 ```
 
-취소된 예약도 본인 이름으로 조회할 수 있다.
+취소된 예약은 응답에 포함되지 않는다. 취소 이력은 `canceled_reservation` 에 보관된다.
 
 ### 예약 생성 (사용자)
 
@@ -278,13 +276,6 @@ Error Response
 }
 ```
 
-### 본인 예약 응답에 포함되는 상태
-
-조회/생성/변경 응답의 각 항목에는 `isActive` 필드가 포함된다.
-
-- `true` - 유효한 예약
-- `false` - 취소된 예약 (이력으로 조회됨)
-
 ### 예약 변경 (사용자)
 
 ```http
@@ -310,7 +301,7 @@ Request Body
 정책
 
 - 이미 시작된 예약(예약 시점이 현재 이전)은 변경 불가
-- 변경 후 (date, timeId, themeId)가 다른 활성 예약과 충돌하면 거부 - 같은 자리로 변경하는 경우는 허용(자기 자신 제외 검사)
+- 변경 후 (date, timeId, themeId)가 다른 예약과 충돌하면 거부 - 같은 자리로 변경하는 경우는 허용(자기 자신 제외 검사)
 - 변경 후 시점이 과거(`UserReservationSavePolicy`)면 거부
 
 Response `200 OK`
@@ -329,19 +320,18 @@ Response `200 OK`
     "name": "우주",
     "description": "우주 느낌의 몽환적인 방탈출!",
     "thumbnailUrl": "https://example.com/theme1.jpg"
-  },
-  "isActive": true
+  }
 }
 ```
 
 Error Response
 
-| 상태                         | `code`                        | 조건                                     |
-|----------------------------|-------------------------------|----------------------------------------|
-| `400 Bad Request`          | `VALIDATION_FAILED`           | Bean Validation 위반                     |
-| `404 Not Found`            | `RESERVATION_NOT_FOUND`       | 존재하지 않는 `reservationId`                |
-| `404 Not Found`            | `RESERVATION_TIME_NOT_FOUND`  | 변경할 `timeId`가 존재하지 않음                  |
-| `409 Conflict`             | `RESERVATION_DUPLICATED`      | 변경 후 (date, time, theme)가 다른 활성 예약과 충돌 |
+| 상태                         | `code`                        | 조건                                    |
+|----------------------------|-------------------------------|---------------------------------------|
+| `400 Bad Request`          | `VALIDATION_FAILED`           | Bean Validation 위반                    |
+| `404 Not Found`            | `RESERVATION_NOT_FOUND`       | 존재하지 않는 `reservationId`               |
+| `404 Not Found`            | `RESERVATION_TIME_NOT_FOUND`  | 변경할 `timeId`가 존재하지 않음                 |
+| `409 Conflict`             | `RESERVATION_DUPLICATED`      | 변경 후 (date, time, theme)가 다른 예약과 충돌   |
 | `422 Unprocessable Entity` | `RESERVATION_ALREADY_STARTED` | 이미 지난 예약을 변경 시도                        |
 | `422 Unprocessable Entity` | `RESERVATION_PAST_DATE`       | 변경 후 날짜가 과거                            |
 | `422 Unprocessable Entity` | `RESERVATION_PAST_TIME`       | 변경 후 오늘 + 시간이 과거                       |
@@ -352,7 +342,7 @@ Error Response
 DELETE /reservations/{reservationId}
 ```
 
-> 행을 삭제하지 않고 `isActive`를 `false`로 바꾼다. 내 예약 조회에서는 계속 노출되지만 중복, 가능한 예약 시간 조회할 때는 제외한다.
+> reservation 테이블에서 행을 제거하고 `canceled_reservation` 으로 옮긴다(soft cancel). 본인 예약 조회·중복 검사·가능한 시간 조회에는 더 이상 노출되지 않으며, 취소 이력은 `canceled_reservation` 에만 남는다.
 
 Response `204 No Content`
 

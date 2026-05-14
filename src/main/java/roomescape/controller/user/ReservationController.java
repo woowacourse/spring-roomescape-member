@@ -5,14 +5,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.command.ReservationEditCommand;
 import roomescape.domain.Reservation;
 import roomescape.policy.UserReservationSavePolicy;
+import roomescape.request.ReservationEditRequest;
 import roomescape.request.ReservationRequest;
 import roomescape.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -62,5 +65,12 @@ public class ReservationController {
         reservationService.updateCancelled(id, LocalDateTime.now(clock));
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> editReservation(@PathVariable Long id, @RequestBody ReservationEditRequest request) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        Reservation reservation = reservationService.editReservation(id, request.toCommand(), now);
+        return ResponseEntity.ok(ReservationResponse.from(reservation));
     }
 }
