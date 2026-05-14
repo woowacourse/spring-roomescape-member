@@ -280,7 +280,7 @@
 
     <nav class="nav">
         <a th:href="@{/pages/user/reservations}">예약 홈</a>
-        <a th:href="@{/pages/admin/themes}" class="admin-link">관리자 콘솔로 이동</a>
+        <a th:href="@{/pages/admin/reservations}" class="admin-link">관리자 콘솔로 이동</a>
     </nav>
 
     <section id="page-feedback"
@@ -381,19 +381,32 @@
 
     <section class="bottom-grid">
         <article class="card">
-            <h2>예약 목록</h2>
-            <div class="list" th:if="${!#lists.isEmpty(reservations)}">
-                <div class="item" th:each="reservation : ${reservations}">
+            <h2>내 예약 조회</h2>
+            <form method="get" th:action="@{/pages/user/reservations}">
+                <input type="hidden" name="themeId" th:value="${selectedThemeId}">
+                <input type="hidden" name="date" th:value="${selectedDate}">
+                <input type="hidden" name="period" th:value="${period}">
+                <input type="hidden" name="limit" th:value="${limit}">
+                <label>
+                    예약자 이름
+                    <input type="text" name="reservationName" th:value="${reservationName}" maxlength="9" required>
+                </label>
+                <button type="submit">내 예약 찾기</button>
+            </form>
+            <div class="list" th:if="${!#lists.isEmpty(myReservations)}">
+                <div class="item" th:each="reservation : ${myReservations}">
                     <div>
                         <strong th:text="${reservation.name}">브라운</strong>
                         <span th:text="${reservation.date + ' / ' + reservation.theme.name + ' / ' + reservation.time.startAt}">내용</span>
                     </div>
                     <form class="inline-form" method="post" th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
+                        <input type="hidden" name="reservationName" th:value="${reservationName}">
                         <button type="submit" class="delete">삭제</button>
                     </form>
                 </div>
             </div>
-            <p class="hint" th:if="${#lists.isEmpty(reservations)}">아직 예약이 없습니다.</p>
+            <p class="hint" th:if="${reservationName == null}">이름으로 조회한 내 예약 목록에서만 취소를 진행할 수 있습니다.</p>
+            <p class="hint" th:if="${reservationName != null and #lists.isEmpty(myReservations)}">조회한 이름으로 등록된 예약이 아직 없습니다.</p>
         </article>
 
         <article class="card">
@@ -490,6 +503,11 @@
             title: "선택한 시간이 더 이상 보이지 않아요",
             message: "시간 슬롯이 바뀌었거나 이미 정리되어, 가능한 시간을 다시 조회하는 편이 좋아요.",
             hint: "같은 날짜로 다시 조회하면 최신 시간 목록을 볼 수 있어요."
+        },
+        MY_RESERVATION_NOT_FOUND: {
+            title: "내 예약 목록을 한 번 더 새로 볼게요",
+            message: "방금 보던 예약이 더 이상 없거나, 지금 조회한 이름의 예약이 아닐 수 있어요.",
+            hint: "이름으로 다시 조회하면 최신 예약 목록을 바로 확인할 수 있어요."
         },
         INVALID_INPUT: {
             title: "입력 내용을 한 번만 더 볼게요",

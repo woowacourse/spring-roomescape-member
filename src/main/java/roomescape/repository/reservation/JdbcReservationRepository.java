@@ -77,6 +77,28 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(final String name) {
+        String sql = """
+                SELECT r.id,
+                       r.name AS reservation_name,
+                       r.date,
+                       rt.id AS time_id,
+                       rt.start_at,
+                       t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description,
+                       t.thumbnail_url
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
+                WHERE r.name = ?
+                ORDER BY r.date, rt.start_at
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         String sql = """
                 SELECT r.id,
@@ -95,6 +117,29 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(final long id, final String name) {
+        String sql = """
+                SELECT r.id,
+                       r.name AS reservation_name,
+                       r.date,
+                       rt.id AS time_id,
+                       rt.start_at,
+                       t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description,
+                       t.thumbnail_url
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
+                WHERE r.id = ? AND r.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id, name)
                 .stream()
                 .findFirst();
     }

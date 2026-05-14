@@ -9,6 +9,7 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.ConflictException;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
 import roomescape.service.theme.ThemeService;
@@ -31,6 +32,11 @@ public class ReservationService {
 
     public List<Reservation> getAll() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> getAllByName(final String name) {
+        validateReservationName(name);
+        return reservationRepository.findAllByName(name);
     }
 
     public Reservation save(final String name, final LocalDate date, final Long themeId, final Long timeId) {
@@ -66,5 +72,22 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    public void deleteByIdAndName(final long id, final String name) {
+        validateReservationName(name);
+
+        Reservation reservation = reservationRepository.findByIdAndName(id, name)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "MY_RESERVATION_NOT_FOUND",
+                        "조회한 이름으로 찾은 예약이 없습니다."
+                ));
+
+        reservationRepository.deleteById(reservation.getId());
+    }
+
+    private void validateReservationName(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidInputException("RESERVATION_NAME_REQUIRED", "예약자 이름은 필수입니다.");
+        }
+    }
 
 }

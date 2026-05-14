@@ -17,9 +17,24 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(final String name) {
+        return reservations.stream()
+                .filter(it -> it.getName().equals(name))
+                .toList();
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         return reservations.stream()
                 .filter(it -> it.getId() == id)
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(final long id, final String name) {
+        return reservations.stream()
+                .filter(it -> it.getId() == id)
+                .filter(it -> it.getName().equals(name))
                 .findFirst();
     }
 

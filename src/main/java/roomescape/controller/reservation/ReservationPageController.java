@@ -41,6 +41,7 @@ public class ReservationPageController {
     public String getReservationPage(
             @RequestParam(required = false) final String themeId,
             @RequestParam(required = false) final String date,
+            @RequestParam(required = false) final String reservationName,
             @RequestParam(defaultValue = "7") final int period,
             @RequestParam(defaultValue = "10") final int limit,
             @RequestParam(required = false) final String errorCode,
@@ -69,6 +70,7 @@ public class ReservationPageController {
         model.addAttribute("selectedThemeId", selectedThemeId);
         model.addAttribute("selectedTheme", getSelectedTheme(selectedThemeId));
         model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("reservationName", reservationName);
         model.addAttribute("period", period);
         model.addAttribute("limit", limit);
         model.addAttribute("errorCode", resolvedErrorCode);
@@ -80,6 +82,7 @@ public class ReservationPageController {
                     .toList();
         }
         model.addAttribute("availableTimes", availableTimes);
+        model.addAttribute("myReservations", getMyReservations(reservationName, resolvedErrorCode));
 
         return "reservation/list";
     }
@@ -101,14 +104,17 @@ public class ReservationPageController {
             parsedTimeId = parseLongValue(timeId);
             parsedDate = parseDate(date);
             reservationService.save(name, parsedDate, parsedThemeId, parsedTimeId);
+            addReservationNameAttribute(redirectAttributes, name);
         } catch (ApiException exception) {
             addThemeIdAttribute(redirectAttributes, parsedThemeId);
             addDateAttribute(redirectAttributes, parsedDate);
+            addReservationNameAttribute(redirectAttributes, name);
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/user/reservations";
         } catch (Exception exception) {
             addThemeIdAttribute(redirectAttributes, parsedThemeId);
             addDateAttribute(redirectAttributes, parsedDate);
+            addReservationNameAttribute(redirectAttributes, name);
             redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
             return "redirect:/pages/user/reservations";
         }
@@ -117,8 +123,24 @@ public class ReservationPageController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteReservation(@PathVariable final Long id) {
-        reservationService.deleteById(id);
+    public String deleteReservation(
+            @PathVariable final Long id,
+            @RequestParam(required = false) final String reservationName,
+            final RedirectAttributes redirectAttributes
+    ) {
+        try {
+            reservationService.deleteByIdAndName(id, reservationName);
+        } catch (ApiException exception) {
+            addReservationNameAttribute(redirectAttributes, reservationName);
+            redirectAttributes.addAttribute("errorCode", exception.getCode());
+            return "redirect:/pages/user/reservations";
+        } catch (Exception exception) {
+            addReservationNameAttribute(redirectAttributes, reservationName);
+            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            return "redirect:/pages/user/reservations";
+        }
+
+        addReservationNameAttribute(redirectAttributes, reservationName);
         return "redirect:/pages/user/reservations";
     }
 
@@ -144,6 +166,14 @@ public class ReservationPageController {
         }
 
         redirectAttributes.addAttribute("themeId", themeId);
+    }
+
+    private void addReservationNameAttribute(final RedirectAttributes redirectAttributes, final String reservationName) {
+        if (reservationName == null || reservationName.isBlank()) {
+            return;
+        }
+
+        redirectAttributes.addAttribute("reservationName", reservationName);
     }
 
     private Long parseLongValue(final String value) {
@@ -182,5 +212,19 @@ public class ReservationPageController {
         }
 
         return fallbackErrorCode;
+    }
+
+    private List<ReservationResponse> getMyReservations(final String reservationName, final String errorCode) {
+        if (reservationName == null || reservationName.isBlank()) {
+            return List.of();
+        }
+
+        if ("RESERVATION_NAME_REQUIRED".equals(errorCode)) {
+            return List.of();
+        }
+
+        return reservationService.getAllByName(reservationName).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }
