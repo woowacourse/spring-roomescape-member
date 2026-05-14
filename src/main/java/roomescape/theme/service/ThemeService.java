@@ -1,9 +1,9 @@
 package roomescape.theme.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,16 +54,16 @@ public class ThemeService {
 
     public List<ThemeRankResponse> getThemeRankingsInRecentDays(int days, int limit) {
         List<Theme> themes = themeRepository.findThemesOrderedByReservationCount(
-                GetThemeRankingsInRecentDaysParams.of(days, limit)
-        );
+                GetThemeRankingsInRecentDaysParams.of(days, limit));
 
-        return IntStream.range(0, themes.size())
-                .mapToObj(index -> {
-                    int rank = index + 1;
-                    ThemeResponse themeResponse = ThemeResponse.from(themes.get(index));
-                    return new ThemeRankResponse(rank, themeResponse);
-                })
-                .toList();
+        List<ThemeRankResponse> responses = new ArrayList<>();
+        int rank = 1;
+
+        for (Theme theme : themes) {
+            responses.add(new ThemeRankResponse(rank++, ThemeResponse.from(theme)));
+        }
+
+        return responses;
     }
 
     public ThemeReservationTimesResponse findAllAvailableTimes(GetAvailableTimesRequest request) {
