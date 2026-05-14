@@ -65,4 +65,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(HttpStatus.CONFLICT, "이미 존재하는 데이터입니다.", request));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnknownException(Exception e, HttpServletRequest request) {
+        return ResponseEntity.internalServerError()
+                .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다. : " + e.getMessage(),
+                        request));
+    }
 }
