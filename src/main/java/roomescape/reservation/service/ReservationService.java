@@ -45,7 +45,7 @@ public class ReservationService {
         validateDuplicate(date, timeId);
 
         Reservation reservation =
-                Reservation.createNew(name, date, reservationTime);
+                Reservation.createNew(name, date, reservationTime.getId());
 
         validateDateTime(reservation, reservationTime.getStartAt());
 
@@ -77,7 +77,7 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(timeId);
         validateDuplicate(date, timeId);
 
-        reservation = reservation.modify(date, reservationTime);
+        reservation = reservation.modify(date, reservationTime.getId());
         validateDateTime(reservation, reservationTime.getStartAt());
 
         reservationRepository.update(reservation);

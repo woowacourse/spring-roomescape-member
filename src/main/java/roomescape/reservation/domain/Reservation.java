@@ -20,31 +20,31 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final ReservationTime time;
+    private final Long timeId;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    private Reservation(final Long id, final String name, final LocalDate date, final Long timeId) {
         this.id = id;
         this.name = name;
         this.date = date;
-        this.time = time;
+        this.timeId = timeId;
     }
 
-    public static Reservation createNew(final String name, final LocalDate date, final ReservationTime time) {
-        validate(name, date, time);
-        return new Reservation(null, name, date, time);
+    public static Reservation createNew(final String name, final LocalDate date, final Long timeId) {
+        validate(name, date, timeId);
+        return new Reservation(null, name, date, timeId);
     }
 
-
-    public static Reservation of(final long id, final String name, final LocalDate date, final ReservationTime time) {
-        return new Reservation(id, name, date, time);
+    public static Reservation of(final long id, final String name, final LocalDate date, final Long timeId) {
+        validate(name, date, timeId);
+        return new Reservation(id, name, date, timeId);
     }
 
-    private static void validate(final String name, final LocalDate date, final ReservationTime time) {
+    private static void validate(final String name, final LocalDate date, final Long timeId) {
         List<String> errors = new ArrayList<>();
 
         validateName(name, errors);
         validateDate(date, errors);
-        validateTime(time, errors);
+        validateTimeId(timeId, errors);
 
         if (!errors.isEmpty()) {
             throw new ReservationInvalidException(errors);
@@ -60,7 +60,6 @@ public class Reservation {
         if (name.length() > NAME_MAX_LENGTH) {
             errors.add(ReservationErrorCode.RESERVATION_NAME_TOO_LONG.getMessage());
         }
-
     }
 
     private static void validateDate(final LocalDate date, final List<String> errors) {
@@ -69,20 +68,20 @@ public class Reservation {
         }
     }
 
-    private static void validateTime(final ReservationTime time, final List<String> errors) {
-        if (time == null) {
+    private static void validateTimeId(final Long timeId, final List<String> errors) {
+        if (timeId == null) {
             errors.add(ReservationErrorCode.RESERVATION_TIME_NOT_NULL.getMessage());
         }
     }
 
     public Reservation withId(final long id) {
-        return new Reservation(id, this.name, this.date, this.time);
+        return new Reservation(id, this.name, this.date, this.timeId);
     }
 
-    public Reservation modify(final LocalDate newDate, final ReservationTime newTime) {
-        return new Reservation(id, name, newDate, newTime);
+    public Reservation modify(final LocalDate newDate, final Long newTimeId) {
+        validate(name, newDate, newTimeId);
+        return new Reservation(id, name, newDate, newTimeId);
     }
-
 
     public boolean isPastTime(LocalTime time, LocalDateTime now) {
         return LocalDateTime.of(date, time).isBefore(now);

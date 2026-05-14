@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class ThemeAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponse create(@RequestBody ThemeCreateRequest request) {
+    public ThemeResponse create(@Valid @RequestBody ThemeCreateRequest request) {
         ThemeResult themeResult = themeService.save(
                 request.name(),
                 request.description(),
