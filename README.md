@@ -309,16 +309,21 @@ erDiagram
 <summary>3단계 - 내 예약 조회/변경/취소</summary>
 
 - **사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다**
-- [ ] 현재 프론트에서 할 수 있긴 한데 이거를 그냥 냅둬야하나? 지난예약은 분리를 해야하나?
+- [ ] 사용자가 이름으로 예약을 조회하는 API명세 `Get /reservations?name={이름}`
+- [ ] ReservationDao 에서 이름과 같은 List<Reservation>반환 구현
+- [ ] ReservationService 예약 목록을 반환 구현
+- [ ] ReservationController 에서 예약 목록 조회 구현
+- [ ] 만약 해당 이름이 없으면 빈 리스트 반환(200)
 
 - **사용자가 본인의 예약을 취소 가능**
-- [ ] 취소가 지금도 가능하긴 한 것 같은데. 지난거는 취소할 수 없게 처리
+- [ ] 본인의 예약을 취소하는 API명세 `Delete /reservations/{id}`
+- [ ] ReservationDao 에서 이름에 해당하는 id 제거 구현
+- [ ] ReservationService 에서 예약 취소 구현
 
 - **사용자가 본인의 예약의 날짜·시간을 변경 가능**
-- [ ] 변경하려는 곳에 이미 예약이 있으면 수정 불가
-
-- **변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리**
-- [ ] 확인
+- [ ] 본인의 예약 변경 API명세 `Put /reservations/{id}`
+- [ ] ReservationDao 에서 해당 예약 날짜/시간을 변경할 수 있도록 구현
+- [ ] ReservationService 에서 변경 구현
 
 </details>
 
