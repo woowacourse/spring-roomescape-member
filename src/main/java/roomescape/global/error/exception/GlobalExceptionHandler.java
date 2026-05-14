@@ -15,6 +15,8 @@ import roomescape.domain.reservation.error.exception.ReservationNotFoundExceptio
 import roomescape.global.error.exception.dto.ErrorResponseDto;
 import roomescape.global.error.exception.dto.FieldErrorResponseDto;
 import roomescape.global.error.exception.dto.FieldErrorResponsesDto;
+import roomescape.global.error.exception.dto.ParameterErrorResponseDto;
+import roomescape.global.error.exception.dto.ParameterErrorResponsesDto;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,32 +30,34 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<FieldErrorResponsesDto> handleMethodArgumentTypeMismatchException(
+    public ResponseEntity<ParameterErrorResponsesDto> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e
     ) {
-        List<FieldErrorResponseDto> fieldErrors = List.of(
-            new FieldErrorResponseDto(e.getName(), e.getName() + "의 값이 유효하지 않습니다.")
+        List<ParameterErrorResponseDto> parameterErrors = List.of(
+            new ParameterErrorResponseDto(e.getName(), e.getName() + "의 값이 유효하지 않습니다.")
         );
 
-        return ResponseEntity.badRequest().body(new FieldErrorResponsesDto("요청값이 올바르지 않습니다.", fieldErrors));
+        return ResponseEntity.badRequest()
+            .body(new ParameterErrorResponsesDto("요청값이 올바르지 않습니다.", parameterErrors));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<FieldErrorResponsesDto> handleConstraintViolationException(
+    public ResponseEntity<ParameterErrorResponsesDto> handleConstraintViolationException(
         ConstraintViolationException e
     ) {
-        List<FieldErrorResponseDto> fieldErrors = e.getConstraintViolations()
+        List<ParameterErrorResponseDto> parameterErrors = e.getConstraintViolations()
             .stream()
-            .map(violation -> new FieldErrorResponseDto(
-                getFieldName(violation),
+            .map(violation -> new ParameterErrorResponseDto(
+                getParameterName(violation),
                 violation.getMessage()
             ))
             .toList();
 
-        return ResponseEntity.badRequest().body(new FieldErrorResponsesDto("요청값이 올바르지 않습니다.", fieldErrors));
+        return ResponseEntity.badRequest()
+            .body(new ParameterErrorResponsesDto("요청값이 올바르지 않습니다.", parameterErrors));
     }
 
-    private String getFieldName(ConstraintViolation<?> violation) {
+    private String getParameterName(ConstraintViolation<?> violation) {
         String propertyPath = violation.getPropertyPath().toString();
         int lastSeparatorIndex = propertyPath.lastIndexOf('.');
 
