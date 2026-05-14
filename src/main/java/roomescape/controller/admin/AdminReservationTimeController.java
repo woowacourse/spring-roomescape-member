@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

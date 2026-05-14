@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -17,7 +17,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
-import roomescape.exception.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
