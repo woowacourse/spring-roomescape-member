@@ -6,8 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
-import roomescape.exception.ThemeDoesNotExistsException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.JdbcThemeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -37,7 +36,7 @@ public class ThemeService {
 
     public ThemeResponseDTO findById(Long id) {
         Theme result = themeRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new ThemeNotFoundException("ID로 테마 조회 실패: " + id));
         return ThemeResponseDTO.from(result);
     }
 
@@ -50,7 +49,7 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (themeRepository.findById(id).isEmpty()) {
-            throw new ThemeDoesNotExistsException();
+            throw new ThemeNotFoundException("테마 삭제 실패 (존재하지 않음): " + id);
         }
         themeRepository.delete(id);
     }

@@ -4,14 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
-public class EmptyNameException extends BusinessException {
+public class PastDateModificationException extends BusinessException {
 
-    private static final String LOG_MESSAGE = "이름 입력 누락: 비어 있지 않은 이름을 입력해야 합니다.";
-    private static final String CLIENT_TITLE = "입력값이 유효하지 않습니다.";
-    private static final String CLIENT_DETAIL = "예약자 이름이 입력되지 않아 예약을 진행할 수 없습니다. 예약자 성함을 입력해 주세요.";
+    private static final String CLIENT_TITLE = "수정 불가";
+    private static final String CLIENT_DETAIL = "이미 이용 시간이 지난 예약이어서 정보를 변경할 수 없습니다. 변경 가능한 예약을 다시 확인해 주세요.";
 
-    public EmptyNameException() {
-        super(LOG_MESSAGE);
+    public PastDateModificationException(String logMessage) {
+        super(logMessage);
     }
 
     @Override

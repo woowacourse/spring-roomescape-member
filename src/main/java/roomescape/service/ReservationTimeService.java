@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
-import roomescape.exception.CannotDeleteReservationTimeException;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -52,10 +52,10 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existByTimeId(id)) {
-            throw new CannotDeleteReservationTimeException("다른 예약에서 사용중입니다.");
+            throw new ReservationTimeInUseException("예약 시간 삭제 실패 (사용 중): " + id);
         }
         if (reservationTimeRepository.findById(id).isEmpty()) {
-            throw new ReservationTimeDoesNotExistsException();
+            throw new ReservationTimeNotFoundException("예약 시간 삭제 실패 (존재하지 않음): " + id);
         }
         reservationTimeRepository.delete(id);
     }

@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
-import roomescape.exception.CannotDeleteReservationTimeException;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 
@@ -88,15 +87,15 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 예약 시간의 삭제를 거부한다")
     @Sql("/data.sql")
     @Test
-    void 삭제하려는_예약_시간에_대한_예약이_존재한다면_CannotDeleteReservationTimeException을_던진다() {
+    void 삭제하려는_예약_시간에_대한_예약이_존재한다면_ReservationTimeInUseException을_던진다() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isExactlyInstanceOf(CannotDeleteReservationTimeException.class);
+                .isExactlyInstanceOf(ReservationTimeInUseException.class);
     }
 
     @DisplayName("존재하지 않는 예약 시간의 삭제를 거부한다")
     @Test
-    void 삭제하려는_예약_시간이_존재하지_않으면_ReservationTimeDoesNotExistsException을_던진다() {
+    void 삭제하려는_예약_시간이_존재하지_않으면_ReservationTimeNotFoundException을_던진다() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isExactlyInstanceOf(ReservationTimeDoesNotExistsException.class);
+                .isExactlyInstanceOf(ReservationTimeNotFoundException.class);
     }
 }

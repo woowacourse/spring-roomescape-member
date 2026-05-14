@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.CannotDeleteReservationTimeException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
-import roomescape.exception.ReservationByPastDateTimeException;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
-import roomescape.exception.ThemeDoesNotExistsException;
+import roomescape.exception.PastDateBookingException;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 
 @WebMvcTest(Void.class)
 class GlobalExceptionHandlerTest {
@@ -30,20 +30,20 @@ class GlobalExceptionHandlerTest {
     @Nested
     class 예외를_404_Not_Found로_변환한다 {
 
-        @DisplayName("ReservationTimeDoesNotExistsException이 발생하면 404 Not Found로 변환하여 응답한다")
+        @DisplayName("ReservationTimeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
         @Test
-        void ReservationTimeDoesNotExistsException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(ReservationTimeDoesNotExistsException.class)
+        void ReservationTimeNotFoundException을_404로_변환한다() throws Exception {
+            Mockito.doThrow(ReservationTimeNotFoundException.class)
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))
                     .andExpect(status().isNotFound());
         }
 
-        @DisplayName("ThemeDoesNotExistsException이 발생하면 404 Not Found로 변환하여 응답한다")
+        @DisplayName("ThemeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
         @Test
-        void ThemeDoesNotExistsException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(ThemeDoesNotExistsException.class)
+        void ThemeNotFoundException을_404로_변환한다() throws Exception {
+            Mockito.doThrow(ThemeNotFoundException.class)
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))
@@ -54,10 +54,10 @@ class GlobalExceptionHandlerTest {
     @Nested
     class 예외를_409_Conflict로_변환한다 {
 
-        @DisplayName("CannotDeleteReservationTimeException이 발생하면 409 Conflict로 변환하여 응답한다")
+        @DisplayName("ReservationTimeInUseException이 발생하면 409 Conflict로 변환하여 응답한다")
         @Test
-        void CannotDeleteReservationTimeException을_409로_변환한다() throws Exception {
-            Mockito.doThrow(CannotDeleteReservationTimeException.class)
+        void ReservationTimeInUseException을_409로_변환한다() throws Exception {
+            Mockito.doThrow(ReservationTimeInUseException.class)
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))
@@ -78,10 +78,10 @@ class GlobalExceptionHandlerTest {
     @Nested
     class 예외를_422_Unprocessable_Entity로_변환한다 {
 
-        @DisplayName("ReservationByPastDateTimeException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
+        @DisplayName("PastDateBookingException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
         @Test
-        void ReservationByPastDateTimeException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(ReservationByPastDateTimeException.class)
+        void PastDateBookingException을_422로_변환한다() throws Exception {
+            Mockito.doThrow(PastDateBookingException.class)
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))

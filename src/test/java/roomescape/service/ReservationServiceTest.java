@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,12 +16,13 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.dto.ReservationUpdateDtoDateAndTimeIdOnly;
-import roomescape.exception.CannotDeleteReservationException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
-import roomescape.exception.ReservationByPastDateTimeException;
-import roomescape.exception.ReservationDoesNotExistsException;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.PastDateBookingException;
+import roomescape.exception.PastDateCancellationException;
+import roomescape.exception.PastDateModificationException;
+import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
@@ -57,7 +57,7 @@ class ReservationServiceTest {
 
     @DisplayName("지나간 날짜/시간에 대한 예약은 거부한다")
     @Test
-    void 지나간_시점에_대한_예약_요청에는_ReservationByPastDateTimeException_예외를_던진다() {
+    void 지나간_시점에_대한_예약_요청에는_PastDateBookingException_예외를_던진다() {
         ReservationRequestDTO outdatedRequest = new ReservationRequestDTO(
                 "sample",
                 LocalDate.now().minusDays(1),
@@ -66,7 +66,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(outdatedRequest))
-                .isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+                .isExactlyInstanceOf(PastDateBookingException.class);
     }
 
     @DisplayName("비어 있는 이름에 대한 예약은 거부한다")
@@ -150,13 +150,13 @@ class ReservationServiceTest {
 
         // then
         assertThatThrownBy(() -> reservationService.findById(addedReservation.id()))
-                .isExactlyInstanceOf(NoSuchElementException.class);
+                .isExactlyInstanceOf(ReservationNotFoundException.class);
     }
 
     @DisplayName("과거 시점의 예약은 취소할 수 없다")
     @Sql("/data.sql")
     @Test
-    void 과거_시점의_예약을_취소하면_CannotDeleteReservationException을_던진다() {
+    void 과거_시점의_예약을_취소하면_PastDateCancellationException을_던진다() {
         // when and then
         assertThatThrownBy(() -> reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(
                 new ReservationRequestDTO(
@@ -165,14 +165,13 @@ class ReservationServiceTest {
                         1L,
                         1L
                 )
-        )).isExactlyInstanceOf(CannotDeleteReservationException.class)
-                .hasMessageContaining("과거");
+        )).isExactlyInstanceOf(PastDateCancellationException.class);
     }
 
     @DisplayName("존재하지 않는 예약은 취소할 수 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 존재하지_않는_예약을_취소하면_ReservationDoesNotExistsException을_던진다() {
+    void 존재하지_않는_예약을_취소하면_ReservationNotFoundException을_던진다() {
         // when and then
         assertThatThrownBy(() -> reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(
                 new ReservationRequestDTO(
@@ -181,7 +180,7 @@ class ReservationServiceTest {
                         1L,
                         1L
                 )
-        )).isExactlyInstanceOf(ReservationDoesNotExistsException.class);
+        )).isExactlyInstanceOf(ReservationNotFoundException.class);
     }
 
     @DisplayName("사용자 이름으로 예약을 조회한다")
@@ -235,7 +234,7 @@ class ReservationServiceTest {
     @DisplayName("과거 시점으로 변경할 수는 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 과거_시점으로_변경하면_ReservationByPastDateTimeException을_던진다() {
+    void 과거_시점으로_변경하면_PastDateBookingException을_던진다() {
         // given
         ReservationResponseDTO added = reservationService.addReservation(new ReservationRequestDTO(
                 "루드비코", LocalDate.now().plusDays(1), 1L, 1L
@@ -250,26 +249,26 @@ class ReservationServiceTest {
                         dateForUpdate,
                         added.time().id()
                 )
-        )).isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+        )).isExactlyInstanceOf(PastDateBookingException.class);
     }
 
     @DisplayName("과거 시점의 예약을 변경할 수 없다")
     @Sql("/data.sql")
     @Test
-    void 과거_시점의_예약을_변경하면_ReservationByPastDateTimeException을_던진다() {
+    void 과거_시점의_예약을_변경하면_PastDateModificationException을_던진다() {
         assertThatThrownBy(() -> reservationService.update(
                 1L,
                 new ReservationUpdateDtoDateAndTimeIdOnly(
                         LocalDate.now().plusDays(1),
                         1L
                 )
-        )).isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+        )).isExactlyInstanceOf(PastDateModificationException.class);
     }
 
     @DisplayName("존재하지 않는 예약 시간으로 변경할 수는 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 존재하지_않는_예약_시간으로_변경하면_ReservationTimeDoesNotExistsException을_던진다() {
+    void 존재하지_않는_예약_시간으로_변경하면_ReservationTimeNotFoundException을_던진다() {
         // given
         ReservationResponseDTO added = reservationService.addReservation(new ReservationRequestDTO(
                 "루드비코", LocalDate.now().plusDays(1), 1L, 1L
@@ -283,13 +282,13 @@ class ReservationServiceTest {
                         dateForUpdate,
                         Long.MAX_VALUE
                 )
-        )).isExactlyInstanceOf(ReservationTimeDoesNotExistsException.class);
+        )).isExactlyInstanceOf(ReservationTimeNotFoundException.class);
     }
 
     @DisplayName("존재하지 않는 예약을 변경할 수는 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 존재하지_않는_예약을_변경하면_ReservationDoesNotExistsException을_던진다() {
+    void 존재하지_않는_예약을_변경하면_ReservationNotFoundException을_던진다() {
         // given
         ReservationResponseDTO added = reservationService.addReservation(new ReservationRequestDTO(
                 "루드비코", LocalDate.now().plusDays(1), 1L, 1L
@@ -303,7 +302,7 @@ class ReservationServiceTest {
                         dateForUpdate,
                         added.time().id()
                 )
-        )).isExactlyInstanceOf(ReservationDoesNotExistsException.class);
+        )).isExactlyInstanceOf(ReservationNotFoundException.class);
     }
 
     @DisplayName("이미 다른 예약이 존재하는 시점으로 변경할 수는 없다")
@@ -316,7 +315,7 @@ class ReservationServiceTest {
         ));
 
         LocalDate dateForUpdate = added.date().plusDays(2);
-        ReservationResponseDTO alreadyExistence = reservationService.addReservation(new ReservationRequestDTO(
+        reservationService.addReservation(new ReservationRequestDTO(
                 "루드비코", dateForUpdate, 1L, 1L
         ));
 

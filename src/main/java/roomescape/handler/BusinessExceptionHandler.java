@@ -14,7 +14,7 @@ import roomescape.exception.BusinessException;
 public class BusinessExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ProblemDetail> handleClientException(BusinessException ex) {
+    public ResponseEntity<ProblemDetail> handleBusinessException(BusinessException ex) {
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(ex.getBody());
@@ -24,10 +24,12 @@ public class BusinessExceptionHandler {
     public ResponseEntity<ProblemDetail> handleDateTimeParseException(DateTimeParseException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNPROCESSABLE_ENTITY,
-                "날짜 형식이 잘못되었습니다."
+                "날짜 또는 시간 형식이 올바르지 않습니다. (예: 2024-05-14, 10:00)"
         );
+        problemDetail.setTitle("형식 오류");
+
         return ResponseEntity
-                .status(problemDetail.getStatus())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(problemDetail);
     }
 }
