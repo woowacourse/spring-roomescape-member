@@ -69,7 +69,7 @@
     localStorage.setItem(PROFILE_ROLE_KEY, role);
 
     if (role === 'USER') {
-      location.href = `/themes?name=${encodeURIComponent(name)}`;
+      location.href = '/themes';
       return;
     }
     location.href = '/admin';

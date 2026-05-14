@@ -84,7 +84,7 @@
       alert('이름을 입력해주세요.');
       return;
     }
-    location.href = `/themes?name=${encodeURIComponent(name)}`;
+    location.href = '/themes';
   }
 
   async function loadMyReservations() {
@@ -242,8 +242,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name') || localStorage.getItem('roomescapeVisitorName');
+    const name = localStorage.getItem('roomescapeVisitorName');
     if (name) {
       document.getElementById('name').value = name;
       loadMyReservations();

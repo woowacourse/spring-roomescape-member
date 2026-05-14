@@ -86,8 +86,7 @@
   let visitorName = '';
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    visitorName = urlParams.get('name') || localStorage.getItem('roomescapeVisitorName') || '';
+    visitorName = localStorage.getItem('roomescapeVisitorName') || '';
 
     if (!visitorName) {
       alert('사용자 이름을 입력해주세요.');
@@ -189,16 +188,12 @@
     }
   }
 
-  function nameQuery() {
-    return `name=${encodeURIComponent(visitorName)}`;
-  }
-
   function openMyReservations() {
-    location.href = `/my-reservations?${nameQuery()}`;
+    location.href = '/my-reservations';
   }
 
   function openReservation(themeId) {
-    location.href = `/reservations?themeId=${themeId}&${nameQuery()}`;
+    location.href = `/reservations?themeId=${themeId}`;
   }
 </script>
 </body>

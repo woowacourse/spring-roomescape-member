@@ -11,7 +11,7 @@
     <div class="mb-3">
       <label>이름</label>
       <div class="input-group">
-        <input type="text" id="name" class="form-control" required>
+        <input type="text" id="name" class="form-control" required readonly>
       </div>
     </div>
     <div class="mb-3">
@@ -62,11 +62,15 @@
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const themeIdFromUrl = urlParams.get('themeId');
-    const nameFromUrl = urlParams.get('name');
+    const savedName = localStorage.getItem('roomescapeVisitorName');
 
-    if (nameFromUrl) {
-      document.getElementById('name').value = nameFromUrl;
+    if (!savedName) {
+      alert('사용자 이름을 입력해주세요.');
+      location.href = '/';
+      return;
     }
+
+    document.getElementById('name').value = savedName;
 
     if (!themeIdFromUrl) {
       alert('잘못된 접근입니다.');
@@ -157,7 +161,7 @@
       alert('이름을 입력해주세요.');
       return;
     }
-    location.href = `/my-reservations?name=${encodeURIComponent(name)}`;
+    location.href = '/my-reservations';
   }
 </script>
 </body>
