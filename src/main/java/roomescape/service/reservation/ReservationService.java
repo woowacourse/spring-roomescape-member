@@ -81,6 +81,13 @@ public class ReservationService {
                         "조회한 이름으로 찾은 예약이 없습니다."
                 ));
 
+        if (isPastReservation(reservation)) {
+            throw new ConflictException(
+                    "PAST_RESERVATION_CANNOT_BE_CANCELLED",
+                    "이미 지난 예약은 취소할 수 없습니다."
+            );
+        }
+
         reservationRepository.deleteById(reservation.getId());
     }
 
@@ -106,6 +113,13 @@ public class ReservationService {
                         "조회한 이름으로 찾은 예약이 없습니다."
                 ));
 
+        if (isPastReservation(reservation)) {
+            throw new ConflictException(
+                    "PAST_RESERVATION_CANNOT_BE_UPDATED",
+                    "이미 지난 예약은 변경할 수 없습니다."
+            );
+        }
+
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
         LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
 
@@ -130,6 +144,14 @@ public class ReservationService {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("RESERVATION_NAME_REQUIRED", "예약자 이름은 필수입니다.");
         }
+    }
+
+    private boolean isPastReservation(final Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
+        );
+        return reservationDateTime.isBefore(LocalDateTime.now());
     }
 
 }

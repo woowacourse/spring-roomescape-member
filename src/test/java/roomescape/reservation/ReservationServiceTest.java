@@ -95,6 +95,24 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("지난 예약은 취소할 수 없다")
+    void deleteByIdAndNamePastReservation() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime time = fixture.reservationTimeService.save(pastTime);
+        Reservation saved = fixture.reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now(), theme, time)
+        );
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.deleteByIdAndName(saved.getId(), "쿠다")
+        );
+    }
+
+    @Test
     @DisplayName("조회한 이름의 예약 날짜와 시간을 변경한다")
     void updateByIdAndName() {
         Fixture fixture = new Fixture();
@@ -128,6 +146,30 @@ class ReservationServiceTest {
         assertThrows(
                 ConflictException.class,
                 () -> fixture.reservationService.updateByIdAndName(target.getId(), "쿠다", date, secondTime.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약은 변경할 수 없다")
+    void updateByIdAndNamePastReservation() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime savedTime = fixture.reservationTimeService.save(pastTime);
+        Reservation saved = fixture.reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now(), theme, savedTime)
+        );
+        ReservationTime futureTime = fixture.reservationTimeService.save(now.plusMinutes(10));
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.updateByIdAndName(
+                        saved.getId(),
+                        "쿠다",
+                        LocalDate.now().plusDays(1),
+                        futureTime.getId()
+                )
         );
     }
 
