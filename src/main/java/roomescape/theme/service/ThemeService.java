@@ -11,6 +11,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,11 +50,18 @@ public class ThemeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> availableTimes = themeRepository.findNotAvailableTimes(id, date);
 
+        LocalDateTime now = LocalDateTime.now();
+
         return reservationTimes.stream()
-                .map(t -> AvailableTime.of(
-                        t.getId(),
-                        t.getStartAt(),
-                        !availableTimes.contains(t.getId())))
+                .map(t -> {
+                    boolean isExisted = availableTimes.contains(t.getId());
+                    boolean isBefore = LocalDateTime.of(date, t.getStartAt()).isBefore(now);
+                    return AvailableTime.of(
+                            t.getId(),
+                            t.getStartAt(),
+                            !isExisted && !isBefore
+                    );
+                })
                 .toList();
     }
 

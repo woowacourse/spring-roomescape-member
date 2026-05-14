@@ -86,7 +86,7 @@ public class ThemeRepository {
                 "JOIN theme t ON r.theme_id = t.id " +
                 "WHERE r.date BETWEEN ? AND ? " +
                 "GROUP BY r.theme_id " +
-                "ORDER BY count(r.theme_id) DESC " +
+                "ORDER BY count(r.theme_id) DESC, r.theme_id ASC " +
                 "LIMIT ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
