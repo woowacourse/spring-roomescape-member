@@ -21,4 +21,12 @@ public class Reservation {
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public boolean isSameSlot(LocalDate date, Long timeId) {
+        return this.date.equals(date) && this.time.getId().equals(timeId);
+    }
 }

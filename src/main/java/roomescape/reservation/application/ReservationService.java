@@ -94,13 +94,11 @@ public class ReservationService {
     }
 
     private void validateNoDuplicateForUpdate(Reservation existing, ReservationUpdateRequest request) {
-        boolean sameSlot = existing.getDate().equals(request.date())
-                && existing.getTime().getId().equals(request.timeId());
-        if (sameSlot) {
+        if (existing.isSameSlot(request.date(), request.timeId())) {
             return;
         }
         if (reservationRepository.existsByDateAndTimeAndTheme(
-                request.date(), request.timeId(), existing.getTheme().getId())) {
+                request.date(), request.timeId(), existing.getThemeId())) {
             throw new DuplicateReservationException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
