@@ -70,4 +70,13 @@ class AdminThemeAcceptanceTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void DELETE_admin_themes_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("테마을(를) 찾을 수 없습니다. id=9999"));
+    }
 }

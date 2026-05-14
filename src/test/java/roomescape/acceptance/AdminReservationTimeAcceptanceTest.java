@@ -66,6 +66,15 @@ class AdminReservationTimeAcceptanceTest {
     }
 
     @Test
+    void DELETE_admin_times_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("예약 시간을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
     void DELETE_admin_times_참조하는_예약이_존재하면_409과_메시지를_반환한다() {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (1, '10:00')");
         jdbcTemplate.update(

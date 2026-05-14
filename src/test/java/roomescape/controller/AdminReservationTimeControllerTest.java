@@ -84,6 +84,16 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
+    void DELETE_admin_times_서비스가_ResourceNotFoundException을_던지면_404과_메시지를_반환한다() throws Exception {
+        willThrow(new roomescape.exception.ResourceNotFoundException("예약 시간", 9999L))
+                .given(reservationTimeService).deleteReservationTime(9999L);
+
+        mockMvc.perform(delete("/admin/times/9999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("예약 시간을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
     void DELETE_admin_times_서비스가_ReservationTimeInUseException을_던지면_409과_메시지를_반환한다() throws Exception {
         willThrow(new ReservationTimeInUseException())
                 .given(reservationTimeService).deleteReservationTime(3L);

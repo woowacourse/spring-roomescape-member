@@ -61,7 +61,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+        int affected = reservationRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ResourceNotFoundException("예약", id);
+        }
     }
 
     private void validateNotPastDateTime(Reservation reservation) {

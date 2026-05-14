@@ -147,6 +147,14 @@ class ReservationServiceTest {
     }
 
     @Test
+    void deleteReservation_없는_id이면_ResourceNotFoundException() {
+        assertThatThrownBy(() -> service.deleteReservation(9999L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("예약")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void deleteReservation_삭제후_조회되지_않는다() {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
         Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));

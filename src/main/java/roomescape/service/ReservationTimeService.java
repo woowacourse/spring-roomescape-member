@@ -46,7 +46,10 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         validateNotReferencedByReservation(id);
-        reservationTimeRepository.deleteById(id);
+        int affected = reservationTimeRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ResourceNotFoundException("예약 시간", id);
+        }
     }
 
     private void validateNotReferencedByReservation(Long id) {

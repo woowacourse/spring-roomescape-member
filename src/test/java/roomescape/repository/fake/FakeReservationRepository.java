@@ -38,8 +38,8 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        store.remove(id);
+    public int deleteById(Long id) {
+        return store.remove(id) == null ? 0 : 1;
     }
 
     @Override

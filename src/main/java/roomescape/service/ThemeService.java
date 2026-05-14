@@ -55,7 +55,10 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.deleteById(id);
+        int affected = themeRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ResourceNotFoundException("테마", id);
+        }
     }
 
     @Transactional(readOnly = true)

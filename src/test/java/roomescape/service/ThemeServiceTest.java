@@ -89,6 +89,14 @@ class ThemeServiceTest {
     }
 
     @Test
+    void deleteTheme_없는_id이면_ResourceNotFoundException() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.deleteTheme(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("테마")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void deleteTheme_삭제후_조회되지_않는다() {
         Long id = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
 

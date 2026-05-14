@@ -81,6 +81,14 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void deleteReservationTime_없는_id이면_ResourceNotFoundException() {
+        assertThatThrownBy(() -> service.deleteReservationTime(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("예약 시간")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
     void deleteReservationTime_참조하는_예약이_없으면_정상_삭제() {
         Long id = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
 

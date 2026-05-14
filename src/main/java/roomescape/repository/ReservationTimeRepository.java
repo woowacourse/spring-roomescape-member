@@ -14,5 +14,5 @@ public interface ReservationTimeRepository {
 
     Long save(ReservationTime reservationTime);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 }
