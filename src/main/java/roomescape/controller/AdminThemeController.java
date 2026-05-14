@@ -1,8 +1,7 @@
 package roomescape.controller;
 
-import java.net.URI;
-
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/admin/themes")
@@ -30,7 +31,7 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable @NotNull(message = "테마 ID는 필수로 입력해야 합니다.") Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }

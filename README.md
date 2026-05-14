@@ -90,8 +90,6 @@ Path Variable:
 Query Variable: date, themeId
 
 RequestBody:
-{
-}
 
 ResponseBody:
 {
@@ -130,14 +128,12 @@ Status Code: 200
 Theme - 03
 
 API 설명: 최근 1주 동안 예약이 많았던 테마 상위 10개를 내림차순으로 조회한다.
-URI: /api/v1/themes?from=2026-05-01&to=2026-05-07
+URI: /api/v1/themes/popular?from=2026-05-01&to=2026-05-07
 Method: GET
 Path Variable:
 Query Variable: from, to
 
 RequestBody:
-{
-}
 
 ResponseBody:
 {
@@ -227,12 +223,8 @@ Path Variable: id
 Query Variable:
 
 RequestBody:
-{
-}
 
 ResponseBody:
-{
-}
 
 Status Code: 204
 
@@ -245,14 +237,8 @@ URI: /api/v1/themes/{id}
 Method: POST
 Path Variable: id
 Query Variable:
-
 RequestBody:
-{
-}
-
 ResponseBody:
-{
-}
 
 Status Code: 204
 
@@ -260,8 +246,16 @@ Status Code: 204
 
 ```
 
+#### 2단계
 
-### API 설계 규칙
+- [ ] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
+  - [ ] 서비스 정책 위반
+  - [x] 유효하지 않은 입력
+  - [ ] 존재하지 않는 리소스
+- [ ] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+- [ ] 에러 응답 본문에 어떤 정보를 담을지 결정한다.
+- [ ] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
+
 
 #### 1. 리소스 식별 기준
 

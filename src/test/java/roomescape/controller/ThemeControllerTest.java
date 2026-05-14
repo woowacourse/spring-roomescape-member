@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 @ActiveProfiles("test")
@@ -48,7 +49,7 @@ public class ThemeControllerTest {
     @Sql("/popular-themes.sql")
     void 최근_1주동안_예약이_많았던_테마_상위_10개를_조회한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/themes?from=2026-05-01&to=2026-05-07")
+                .when().get("/api/v1/themes/popular?from=2026-05-01&to=2026-05-07")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10))
@@ -62,5 +63,16 @@ public class ThemeControllerTest {
                 .body("[7].name", is("미스터리 호텔"))
                 .body("[8].name", is("시간의 문"))
                 .body("[9].name", is("사라진 탐정"));
+    }
+
+    @Test
+    void 인기_테마_조회_시_조건을_만족하지_않으면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/themes/popular?from=2026-05-01")
+                .then().log().all()
+                .statusCode(400)
+                .body("status", is(400))
+                .body("errorCode", is("UNSATISFIED_PARAMETERS"))
+                .body("message", containsString("요청 파라미터 조건이 맞지 않습니다"));
     }
 }
