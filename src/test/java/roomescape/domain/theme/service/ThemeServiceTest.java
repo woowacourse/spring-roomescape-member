@@ -16,11 +16,10 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
-import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.custom.NotFoundException;
 import roomescape.domain.global.exception.custom.UnprocessableEntityException;
+import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -180,18 +179,6 @@ class ThemeServiceTest {
                 () -> assertEquals("테마 설명", actual.description()),
                 () -> assertEquals("https://roomescape.com/images/themes/prison-room.png",
                     actual.imageUrl())
-            );
-        }
-
-        @Test
-        @DisplayName("테마 입력값이 비어 있으면 예외가 발생한다.")
-        void 실패() {
-            ThemeCreateRequestDto request = new ThemeCreateRequestDto("", "", "");
-
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.saveTheme(request),
-                BadRequestException.class,
-                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }

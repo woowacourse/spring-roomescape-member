@@ -7,11 +7,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
+import roomescape.domain.global.exception.custom.NotFoundException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
-import roomescape.domain.global.exception.custom.ForbiddenException;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
@@ -19,6 +17,7 @@ import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.validator.ReservationCreateRequestValidator;
+import roomescape.domain.reservation.validator.ReservationValidator;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
@@ -82,12 +81,12 @@ public class ReservationService {
 
     public void updateReservation(String name, Long id, ReservationUpdateRequestDto requestDto) {
         Reservation reservation = getReservationById(id);
-        validateOwner(name, reservation);
-        validateTimeExists(requestDto.timeId());
+        ReservationValidator.validateOwner(name, reservation);
+        Time time = getTimeById(requestDto.timeId());
         validateDuplicatesExceptMe(id, requestDto.date(), requestDto.timeId(),
             reservation.getTheme().getId());
-        validateDateAccessable(reservation);
-        validateDateTimeChangeable(requestDto.date(), requestDto.timeId());
+        ReservationValidator.validateDateAccessable(reservation, clock);
+        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, clock);
 
         reservationRepository.updateReservationById(id, requestDto.date(), requestDto.timeId());
     }
@@ -100,24 +99,15 @@ public class ReservationService {
         return reservation.get();
     }
 
-    private void validateTimeExists(Long timeId) {
-        if (!timeRepository.existsById(timeId)) {
-            throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
-                List.of(ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다.")));
-        }
+    private Time getTimeById(Long timeId) {
+        return timeRepository.findTimeById(timeId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
+                List.of(ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다."))));
     }
 
     private void validateDuplicatesExceptMe(Long id, LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateTimeAndThemeIdExceptId(id, date, timeId, themeId)) {
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATE);
-        }
-    }
-
-    private void validateDateTimeChangeable(LocalDate date, Long timeId) {
-        LocalDate nowDate = LocalDate.now(clock);
-        Time time = timeRepository.findTimeById(timeId).get();
-        if (date.isBefore(LocalDate.now(clock)) || (date.isEqual(nowDate) && time.isPast(clock))) {
-            throw new UnprocessableEntityException(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
     }
 
@@ -129,20 +119,8 @@ public class ReservationService {
 
     public void deleteMemberReservationById(String name, Long id) {
         Reservation reservation = getReservationById(id);
-        validateOwner(name, reservation);
-        validateDateAccessable(reservation);
+        ReservationValidator.validateOwner(name, reservation);
+        ReservationValidator.validateDateAccessable(reservation, clock);
         reservationRepository.deleteReservationById(id);
-    }
-
-    private void validateOwner(String name, Reservation reservation) {
-        if (!reservation.isOwner(name)) {
-            throw new ForbiddenException(ErrorCode.RESERVATION_FORBIDDEN);
-        }
-    }
-
-    private void validateDateAccessable(Reservation reservation) {
-        if (reservation.isPast(clock)) {
-            throw new UnprocessableEntityException(ErrorCode.RESERVATION_ALREADY_PASSED);
-        }
     }
 }

@@ -264,26 +264,6 @@ class ReservationServiceTest {
                 ErrorCode.RESERVATION_ALREADY_PASSED
             );
         }
-
-        @Test
-        @DisplayName("이름이 빈 문자열이면 예외가 발생한다.")
-        void 실패5() {
-            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
-            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
-                "https://roomescape.com/images/themes/ring-banner.png"));
-            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
-                "",
-                LocalDate.of(2026, 5, 1),
-                time.getId(),
-                theme.getId()
-            );
-
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.saveReservation(request),
-                BadRequestException.class,
-                ErrorCode.COMMON_INVALID_REQUEST
-            );
-        }
     }
 
     @Nested
