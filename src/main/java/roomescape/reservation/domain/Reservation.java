@@ -21,17 +21,23 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
+    private final boolean cancel;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, boolean cancel, ReservationTime time, Theme theme) {
         validateId(id);
         validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
+        this.cancel = cancel;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(id, name, date, false, time, theme);
     }
 
     private void validateName(String name) {

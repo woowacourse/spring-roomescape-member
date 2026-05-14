@@ -9,12 +9,14 @@ public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
+        boolean isCancelled,
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+                reservation.isCancel(),
                 ReservationTimeResponse.from(reservation.getTime())
         , ThemeResponse.from(reservation.getTheme()));
     }
