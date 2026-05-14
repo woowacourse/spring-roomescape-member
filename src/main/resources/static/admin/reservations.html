@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 관리 · 관리자</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f59e0b;
+            text-decoration: none;
+        }
+        .logo .admin-badge {
+            background: #ef4444;
+            color: #0f172a;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.875rem;
+            transition: color 0.15s;
+        }
+        nav a:hover { color: #f1f5f9; }
+        nav a.active { color: #f59e0b; font-weight: 700; }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .count {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .toast-success {
+            background: #14532d33;
+            border: 1px solid #22c55e55;
+            color: #86efac;
+        }
+        .toast-error {
+            background: #7f1d1d33;
+            border: 1px solid #ef444455;
+            color: #fca5a5;
+        }
+
+        .table-wrap {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        thead {
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+        }
+        thead th {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #334155;
+            transition: background 0.15s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #0f172a44; }
+
+        td.id { color: #64748b; font-family: monospace; }
+        td.theme { font-weight: 700; }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid #ef4444aa;
+            color: #fca5a5;
+            padding: 0.35rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-delete:hover {
+            background: #ef4444;
+            color: #0f172a;
+        }
+        .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .state-msg {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        /* 모달 */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: #0f172acc;
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+        .modal-backdrop.show { display: flex; }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            width: min(420px, 100%);
+            padding: 1.75rem;
+        }
+        .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .modal p { color: #94a3b8; font-size: 0.9rem; line-height: 1.55; margin-bottom: 1.5rem; }
+        .modal p strong { color: #f1f5f9; }
+        .modal-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
+        .modal-actions button {
+            padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+            font-size: 0.875rem; font-weight: 700; cursor: pointer;
+        }
+        .btn-secondary { background: #334155; color: #f1f5f9; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: #ef4444; color: #0f172a; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/admin/index.html" class="logo">🔐 방탈출 <span class="admin-badge">ADMIN</span></a>
+    <nav>
+        <a href="/admin/index.html">홈</a>
+        <a href="/admin/reservations.html" class="active">예약</a>
+        <a href="/admin/themes.html">테마</a>
+        <a href="/admin/times.html">시간</a>
+        <a href="/">사용자 화면</a>
+    </nav>
+</header>
+
+<main>
+    <div class="page-header">
+        <h1>📋 예약 관리</h1>
+        <span class="count" id="count"></span>
+    </div>
+
+    <div id="toast"></div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>예약자</th>
+                    <th>테마</th>
+                    <th>날짜</th>
+                    <th>시간</th>
+                    <th style="width: 100px;"></th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <tr><td colspan="6" class="state-msg">불러오는 중...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal-backdrop" id="modal">
+    <div class="modal">
+        <h3>예약을 강제 삭제하시겠습니까?</h3>
+        <p id="modal-text"></p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modal-close">닫기</button>
+            <button class="btn-danger" id="modal-confirm">삭제하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingId = null;
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(type, text, ms = 3000) {
+        $('toast').innerHTML = `<div class="toast toast-${type}">${text}</div>`;
+        if (ms) setTimeout(() => $('toast').innerHTML = '', ms);
+    }
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+    async function parseError(res) {
+        try {
+            const body = await res.json();
+            return body.message || '요청에 실패했습니다.';
+        } catch {
+            return `요청에 실패했습니다 (${res.status})`;
+        }
+    }
+
+    async function load() {
+        const tbody = $('tbody');
+        tbody.innerHTML = '<tr><td colspan="6" class="state-msg">불러오는 중...</td></tr>';
+        try {
+            const res = await fetch('/admin/reservations');
+            const data = await res.json();
+            $('count').textContent = `총 ${data.length}건`;
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="state-msg">예약 내역이 없습니다.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            data.forEach(r => tbody.appendChild(createRow(r)));
+        } catch {
+            tbody.innerHTML = '<tr><td colspan="6" class="state-msg">불러오기에 실패했습니다.</td></tr>';
+        }
+    }
+
+    function createRow(r) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="id">#${r.id}</td>
+            <td>${escapeHtml(r.name)}</td>
+            <td class="theme">${escapeHtml(r.theme.name)}</td>
+            <td>${escapeHtml(r.date)}</td>
+            <td>${escapeHtml(r.time.startAt)}</td>
+            <td><button class="btn-delete">삭제</button></td>
+        `;
+        tr.querySelector('.btn-delete').addEventListener('click', () => openModal(r));
+        return tr;
+    }
+
+    function openModal(r) {
+        pendingId = r.id;
+        $('modal-text').innerHTML = `
+            <strong>#${r.id}</strong> · ${escapeHtml(r.name)}<br>
+            ${escapeHtml(r.theme.name)} · ${escapeHtml(r.date)} ${escapeHtml(r.time.startAt)}
+        `;
+        $('modal-confirm').disabled = false;
+        $('modal').classList.add('show');
+    }
+    function closeModal() {
+        pendingId = null;
+        $('modal').classList.remove('show');
+    }
+
+    async function confirmDelete() {
+        if (pendingId == null) return;
+        const btn = $('modal-confirm');
+        btn.disabled = true;
+        btn.textContent = '삭제 중...';
+        const id = pendingId;
+        try {
+            const res = await fetch(`/admin/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                showToast('error', await parseError(res));
+                closeModal();
+                return;
+            }
+            closeModal();
+            showToast('success', `#${id} 예약이 삭제되었습니다.`);
+            await load();
+        } catch {
+            showToast('error', '삭제에 실패했습니다.');
+            closeModal();
+        } finally {
+            btn.textContent = '삭제하기';
+        }
+    }
+
+    $('modal-close').addEventListener('click', closeModal);
+    $('modal-confirm').addEventListener('click', confirmDelete);
+    $('modal').addEventListener('click', (e) => {
+        if (e.target.id === 'modal') closeModal();
+    });
+
+    load();
+</script>
+
+</body>
+</html>

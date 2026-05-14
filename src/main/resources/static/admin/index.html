@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 · 방탈출</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f59e0b;
+            text-decoration: none;
+        }
+        .logo .admin-badge {
+            background: #ef4444;
+            color: #0f172a;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.875rem;
+            transition: color 0.15s;
+        }
+        nav a:hover { color: #f1f5f9; }
+        nav a.active { color: #f59e0b; font-weight: 700; }
+
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        h1 {
+            font-size: 1.625rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .sub {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .menu-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 1.75rem 1.5rem;
+            text-decoration: none;
+            color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-3px);
+            border-color: #f59e0b55;
+            box-shadow: 0 8px 32px #00000055;
+        }
+
+        .menu-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .menu-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .menu-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.55;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/admin/index.html" class="logo">🔐 방탈출 <span class="admin-badge">ADMIN</span></a>
+    <nav>
+        <a href="/admin/index.html" class="active">홈</a>
+        <a href="/admin/reservations.html">예약</a>
+        <a href="/admin/themes.html">테마</a>
+        <a href="/admin/times.html">시간</a>
+        <a href="/">사용자 화면</a>
+    </nav>
+</header>
+
+<main>
+    <h1>👋 관리자 메뉴</h1>
+    <p class="sub">예약, 테마, 시간을 관리할 수 있습니다.</p>
+
+    <div class="menu-grid">
+        <a href="/admin/reservations.html" class="menu-card">
+            <div class="menu-icon">📋</div>
+            <div class="menu-title">예약 관리</div>
+            <div class="menu-desc">전체 예약을 조회하고 삭제할 수 있습니다.</div>
+        </a>
+        <a href="/admin/themes.html" class="menu-card">
+            <div class="menu-icon">🎭</div>
+            <div class="menu-title">테마 관리</div>
+            <div class="menu-desc">테마를 추가/삭제할 수 있습니다.</div>
+        </a>
+        <a href="/admin/times.html" class="menu-card">
+            <div class="menu-icon">🕐</div>
+            <div class="menu-title">시간 관리</div>
+            <div class="menu-desc">예약 가능 시간을 추가/삭제할 수 있습니다.</div>
+        </a>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시간 관리 · 관리자</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo { font-size: 1.4rem; font-weight: 800; color: #f59e0b; text-decoration: none; }
+        .logo .admin-badge {
+            background: #ef4444; color: #0f172a; font-size: 0.65rem; font-weight: 800;
+            padding: 0.15rem 0.45rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle;
+        }
+        nav a {
+            color: #94a3b8; text-decoration: none; margin-left: 1.5rem;
+            font-size: 0.875rem; transition: color 0.15s;
+        }
+        nav a:hover { color: #f1f5f9; }
+        nav a.active { color: #f59e0b; font-weight: 700; }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .section-title {
+            font-size: 1rem; font-weight: 600; color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        section + section { margin-top: 2.5rem; }
+
+        .form-card {
+            background: #1e293b; border: 1px solid #334155;
+            border-radius: 14px; padding: 1.5rem;
+        }
+        .form-row { display: flex; gap: 0.75rem; align-items: stretch; }
+        .form-row input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .form-row input:focus { border-color: #f59e0b; }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.4rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: #d97706; }
+        .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+
+        .field-error {
+            color: #fca5a5;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+        }
+
+        .toast {
+            border-radius: 10px; padding: 0.85rem 1rem;
+            font-size: 0.875rem; margin-bottom: 1.25rem;
+        }
+        .toast-success { background: #14532d33; border: 1px solid #22c55e55; color: #86efac; }
+        .toast-error { background: #7f1d1d33; border: 1px solid #ef444455; color: #fca5a5; }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .time-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .time-id { color: #64748b; font-family: monospace; font-size: 0.7rem; }
+        .time-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f59e0b;
+            font-variant-numeric: tabular-nums;
+        }
+        .btn-delete {
+            background: transparent;
+            border: 1px solid #ef4444aa;
+            color: #fca5a5;
+            padding: 0.35rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-delete:hover { background: #ef4444; color: #0f172a; }
+        .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .state-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: #0f172acc;
+            backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100; padding: 1rem;
+        }
+        .modal-backdrop.show { display: flex; }
+        .modal {
+            background: #1e293b; border: 1px solid #334155;
+            border-radius: 14px; width: min(420px, 100%); padding: 1.75rem;
+        }
+        .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .modal p { color: #94a3b8; font-size: 0.9rem; line-height: 1.55; margin-bottom: 1.5rem; }
+        .modal p strong { color: #f1f5f9; }
+        .modal-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
+        .modal-actions button {
+            padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+            font-size: 0.875rem; font-weight: 700; cursor: pointer;
+        }
+        .btn-secondary { background: #334155; color: #f1f5f9; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: #ef4444; color: #0f172a; }
+        .btn-danger:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/admin/index.html" class="logo">🔐 방탈출 <span class="admin-badge">ADMIN</span></a>
+    <nav>
+        <a href="/admin/index.html">홈</a>
+        <a href="/admin/reservations.html">예약</a>
+        <a href="/admin/themes.html">테마</a>
+        <a href="/admin/times.html" class="active">시간</a>
+        <a href="/">사용자 화면</a>
+    </nav>
+</header>
+
+<main>
+    <h1>🕐 시간 관리</h1>
+
+    <div id="toast"></div>
+
+    <section>
+        <div class="section-title">신규 시간 등록</div>
+        <div class="form-card">
+            <div class="form-row">
+                <input type="time" id="time-input" />
+                <button class="btn-primary" id="create-btn">등록</button>
+            </div>
+            <div class="field-error" id="form-error" style="display: none;"></div>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">등록된 시간</div>
+        <div id="time-list" class="time-grid"></div>
+    </section>
+</main>
+
+<div class="modal-backdrop" id="modal">
+    <div class="modal">
+        <h3>시간을 삭제하시겠습니까?</h3>
+        <p id="modal-text"></p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modal-close">닫기</button>
+            <button class="btn-danger" id="modal-confirm">삭제하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingTime = null;
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(type, text, ms = 3000) {
+        $('toast').innerHTML = `<div class="toast toast-${type}">${text}</div>`;
+        if (ms) setTimeout(() => $('toast').innerHTML = '', ms);
+    }
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+    async function parseError(res) {
+        try {
+            const body = await res.json();
+            if (body.fieldErrors && body.fieldErrors.length) {
+                return body.fieldErrors.map(fe => `${fe.field}: ${fe.message}`).join(', ');
+            }
+            return body.message || '요청에 실패했습니다.';
+        } catch {
+            return `요청에 실패했습니다 (${res.status})`;
+        }
+    }
+
+    async function loadTimes() {
+        const list = $('time-list');
+        list.innerHTML = '<p class="state-msg">불러오는 중...</p>';
+        try {
+            const res = await fetch('/times');
+            const times = await res.json();
+            list.innerHTML = '';
+            if (times.length === 0) {
+                list.innerHTML = '<p class="state-msg">등록된 시간이 없습니다.</p>';
+                return;
+            }
+            times.forEach(t => list.appendChild(createCard(t)));
+        } catch {
+            list.innerHTML = '<p class="state-msg">불러오기에 실패했습니다.</p>';
+        }
+    }
+
+    function createCard(t) {
+        const card = document.createElement('div');
+        card.className = 'time-card';
+        card.innerHTML = `
+            <span class="time-id">#${t.id}</span>
+            <span class="time-value">${escapeHtml(t.startAt)}</span>
+            <button class="btn-delete">삭제</button>
+        `;
+        card.querySelector('.btn-delete').addEventListener('click', () => openModal(t));
+        return card;
+    }
+
+    async function createTime() {
+        const startAt = $('time-input').value;
+        const btn = $('create-btn');
+        $('form-error').style.display = 'none';
+
+        if (!startAt) {
+            $('form-error').textContent = '시간을 입력해주세요.';
+            $('form-error').style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        try {
+            const res = await fetch('/admin/times', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ startAt }),
+            });
+            if (!res.ok) {
+                $('form-error').textContent = await parseError(res);
+                $('form-error').style.display = 'block';
+                return;
+            }
+            $('time-input').value = '';
+            showToast('success', '시간이 등록되었습니다.');
+            await loadTimes();
+        } catch {
+            showToast('error', '등록에 실패했습니다.');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function openModal(t) {
+        pendingTime = t;
+        $('modal-text').innerHTML = `
+            <strong>#${t.id}</strong> · ${escapeHtml(t.startAt)}<br>
+            <span style="color: #64748b;">예약이 있는 시간은 삭제할 수 없습니다.</span>
+        `;
+        $('modal').classList.add('show');
+    }
+    function closeModal() {
+        pendingTime = null;
+        $('modal').classList.remove('show');
+    }
+
+    async function confirmDelete() {
+        if (!pendingTime) return;
+        const t = pendingTime;
+        const btn = $('modal-confirm');
+        btn.disabled = true;
+        try {
+            const res = await fetch(`/admin/times/${t.id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                showToast('error', await parseError(res));
+                closeModal();
+                return;
+            }
+            closeModal();
+            showToast('success', `#${t.id} 시간이 삭제되었습니다.`);
+            await loadTimes();
+        } catch {
+            showToast('error', '삭제에 실패했습니다.');
+            closeModal();
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    $('create-btn').addEventListener('click', createTime);
+    $('modal-close').addEventListener('click', closeModal);
+    $('modal-confirm').addEventListener('click', confirmDelete);
+    $('modal').addEventListener('click', (e) => {
+        if (e.target.id === 'modal') closeModal();
+    });
+
+    loadTimes();
+</script>
+
+</body>
+</html>

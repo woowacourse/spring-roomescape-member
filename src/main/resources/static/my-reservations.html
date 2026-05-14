@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예약 · 방탈출</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f59e0b;
+            text-decoration: none;
+        }
+
+        .btn-back {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.15s;
+        }
+        .btn-back:hover { color: #f1f5f9; }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .page-sub {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* ── 이름 입력 ── */
+        .search-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .search-box input::placeholder { color: #475569; }
+        .search-box input:focus { border-color: #f59e0b; }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.4rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-primary:hover { background: #d97706; }
+        .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+
+        /* ── 토스트 ── */
+        .toast {
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .toast-success {
+            background: #14532d33;
+            border: 1px solid #22c55e55;
+            color: #86efac;
+        }
+        .toast-error {
+            background: #7f1d1d33;
+            border: 1px solid #ef444455;
+            color: #fca5a5;
+        }
+
+        /* ── 예약 카드 ── */
+        .res-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .res-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: border-color 0.2s;
+        }
+        .res-card:hover { border-color: #475569; }
+
+        .res-info {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .res-theme {
+            font-size: 1.05rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .res-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.85rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .res-meta .dot {
+            width: 3px;
+            height: 3px;
+            background: #475569;
+            border-radius: 50%;
+        }
+
+        .res-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-action.edit:hover {
+            background: #f59e0b;
+            color: #0f172a;
+            border-color: #f59e0b;
+        }
+        .btn-action.cancel {
+            border-color: #ef4444aa;
+            color: #fca5a5;
+        }
+        .btn-action.cancel:hover {
+            background: #ef4444;
+            color: #0f172a;
+        }
+        .btn-action:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .res-expired {
+            flex-shrink: 0;
+            padding: 0.5rem 0.9rem;
+            background: #334155;
+            color: #94a3b8;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .state-msg {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        /* ── 모달 ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: #0f172acc;
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+        .modal-backdrop.show { display: flex; }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            width: min(480px, 100%);
+            padding: 1.75rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .modal p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            margin-bottom: 1.25rem;
+        }
+        .modal p strong { color: #f1f5f9; }
+
+        .modal label {
+            display: block;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .modal input[type="date"] {
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            width: 100%;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.15s;
+            margin-bottom: 1.25rem;
+        }
+        .modal input[type="date"]:focus { border-color: #f59e0b; }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-slot {
+            padding: 0.65rem 0.5rem;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            user-select: none;
+        }
+        .time-slot:hover:not(.booked) { border-color: #f59e0b; background: #1e293b; }
+        .time-slot.selected { border-color: #f59e0b; background: #f59e0b22; color: #f59e0b; }
+        .time-slot.booked {
+            opacity: 0.35;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        .modal-actions button {
+            padding: 0.65rem 1.3rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: #334155;
+            color: #f1f5f9;
+        }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger {
+            background: #ef4444;
+            color: #0f172a;
+        }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-danger:disabled, .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">🔐 방탈출</a>
+    <a href="/" class="btn-back">← 홈으로</a>
+</header>
+
+<main>
+    <div class="page-header">
+        <h1 class="page-title">📂 내 예약</h1>
+        <p class="page-sub">예약자 이름을 입력하면 본인 예약을 조회할 수 있습니다.</p>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="name-input" placeholder="이름을 입력하세요" maxlength="20" />
+        <button class="btn-primary" id="search-btn">조회</button>
+    </div>
+
+    <div id="toast"></div>
+
+    <div id="res-list" class="res-list"></div>
+</main>
+
+<!-- 취소 확인 모달 -->
+<div class="modal-backdrop" id="cancel-modal">
+    <div class="modal">
+        <h3>예약을 취소하시겠습니까?</h3>
+        <p id="cancel-modal-text"></p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="cancel-modal-close">닫기</button>
+            <button class="btn-danger" id="cancel-modal-confirm">취소하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 변경 모달 -->
+<div class="modal-backdrop" id="edit-modal">
+    <div class="modal">
+        <h3>예약 일시 변경</h3>
+        <p id="edit-modal-text"></p>
+
+        <label>새 날짜</label>
+        <input type="date" id="edit-date" />
+
+        <label>새 시간</label>
+        <div class="time-grid" id="edit-times">
+            <p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">날짜를 선택해주세요.</p>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" id="edit-modal-close">닫기</button>
+            <button class="btn-primary" id="edit-modal-confirm" disabled>변경하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentName = '';
+    let pendingReservation = null;
+    let editState = { reservation: null, date: null, timeId: null };
+
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(type, text, ms = 3000) {
+        $('toast').innerHTML = `<div class="toast toast-${type}">${text}</div>`;
+        if (ms) setTimeout(() => { $('toast').innerHTML = ''; }, ms);
+    }
+    function clearToast() { $('toast').innerHTML = ''; }
+
+    async function parseError(res) {
+        try {
+            const body = await res.json();
+            return body.message || '요청에 실패했습니다.';
+        } catch {
+            return `요청에 실패했습니다 (${res.status})`;
+        }
+    }
+
+    // ── 조회 ──
+    async function searchReservations() {
+        const name = $('name-input').value.trim();
+        if (!name) {
+            showToast('error', '이름을 입력해주세요.');
+            return;
+        }
+        currentName = name;
+        clearToast();
+
+        const list = $('res-list');
+        list.innerHTML = '<p class="state-msg">불러오는 중...</p>';
+
+        try {
+            const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+            if (!res.ok) {
+                list.innerHTML = '';
+                showToast('error', await parseError(res));
+                return;
+            }
+            const reservations = await res.json();
+            if (reservations.length === 0) {
+                list.innerHTML = `<p class="state-msg">「${escapeHtml(name)}」 이름으로 예약된 내역이 없습니다.</p>`;
+                return;
+            }
+            list.innerHTML = '';
+            reservations.forEach(r => list.appendChild(createReservationCard(r)));
+        } catch {
+            list.innerHTML = '<p class="state-msg">조회에 실패했습니다.</p>';
+        }
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function isExpired(r) {
+        const slot = new Date(`${r.date}T${r.time.startAt}`);
+        return slot.getTime() < Date.now();
+    }
+
+    function createReservationCard(r) {
+        const card = document.createElement('div');
+        card.className = 'res-card';
+
+        const expired = isExpired(r);
+        const actionsHtml = expired
+            ? `<div class="res-expired">변경 및 삭제 불가</div>`
+            : `<div class="res-actions">
+                   <button class="btn-action edit">변경</button>
+                   <button class="btn-action cancel">취소</button>
+               </div>`;
+
+        card.innerHTML = `
+            <div class="res-info">
+                <div class="res-theme">${escapeHtml(r.theme.name)}</div>
+                <div class="res-meta">
+                    <span>${escapeHtml(r.date)}</span>
+                    <span class="dot"></span>
+                    <span>${escapeHtml(r.time.startAt)}</span>
+                </div>
+            </div>
+            ${actionsHtml}
+        `;
+
+        if (!expired) {
+            card.querySelector('.edit').addEventListener('click', () => openEditModal(r));
+            card.querySelector('.cancel').addEventListener('click', () => openCancelModal(r));
+        }
+        return card;
+    }
+
+    // ── 취소 모달 ──
+    function openCancelModal(r) {
+        pendingReservation = r;
+        $('cancel-modal-text').innerHTML = `
+            <strong>${escapeHtml(r.theme.name)}</strong><br>
+            ${escapeHtml(r.date)} · ${escapeHtml(r.time.startAt)}
+        `;
+        $('cancel-modal-confirm').disabled = false;
+        $('cancel-modal').classList.add('show');
+    }
+    function closeCancelModal() {
+        pendingReservation = null;
+        $('cancel-modal').classList.remove('show');
+    }
+
+    async function confirmCancel() {
+        if (!pendingReservation) return;
+        const r = pendingReservation;
+        const btn = $('cancel-modal-confirm');
+        btn.disabled = true;
+        btn.textContent = '취소 중...';
+        try {
+            const res = await fetch(`/reservations/${r.id}?name=${encodeURIComponent(currentName)}`,
+                { method: 'DELETE' });
+            if (!res.ok) {
+                showToast('error', await parseError(res));
+                closeCancelModal();
+                return;
+            }
+            closeCancelModal();
+            showToast('success', `#${r.id} 예약이 취소되었습니다.`);
+            await searchReservations();
+        } catch {
+            closeCancelModal();
+            showToast('error', '취소에 실패했습니다.');
+        } finally {
+            btn.textContent = '취소하기';
+        }
+    }
+
+    // ── 변경 모달 ──
+    function openEditModal(r) {
+        editState = { reservation: r, date: null, timeId: null };
+        $('edit-modal-text').innerHTML = `
+            <strong>${escapeHtml(r.theme.name)}</strong> · 현재 ${escapeHtml(r.date)} ${escapeHtml(r.time.startAt)}
+        `;
+        $('edit-date').value = '';
+        $('edit-date').min = new Date().toISOString().slice(0, 10);
+        $('edit-times').innerHTML = '<p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">날짜를 선택해주세요.</p>';
+        $('edit-modal-confirm').disabled = true;
+        $('edit-modal').classList.add('show');
+    }
+    function closeEditModal() {
+        editState = { reservation: null, date: null, timeId: null };
+        $('edit-modal').classList.remove('show');
+    }
+
+    async function loadTimes() {
+        const date = $('edit-date').value;
+        const themeId = editState.reservation.theme.id;
+        const grid = $('edit-times');
+        editState.date = date;
+        editState.timeId = null;
+        $('edit-modal-confirm').disabled = true;
+        grid.innerHTML = '<p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">불러오는 중...</p>';
+
+        try {
+            const res = await fetch(`/themes/${themeId}/available-times?date=${date}`);
+            const times = await res.json();
+            grid.innerHTML = '';
+            if (!times.length) {
+                grid.innerHTML = '<p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">등록된 시간이 없습니다.</p>';
+                return;
+            }
+            times.forEach(t => {
+                const slot = document.createElement('div');
+                slot.className = 'time-slot' + (t.isAvailable ? '' : ' booked');
+                slot.textContent = t.startAt;
+                if (t.isAvailable) {
+                    slot.addEventListener('click', () => selectTime(slot, t));
+                }
+                grid.appendChild(slot);
+            });
+        } catch {
+            grid.innerHTML = '<p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">시간 조회 실패</p>';
+        }
+    }
+
+    function selectTime(el, t) {
+        document.querySelectorAll('.time-slot.selected').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        editState.timeId = t.id;
+        $('edit-modal-confirm').disabled = false;
+    }
+
+    async function confirmEdit() {
+        const { reservation, date, timeId } = editState;
+        if (!reservation || !date || !timeId) return;
+        const btn = $('edit-modal-confirm');
+        btn.disabled = true;
+        btn.textContent = '변경 중...';
+        try {
+            const res = await fetch(
+                `/reservations/${reservation.id}?name=${encodeURIComponent(currentName)}`,
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, timeId }),
+                }
+            );
+            if (!res.ok) {
+                showToast('error', await parseError(res));
+                btn.disabled = false;
+                btn.textContent = '변경하기';
+                return;
+            }
+            closeEditModal();
+            showToast('success', `#${reservation.id} 예약이 변경되었습니다.`);
+            await searchReservations();
+        } catch {
+            showToast('error', '변경에 실패했습니다.');
+            btn.disabled = false;
+            btn.textContent = '변경하기';
+        }
+    }
+
+    // ── 이벤트 바인딩 ──
+    $('search-btn').addEventListener('click', searchReservations);
+    $('name-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') searchReservations();
+    });
+    $('cancel-modal-close').addEventListener('click', closeCancelModal);
+    $('cancel-modal-confirm').addEventListener('click', confirmCancel);
+    $('cancel-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'cancel-modal') closeCancelModal();
+    });
+    $('edit-modal-close').addEventListener('click', closeEditModal);
+    $('edit-modal-confirm').addEventListener('click', confirmEdit);
+    $('edit-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'edit-modal') closeEditModal();
+    });
+    $('edit-date').addEventListener('change', loadTimes);
+</script>
+
+</body>
+</html>
