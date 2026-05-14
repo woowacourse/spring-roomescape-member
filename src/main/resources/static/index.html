@@ -3,32 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>방탈출 카페 시스템</title>
+    <title>Roomescape - 현실을 벗어나는 특별한 경험</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f8fafc; margin: 0; color: #1e293b; }
-        .container { text-align: center; background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h1 { margin-bottom: 2.5rem; font-size: 2rem; font-weight: 800; color: #4f46e5; }
-        .btn-group { display: flex; flex-direction: column; gap: 1.25rem; }
-        a { text-decoration: none; padding: 1.25rem; border-radius: 12px; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        a:active { transform: scale(0.98); }
-        .user-btn { background-color: #4f46e5; }
-        .user-btn:hover { background-color: #4338ca; }
-        .admin-btn { background-color: #475569; }
-        .admin-btn:hover { background-color: #334155; }
-        .footer { margin-top: 2rem; font-size: 0.9rem; color: #94a3b8; }
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+            padding-top: 70px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--secondary); font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+        
+        .nav-admin { 
+            background: #f1f5f9; 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            color: var(--text-muted) !important; 
+            font-size: 0.85rem !important; 
+            margin-left: 1rem;
+        }
+        .nav-admin:hover { background: #e2e8f0; }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 2rem 8rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        .hero h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -1px; }
+        .hero p { font-size: 1.2rem; opacity: 0.9; margin-bottom: 0; font-weight: 300; }
+
+        /* Booking Dashboard Widget */
+        .booking-widget {
+            max-width: 1100px;
+            margin: -5rem auto 4rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .widget-panels {
+            display: grid;
+            grid-template-columns: 340px 280px 1fr;
+            min-height: 460px;
+        }
+
+        @media (max-width: 900px) {
+            .widget-panels { grid-template-columns: 1fr; }
+            .panel { border-right: none; border-bottom: 1px solid var(--border); }
+        }
+
+        .panel {
+            padding: 2rem;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+        .panel:last-child { border-right: none; }
+
+        .panel-header {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .step-badge {
+            background: #e0e7ff;
+            color: var(--primary-dark);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 900;
+        }
+
+        /* Calendar Custom UI */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .calendar-header h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+        .cal-btn { background: white; border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .cal-btn:hover { border-color: var(--primary); color: var(--primary); background: #f5f3ff; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day-label { text-align: center; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 0; }
+        .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 0.95rem; transition: all 0.2s; }
+        .cal-day:hover:not(.disabled):not(.selected) { background: #f5f3ff; color: var(--primary); }
+        .cal-day.selected { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); }
+        .cal-day.disabled { color: #cbd5e1; cursor: not-allowed; font-weight: 400; }
+        .cal-day.today { color: var(--primary); border: 1px solid var(--primary); }
+
+        /* Item Lists (Themes / Times) */
+        .item-list { display: flex; flex-direction: column; gap: 0.75rem; overflow-y: auto; flex: 1; padding-right: 0.5rem; }
+        .item-list::-webkit-scrollbar { width: 6px; }
+        .item-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        .item-btn { padding: 1rem; border: 2px solid var(--border); border-radius: 12px; background: white; cursor: pointer; text-align: left; font-weight: 700; font-size: 1rem; transition: all 0.2s; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        .item-btn:hover:not(:disabled) { border-color: var(--primary); background: #f5f3ff; }
+        .item-btn.selected { border-color: var(--primary); background: #f5f3ff; padding: calc(1rem - 2px) calc(1rem - 2px); border-width: 4px; }
+        .item-btn:disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0; }
+        .item-btn.disabled span.badge { background: #e2e8f0; color: #64748b; }
+
+        .time-badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; background: #dcfce7; color: #166534; border-radius: 6px; font-weight: 800; }
+
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; text-align: center; gap: 1rem; opacity: 0.7; }
+        .empty-icon { font-size: 2.5rem; opacity: 0.5; }
+
+        /* Action Bar */
+        .action-bar {
+            background: #f8fafc;
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 700px) {
+            .action-bar { flex-direction: column; gap: 1.5rem; align-items: stretch; }
+            .form-row { flex-direction: column; width: 100%; }
+            .form-row input { width: 100% !important; }
+        }
+
+        .summary { font-size: 1rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .summary-tag { background: white; border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 0.9rem; }
+        .summary-tag.highlight { border-color: var(--primary); color: var(--primary); background: #f5f3ff; }
+
+        .form-row { display: flex; gap: 1rem; align-items: center; }
+        .form-row input { padding: 0.9rem 1.25rem; border: 2px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; transition: border-color 0.2s; width: 220px; font-weight: 600; }
+        .form-row input:focus { border-color: var(--primary); }
+        
+        .btn-submit { padding: 0.9rem 2.5rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); white-space: nowrap; }
+        .btn-submit:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 12px -2px rgba(79, 70, 229, 0.4); }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; transform: none; color: #94a3b8; }
+
+        /* Toast */
+        #toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast { padding: 1rem 1.5rem; border-radius: 12px; background: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 600; min-width: 300px; animation: slideIn 0.3s ease-out; border-left: 6px solid var(--primary); }
+        .toast-success { border-left-color: var(--success); }
+        .toast-error { border-left-color: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Roomescape</h1>
-        <div class="btn-group">
-            <a href="/user-reservation.html" class="user-btn">방탈출 예약하기 (사용자)</a>
-            <a href="/popular-themes.html" class="user-btn" style="background-color: #10b981;">실시간 인기 테마 (사용자)</a>
-            <a href="/admin-reservation.html" class="admin-btn">예약 현황 관리 (관리자)</a>
-            <a href="/admin-time.html" class="admin-btn">예약 시간 관리 (관리자)</a>
-            <a href="/admin-theme.html" class="admin-btn">테마 정보 관리 (관리자)</a>
-        </div>
-        <p class="footer">Woowacourse Level 2 - Roomescape System</p>
+
+<nav>
+    <a href="/" class="nav-logo">Roomescape</a>
+    <div class="nav-links">
+        <a href="/" class="active">예약하기</a>
+        <a href="/popular-themes.html">인기테마</a>
+        <a href="/user-reservation-list.html">내 예약</a>
+        <a href="/admin-reservation.html" class="nav-admin">관리자</a>
     </div>
+</nav>
+
+<div class="hero">
+    <h1>최고의 방탈출 경험을 예약하세요</h1>
+    <p>원하는 날짜와 테마를 한눈에 확인하고 즉시 예약할 수 있습니다.</p>
+</div>
+
+<div class="booking-widget">
+    <div class="widget-panels">
+        <!-- Step 1: Calendar -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="step-badge">1</div>
+                날짜 선택
+            </div>
+            <div class="calendar-header">
+                <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
+                <h3 id="currentMonthYear"></h3>
+                <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="cal-day-label">일</div>
+                <div class="cal-day-label">월</div>
+                <div class="cal-day-label">화</div>
+                <div class="cal-day-label">수</div>
+                <div class="cal-day-label">목</div>
+                <div class="cal-day-label">금</div>
+                <div class="cal-day-label">토</div>
+            </div>
+            <div class="calendar-grid" id="calendarDays"></div>
+        </div>
+
+        <!-- Step 2: Themes -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="step-badge">2</div>
+                테마 선택
+            </div>
+            <div class="item-list" id="themeList">
+                <div class="empty-state">
+                    <span class="empty-icon">📅</span>
+                    날짜를 먼저 선택해주세요.
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Times -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="step-badge">3</div>
+                상세 정보 및 시간 선택
+            </div>
+            
+            <div id="themeDetailsPanel" style="display: none; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <img id="detailThemeImg" src="" alt="Theme" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; border: 1px solid var(--border);">
+                    <div style="flex: 1;">
+                        <h4 id="detailThemeName" style="margin: 0 0 0.5rem 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);"></h4>
+                        <p id="detailThemeDesc" style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-list" id="timeList">
+                <div class="empty-state">
+                    <span class="empty-icon">🧩</span>
+                    테마를 먼저 선택해주세요.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <div class="summary" id="selectionSummary">
+            <span class="summary-tag">날짜 미선택</span>
+            <span class="summary-tag">테마 미선택</span>
+            <span class="summary-tag">시간 미선택</span>
+        </div>
+        <div class="form-row">
+            <input type="text" id="nameInput" placeholder="예약자 성함을 입력해주세요 (영어 가능)" autocomplete="off">
+            <button class="btn-submit" id="reserveBtn" disabled>예약 확정하기</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    const calendarDays = document.getElementById('calendarDays');
+    const currentMonthYear = document.getElementById('currentMonthYear');
+    const themeList = document.getElementById('themeList');
+    const timeList = document.getElementById('timeList');
+    const nameInput = document.getElementById('nameInput');
+    const reserveBtn = document.getElementById('reserveBtn');
+    const selectionSummary = document.getElementById('selectionSummary');
+
+    let selectedDate = '';
+    let selectedTheme = null; // { id, name }
+    let selectedTime = null;  // { id, time }
+    let calendarDate = new Date();
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            toast.style.transition = 'all 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // --- Calendar Logic ---
+    function renderCalendar() {
+        const year = calendarDate.getFullYear();
+        const month = calendarDate.getMonth();
+        currentMonthYear.textContent = `${year}년 ${month + 1}월`;
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        
+        calendarDays.innerHTML = '';
+        
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day disabled';
+            calendarDays.appendChild(div);
+        }
+        
+        for (let day = 1; day <= lastDate; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dateObj = new Date(year, month, day);
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            div.textContent = day;
+            
+            if (dateObj < today) {
+                div.classList.add('disabled');
+            } else {
+                if (dateStr === selectedDate) div.classList.add('selected');
+                if (dateObj.getTime() === today.getTime() && dateStr !== selectedDate) div.classList.add('today');
+                
+                div.onclick = () => {
+                    selectedDate = dateStr;
+                    selectedTheme = null;
+                    selectedTime = null;
+                    renderCalendar();
+                    updateSummary();
+                    loadThemes();
+                    clearTimes();
+                };
+            }
+            calendarDays.appendChild(div);
+        }
+    }
+
+    function changeMonth(offset) {
+        calendarDate.setMonth(calendarDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    // --- Data Loading ---
+    async function loadThemes() {
+        themeList.innerHTML = '<div class="empty-state">테마 정보를 불러오는 중...</div>';
+        try {
+            const res = await fetch('/themes');
+            const themes = await res.json();
+            themeList.innerHTML = '';
+            
+            if (themes.length === 0) {
+                themeList.innerHTML = '<div class="empty-state">등록된 테마가 없습니다.</div>';
+                return;
+            }
+
+            themes.forEach(theme => {
+                const btn = document.createElement('button');
+                btn.className = 'item-btn';
+                btn.textContent = theme.name;
+                btn.onclick = () => selectTheme(theme, btn);
+                themeList.appendChild(btn);
+            });
+        } catch (e) { 
+            showToast('테마 로드 실패', 'error');
+            themeList.innerHTML = '<div class="empty-state">오류가 발생했습니다.</div>';
+        }
+    }
+
+    function selectTheme(theme, btn) {
+        selectedTheme = theme;
+        selectedTime = null;
+        document.querySelectorAll('#themeList .item-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        const detailsPanel = document.getElementById('themeDetailsPanel');
+        const imgEl = document.getElementById('detailThemeImg');
+        imgEl.src = theme.imageUrl || 'https://placehold.co/400x400?text=No+Image';
+        imgEl.onerror = () => { imgEl.src = 'https://placehold.co/400x400?text=No+Image'; };
+        document.getElementById('detailThemeName').textContent = theme.name;
+        document.getElementById('detailThemeDesc').textContent = theme.description;
+        detailsPanel.style.display = 'block';
+
+        updateSummary();
+        loadAvailableTimes();
+    }
+
+    function clearTimes() {
+        timeList.innerHTML = '<div class="empty-state"><span class="empty-icon">🧩</span>테마를 먼저 선택해주세요.</div>';
+        const detailsPanel = document.getElementById('themeDetailsPanel');
+        if(detailsPanel) detailsPanel.style.display = 'none';
+        checkReserveAbility();
+    }
+
+    async function loadAvailableTimes() {
+        if (!selectedDate || !selectedTheme) return;
+        timeList.innerHTML = '<div class="empty-state">예약 가능 시간을 조회 중...</div>';
+        try {
+            const res = await fetch(`/themes/${selectedTheme.id}/times?date=${selectedDate}`);
+            const data = await res.json();
+            timeList.innerHTML = '';
+            
+            if (data.availableTimes.length === 0) {
+                timeList.innerHTML = '<div class="empty-state">예약 가능한 시간이 없습니다.</div>';
+                return;
+            }
+
+            data.availableTimes.forEach(time => {
+                const btn = document.createElement('button');
+                btn.className = `item-btn ${!time.available ? 'disabled' : ''}`;
+                btn.disabled = !time.available;
+                
+                btn.innerHTML = `
+                    <span>${time.startAt}</span>
+                    <span class="time-badge badge" style="${!time.available ? 'background: #e2e8f0; color: #64748b;' : ''}">${time.available ? '예약가능' : '예약마감'}</span>
+                `;
+                
+                if (time.available) {
+                    btn.onclick = () => selectTime({id: time.id, time: time.startAt}, btn);
+                }
+                timeList.appendChild(btn);
+            });
+        } catch (e) { 
+            showToast('시간 정보 로드 실패', 'error');
+            timeList.innerHTML = '<div class="empty-state">오류가 발생했습니다.</div>';
+        }
+    }
+
+    function selectTime(timeObj, btn) {
+        selectedTime = timeObj;
+        document.querySelectorAll('#timeList .item-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        updateSummary();
+        nameInput.focus();
+    }
+
+    // --- UI Update & Submission ---
+    function updateSummary() {
+        selectionSummary.innerHTML = `
+            <span class="summary-tag ${selectedDate ? 'highlight' : ''}">${selectedDate ? selectedDate : '날짜 미선택'}</span>
+            <span class="summary-tag ${selectedTheme ? 'highlight' : ''}">${selectedTheme ? selectedTheme.name : '테마 미선택'}</span>
+            <span class="summary-tag ${selectedTime ? 'highlight' : ''}">${selectedTime ? selectedTime.time : '시간 미선택'}</span>
+        `;
+        checkReserveAbility();
+    }
+
+    function checkReserveAbility() {
+        if (selectedDate && selectedTheme && selectedTime) {
+            reserveBtn.disabled = false;
+        } else {
+            reserveBtn.disabled = true;
+        }
+    }
+
+    nameInput.addEventListener('input', checkReserveAbility);
+
+    reserveBtn.onclick = async () => {
+        const name = nameInput.value.trim();
+        if (!name) { showToast('예약자 성함을 입력해주세요.', 'error'); return; }
+
+        try {
+            const res = await fetch('/reservations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: name,
+                    date: selectedDate,
+                    themeId: selectedTheme.id,
+                    timeId: selectedTime.id
+                })
+            });
+            if (res.ok) {
+                showToast('🎉 예약이 성공적으로 완료되었습니다!', 'success');
+                setTimeout(() => window.location.href = '/user-reservation-list.html', 1500);
+            } else {
+                const error = await res.json();
+                showToast(error.message || '예약 실패', 'error');
+            }
+        } catch (e) { showToast('서버 오류 발생', 'error'); }
+    };
+
+    // Init
+    renderCalendar();
+</script>
+
 </body>
 </html>
