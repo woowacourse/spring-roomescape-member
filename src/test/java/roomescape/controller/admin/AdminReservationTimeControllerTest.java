@@ -1,10 +1,10 @@
 package roomescape.controller.admin;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,13 @@ public class AdminReservationTimeControllerTest {
                 .then().statusCode(200);
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/6")
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10));
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/10")
                 .then().log().all()
                 .statusCode(204);
     }
