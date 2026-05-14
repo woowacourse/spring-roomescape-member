@@ -55,6 +55,11 @@ public class Reservation {
         this.time = newTime;
     }
 
+    public void changeScheduleByManager(ReservationDate newDate, ReservationTime newTime) {
+        this.date = newDate;
+        this.time = newTime;
+    }
+
     private static void validate(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(reservationDate);
