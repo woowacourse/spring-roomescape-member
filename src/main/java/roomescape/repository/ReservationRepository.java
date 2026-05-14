@@ -39,7 +39,32 @@ public class ReservationRepository {
                 ORDER BY r.id
                 """;
 
-        return jdbcTemplate.query(sql, this::mapToDomain)
+        return jdbcTemplate.query(sql, ReservationRepository::mapToDomain)
+                .stream()
+                .toList();
+    }
+
+    public List<Reservation> findByName(final String name) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    r.theme_id AS theme_id,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    t.end_at AS time_end_at,
+                    h.name AS theme_name,
+                    h.description AS theme_description,
+                    h.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme h ON r.theme_id = h.id 
+                WHERE r.name = ?
+                ORDER BY r.id
+                """;
+
+        return jdbcTemplate.query(sql, ReservationRepository::mapToDomain, name)
                 .stream()
                 .toList();
     }
@@ -87,7 +112,7 @@ public class ReservationRepository {
 
         return jdbcTemplate.query(
                         sql,
-                        this::mapToTimesWithStatus,
+                        ReservationRepository::mapToTimesWithStatus,
                         date,
                         themeId
                 ).stream()
@@ -147,7 +172,7 @@ public class ReservationRepository {
     /**
      * ResultSet - Domain 매핑 메서드
      */
-    private Reservation mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
+    private static Reservation mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         final ReservationTime reservationTime = ReservationTime.createWithId(
                 resultSet.getLong("time_id"),
                 resultSet.getTime("time_start_at").toLocalTime(),
@@ -173,7 +198,7 @@ public class ReservationRepository {
     /**
      * ResultSet - DTO 매핑 메서드
      */
-    private ReservationTimesWithStatus mapToTimesWithStatus(final ResultSet resultSet, final int rowNum) throws SQLException {
+    private static ReservationTimesWithStatus mapToTimesWithStatus(final ResultSet resultSet, final int rowNum) throws SQLException {
         return new ReservationTimesWithStatus(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),

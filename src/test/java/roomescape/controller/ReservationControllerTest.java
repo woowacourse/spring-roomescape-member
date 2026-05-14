@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.dto.response.AvailableDateResponse;
+import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
 import java.time.Clock;
@@ -98,6 +99,28 @@ class ReservationControllerTest {
         List<ReservationTimeStatusResponse> timeStatusesAfterReservation = getReservationTimeStatusResponses();
         assertThat(timeStatusesAfterReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesAfterReservation)).isEqualTo(4);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_자신의_이름으로_본인의_예약목록_조회() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
+
+        assertThat(reservations).hasSize(1);
+        ReservationResponse response = reservations.getFirst();
+        assertThat(response.id()).isEqualTo(1);
+        assertThat(response.name()).isEqualTo("브라운");
+        assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 5));
+        assertThat(response.time().id()).isEqualTo(1);
+        assertThat(response.theme().id()).isEqualTo(1);
     }
 
     private static List<ReservationTimeStatusResponse> getReservationTimeStatusResponses() {

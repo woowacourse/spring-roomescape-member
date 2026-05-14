@@ -37,6 +37,12 @@ public class ReservationController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservationsByName(@RequestParam("name") String name) {
+        final List<ReservationResponse> results = reservationService.getReservationsByName(name);
+        return ResponseEntity.ok(results);
+    }
+
     @PostMapping
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ReservationResponse> create(

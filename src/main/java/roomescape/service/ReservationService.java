@@ -116,6 +116,13 @@ public class ReservationService {
         return new AvailableDateResponse(dates);
     }
 
+    public List<ReservationResponse> getReservationsByName(final String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        return reservations.stream()
+                .map(ReservationService::mapDomainToDto)
+                .toList();
+    }
+
     private static ReservationResponse mapDomainToDto(final Reservation reservation) {
         final ReservationTime reservationTime = reservation.getTime();
         final Theme theme = reservation.getTheme();
