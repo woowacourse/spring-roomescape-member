@@ -11,10 +11,14 @@ class ReservationTimeTest {
     @Test
     void 식별자가_같은_경우_동등한_객체로_판단한다() {
         // given
-        ReservationTime reservationTimeA = new ReservationTime(1L, LocalTime.of(10,1));
-        ReservationTime reservationTimeB = new ReservationTime(1L, LocalTime.of(10,2));
+        LocalTime current = LocalTime.now();
+        LocalTime afterOneHour = current.plusHours(1);
 
-        // when & then
+        // when
+        ReservationTime reservationTimeA = new ReservationTime(1L, current);
+        ReservationTime reservationTimeB = new ReservationTime(1L, afterOneHour);
+
+        // then
         Assertions.assertThat(reservationTimeA).isEqualTo(reservationTimeB);
     }
 
@@ -22,7 +26,7 @@ class ReservationTimeTest {
     @ValueSource(longs = {-1L, 0L})
     void 식별자가_0보다_작은_경우_예외가_발생한다(Long id) {
         // when & then
-        Assertions.assertThatThrownBy(() -> new ReservationTime(id, LocalTime.of(10,1)))
+        Assertions.assertThatThrownBy(() -> new ReservationTime(id, LocalTime.now()))
                 .isInstanceOf(InvalidIdException.class);
     }
 
@@ -32,7 +36,7 @@ class ReservationTimeTest {
         Long id = null;
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new ReservationTime(id, LocalTime.of(10,1)))
+        Assertions.assertThatThrownBy(() -> new ReservationTime(id, LocalTime.now()))
                 .isInstanceOf(InvalidIdException.class);
     }
 }
