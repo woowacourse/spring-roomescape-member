@@ -29,8 +29,8 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime saveTime(ReservationTimeCreateCommand timeCreateCommand) {
-        ReservationTime reservationTime = ReservationTime.create(timeCreateCommand.startAt());
+    public ReservationTime saveTime(ReservationTimeCreateCommand createCommand) {
+        ReservationTime reservationTime = ReservationTime.create(createCommand.startAt());
         return reservationTimeRepository.save(reservationTime);
     }
 

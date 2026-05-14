@@ -32,8 +32,8 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> saveTime(
             @RequestBody ReservationTimeCreateRequest request
     ) {
-        ReservationTimeCreateCommand timeCreateCommand = new ReservationTimeCreateCommand(request.startAt());
-        ReservationTimeResponse response = ReservationTimeResponse.from(service.saveTime(timeCreateCommand));
+        ReservationTimeCreateCommand createCommand = new ReservationTimeCreateCommand(request.startAt());
+        ReservationTimeResponse response = ReservationTimeResponse.from(service.saveTime(createCommand));
         return ResponseEntity.created(URI.create("/times/" + response.id()))
                 .body(response);
     }

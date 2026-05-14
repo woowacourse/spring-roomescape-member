@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ThemeErrorCode;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.domain.PopularThemeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -27,8 +28,13 @@ public class ThemeService {
         this.popularThemeRepository = popularThemeRepository;
     }
 
-    public Theme save(String name, String description, String thumbnailUrl) {
-        return themeRepository.save(Theme.create(name, description, thumbnailUrl));
+    public Theme save(ThemeCreateCommand createCommand) {
+        Theme theme = Theme.create(
+                createCommand.name(),
+                createCommand.description(),
+                createCommand.thumbnail()
+        );
+        return themeRepository.save(theme);
     }
 
     public Optional<Theme> findById(Long id) {

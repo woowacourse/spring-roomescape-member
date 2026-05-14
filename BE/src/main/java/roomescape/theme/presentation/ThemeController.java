@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.global.auth.Admin;
 import roomescape.theme.application.ThemeService;
-import roomescape.theme.presentation.dto.ThemeRequest;
-import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.theme.application.dto.ThemeCreateCommand;
+import roomescape.theme.presentation.dto.request.ThemeCreateRequest;
+import roomescape.theme.presentation.dto.response.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -31,13 +32,14 @@ public class ThemeController {
     @Admin
     @PostMapping
     public ResponseEntity<ThemeResponse> saveTheme(
-            @RequestBody ThemeRequest request
+            @RequestBody ThemeCreateRequest request
     ) {
-        ThemeResponse result = ThemeResponse.from(service.save(
+        ThemeCreateCommand createCommand = new ThemeCreateCommand(
                 request.name(),
                 request.description(),
                 request.thumbnail()
-        ));
+        );
+        ThemeResponse result = ThemeResponse.from(service.save(createCommand));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
