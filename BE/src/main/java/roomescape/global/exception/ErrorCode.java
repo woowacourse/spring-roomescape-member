@@ -9,6 +9,7 @@ public enum ErrorCode {
     THEME_NOT_FOUND("선택하신 테마 정보가 존재하지 않습니다."),
 
     // Bad Request - 400
+    INVALID_REQUEST_FORMAT("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."),
     REQUEST_NAME_EMPTY("이름이 비어있습니다. 이름을 입력해주세요"),
     RESERVATION_NAME_EMPTY("예약자 성함이 누락되었습니다. 이름을 입력해주세요."),
     RESERVATION_DATE_NULL("예약 날짜가 선택되지 않았습니다. 날짜를 선택해주세요."),
@@ -18,6 +19,7 @@ public enum ErrorCode {
     THEME_DESCRIPTION_EMPTY("테마 설명이 비어있습니다. 설명을 입력해주세요."),
     THEME_THUMBNAIL_EMPTY("테마 썸네일 주소가 비어있습니다. 주소를 입력해주세요."),
     RESERVATION_UPDATE_REQUEST_EMPTY("수정할 내용이 없습니다. 변경할 정보를 입력해주세요"),
+
 
     // Conflict - 409
     RESERVATION_DUPLICATED("동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요."),
