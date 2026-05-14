@@ -1,29 +1,30 @@
 package roomescape.handler;
 
-import java.time.format.DateTimeParseException;
+import jakarta.annotation.Priority;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.BusinessException;
 
 @RestControllerAdvice
+@Priority(2)
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ProblemDetail> handleClientException(BusinessException ex) {
-        return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(ex.getBody());
-    }
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<ProblemDetail> handleDateTimeParseException(DateTimeParseException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY,
-                "날짜 형식이 잘못되었습니다.");
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ProblemDetail> handleException(Exception e) {
+        log.error("예상치 못한 예외 발생: ", e);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+        );
         return ResponseEntity
-                .status(problemDetail.getStatus())
+                .status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(problemDetail);
     }
 }
