@@ -19,6 +19,7 @@ public enum ErrorCode {
     TIME_INVALID_DATE("지난 날짜로 시간 조회를 시도했습니다."),
 
     THEME_NOT_FOUND("요청한 테마를 찾을 수 없습니다."),
+    THEME_DUPLICATE("이미 존재하는 테마입니다."),
     THEME_REFERENCED_BY_RESERVATION("요청한 테마를 참조하는 예약이 존재합니다."),
     THEME_INVALID_DATE("시작 일자는 종료 일자 이전 시점이어야 합니다.");
 

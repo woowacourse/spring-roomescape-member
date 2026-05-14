@@ -54,6 +54,7 @@ public class ThemeService {
     }
 
     public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
+        validateDuplicates(requestDto.name());
         ThemeCreateRequestValidator.validate(requestDto.name(), requestDto.description(), requestDto.imageUrl());
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
 
@@ -66,6 +67,12 @@ public class ThemeService {
         }
         if (themeRepository.deleteThemeById(id) == 0) {
             throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
+        }
+    }
+
+    private void validateDuplicates(String name) {
+        if (themeRepository.existsByName(name)) {
+            throw new ConflictException(ErrorCode.THEME_DUPLICATE);
         }
     }
 }

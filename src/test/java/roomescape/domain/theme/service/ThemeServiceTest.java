@@ -181,6 +181,29 @@ class ThemeServiceTest {
                     actual.imageUrl())
             );
         }
+
+        @Test
+        @DisplayName("같은 이름의 테마가 존재하면 예외가 발생한다.")
+        void 실패1() {
+            // given
+            themeRepository.save(Theme.create(
+                "테마명",
+                "기존 테마 설명",
+                "https://roomescape.com/images/themes/original.png"
+            ));
+            ThemeCreateRequestDto request = new ThemeCreateRequestDto(
+                "테마명",
+                "새 테마 설명",
+                "https://roomescape.com/images/themes/prison-room.png"
+            );
+
+            // when & then
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.saveTheme(request),
+                ConflictException.class,
+                ErrorCode.THEME_DUPLICATE
+            );
+        }
     }
 
     @Nested

@@ -65,6 +65,12 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existsByName(String name) {
+        return themes.stream()
+            .anyMatch(theme -> theme.getName().equals(name));
+    }
+
+    @Override
     public int deleteThemeById(Long id) {
         int beforeSize = themes.size();
         themes.removeIf(time -> Objects.equals(time.getId(), id));
