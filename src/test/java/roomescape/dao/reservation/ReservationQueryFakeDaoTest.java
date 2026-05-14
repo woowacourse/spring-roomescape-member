@@ -10,7 +10,7 @@ import roomescape.fixture.FakeReservationQueryDao;
 import roomescape.fixture.FakeThemeDao;
 import roomescape.fixture.FakeTimeDao;
 
-public class ReservationQueryFakeDaoTest extends ReservationQueryDaoContract{
+public class ReservationQueryFakeDaoTest extends ReservationQueryDaoContract {
 
     private final FakeTimeDao timeDao = new FakeTimeDao();
     private final FakeThemeDao themeDao = new FakeThemeDao();

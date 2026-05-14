@@ -9,12 +9,10 @@ import java.util.Map;
 
 public class FakeDatabase {
     public static final Map<Long, ThemeRow> themes = new HashMap<>();
-    public static long themeSequence = 0L;
-
     public static final Map<Long, TimeRow> times = new HashMap<>();
-    public static long timeSequence = 0L;
-
     public static final Map<Long, ReservationRow> reservations = new HashMap<>();
+    public static long themeSequence = 0L;
+    public static long timeSequence = 0L;
     public static long reservationSequence = 0L;
 
     public static Long generateTimeId() {

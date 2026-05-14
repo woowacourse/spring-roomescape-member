@@ -1,7 +1,5 @@
 package roomescape.dao;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
 

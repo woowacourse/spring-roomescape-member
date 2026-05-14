@@ -20,13 +20,18 @@ import roomescape.dao.TimeJdbcDao;
         ReservationJdbcDao.class,
         ReservationQueryJdbcDao.class})
 @ActiveProfiles("test")
-public class ReservationQueryJdbcDaoTest extends ReservationQueryDaoContract{
+public class ReservationQueryJdbcDaoTest extends ReservationQueryDaoContract {
 
-    @Autowired private TimeDao timeDao;
-    @Autowired private ThemeDao themeDao;
-    @Autowired private ReservationDao reservationDao;
-    @Autowired private ReservationQueryDao reservationQueryDao;
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired
+    private TimeDao timeDao;
+    @Autowired
+    private ThemeDao themeDao;
+    @Autowired
+    private ReservationDao reservationDao;
+    @Autowired
+    private ReservationQueryDao reservationQueryDao;
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Override
     void clearTime() {

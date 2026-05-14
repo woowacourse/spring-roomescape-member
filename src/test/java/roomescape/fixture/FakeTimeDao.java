@@ -26,7 +26,7 @@ public class FakeTimeDao implements TimeDao {
     public TimeRow create(TimeRow time) {
         boolean duplicate = existsByStartAt(time.startAt());
 
-        if(duplicate){
+        if (duplicate) {
             throw new DuplicateKeyException("uk_start_at");
         }
 

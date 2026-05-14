@@ -44,13 +44,13 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
+        clearAll();
         reservationDao = new FakeReservationDao();
         timeDao = new FakeTimeDao();
         themeDao = new FakeThemeDao();
         reservationService = new ReservationService(
                 reservationDao, timeDao, themeDao, FIXED_CLOCK
         );
-        clearAll();
     }
 
     private TimeRow givenTime(int hour) {
@@ -58,7 +58,7 @@ class ReservationServiceTest {
     }
 
     private ThemeRow givenTheme(String name) {
-        return themeDao.create(new ThemeRow(name, "http://thumbnail_url", "방탈출을 할 수 있다."));
+        return themeDao.create(new ThemeRow(name, "https://test.com", "테스트용 설명입니다"));
     }
 
     private ReservationRequestDto requestOf(String name, LocalDate date, Long timeId, Long themeId) {
@@ -68,12 +68,6 @@ class ReservationServiceTest {
     @Test
     void 조회할_id가_존재하지_않으면_예외처리한다() {
         assertThatThrownBy(() -> reservationService.findById(NOT_EXISTS_ID))
-                .isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    void 삭제하려는_id가_존재하지_않으면_예외_처리한다() {
-        assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -96,7 +90,6 @@ class ReservationServiceTest {
         @Test
         void 시간이_존재하지_않는다면_예외_처리한다() {
             ThemeRow theme = givenTheme("방탈출");
-
             ReservationRequestDto request = requestOf("유저1", TODAY, null, theme.id());
 
             assertThatThrownBy(() -> reservationService.create(request))
@@ -106,7 +99,6 @@ class ReservationServiceTest {
         @Test
         void 테마가_존재하지_않는다면_예외_처리한다() {
             TimeRow time = givenTime(14);
-
             ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), null);
 
             assertThatThrownBy(() -> reservationService.create(request))
@@ -125,7 +117,7 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 같은_테마지만_시간이_다르면_예약_가능() {
+        void 같은_날짜_같은_테마지만_시간이_다르면_예약_가능() {
             TimeRow time1 = givenTime(14);
             TimeRow time2 = givenTime(15);
             ThemeRow theme = givenTheme("방탈출");
@@ -138,16 +130,39 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 같은_시간지만_테마이_다르면_예약_가능() {
+        void 같은_시간_같은_날짜지만_테마가_다르면_예약_가능() {
             TimeRow time = givenTime(14);
             ThemeRow theme1 = givenTheme("방탈출1");
             ThemeRow theme2 = givenTheme("방탈출2");
-
             reservationService.create(requestOf("유저1", TODAY, time.id(), theme1.id()));
 
             assertThatCode(() ->
                     reservationService.create(requestOf("유저1", TODAY, time.id(), theme2.id()))
             ).doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    @DisplayName("예약을 삭제할 때: ")
+    class Delete {
+
+        @Test
+        void 정상_요청이면_삭제된다() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+
+            reservationService.delete(created.id());
+
+            assertThatThrownBy(() -> reservationService.findById(created.id()))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 삭제하려는_id가_존재하지_않으면_예외() {
+            assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

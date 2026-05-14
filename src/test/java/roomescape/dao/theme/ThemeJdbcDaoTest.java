@@ -8,18 +8,17 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.ThemeJdbcDao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @JdbcTest
 @Import({
         ThemeJdbcDao.class
 })
 @ActiveProfiles("test")
-class ThemeJdbcDaoTest extends ThemeDaoContract{
+class ThemeJdbcDaoTest extends ThemeDaoContract {
 
-    @Autowired private ThemeDao themeDao;
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired
+    private ThemeDao themeDao;
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Override
     ThemeDao dao() {

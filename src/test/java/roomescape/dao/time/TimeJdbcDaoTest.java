@@ -11,7 +11,6 @@ import roomescape.dao.TimeJdbcDao;
 @JdbcTest
 @Import(TimeJdbcDao.class)
 @ActiveProfiles("test")
-
 class TimeJdbcDaoTest extends TimeDaoContract {
 
     @Autowired

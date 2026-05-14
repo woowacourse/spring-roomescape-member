@@ -25,6 +25,7 @@ public abstract class ThemeDaoContract {
     }
 
     abstract ThemeDao dao();
+
     abstract void clear();
 
     private ThemeRow themeRow(String name, String thumbnailUrl, String description) {

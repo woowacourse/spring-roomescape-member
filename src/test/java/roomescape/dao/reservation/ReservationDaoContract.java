@@ -38,11 +38,15 @@ public abstract class ReservationDaoContract {
     }
 
     abstract void clearTime();
+
     abstract void clearTheme();
+
     abstract void clearReservation();
 
     abstract ReservationDao reservationDao();
+
     abstract TimeDao timeDao();
+
     abstract ThemeDao themeDao();
 
 

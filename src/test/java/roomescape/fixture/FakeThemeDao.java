@@ -32,7 +32,7 @@ public class FakeThemeDao implements ThemeDao {
     public ThemeRow create(ThemeRow theme) {
         boolean duplicate = existsByName(theme.name());
 
-        if(duplicate) {
+        if (duplicate) {
             throw new DuplicateKeyException("uk_theme_name");
         }
 

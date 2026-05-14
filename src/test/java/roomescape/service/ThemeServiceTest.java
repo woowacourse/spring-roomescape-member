@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.ConflictException;
@@ -21,71 +22,102 @@ import roomescape.fixture.FakeThemeDao;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ThemeServiceTest {
+
+    private static final LocalDate FIXED_DATE = LocalDate.of(2026, 5, 10);
+    private static final Long NOT_EXISTS_ID = Long.MAX_VALUE;
+
     private ThemeService themeService;
     private ThemeDao themeDao;
     private ReservationDao reservationDao;
     private ReservationQueryDao reservationQueryDao;
 
-    private ThemeRequestDto requestDto1;
-    private ThemeRequestDto requestDto2;
 
     @BeforeEach
     void setUp() {
+        FakeDatabase.clearAll();
         themeDao = new FakeThemeDao();
         reservationDao = new FakeReservationDao();
         reservationQueryDao = new FakeReservationQueryDao();
         themeService = new ThemeService(themeDao, reservationDao, reservationQueryDao);
-
-        requestDto1 = new ThemeRequestDto("테마1", "https://test1.com", "설명길이제한때문에");
-        requestDto2 = new ThemeRequestDto("테마2", "https://test2.com", "설명길이제한때문에");
-        FakeDatabase.clearAll();
     }
 
-    @Test
-    void 시간이_이미_존재한다면_예외를_반환한다() {
-        insertHandler(requestDto1);
-        assertThatThrownBy(() -> themeService.create(requestDto1))
-                .isInstanceOf(ConflictException.class);
+    private ThemeRequestDto requestOf(String name) {
+        return new ThemeRequestDto(name, "https://test.com", "테스트용 설명입니다");
     }
+
+    private ThemeResponseDto givenTheme(String name) {
+        return themeService.create(requestOf(name));
+    }
+
+    private void givenReservationOn(ThemeResponseDto theme, int hour) {
+        reservationDao.create(new ReservationRow(
+                "달수",
+                FIXED_DATE,
+                new TimeRow(LocalTime.of(hour, 0)),
+                new ThemeRow(theme.id(), theme.name(), theme.thumbnailUrl(), theme.description())));
+    }
+
 
     @Test
     void 조회하려는_id가_존재하지_않으면_예외_처리한다() {
-        Long notExistsThemeId = 1L;
-
-        assertThatThrownBy(() -> themeService.findById(notExistsThemeId))
+        assertThatThrownBy(() -> themeService.findById(NOT_EXISTS_ID))
                 .isInstanceOf(NotFoundException.class);
     }
 
-    private ThemeResponseDto insertHandler(ThemeRequestDto requestDto1) {
-        return themeService.create(requestDto1);
+    @Nested
+    @DisplayName("테마를 생성할 때: ")
+    class Created {
+
+        @Test
+        void 정상_요청이면_테마가_생성된다() {
+            ThemeRequestDto request = requestOf("방탈출");
+            ThemeResponseDto response = themeService.create(request);
+
+            assertThat(response.id()).isNotNull();
+            assertThat(response.name()).isEqualTo("방탈출");
+        }
+
+        @Test
+        void 동일한_이름의_테마가_이미_있으면_예외_처리한다() {
+            String name = "방탈출";
+            givenTheme(name);
+            ThemeRequestDto request = requestOf(name);
+
+            assertThatThrownBy(() -> themeService.create(request))
+                    .isInstanceOf(ConflictException.class);
+        }
     }
 
     @Nested
-    class 삭제할_때 {
+    @DisplayName("테마를 삭제할 때: ")
+    class Delete {
+
+        @Test
+        void 정상_요청이면_삭제된다() {
+            ThemeResponseDto theme = givenTheme("방탈출");
+
+            themeService.delete(theme.id());
+
+            assertThatThrownBy(() -> themeService.findById(theme.id()))
+                    .isInstanceOf(NotFoundException.class);
+        }
 
         @Test
         void 삭제하려는_id가_존재하지_않으면_예외_처리한다() {
-            Long notExistsThemeId = 1L;
-
-            assertThatThrownBy(() -> themeService.delete(notExistsThemeId))
+            assertThatThrownBy(() -> themeService.delete(NOT_EXISTS_ID))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
         void 예약_id가_존재하면_예외를_반환한다() {
-            ThemeResponseDto savedTheme = themeService.create(requestDto1);
-            reservationDao.create(new ReservationRow(
-                    "달수",
-                    LocalDate.now(),
-                    new TimeRow(LocalTime.of(10, 0)),
-                    new ThemeRow(savedTheme.id(), savedTheme.name(), savedTheme.thumbnailUrl(), savedTheme.description())));
+            ThemeResponseDto theme = givenTheme("방탈출");
+            givenReservationOn(theme, 10);
 
-            Long themeId = savedTheme.id();
-
-            assertThatThrownBy(() -> themeService.delete(themeId))
+            assertThatThrownBy(() -> themeService.delete(theme.id()))
                     .isInstanceOf(ConflictException.class);
         }
     }

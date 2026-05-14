@@ -12,9 +12,6 @@ import roomescape.dao.ThemeJdbcDao;
 import roomescape.dao.TimeDao;
 import roomescape.dao.TimeJdbcDao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @JdbcTest
 @Import({
         ReservationJdbcDao.class,
@@ -22,12 +19,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         ThemeJdbcDao.class
 })
 @ActiveProfiles("test")
-class ReservationJdbcDaoTest extends ReservationDaoContract{
+class ReservationJdbcDaoTest extends ReservationDaoContract {
 
-    @Autowired private TimeDao timeDao;
-    @Autowired private ThemeDao themeDao;
-    @Autowired private ReservationDao reservationDao;
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired
+    private TimeDao timeDao;
+    @Autowired
+    private ThemeDao themeDao;
+    @Autowired
+    private ReservationDao reservationDao;
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Override
     void clearTime() {

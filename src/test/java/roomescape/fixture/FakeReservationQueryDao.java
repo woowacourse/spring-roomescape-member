@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static roomescape.fixture.FakeDatabase.*;
+import static roomescape.fixture.FakeDatabase.clearAll;
 import static roomescape.fixture.FakeDatabase.reservations;
+import static roomescape.fixture.FakeDatabase.times;
 
 public class FakeReservationQueryDao implements ReservationQueryDao {
     public void clear() {
@@ -37,7 +38,7 @@ public class FakeReservationQueryDao implements ReservationQueryDao {
     public List<ThemeRow> findPopulars(int limit, int days, LocalDate date) {
         LocalDate startDate = date.minusDays(days);
 
-        Map<Long, Long> countByTheme =  reservations.values().stream()
+        Map<Long, Long> countByTheme = reservations.values().stream()
                 .filter(r -> !r.date().isBefore(startDate) && !r.date().isAfter(date))
                 .collect(Collectors.groupingBy(
                         r -> r.themeRow().id(),

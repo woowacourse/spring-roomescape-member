@@ -13,7 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class ReservationQueryJdbcDao implements ReservationQueryDao{
+public class ReservationQueryJdbcDao implements ReservationQueryDao {
     private static final RowMapper<ThemeRow> THEME_ROW_MAPPER = (rs, rowNum) ->
             new ThemeRow(
                     rs.getLong("theme_id"),

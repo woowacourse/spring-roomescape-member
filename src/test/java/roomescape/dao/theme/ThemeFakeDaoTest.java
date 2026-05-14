@@ -4,7 +4,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.fixture.FakeDatabase;
 import roomescape.fixture.FakeThemeDao;
 
-public class ThemeFakeDaoTest extends ThemeDaoContract{
+public class ThemeFakeDaoTest extends ThemeDaoContract {
 
     private final FakeThemeDao themeDao = new FakeThemeDao();
 

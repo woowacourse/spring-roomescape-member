@@ -37,13 +37,17 @@ public abstract class ReservationQueryDaoContract {
     }
 
     abstract void clearTime();
+
     abstract void clearTheme();
+
     abstract void clearReservation();
 
     abstract ReservationQueryDao queryDao();
 
     abstract TimeDao timeDao();
+
     abstract ThemeDao themeDao();
+
     abstract ReservationDao reservationDao();
 
     private TimeRow givenTime(int hour) {

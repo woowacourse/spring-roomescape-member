@@ -4,7 +4,7 @@ import roomescape.dao.TimeDao;
 import roomescape.fixture.FakeDatabase;
 import roomescape.fixture.FakeTimeDao;
 
-public class TimeFakeDaoTest extends TimeDaoContract{
+public class TimeFakeDaoTest extends TimeDaoContract {
 
     private final FakeTimeDao timeDao = new FakeTimeDao();
 

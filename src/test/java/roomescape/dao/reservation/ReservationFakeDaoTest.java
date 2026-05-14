@@ -8,7 +8,7 @@ import roomescape.fixture.FakeReservationDao;
 import roomescape.fixture.FakeThemeDao;
 import roomescape.fixture.FakeTimeDao;
 
-public class ReservationFakeDaoTest extends ReservationDaoContract{
+public class ReservationFakeDaoTest extends ReservationDaoContract {
 
     private final FakeTimeDao timeDao = new FakeTimeDao();
     private final FakeThemeDao themeDao = new FakeThemeDao();
@@ -26,7 +26,7 @@ public class ReservationFakeDaoTest extends ReservationDaoContract{
 
     @Override
     void clearReservation() {
-       FakeDatabase.clearReservation();
+        FakeDatabase.clearReservation();
     }
 
     @Override
