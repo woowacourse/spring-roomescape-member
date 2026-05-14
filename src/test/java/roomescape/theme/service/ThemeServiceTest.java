@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 
@@ -126,7 +127,7 @@ class ThemeServiceTest {
             LocalDate reservationDate = futureDate.toLocalDate();
             Long timeId = insertReservationTime(futureDate.toLocalTime());
             Theme saved = themeService.save(new ThemeRequest("테마", "설명", "https://example.com/a.png"));
-            insertReservation("브라운", reservationDate, timeId, saved.getId());
+            insertReservation("브라운", reservationDate, timeId, saved.getId(), ReservationStatus.RESERVED);
 
             // when & then
             assertThatThrownBy(() -> themeService.deleteById(saved.getId()))
@@ -181,12 +182,12 @@ class ThemeServiceTest {
             Long t11 = insertReservationTime(LocalTime.of(11, 0));
             Long t12 = insertReservationTime(LocalTime.of(12, 0));
 
-            insertReservation("u1", day1Ago, t10, themeA.getId());
-            insertReservation("u2", day1Ago, t11, themeA.getId());
+            insertReservation("u1", day1Ago, t10, themeA.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u2", day1Ago, t11, themeA.getId(), ReservationStatus.COMPLETED);
 
-            insertReservation("u3", day7Ago, t11, themeB.getId());
-            insertReservation("u4", day7Ago, t10, themeB.getId());
-            insertReservation("u5", day7Ago, t12, themeB.getId());
+            insertReservation("u3", day7Ago, t11, themeB.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u4", day7Ago, t10, themeB.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u5", day7Ago, t12, themeB.getId(), ReservationStatus.COMPLETED);
 
             // when
             List<Theme> popular = themeService.findPopularThemes();
@@ -206,7 +207,7 @@ class ThemeServiceTest {
             Long timeId = insertReservationTime(LocalTime.of(10, 0));
 
             // 기준 시각 2026-05-06 의 8일 전 = 2026-04-28 → 제외돼야 함
-            insertReservation("oldUser", day8Ago, timeId, theme.getId());
+            insertReservation("oldUser", day8Ago, timeId, theme.getId(), ReservationStatus.COMPLETED);
 
             // when
             List<Theme> popular = themeService.findPopularThemes();
@@ -273,10 +274,10 @@ class ThemeServiceTest {
         );
     }
 
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId, ReservationStatus status) {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, date.toString(), timeId, themeId
+                "INSERT INTO reservation (name, reservation_date, time_id, theme_id, status) VALUES (?, ?, ?, ?, ?)",
+                name, date.toString(), timeId, themeId, status.name()
         );
     }
 }

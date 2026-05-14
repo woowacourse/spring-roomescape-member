@@ -7,12 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -79,8 +84,6 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.save(request))
                     .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("과거 시각");
-
-            assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
@@ -95,8 +98,6 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.save(request))
                     .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("과거 시각");
-
-            assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
@@ -114,49 +115,26 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.save(duplicate))
                     .isInstanceOf(DuplicateResourceException.class)
                     .hasMessageContaining("이미 해당 날짜와 시간에 예약이 존재합니다.");
-
-            assertThat(reservationService.findAll()).hasSize(1);
         }
     }
 
     @Nested
-    @DisplayName("deleteById 메서드는")
-    class DeleteById {
+    @DisplayName("cancelById 메서드는")
+    class CancelById {
 
         @Test
-        @DisplayName("ID에 해당하는 예약을 삭제한다.")
-        void deleteByIdRemovesReservation() {
+        @DisplayName("ID에 해당하는 예약의 상태를 CANCELED 로 변경한다.")
+        void cancelByIdRemovesReservation() {
             // given
             LocalDate reservationDate = futureDate.toLocalDate();
             Long timeId = insertReservationTime(futureDate.toLocalTime());
             Reservation saved = reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
 
             // when
-            reservationService.deleteById(saved.getId());
+            reservationService.cancelById(saved.getId());
 
             // then
-            assertThat(reservationService.findAll()).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("deleteAll 메서드는")
-    class DeleteAll {
-
-        @Test
-        @DisplayName("모든 예약을 삭제한다.")
-        void deleteAllRemovesEverything() {
-            // given
-            LocalDate reservationDate = futureDate.toLocalDate();
-            Long timeId = insertReservationTime(futureDate.toLocalTime());
-            reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
-            reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(1), timeId, themeId));
-
-            // when
-            reservationService.deleteAll();
-
-            // then
-            assertThat(reservationService.findAll()).isEmpty();
+            assertThat(reservationService.findAll().get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
     }
 
@@ -165,7 +143,7 @@ class ReservationServiceTest {
     class FindAll {
 
         @Test
-        @DisplayName("저장된 예약을 ID 오름차순으로 반환한다.")
+        @DisplayName("저장된 예약을 ID 내림차순으로 반환한다.")
         void findAllReturnsAll() {
             // given
             LocalDate reservationDate = futureDate.toLocalDate();
@@ -178,7 +156,7 @@ class ReservationServiceTest {
 
             // then
             assertThat(result).extracting(Reservation::getName)
-                    .containsExactly("브라운", "제임스");
+                    .containsExactly("제임스", "브라운");
         }
 
         @Test
@@ -189,32 +167,12 @@ class ReservationServiceTest {
     }
 
     @Nested
-    @DisplayName("findByFilter 메서드는")
-    class FindByFilter {
+    @DisplayName("search 메서드는")
+    class Search {
 
         @Test
-        @DisplayName("date 와 themeId 조건에 모두 부합하는 예약만 반환한다.")
-        void findByFilterAppliesBothConditions() {
-            // given
-            LocalDate reservationDate = futureDate.toLocalDate();
-            Long timeId = insertReservationTime(futureDate.toLocalTime());
-            Long otherThemeId = insertTheme("다른 테마", "설명", "https://example.com/thumb2.jpg");
-
-            reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
-            reservationService.save(new ReservationRequest("제임스", reservationDate, timeId, otherThemeId));
-            reservationService.save(new ReservationRequest("나나", reservationDate.plusDays(1), timeId, themeId));
-
-            // when
-            List<Reservation> result = reservationService.findByFilter(reservationDate, themeId);
-
-            // then
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).getName()).isEqualTo("브라운");
-        }
-
-        @Test
-        @DisplayName("두 조건이 모두 null 이면 전체 예약을 반환한다.")
-        void findByFilterReturnsAllWhenNoFilter() {
+        @DisplayName("모든 검색 조건이 다 맞아야 해당하는 예약을 필터링하여 반환한다.")
+        void searchWithAllFilters() {
             // given
             LocalDate reservationDate = futureDate.toLocalDate();
             Long timeId = insertReservationTime(futureDate.toLocalTime());
@@ -222,11 +180,123 @@ class ReservationServiceTest {
             reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(1), timeId, themeId));
 
             // when
-            List<Reservation> result = reservationService.findByFilter(null, null);
+            List<Reservation> results = reservationService.search("브라운", reservationDate, reservationDate.plusDays(1), themeId);
 
             // then
-            assertThat(result).hasSize(2);
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0).getName()).isEqualTo("브라운");
+            assertThat(results.get(0).getTheme().getId()).isEqualTo(themeId);
         }
+
+        @Test
+        @DisplayName("이름 조건만 주어지면 해당 이름을 가진 모든 예약을 반환한다.")
+        void searchByNameOnly() {
+            // given
+            LocalDate reservationDate = futureDate.toLocalDate();
+            Long timeId = insertReservationTime(futureDate.toLocalTime());
+
+            reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
+            reservationService.save(new ReservationRequest("브라운", reservationDate.plusDays(1), timeId, themeId));
+            reservationService.save(new ReservationRequest("브라운", reservationDate.plusDays(4), timeId, themeId));
+            reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(3), timeId, themeId));
+
+            // when
+            List<Reservation> results = reservationService.search("브라운", null, null, null);
+
+            // then
+            assertThat(results).hasSize(3);
+            assertThat(results).extracting(Reservation::getName).containsOnly("브라운");
+        }
+
+        @Test
+        @DisplayName("시작 날짜(from)가 종료 날짜(to)보다 미래이면 BusinessRuleViolationException 이 발생한다.")
+        void searchFailWhenFromAfterTo() {
+            // given
+            LocalDate todayDate = futureDate.toLocalDate();
+            LocalDate tomorrowDate = futureDate.toLocalDate().plusDays(1);
+
+            // when - then
+            assertThatThrownBy(() -> reservationService.search("브라운", tomorrowDate, todayDate, null))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessageContaining("from 은 to 보다 이전이어야 합니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("update 메서드는")
+    class Update {
+
+        @Test
+        @DisplayName("정상 요청이면 예약을 변경하고 변경된 예약을 반환한다.")
+        void updateSuccess() {
+            // given
+            LocalDate reservationDate = futureDate.toLocalDate();
+            Long timeId = insertReservationTime(futureDate.toLocalTime());
+            ReservationRequest request = new ReservationRequest("브라운", reservationDate, timeId, themeId);
+            Long generatedId = insertReservation(request, ReservationStatus.RESERVED);
+
+            // when
+            Reservation updated = reservationService.update(generatedId, request);
+
+            // then
+            assertThat(updated.getId()).isEqualTo(generatedId);
+            assertThat(updated.getName()).isEqualTo("브라운");
+            assertThat(updated.getDate()).isEqualTo(reservationDate);
+            assertThat(updated.getTime().getId()).isEqualTo(timeId);
+            assertThat(updated.getTheme().getId()).isEqualTo(themeId);
+        }
+
+        @Test
+        @DisplayName("예약 일자가 과거이면 BusinessRuleViolationException 이 발생하고 변경되지 않는다.")
+        void updateFailWhenPastDate() {
+            // given
+            LocalDate reservationDate = pastDate.toLocalDate();
+            Long timeId = insertReservationTime(pastDate.toLocalTime());
+            ReservationRequest request = new ReservationRequest("브라운", reservationDate, timeId, themeId);
+            Long generatedId = insertReservation(request, ReservationStatus.COMPLETED);
+
+            // when & then
+            assertThatThrownBy(() ->  reservationService.update(generatedId, request))
+                    .isInstanceOf(BusinessRuleViolationException.class);
+        }
+
+        @Test
+        @DisplayName("동일한 날짜/시간/테마 조합의 예약이 이미 존재하면 DuplicateResourceException 이 발생한다.")
+        void updateFailWhenDuplicate() {
+            // given
+            LocalDate reservationDate1 = futureDate.toLocalDate();
+            Long timeId1 = insertReservationTime(futureDate.toLocalTime());
+            ReservationRequest request1 = new ReservationRequest("브라운", reservationDate1, timeId1, themeId);
+            Long brownId = insertReservation(request1, ReservationStatus.RESERVED);
+
+            LocalDate reservationDate2 = futureDate.toLocalDate();
+            Long timeId2 = insertReservationTime(futureDate.toLocalTime().minusHours(1));
+            ReservationRequest request2 = new ReservationRequest("제임스", reservationDate2, timeId2, themeId);
+            Long jamesId = insertReservation(request2, ReservationStatus.RESERVED);
+
+            ReservationRequest updateToBrownTime = new ReservationRequest("제임스", futureDate.toLocalDate(), timeId1, themeId);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.update(jamesId, updateToBrownTime))
+                    .isInstanceOf(DuplicateResourceException.class);
+        }
+    }
+
+    private Long insertReservation(ReservationRequest request, ReservationStatus status) {
+        String sql = "INSERT INTO reservation (name, reservation_date, time_id, theme_id, status) VALUES (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, request.name());
+            ps.setDate(2, Date.valueOf(request.date()));
+            ps.setLong(3, request.timeId());
+            ps.setLong(4, request.themeId());
+            ps.setString(5, status.name());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     private Long insertReservationTime(LocalTime startAt) {
