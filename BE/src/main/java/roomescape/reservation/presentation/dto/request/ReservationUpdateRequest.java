@@ -10,7 +10,7 @@ public record ReservationUpdateRequest(
         String name
 ) {
     public ReservationUpdateRequest{
-        RequestValidator.requireNotNull(date, ReservationErrorCode.RESERVATION_TIME_REQUIRED);
+        RequestValidator.requireNotNull(date, ReservationErrorCode.RESERVATION_DATE_REQUIRED);
         RequestValidator.requireNotNull(timeId, ReservationErrorCode.RESERVATION_TIME_REQUIRED);
         RequestValidator.requireNotBlank(name, ReservationErrorCode.RESERVATION_NAME_REQUIRED);
     }
