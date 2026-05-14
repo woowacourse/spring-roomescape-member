@@ -26,7 +26,7 @@ public class AdminReservationTimeService {
         try {
             return reservationTimeRepository.save(startAt);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("이미 존재하는 예약 시간입니다");
+            throw new DuplicateException("이미 존재하는 예약 시간입니다.");
         }
     }
 
@@ -35,7 +35,7 @@ public class AdminReservationTimeService {
         int reservationCount = reservationRepository.countByTimeId(id);
 
         if (reservationCount > 0) {
-            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다");
+            throw new ResourceInUseException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
 
         reservationTimeRepository.delete(id);
