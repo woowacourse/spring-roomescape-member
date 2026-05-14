@@ -28,9 +28,9 @@ class UserNameTest {
     }
 
     @Test
-    @DisplayName("예약자 이름의 값이 10자를 초과하면 예외가 발생한다.")
+    @DisplayName("예약자 이름 글자 수 제한을 초과하면 예외가 발생한다.")
     void 이름_글자_수_초과_예외_테스트() {
-        String userName = "01234567890";
+        String userName = "0".repeat(NAME_MAX_LENGTH+1);
 
         assertThatThrownBy(() -> new UserName(userName))
                 .isInstanceOf(IllegalArgumentException.class)

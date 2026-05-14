@@ -18,7 +18,7 @@ class ThemeNameTest {
     }
 
     @Test
-    @DisplayName("테마 이름이 빈칸 이면 예외가 발생한다")
+    @DisplayName("테마 이름이 빈칸 이면 예외가 발생한다.")
     void 테마_이름_빈칸_예외_테스트() {
         String themeName = "";
 
@@ -28,9 +28,9 @@ class ThemeNameTest {
     }
 
     @Test
-    @DisplayName("테마 이름의 값이 20자를 초과하면 예외가 발생한다.")
+    @DisplayName("테마 이름 글자 수 제한을 초과하면 예외가 발생한다.")
     void 테마_이름_글자_수_초과_예외_테스트() {
-        String themeName = "012345678901234567890";
+        String themeName = "0".repeat(THEME_NAME_MAX_LENGTH+1);
 
         assertThatThrownBy(() -> new ThemeName(themeName))
                 .isInstanceOf(IllegalArgumentException.class)
