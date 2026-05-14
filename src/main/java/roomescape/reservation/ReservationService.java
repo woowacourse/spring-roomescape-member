@@ -63,6 +63,7 @@ public class ReservationService {
         LocalDate newDate = Objects.requireNonNullElse(body.date(), oldReservation.date());
         long newTimeId = Objects.requireNonNullElse(body.timeId(), oldReservation.getTimeId());
         long scheduleId = scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(newDate, newTimeId, oldReservation.getThemeId());
+        scheduleService.validateSchedule(newDate, newTimeId, oldReservation.getThemeId());
         validateDuplicatedReservationNot(reservationId, scheduleId);
 
         int affectedRow = reservationRepository.updateScheduleByIdAndName(oldReservation.id(), name, scheduleId);
