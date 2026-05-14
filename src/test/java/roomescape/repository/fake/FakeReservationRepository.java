@@ -26,6 +26,16 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(String name, int limit, int offset) {
+        return store.values().stream()
+                .filter(r -> r.getName().equals(name))
+                .sorted(Comparator.comparing(Reservation::getId))
+                .skip(offset)
+                .limit(limit)
+                .toList();
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }

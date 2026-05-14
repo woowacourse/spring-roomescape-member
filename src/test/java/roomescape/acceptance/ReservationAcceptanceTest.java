@@ -45,6 +45,31 @@ class ReservationAcceptanceTest {
     }
 
     @Test
+    void GET_reservations_name_쿼리_파라미터로_본인의_예약만_조회한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-05-01", 1L);
+        insertReservation("다른사람", 1L, "2026-05-02", 1L);
+        insertReservation("브라운", 1L, "2026-05-03", 1L);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(2))
+                .body("reservations.name", org.hamcrest.Matchers.everyItem(equalTo("브라운")));
+    }
+
+    @Test
+    void GET_reservations_name이_빈_문자열이면_400과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("name은(는) 최소 1자 이상이어야 합니다."));
+    }
+
+    @Test
     void GET_reservations_id_단건을_조회한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");

@@ -106,7 +106,7 @@ class ReservationServiceTest {
         reservationRepository.save(buildReservation("B", themeId, timeId, LocalDate.of(2026, 5, 2)));
         reservationRepository.save(buildReservation("C", themeId, timeId, LocalDate.of(2026, 5, 3)));
 
-        ReservationResponses responses = service.getReservations(0, 2);
+        ReservationResponses responses = service.getReservations(0, 2, null);
 
         assertThat(responses.reservations()).hasSize(2);
         assertThat(responses.hasNext()).isTrue();
@@ -119,10 +119,24 @@ class ReservationServiceTest {
         reservationRepository.save(buildReservation("A", themeId, timeId, LocalDate.of(2026, 5, 1)));
         reservationRepository.save(buildReservation("B", themeId, timeId, LocalDate.of(2026, 5, 2)));
 
-        ReservationResponses responses = service.getReservations(0, 2);
+        ReservationResponses responses = service.getReservations(0, 2, null);
 
         assertThat(responses.reservations()).hasSize(2);
         assertThat(responses.hasNext()).isFalse();
+    }
+
+    @Test
+    void getReservations_name이_주어지면_해당_이름의_예약만_반환한다() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        reservationRepository.save(buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 5, 1)));
+        reservationRepository.save(buildReservation("다른사람", themeId, timeId, LocalDate.of(2026, 5, 2)));
+        reservationRepository.save(buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 5, 3)));
+
+        ReservationResponses responses = service.getReservations(0, 10, "브라운");
+
+        assertThat(responses.reservations()).hasSize(2);
+        assertThat(responses.reservations()).extracting("name").containsOnly("브라운");
     }
 
     @Test
@@ -163,7 +177,7 @@ class ReservationServiceTest {
 
         service.deleteReservation(reservationId);
 
-        ReservationResponses responses = service.getReservations(0, 10);
+        ReservationResponses responses = service.getReservations(0, 10, null);
         assertThat(responses.reservations()).extracting("id").doesNotContain(reservationId);
     }
 

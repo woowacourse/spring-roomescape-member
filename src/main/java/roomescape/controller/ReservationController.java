@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,13 +35,14 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<ReservationResponses> readReservations(
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size,
+            @RequestParam(required = false) @Size(min = 1) String name
     ) {
-        return ResponseEntity.ok(reservationService.getReservations(page, size));
+        return ResponseEntity.ok(reservationService.getReservations(page, size, name));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> readTime(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> readReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(ReservationResponse.from(reservationService.getReservation(id)));
     }
 

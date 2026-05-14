@@ -9,6 +9,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll(int limit, int offset);
 
+    List<Reservation> findAllByName(String name, int limit, int offset);
+
     Optional<Reservation> findById(Long id);
 
     Long save(Reservation reservation);

@@ -31,13 +31,20 @@ public class ReservationService {
         this.timeProvider = timeProvider;
     }
 
-    public ReservationResponses getReservations(int page, int size) {
-        List<Reservation> reservations = reservationRepository.findAll(size + 1, page * size);
+    public ReservationResponses getReservations(int page, int size, String name) {
+        List<Reservation> reservations = fetchReservations(page, size, name);
         boolean hasNext = reservations.size() > size;
         if (hasNext) {
             reservations = reservations.subList(0, size);
         }
         return ReservationResponses.of(reservations, hasNext);
+    }
+
+    private List<Reservation> fetchReservations(int page, int size, String name) {
+        if (name == null) {
+            return reservationRepository.findAll(size + 1, page * size);
+        }
+        return reservationRepository.findAllByName(name, size + 1, page * size);
     }
 
     public Reservation getReservation(Long id) {

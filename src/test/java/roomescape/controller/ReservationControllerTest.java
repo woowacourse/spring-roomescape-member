@@ -46,7 +46,7 @@ class ReservationControllerTest {
 
     @Test
     void GET_reservations_서비스가_반환한_목록과_hasNext를_그대로_응답한다() throws Exception {
-        given(reservationService.getReservations(0, 20))
+        given(reservationService.getReservations(0, 20, null))
                 .willReturn(ReservationResponses.of(List.of(sampleReservation(1L)), false));
 
         mockMvc.perform(get("/reservations"))
@@ -58,14 +58,14 @@ class ReservationControllerTest {
 
     @Test
     void GET_reservations_page와_size_쿼리_파라미터를_그대로_위임한다() throws Exception {
-        given(reservationService.getReservations(2, 5))
+        given(reservationService.getReservations(2, 5, null))
                 .willReturn(ReservationResponses.of(List.of(), true));
 
         mockMvc.perform(get("/reservations?page=2&size=5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasNext").value(true));
 
-        verify(reservationService).getReservations(2, 5);
+        verify(reservationService).getReservations(2, 5, null);
     }
 
     @Test
@@ -183,6 +183,25 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message")
                         .value("'date' 값 'abc'은(는) yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
+    void GET_reservations_name_쿼리_파라미터가_있으면_서비스에_위임한다() throws Exception {
+        given(reservationService.getReservations(0, 20, "브라운"))
+                .willReturn(ReservationResponses.of(java.util.List.of(sampleReservation(1L)), false));
+
+        mockMvc.perform(get("/reservations?name=브라운"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations.size()").value(1));
+
+        verify(reservationService).getReservations(0, 20, "브라운");
+    }
+
+    @Test
+    void GET_reservations_name이_빈_문자열이면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/reservations?name="))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("name은(는) 최소 1자 이상이어야 합니다."));
     }
 
     @Test
