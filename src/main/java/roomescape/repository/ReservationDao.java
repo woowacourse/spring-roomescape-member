@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +14,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorMessage;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 @RequiredArgsConstructor
@@ -86,7 +87,7 @@ public class ReservationDao {
         int affected = jdbcTemplate.update(sql, ReservationStatus.DELETED.name(), reservationId);
 
         if (affected == 0) {
-            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorMessage.RESERVATION_NOT_FOUND);
         }
     }
 
@@ -112,6 +113,18 @@ public class ReservationDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, ReservationStatus.AVAILABLE.name());
+    }
+
+    public boolean existsByTimeId(long timeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation
+                    WHERE status = ? AND time_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, ReservationStatus.AVAILABLE.name(), timeId)
+        );
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

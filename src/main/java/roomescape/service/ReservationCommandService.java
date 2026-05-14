@@ -8,7 +8,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ErrorMessage;
-import roomescape.exception.custom.PastReservationTimeException;
+import roomescape.exception.custom.BadRequestException;
+import roomescape.exception.custom.ConflictException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
@@ -30,18 +31,18 @@ public class ReservationCommandService {
 
     private ReservationTime getReservationTime(long timeId) {
         return reservationTimeDao.findByTimeId(timeId)
-                .orElseThrow(() -> new IllegalStateException("해당하는 ID의 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.TIME_NOT_FOUND));
     }
 
     private void validatePastDateTime(LocalDateTime requestDateTime, LocalDate date, ReservationTime reservationTime) {
         if (requestDateTime.isAfter(LocalDateTime.of(date, reservationTime.startAt()))) {
-            throw new PastReservationTimeException(ErrorMessage.CANNOT_SELECT_PAST_DATETIME);
+            throw new BadRequestException(ErrorMessage.CANNOT_SELECT_PAST_DATETIME);
         }
     }
 
     private void validateNoDuplicateReservation(LocalDate date, long timeId, long themeId) {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalStateException("이미 중복된 예약이 존재합니다.");
+            throw new ConflictException(ErrorMessage.DUPLICATE_RESERVATION);
         }
     }
 

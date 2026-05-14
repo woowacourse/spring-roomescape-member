@@ -1,32 +1,18 @@
 package roomescape.exception.handler;
 
-import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.response.ErrorResponse;
-import roomescape.exception.custom.PastReservationTimeException;
+import roomescape.exception.custom.RoomescapeException;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException exception) {
-        log.error(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException exception) {
-        log.error(exception.getMessage());
-        return ResponseEntity.badRequest().body(exception.getMessage());
-    }
-
-    @ExceptionHandler(PastReservationTimeException.class)
-    public ResponseEntity<ErrorResponse> handlePastReservationTimeException(PastReservationTimeException exception) {
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException exception) {
         log.error(exception.getMessage());
         return ResponseEntity.status(exception.httpStatus()).body(new ErrorResponse(exception.getMessage()));
     }

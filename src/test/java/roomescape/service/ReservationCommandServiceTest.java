@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.ErrorMessage;
-import roomescape.exception.custom.PastReservationTimeException;
+import roomescape.exception.custom.BadRequestException;
+import roomescape.exception.custom.ConflictException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationCommandServiceTest {
@@ -42,7 +43,7 @@ class ReservationCommandServiceTest {
         LocalDateTime requestDateTime = LocalDateTime.of(date, LocalTime.MAX);
 
         assertThatThrownBy(() -> reservationCommandService.create("user_a", date, timeId, themeId, requestDateTime))
-                .isExactlyInstanceOf(PastReservationTimeException.class)
+                .isExactlyInstanceOf(BadRequestException.class)
                 .hasMessage(ErrorMessage.CANNOT_SELECT_PAST_DATETIME.getMessage());
     }
 
@@ -60,7 +61,7 @@ class ReservationCommandServiceTest {
         reservationCommandService.create("user_a", date, timeId, themeId, requestDateTime);
 
         assertThatThrownBy(() -> reservationCommandService.create("user_b", date, timeId, themeId, requestDateTime))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("이미 중복된 예약이 존재합니다.");
+                .isExactlyInstanceOf(ConflictException.class)
+                .hasMessage(ErrorMessage.DUPLICATE_RESERVATION.getMessage());
     }
 }
