@@ -70,7 +70,13 @@ public class ReservationService {
                 .toList();
     }
 
-    //todo: 본인만 삭제 가능
+    public List<ReservationResponse> getReservationsByName(String name) {
+        List<Reservation> reservations = reservationDao.findAllByName(name);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public void delete(long reservationId) {
         Reservation reservation = getReservation(reservationId);
         validateCancelable(reservation);

@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -77,6 +78,46 @@ class ReservationDaoTest {
                 () -> assertThat(reservations.getFirst().getTheme().getName()).isEqualTo(savedTheme.getName()),
                 () -> assertThat(reservations.getFirst().getTheme().getDescription()).isEqualTo(savedTheme.getDescription()),
                 () -> assertThat(reservations.getFirst().getTheme().getThumbnail()).isEqualTo(savedTheme.getThumbnail())
+        );
+    }
+
+    @Test
+    void 이름에_따른_예약_목록을_조회한다() {
+        // given
+        ReservationTime time10 = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime time20 = saveReservationTime(LocalTime.of(20, 0));
+        ReservationTime time22 = saveReservationTime(LocalTime.of(22, 0));
+
+        Theme theme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+
+        saveReservation("브라운", LocalDate.of(2026, 5, 5), time10, theme);
+        saveReservation("브라운", LocalDate.of(2026, 5, 7), time20, theme);
+        saveReservation("브라운", LocalDate.of(2026, 5, 7), time22, theme);
+
+        saveReservation("로지", LocalDate.of(2026, 5, 8), time22, theme);
+        saveReservation("러키", LocalDate.of(2026, 5, 9), time22, theme);
+
+        // when
+        List<Reservation> reservations = reservationDao.findAllByName("브라운");
+
+        // then
+        assertAll(
+                () -> assertThat(reservations).hasSize(3),
+
+                () -> assertThat(reservations)
+                        .extracting(Reservation::getName)
+                        .containsOnly("브라운"),
+
+                () -> assertThat(reservations)
+                        .extracting(
+                                Reservation::getDate,
+                                reservation -> reservation.getTime().getStartAt()
+                        )
+                        .containsExactly(
+                                tuple(LocalDate.of(2026, 5, 7), LocalTime.of(22, 0)),
+                                tuple(LocalDate.of(2026, 5, 7), LocalTime.of(20, 0)),
+                                tuple(LocalDate.of(2026, 5, 5), LocalTime.of(10, 0))
+                        )
         );
     }
 
