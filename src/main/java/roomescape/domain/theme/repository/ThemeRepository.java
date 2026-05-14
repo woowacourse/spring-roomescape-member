@@ -17,5 +17,7 @@ public interface ThemeRepository {
 
     boolean existsThemeByIdAndDeletedAtIsNull(Long id);
 
+    boolean existsThemeByNameAndDeletedAtIsNull(String name);
+
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit);
 }

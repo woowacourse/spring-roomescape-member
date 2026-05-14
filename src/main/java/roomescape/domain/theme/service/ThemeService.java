@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.error.type.ThemeErrorType;
 import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.global.error.exception.GeneralException;
 
 @Service
 public class ThemeService {
@@ -47,6 +49,10 @@ public class ThemeService {
     }
 
     public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
+        if (themeRepository.existsThemeByNameAndDeletedAtIsNull(requestDto.name())) {
+            throw new GeneralException(ThemeErrorType.ALREADY_EXIST_THEME);
+        }
+
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
         return ThemeMapper.toResponseDto(themeRepository.save(theme));
     }

@@ -97,6 +97,22 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existsThemeByNameAndDeletedAtIsNull(String name) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+                  AND deleted_at IS NULL
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
     public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit) {
         String sql = """
             SELECT t.id, t.name, t.description, t.image_url
