@@ -84,6 +84,22 @@ class JdbcThemeRepositoryTest {
                     tuple(theme2.getId(), "테마2", "설명2", "image2.png")
                 );
         }
+
+        @Test
+        void 삭제된_테마는_조회하지_않는다() {
+            // given
+            Theme deletedTheme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Theme activeTheme = themeRepository.save(Theme.create("테마2", "설명2", "image2.png"));
+            themeRepository.deleteThemeById(deletedTheme.getId());
+
+            // when
+            List<Theme> actual = themeRepository.findAllByDeletedAtIsNull();
+
+            // then
+            assertThat(actual)
+                .extracting(Theme::getId, Theme::getName, Theme::getDescription, Theme::getImageUrl)
+                .containsExactly(tuple(activeTheme.getId(), "테마2", "설명2", "image2.png"));
+        }
     }
 
     @Nested

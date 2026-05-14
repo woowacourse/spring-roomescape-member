@@ -55,7 +55,44 @@ class ThemeServiceTest {
     class GetThemesTest {
 
         @Test
-        void 성공() {
+        void 등록된_테마_목록을_조회한다() {
+            // given
+            Theme theme1 = themeRepository.save(
+                Theme.create("테마1", "설명1", "https://roomescape.com/images/themes/theme1.png"));
+            Theme theme2 = themeRepository.save(
+                Theme.create("테마2", "설명2", "https://roomescape.com/images/themes/theme2.png"));
+
+            // when
+            List<ThemeResponseDto> actual = themeService.getThemes();
+
+            // then
+            assertThat(actual).containsExactly(
+                new ThemeResponseDto(theme1.getId(), "테마1", "설명1", "https://roomescape.com/images/themes/theme1.png"),
+                new ThemeResponseDto(theme2.getId(), "테마2", "설명2", "https://roomescape.com/images/themes/theme2.png")
+            );
+        }
+
+        @Test
+        void 삭제된_테마는_조회하지_않는다() {
+            // given
+            Theme deletedTheme = themeRepository.save(
+                Theme.create("삭제된 테마", "설명1", "https://roomescape.com/images/themes/deleted.png"));
+            Theme activeTheme = themeRepository.save(
+                Theme.create("조회할 테마", "설명2", "https://roomescape.com/images/themes/active.png"));
+            themeRepository.deleteThemeById(deletedTheme.getId());
+
+            // when
+            List<ThemeResponseDto> actual = themeService.getThemes();
+
+            // then
+            assertThat(actual).containsExactly(
+                new ThemeResponseDto(activeTheme.getId(), "조회할 테마", "설명2",
+                    "https://roomescape.com/images/themes/active.png")
+            );
+        }
+
+        @Test
+        void 조회할_테마가_없으면_빈_목록을_반환한다() {
             // when
             List<ThemeResponseDto> actual = themeService.getThemes();
 
