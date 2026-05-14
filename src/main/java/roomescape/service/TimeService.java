@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class TimeService {
     public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, LocalDate date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         return times.stream()
+                .filter(time -> !isPastTime(date, time))
                 .map(TimeResponse::from)
                 .collect(Collectors.toList());
     }
@@ -56,5 +58,9 @@ public class TimeService {
         }
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
+    }
+
+    private boolean isPastTime(LocalDate date, ReservationTime time) {
+        return LocalDateTime.now().isAfter(LocalDateTime.of(date, time.getStartAt()));
     }
 }
