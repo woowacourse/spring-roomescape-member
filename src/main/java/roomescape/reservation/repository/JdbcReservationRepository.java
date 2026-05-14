@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,24 +32,51 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return jdbcTemplate.query(
-                """
-                SELECT r.id,
-                       r.name,
-                       r.date,
-                       r.time_id,
-                       r.theme_id,
-                       rt.start_time,
-                       rt.end_time,
-                       t.name AS theme_name,
-                       t.description AS theme_description,
-                       t.image_url AS theme_image_url
-                FROM reservation r
-                LEFT JOIN reservation_time rt ON r.time_id = rt.id
-                LEFT JOIN theme t ON r.theme_id = t.id
-                """,
-                new ReservationRowMapper()
+        return jdbcTemplate.query(BASE_SELECT, new ReservationRowMapper());
+    }
+
+    private static final String BASE_SELECT = """
+            SELECT r.id,
+                   r.name,
+                   r.date,
+                   r.time_id,
+                   r.theme_id,
+                   rt.start_time,
+                   rt.end_time,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.image_url AS theme_image_url
+            FROM reservation r
+            LEFT JOIN reservation_time rt ON r.time_id = rt.id
+            LEFT JOIN theme t ON r.theme_id = t.id
+            """;
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        List<Reservation> results = jdbcTemplate.query(
+                BASE_SELECT + "WHERE r.id = ?",
+                new ReservationRowMapper(),
+                id
         );
+        return results.stream().findFirst();
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(
+                BASE_SELECT + "WHERE r.name = ?",
+                new ReservationRowMapper(),
+                name
+        );
+    }
+
+    @Override
+    public boolean update(Long id, LocalDate date, Long timeId) {
+        int affected = jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                Date.valueOf(date), timeId, id
+        );
+        return affected > 0;
     }
 
     @Override

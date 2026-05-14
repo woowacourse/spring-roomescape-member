@@ -12,6 +12,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.PastReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -20,7 +21,6 @@ import roomescape.time.service.TimeService;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeRepository themeRepository;
@@ -42,7 +42,6 @@ public class ReservationServiceImpl implements ReservationService {
     public List<Reservation> getAll() {
         return reservationRepository.findAll();
     }
-
 
     @Transactional
     @Override
@@ -100,5 +99,42 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void cancel(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Reservation> getByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
+    @Override
+    public void cancelForUser(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        validateNotPastForCancel(reservation);
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public Reservation update(Long id, LocalDate date, Long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        ReservationTime newTime = findTime(timeId);
+        validatePast(date, newTime);
+        validateDuplicatedReservation(reservation.getThemeId(), newTime, date);
+        reservationRepository.update(id, date, timeId);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+    }
+
+    private void validateNotPastForCancel(Reservation reservation) {
+        LocalDate date = reservation.getDate();
+        LocalTime startAt = reservation.getTime().getStartAt();
+        if (date.isBefore(LocalDate.now())) {
+            throw PastReservationException.pastCancel();
+        }
+        if (date.equals(LocalDate.now()) && startAt.isBefore(LocalTime.now())) {
+            throw PastReservationException.pastCancel();
+        }
     }
 }
