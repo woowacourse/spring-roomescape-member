@@ -104,14 +104,6 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorResponse> handleApiException(ApiException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnhandledException(Exception e) {
         logger.error("서버 내부 오류 발생", e);
