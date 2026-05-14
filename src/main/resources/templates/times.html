@@ -85,9 +85,10 @@
                             <h3>예약 정보 입력</h3>
                             <p id="reservation-form-summary">테마와 날짜를 선택해 주세요.</p>
                         </div>
-                        <label for="reservation-name">예약자 이름</label>
+                        <label for="reservation-name">예약자 이름 <span class="input-hint">(공백 없이 입력)</span></label>
                         <input id="reservation-name" name="name" type="text" maxlength="20"
-                               placeholder="이름을 입력하세요" required>
+                               placeholder="공백 없이 이름을 입력하세요" 
+                               pattern="^[^\s]+$" title="공백은 포함될 수 없습니다." required>
                         <button type="submit" class="primary-button full-width">예약 확정</button>
                         <p id="reservation-message" class="form-message" aria-live="polite"></p>
                     </form>
@@ -106,8 +107,10 @@
                 </div>
                 <div class="search-form-layout">
                     <form id="search-form" class="reservation-form search-form-inline">
+                        <label for="search-name">예약자 이름 <span class="input-hint">(공백 없이 입력)</span></label>
                         <input id="search-name" name="name" type="text" maxlength="20"
-                               placeholder="예약자 이름을 입력하세요" required>
+                               placeholder="공백 없이 이름을 입력하세요" 
+                               pattern="^[^\s]+$" title="공백은 포함될 수 없습니다." required>
                         <button type="submit" class="primary-button">검색하기</button>
                     </form>
                 </div>
@@ -120,7 +123,6 @@
                 <p id="search-message" class="form-message" aria-live="polite"></p>
             </section>
         </div>
-
     </main>
 </div>
 

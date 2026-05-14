@@ -156,6 +156,18 @@ a {
     gap: 12px;
 }
 
+.admin-form label span {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.input-hint {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--red);
+}
+
 .token-row input,
 .admin-form input {
     width: 100%;

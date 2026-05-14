@@ -237,6 +237,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const reservationForm = document.getElementById("reservation-form");
     const message = document.getElementById("reservation-message");
 
+    const reservationNameInput = document.getElementById("reservation-name");
+    const searchNameInput = document.getElementById("search-name");
+
+    [reservationNameInput, searchNameInput].forEach(input => {
+        if (input) {
+            input.addEventListener("input", (e) => {
+                const value = e.target.value;
+                if (/\s/.test(value)) {
+                    e.target.value = value.replace(/\s/g, "");
+                }
+            });
+        }
+    });
+
     reservationForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
