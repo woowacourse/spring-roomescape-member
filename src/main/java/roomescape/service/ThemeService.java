@@ -7,7 +7,6 @@ import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.PopularThemeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ThemeNotFoundException;
-import roomescape.exception.UnauthorizedException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,14 +22,12 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse createTheme(ThemeCreateRequest request) {
-        validateAdmin(request.userName());
         Long id = themeDao.insertTheme(request.name(), request.description(), request.imgUrl());
         return ThemeResponse.from(themeDao.findById(id));
     }
 
     @Transactional
-    public void deleteTheme(Long id, String userName) {
-        validateAdmin(userName);
+    public void deleteTheme(Long id) {
         int deleteCount = themeDao.delete(id);
         validateDelete(deleteCount);
     }
@@ -46,12 +43,6 @@ public class ThemeService {
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ThemeNotFoundException();
-        }
-    }
-
-    private void validateAdmin(String userName) {
-        if (!userName.equals("ADMIN")) {
-            throw new UnauthorizedException();
         }
     }
 }
