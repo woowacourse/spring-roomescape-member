@@ -160,6 +160,22 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_본인_예약_취소시_존재하지_않는_예약이면_에러_응답() throws Exception {
+        // given
+        Long id = 999L;
+        String name = "브라운";
+        willThrow(new NotFoundException("존재하지 않는 예약입니다."))
+                .given(reservationService).deleteUserReservation(id, name);
+
+        // when & then
+        mockMvc.perform(delete("/reservations/{id}", id)
+                        .param("name", name))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.detail").value("존재하지 않는 예약입니다."));
+    }
+
+    @Test
     void 사용자_본인_예약_취소시_본인의_예약이_아니면_에러_응답() throws Exception {
         // given
         Long id = 1L;
@@ -256,6 +272,26 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_존재하지_않는_예약이면_에러_응답() throws Exception {
+        // given
+        Long id = 999L;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 2)),
+                eq(2L)))
+                .willThrow(new NotFoundException("존재하지 않는 예약입니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.detail").value("존재하지 않는 예약입니다."));
     }
 
     @Test
