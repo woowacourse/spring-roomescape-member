@@ -117,11 +117,10 @@
 #### 사용자
 - [x] `GET /reservations?name={name}` API 추가
 - [x] `DELETE /reservations/{id}?name={name}` 취소 API 수정
-- [ ] `PATCH /reservations/{id}?name={name}` 날짜/시간 변경 API
+- [x] `PATCH /reservations/{id}?name={name}` 날짜/시간 변경 API
     ```json
     {
       "date": "yyyy-mm-dd",
-      "themeId": "1",
       "timeId": "1"
     }
     ```
