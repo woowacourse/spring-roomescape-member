@@ -87,4 +87,33 @@ class ReservationFlowTest {
                 .then().log().all()
                 .statusCode(422);
     }
+
+    @Test
+    void 취소한_슬롯_재예약_가능() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("userName", "동키");
+        reservation.put("themeId", 1);
+        reservation.put("date", "2026-12-30");
+        reservation.put("timeId", 1);
+
+        int reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/api/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract().jsonPath().getInt("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/api/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/api/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
 }
