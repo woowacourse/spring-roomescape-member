@@ -1,6 +1,5 @@
 package roomescape.reservation.infra;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -67,24 +66,24 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByDateAndThemeAndTime(LocalDate date, Long themeId, Long timeId) {
+    public Boolean existsDuplicate(Reservation reservation) {
         return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)",
                 Boolean.class,
-                date,
-                themeId,
-                timeId);
+                reservation.getDate(),
+                reservation.getThemeId(),
+                reservation.getTimeId());
     }
 
     @Override
-    public Boolean existsByDateAndThemeAndTimeExcluding(LocalDate date, Long themeId, Long timeId, Long excludeId) {
+    public Boolean existsDuplicateExcluding(Reservation reservation) {
         return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ? AND id != ?)",
                 Boolean.class,
-                date,
-                themeId,
-                timeId,
-                excludeId);
+                reservation.getDate(),
+                reservation.getThemeId(),
+                reservation.getTimeId(),
+                reservation.getId());
     }
 
     @Override

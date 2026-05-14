@@ -32,7 +32,6 @@ public class ReservationCommandService {
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository timeRepository;
 
-
     public ReservationResult save(ReservationCreateCommand request) {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
@@ -96,26 +95,13 @@ public class ReservationCommandService {
     }
 
     private void checkAlreadyExistsDateAndTime(Reservation reservation) {
-        Boolean alreadyExist = reservationRepository.existsByDateAndThemeAndTimeExcluding(
-                reservation.getDate(),
-                reservation.getThemeId(),
-                reservation.getTimeId(),
-                reservation.getId()
-        );
-
-        if (alreadyExist) {
+        if (reservationRepository.existsDuplicateExcluding(reservation)) {
             throw new ConflictException("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
         }
     }
 
     private void validateDuplicateReservation(Reservation reservation) {
-        Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(
-                reservation.getDate(),
-                reservation.getThemeId(),
-                reservation.getTimeId()
-        );
-
-        if (existsByDateAndTime) {
+        if (reservationRepository.existsDuplicate(reservation)) {
             throw new ConflictException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }

@@ -1,6 +1,5 @@
 package roomescape.reservation.domain.repository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
 
@@ -13,9 +12,9 @@ public interface ReservationRepository {
 
     Integer delete(Long id);
 
-    Boolean existsByDateAndThemeAndTime(LocalDate date, Long themeId, Long timeId);
+    Boolean existsDuplicate(Reservation reservation);
 
-    Boolean existsByDateAndThemeAndTimeExcluding(LocalDate date, Long themeId, Long timeId, Long excludeId);
+    Boolean existsDuplicateExcluding(Reservation reservation);
 
     Boolean existsByTheme(Long themeId);
 

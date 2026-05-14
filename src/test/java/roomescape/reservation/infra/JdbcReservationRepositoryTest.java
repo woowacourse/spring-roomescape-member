@@ -102,31 +102,34 @@ class JdbcReservationRepositoryTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
         Long reservationId = testHelper.insertReservation("스타크", date, themeId, nineTimeId);
 
-        Boolean notExistsWithSelf = reservationRepository.existsByDateAndThemeAndTimeExcluding(
-                date,
-                themeId,
-                nineTimeId,
-                reservationId
-        );
+        Reservation reservation = Reservation.builder()
+                .id(reservationId)
+                .name("스타크")
+                .date(date)
+                .themeId(themeId)
+                .timeId(nineTimeId)
+                .build();
 
-        Boolean existsWithOther = reservationRepository.existsByDateAndThemeAndTimeExcluding(
-                date,
-                themeId,
-                nineTimeId,
-                100L
-        );
+        Reservation differentIdReservation = Reservation.builder()
+                .id(100L)
+                .name("스타크")
+                .date(date)
+                .themeId(themeId)
+                .timeId(nineTimeId)
+                .build();
 
-        Boolean notExistsWithDifferentTime = reservationRepository.existsByDateAndThemeAndTimeExcluding(
-                date,
-                themeId,
-                tenTimeId,
-                reservationId
-        );
+        Reservation differentTimeReservation = Reservation.builder()
+                .id(reservationId)
+                .name("스타크")
+                .date(date)
+                .themeId(themeId)
+                .timeId(tenTimeId)
+                .build();
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(notExistsWithSelf).isFalse();
-            assertSoftly.assertThat(existsWithOther).isTrue();
-            assertSoftly.assertThat(notExistsWithDifferentTime).isFalse();
+            assertSoftly.assertThat(reservationRepository.existsDuplicateExcluding(reservation)).isFalse();
+            assertSoftly.assertThat(reservationRepository.existsDuplicateExcluding(differentIdReservation)).isTrue();
+            assertSoftly.assertThat(reservationRepository.existsDuplicateExcluding(differentTimeReservation)).isFalse();
         });
     }
 
