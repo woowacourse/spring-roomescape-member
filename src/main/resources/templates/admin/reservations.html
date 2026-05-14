@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Admin · 예약 관리</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-logo" href="/">// ROOMESCAPE</a>
+  <div class="nav-actions">
+    <a class="nav-btn" href="/admin">← 관리자 홈</a>
+  </div>
+</nav>
+
+<main class="page" style="padding-top:0;">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Admin · Reservations</p>
+    <h1>예약 관리</h1>
+    <p>전체/필터 조회 · 추가 · 수정 · 취소. 상태: RESERVED · CANCELED · COMPLETED</p>
+  </header>
+
+  <!-- 필터 -->
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>필터</h2>
+        <p class="panel-sub" style="margin-bottom:0;">이름 없이 조회하면 전체 목록.</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="resetFilter" type="button">초기화</button>
+        <button class="primary" id="applyFilter" type="button">조회</button>
+      </div>
+    </div>
+    <div class="filter-bar" style="margin-bottom:0;">
+      <div class="field">
+        <label>이름</label>
+        <input id="filterName" placeholder="홍길동" type="text" />
+      </div>
+      <div class="field">
+        <label>시작 날짜</label>
+        <input id="filterFrom" type="date" />
+      </div>
+      <div class="field">
+        <label>종료 날짜</label>
+        <input id="filterTo" type="date" />
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select id="filterTheme">
+          <option value="">전체 테마</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 새 예약 등록 -->
+  <section class="panel">
+    <h2>새 예약 등록</h2>
+    <p class="panel-sub">관리자 권한으로 예약을 직접 생성한다.</p>
+    <form class="grid-form" id="createForm" onsubmit="return false;">
+      <div class="field">
+        <label>예약자 이름</label>
+        <input maxlength="10" name="name" placeholder="홍길동" required />
+      </div>
+      <div class="field">
+        <label>날짜</label>
+        <input name="date" required type="date" />
+      </div>
+      <div class="field">
+        <label>시간</label>
+        <select name="timeId" required>
+          <option value="">시간 선택</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select name="themeId" required>
+          <option value="">테마 선택</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:span 2; align-self:end;">
+        <button class="primary" id="createBtn" type="button">예약 추가</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 예약 목록 -->
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>예약 목록</h2>
+        <p class="panel-sub" id="listSummary" style="margin-bottom:0;">…</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="refreshList" type="button">새로고침</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:56px;">ID</th>
+            <th>이름</th>
+            <th style="width:120px;">날짜</th>
+            <th style="width:80px;">시간</th>
+            <th>테마</th>
+            <th style="width:110px;">상태</th>
+            <th style="width:140px;"></th>
+          </tr>
+        </thead>
+        <tbody id="reservationRows">
+          <tr><td colspan="7" class="muted" style="text-align:center;">불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+
+<!-- 예약 수정 모달 -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="editModalTitle">예약 수정</h3>
+      <button class="modal-close" id="editModalClose" type="button">✕</button>
+    </div>
+    <form class="grid-form" id="editForm" onsubmit="return false;" style="grid-template-columns: 1fr 1fr;">
+      <input id="editId" type="hidden" />
+      <div class="field">
+        <label>예약자 이름</label>
+        <input id="editName" maxlength="10" required type="text" />
+      </div>
+      <div class="field">
+        <label>날짜</label>
+        <input id="editDate" required type="date" />
+      </div>
+      <div class="field">
+        <label>시간</label>
+        <select id="editTime" required></select>
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select id="editTheme" required></select>
+      </div>
+      <div class="field" style="grid-column:span 2; align-self:end;">
+        <button class="primary" id="editSaveBtn" type="button">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/admin/reservations.js"></script>
+</body>
+</html>

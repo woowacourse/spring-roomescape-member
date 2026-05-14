@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>테마 예약 · Roomescape</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-logo" href="/">// ROOMESCAPE</a>
+  <div class="nav-actions">
+    <a class="nav-btn" href="/my-reservations">🔍 예약 조회</a>
+    <a class="nav-btn primary-btn" href="/admin">⌘ 관리자</a>
+  </div>
+</nav>
+
+<!-- themeId를 JS에서 읽을 수 있도록 data 속성으로 전달 -->
+<main class="page" style="padding-top:0;" th:data-theme-id="${themeId}">
+
+  <!-- 테마 헤더 (JS가 채워줌) -->
+  <div class="theme-hero" id="themeHero">
+    <div class="theme-hero-overlay" id="themeInfo">
+      <p class="eyebrow">불러오는 중…</p>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2>예약하기</h2>
+    <p class="panel-sub">날짜를 선택하면 예약 가능한 시간이 표시된다. 이름 입력 후 시간을 클릭하면 바로 예약된다.</p>
+
+    <!-- 예약자 이름 -->
+    <div class="booking-name-bar">
+      <div class="field">
+        <label>예약자 이름</label>
+        <input id="bookingName" maxlength="10" placeholder="홍길동 (최대 10자)" type="text" />
+      </div>
+    </div>
+
+    <!-- 달력 + 시간 선택 -->
+    <div class="booking-grid">
+
+      <!-- 달력 -->
+      <div>
+        <div class="calendar" id="calendar">
+          <div class="cal-header">
+            <button class="cal-nav" id="calPrev" type="button">‹</button>
+            <span class="cal-title" id="calTitle"></span>
+            <button class="cal-nav" id="calNext" type="button">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <p style="margin-top:10px; font-family:var(--font-mono); font-size:12px; color:var(--text-2);">
+          선택된 날짜: <span id="selectedDateLabel">—</span>
+        </p>
+      </div>
+
+      <!-- 예약 가능 시간 -->
+      <div>
+        <h3 style="margin:0 0 12px; font-size:16px;">예약 가능 시간</h3>
+        <div class="chips" id="availableTimes">
+          <p class="chip-empty">달력에서 날짜를 선택해 주세요.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-box" id="successBox"></div>
+    <p class="message" id="message"></p>
+  </section>
+
+</main>
+
+<script src="/theme.js"></script>
+</body>
+</html>
