@@ -84,4 +84,14 @@ public class Reservation {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    public Reservation updateDateTime(LocalDate date, ReservationTime time) {
+        return new Reservation(
+            id,
+            memberName,
+            new ReservationLocalDate(date),
+            time,
+            theme
+        );
+    }
 }

@@ -14,7 +14,7 @@
 [
   {
     "id": 1,
-    "name": "브라운",
+    "name": "코로구",
     "date": "2026-05-04",
     "time": {
       "id": 1,
@@ -40,7 +40,7 @@
 
 ```json
 {
-  "name": "브라운",
+  "name": "코로구",
   "date": "2026-05-04",
   "timeId": 1,
   "themeId": 5
@@ -59,7 +59,7 @@
 
 ### 예약 단건 삭제
 
-`DELETE /reservations/{id}`
+`DELETE /reservations/{id}?name={name}`
 
 ---
 
@@ -291,8 +291,8 @@
 | `THEME_NOT_FOUND`                   | 404     | 존재하지 않는 테마                                       |
 | `DUPLICATED_RESERVATION`            | 409     | 같은 날짜, 시간, 테마 예약이 이미 존재                          |
 | `PAST_DATE_RESERVATION`             | 422     | 요청한 날짜 자체가 과거 (생성, 변경 공통)                        |
-| `PAST_RESERVATION_CANCEL`           | 422     | 이미 지난 예약 취소 시도                                   |
 | `PAST_RESERVATION_UPDATE`           | 422     | 이미 지난 예약 변경 시도                                   |
+| `PAST_RESERVATION_CANCEL`           | 422     | 이미 지난 예약 취소 시도                                   |
 | `INTERNAL_SERVER_ERROR`             | 500     | 예상치 못한 서버 오류 (사용자 노출 X)                          |
 
 ---
@@ -325,17 +325,20 @@
 
 #### 내 예약 변경
 
-- [ ]  **사용자는 본인 예약의 날짜 및 시간을 변경할 수 있다**
-- [ ]  존재하지 않는 예약을 변경하는 경우 예외가 발생한다 -> `NOT_FOUND` (404)
-- [ ]  이미 지난 예약은 변경하는 경우 예외가 발생한다 -> `PAST_RESERVATION_UPDATE` (422)
-- [ ]  변경하려는 날짜가 과거인 경우 예외가 발생한다 -> `PAST_DATE_RESERVATION` (422)
-- [ ]  변경하려는 날짜, 시간, 테마가 이미 예약되어 있는 경우 예외가 발생한다 -> `DUPLICATED_RESERVATION` (409)
+- [x]  **사용자는 본인 예약의 날짜 및 시간을 변경할 수 있다**
+- [x]  변경하려는 날짜가 과거인 경우 예외가 발생한다 -> `PAST_DATE_RESERVATION` (422)
+- [x]  존재하지 않는 예약을 변경하는 경우 예외가 발생한다 -> `RESERVATION_NOT_FOUND` (404)
+- [x]  예약을 존재하지 않는 시간으로 변경하는 경우 예외가 발생한다 -> `TIME_NOT_FOUND` (404)
+- [x]  변경하려는 날짜, 시간, 테마가 이미 예약되어 있는 경우 예외가 발생한다 -> `DUPLICATED_RESERVATION` (409)
+- [x]  변경하려는 예약이 본인의 예약이 아닌 경우 예외가 발생한다 -> `FORBIDDEN` (403)
+- [x]  이미 지난 예약은 변경하는 경우 예외가 발생한다 -> `PAST_RESERVATION_UPDATE` (422)
 
 #### 내 예약 취소
 
 - [x]  **사용자는 본인의 예약을 취소할 수 있다**
 - [x]  존재하지 않는 예약은 취소할 수 없다. -> `NOT_FOUND` (404)
 - [x]  이미 지난 예약은 취소할 수 없다. -> `PAST_RESERVATION_CANCEL` (422)
+- [ ]  취소하려는 예약이 본인의 예약이 아닌 경우 예외가 발생한다 -> `FORBIDDEN` (403)
 
 ---
 
@@ -351,7 +354,7 @@
 [
   {
     "id": 1,
-    "name": "브라운",
+    "name": "코로구",
     "date": "2026-05-04",
     "time": {
       "id": 1,
@@ -371,7 +374,7 @@
 
 #### 예약 변경
 
-`PATCH /reservations/{id}`
+`PATCH /reservations/{id}?name={name}`
 
 **Request**
 
@@ -388,5 +391,5 @@
 
 #### 예약 취소
 
-`DELETE /reservations/{id}` — 기존 API 재사용, 정책 추가
+`DELETE /reservations/{id}?name={name}` — 기존 API 재사용, name 파라미터 및 정책 추가
 

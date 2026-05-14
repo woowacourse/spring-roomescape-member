@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
 import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationUpdateRequest;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
@@ -100,5 +101,33 @@ public class ReservationService {
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         return reservationTimeRepository.findAvailableTimeByDateAndThemeId(date, theme.getId());
+    }
+
+    public void updateDateTime(long reservationId, String requestName, ReservationUpdateRequest request) {
+        if (!request.date().isAfter(LocalDate.now())) {
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
+        }
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
+
+        boolean alreadyExists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+            request.date(), request.timeId(), reservation.getThemeId());
+        if (alreadyExists) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        }
+
+        MemberName name = new MemberName(requestName);
+        if (!reservation.isBooker(name)) {
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
+        }
+        if (reservation.isBeforeNow()) {
+            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+        }
+
+        Reservation updated = reservation.updateDateTime(request.date(), reservationTime);
+        reservationRepository.updateById(reservation.getId(), updated);
     }
 }

@@ -23,4 +23,6 @@ public interface ReservationRepository {
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByMemberName(MemberName name);
+
+    void updateById(Long id, Reservation updated);
 }

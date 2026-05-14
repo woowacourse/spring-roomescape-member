@@ -32,6 +32,7 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationUpdateRequest;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.ErrorResponse;
 import roomescape.exception.RoomEscapeException;
@@ -319,6 +320,241 @@ class ReservationControllerTest {
         verifyNoMoreInteractions(reservationService);
     }
 
+    @Test
+    void 사용자는_본인_예약의_날짜_및_시간을_변경할_수_있다() {
+        //given
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 예약의_날짜를_과거_날짜로_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.PAST_RESERVATION_UPDATE);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.RESERVATION_NOT_FOUND);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 예약을_존재하지_않는_시간으로_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.TIME_NOT_FOUND);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.TIME_NOT_FOUND);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 중복되는_예약으로_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.DUPLICATED_RESERVATION);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 다른_사용자의_예약을_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.FORBIDDEN);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.FORBIDDEN);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 지난_날짜로_예약을_변경하는_경우_예외_응답을_반환한다() {
+        //given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+
+        MemberName name = new MemberName("korogoo");
+        Reservation reservation = new Reservation(1L, name, new ReservationLocalDate(TOMORROW), TIME, THEME);
+
+        ReservationUpdateRequest request = updateRequestFrom(reservation);
+
+        doThrow(exception)
+            .when(reservationService).updateDateTime(anyLong(), any(), any());
+        ErrorResponse expectedErrorResponse = ErrorResponse.of(ErrorCode.PAST_DATE_RESERVATION);
+
+        //when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .pathParam("id", 1L)
+            .queryParam("name", name.value())
+            .when().patch("/reservations/{id}");
+
+        //then
+        response
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse).isEqualTo(expectedErrorResponse);
+
+        verify(reservationService, times(1)).updateDateTime(reservation.getId(), name.value(), request);
+        verifyNoMoreInteractions(reservationService);
+    }
 
     private Reservation reservation() {
         return new Reservation("이름", LocalDate.now().plusDays(1L), TIME, THEME);
@@ -327,5 +563,9 @@ class ReservationControllerTest {
     private ReservationRequest requestDtoFrom(Reservation reservation) {
         return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(),
             reservation.getTime().getId(), reservation.getTheme().getId());
+    }
+
+    private ReservationUpdateRequest updateRequestFrom(Reservation reservation) {
+        return new ReservationUpdateRequest(reservation.getDateValue(), reservation.getTime().getId());
     }
 }

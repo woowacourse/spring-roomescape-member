@@ -1,10 +1,12 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationUpdateRequest;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -55,5 +58,15 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
+    }
+
+    @PatchMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateReservation(
+        @RequestParam @NotBlank String name,
+        @PathVariable Long id,
+        @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        reservationService.updateDateTime(id, name, request);
     }
 }

@@ -195,4 +195,18 @@ public class JdbcReservationRepository implements ReservationRepository {
             name.value()
         );
     }
+
+    @Override
+    public void updateById(Long id, Reservation updated) {
+        template.update("""
+                UPDATE reservation
+                SET name = ?, res_date = ?, time_id = ?, theme_id = ?
+                WHERE id = ?
+                """,
+            updated.getName().value(),
+            Date.valueOf(updated.getDateValue()),
+            updated.getTimeId(),
+            updated.getThemeId()
+        );
+    }
 }
