@@ -2,7 +2,7 @@ package roomescape.reservation.presentation.dto.request;
 
 import java.time.LocalDate;
 import roomescape.global.exception.ReservationErrorCode;
-import roomescape.global.exception.customException.BadRequestException;
+import roomescape.global.validation.RequestValidator;
 
 public record ReservationUpdateRequest(
         LocalDate date,
@@ -10,27 +10,9 @@ public record ReservationUpdateRequest(
         String name
 ) {
     public ReservationUpdateRequest{
-        validateDateNotEmpty(date);
-        validateTimeIdNotEmpty(timeId);
-        validateNameNotEmpty(name);
-    }
-
-    private static void validateTimeIdNotEmpty(Long timeId) {
-        if (timeId == null) {
-            throw new BadRequestException(ReservationErrorCode.RESERVATION_TIME_REQUIRED);
-        }
-    }
-
-    private static void validateDateNotEmpty(LocalDate date) {
-        if (date == null) {
-            throw new BadRequestException(ReservationErrorCode.RESERVATION_DATE_REQUIRED);
-        }
-    }
-
-    private static void validateNameNotEmpty(String name) {
-        if (name == null || name.trim().isBlank()) {
-            throw new BadRequestException(ReservationErrorCode.RESERVATION_NAME_REQUIRED);
-        }
+        RequestValidator.requireNotNull(date, ReservationErrorCode.RESERVATION_TIME_REQUIRED);
+        RequestValidator.requireNotNull(timeId, ReservationErrorCode.RESERVATION_TIME_REQUIRED);
+        RequestValidator.requireNotBlank(name, ReservationErrorCode.RESERVATION_NAME_REQUIRED);
     }
 }
 
