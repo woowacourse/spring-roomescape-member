@@ -3,11 +3,14 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static roomescape.test.util.RoomEscapeTestFixture.BROWN_RESERVATION_DATE;
+import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_THEME_COUNT;
 import static roomescape.test.util.RoomEscapeTestFixture.JASON_RESERVATION_DATE;
+import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.EntityId;
 import roomescape.test.util.RoomEscapeTestFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -171,6 +175,45 @@ class ThemeControllerTest {
                     .when().get("/themes/most-reserved")
                     .then().log().all()
                     .statusCode(400);
+        }
+    }
+
+    @Nested
+    class 테마를_제거한다 {
+
+        @Test
+        void 제거에_성공하면_200을_응답한다() {
+            EntityId unreservedThemeId = EntityId.random();
+            fixture.insertTheme(unreservedThemeId, "name", "description", "imageUrl");
+
+            RestAssured.given().log().all()
+                    .when().delete("/themes/" + unreservedThemeId.getValueAsString())
+                    .then().log().all()
+                    .statusCode(200);
+
+            RestAssured.given().log().all()
+                    .when().get("/themes")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(INITIALIZED_THEME_COUNT));
+        }
+
+        @Test
+        void 예약에서_사용_중인_테마라면_400을_응답한다() {
+            RestAssured.given().log().all()
+                    .when().delete("/themes/" + WESTERN_THEME_ID.getValueAsString())
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        @Test
+        void 존재하지_않는_테마라면_404를_응답한다() {
+            String nonExistentTimeId = UUID.randomUUID().toString();
+
+            RestAssured.given().log().all()
+                    .when().delete("/themes/" + nonExistentTimeId)
+                    .then().log().all()
+                    .statusCode(404);
         }
     }
 }

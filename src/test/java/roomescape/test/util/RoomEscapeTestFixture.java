@@ -14,9 +14,12 @@ public class RoomEscapeTestFixture {
 
     private final JdbcTemplate jdbcTemplate;
 
-    // 초기 데이터 상수
+
     public static final int INITIALIZED_RESERVATION_COUNT = 3;
     public static final int INITIALIZED_TIME_COUNT = 2;
+    public static final int INITIALIZED_THEME_COUNT = 2;
+
+    // 초기 데이터 상수
     public static final EntityId MORNING_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01"));
     public static final EntityId AFTERNOON_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02"));
     public static final EntityId WESTERN_THEME_ID = EntityId.fromUuid(UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01"));
