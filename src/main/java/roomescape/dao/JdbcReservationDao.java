@@ -49,7 +49,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> readAll() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url
                 FROM `reservation` r
@@ -83,7 +83,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                 SELECT 1 FROM `reservation` WHERE `date` = (?) AND `time_id` = (?) AND `theme_id` = (?)
@@ -93,7 +93,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findByName(String name) {
+    public List<Reservation> findAllByName(String name) {
         String sql = """
                 SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url
                 FROM `reservation` r
@@ -120,7 +120,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByExceptId(LocalDate date, Long timeId, Long themeId, Long excludeId) {
+    public boolean existsByDateAndTimeIdAndThemeIdExcludingId(LocalDate date, Long timeId, Long themeId, Long excludeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1 FROM `reservation`

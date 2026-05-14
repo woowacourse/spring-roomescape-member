@@ -8,11 +8,11 @@ import roomescape.domain.Theme;
 public interface ThemeDao {
     Theme create(Theme theme);
 
-    Optional<Theme> read(Long id);
+    Optional<Theme> findById(Long id);
 
-    List<Theme> readAll();
+    List<Theme> findAll();
 
     void delete(Long id);
 
-    List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit);
+    List<Theme> findRanking(LocalDate startDate, LocalDate endDate, int limit);
 }

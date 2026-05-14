@@ -46,8 +46,8 @@ public class AdminReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> readAll() {
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll();
         return ResponseEntity.ok(responseDtos);
     }
 

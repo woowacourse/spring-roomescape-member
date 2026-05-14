@@ -8,11 +8,11 @@ import roomescape.domain.ReservationTime;
 public interface ReservationTimeDao {
     ReservationTime create(ReservationTime reservationTime);
 
-    Optional<ReservationTime> read(Long id);
+    Optional<ReservationTime> findById(Long id);
 
-    List<ReservationTime> readAll();
+    List<ReservationTime> findAll();
 
     void delete(Long id);
 
-    List<Long> bookedTimeIdByDateAndTheme(LocalDate date, Long themeId);
+    List<Long> findBookedTimeIdsByDateAndTheme(LocalDate date, Long themeId);
 }

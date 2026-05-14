@@ -79,7 +79,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void readAllTest() {
+    void findAllTest() {
         ReservationTimeResponseDto reservationTimeResponseDto = createReservationTime();
         ThemeResponseDto themeResponseDto = createTheme();
         ReservationResponseDto firstResponse = reservationService.create(
@@ -89,7 +89,7 @@ public class ReservationServiceTest {
                 new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 3), reservationTimeResponseDto.id(),
                         themeResponseDto.id()));
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ReservationResponseDto> responseDtos = reservationService.findAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(firstResponse);
         assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
@@ -104,7 +104,7 @@ public class ReservationServiceTest {
                         themeResponseDto.id()));
         reservationService.delete(responseDto.id());
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ReservationResponseDto> responseDtos = reservationService.findAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
     }

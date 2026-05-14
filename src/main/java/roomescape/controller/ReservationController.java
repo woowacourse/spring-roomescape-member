@@ -30,8 +30,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> readAll() {
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+    public ResponseEntity<List<ReservationResponseDto>> findAll() {
+        List<ReservationResponseDto> responseDtos = reservationService.findAll();
         return ResponseEntity.ok(responseDtos);
     }
 
@@ -75,8 +75,8 @@ public class ReservationController {
     }
 
     @GetMapping(params = "name")
-    public ResponseEntity<List<ReservationResponseDto>> getUserReservation(@RequestParam String name) {
-        List<ReservationResponseDto> reservations = reservationService.getReservationsBy(name);
+    public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam String name) {
+        List<ReservationResponseDto> reservations = reservationService.findByName(name);
 
         return ResponseEntity
                 .ok(reservations);

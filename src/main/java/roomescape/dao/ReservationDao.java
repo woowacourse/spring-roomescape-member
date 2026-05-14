@@ -8,19 +8,19 @@ import roomescape.domain.Reservation;
 public interface ReservationDao {
     Reservation create(Reservation reservation);
 
-    List<Reservation> readAll();
-
-    void delete(Long id);
-
-    boolean existsBy(LocalDate date, Long timeId, Long themeId);
-
-    boolean existsByExceptId(LocalDate date, Long timeId, Long themeId, Long excludeId);
-
-    boolean existsByTimeId(Long timeId);
-
-    List<Reservation> findByName(String name);
+    List<Reservation> findAll();
 
     Optional<Reservation> findById(Long id);
 
+    List<Reservation> findAllByName(String name);
+
     void update(Reservation reservation);
+
+    void delete(Long id);
+
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    boolean existsByDateAndTimeIdAndThemeIdExcludingId(LocalDate date, Long timeId, Long themeId, Long excludeId);
+
+    boolean existsByTimeId(Long timeId);
 }

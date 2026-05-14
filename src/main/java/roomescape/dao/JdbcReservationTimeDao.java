@@ -42,7 +42,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Optional<ReservationTime> read(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT * FROM `reservation_time` WHERE `id` = (?)";
 
         try {
@@ -53,7 +53,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTime> readAll() {
+    public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM `reservation_time` "
                 + "ORDER BY start_at ASC";
 
@@ -68,7 +68,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<Long> bookedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
+    public List<Long> findBookedTimeIdsByDateAndTheme(LocalDate date, Long themeId) {
         String sql = "SELECT t.id as time_id "
                 + "FROM `reservation_time` t "
                 + "INNER JOIN `reservation` r ON r.time_id = t.id "

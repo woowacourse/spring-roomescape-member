@@ -32,23 +32,23 @@ public class ReservationTimeService {
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
-    public List<ReservationTimeResponseDto> readAll() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
+    public List<ReservationTimeResponseDto> findAll() {
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         return reservationTimes.stream()
                 .map(ReservationTimeResponseDto::from)
                 .toList();
     }
 
-    public List<ReservationTimeAvailabilityResponseDto> readAvailabilityByDateAndTheme(
+    public List<ReservationTimeAvailabilityResponseDto> findAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
         Theme theme = findTheme(themeId);
 
-        List<ReservationTime> allReservationTimes = reservationTimeDao.readAll();
-        List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, theme.getId());
+        List<ReservationTime> allReservationTimes = reservationTimeDao.findAll();
+        List<Long> bookedTimeIds = reservationTimeDao.findBookedTimeIdsByDateAndTheme(date, theme.getId());
 
         return allReservationTimes.stream()
                 .map(reservationTime -> {
-                    if (bookedTimeIdByDateAndTheme.contains(reservationTime.getId())) {
+                    if (bookedTimeIds.contains(reservationTime.getId())) {
                         return ReservationTimeAvailabilityResponseDto.from(reservationTime, false);
                     }
                     return ReservationTimeAvailabilityResponseDto.from(reservationTime, true);
@@ -56,17 +56,17 @@ public class ReservationTimeService {
     }
 
     private Theme findTheme(Long id) {
-        return themeDao.read(id)
+        return themeDao.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public void delete(Long id) {
-        validateTimeNotUse(id);
+        validateTimeNotInUse(id);
 
         reservationTimeDao.delete(id);
     }
 
-    private void validateTimeNotUse(Long id) {
+    private void validateTimeNotInUse(Long id) {
         if (reservationDao.existsByTimeId(id)) {
             throw new CustomException(ErrorCode.RESERVATION_TIME_IN_USE);
         }

@@ -34,10 +34,10 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto request) {
         ReservationTime reservationTime = findReservationTime(request.timeId());
-        validateNotPast(request.date(), reservationTime);
         Theme theme = findTheme(request.themeId());
 
-        validateDuplicate(request, reservationTime, theme);
+        validateNotPast(request.date(), reservationTime);
+        validateNotDuplicated(request.date(), reservationTime.getId(), theme.getId());
 
         Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
         Reservation reservation = reservationDao.create(reservationWithoutId);
@@ -45,13 +45,8 @@ public class ReservationService {
         return ReservationResponseDto.from(reservation);
     }
 
-    private void validateDuplicate(ReservationRequestDto request, ReservationTime reservationTime, Theme theme) {
-        boolean isDuplicated = reservationDao.existsBy(
-                request.date(),
-                reservationTime.getId(),
-                theme.getId()
-        );
-        if (isDuplicated) {
+    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
@@ -66,17 +61,17 @@ public class ReservationService {
     }
 
     private ReservationTime findReservationTime(Long id) {
-        return reservationTimeDao.read(id)
+        return reservationTimeDao.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme findTheme(Long id) {
-        return themeDao.read(id)
+        return themeDao.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
-    public List<ReservationResponseDto> readAll() {
-        List<Reservation> reservations = reservationDao.readAll();
+    public List<ReservationResponseDto> findAll() {
+        List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
                 .map(ReservationResponseDto::from)
                 .toList();
@@ -95,8 +90,8 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponseDto> getReservationsBy(String name) {
-        return reservationDao.findByName(name).stream()
+    public List<ReservationResponseDto> findByName(String name) {
+        return reservationDao.findAllByName(name).stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }
@@ -121,7 +116,7 @@ public class ReservationService {
     }
 
     private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId, Long excludeId) {
-        if (reservationDao.existsByExceptId(date, timeId, themeId, excludeId)) {
+        if (reservationDao.existsByDateAndTimeIdAndThemeIdExcludingId(date, timeId, themeId, excludeId)) {
             throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }

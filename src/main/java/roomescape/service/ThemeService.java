@@ -22,8 +22,8 @@ public class ThemeService {
         return ThemeResponseDto.from(themeDao.create(theme));
     }
 
-    public List<ThemeResponseDto> readAll() {
-        return themeDao.readAll().stream()
+    public List<ThemeResponseDto> findAll() {
+        return themeDao.findAll().stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
@@ -32,8 +32,8 @@ public class ThemeService {
         themeDao.delete(id);
     }
 
-    public List<ThemeResponseDto> readRanking(LocalDate startDate, LocalDate endDate) {
-        return themeDao.readRanking(startDate, endDate, RANKING_LIMIT).stream()
+    public List<ThemeResponseDto> findRanking(LocalDate startDate, LocalDate endDate) {
+        return themeDao.findRanking(startDate, endDate, RANKING_LIMIT).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }

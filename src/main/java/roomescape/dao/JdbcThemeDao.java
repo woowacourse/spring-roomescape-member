@@ -42,7 +42,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Optional<Theme> read(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM `theme` WHERE `id` = (?)";
 
         try {
@@ -58,14 +58,14 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> readAll() {
+    public List<Theme> findAll() {
         String sql = "SELECT * FROM `theme`";
 
         return jdbcTemplate.query(sql, this::mapToTheme);
     }
 
     @Override
-    public List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findRanking(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT th.id AS id, th.name, th.description, "
                 + "th.thumbnail_url, COUNT(r.id) AS reservation_count "
                 + "FROM theme th "

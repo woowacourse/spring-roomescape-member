@@ -41,7 +41,7 @@ public class ThemeServiceTest {
     }
 
     @Test
-    void readAllTest() {
+    void findAllTest() {
         ThemeResponseDto firstResponse = themeService.create(new ThemeRequestDto(
                 "피즈의 모험",
                 "모험 이야기",
@@ -53,7 +53,7 @@ public class ThemeServiceTest {
                 "url.jpg"
         ));
 
-        List<ThemeResponseDto> responseDtos = themeService.readAll();
+        List<ThemeResponseDto> responseDtos = themeService.findAll();
 
         assertThat(responseDtos.size()).isEqualTo(2);
         assertThat(responseDtos.get(0)).isEqualTo(firstResponse);
@@ -70,14 +70,14 @@ public class ThemeServiceTest {
 
         themeService.delete(responseDto.id());
 
-        List<ThemeResponseDto> responseDtos = themeService.readAll();
+        List<ThemeResponseDto> responseDtos = themeService.findAll();
         assertThat(responseDtos.size()).isEqualTo(0);
     }
 
     @Test
     @Sql(scripts = "/ranking-test-data.sql")
-    void readRankingTest() {
-        List<ThemeResponseDto> responseDtos = themeService.readRanking(LocalDate.of(2026, 5, 1),
+    void findRankingTest() {
+        List<ThemeResponseDto> responseDtos = themeService.findRanking(LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 7));
 
         assertThat(responseDtos.get(0).id()).isEqualTo(1);
