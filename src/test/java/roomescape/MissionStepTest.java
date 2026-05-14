@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.is;
 public class MissionStepTest {
 
     private static final String TODAY = "2026-05-10";
-    private static final String FUTURE_DATE = "2026-05-15";
+    private static final String FUTURE_DATE = "2026-05-12";
     private static final String FUTURE_TIME = "14:00";
 
     @Test

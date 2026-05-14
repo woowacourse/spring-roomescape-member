@@ -1,46 +1,44 @@
-package roomescape.service.fake;
+package roomescape.fixture;
 
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.dao.TimeDao;
 import roomescape.dao.row.TimeRow;
 
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import static roomescape.fixture.FakeDatabase.generateTimeId;
+import static roomescape.fixture.FakeDatabase.times;
+
 public class FakeTimeDao implements TimeDao {
-
-    private final Map<Long, TimeRow> store = new HashMap<>();
-    private long sequence = 0L;
-
     @Override
     public List<TimeRow> findAll() {
-        return store.values().stream().toList();
+        return List.copyOf(times.values());
     }
 
     @Override
     public Optional<TimeRow> findById(Long id) {
-        TimeRow time = store.get(id);
-
-        if (time == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(time);
+        return Optional.ofNullable(times.get(id));
     }
 
     @Override
     public TimeRow create(TimeRow time) {
-        Long id = ++sequence;
+        boolean duplicate = existsByStartAt(time.startAt());
+
+        if(duplicate){
+            throw new DuplicateKeyException("uk_start_at");
+        }
+
+        Long id = generateTimeId();
         TimeRow newTime = new TimeRow(id, time.startAt());
-        store.put(id, newTime);
+        times.put(id, newTime);
         return newTime;
     }
 
     @Override
     public int delete(Long id) {
-        TimeRow remove = store.remove(id);
+        TimeRow remove = times.remove(id);
 
         if (remove == null) {
             return 0;
@@ -51,13 +49,13 @@ public class FakeTimeDao implements TimeDao {
 
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
-        return store.values()
+        return times.values()
                 .stream()
                 .anyMatch(theme -> theme.startAt().equals(startAt));
     }
 
     @Override
     public boolean existsById(Long id) {
-        return store.get(id) != null;
+        return times.get(id) != null;
     }
 }

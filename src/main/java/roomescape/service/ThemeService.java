@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationQueryDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
@@ -23,10 +24,12 @@ import java.util.List;
 public class ThemeService {
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
+    private final ReservationQueryDao reservationQueryDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao, ReservationQueryDao reservationQueryDao) {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
+        this.reservationQueryDao = reservationQueryDao;
     }
 
     public List<ThemeResponseDto> findAll() {
@@ -72,11 +75,11 @@ public class ThemeService {
     }
 
     public List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate) {
-        return themeDao.findAvailableTimesById(themeId, localDate);
+        return reservationQueryDao.findAvailableTimesById(themeId, localDate);
     }
 
     public List<ThemeResponseDto> findPopulars(int limit, int days, LocalDate date) {
-        return themeDao.findPopulars(limit, days, date).stream()
+        return reservationQueryDao.findPopulars(limit, days, date).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }

@@ -8,11 +8,13 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.dao.row.ReservationRow;
+import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
 import roomescape.dto.request.TimeRequestDto;
 import roomescape.dto.response.TimeResponseDto;
-import roomescape.service.fake.FakeReservationDao;
-import roomescape.service.fake.FakeTimeDao;
+import roomescape.fixture.FakeDatabase;
+import roomescape.fixture.FakeReservationDao;
+import roomescape.fixture.FakeTimeDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,7 +38,7 @@ class TimeServiceTest {
 
         timeRequestDto1 = new TimeRequestDto(LocalTime.of(10, 0));
         timeRequestDto2 = new TimeRequestDto(LocalTime.of(12, 0));
-
+        FakeDatabase.clearAll();
     }
 
 
@@ -67,8 +69,11 @@ class TimeServiceTest {
         @Test
         void 예약이_존재하면_삭제할_수_없다() {
             TimeResponseDto savedTime = timeService.create(timeRequestDto1);
-            reservationDao.create(new ReservationRow("달수", LocalDate.now(), new TimeRow(savedTime.id(), savedTime.startAt()), null));
-
+            reservationDao.create(new ReservationRow(
+                    "달수",
+                    LocalDate.now(),
+                    new TimeRow(savedTime.id(), savedTime.startAt()),
+                    new ThemeRow("테마1","url","ㅔㅔ마입니다")));
             assertThatThrownBy(() -> timeService.delete(savedTime.id()))
                     .isInstanceOf(ConflictException.class);
         }
