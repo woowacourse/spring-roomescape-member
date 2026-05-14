@@ -42,7 +42,7 @@ public class ReservationController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping(value = "name")
+    @GetMapping(params = "name")
     public ResponseEntity<List<ReservationResponse>> getReservationByName(@RequestParam String name) {
         List<ReservationResponse> responses = reservationService.getMyReservation(name);
         return ResponseEntity.ok(responses);
