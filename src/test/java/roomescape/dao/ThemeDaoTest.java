@@ -34,7 +34,7 @@ class ThemeDaoTest {
         String name = "방탈출1";
         String description = "로지와 러키의 신나는 방탈출";
         String thumbnail = "https://abc.asdfdsa";
-        Theme theme = Theme.createWithoutId(name, description, thumbnail);
+        Theme theme = new Theme(name, description, thumbnail);
 
         // when
         Theme savedTheme = themeDao.save(theme);
@@ -239,7 +239,7 @@ class ThemeDaoTest {
     }
 
     private Theme saveTheme(String name, String description, String thumbnail) {
-        Theme theme = Theme.createWithoutId(name, description, thumbnail);
+        Theme theme = new Theme(name, description, thumbnail);
         return themeDao.save(theme);
     }
 

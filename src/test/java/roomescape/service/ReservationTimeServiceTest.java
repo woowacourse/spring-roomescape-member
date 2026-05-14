@@ -177,7 +177,7 @@ class ReservationTimeServiceTest extends ServiceTest {
     }
 
     private Theme saveTheme(String name) {
-        Theme theme = Theme.createWithoutId(name, "설명", "https://adsf.dsaf");
+        Theme theme = new Theme(name, "설명", "https://adsf.dsaf");
         return themeDao.save(theme);
     }
 

@@ -41,12 +41,7 @@ public class ThemeDao {
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
 
-        return new Theme(
-                generatedId.longValue(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail()
-        );
+        return theme.createWithId(generatedId.longValue());
     }
 
     public Optional<Theme> findById(Long themeId) {

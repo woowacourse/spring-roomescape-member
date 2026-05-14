@@ -216,7 +216,7 @@ class ThemeServiceTest extends ServiceTest {
     }
 
     private Theme saveTheme(String name) {
-        Theme theme = Theme.createWithoutId(
+        Theme theme = new Theme(
                 name,
                 "설명",
                 "https://dsf.sdaf"

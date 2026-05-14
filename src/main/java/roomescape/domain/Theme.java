@@ -9,16 +9,19 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public static Theme createWithoutId(String name, String description, String thumbnail) {
-        return new Theme(null, name, description, thumbnail);
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
-    //todo: private 처리? 정팩메 제거?
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme createWithId(Long id) {
+        return new Theme(id, this.name, this.description, this.thumbnail);
     }
 
     public Long getId() {

@@ -15,7 +15,7 @@ public record ThemeRequest(
 
         @NotBlank(message = "테마에 대한 설명을 입력해 주세요.")
         @Size(min = 10, max = 500, message = "테마 설명은 10자 이상 500자 이하로 입력해 주세요.")
-                String description,
+        String description,
 
         @NotBlank(message = "썸네일 링크를 입력해 주세요.")
         @Pattern(
@@ -25,10 +25,6 @@ public record ThemeRequest(
         String thumbnail
 ) {
     public Theme toTheme() {
-        return Theme.createWithoutId(
-                name,
-                description,
-                thumbnail
-        );
+        return new Theme(name, description, thumbnail);
     }
 }

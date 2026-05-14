@@ -145,7 +145,7 @@ class ReservationDaoTest {
     }
 
     private Theme saveTheme(String name, String description, String thumbnail) {
-        Theme theme = Theme.createWithoutId(name, description, thumbnail);
+        Theme theme = new Theme(name, description, thumbnail);
         return themeDao.save(theme);
     }
 
