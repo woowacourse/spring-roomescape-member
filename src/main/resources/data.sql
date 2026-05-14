@@ -15,7 +15,9 @@ CREATE TABLE theme
 CREATE TABLE time_slot
 (
     id       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    start_at TIME NOT NULL
+    start_at TIME NOT NULL,
+    CONSTRAINT uk_time_slot_start_at
+        UNIQUE (start_at)
 );
 CREATE TABLE reservation
 (
