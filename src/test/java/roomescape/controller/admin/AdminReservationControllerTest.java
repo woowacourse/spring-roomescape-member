@@ -27,7 +27,7 @@ import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.response.ReservationResponseDto;
+import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(AdminReservationController.class)
@@ -55,31 +55,31 @@ class AdminReservationControllerTest {
         void returnsAllReservations() {
             List<Reservation> reservations = List.of(reservation);
             given(reservationService.findAll()).willReturn(reservations);
-            List<ReservationResponseDto> expected = reservations.stream()
-                    .map(ReservationResponseDto::from)
+            List<AdminReservationResponseDto> expected = reservations.stream()
+                    .map(AdminReservationResponseDto::from)
                     .toList();
 
-            List<ReservationResponseDto> actual = RestAssuredMockMvc.given()
+            List<AdminReservationResponseDto> actual = RestAssuredMockMvc.given()
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(new TypeRef<>() {
-                    });
+                    .extract().as(new TypeRef<>() {});
 
             assertThat(actual).isEqualTo(expected);
+            then(reservationService).should().findAll();
         }
 
         @Test
         @DisplayName("존재하는 예약 id를 조회하면 200을 반환한다")
         void returnsReservationById() {
             given(reservationService.findById(reservation.getId())).willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
                     .when().get("/admin/reservations/" + reservation.getId())
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(AdminReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -93,17 +93,17 @@ class AdminReservationControllerTest {
         void createsReservation() {
             ReservationRequestDto requestDto = new ReservationRequestDto(reservation.getName(), reservation.getDate(),
                     time.getId(), theme.getId());
-            given(reservationService.create(any(ReservationRequestDto.class))).willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+            given(reservationService.createByAdmin(any(ReservationRequestDto.class))).willReturn(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().post("/admin/reservations")
                     .then()
                     .status(HttpStatus.CREATED)
                     .header("Location", "http://localhost/admin/reservations/" + reservation.getId())
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(AdminReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -118,15 +118,15 @@ class AdminReservationControllerTest {
             ReservationPatchDto requestDto = new ReservationPatchDto(LocalDate.now().plusDays(2), time.getId());
             given(reservationService.update(eq(reservation.getId()), any(ReservationPatchDto.class)))
                     .willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().patch("/admin/reservations/" + reservation.getId())
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(AdminReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
         }

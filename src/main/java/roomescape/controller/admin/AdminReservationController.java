@@ -1,6 +1,5 @@
 package roomescape.controller.admin;
 
-
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -17,7 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.response.ReservationResponseDto;
+import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -30,34 +29,33 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        List<ReservationResponseDto> responses = reservationService.findAll().stream()
-                .map(ReservationResponseDto::from)
+    public ResponseEntity<List<AdminReservationResponseDto>> findAll() {
+        List<AdminReservationResponseDto> responses = reservationService.findAll().stream()
+                .map(AdminReservationResponseDto::from)
                 .toList();
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponseDto> findById(@PathVariable Long id) {
-        Reservation reservationById = reservationService.findById(id);
-        return ResponseEntity.ok(ReservationResponseDto.from(reservationById));
+    public ResponseEntity<AdminReservationResponseDto> findById(@PathVariable Long id) {
+        Reservation reservation = reservationService.findById(id);
+        return ResponseEntity.ok(AdminReservationResponseDto.from(reservation));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationRequest) {
-        Reservation reservation = reservationService.create(reservationRequest);
+    public ResponseEntity<AdminReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationRequest) {
+        Reservation reservation = reservationService.createByAdmin(reservationRequest);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(reservation.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(ReservationResponseDto.from(reservation));
+        return ResponseEntity.created(uri).body(AdminReservationResponseDto.from(reservation));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReservationResponseDto> patch(
+    public ResponseEntity<AdminReservationResponseDto> patch(
             @PathVariable Long id,
             @Valid @RequestBody ReservationPatchDto request) {
         Reservation updated = reservationService.update(id, request);
-        return ResponseEntity.ok(ReservationResponseDto.from(updated));
+        return ResponseEntity.ok(AdminReservationResponseDto.from(updated));
     }
 
     @DeleteMapping("/{id}")

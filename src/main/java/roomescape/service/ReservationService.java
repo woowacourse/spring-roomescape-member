@@ -39,6 +39,18 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(ReservationRequestDto reservationRequest) {
+        Reservation reservation = buildReservation(reservationRequest);
+        reservation.validateCreate(LocalDateTime.now());
+        return reservationDao.insert(reservation);
+    }
+
+    @Transactional
+    public Reservation createByAdmin(ReservationRequestDto reservationRequest) {
+        Reservation reservation = buildReservation(reservationRequest);
+        return reservationDao.insert(reservation);
+    }
+
+    private Reservation buildReservation(ReservationRequestDto reservationRequest) {
         Time timeById = timeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
         Theme themeById = themeDao.findById(reservationRequest.themeId())
@@ -46,11 +58,9 @@ public class ReservationService {
 
         if (reservationDao.existsByThemeIdAndTimeIdAndDate(reservationRequest.themeId(), reservationRequest.timeId(),
                 reservationRequest.date())) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다. ");
+            throw new ConflictException("이미 존재하는 예약이 있습니다.");
         }
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeById,
-                themeById);
-        return reservationDao.insert(reservation);
+        return new Reservation(reservationRequest.name(), reservationRequest.date(), timeById, themeById);
     }
 
     @Transactional
@@ -69,6 +79,7 @@ public class ReservationService {
     public void cancel(Long id) {
         Reservation reservation = findById(id);
         reservation.validateCancel(LocalDateTime.now());
+        reservation.cancel();
         reservationDao.delete(id);
     }
 

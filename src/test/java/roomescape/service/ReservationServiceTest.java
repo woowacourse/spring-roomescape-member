@@ -57,9 +57,9 @@ class ReservationServiceTest {
         savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
         savedTheme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
         savedTheme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        requestDto1 = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 3), savedTime1.getId(),
+        requestDto1 = new ReservationRequestDto("유저1", LocalDate.now().plusDays(1), savedTime1.getId(),
                 savedTheme1.getId());
-        requestDto2 = new ReservationRequestDto("유저2", LocalDate.of(2026, 5, 3), savedTime2.getId(),
+        requestDto2 = new ReservationRequestDto("유저2", LocalDate.now().plusDays(2), savedTime2.getId(),
                 savedTheme2.getId());
     }
 
@@ -142,6 +142,41 @@ class ReservationServiceTest {
 
             assertThatThrownBy(() -> reservationService.create(requestDto1))
                     .isInstanceOf(ConflictException.class);
+        }
+
+        @Test
+        @DisplayName("과거 날짜로 예약을 생성하면 예외를 반환한다")
+        void throwsWhenPastDate() {
+            ReservationRequestDto pastDto = new ReservationRequestDto(
+                    "유저1", LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
+
+            assertThatThrownBy(() -> reservationService.create(pastDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    class CreateByAdmin {
+
+        @Test
+        @DisplayName("과거 날짜로도 예약을 생성한다")
+        void createsReservationWithPastDate() {
+            ReservationRequestDto pastDto = new ReservationRequestDto(
+                    "유저1", LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
+
+            Reservation saved = reservationService.createByAdmin(pastDto);
+
+            assertThat(saved.getId()).isNotNull();
+            assertThat(saved.getDate()).isEqualTo(LocalDate.now().minusDays(1));
+        }
+
+        @Test
+        @DisplayName("미래 날짜로도 예약을 생성한다")
+        void createsReservationWithFutureDate() {
+            Reservation saved = reservationService.createByAdmin(requestDto1);
+
+            assertThat(saved.getId()).isNotNull();
+            assertThat(saved.getDate()).isEqualTo(requestDto1.date());
         }
     }
 
