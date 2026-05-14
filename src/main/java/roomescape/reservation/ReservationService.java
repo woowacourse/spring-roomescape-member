@@ -36,11 +36,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+        ReservationTime reservationTime = getReservationTime(reservationRequest.timeId());
+        Theme theme = getTheme(reservationRequest.themeId());
 
         Reservation reservation = new Reservation(
                 reservationRequest.userName(),
@@ -53,13 +50,7 @@ public class ReservationService {
                 reservationTime.getId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
-
-        try {
-            Reservation saved = reservationRepository.save(reservation);
-            return ReservationResponse.from(saved);
-        } catch (DataIntegrityViolationException e) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
-        }
+        return getReservationResponse(reservation);
     }
 
     public List<ReservationResponse> read() {
@@ -68,33 +59,16 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> readByUserName(String userName) {
-        return reservationRepository.findByUserName(userName).stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
-
-    public void delete(Long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.cancel(LocalDateTime.now(clock));
-        reservationRepository.update(reservation);
-    }
-
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest reservationUpdateRequest) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = getReservation(id);
 
         if (!reservation.belongsTo(reservationUpdateRequest.userName())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
         }
 
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationUpdateRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        Theme theme = themeRepository.findById(reservationUpdateRequest.themeId()).stream().findFirst()
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+        ReservationTime reservationTime = getReservationTime(reservationUpdateRequest.timeId());
+        Theme theme = getTheme(reservationUpdateRequest.themeId());
 
         if (reservationRepository.existsActiveByDateAndThemeAndTimeExcludingId(reservationUpdateRequest.date(),
                 theme.getId(),
@@ -102,6 +76,33 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 
+        return getReservationResponse(reservationUpdateRequest, reservation, theme, reservationTime);
+    }
+
+    public void delete(Long id) {
+        Reservation reservation = getReservation(id);
+        reservation.cancel(LocalDateTime.now(clock));
+        reservationRepository.update(reservation);
+    }
+
+    public List<ReservationResponse> readByUserName(String userName) {
+        return reservationRepository.findByUserName(userName).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    private ReservationResponse getReservationResponse(Reservation reservation) {
+        try {
+            Reservation saved = reservationRepository.save(reservation);
+            return ReservationResponse.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+        }
+    }
+
+    private ReservationResponse getReservationResponse(ReservationUpdateRequest reservationUpdateRequest,
+                                                       Reservation reservation, Theme theme,
+                                                       ReservationTime reservationTime) {
         try {
             Reservation updated = reservation.change(theme, reservationUpdateRequest.date(), reservationTime,
                     LocalDateTime.now(clock));
@@ -110,5 +111,20 @@ public class ReservationService {
         } catch (DataIntegrityViolationException e) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private Theme getTheme(Long reservationRequest) {
+        return themeRepository.findById(reservationRequest).stream().findFirst()
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+    }
+
+    private ReservationTime getReservationTime(Long reservationRequest) {
+        return reservationTimeRepository.findById(reservationRequest)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 }
