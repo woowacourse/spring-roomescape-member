@@ -30,17 +30,11 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public ReservationTime find(long reservationTimeId) {
-        return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-    }
-
     public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> findAvailable(AvailableTimeFindRequest request) {
-        LocalDate now = LocalDate.now();
+    public List<ReservationTime> findAvailable(AvailableTimeFindRequest request, LocalDate now) {
         if (now.isAfter(request.getDate())) {
             throw new RoomEscapeException(ErrorCode.PAST_DATE_NOT_ALLOWED);
         }

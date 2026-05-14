@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +47,7 @@ public class ReservationTimeController {
     @GetMapping("/times/available")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeResponse> findAvailable(@Valid @ModelAttribute AvailableTimeFindRequest request) {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAvailable(request);
+        List<ReservationTime> reservationTimes = reservationTimeService.findAvailable(request, LocalDate.now());
 
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::toDto)
