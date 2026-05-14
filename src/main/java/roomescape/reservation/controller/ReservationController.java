@@ -18,7 +18,7 @@ import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api")
 public class ReservationController {
 
     private final ReservationService reservationService;

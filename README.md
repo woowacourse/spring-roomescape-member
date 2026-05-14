@@ -12,22 +12,22 @@
 
 ## API 명세
 
-| 기능 | Method | URL | 설명 |
-| --- | --- | --- | --- |
-| 사용자 전체 테마 조회 | GET | `/user/themes` | 전체 테마 조회 |
-| 사용자 단일 테마 조회 | GET | `/user/themes/{id}` | 특정 테마 조회 |
-| 관리자 전체 테마 조회 | GET | `/admin/themes` | 전체 테마 조회 |
-| 관리자 단일 테마 조회 | GET | `/admin/themes/{id}` | 특정 테마 조회 |
-| 관리자 테마 생성 | POST | `/admin/themes` | 테마 생성 |
-| 관리자 테마 삭제 | DELETE | `/admin/themes/{id}` | 테마 삭제 |
-| 전체 예약 시간 조회 | GET | `/user/times` | 전체 예약 시간 조회 |
-| 예약 가능 시간 조회 | GET | `/user/times?themeId={themeId}&date={date}` | 날짜/테마 기준 예약 가능 시간 조회 |
-| 예약 시간 생성 | POST | `/user/times` | 예약 시간 생성 |
-| 예약 시간 삭제 | DELETE | `/user/times/{id}` | 예약 시간 삭제 |
-| 전체 예약 조회 | GET | `/user/reservations` | 전체 예약 조회 |
-| 예약 생성 | POST | `/user/reservations` | 예약 생성 |
-| 예약 삭제 | DELETE | `/user/reservations/{id}` | 예약 삭제 |
-| 인기 테마 조회 | GET | `/user/themes/trending?from={from}&to={to}&limit={limit}` | 인기 테마 조회 |
+| 기능 | Method | URL                                                      | 설명 |
+| --- | --- |----------------------------------------------------------| --- |
+| 사용자 전체 테마 조회 | GET | `/api/themes`                                            | 전체 테마 조회 |
+| 사용자 단일 테마 조회 | GET | `/api/themes/{id}`                                       | 특정 테마 조회 |
+| 관리자 전체 테마 조회 | GET | `/admin/themes`                                          | 전체 테마 조회 |
+| 관리자 단일 테마 조회 | GET | `/admin/themes/{id}`                                     | 특정 테마 조회 |
+| 관리자 테마 생성 | POST | `/admin/themes`                                          | 테마 생성 |
+| 관리자 테마 삭제 | DELETE | `/admin/themes/{id}`                                     | 테마 삭제 |
+| 전체 예약 시간 조회 | GET | `/api/times`                                             | 전체 예약 시간 조회 |
+| 예약 가능 시간 조회 | GET | `/api/times?themeId={themeId}&date={date}`               | 날짜/테마 기준 예약 가능 시간 조회 |
+| 예약 시간 생성 | POST | `/api/times`                                             | 예약 시간 생성 |
+| 예약 시간 삭제 | DELETE | `/api/times/{id}`                                        | 예약 시간 삭제 |
+| 전체 예약 조회 | GET | `/api/reservations`                                      | 전체 예약 조회 |
+| 예약 생성 | POST | `/api/reservations`                                      | 예약 생성 |
+| 예약 삭제 | DELETE | `/api/reservations/{id}`                                 | 예약 삭제 |
+| 인기 테마 조회 | GET | `/api/themes/trending?from={from}&to={to}&limit={limit}` | 인기 테마 조회 |
 
 ### 응답 상태 코드 규칙
 

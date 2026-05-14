@@ -23,7 +23,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/user/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(201);
     }
@@ -39,7 +39,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/user/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(500);
     }
@@ -47,7 +47,7 @@ public class ReservationControllerTest {
     @Test
     void 예약삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/user/reservations/1")
+                .when().delete("/api/reservations/1")
                 .then().log().all()
                 .statusCode(204);
     }

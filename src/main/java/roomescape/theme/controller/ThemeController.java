@@ -14,7 +14,7 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api")
 public class ThemeController {
     private final ThemeService themeService;
 
