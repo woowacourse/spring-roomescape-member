@@ -47,6 +47,30 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 중복_예약을_하면_409를_반환한다() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+        String date = LocalDate.now().plusDays(1).toString();
+        createReservation("브라운", date, timeId, themeId).statusCode(201);
+
+        // when & then
+        createReservation("로지", date, timeId, themeId)
+                .statusCode(409);
+    }
+
+    @Test
+    void 지나간_날짜로_예약하면_422를_반환한다() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+
+        // when & then
+        createReservation("브라운", "2026-04-01", timeId, themeId)
+                .statusCode(422);
+    }
+
+    @Test
     void 예약_조회() {
         // given
         int timeId = createTime("10:00");
