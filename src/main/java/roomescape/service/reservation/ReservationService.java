@@ -54,11 +54,7 @@ public class ReservationService {
 
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidInputException("RESERVATION_DATE_TIME_IN_PAST", "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
-        }
+        validateReservationDateTime(date, reservationTime);
 
         if(reservationRepository.existsByDateAndThemeIdAndTimeId(date, themeId, timeId)){
             throw new ConflictException("RESERVATION_DUPLICATED", "동일한 시기에 예약을 할 수 없습니다.");
@@ -116,16 +112,12 @@ public class ReservationService {
         if (isPastReservation(reservation)) {
             throw new ConflictException(
                     "PAST_RESERVATION_CANNOT_BE_UPDATED",
-                    "이미 지난 예약은 변경할 수 없습니다."
+                "이미 지난 예약은 변경할 수 없습니다."
             );
         }
 
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidInputException("RESERVATION_DATE_TIME_IN_PAST", "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
-        }
+        validateReservationDateTime(date, reservationTime);
 
         if (reservationRepository.existsByDateAndThemeIdAndTimeIdExcludingId(
                 date,
@@ -146,12 +138,18 @@ public class ReservationService {
         }
     }
 
+    private void validateReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
+        if (toReservationDateTime(date, reservationTime).isBefore(LocalDateTime.now())) {
+            throw new InvalidInputException("RESERVATION_DATE_TIME_IN_PAST", "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
+        }
+    }
+
+    private LocalDateTime toReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
+        return LocalDateTime.of(date, reservationTime.getStartAt());
+    }
+
     private boolean isPastReservation(final Reservation reservation) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(
-                reservation.getDate(),
-                reservation.getTime().getStartAt()
-        );
-        return reservationDateTime.isBefore(LocalDateTime.now());
+        return toReservationDateTime(reservation.getDate(), reservation.getTime()).isBefore(LocalDateTime.now());
     }
 
 }

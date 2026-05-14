@@ -60,31 +60,16 @@ public class ReservationPageController {
             resolvedErrorCode = resolveErrorCode(resolvedErrorCode, exception.getCode());
         }
 
-        model.addAttribute("themes", themeService.getAll().stream()
-                .map(ThemeResponse::from)
-                .toList());
-        model.addAttribute("popularThemes", themeService.getPopularThemes(period, limit).stream()
-                .map(ThemeResponse::from)
-                .toList());
-        model.addAttribute("selectedThemeId", selectedThemeId);
-        model.addAttribute("selectedTheme", selectedTheme);
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("reservationName", reservationName);
-        model.addAttribute("period", period);
-        model.addAttribute("limit", limit);
-        model.addAttribute("errorCode", resolvedErrorCode);
-        model.addAttribute("reservationTimes", reservationTimeService.getAll().stream()
-                .map(ReservationTimeResponse::from)
-                .toList());
-
-        List<ReservationTimeResponse> availableTimes = List.of();
-        if (selectedTheme != null && selectedDate != null) {
-            availableTimes = reservationTimeService.findAvailableTimes(selectedDate, selectedThemeId).stream()
-                    .map(ReservationTimeResponse::from)
-                    .toList();
-        }
-        model.addAttribute("availableTimes", availableTimes);
-        model.addAttribute("myReservations", getMyReservations(reservationName, resolvedErrorCode));
+        addReservationPageAttributes(
+                model,
+                selectedThemeId,
+                selectedTheme,
+                selectedDate,
+                reservationName,
+                period,
+                limit,
+                resolvedErrorCode
+        );
 
         return "reservation/list";
     }
@@ -108,17 +93,21 @@ public class ReservationPageController {
             reservationService.save(name, parsedDate, parsedThemeId, parsedTimeId);
             addReservationNameAttribute(redirectAttributes, name);
         } catch (ApiException exception) {
-            addThemeIdAttribute(redirectAttributes, parsedThemeId);
-            addDateAttribute(redirectAttributes, parsedDate);
-            addReservationNameAttribute(redirectAttributes, name);
-            redirectAttributes.addAttribute("errorCode", exception.getCode());
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    parsedThemeId,
+                    parsedDate,
+                    name,
+                    exception.getCode()
+            );
         } catch (Exception exception) {
-            addThemeIdAttribute(redirectAttributes, parsedThemeId);
-            addDateAttribute(redirectAttributes, parsedDate);
-            addReservationNameAttribute(redirectAttributes, name);
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    parsedThemeId,
+                    parsedDate,
+                    name,
+                    "INTERNAL_SERVER_ERROR"
+            );
         }
 
         return "redirect:/pages/user/reservations";
@@ -133,13 +122,21 @@ public class ReservationPageController {
         try {
             reservationService.deleteByIdAndName(id, reservationName);
         } catch (ApiException exception) {
-            addReservationNameAttribute(redirectAttributes, reservationName);
-            redirectAttributes.addAttribute("errorCode", exception.getCode());
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    null,
+                    null,
+                    reservationName,
+                    exception.getCode()
+            );
         } catch (Exception exception) {
-            addReservationNameAttribute(redirectAttributes, reservationName);
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    null,
+                    null,
+                    reservationName,
+                    "INTERNAL_SERVER_ERROR"
+            );
         }
 
         addReservationNameAttribute(redirectAttributes, reservationName);
@@ -162,16 +159,82 @@ public class ReservationPageController {
             parsedDate = parseDate(date);
             reservationService.updateByIdAndName(id, reservationName, parsedDate, parsedTimeId);
         } catch (ApiException exception) {
-            addReservationNameAttribute(redirectAttributes, reservationName);
-            redirectAttributes.addAttribute("errorCode", exception.getCode());
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    null,
+                    null,
+                    reservationName,
+                    exception.getCode()
+            );
         } catch (Exception exception) {
-            addReservationNameAttribute(redirectAttributes, reservationName);
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
-            return "redirect:/pages/user/reservations";
+            return redirectReservationPageWithError(
+                    redirectAttributes,
+                    null,
+                    null,
+                    reservationName,
+                    "INTERNAL_SERVER_ERROR"
+            );
         }
 
         addReservationNameAttribute(redirectAttributes, reservationName);
+        return "redirect:/pages/user/reservations";
+    }
+
+    private void addReservationPageAttributes(
+            final Model model,
+            final Long selectedThemeId,
+            final ThemeResponse selectedTheme,
+            final LocalDate selectedDate,
+            final String reservationName,
+            final int period,
+            final int limit,
+            final String errorCode
+    ) {
+        model.addAttribute("themes", themeService.getAll().stream()
+                .map(ThemeResponse::from)
+                .toList());
+        model.addAttribute("popularThemes", themeService.getPopularThemes(period, limit).stream()
+                .map(ThemeResponse::from)
+                .toList());
+        model.addAttribute("selectedThemeId", selectedThemeId);
+        model.addAttribute("selectedTheme", selectedTheme);
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("reservationName", reservationName);
+        model.addAttribute("period", period);
+        model.addAttribute("limit", limit);
+        model.addAttribute("errorCode", errorCode);
+        model.addAttribute("reservationTimes", reservationTimeService.getAll().stream()
+                .map(ReservationTimeResponse::from)
+                .toList());
+        model.addAttribute("availableTimes", getAvailableTimes(selectedThemeId, selectedTheme, selectedDate));
+        model.addAttribute("myReservations", getMyReservations(reservationName, errorCode));
+    }
+
+    private List<ReservationTimeResponse> getAvailableTimes(
+            final Long selectedThemeId,
+            final ThemeResponse selectedTheme,
+            final LocalDate selectedDate
+    ) {
+        if (selectedTheme == null || selectedDate == null) {
+            return List.of();
+        }
+
+        return reservationTimeService.findAvailableTimes(selectedDate, selectedThemeId).stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
+    private String redirectReservationPageWithError(
+            final RedirectAttributes redirectAttributes,
+            final Long themeId,
+            final LocalDate date,
+            final String reservationName,
+            final String errorCode
+    ) {
+        addThemeIdAttribute(redirectAttributes, themeId);
+        addDateAttribute(redirectAttributes, date);
+        addReservationNameAttribute(redirectAttributes, reservationName);
+        redirectAttributes.addAttribute("errorCode", errorCode);
         return "redirect:/pages/user/reservations";
     }
 
