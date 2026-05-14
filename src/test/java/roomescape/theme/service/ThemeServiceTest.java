@@ -205,8 +205,6 @@ class ThemeServiceTest {
             LocalDate day8Ago = reservationDate.minusDays(8);
             Theme theme = themeService.save(new ThemeRequest("Old", "설명", "https://example.com/o.png"));
             Long timeId = insertReservationTime(LocalTime.of(10, 0));
-
-            // 기준 시각 2026-05-06 의 8일 전 = 2026-04-28 → 제외돼야 함
             insertReservation("oldUser", day8Ago, timeId, theme.getId(), ReservationStatus.COMPLETED);
 
             // when

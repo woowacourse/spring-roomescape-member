@@ -51,7 +51,7 @@ public class UserReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         reservationService.cancelById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

@@ -15,7 +15,7 @@
   <a class="nav-logo" href="/">// ROOMESCAPE</a>
   <div class="nav-actions">
     <a class="nav-btn" href="/">← 홈</a>
-    <a class="nav-btn primary-btn" href="/admin/">⌘ 관리자</a>
+    <a class="nav-btn primary-btn" href="/admin/index.html">⌘ 관리자</a>
   </div>
 </nav>
 
@@ -90,14 +90,15 @@
     </div>
     <form class="grid-form" id="editForm" onsubmit="return false;" style="grid-template-columns:1fr 1fr;">
       <input id="editId" type="hidden" />
-      <input id="editThemeId" type="hidden" />
       <div class="field">
         <label>예약자 이름</label>
         <input id="editName" maxlength="10" required type="text" />
       </div>
       <div class="field">
         <label>테마</label>
-        <input id="editThemeName" disabled type="text" />
+        <select id="editTheme" required>
+          <option value="">테마 선택</option>
+        </select>
       </div>
       <div class="field">
         <label>날짜</label>

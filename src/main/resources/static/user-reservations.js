@@ -39,6 +39,9 @@ function setMessage(msg, isError = false) {
 
 const STATUS_LABEL = { RESERVED: "예약됨", CANCELED: "취소됨", COMPLETED: "이용완료" };
 
+// 테마 목록 캐시 (init 에서 로드 후 모달에서 재사용)
+let allThemes = [];
+
 /* ── 결과 렌더링 ── */
 function renderResults(reservations) {
   const tbody = $("#resultRows");
@@ -119,13 +122,22 @@ function openEditModal(btn) {
   _editPinTimeId    = btn.dataset.timeId;
   _editPinTimeLabel = btn.dataset.timeLabel;
 
-  $("#editId").value        = btn.dataset.id;
-  $("#editName").value      = btn.dataset.name;
-  $("#editDate").value      = btn.dataset.date;
-  $("#editThemeId").value   = btn.dataset.themeId;
-  $("#editThemeName").value = btn.dataset.themeName;
+  $("#editId").value   = btn.dataset.id;
+  $("#editName").value = btn.dataset.name;
+  $("#editDate").value = btn.dataset.date;
 
-  // 모달 열릴 때 즉시 예약 가능 시간 조회
+  // 테마 select 채우기 (캐시된 전체 목록 사용)
+  const themeSel = $("#editTheme");
+  themeSel.innerHTML = '<option value="">테마 선택</option>';
+  allThemes.forEach((t) => {
+    const opt = document.createElement("option");
+    opt.value = t.id;
+    opt.textContent = t.name;
+    themeSel.appendChild(opt);
+  });
+  themeSel.value = btn.dataset.themeId;
+
+  // 모달 열릴 때 즉시 예약 가능 시간 조회 (현재 시간 핀 포함)
   loadEditTimes(btn.dataset.themeId, btn.dataset.date, _editPinTimeId, _editPinTimeLabel);
   $("#editModal").classList.remove("hidden");
 }
@@ -179,7 +191,7 @@ async function saveEdit() {
   const name    = $("#editName").value.trim();
   const date    = $("#editDate").value;
   const timeId  = Number($("#editTime").value);
-  const themeId = Number($("#editThemeId").value);
+  const themeId = Number($("#editTheme").value);
 
   if (!name || !date || !timeId || !themeId) {
     setMessage("모든 항목을 입력해 주세요.", true);
@@ -218,9 +230,12 @@ $("#resultRows").addEventListener("click", (e) => {
   if (cancelBtn) cancelReservation(cancelBtn.dataset.id);
 });
 
-// 날짜 바꾸면 핀 없이 새 가능 시간 목록 조회
+// 날짜 또는 테마 바꾸면 핀 없이 새 가능 시간 목록 조회
 $("#editDate").addEventListener("change", () => {
-  loadEditTimes($("#editThemeId").value, $("#editDate").value);
+  loadEditTimes($("#editTheme").value, $("#editDate").value);
+});
+$("#editTheme").addEventListener("change", () => {
+  loadEditTimes($("#editTheme").value, $("#editDate").value);
 });
 
 $("#editSaveBtn").addEventListener("click", saveEdit);
@@ -235,6 +250,8 @@ $("#editModal").addEventListener("click", (e) => {
 (async function init() {
   try {
     const themes = await api("/themes");
+    allThemes = themes;   // 모달 테마 select 에서 재사용
+
     const sel = $("#searchTheme");
     themes.forEach((t) => {
       const opt = document.createElement("option");
