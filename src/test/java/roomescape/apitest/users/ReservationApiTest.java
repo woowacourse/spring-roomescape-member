@@ -49,6 +49,7 @@ class ReservationApiTest {
 
     @Test
     void 예약_사용자_시간_변경_API() {
+        long id = 24L;
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", userName);
         reservation.put("date", FUTURE_DATE);
@@ -58,13 +59,14 @@ class ReservationApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().put("/reservations")
+                .when().put("/reservations/" + id)
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 예약_사용자_날짜_변경_API() {
+        long id = 24L;
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", userName);
         reservation.put("date", "2026-05-13");
@@ -74,7 +76,7 @@ class ReservationApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().put("/reservations")
+                .when().put("/reservations/" + id)
                 .then().log().all()
                 .statusCode(200);
     }
