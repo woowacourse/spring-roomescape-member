@@ -2,7 +2,6 @@ package roomescape.domain.theme.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ class ThemeCreateRequestDtoTest {
 
     @Nested
     @DisplayName("생성자 테스트")
-    @Disabled
     class Constructor {
 
         @Test
