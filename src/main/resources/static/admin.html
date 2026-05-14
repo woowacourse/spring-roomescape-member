@@ -150,9 +150,13 @@
     }
 
     async function deleteTheme(id) {
-        if(!confirm('🚨 정말 삭제하시겠습니까? 연결된 예약이 모두 삭제됩니다!')) return;
-        await fetch(`${API_BASE_URL}/admin/themes/${id}`, { method: 'DELETE' });
-        loadThemes();
+        if(!confirm('정말 삭제하시겠습니까?')) return;
+        const res = await fetch(`${API_BASE_URL}/admin/themes/${id}`, { method: 'DELETE' });
+        if (res.status === 409) {
+            alert('🚨 예약이 걸려있는 테마는 삭제할 수 없습니다!');
+        } else {
+            loadThemes();
+        }
     }
 
     async function loadTimes() {
