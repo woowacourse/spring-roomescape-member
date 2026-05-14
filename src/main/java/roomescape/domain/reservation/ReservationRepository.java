@@ -102,7 +102,6 @@ public class ReservationRepository {
             WHERE id = ?
             """;
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        System.out.println(count);
         return count != null && count > 0;
     }
 
@@ -138,5 +137,10 @@ public class ReservationRepository {
 
         return jdbcTemplate.query(query, rowMapper, id).stream()
             .findFirst();
+    }
+
+    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String query = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(query, date, timeId, id);
     }
 }

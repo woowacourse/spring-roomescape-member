@@ -48,12 +48,4 @@ public class Reservation {
         return theme;
     }
 
-    public void update(LocalDate date, ReservationTime time) {
-        if (date != null) {
-            this.date = date;
-        }
-        if (time != null) {
-            this.time = time;
-        }
-    }
 }
