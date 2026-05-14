@@ -20,6 +20,8 @@ import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.holiday.service.dto.HolidaySaveServiceDto;
 import roomescape.reservation.controller.dto.ReservationResponseDto;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.PastReservationException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
@@ -27,8 +29,9 @@ import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
-import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.controller.dto.TimeResponseDto;
+import roomescape.time.exception.ReservationTimeConflictException;
+import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.service.TimeService;
 
 @Controller
@@ -109,7 +112,8 @@ public class RoomescapePageController {
         try {
             reservationService.create(new ReservationSaveServiceDto(name, date, themeId, timeId));
             addSuccessMessage(redirectAttributes, "예약을 생성했습니다.");
-        } catch (IllegalArgumentException | ThemeNotFoundException | TimeNotFoundException e) {
+        } catch (PastReservationException | DuplicateReservationException |
+                 IllegalArgumentException | ThemeNotFoundException | TimeNotFoundException e) {
             addExpectedErrorMessage(redirectAttributes, "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요.", e);
         }
         return "redirect:/dashboard/reservations";
@@ -173,6 +177,8 @@ public class RoomescapePageController {
         try {
             timeService.deleteById(id);
             addSuccessMessage(redirectAttributes, "시간 슬롯을 삭제했습니다.");
+        } catch (ReservationTimeConflictException e) {
+            addExpectedErrorMessage(redirectAttributes, "해당 시간에 예약이 존재하여 삭제할 수 없습니다.", e);
         } catch (TimeNotFoundException e) {
             addExpectedErrorMessage(redirectAttributes, "삭제할 시간 슬롯을 찾지 못했습니다.", e);
         }
