@@ -31,17 +31,60 @@
         <p id="empty" class="muted" style="display:none;">등록된 예약이 없습니다.</p>
         <p id="err" class="status-msg err" style="display:none;"></p>
     </div>
+    <details class="dev-panel">
+        <summary>🧪 에러 응답 테스트</summary>
+        <p class="trigger-desc">존재하지 않는 UUID로 예약 취소를 시도합니다. → <code>RESERVATION_NOT_FOUND</code></p>
+        <div class="form-row">
+            <button type="button" class="btn btn-test" id="triggerErrBtn">존재하지 않는 예약 취소 시도</button>
+        </div>
+        <p id="testErr" class="status-msg" style="display:none;"></p>
+    </details>
 </main>
+<div th:replace="~{fragments/site :: errorModal}"></div>
+<script th:src="@{/js/common.js}"></script>
 <script>
     const tbody = document.getElementById('rows');
     const empty = document.getElementById('empty');
     const err = document.getElementById('err');
 
+    const ERROR_MESSAGES = {
+        BAD_REQUEST: '잘못된 요청입니다.',
+        INVALID_INPUT: '입력값이 올바르지 않습니다.',
+        INVALID_REQUEST: '요청 형식이 올바르지 않습니다.',
+        INVALID_ID: 'ID 형식이 올바르지 않습니다.',
+        INVALID_DURATION: '조회 기간이 올바르지 않습니다. 시작일은 종료일보다 늦을 수 없습니다.',
+        INVALID_RESERVATION: '예약 정보가 올바르지 않습니다.',
+        INVALID_RESERVATION_TIME: '예약 시간 정보가 올바르지 않습니다.',
+        INVALID_THEME: '테마 정보가 올바르지 않습니다.',
+        TIME_IN_USE: '해당 시간은 예약에 사용 중이라 삭제할 수 없습니다.',
+        THEME_IN_USE: '해당 테마는 예약에 사용 중이라 삭제할 수 없습니다.',
+        DATA_INTEGRITY_VIOLATION: '데이터 처리 중 오류가 발생했습니다.',
+        PAST_RESERVATION: '지난 시간의 예약은 생성·변경·취소할 수 없습니다.',
+        NOT_RESERVATION_OWNER: '본인의 예약만 변경하거나 취소할 수 있습니다.',
+        RESERVATION_NOT_FOUND: '해당 예약을 찾을 수 없습니다.',
+        RESERVATION_TIME_NOT_FOUND: '해당 예약 시간을 찾을 수 없습니다.',
+        THEME_NOT_FOUND: '해당 테마를 찾을 수 없습니다.',
+        DUPLICATE_RESERVATION: '이미 같은 날짜·시간·테마에 예약이 존재합니다.',
+        DATABASE_ERROR: '데이터베이스 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+    };
+
+    async function readApiError(res) {
+        const text = await res.text();
+        if (!text) return '요청 실패 (' + res.status + ')';
+        try {
+            const j = JSON.parse(text);
+            if (j && j.errorCode && ERROR_MESSAGES[j.errorCode]) return ERROR_MESSAGES[j.errorCode];
+            if (j && j.message) return j.message;
+        } catch (_) {}
+        return text || '요청 실패 (' + res.status + ')';
+    }
+
     async function load() {
         err.style.display = 'none';
         try {
             const res = await fetch('/admin/reservations');
-            if (!res.ok) throw new Error('조회 실패');
+            if (!res.ok) throw new Error(await readApiError(res));
             const list = await res.json();
             tbody.innerHTML = '';
             empty.style.display = list.length ? 'none' : 'block';
@@ -63,8 +106,7 @@
                 btn.addEventListener('click', () => cancelReservation(btn.dataset.id));
             });
         } catch (e) {
-            err.textContent = e.message;
-            err.style.display = 'block';
+            showErrorModal(e.message);
         }
     }
 
@@ -73,11 +115,10 @@
         err.style.display = 'none';
         try {
             const res = await fetch('/admin/reservations/' + id, {method: 'DELETE'});
-            if (!res.ok) throw new Error('취소 실패');
+            if (!res.ok) throw new Error(await readApiError(res));
             await load();
         } catch (e) {
-            err.textContent = e.message;
-            err.style.display = 'block';
+            showErrorModal(e.message);
         }
     }
 
@@ -88,6 +129,21 @@
     }
 
     load();
+
+    document.getElementById('triggerErrBtn').addEventListener('click', async () => {
+        const testErr = document.getElementById('testErr');
+        testErr.style.display = 'none';
+        try {
+            // 존재하지 않는 예약 ID로 취소 시도 → RESERVATION_NOT_FOUND
+            const res = await fetch('/admin/reservations/00000000-0000-0000-0000-000000000000', {method: 'DELETE'});
+            if (!res.ok) throw new Error(await readApiError(res));
+            testErr.textContent = '성공 응답을 받았습니다.';
+            testErr.className = 'status-msg ok';
+            testErr.style.display = 'block';
+        } catch (e) {
+            showErrorModal(e.message);
+        }
+    });
 </script>
 </body>
 </html>

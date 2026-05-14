@@ -387,3 +387,73 @@ tbody tr:hover {
 .status-msg.err {
     color: var(--danger);
 }
+
+/* ── 에러 모달 ── */
+#_errModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#_errModalBox {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.75rem 1.5rem;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+#_errModalMsg {
+    margin: 0 0 1.5rem;
+    color: var(--danger);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+/* ── 에러 테스트 패널 ── */
+.dev-panel {
+    margin-top: 2rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    background: rgba(139, 156, 179, 0.04);
+}
+
+.dev-panel summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.85rem;
+    user-select: none;
+    list-style: none;
+}
+
+.dev-panel summary:hover {
+    color: var(--text);
+}
+
+.dev-panel .trigger-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin: 0.6rem 0 0.75rem;
+}
+
+.btn-test {
+    border-color: var(--muted);
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.btn-test:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(224, 108, 108, 0.07);
+}

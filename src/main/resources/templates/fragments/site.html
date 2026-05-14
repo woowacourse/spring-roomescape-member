@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+<div th:fragment="errorModal" id="_errModal">
+    <div id="_errModalBox">
+        <p id="_errModalMsg"></p>
+        <button type="button" class="btn btn-primary" id="_errModalBtn">확인</button>
+    </div>
+</div>
+
 <header th:fragment="siteHeader" class="site-header">
     <a class="brand" th:href="@{/view}">방탈출 예약</a>
     <nav>
