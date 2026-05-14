@@ -1,6 +1,7 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -101,11 +102,11 @@ class RoomescapeApplicationTest {
     @Test
     void 중복_예약_수행시_409를_반환한다() {
         String name = "zeze";
-        String date = "2026-05-14";
+        String date = "2099-05-14";
         long timeId = 1L;
         long themeId = 1L;
         reserve(name, date, timeId, themeId, 201);
-        reserve(name, date, timeId, themeId, 422);
+        reserve(name, date, timeId, themeId, 409);
     }
 
     @Test
@@ -135,6 +136,19 @@ class RoomescapeApplicationTest {
         String past = "2020-01-01";
 
         reserve("zeze", past, 1L, 1L, 422);
+    }
+
+    @Test
+    void 이름으로_조회시_정상적으로_반환한다() {
+        reserve("zeze", "2099-05-01", 1L, 1L, 201);
+        reserve("zeze", "2099-05-02", 1L, 1L, 201);
+        reserve("zeze", "2099-05-03", 1L, 1L, 201);
+        reserve("mingu", "2099-05-04", 1L, 1L, 201);
+
+        RestAssured.given().params("name", "zeze")
+                .when().get("/reservations")
+                .then().log().all()
+                .body("size()", is(3));
     }
 
     private int availableCount(String date, long themeId) {

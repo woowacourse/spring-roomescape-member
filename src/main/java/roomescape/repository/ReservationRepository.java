@@ -38,6 +38,7 @@ public class ReservationRepository {
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
+    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.name = ?";
     private static final String EXISTS_BY_DATE_AND_TIME_AND_THEME_ID = """
             SELECT EXISTS (
                 SELECT 1
@@ -113,5 +114,9 @@ public class ReservationRepository {
     public boolean existsByTimeId(long reservationTimeId) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
+    }
+
+    public List<Reservation> findAllByName(String name) {
+        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, name);
     }
 }
