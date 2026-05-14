@@ -47,32 +47,6 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private ReservationTime getTime(long timeId) {
-        return reservationTimeDao.selectById(timeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
-    }
-
-    private Theme getTheme(long themeId) {
-        return themeDao.selectById(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
-    }
-
-    private void validateUniqueReservation(LocalDate date, long timeId, long themeId) {
-        boolean exists = reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId);
-        if (exists) {
-            throw new AlreadyExistException("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
-        }
-    }
-
-    private void validatePastDatetime(LocalDate date, ReservationTime reservationTime) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime reservationDateAndTime = LocalDateTime.of(date, reservationTime.getStartAt());
-
-        if (reservationDateAndTime.isBefore(now)) {
-            throw new UnprocessableException("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<ReservationResponse> getAllReservations() {
         List<Reservation> reservations = reservationDao.select();
@@ -99,15 +73,41 @@ public class ReservationService {
         return ReservationResponse.from(updateReservation);
     }
 
-    private Reservation getReservation(Long reservationId) {
-        return reservationDao.selectById(reservationId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
-    }
-
     public void delete(Long reservationId) {
         int deleted = reservationDao.delete(reservationId);
         if (deleted == 0) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }
+    }
+
+    private ReservationTime getTime(long timeId) {
+        return reservationTimeDao.selectById(timeId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+    }
+
+    private Theme getTheme(long themeId) {
+        return themeDao.selectById(themeId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+    }
+
+    private void validateUniqueReservation(LocalDate date, long timeId, long themeId) {
+        boolean exists = reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId);
+        if (exists) {
+            throw new AlreadyExistException("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+        }
+    }
+
+    private void validatePastDatetime(LocalDate date, ReservationTime reservationTime) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime reservationDateAndTime = LocalDateTime.of(date, reservationTime.getStartAt());
+
+        if (reservationDateAndTime.isBefore(now)) {
+            throw new UnprocessableException("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private Reservation getReservation(Long reservationId) {
+        return reservationDao.selectById(reservationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 }

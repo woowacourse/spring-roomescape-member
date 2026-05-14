@@ -36,13 +36,6 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
-    private void validateUniqueTheme(String name) {
-        boolean exists = themeDao.existsByName(name);
-        if (exists) {
-            throw new AlreadyExistException("이미 존재하는 테마입니다.");
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<ThemeResponse> getThemes() {
         return themeDao.selectAll().stream()
@@ -67,10 +60,21 @@ public class ThemeService {
             throw new NotFoundException("존재하지 않는 테마입니다.");
         }
 
+        validateThemeIncludeReservation(themeId);
+        themeDao.delete(themeId);
+    }
+
+    private void validateUniqueTheme(String name) {
+        boolean exists = themeDao.existsByName(name);
+        if (exists) {
+            throw new AlreadyExistException("이미 존재하는 테마입니다.");
+        }
+    }
+
+    private void validateThemeIncludeReservation(long themeId) {
         boolean existsByThemeId = reservationDao.existsByThemeId(themeId);
         if (existsByThemeId) {
             throw new UnprocessableException("예약된 테마는 삭제할 수 없습니다.");
         }
-        themeDao.delete(themeId);
     }
 }

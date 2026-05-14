@@ -48,6 +48,16 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    public void deleteReservationTime(long reservationTimeId) {
+        Optional<ReservationTime> reservationTime = reservationTimeDao.selectById(reservationTimeId);
+        if (reservationTime.isEmpty()) {
+            throw new NotFoundException("존재하지 않는 예약 시간입니다.");
+        }
+
+        validateTimeIncludeReservation(reservationTimeId);
+        reservationTimeDao.delete(reservationTimeId);
+    }
+
     private void validateTheme(Long themeId) {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
@@ -55,16 +65,10 @@ public class ReservationTimeService {
         }
     }
 
-    public void deleteReservationTime(long reservationTimeId) {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.selectById(reservationTimeId);
-        if (reservationTime.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 예약 시간입니다.");
-        }
-
+    private void validateTimeIncludeReservation(long reservationTimeId) {
         boolean existsByTimeId = reservationDao.existsByTimeId(reservationTimeId);
         if (existsByTimeId) {
             throw new UnprocessableException("예약된 시간은 삭제할 수 없습니다.");
         }
-        reservationTimeDao.delete(reservationTimeId);
     }
 }
