@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -83,7 +84,7 @@ class ReservationTimeServiceTest {
     void 존재하지_않는_테마로_조회하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.getReservationTimes(999L, LocalDate.of(2026, 5, 5)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 
@@ -100,8 +101,8 @@ class ReservationTimeServiceTest {
     void 존재하지_않는_시간을_삭제하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 시간입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
     private ReservationTime saveTime(int hour, int minute) {

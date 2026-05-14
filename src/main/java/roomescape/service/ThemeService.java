@@ -64,7 +64,7 @@ public class ThemeService {
     public void deleteTheme(long themeId) {
         Optional<Theme> theme = themeDao.selectById(themeId);
         if (theme.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 테마 입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
 
         boolean existsByThemeId = reservationDao.existsByThemeId(themeId);

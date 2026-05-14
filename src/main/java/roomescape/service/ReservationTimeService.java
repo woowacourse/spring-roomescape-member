@@ -58,7 +58,7 @@ public class ReservationTimeService {
     public void deleteReservationTime(long reservationTimeId) {
         Optional<ReservationTime> reservationTime = reservationTimeDao.selectById(reservationTimeId);
         if (reservationTime.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 예약 시간 입니다.");
+            throw new NotFoundException("존재하지 않는 예약 시간입니다.");
         }
 
         boolean existsByTimeId = reservationDao.existsByTimeId(reservationTimeId);

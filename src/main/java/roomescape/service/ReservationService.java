@@ -68,7 +68,7 @@ public class ReservationService {
         LocalDateTime reservationDateAndTime = LocalDateTime.of(date, reservationTime.getStartAt());
 
         if (reservationDateAndTime.isBefore(now)) {
-            throw new UnprocessableException("지나간 날짜·시간에 대한 예약 생성은 불가능 합니다.");
+            throw new UnprocessableException("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 

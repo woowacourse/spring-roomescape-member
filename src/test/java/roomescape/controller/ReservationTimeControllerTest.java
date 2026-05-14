@@ -12,8 +12,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.dto.response.ReservationTimeResponse;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
@@ -23,7 +25,7 @@ public class ReservationTimeControllerTest {
         // given
         int timeId = createTime("09:00");
         int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");
-        LocalDate date = LocalDate.of(2026, 5, 5);
+        LocalDate date = LocalDate.now().plusDays(1);
         createReservation("러키", date.toString(), timeId, themeId);
 
         // when

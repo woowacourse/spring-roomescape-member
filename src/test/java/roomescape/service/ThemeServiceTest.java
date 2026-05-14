@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import roomescape.DatabaseInitializer;
+import roomescape.common.exception.AlreadyExistException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.config.TestConfig;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -67,7 +69,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.addTheme(new ThemeRequest("방탈출1", "설명2", "https://thumb2.com")))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AlreadyExistException.class)
                 .hasMessage("이미 존재하는 테마입니다.");
     }
 
@@ -115,14 +117,14 @@ class ThemeServiceTest {
         Theme saved = saveTheme("방탈출1", "설명", "https://thumb.com");
 
         // when & then
-        assertThatNoException().isThrownBy(() -> themeService.delete(saved.getId()));
+        assertThatNoException().isThrownBy(() -> themeService.deleteTheme(saved.getId()));
     }
 
     @Test
     void 존재하지_않는_테마를_삭제하면_예외가_발생한다() {
         // when & then
-        assertThatThrownBy(() -> themeService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> themeService.deleteTheme(999L))
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 

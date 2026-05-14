@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -41,7 +42,7 @@ class ReservationServiceTest {
         // given
         ReservationTime time = saveTime(10, 0);
         Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 5, 5), time.getId(),
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now().plusDays(1), time.getId(),
                 theme.getId());
 
         // when
@@ -50,7 +51,7 @@ class ReservationServiceTest {
         // then
         assertThat(response)
                 .extracting(ReservationResponse::name, ReservationResponse::date)
-                .containsExactly("브라운", LocalDate.of(2026, 5, 5));
+                .containsExactly("브라운", LocalDate.now().plusDays(1));
     }
 
     @Test
@@ -61,7 +62,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 시간입니다.");
     }
 
@@ -73,7 +74,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 
@@ -108,7 +109,7 @@ class ReservationServiceTest {
     void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
     }
 
