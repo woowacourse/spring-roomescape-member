@@ -43,6 +43,19 @@ class AdminReservationTimeAcceptanceTest {
     }
 
     @Test
+    void POST_admin_times_본문의_startAt이_누락되면_400과_메시지를_반환한다() {
+        Map<String, Object> body = Map.of();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("startAt은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void DELETE_admin_times_id_시간을_삭제한다() {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (1, '10:00')");
 

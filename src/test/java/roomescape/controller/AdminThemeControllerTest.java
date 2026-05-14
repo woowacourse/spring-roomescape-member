@@ -6,9 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,20 @@ class AdminThemeControllerTest {
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/themes/7"));
+    }
+
+    @Test
+    void POST_admin_themes_본문의_name이_빈_문자열이면_400과_메시지를_반환한다() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "");
+        body.put("description", "무서움");
+        body.put("thumbnailImageUrl", "https://thumbnail.url");
+
+        mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("name은(는) 필수 입력값입니다."));
     }
 
     @Test

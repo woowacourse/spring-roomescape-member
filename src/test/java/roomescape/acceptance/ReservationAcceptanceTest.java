@@ -136,6 +136,25 @@ class ReservationAcceptanceTest {
     }
 
     @Test
+    void POST_reservations_본문의_name이_누락되면_400과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+
+        Map<String, Object> body = Map.of(
+                "date", "2026-05-08",
+                "themeId", 1,
+                "timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("name은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void POST_reservations_본문_JSON_문법_오류면_400과_메시지를_반환한다() {
         String brokenBody = "{\"name\":\"브라";
 

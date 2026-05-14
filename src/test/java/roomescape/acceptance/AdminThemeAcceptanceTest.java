@@ -1,5 +1,6 @@
 package roomescape.acceptance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import io.restassured.RestAssured;
@@ -42,6 +43,21 @@ class AdminThemeAcceptanceTest {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", matchesPattern("/themes/\\d+"));
+    }
+
+    @Test
+    void POST_admin_themes_본문의_name이_누락되면_400과_메시지를_반환한다() {
+        Map<String, Object> body = Map.of(
+                "description", "무서움",
+                "thumbnailImageUrl", "https://thumbnail.url");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("name은(는) 필수 입력값입니다."));
     }
 
     @Test

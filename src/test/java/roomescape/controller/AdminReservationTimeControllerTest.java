@@ -73,6 +73,17 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
+    void POST_admin_times_본문의_startAt이_누락되면_400과_메시지를_반환한다() throws Exception {
+        String body = "{}";
+
+        mockMvc.perform(post("/admin/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("startAt은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void DELETE_admin_times_서비스가_ReservationTimeInUseException을_던지면_409과_메시지를_반환한다() throws Exception {
         willThrow(new ReservationTimeInUseException())
                 .given(reservationTimeService).deleteReservationTime(3L);

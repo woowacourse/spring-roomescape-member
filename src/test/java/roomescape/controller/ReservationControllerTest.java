@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -187,6 +188,35 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message")
                         .value("'timeId' 값 'abc'은(는) 숫자 형식이어야 합니다."));
+    }
+
+    @Test
+    void POST_reservations_본문의_name이_빈_문자열이면_400과_메시지를_반환한다() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "");
+        body.put("date", "2026-05-08");
+        body.put("themeId", 1);
+        body.put("timeId", 1);
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("name은(는) 필수 입력값입니다."));
+    }
+
+    @Test
+    void POST_reservations_본문의_themeId가_누락되면_400과_메시지를_반환한다() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-08");
+        body.put("timeId", 1);
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("themeId은(는) 필수 입력값입니다."));
     }
 
     @Test
