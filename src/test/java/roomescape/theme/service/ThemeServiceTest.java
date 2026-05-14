@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.fixture.FakeThemeRepository;
 import roomescape.theme.fixture.ThemeFixture;
 
@@ -71,8 +73,8 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.readTheme(unregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(THEME_NOT_FOUND.getMessage());
     }
 
     @Test

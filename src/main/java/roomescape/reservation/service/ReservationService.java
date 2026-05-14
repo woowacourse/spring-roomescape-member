@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
+import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
 import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.exception.ReservationTimeException;
@@ -107,7 +109,7 @@ public class ReservationService {
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new ThemeException(THEME_NOT_FOUND));
     }
 
     private Reservation getReservation(Long id) {

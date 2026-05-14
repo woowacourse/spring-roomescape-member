@@ -3,6 +3,9 @@ package roomescape.theme.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import roomescape.theme.exception.ThemeException;
+
+import static roomescape.theme.exception.ThemeExceptionInformation.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -35,25 +38,25 @@ public class Theme {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
+            throw new ThemeException(ID_IS_NULL);
         }
     }
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+            throw new ThemeException(NAME_IS_NULL);
         }
     }
 
     private static void validateThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl == null) {
-            throw new IllegalArgumentException("테마 썸네일 URL은 필수입니다.");
+            throw new ThemeException(THUMBNAIL_URL_IS_NULL);
         }
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 필수입니다.");
+            throw new ThemeException(DESCRIPTION_IS_NULL);
         }
     }
 

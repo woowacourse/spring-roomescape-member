@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
+import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
 import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.fixture.FakeReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.fixture.FakeThemeRepository;
 import roomescape.theme.fixture.ThemeFixture;
 import roomescape.time.domain.ReservationTime;
@@ -136,8 +138,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(THEME_NOT_FOUND.getMessage());
     }
 
     @Test

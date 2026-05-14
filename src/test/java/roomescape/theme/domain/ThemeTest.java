@@ -2,10 +2,12 @@ package roomescape.theme.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.theme.exception.ThemeExceptionInformation.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.theme.exception.ThemeException;
 
 class ThemeTest {
     private final String name = "공포";
@@ -55,7 +57,7 @@ class ThemeTest {
 
         // when
         Assertions.assertThatThrownBy(() -> Theme.load(nullId, name, description, description, loadStatus))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ThemeException.class)
                 .hasMessage("테마 ID는 필수입니다.");
     }
 
@@ -81,8 +83,8 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(nullName, description, defaultThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 이름은 필수입니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(NAME_IS_NULL.getMessage());
     }
 
     @Test
@@ -93,8 +95,8 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(emptyName, description, defaultThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 이름은 필수입니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(NAME_IS_NULL.getMessage());
     }
 
     @Test
@@ -105,8 +107,8 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, nullDescription, defaultThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 설명은 필수입니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(DESCRIPTION_IS_NULL.getMessage());
     }
 
     @Test
@@ -117,8 +119,8 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, emptyDescription, defaultThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 설명은 필수입니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(DESCRIPTION_IS_NULL.getMessage());
     }
 
     @Test
@@ -129,8 +131,8 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, description, nullThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 썸네일 URL은 필수입니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(THUMBNAIL_URL_IS_NULL.getMessage());
     }
 
     @Test

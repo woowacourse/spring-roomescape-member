@@ -6,8 +6,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.projection.PopularThemeResult;
+
+import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
+import static roomescape.theme.exception.ThemeExceptionInformation.THEME_STATUS_UPDATE_FAILED;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,16 +54,20 @@ public class ThemeService {
     public Theme updateStatus(Long id, boolean isActive) {
         Theme theme = getTheme(id);
         theme.updateStatus(isActive);
-        themeRepository.updateStatus(theme);
-        if (!themeRepository.updateStatus(theme)) {
-            throw new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
-        }
+        boolean isUpdated = themeRepository.updateStatus(theme);
+        validateIsUpdated(isUpdated);
         return theme;
     }
 
     private Theme getTheme(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new ThemeException(THEME_NOT_FOUND));
+    }
+
+    private void validateIsUpdated(boolean isUpdated) {
+        if (!isUpdated) {
+            throw new ThemeException(THEME_STATUS_UPDATE_FAILED);
+        }
     }
 
 }
