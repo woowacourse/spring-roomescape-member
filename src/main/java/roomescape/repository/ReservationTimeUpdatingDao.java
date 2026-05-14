@@ -34,10 +34,11 @@ public class ReservationTimeUpdatingDao {
         jdbcTemplate.update(sql, param);
     }
 
-    public int delete(Long id) {
+    public void delete(Long id) {
         String sql = "delete from reservation_time where id = :id";
+
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", id);
-        return jdbcTemplate.update(sql, param);
+        jdbcTemplate.update(sql, param);
     }
 }

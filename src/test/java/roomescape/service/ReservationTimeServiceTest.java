@@ -9,13 +9,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
+import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -25,6 +28,9 @@ class ReservationTimeServiceTest {
 
     @Mock
     ReservationTimeQueryingDao reservationTimeQueryingDao;
+
+    @Mock
+    ReservationQueryingDao reservationQueryingDao;
 
     @InjectMocks
     ReservationTimeService reservationTimeService;
@@ -56,4 +62,52 @@ class ReservationTimeServiceTest {
         // then
         Assertions.assertEquals(time, reservationTimeResponses.getFirst().getStartAt());
     }
+
+    @Test
+    void 시간_삭제_성공() {
+        // given
+        Long reservationTimeId = 1L;
+        ReservationTime reservationTime = new ReservationTime(reservationTimeId, LocalTime.of(10, 0));
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
+                .thenReturn(false);
+
+        // when
+        reservationTimeService.delete(reservationTimeId);
+
+        // then
+        verify(reservationTimeUpdatingDao, times(1)).delete(reservationTimeId);
+    }
+
+    @Test
+    void 시간_삭제_에러_존재하지_않는_시간() {
+        // given
+        Long reservationTimeId = 1L;
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.empty());
+
+        // when && then
+        Assertions.assertThrows(ReservationTimeNotFoundException.class, () -> reservationTimeService.delete(reservationTimeId));
+    }
+
+    @Test
+    void 시간_삭제_에러_예약이_있는_시간() {
+        // given
+        Long reservationTimeId = 1L;
+        ReservationTime reservationTime = new ReservationTime(reservationTimeId, LocalTime.of(10, 0));
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
+                .thenReturn(true);
+
+        // when && then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> reservationTimeService.delete(reservationTimeId));
+    }
+
 }

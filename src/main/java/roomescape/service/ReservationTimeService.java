@@ -6,6 +6,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
 import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
@@ -18,10 +19,18 @@ public class ReservationTimeService {
 
     private final ReservationTimeQueryingDao reservationTimeQueryingDao;
     private final ReservationTimeUpdatingDao reservationTimeUpdatingDao;
+    private final ReservationQueryingDao reservationQueryingDao;
 
-    public ReservationTimeService(ReservationTimeQueryingDao reservationTimeQueryingDao, ReservationTimeUpdatingDao reservationTimeUpdatingDao) {
+    public ReservationTimeService(ReservationTimeQueryingDao reservationTimeQueryingDao, ReservationTimeUpdatingDao reservationTimeUpdatingDao, ReservationQueryingDao reservationQueryingDao) {
         this.reservationTimeQueryingDao = reservationTimeQueryingDao;
         this.reservationTimeUpdatingDao = reservationTimeUpdatingDao;
+        this.reservationQueryingDao = reservationQueryingDao;
+    }
+
+    @Transactional
+    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
+        Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
+        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
 
     public List<ReservationTimeResponse> read(LocalDate date, Long themeId) {
@@ -37,22 +46,18 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
-        Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
-        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
-    }
-
-    @Transactional
     public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
         reservationTimeUpdatingDao.update(id, newReservationTimeReq);
     }
 
     @Transactional
     public void delete(Long id) {
-        int delete = reservationTimeUpdatingDao.delete(id);
+        ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(id)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(id));
 
-        if (delete == 0) {
-            throw new ReservationTimeNotFoundException(id);
+        if (reservationQueryingDao.existsReservationByTimeId(findReservationTime.getId())) {
+            throw new IllegalArgumentException("예약이 있는 시간은 삭제할 수 없습니다.");
         }
+        reservationTimeUpdatingDao.delete(id);
     }
 }

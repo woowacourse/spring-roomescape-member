@@ -95,4 +95,18 @@ public class ReservationQueryingDao {
             return Optional.empty();
         }
     }
+
+    public boolean existsReservationByTimeId(Long timeId) {
+        String sql = """
+                select count(1)
+                from reservation as r
+                where r.time_id = :time_id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("time_id", timeId);
+
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
 }
