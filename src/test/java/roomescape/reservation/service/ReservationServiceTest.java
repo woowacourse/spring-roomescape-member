@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.payload.ReservationRequest;
+import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.theme.exception.ThemeNotFoundException;
 
@@ -133,5 +135,112 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservation.getId(), "다른이름"))
                 .isInstanceOf(ReservationAccessDeniedException.class);
+    }
+
+    @Test
+    void 예약을_수정한다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), 2L, 2L);
+
+        Reservation updatedReservation = reservationService.updateByIdAndName(
+                reservation.getId(),
+                "봉구스",
+                updateRequest
+        );
+
+        assertThat(updatedReservation.getId()).isEqualTo(reservation.getId());
+        assertThat(updatedReservation.getName()).isEqualTo("봉구스");
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2099, 5, 7));
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(2L);
+        assertThat(updatedReservation.getTheme().getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void 예약_수정_요청에_없는_값은_기존_값을_사용한다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), null, null);
+
+        Reservation updatedReservation = reservationService.updateByIdAndName(
+                reservation.getId(),
+                "봉구스",
+                updateRequest
+        );
+
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2099, 5, 7));
+        assertThat(updatedReservation.getTime()).isEqualTo(reservation.getTime());
+        assertThat(updatedReservation.getTheme()).isEqualTo(reservation.getTheme());
+    }
+
+    @Test
+    void 수정할_예약이_없으면_에러를_던진다() {
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), null, null);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(999L, "봉구스", updateRequest))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 예약자_이름이_다르면_예약을_수정할_수_없다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), null, null);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "다른이름", updateRequest))
+                .isInstanceOf(ReservationAccessDeniedException.class);
+    }
+
+    @Test
+    void 존재하지_않는_예약시간으로_수정하면_에러를_던진다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(null, 999L, null);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
+                .isInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @Test
+    void 존재하지_않는_테마로_수정하면_에러를_던진다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(null, null, 999L);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
+                .isInstanceOf(ThemeNotFoundException.class);
+    }
+
+    @Test
+    void 과거_날짜_시간으로_수정하면_에러를_던진다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2000, 1, 1), null, null);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
+                .isInstanceOf(PastReservationNotAllowedException.class);
+    }
+
+    @Test
+    void 이미_예약된_날짜_시간_테마로_수정하면_에러를_던진다() {
+        ReservationRequest reservationRequest1 = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        ReservationRequest reservationRequest2 = new ReservationRequest("밀란", LocalDate.of(2099, 5, 7), 2L, 1L);
+        reservationService.save(reservationRequest1);
+        Reservation reservation = reservationService.save(reservationRequest2);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 6), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "밀란", updateRequest))
+                .isInstanceOf(ReservationDuplicatedException.class);
+    }
+
+    @Test
+    void 수정할_값이_없으면_에러를_던진다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(null, null, null);
+
+        assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("변경할 예약 정보가 없습니다.");
     }
 }

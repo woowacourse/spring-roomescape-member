@@ -49,17 +49,11 @@
 | 예약 추가        | `POST /reservations`                | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
 | 이름으로 예약 삭제   | `DELETE /reservations/{id}?name={}` |                                      |                                                                                                       |
 | 이름으로 예약 조회   | `GET /reservations?name={}`         |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 예약 변경        | `PATCH /reservations/{id}?name={}`  | `{date, time_id, theme_id}`          | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
 | 시간 조회        | `GET /times`                        |                                      | `[{id, startAt}, ...]`                                                                                |
 | 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}`     |                                      | `[{id, startAt}, ...]`                                                                                |
 | 테마 조회        | `GET /themes`                       |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
 | 인기 있는 테마 조회  | `GET /themes?days={}&limits={}`     |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
-
-### API TODO
-
-| 기능         | 메서드 / URL                          | 요청 본문                                       | 응답 본문                                                                                                 |
-|------------|------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------|
-| (유저)       |                                    |                                             |
-| 예약 변경      | `PATCH /reservations/{id}?name={}` | `{date, time_id, theme_id}`(필요 없는 필드 삭제 가능) | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
 
 ## 예외 처리
 
@@ -75,9 +69,13 @@
 | 잘못된 path/query parameter 형식 | `400 Bad Request`           | `{field}: 입력 형식이 잘못되었습니다.`                                     |
 | query parameter 조합이 올바르지 않음 | `400 Bad Request`           | `날짜와 테마는 함께 입력해야 합니다.`, `날짜와 제한은 함께 입력해야 합니다.`                 |
 | `days`, `limits`가 0 이하      | `400 Bad Request`           | `{field}: 0보다 커야 합니다.`                                         |
+| 수정할 예약 정보가 없음               | `400 Bad Request`           | `변경할 예약 정보가 없습니다.`                                             |
 | 존재하지 않는 예약 시간으로 예약 생성       | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
+| 존재하지 않는 예약 시간으로 예약 수정       | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
 | 존재하지 않는 테마로 예약 생성           | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
+| 존재하지 않는 테마로 예약 수정           | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
 | 존재하지 않는 예약 삭제               | `404 Not Found`             | `존재하지 않는 예약입니다. id={id}`                                       |
+| 존재하지 않는 예약 수정               | `404 Not Found`             | `존재하지 않는 예약입니다. id={id}`                                       |
 | 존재하지 않는 예약 시간 삭제            | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
 | 존재하지 않는 테마 삭제               | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
 | 존재하지 않는 URL 요청              | `404 Not Found`             | `존재하지 않는 요청입니다.`                                               |
@@ -87,16 +85,8 @@
 | 예약이 존재하는 시간을 삭제             | `409 Conflict`              | `예약이 존재하는 시간은 삭제할 수 없습니다. id={id}`                             |
 | 예약이 존재하는 테마를 삭제             | `409 Conflict`              | `예약이 존재하는 테마는 삭제할 수 없습니다. id={id}`                             |
 | 지나간 날짜·시간에 대한 예약 생성         | `422 Unprocessable Entity`  | `과거로 예약할 수 없습니다.`                                              |
+| 지나간 날짜·시간에 대한 예약 수정         | `422 Unprocessable Entity`  | `과거로 예약할 수 없습니다.`                                              |
 | 서버에서 예상하지 못한 오류 발생          | `500 Internal Server Error` | `예상하지 못한 오류가 발생했습니다.`                                          |
-
-### 예외 처리 TODO
-
-| 상황                       | 응답 코드                      | 메시지                         |
-|--------------------------|----------------------------|-----------------------------|
-| 존재하지 않는 예약 시간으로 예약 생성/수정 | `404 Not Found`            | `존재하지 않는 예약 시간입니다. id={id}` |
-| 존재하지 않는 테마로 예약 생성/수정     | `404 Not Found`            | `존재하지 않는 테마입니다. id={id}`    |
-| 존재하지 않는 예약 삭제/수정         | `404 Not Found`            | `존재하지 않는 예약입니다. id={id}`    |
-| 지나간 날짜·시간에 대한 예약 생성/수정   | `422 Unprocessable Entity` | `과거로 예약할 수 없습니다.`           |
 
 ## 응답 코드
 
@@ -145,10 +135,10 @@
 - [x] 사용자가 본인의 예약을 취소할 수 있다.
     - [x] 기존의 예약 삭제 API를 관리자용 API로 변경 후 이름으로 예약 삭제 API 생성
     - [x] 이름이 다른 경우 403에러 반환
-- [ ] 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
-    - [ ] 이름일 다른 경우 403에러 반환
-    - [ ] 수정할 수 없는 케이스에 적절한 에러 응답
-- [ ] 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
+- [x] 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
+    - [x] 이름이 다른 경우 403에러 반환
+    - [x] 수정할 수 없는 케이스에 적절한 에러 응답
+- [x] 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
 
 <details>
 

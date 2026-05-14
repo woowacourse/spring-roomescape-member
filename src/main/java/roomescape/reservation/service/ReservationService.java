@@ -14,6 +14,7 @@ import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.payload.ReservationRequest;
+import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
@@ -89,9 +90,57 @@ public class ReservationService {
     public void cancelByIdAndName(Long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+        validateOwner(reservation, name);
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Reservation updateByIdAndName(Long id, String name, ReservationUpdateRequest request) {
+        if (request.isEmpty()) {
+            throw new IllegalArgumentException("변경할 예약 정보가 없습니다.");
+        }
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        validateOwner(reservation, name);
+
+        LocalDate date = getDateOrDefault(request, reservation);
+        ReservationTime reservationTime = getReservationTimeOrDefault(request, reservation);
+        Theme theme = getThemeOrDefault(request, reservation);
+
+        if (isPassed(date, reservationTime.getStartAt())) {
+            throw new PastReservationNotAllowedException();
+        }
+
+        Reservation updatedReservation = Reservation.of(id, reservation.getName(), date, reservationTime, theme);
+        return reservationRepository.update(updatedReservation);
+    }
+
+    private void validateOwner(Reservation reservation, String name) {
         if (!reservation.getName().equals(name)) {
             throw new ReservationAccessDeniedException();
         }
-        reservationRepository.deleteById(id);
+    }
+
+    private LocalDate getDateOrDefault(ReservationUpdateRequest request, Reservation reservation) {
+        if (request.date() == null) {
+            return reservation.getDate();
+        }
+        return request.date();
+    }
+
+    private ReservationTime getReservationTimeOrDefault(ReservationUpdateRequest request, Reservation reservation) {
+        if (request.timeId() == null) {
+            return reservation.getTime();
+        }
+        return reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+    }
+
+    private Theme getThemeOrDefault(ReservationUpdateRequest request, Reservation reservation) {
+        if (request.themeId() == null) {
+            return reservation.getTheme();
+        }
+        return themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
     }
 }
