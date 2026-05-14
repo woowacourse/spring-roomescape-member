@@ -1,5 +1,6 @@
 package roomescape.date.fixture;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,12 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
         }
         target.get().updateStatus(isActive);
         return true;
+    }
+
+    @Override
+    public boolean existsByDate(LocalDate date) {
+        return reservationDates.stream()
+                .anyMatch(reservationDate -> reservationDate.getDate().equals(date));
     }
 
     private void autoIncrement() {

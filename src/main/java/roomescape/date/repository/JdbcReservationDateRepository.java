@@ -90,4 +90,12 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         return updateCount > 0;
     }
 
+    @Override
+    public boolean existsByDate(LocalDate date) {
+        String sql = "SELECT COUNT(*) FROM reservation_date WHERE date = :date";
+        MapSqlParameterSource params = new MapSqlParameterSource("date", date);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
+    }
+
 }

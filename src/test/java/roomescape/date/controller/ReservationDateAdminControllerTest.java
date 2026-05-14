@@ -1,6 +1,7 @@
 package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_ALREADY_EXISTS;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
@@ -66,6 +67,23 @@ class ReservationDateAdminControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @Test
+    @DisplayName("이미 등록된 날짜를 또 등록하면 예외가 발생한다.")
+    void create_duplicated_date() {
+        createReservationDate(date);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", date);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/dates")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is(DATE_ALREADY_EXISTS.getMessage()));
     }
 
     @Test

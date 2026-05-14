@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationSaveDto;
@@ -98,7 +100,7 @@ public class ReservationService {
 
     private ReservationDate getReservationDate(Long dateId) {
         return reservationDateRepository.findById(dateId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 날짜입니다."));
+                .orElseThrow(() -> new ReservationDateException(DATE_NOT_FOUND));
     }
 
     private Theme getTheme(Long themeId) {

@@ -3,8 +3,11 @@ package roomescape.date.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import roomescape.date.exception.ReservationDateException;
 
 import java.time.LocalDate;
+
+import static roomescape.date.exception.ReservationDateExceptionInformation.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,24 +27,24 @@ public class ReservationDate {
         return new ReservationDate(id, date, isActive);
     }
 
-    public static void validateId(Long id) {
+    public void updateStatus(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("예약날짜 ID는 필수입니다.");
+            throw new ReservationDateException(ID_IS_NULL);
         }
     }
 
-    public static void validateDate(LocalDate date) {
+    private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new ReservationDateException(DATE_IS_NULL);
         }
 
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("과거 날짜는 등록할 수 없습니다.");
+            throw new ReservationDateException(PAST_DATE_NOT_ALLOWED);
         }
-    }
-
-    public void updateStatus(boolean isActive) {
-        this.isActive = isActive;
     }
 
 }

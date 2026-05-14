@@ -118,6 +118,20 @@ class ReservationDateRepositoryTest {
                 .isFalse();
     }
 
+    @Test
+    @DisplayName("이미 등록된 날짜인 지 확인할 수 있다.")
+    void existsByDate() {
+        // given
+        ReservationDate saved = save(ReservationDateFixture.activeOneWeekLater());
+
+        // when
+        boolean result = reservationDateRepository.existsByDate(saved.getDate());
+
+        // then
+        Assertions.assertThat(result)
+                .isTrue();
+    }
+
     private List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {
         List<ReservationDate> savedReservationDates = new ArrayList<>();
         for (ReservationDate reservationDate : reservationDates) {

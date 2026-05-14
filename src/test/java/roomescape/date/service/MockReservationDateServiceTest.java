@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class MockReservationDateServiceTest {
@@ -83,12 +85,12 @@ class MockReservationDateServiceTest {
         // given
         Long deregisteredId = Long.MIN_VALUE;
         when(reservationDateRepository.findById(deregisteredId))
-                .thenThrow(new IllegalArgumentException("등록되지 않은 예약날짜입니다."));
+                .thenThrow(new ReservationDateException(DATE_NOT_FOUND));
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationDateService.readDate(deregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("등록되지 않은 예약날짜입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_NOT_FOUND.getMessage());
 
         verify(reservationDateRepository).findById(deregisteredId);
     }
@@ -118,12 +120,12 @@ class MockReservationDateServiceTest {
         // given
         Long deregisteredId = Long.MIN_VALUE;
         when(reservationDateRepository.findById(deregisteredId))
-                .thenThrow(new IllegalArgumentException("등록되지 않은 예약날짜입니다."));
+                .thenThrow(new ReservationDateException(DATE_NOT_FOUND));
 
         // when  & then
         Assertions.assertThatThrownBy(() -> reservationDateService.updateStatus(deregisteredId, true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("등록되지 않은 예약날짜입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_NOT_FOUND.getMessage());
 
         verify(reservationDateRepository).findById(deregisteredId);
     }

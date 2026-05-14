@@ -3,8 +3,11 @@ package roomescape.date.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.date.exception.ReservationDateException;
 
 import java.time.LocalDate;
+
+import static roomescape.date.exception.ReservationDateExceptionInformation.*;
 
 class ReservationDateTest {
 
@@ -82,8 +85,8 @@ class ReservationDateTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> ReservationDate.load(nullId, validDate, false))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약날짜 ID는 필수입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(ID_IS_NULL.getMessage());
     }
 
     @Test
@@ -94,8 +97,8 @@ class ReservationDateTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> ReservationDate.create(nullDate))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜는 필수입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_IS_NULL.getMessage());
     }
 
     @Test
@@ -106,8 +109,8 @@ class ReservationDateTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> ReservationDate.create(pastDate))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("과거 날짜는 등록할 수 없습니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(PAST_DATE_NOT_ALLOWED.getMessage());
     }
 
 }
