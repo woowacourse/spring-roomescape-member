@@ -37,12 +37,6 @@ public class AdminThemeService {
         return AdminThemeResponse.from(saved);
     }
 
-    private void validateDuplicateTheme(String name) {
-        if (adminThemeRepository.existsByName(name)) {
-            throw new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION_NAME);
-        }
-    }
-
     public AdminThemesResponse getAllThemes() {
         List<Theme> themes = adminThemeRepository.findAll();
 
@@ -50,12 +44,26 @@ public class AdminThemeService {
     }
 
     public void deleteTheme(Long themeId) {
+        validateThemeId(themeId);
+        validateTimeDeletable(themeId);
+        adminThemeRepository.deleteById(themeId);
+    }
+
+    private void validateThemeId(Long themeId) {
         if (!adminThemeRepository.existsById(themeId)) {
             throw new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND);
         }
+    }
+
+    private void validateTimeDeletable(Long themeId) {
         if (reservationRepository.existsByThemeId(themeId)) {
             throw new RoomescapeException(ErrorCode.TIME_DELETE_NOT_ALLOWED);
         }
-        adminThemeRepository.deleteById(themeId);
+    }
+
+    private void validateDuplicateTheme(String name) {
+        if (adminThemeRepository.existsByName(name)) {
+            throw new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION_NAME);
+        }
     }
 }

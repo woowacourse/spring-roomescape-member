@@ -1,5 +1,6 @@
 package roomescape.domain.reservationtime;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,12 +19,10 @@ public class ReservationTimeService {
     }
 
     public TimeResponse createTime(TimeRequest request) {
-        if (timeRepository.existsByStartAt(request.startAt())) {
-            throw new RoomescapeException(ErrorCode.DUPLICATE_TIME);
-        }
+        validateDuplicateTime(request.startAt());
         ReservationTime time = ReservationTime.of(
-                request.startAt(),
-                request.finishAt()
+            request.startAt(),
+            request.finishAt()
         );
         ReservationTime saved = timeRepository.save(time);
         return TimeResponse.of(saved);
@@ -42,9 +41,14 @@ public class ReservationTimeService {
         timeRepository.deleteById(id);
     }
 
+    private void validateDuplicateTime(LocalTime newTime) {
+        if (timeRepository.existsByStartAt(newTime)) {
+            throw new RoomescapeException(ErrorCode.DUPLICATE_TIME);
+        }
+    }
+
     private void validateReservationTimeId(Long id) {
-        boolean isValidId = timeRepository.existsById(id);
-        if (!isValidId) {
+        if (!timeRepository.existsById(id)) {
             throw new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND);
         }
     }
