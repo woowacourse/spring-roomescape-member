@@ -1,9 +1,9 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 public record UserName(
         String value
 ) {
-    private static final int NAME_MAX_LENGTH = 10;
+    public static final int NAME_MAX_LENGTH = 10;
 
     public UserName {
         if (value.isBlank()) {
@@ -11,7 +11,7 @@ public record UserName(
         }
 
         if (value.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("예약자 이름은 10자를 초과할 수 없습니다.");
+            throw new IllegalArgumentException("예약자 이름은 %d자를 초과할 수 없습니다.".formatted(NAME_MAX_LENGTH));
         }
     }
 

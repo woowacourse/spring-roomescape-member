@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.time.ReservationTime;
+import roomescape.domain.reservation.theme.Theme;
 
 @JdbcTest
 @Import(ThemeDao.class)
@@ -52,7 +52,7 @@ class ThemeDaoTest {
         // then
         assertThat(topThemes).hasSize(expectedNames.size());
         for (int i = 0; i < expectedNames.size(); i++) {
-            assertThat(topThemes.get(i).getName()).isEqualTo(expectedNames.get(i));
+            assertThat(topThemes.get(i).getName().value()).isEqualTo(expectedNames.get(i));
         }
     }
 }

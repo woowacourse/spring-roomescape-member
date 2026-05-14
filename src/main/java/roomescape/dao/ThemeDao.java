@@ -11,8 +11,8 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.time.ReservationTime;
+import roomescape.domain.reservation.theme.Theme;
 
 @Repository
 public class ThemeDao {
@@ -73,7 +73,7 @@ public class ThemeDao {
 
     public Theme save(Theme theme) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", theme.getName());
+        params.put("name", theme.getName().value());
         params.put("description", theme.getDescription());
         params.put("url", theme.getUrl());
 

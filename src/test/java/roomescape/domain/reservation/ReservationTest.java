@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.theme.ThemeName;
+import roomescape.domain.reservation.time.ReservationTime;
+import roomescape.domain.reservation.theme.Theme;
 
 class ReservationTest {
 
@@ -17,7 +20,7 @@ class ReservationTest {
         UserName userName = UserName.parse("아나키");
         LocalDate date = LocalDate.parse(TODAY);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
+        Theme theme = new Theme(1L, ThemeName.parse("공포"), "너무무서워", "/horror");
 
         assertDoesNotThrow(() -> new Reservation(userName, date, time, theme));
     }
@@ -28,7 +31,7 @@ class ReservationTest {
         UserName userName = null;
         LocalDate date = LocalDate.parse(TODAY);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
+        Theme theme = new Theme(1L, ThemeName.parse("공포"), "너무무서워", "/horror");
 
         assertThatThrownBy(() -> new Reservation(userName, date, time, theme))
                 .isInstanceOf(NullPointerException.class)
@@ -41,7 +44,7 @@ class ReservationTest {
         UserName userName = UserName.parse("아나키");
         LocalDate date = null;
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
+        Theme theme = new Theme(1L, ThemeName.parse("공포"), "너무무서워", "/horror");
 
         assertThatThrownBy(() -> new Reservation(userName, date, time, theme))
                 .isInstanceOf(NullPointerException.class)
@@ -54,7 +57,7 @@ class ReservationTest {
         UserName userName = UserName.parse("아나키");
         LocalDate date = LocalDate.parse(TODAY);
         ReservationTime time = null;
-        Theme theme = new Theme(1L, "공포", "너무무서워", "/horror");
+        Theme theme = new Theme(1L, ThemeName.parse("공포"), "너무무서워", "/horror");
 
         assertThatThrownBy(() -> new Reservation(userName, date, time, theme))
                 .isInstanceOf(NullPointerException.class)

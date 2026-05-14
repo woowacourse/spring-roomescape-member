@@ -1,7 +1,8 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static roomescape.domain.reservation.UserName.NAME_MAX_LENGTH;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,6 @@ class UserNameTest {
 
         assertThatThrownBy(() -> new UserName(userName))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름은 10자를 초과할 수 없습니다.");
+                .hasMessage("예약자 이름은 %d자를 초과할 수 없습니다.".formatted(NAME_MAX_LENGTH));
     }
 }
