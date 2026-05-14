@@ -1,11 +1,10 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import common.exception.RoomEscapeException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.reservation.ReservationName;
 
 public class ReservationNameTest {
     private static final String UNDER_SIZE_NAME = "";
