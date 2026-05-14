@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -242,7 +243,8 @@ class ReservationServiceTest {
     void 사용자가_존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
         when(reservationRepository.deleteByIdAndName(any(), any())).thenReturn(0);
 
-        reservationService.deleteUserReservation(999L, "레서");
+        assertThatNoException()
+                .isThrownBy(() -> reservationService.deleteUserReservation(999L, "레서"));
         verify(reservationRepository).deleteByIdAndName(999L, "레서");
     }
 }
