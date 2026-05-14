@@ -24,6 +24,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.reservation.repository.dto.DuplicateReservationCondition;
+import roomescape.reservation.service.dto.RescheduleReservationInfo;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -227,6 +228,80 @@ class ReservationServiceTest {
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
                     .isInstanceOf(ThemeNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("예약 변경")
+    class reschedule {
+
+        @Test
+        void 예약을_변경한다() {
+            // given
+            Long id = 1L;
+            LocalDate date = LocalDate.now().plusDays(1);
+            Long timeId = 2L;
+            RescheduleReservationInfo info = new RescheduleReservationInfo(id, date, timeId);
+
+            Reservation reservation = new Reservation(id, "userA", LocalDate.now(),
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(id)).thenReturn(reservation);
+            when(reservationTimeRepository.findById(timeId)).thenReturn(new ReservationTime(timeId, LocalTime.now().plusHours(1)));
+            when(themeRepository.existsById(any(Long.class))).thenReturn(true);
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
+                    .thenReturn(false);
+
+            // when
+            ReservationResponse response = reservationService.rescheduleReservation(info);
+
+            // then
+            Assertions.assertThat(response.date()).isEqualTo(date);
+        }
+
+        @Test
+        void 변경하려는_날짜_시간에_이미_예약이_존재하는_경우_변경을_거부한다() {
+            // given
+            Long id = 1L;
+            LocalDate date = LocalDate.now().plusDays(1);
+            Long timeId = 2L;
+            RescheduleReservationInfo info = new RescheduleReservationInfo(id, date, timeId);
+
+            Reservation reservation = new Reservation(id, "userA", LocalDate.now(),
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(id)).thenReturn(reservation);
+            when(reservationTimeRepository.findById(timeId)).thenReturn(new ReservationTime(timeId, LocalTime.now()));
+            when(themeRepository.existsById(any(Long.class))).thenReturn(true);
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
+                    .thenReturn(true);
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> reservationService.rescheduleReservation(info))
+                    .isInstanceOf(ReservationConflictException.class);
+        }
+
+        @Test
+        void 변경하려는_예약_시간이_과거인_경우_예약을_거부한다() {
+            // given
+            Long id = 1L;
+            LocalDate pastDate = LocalDate.now().minusDays(1);
+            Long timeId = 2L;
+            RescheduleReservationInfo info = new RescheduleReservationInfo(id, pastDate, timeId);
+
+            Reservation reservation = new Reservation(id, "userA", LocalDate.now().plusDays(1),
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(id)).thenReturn(reservation);
+            when(reservationTimeRepository.findById(timeId)).thenReturn(new ReservationTime(timeId, LocalTime.now()));
+            when(themeRepository.existsById(any(Long.class))).thenReturn(true);
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> reservationService.rescheduleReservation(info))
+                    .isInstanceOf(PastReservationNotAllowedException.class);
         }
     }
 }

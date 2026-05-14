@@ -17,7 +17,10 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.reservation.repository.dto.DuplicateReservationCondition;
+import roomescape.reservation.repository.dto.UpdateReservationParams;
+import roomescape.reservation.service.dto.RescheduleReservationInfo;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -49,6 +52,18 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(params);
 
         return ReservationResponse.from(reservation);
+    }
+
+    @Transactional
+    public ReservationResponse rescheduleReservation(RescheduleReservationInfo rescheduleReservationInfo) {
+        Reservation reservation = reservationRepository.findById(rescheduleReservationInfo.id());
+        validateReservationAvailable(rescheduleReservationInfo.date(), rescheduleReservationInfo.timeId(), reservation.getThemeId());
+
+        ReservationTime reservedTime = reservationTimeRepository.findById(rescheduleReservationInfo.timeId());
+        Reservation rescheduledReservation = reservation.reschedule(rescheduleReservationInfo.date(), reservedTime);
+        reservationRepository.update(UpdateReservationParams.from(rescheduledReservation));
+
+        return ReservationResponse.from(rescheduledReservation);
     }
 
     private void validateReservationAvailable(LocalDate date, Long timeId, Long themeId) {

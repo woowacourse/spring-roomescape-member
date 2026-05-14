@@ -63,4 +63,23 @@ public class Reservation {
     public boolean isFutureOrPresent(LocalDateTime compareDateTime) {
         return !getReservationDateTime().isBefore(compareDateTime);
     }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public Reservation reschedule(LocalDate date, ReservationTime time) {
+        return new Reservation(
+                id,
+                name,
+                Objects.requireNonNullElse(date, this.date),
+                cancel,
+                Objects.requireNonNullElse(time, this.time),
+                theme
+        );
+    }
 }

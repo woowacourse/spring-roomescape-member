@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -26,9 +27,11 @@ public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -59,6 +62,26 @@ public class ReservationDao {
                 .addValue("is_deleted", false)
                 .addValue("is_cancelled", false);
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+    }
+
+    public int update(Long id, String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+            UPDATE reservation
+            SET name = :name,
+                date = :date,
+                time_id = :time_id,
+                theme_id = :theme_id
+            WHERE id = :id
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", name)
+                .addValue("date", date)
+                .addValue("time_id", timeId)
+                .addValue("theme_id", themeId);
+
+        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     public int updateCancelledById(Long id, boolean status) {
