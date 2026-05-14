@@ -80,6 +80,17 @@ public class ReservationService {
         return reservation;
     }
 
+    @Transactional
+    public Reservation changeScheduleByManager(Long id, Long dateId, Long timeId) {
+        Reservation reservation = getReservation(id);
+        ReservationDate newDate = getReservationDate(dateId);
+        ReservationTime newTime = getReservationTime(timeId);
+
+        reservation.changeScheduleByManager(newDate, newTime);
+        reservationRepository.updateSchedule(reservation);
+        return reservation;
+    }
+
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));

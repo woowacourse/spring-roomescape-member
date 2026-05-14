@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
 
@@ -268,8 +267,8 @@ class ReservationServiceTest {
         reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id());
 
         // then
-        Assertions.assertThat(reservationRepository.findById(saved.id()).get())
-                .isEqualTo(saved);
+        Assertions.assertThat(reservationRepository.findById(saved.id()))
+                .contains(saved);
     }
 
     @Test
@@ -328,6 +327,54 @@ class ReservationServiceTest {
                     reservationService.changeSchedule(saved.id(), name, pastDate.id(), reservationTime2.id());
                 }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("관리자는 예약자 확인 없이, 예약 날짜/시간을 변경할 수 있다.")
+    void changeScheduleByManager() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+
+        // when
+        reservationService.changeScheduleByManager(saved.id(), reservationDate2.id(), reservationTime2.id());
+
+        // then
+        Assertions.assertThat(reservationRepository.findById(saved.id()))
+                .contains(saved);
+    }
+
+    @Test
+    @DisplayName("관리자는 예약을 과거의 날짜로 변경할 수 있다.")
+    void changeScheduleByManager_pastDate() {
+        // given
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationDate pastDate = reservationDateRepository.save(ReservationDate.load(1L, LocalDate.now().minusDays(1), true));
+
+        // when
+        reservationService.changeScheduleByManager(saved.id(), pastDate.id(), reservationTime2.id());
+
+        // then
+        Assertions.assertThat(saved.date())
+                .usingRecursiveComparison()
+                .isEqualTo(pastDate);
+    }
+
+    @Test
+    @DisplayName("관리자는 예약을 과거의 시간으로 변경할 수 있다.")
+    void changeScheduleByManager_pastTime() {
+        // given
+        ReservationTime currentTime = reservationTimeRepository.save(ReservationTimeFixture.time15());
+        ReservationTime pastTime = reservationTimeRepository.save(ReservationTimeFixture.time16());
+
+        Reservation saved = save(reservation(name, reservationDate1, currentTime, theme1));
+
+        // when
+        reservationService.changeScheduleByManager(saved.id(), reservationDate1.id(), pastTime.id());
+
+        // then
+        Assertions.assertThat(saved.time())
+                .usingRecursiveComparison()
+                .isEqualTo(pastTime);
     }
 
     private Reservation save(Reservation reservation) {
