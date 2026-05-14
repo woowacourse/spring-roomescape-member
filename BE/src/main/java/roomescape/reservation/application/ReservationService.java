@@ -74,7 +74,7 @@ public class ReservationService {
 
     @Transactional
     public void updateReservationSchedule(ReservationUpdateCommand updateCommand) {
-        ReservationTime time = reservationTimeRepository.findById(updateCommand.timeId())
+        reservationTimeRepository.findById(updateCommand.timeId())
                 .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND, updateCommand.timeId()));
         Reservation targetReservation = reservationRepository.findById(updateCommand.id())
                 .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, updateCommand.id()));
