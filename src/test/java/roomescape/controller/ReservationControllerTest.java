@@ -92,7 +92,7 @@ class ReservationControllerTest {
         assertThat(timeStatusesBeforeReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesBeforeReservation)).isEqualTo(5);
 
-        // 예약 추가 1
+        // 예약 추가
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
 
         // 예약 후
@@ -121,6 +121,19 @@ class ReservationControllerTest {
         assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 5));
         assertThat(response.time().id()).isEqualTo(1);
         assertThat(response.theme().id()).isEqualTo(1);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_본인의_예약을_취소() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?name=브라운")
+                .then().log().all()
+                .statusCode(204);
     }
 
     private static List<ReservationTimeStatusResponse> getReservationTimeStatusResponses() {

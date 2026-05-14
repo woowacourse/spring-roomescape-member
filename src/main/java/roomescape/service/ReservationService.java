@@ -109,6 +109,16 @@ public class ReservationService {
         }
     }
 
+    public void deleteWithValidation(final Long reservationId, final String name) {
+        final boolean isUserNameMatched = reservationRepository.existsByIdAndName(reservationId, name);
+
+        if (!isUserNameMatched) {
+            throw new IllegalArgumentException("예약자와 사용자 이름이 일치하지 않습니다.");
+        }
+
+        delete(reservationId);
+    }
+
     public AvailableDateResponse getReservationOptions() {
         LocalDate today = LocalDate.now(clock);
         List<LocalDate> dates = today.datesUntil(today.plusDays(RESERVABLE_DAYS_RANGE)).toList();

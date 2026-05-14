@@ -95,7 +95,7 @@ async function loadReservations() {
 
 async function deleteReservation(id) {
   if (!confirm('이 예약을 삭제하시겠습니까?')) return;
-  await api.del(`/reservations/${id}`);
+  await api.del(`/admin/reservations/${id}`);
   showToast('예약이 삭제되었습니다.', 'success');
   loadReservations();
 }

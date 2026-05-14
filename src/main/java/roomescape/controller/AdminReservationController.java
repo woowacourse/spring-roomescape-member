@@ -2,7 +2,9 @@ package roomescape.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
@@ -21,5 +23,13 @@ public class AdminReservationController {
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         final List<ReservationResponse> results = reservationService.getReservations();
         return ResponseEntity.ok(results);
+    }
+
+    @DeleteMapping("/{reservation-id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable("reservation-id") Long reservationId
+    ) {
+        reservationService.delete(reservationId);
+        return ResponseEntity.noContent().build();
     }
 }

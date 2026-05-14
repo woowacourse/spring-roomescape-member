@@ -93,6 +93,18 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsByIdAndName(final Long reservationId, final String name) {
+        final String sql = """
+                SELECT COUNT(id)
+                FROM reservation
+                WHERE id = ? AND name = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, reservationId, name);
+
+        return count != null && count > 0;
+    }
+
     public List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
                 SELECT
