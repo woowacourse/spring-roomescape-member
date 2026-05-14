@@ -503,24 +503,31 @@
   async function readErrorMessage(res, fallback) {
     try {
       const data = await res.json();
-      return data.message || fallback;
+      return {
+        message: data.message || data.errors?.[0]?.defaultMessage || data.error || fallback,
+        code: data.code,
+        status: data.status
+      };
     } catch (e) {
-      return fallback;
+      return { message: fallback };
     }
   }
 
   async function fetchJson(url, options = {}, fallback = '요청을 처리할 수 없습니다.') {
     const res = await fetch(url, options);
     if (!res.ok) {
-      throw new Error(await readErrorMessage(res, fallback));
+      const error = await readErrorMessage(res, fallback);
+      throw Object.assign(new Error(error.message), error);
     }
-    return res.status === 204 ? null : res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   }
 
   async function fetchEmpty(url, options = {}, fallback = '요청을 처리할 수 없습니다.') {
     const res = await fetch(url, options);
     if (!res.ok) {
-      throw new Error(await readErrorMessage(res, fallback));
+      const error = await readErrorMessage(res, fallback);
+      throw Object.assign(new Error(error.message), error);
     }
   }
 
