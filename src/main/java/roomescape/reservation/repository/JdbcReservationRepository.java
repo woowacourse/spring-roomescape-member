@@ -163,9 +163,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         from reservation r
         inner join reservation_time t on r.time_id  = t.id
         inner join theme            h on r.theme_id = h.id
-        where r.name = ?
+        where 1=1
         """);
-        params.add(name);
+
+        if (name != null) {
+            sql.append(" and r.name = ?");
+            params.add(name);
+        }
 
         if (from != null) {
             sql.append(" and r.reservation_date >= ?");
@@ -188,7 +192,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void update(Reservation reservation) {
         String sql = """
         update reservation
-           set name = ?,
+           set name = ?, 
                reservation_date = ?,
                time_id = ?,
                theme_id = ?

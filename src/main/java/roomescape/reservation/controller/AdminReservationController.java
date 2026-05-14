@@ -32,12 +32,10 @@ public class AdminReservationController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) Long themeId
     ) {
-        if (name != null) {
-            List<ReservationResponse> responses = reservationService.search(name, from, to, themeId).stream().map(ReservationResponse::from).toList();
-            return ResponseEntity.ok(responses);
-        }
-
-        List<ReservationResponse> responses = reservationService.findAll().stream().map(ReservationResponse::from).toList();
+        List<ReservationResponse> responses = reservationService.search(name, from, to, themeId)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok(responses);
     }
 
@@ -50,15 +48,15 @@ public class AdminReservationController {
                 .body(response);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        reservationService.cancelById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationRequest requestDto) {
         Reservation reservation = reservationService.update(id, requestDto);
         return ResponseEntity.ok(ReservationResponse.from(reservation));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
-        reservationService.cancelById(id);
-        return ResponseEntity.ok().build();
     }
 }
