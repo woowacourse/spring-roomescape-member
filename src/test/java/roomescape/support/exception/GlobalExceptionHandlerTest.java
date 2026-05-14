@@ -4,6 +4,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import roomescape.support.exception.errors.ReservationErrors;
 
 class GlobalExceptionHandlerTest {
 

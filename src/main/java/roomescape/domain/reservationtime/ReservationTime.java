@@ -3,7 +3,7 @@ package roomescape.domain.reservationtime;
 import java.time.LocalTime;
 import lombok.Getter;
 import roomescape.support.exception.BadRequestException;
-import roomescape.support.exception.ReservationTimeErrors;
+import roomescape.support.exception.errors.ReservationTimeErrors;
 
 @Getter
 public class ReservationTime {

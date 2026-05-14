@@ -1,4 +1,4 @@
-package roomescape.support.exception;
+package roomescape.support.exception.errors;
 
 import lombok.Getter;
 

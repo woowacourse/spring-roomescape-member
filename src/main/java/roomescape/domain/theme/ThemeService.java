@@ -12,7 +12,7 @@ import roomescape.domain.theme.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.support.exception.ConflictException;
-import roomescape.support.exception.ThemeErrors;
+import roomescape.support.exception.errors.ThemeErrors;
 
 @Slf4j
 @Service

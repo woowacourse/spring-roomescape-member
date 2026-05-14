@@ -12,7 +12,7 @@ import roomescape.domain.reservationtime.dto.CreateTimeRequest;
 import roomescape.domain.reservationtime.dto.CreateTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
-import roomescape.support.exception.ReservationTimeErrors;
+import roomescape.support.exception.errors.ReservationTimeErrors;
 
 @Slf4j
 @Service

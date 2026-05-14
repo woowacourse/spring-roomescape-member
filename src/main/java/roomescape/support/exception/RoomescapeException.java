@@ -1,6 +1,7 @@
 package roomescape.support.exception;
 
 import lombok.Getter;
+import roomescape.support.exception.errors.Errors;
 
 @Getter
 public abstract class RoomescapeException extends RuntimeException {

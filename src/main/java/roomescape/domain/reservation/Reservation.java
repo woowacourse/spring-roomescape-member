@@ -5,9 +5,9 @@ import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.support.exception.BadRequestException;
-import roomescape.support.exception.ReservationErrors;
-import roomescape.support.exception.ReservationTimeErrors;
-import roomescape.support.exception.ThemeErrors;
+import roomescape.support.exception.errors.ReservationErrors;
+import roomescape.support.exception.errors.ReservationTimeErrors;
+import roomescape.support.exception.errors.ThemeErrors;
 
 @Getter
 public class Reservation {

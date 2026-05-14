@@ -2,6 +2,7 @@ package roomescape.support.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import roomescape.support.exception.errors.Errors;
 
 public record ErrorResponse(
     String code,

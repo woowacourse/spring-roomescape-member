@@ -10,7 +10,7 @@ import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateResponse;
 import roomescape.support.exception.ConflictException;
-import roomescape.support.exception.ReservationDateErrors;
+import roomescape.support.exception.errors.ReservationDateErrors;
 
 @Slf4j
 @Service

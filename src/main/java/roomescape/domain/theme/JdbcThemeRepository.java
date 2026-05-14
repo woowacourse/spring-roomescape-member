@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.support.exception.InternalServerException;
-import roomescape.support.exception.RoomescapeErrors;
+import roomescape.support.exception.errors.RoomescapeErrors;
 
 @Repository
 @RequiredArgsConstructor

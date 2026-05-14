@@ -21,10 +21,10 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.BadRequestException;
 import roomescape.support.exception.NotFoundException;
-import roomescape.support.exception.ReservationDateErrors;
-import roomescape.support.exception.ReservationErrors;
-import roomescape.support.exception.ReservationTimeErrors;
-import roomescape.support.exception.ThemeErrors;
+import roomescape.support.exception.errors.ReservationDateErrors;
+import roomescape.support.exception.errors.ReservationErrors;
+import roomescape.support.exception.errors.ReservationTimeErrors;
+import roomescape.support.exception.errors.ThemeErrors;
 
 @Slf4j
 @Service
