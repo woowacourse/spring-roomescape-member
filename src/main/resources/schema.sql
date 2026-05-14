@@ -15,7 +15,7 @@ CREATE TABLE themes
     id            BIGINT      NOT NULL AUTO_INCREMENT,
     name          VARCHAR(40) NOT NULL,
     thumbnail_url VARCHAR(2048),
-    description   VARCHAR(40),
+    description   VARCHAR(400),
     PRIMARY KEY (id),
     UNIQUE (name)
 );
