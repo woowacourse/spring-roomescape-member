@@ -53,7 +53,7 @@ class ThemeServiceTest {
                 Reservation.createNew(
                         "쿠다",
                         LocalDate.now(),
-                        reservationTime
+                        reservationTime.getId()
                 )
         );
 

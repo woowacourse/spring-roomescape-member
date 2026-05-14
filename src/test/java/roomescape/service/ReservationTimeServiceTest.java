@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
 
         reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time)
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId())
         );
 
         // when & then
@@ -83,7 +83,7 @@ class ReservationTimeServiceTest {
         ReservationTime time2 = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(11, 0), theme));
 
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(Reservation.createNew("쿠다", date, time1));
+        reservationRepository.save(Reservation.createNew("쿠다", date, time1.getId()));
 
         // when
         List<ReservationTimeResult> availableTimes = reservationTimeService.findAvailableTimes(date, theme.getId());

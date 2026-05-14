@@ -63,7 +63,7 @@ class ReservationServiceTest {
         );
         LocalDate date = LocalDate.now().plusDays(1);
 
-        reservationRepository.save(Reservation.createNew("기존예약", date, time));
+        reservationRepository.save(Reservation.createNew("기존예약", date, time.getId()));
 
         // when & then
         assertThatThrownBy(() -> reservationService.save("신규예약", date, time.getId()))
@@ -81,7 +81,7 @@ class ReservationServiceTest {
         );
 
         //when
-        Reservation saved = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+        Reservation saved = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         //then
         assertThat(saved.getId()).isNotNull();
@@ -99,7 +99,7 @@ class ReservationServiceTest {
         );
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         // when
         reservationService.deleteById(reservation.getId());
@@ -118,7 +118,7 @@ class ReservationServiceTest {
         );
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
@@ -139,7 +139,7 @@ class ReservationServiceTest {
         );
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1.getId()));
 
         // when
         reservationService.update(reservation.getId(), "쿠다", LocalDate.now().plusDays(2), time2.getId());
@@ -147,7 +147,7 @@ class ReservationServiceTest {
         // then
         Reservation updated = reservationRepository.findById(reservation.getId()).orElseThrow();
         assertThat(updated.getDate()).isEqualTo(LocalDate.now().plusDays(2));
-        assertThat(updated.getTime().getId()).isEqualTo(time2.getId());
+        assertThat(updated.getTimeId()).isEqualTo(time2.getId());
     }
 
     @Test
@@ -160,7 +160,7 @@ class ReservationServiceTest {
         );
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         // when & then
         assertThatThrownBy(
@@ -179,7 +179,7 @@ class ReservationServiceTest {
         );
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         // when & then
         assertThatThrownBy(() -> reservationService.update(reservation.getId(), "쿠다", LocalDate.now().minusDays(10),
@@ -201,9 +201,9 @@ class ReservationServiceTest {
         );
 
         Reservation reservation1 = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1));
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1.getId()));
         Reservation reservation2 = reservationRepository.save(
-                Reservation.createNew("피케이", LocalDate.now().plusDays(1), time2));
+                Reservation.createNew("피케이", LocalDate.now().plusDays(1), time2.getId()));
 
         // when & then
         assertThatThrownBy(() -> reservationService.update(reservation1.getId(), "쿠다", reservation2.getDate(),

@@ -27,15 +27,11 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     public List<ReservationResult> getAll() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResult::from)
-                .toList();
+        return reservationRepository.findAll();
     }
 
     public List<ReservationResult> getAllByName(final String name) {
-        return reservationRepository.findAllByName(name).stream()
-                .map(ReservationResult::from)
-                .toList();
+        return reservationRepository.findAllByName(name);
     }
 
     @Transactional
@@ -52,7 +48,7 @@ public class ReservationService {
         Reservation savedReservation =
                 reservationRepository.save(reservation);
 
-        return ReservationResult.from(savedReservation);
+        return ReservationResult.from(savedReservation, reservationTime);
     }
 
     @Transactional

@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
+import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -48,7 +49,7 @@ class JdbcReservationRepositoryTest {
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
-        Reservation reservation = Reservation.createNew(name, date, reservationTime);
+        Reservation reservation = Reservation.createNew(name, date, reservationTime.getId());
         //when
         Reservation result = jdbcReservationRepository.save(reservation);
         Reservation saved = jdbcReservationRepository.findById(result.getId())
@@ -67,10 +68,10 @@ class JdbcReservationRepositoryTest {
         Theme theme = createTheme("미술관의 밤");
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime.getId()));
 
         // when & then
-        assertThatThrownBy(() -> jdbcReservationRepository.save(Reservation.createNew("아루", date, reservationTime)))
+        assertThatThrownBy(() -> jdbcReservationRepository.save(Reservation.createNew("아루", date, reservationTime.getId())))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -83,13 +84,13 @@ class JdbcReservationRepositoryTest {
         Theme theme = createTheme("미술관의 밤");
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime.getId()));
 
         //when
-        List<Reservation> reservations = jdbcReservationRepository.findAll();
+        List<ReservationResult> reservationResults = jdbcReservationRepository.findAll();
 
         //then
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservationResults.size()).isEqualTo(1);
     }
 
     @Test
@@ -102,17 +103,17 @@ class JdbcReservationRepositoryTest {
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime.getId()));
 
         int beforeSize = jdbcReservationRepository.findAll().size();
 
-        Reservation reservation = jdbcReservationRepository.findAll()
+        ReservationResult result = jdbcReservationRepository.findAll()
                 .stream()
                 .findFirst()
                 .orElseThrow();
 
         // when
-        jdbcReservationRepository.deleteById(reservation.getId());
+        jdbcReservationRepository.deleteById(result.id());
 
         // then
         int afterSize = jdbcReservationRepository.findAll().size();
@@ -130,7 +131,7 @@ class JdbcReservationRepositoryTest {
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
-        Reservation reservation = jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+        Reservation reservation = jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime.getId()));
 
         // when
         LocalDate newDate = date.plusDays(1);
@@ -138,14 +139,14 @@ class JdbcReservationRepositoryTest {
         ReservationTime newReservationTime = jdbcReservationTimeRepository.save(
                 ReservationTime.createNew(newTime, theme));
 
-        jdbcReservationRepository.update(reservation.modify(newDate, newReservationTime));
+        jdbcReservationRepository.update(reservation.modify(newDate, newReservationTime.getId()));
 
         Reservation updated = jdbcReservationRepository.findById(reservation.getId())
                 .orElseThrow();
 
         // then
         assertThat(updated.getDate()).isEqualTo(newDate);
-        assertThat(updated.getTime().getId()).isEqualTo(newReservationTime.getId());
+        assertThat(updated.getTimeId()).isEqualTo(newReservationTime.getId());
     }
 
     @Test
@@ -166,10 +167,10 @@ class JdbcReservationRepositoryTest {
                 ReservationTime.createNew(LocalTime.parse("10:00"), secondTheme)
         );
 
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstThemeFirstTime));
-        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstThemeSecondTime));
-        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstThemeFirstTime));
-        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstThemeFirstTime.getId()));
+        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstThemeSecondTime.getId()));
+        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstThemeFirstTime.getId()));
+        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondThemeTime.getId()));
 
         // when
         List<Long> reservedTimeIds = jdbcReservationRepository.findAllByDateAndThemeId(date, firstTheme.getId());

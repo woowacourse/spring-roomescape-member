@@ -115,7 +115,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime2 = jdbcReservationTimeRepository.save(ReservationTime.createNew(time2, theme));
 
         jdbcReservationRepository.save(
-                Reservation.createNew("쿠다", java.time.LocalDate.now().plusDays(1), reservationTime1)
+                Reservation.createNew("쿠다", java.time.LocalDate.now().plusDays(1), reservationTime1.getId())
         );
 
         // when

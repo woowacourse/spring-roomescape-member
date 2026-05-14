@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.service.dto.ReservationResult;
 
 public interface ReservationRepository {
 
@@ -21,9 +22,9 @@ public interface ReservationRepository {
 
     List<Long> findAllByDateAndThemeId(LocalDate date, long themeId);
 
-    List<Reservation> findAll();
+    List<ReservationResult> findAll();
 
-    List<Reservation> findAllByName(final String name);
+    List<ReservationResult> findAllByName(final String name);
 
     Optional<Reservation> findById(long id);
 

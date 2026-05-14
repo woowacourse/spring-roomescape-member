@@ -24,10 +24,9 @@ class ReservationTest {
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
 
         // when & then
-        assertThatCode(() -> Reservation.createNew(name, date, time))
+        assertThatCode(() -> Reservation.createNew(name, date, 1L))
                 .doesNotThrowAnyException();
     }
 
@@ -39,10 +38,8 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.parse("2026-03-08");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
-
         // when & then
-        assertThatThrownBy(() -> Reservation.createNew(name, date, time))
+        assertThatThrownBy(() -> Reservation.createNew(name, date, 1L))
                 .isInstanceOf(ReservationInvalidException.class);
     }
 
@@ -55,7 +52,7 @@ class ReservationTest {
         ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
 
         // when & then
-        assertThatThrownBy(() -> Reservation.createNew(name, null, time))
+        assertThatThrownBy(() -> Reservation.createNew(name, null, 1L))
                 .isInstanceOf(ReservationInvalidException.class);
     }
 
