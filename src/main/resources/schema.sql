@@ -18,8 +18,10 @@ CREATE TABLE reservation (
     reservation_date   DATE            NOT NULL,
     time_id            BIGINT          NOT NULL,
     theme_id           BIGINT          NOT NULL,
+    status             VARCHAR(20)     NOT NULL DEFAULT 'RESERVED',
     PRIMARY KEY (id),
     FOREIGN KEY (time_id)  REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (reservation_Date, theme_id, time_id)
+    CONSTRAINT chk_reservation_status
+        CHECK (status IN ('RESERVED', 'CANCELED', 'COMPLETED'))
 );
