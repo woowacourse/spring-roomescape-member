@@ -5,32 +5,48 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.exception.ReservationForbiddenException;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @RoomescapeServiceTest
 class ReservationServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private ReservationService reservationService;
-    @Autowired
     private ReservationRepository reservationRepository;
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-    @Autowired
     private ThemeRepository themeRepository;
+
+    @BeforeEach
+    void setUp(){
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+    }
 
     @Test
     @DisplayName("없는 예약 시간 ID 예약 예외")
@@ -82,11 +98,10 @@ class ReservationServiceTest {
         );
 
         //when
-        Reservation saved = reservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
+        ReservationResult saved = reservationService.save("쿠다", LocalDate.now().plusDays(1), time.getId());
 
         //then
-        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.id()).isNotNull();
         assertThat(reservationRepository.findAll()).hasSize(1);
     }
 

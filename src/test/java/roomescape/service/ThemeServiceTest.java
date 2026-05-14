@@ -4,16 +4,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeConstraintException;
 import roomescape.theme.exception.ThemeDuplicateException;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
@@ -21,13 +26,21 @@ import roomescape.theme.service.ThemeService;
 class ThemeServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private ThemeService themeService;
-    @Autowired
     private ReservationRepository reservationRepository;
-    @Autowired
     private ThemeRepository themeRepository;
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @BeforeEach
+    void setUp() {
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+
+        themeService = new ThemeService(themeRepository, reservationRepository);
+    }
 
     @Test
     @DisplayName("같은 이름 테마 중복 생성 예외")
