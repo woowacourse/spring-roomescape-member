@@ -32,5 +32,28 @@
 5. 현재 날짜보다 이전 날짜의 스케줄로 예약 추가, 삭제, 수정을 할 수 없다.
 6. 특정 값으로 조회시 데이터가 없다면 예외가 발생한다.
 
+### 6. 성공/실패 응답 포맷
+
+#### 성공 응답 포맷 예시
+```json
+{
+   "success": true,
+   "data": {},
+   "error": null
+}
+```
+
+#### 실패 응답 포맷 예시
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "RESERVATION_NOT_FOUND",
+    "message": "예약을 찾을 수 없습니다."
+  }
+}
+```
+
 ## 2. API 명세서
 [기능 명세서 바로가기](https://www.notion.so/sangjunn/2-3-356976a7f22380b58672fccba4eddb3d?source=copy_link)
