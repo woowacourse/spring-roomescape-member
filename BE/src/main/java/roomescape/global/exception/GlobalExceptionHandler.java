@@ -1,11 +1,10 @@
 package roomescape.global.exception;
 
-import static org.h2.expression.function.DateTimeFunction.getFieldName;
-
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +15,13 @@ import roomescape.global.exception.customException.RoomEscapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Map<Class<?>, String> TYPE_HINTS = Map.of(
+            LocalDate.class, "yyyy-MM-dd",
+            LocalTime.class, "HH:mm",
+            Long.class, "숫자",
+            Integer.class, "숫자"
+    );
 
     @ExceptionHandler(RoomEscapeException.class)
     public ResponseEntity<ErrorResponse> handleRoomEscape(RoomEscapeException e) {
@@ -28,23 +34,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidRequestBody(HttpMessageNotReadableException e) {
         if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
             String fieldName = getFieldName(invalidFormatException);
-            String typeHint = getTypeHint(invalidFormatException.getTargetType());
-
+            String typeHint = getExpectedType(invalidFormatException.getTargetType());
             String message = "%s 값의 형식이 올바르지 않습니다. %s 형식으로 입력해 주세요."
                     .formatted(fieldName, typeHint);
-
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(message));
         }
-
         return createErrorResponse(CommonErrorCode.INVALID_REQUEST_BODY);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        String message = "%s 값의 형식이 올바르지 않습니다. %s 형식으로 입력해 주세요."
-                .formatted(e.getName(), getTypeHint(e.getRequiredType()));
-
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(
+            MethodArgumentTypeMismatchException e
+    ) {
+        String parameter = e.getName();
+        Object value = e.getValue();
+        String expected = getExpectedType(e.getRequiredType());
+        String message = "%s는 %s 형식이어야 합니다. 입력값=%s"
+                .formatted(parameter, expected, value);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(message));
     }
@@ -67,28 +74,10 @@ public class GlobalExceptionHandler {
                 .orElse("요청 값");
     }
 
-    private String getTypeHint(Class<?> type) {
+    private String getExpectedType(Class<?> type) {
         if (type == null) {
-            return "올바른";
+            return "올바른 형식";
         }
-
-        if (type.equals(LocalDate.class)) {
-            return "yyyy-MM-dd";
-        }
-
-        if (type.equals(LocalTime.class)) {
-            return "HH:mm";
-        }
-
-        if (type.equals(Long.class) || type.equals(long.class)) {
-            return "숫자";
-        }
-
-        if (type.equals(Integer.class) || type.equals(int.class)) {
-            return "숫자";
-        }
-
-        return type.getSimpleName();
+        return TYPE_HINTS.getOrDefault(type, type.getSimpleName());
     }
-
 }
