@@ -1,15 +1,15 @@
-package roomescape.theme.presentation.dto;
+package roomescape.theme.presentation.dto.request;
 
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.ThemeErrorCode;
 import roomescape.global.exception.customException.BadRequestException;
 
-public record ThemeRequest(
+public record ThemeCreateRequest(
         String name,
         String description,
         String thumbnail
 ) {
-    public ThemeRequest {
+    public ThemeCreateRequest {
         validateNameNotEmpty(name);
         validateDescriptionNotEmpty(description);
         validateThumbnailNotEmpty(thumbnail);
