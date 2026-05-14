@@ -74,7 +74,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
 
             assertThatThrownBy(() -> reservationService.create(command))
                     .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessage("지나간 날짜,시간으로는 예약할 수 없습니다.");
+                    .hasMessage("지나간 날짜, 시간으로는 예약할 수 없습니다.");
         }
 
         @Test
@@ -86,7 +86,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
 
             assertThatThrownBy(() -> reservationService.create(command))
                     .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessage("지나간 날짜,시간으로는 예약할 수 없습니다.");
+                    .hasMessage("지나간 날짜, 시간으로는 예약할 수 없습니다.");
         }
 
         @Test
@@ -111,6 +111,45 @@ public class ReservationPolicyStepTest extends IntegrationTest {
             assertThatCode(() -> reservationService.create(command))
                     .doesNotThrowAnyException();
         }
+    }
+
+    @Nested
+    @DisplayName("중복 예약 거부 정책")
+    class DuplicateReservationPolicy {
+
+        @Test
+        @DisplayName("같은 날짜+시간+테마에 이미 예약이 있으면 거부된다")
+        void 같은_날짜_시간_테마_중복은_거부() {
+            LocalDate futureDate = TODAY.plusDays(1);
+            // 첫 예약은 성공
+            reservationService.create(new ReservationCreateCommand(
+                    "브라운", futureDate, timeId10, themeId
+            ));
+
+            // 같은 조합으로 두 번째 시도 → 거부
+            assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
+                    "모오카", futureDate, timeId10, themeId
+            )))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요.");
+        }
+
+        @Test
+        @DisplayName("같은 날짜+시간이라도 테마가 다르면 허용된다")
+        void 같은_날짜_시간이지만_테마가_다르면_허용() {
+            LocalDate futureDate = TODAY.plusDays(1);
+            Long anotherThemeId = insertTheme("테마B", "설명B", "https://example.com/b.jpg");
+
+            reservationService.create(new ReservationCreateCommand(
+                    "브라운", futureDate, timeId10, themeId
+            ));
+
+            assertThatCode(() -> reservationService.create(new ReservationCreateCommand(
+                    "모오오카", futureDate, timeId10, anotherThemeId
+            )))
+                    .doesNotThrowAnyException();
+        }
+
     }
 
     private Long insertTime(LocalTime startAt) {

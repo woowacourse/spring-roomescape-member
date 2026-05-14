@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -50,10 +51,8 @@ public class ReservationService {
         ThemeEntity themeEntity = themeRepository.findById(command.getThemeId())
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다: " + command.getThemeId()));
 
-        LocalDateTime requestedAt = command.getDate().atTime(timeEntity.getTime().getStartAt());
-        if (!requestedAt.isAfter(LocalDateTime.now(clock))) {
-            throw new BusinessRuleViolationException("지나간 날짜,시간으로는 예약할 수 없습니다.");
-        }
+        validateNotPast(command.getDate().atTime(timeEntity.getTime().getStartAt()));
+        validateNotDuplicated(command.getDate(), timeEntity.getId(), themeEntity.getId());
 
         Reservation reservation = new Reservation(
                 command.getName(),
@@ -72,5 +71,19 @@ public class ReservationService {
 
     public void delete(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    private void validateNotPast(LocalDateTime requestedAt) {
+        if (!requestedAt.isAfter(LocalDateTime.now(clock))) {
+            throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(date, timeId, themeId)) {
+            throw new BusinessRuleViolationException(
+                    "해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."
+            );
+        }
     }
 }
