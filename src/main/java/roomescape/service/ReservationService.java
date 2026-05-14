@@ -74,6 +74,12 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    public List<ReservationResult> findByName(String name) {
+        return reservationRepository.findByName(name).stream()
+                .map(ReservationResult::from)
+                .toList();
+    }
+
     private void validateNotPast(LocalDateTime requestedAt) {
         if (!requestedAt.isAfter(LocalDateTime.now(clock))) {
             throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 예약할 수 없습니다.");
