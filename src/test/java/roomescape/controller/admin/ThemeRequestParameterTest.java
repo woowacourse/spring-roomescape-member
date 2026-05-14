@@ -3,7 +3,6 @@ package roomescape.controller.admin;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,7 @@ import roomescape.exception.RoomescapeException;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(AdminThemeController.class)
-class AdminThemeControllerTest {
+class ThemeRequestParameterTest {
 
     @Autowired
     private MockMvc mockMvc;

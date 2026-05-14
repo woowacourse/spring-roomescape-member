@@ -18,7 +18,7 @@ import roomescape.exception.RoomescapeException;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
-class ReservationTimeControllerTest {
+class ReservationTimeRequestParameterTest {
 
     @Autowired
     private MockMvc mockMvc;
