@@ -129,6 +129,14 @@
         button:hover {
             background: var(--point-dark);
         }
+        button.secondary {
+            background: rgba(14, 116, 144, 0.12);
+            color: var(--point);
+            border: 1px solid rgba(14, 116, 144, 0.2);
+        }
+        button.secondary:hover {
+            background: rgba(14, 116, 144, 0.18);
+        }
         button.delete {
             background: #d1495b;
         }
@@ -198,6 +206,22 @@
         .helper {
             font-size: 13px;
             color: rgba(47, 36, 24, 0.68);
+        }
+        .action-stack {
+            display: grid;
+            gap: 10px;
+        }
+        .edit-panel {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(14, 116, 144, 0.22);
+            background: rgba(14, 116, 144, 0.06);
+            display: grid;
+            gap: 12px;
+        }
+        .edit-panel.hidden {
+            display: none;
         }
         .feedback {
             display: grid;
@@ -399,11 +423,43 @@
                         <strong th:text="${reservation.name}">브라운</strong>
                         <span th:text="${reservation.date + ' / ' + reservation.theme.name + ' / ' + reservation.time.startAt}">내용</span>
                     </div>
-                    <form class="inline-form" method="post" th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
-                        <input type="hidden" name="reservationName" th:value="${reservationName}">
-                        <button type="submit" class="delete">삭제</button>
-                    </form>
+                    <div class="action-stack">
+                        <button type="button"
+                                class="secondary"
+                                th:attr="data-reservation-id=${reservation.id},data-reservation-date=${reservation.date},data-time-id=${reservation.time.id},data-theme-name=${reservation.theme.name},data-start-at=${reservation.time.startAt}"
+                                onclick="openReservationEditForm(this)">
+                            수정
+                        </button>
+                        <form class="inline-form" method="post" th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
+                            <input type="hidden" name="reservationName" th:value="${reservationName}">
+                            <button type="submit" class="delete">삭제</button>
+                        </form>
+                    </div>
                 </div>
+            </div>
+            <div id="reservation-edit-panel" class="edit-panel hidden">
+                <strong id="reservation-edit-title">예약 변경</strong>
+                <div id="reservation-edit-body" class="helper">수정할 예약을 고르면 날짜와 시간이 자동으로 채워집니다.</div>
+                <form id="reservation-edit-form" method="post">
+                    <input type="hidden" name="reservationName" th:value="${reservationName}">
+                    <label>
+                        변경 날짜
+                        <input type="date" id="reservation-edit-date" name="date" required>
+                    </label>
+                    <label>
+                        변경 시간
+                        <select id="reservation-edit-time" name="timeId" required>
+                            <option th:each="time : ${reservationTimes}"
+                                    th:value="${time.id}"
+                                    th:text="${time.startAt}">
+                            </option>
+                        </select>
+                    </label>
+                    <div class="action-stack">
+                        <button type="submit">변경 저장</button>
+                        <button type="button" class="secondary" onclick="closeReservationEditForm()">닫기</button>
+                    </div>
+                </form>
             </div>
             <p class="hint" th:if="${reservationName == null}">이름으로 조회한 내 예약 목록에서만 취소를 진행할 수 있습니다.</p>
             <p class="hint" th:if="${reservationName != null and #lists.isEmpty(myReservations)}">조회한 이름으로 등록된 예약이 아직 없습니다.</p>
@@ -558,6 +614,34 @@
 
         formCard.scrollIntoView({behavior: "smooth", block: "center"});
         nameInput.focus();
+    }
+
+    function openReservationEditForm(button) {
+        const reservationId = button.dataset.reservationId;
+        const reservationDate = button.dataset.reservationDate;
+        const timeId = button.dataset.timeId;
+        const themeName = button.dataset.themeName;
+        const startAt = button.dataset.startAt;
+
+        const panel = document.getElementById("reservation-edit-panel");
+        const form = document.getElementById("reservation-edit-form");
+        const dateInput = document.getElementById("reservation-edit-date");
+        const timeSelect = document.getElementById("reservation-edit-time");
+        const title = document.getElementById("reservation-edit-title");
+        const body = document.getElementById("reservation-edit-body");
+
+        form.action = "/pages/user/reservations/" + reservationId + "/update";
+        dateInput.value = reservationDate;
+        timeSelect.value = timeId;
+        title.textContent = "예약 변경";
+        body.textContent = themeName + " / " + startAt + " 예약을 새 날짜와 시간으로 바꿀 수 있어요.";
+        panel.classList.remove("hidden");
+        panel.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+
+    function closeReservationEditForm() {
+        const panel = document.getElementById("reservation-edit-panel");
+        panel.classList.add("hidden");
     }
 
     applyPageFeedback();

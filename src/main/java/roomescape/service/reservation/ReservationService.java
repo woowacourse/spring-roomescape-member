@@ -84,6 +84,48 @@ public class ReservationService {
         reservationRepository.deleteById(reservation.getId());
     }
 
+    public Reservation updateByIdAndName(
+            final long id,
+            final String name,
+            final LocalDate date,
+            final Long timeId
+    ) {
+        validateReservationName(name);
+
+        if (timeId == null) {
+            throw new InvalidInputException("RESERVATION_TIME_ID_REQUIRED", "timeId는 필수입니다.");
+        }
+
+        if (date == null) {
+            throw new InvalidInputException("RESERVATION_DATE_REQUIRED", "날짜는 필수입니다.");
+        }
+
+        Reservation reservation = reservationRepository.findByIdAndName(id, name)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "MY_RESERVATION_NOT_FOUND",
+                        "조회한 이름으로 찾은 예약이 없습니다."
+                ));
+
+        ReservationTime reservationTime = reservationTimeService.getById(timeId);
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidInputException("RESERVATION_DATE_TIME_IN_PAST", "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
+        }
+
+        if (reservationRepository.existsByDateAndThemeIdAndTimeIdExcludingId(
+                date,
+                reservation.getTheme().getId(),
+                timeId,
+                reservation.getId()
+        )) {
+            throw new ConflictException("RESERVATION_DUPLICATED", "동일한 시기에 예약을 할 수 없습니다.");
+        }
+
+        Reservation updatedReservation = reservation.withDateAndTime(date, reservationTime);
+        return reservationRepository.update(updatedReservation);
+    }
+
     private void validateReservationName(final String name) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("RESERVATION_NAME_REQUIRED", "예약자 이름은 필수입니다.");

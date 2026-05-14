@@ -180,6 +180,31 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(final Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        try {
+            jdbcTemplate.update(
+                    sql,
+                    Date.valueOf(reservation.getDate()),
+                    reservation.getTime().getId(),
+                    reservation.getId()
+            );
+        } catch (DataIntegrityViolationException exception) {
+            throw new ConflictException(
+                    "RESERVATION_DUPLICATED",
+                    "동일한 시기에 예약을 할 수 없습니다."
+            );
+        }
+
+        return reservation;
+    }
+
+    @Override
     public boolean existsByDateAndThemeIdAndTimeId(final LocalDate date, final long themeId, final long timeId) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)";
 
@@ -189,6 +214,31 @@ public class JdbcReservationRepository implements ReservationRepository {
                 Date.valueOf(date),
                 themeId,
                 timeId
+        ));
+    }
+
+    @Override
+    public boolean existsByDateAndThemeIdAndTimeIdExcludingId(
+            final LocalDate date,
+            final long themeId,
+            final long timeId,
+            final long reservationId
+    ) {
+        final String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND theme_id = ? AND time_id = ? AND id <> ?
+                )
+                """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                Date.valueOf(date),
+                themeId,
+                timeId,
+                reservationId
         ));
     }
 

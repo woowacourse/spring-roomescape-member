@@ -94,6 +94,43 @@ class ReservationServiceTest {
         assertThat(fixture.reservationRepository.findAll()).isEmpty();
     }
 
+    @Test
+    @DisplayName("조회한 이름의 예약 날짜와 시간을 변경한다")
+    void updateByIdAndName() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime firstTime = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+        ReservationTime secondTime = fixture.reservationTimeService.save(LocalTime.parse("11:00"));
+        Reservation saved = fixture.reservationService.save("쿠다", LocalDate.parse("2026-08-06"), theme.getId(), firstTime.getId());
+
+        Reservation updated = fixture.reservationService.updateByIdAndName(
+                saved.getId(),
+                "쿠다",
+                LocalDate.parse("2026-08-07"),
+                secondTime.getId()
+        );
+
+        assertThat(updated.getDate()).isEqualTo(LocalDate.parse("2026-08-07"));
+        assertThat(updated.getTime().getId()).isEqualTo(secondTime.getId());
+    }
+
+    @Test
+    @DisplayName("조회한 이름의 다른 예약과 시간이 겹치면 변경할 수 없다")
+    void updateByIdAndNameDuplicate() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime firstTime = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+        ReservationTime secondTime = fixture.reservationTimeService.save(LocalTime.parse("11:00"));
+        LocalDate date = LocalDate.parse("2026-08-06");
+        Reservation target = fixture.reservationService.save("쿠다", date, theme.getId(), firstTime.getId());
+        fixture.reservationService.save("쿠다", date, theme.getId(), secondTime.getId());
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.updateByIdAndName(target.getId(), "쿠다", date, secondTime.getId())
+        );
+    }
+
     private static class Fixture {
         private final MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
         private final ReservationTimeService reservationTimeService =

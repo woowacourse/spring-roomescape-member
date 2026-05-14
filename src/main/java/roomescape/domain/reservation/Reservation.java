@@ -37,6 +37,10 @@ public class Reservation {
         return new Reservation(id, this.name, this.date, this.theme, this.time);
     }
 
+    public Reservation withDateAndTime(final LocalDate date, final ReservationTime time) {
+        return new Reservation(this.id, this.name, date, this.theme, time);
+    }
+
     private static void validateId(final Long id){
         if(id == null) {
             throw new InvalidInputException("INVALID_RESERVATION_ID", "Id는 비어있을 수 없습니다.");

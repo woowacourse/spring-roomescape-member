@@ -74,6 +74,9 @@ public class ReservationPageController {
         model.addAttribute("period", period);
         model.addAttribute("limit", limit);
         model.addAttribute("errorCode", resolvedErrorCode);
+        model.addAttribute("reservationTimes", reservationTimeService.getAll().stream()
+                .map(ReservationTimeResponse::from)
+                .toList());
 
         List<ReservationTimeResponse> availableTimes = List.of();
         if (selectedThemeId != null && selectedDate != null) {
@@ -130,6 +133,35 @@ public class ReservationPageController {
     ) {
         try {
             reservationService.deleteByIdAndName(id, reservationName);
+        } catch (ApiException exception) {
+            addReservationNameAttribute(redirectAttributes, reservationName);
+            redirectAttributes.addAttribute("errorCode", exception.getCode());
+            return "redirect:/pages/user/reservations";
+        } catch (Exception exception) {
+            addReservationNameAttribute(redirectAttributes, reservationName);
+            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            return "redirect:/pages/user/reservations";
+        }
+
+        addReservationNameAttribute(redirectAttributes, reservationName);
+        return "redirect:/pages/user/reservations";
+    }
+
+    @PostMapping("/{id}/update")
+    public String updateReservation(
+            @PathVariable final Long id,
+            @RequestParam(required = false) final String reservationName,
+            @RequestParam(required = false) final String date,
+            @RequestParam(required = false) final String timeId,
+            final RedirectAttributes redirectAttributes
+    ) {
+        Long parsedTimeId = null;
+        LocalDate parsedDate = null;
+
+        try {
+            parsedTimeId = parseLongValue(timeId);
+            parsedDate = parseDate(date);
+            reservationService.updateByIdAndName(id, reservationName, parsedDate, parsedTimeId);
         } catch (ApiException exception) {
             addReservationNameAttribute(redirectAttributes, reservationName);
             redirectAttributes.addAttribute("errorCode", exception.getCode());
