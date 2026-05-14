@@ -246,7 +246,7 @@
 
 ### 예약 시간
 
-#### `GET /times?themeId={themeId}&dateId={dateId}`
+#### `GET /reservation-times/availability?themeId={themeId}&dateId={dateId}`
 
 - 설명: 특정 테마와 날짜의 예약 가능 시간 조회
 - 응답 `200 OK`

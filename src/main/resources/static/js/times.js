@@ -376,7 +376,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadEditTimes(reservation, dateId) {
         try {
-            const times = await fetchJson(`/times?themeId=${reservation.theme.id}&dateId=${dateId}`);
+            const times = await fetchJson(
+                `/reservation-times/availability?themeId=${reservation.theme.id}&dateId=${dateId}`
+            );
             state.editTimesByReservationId[reservation.reservationId] = times;
             renderUserReservations();
         } catch (error) {
@@ -409,7 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedTheme = findTheme();
         const selectedDate = findDate();
 
-        state.times = await fetchJson(`/times?themeId=${state.selectedThemeId}&dateId=${state.selectedDateId}`);
+        state.times = await fetchJson(
+            `/reservation-times/availability?themeId=${state.selectedThemeId}&dateId=${state.selectedDateId}`
+        );
         renderTimes();
         selectedThemeInput.value = String(state.selectedThemeId);
         selectedDateInput.value = String(state.selectedDateId);
