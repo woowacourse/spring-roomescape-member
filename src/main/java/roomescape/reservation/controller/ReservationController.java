@@ -45,8 +45,12 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}/schedule")
-    public ResponseEntity<ReservationDetailDto> updateSchedule(@PathVariable Long id, @RequestBody ReservationChangeScheduleDto dto) {
-        Reservation reservation = reservationService.changeSchedule(id, dto.name(), dto.dateId(), dto.timeId());
+    public ResponseEntity<ReservationDetailDto> updateSchedule(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @RequestBody ReservationChangeScheduleDto dto
+    ) {
+        Reservation reservation = reservationService.changeSchedule(id, name, dto.dateId(), dto.timeId());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }

@@ -45,11 +45,13 @@ Content-Type: application/json
 }
 
 ### [Member] 7. 예약 날짜/시간 변경
-PATCH http://localhost:8080/member/reservations/16/schedule
+< {%
+    request.variables.set("encodedName", encodeURIComponent("송송"))
+%}
+PATCH http://localhost:8080/member/reservations/16/schedule?name={{encodedName}}
 Content-Type: application/json
 
 {
-  "name": "송송",
   "dateId": 15,
   "timeId": 4
 }

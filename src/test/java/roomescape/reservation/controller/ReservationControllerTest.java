@@ -357,7 +357,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + reservationName)
                 .then().log().all()
                 .statusCode(200)
                 .body("date", is(futureDate))
@@ -376,14 +376,13 @@ class ReservationControllerTest {
 
         String notOwnerName = "다른사람";
         Map<String, Object> params = new HashMap<>();
-        params.put("name", notOwnerName);
         params.put("dateId", changedDateId);
         params.put("timeId", changedTimeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + notOwnerName)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("본인의 예약만 취소할 수 있습니다."));
@@ -408,7 +407,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + reservationName)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("이미 취소된 예약입니다."));
@@ -435,7 +434,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/member/reservations/" + sqlSavedId + "/schedule")
+                .when().patch("/member/reservations/" + sqlSavedId + "/schedule?name=" + sqlRequsterName)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("이미 지난 예약입니다."));
@@ -463,7 +462,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/member/reservations/" + reservationId + "/schedule")
+                .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + reservationName)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("이미 지난 날짜/시간을 예약할 수 없습니다."));
