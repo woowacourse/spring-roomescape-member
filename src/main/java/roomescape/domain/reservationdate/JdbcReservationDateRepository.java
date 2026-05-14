@@ -20,6 +20,14 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     private static final String FIND_BY_ID_SQL = "select id, play_day from reservation_date where id = ?";
     private static final String FIND_ALL_SQL = "select id, play_day from reservation_date order by id";
     private static final String DELETE_BY_ID_SQL = "delete from reservation_date where id = ?";
+    private static final String EXISTS_BY_PLAY_DAY_SQL =
+        """
+            select exists(
+            select 1
+            from reservation_date
+            where play_day = ?
+            )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -52,6 +60,11 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     @Override
     public int deleteById(Long id) {
         return jdbcTemplate.update(DELETE_BY_ID_SQL, id);
+    }
+
+    @Override
+    public boolean existsByPlayDay(LocalDate playDay) {
+        return jdbcTemplate.queryForObject(EXISTS_BY_PLAY_DAY_SQL, Boolean.class, playDay);
     }
 
     private RowMapper<ReservationDate> reservationDateRowMapper() {

@@ -28,6 +28,9 @@ public class ReservationDateService {
     }
 
     public ReservationDateCreationResponse createReservationDate(ReservationDateCreationRequest request) {
+        if (reservationDateRepository.existsByPlayDay(request.playDay())) {
+            throw new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_DUPLICATED);
+        }
         ReservationDate reservationDate = reservationDateRepository.save(request.toEntity());
         return ReservationDateCreationResponse.from(reservationDate);
     }
