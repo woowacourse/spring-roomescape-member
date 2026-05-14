@@ -74,6 +74,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM theme WHERE id = (?)";
+
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT th.id AS theme_id, th.name, th.description, "
                 + "th.thumbnail_url, COUNT(r.id) AS reservation_count "
@@ -101,9 +108,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM theme WHERE id = (?)";
+    public boolean existById(Long id) {
+        String sql = "SELECT EXISTS ("
+                + "SELECT 1 FROM `theme` WHERE `id` = (?) "
+                + ") AS exist";
 
-        jdbcTemplate.update(sql, id);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }

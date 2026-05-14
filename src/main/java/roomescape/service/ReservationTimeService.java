@@ -1,12 +1,11 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.exception.CustomConflictException;
 import roomescape.exception.CustomNotFoundException;
 import roomescape.exception.CustomUnprocessableEntityException;
@@ -35,9 +34,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ServiceReservationTimeResponse create(ServiceReservationTimeCreateRequest request) {
-        if (reservationTimeRepository.existByStartAt(request.startAt())) {
-            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION_TIME);
-        }
+        validateDuplicatedReservationTime(request.startAt());
 
         ReservationTime reservationTime = reservationTimeRepository.create(request.toEntity());
         return ServiceReservationTimeResponse.from(reservationTime);
@@ -50,15 +47,16 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    private void validateDuplicatedReservationTime(LocalTime startAt) {
+        if (reservationTimeRepository.existByStartAt(startAt)) {
+            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION_TIME);
+        }
+    }
+
     public List<ServiceReservationTimeAvailabilityResponse> readAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
-        Optional<Theme> theme = themeRepository.read(themeId);
-        if (theme.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME);
-        }
-        if (date.isBefore(LocalDate.now())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.PAST_RESERVATION_TIME_READ);
-        }
+        validateExistTheme(themeId);
+        validateNotPastDate(date);
 
         List<ReservationTime> allReservationTimes = reservationTimeRepository.readAll();
         List<Long> reservedTimeIdByDateAndTheme = reservationTimeRepository.reservedTimeIdByDateAndTheme(date, themeId);
@@ -72,11 +70,27 @@ public class ReservationTimeService {
                 }).toList();
     }
 
+    private void validateExistTheme(Long themeId) {
+        if (!themeRepository.existById(themeId)) {
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME);
+        }
+    }
+
+    private void validateNotPastDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new CustomUnprocessableEntityException(ErrorCode.PAST_RESERVATION_TIME_READ);
+        }
+    }
+
     @Transactional
     public void delete(Long id) {
+        validateReferencedTime(id);
+        reservationTimeRepository.delete(id);
+    }
+
+    private void validateReferencedTime(Long id) {
         if (reservationRepository.existByTimeId(id)) {
             throw new CustomConflictException(ErrorCode.REFERENCED_TIME);
         }
-        reservationTimeRepository.delete(id);
     }
 }

@@ -68,6 +68,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM `reservation_time` WHERE `id` = (?)";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public List<Long> reservedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
         String sql = "SELECT t.id as time_id "
                 + "FROM `reservation_time` t "
@@ -89,11 +95,5 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 + ") AS exist";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
-    }
-
-    @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM `reservation_time` WHERE `id` = (?)";
-        jdbcTemplate.update(sql, id);
     }
 }

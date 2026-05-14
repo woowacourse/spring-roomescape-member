@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -36,27 +35,11 @@ public class ReservationService {
 
     @Transactional
     public ServiceReservationResponse create(ServiceReservationCreateRequest request) {
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
-        if (reservationTime.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
-        }
+        ReservationTime reservationTime = readReservationTime(request.timeId());
+        Theme theme = readTheme(request.themeId());
 
-        Optional<Theme> theme = themeRepository.read(request.themeId());
-        if (theme.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME);
-        }
-
-        boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(request.date(),
-                request.timeId(),
-                request.themeId());
-        if (existReservation) {
-            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION);
-        }
-
-        Reservation reservationWithoutId = request.toEntity(reservationTime.get(), theme.get());
-        if (reservationWithoutId.isPast(LocalDateTime.now())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_CREATE);
-        }
+        Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
+        validateCreateReservation(reservationWithoutId);
 
         Reservation reservation = reservationRepository.create(reservationWithoutId);
 
@@ -80,28 +63,13 @@ public class ReservationService {
     }
 
     public ServiceReservationResponse update(Long id, ServiceReservationUpdateRequest request) {
-        Optional<Reservation> beforeReservation = reservationRepository.readById(id);
-        if (beforeReservation.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION);
-        }
-        if (beforeReservation.get().isPast(LocalDateTime.now())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE);
-        }
+        Reservation beforeReservation = readReservation(id);
+        validatePastReservation(beforeReservation, ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE);
 
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
-        if (reservationTime.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
-        }
+        ReservationTime reservationTime = readReservationTime(request.timeId());
 
-        Reservation newReservation = request.toEntity(beforeReservation.get(), reservationTime.get());
-        if (newReservation.isPast(LocalDateTime.now())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_CREATE);
-        }
-
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(newReservation.getDate(),
-                newReservation.getTime().getId(), newReservation.getTheme().getId())) {
-            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION);
-        }
+        Reservation newReservation = request.toEntity(beforeReservation, reservationTime);
+        validateCreateReservation(newReservation);
 
         reservationRepository.update(id, request.date(), request.timeId());
 
@@ -110,14 +78,44 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        Optional<Reservation> reservation = reservationRepository.readById(id);
-        if (reservation.isEmpty()) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION);
-        }
-        if (reservation.get().isPast(LocalDateTime.now())) {
+        Reservation reservation = readReservation(id);
+        if (reservation.isPast(LocalDateTime.now())) {
             throw new CustomUnprocessableEntityException(ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_DELETE);
         }
 
         reservationRepository.delete(id);
+    }
+
+    private void validateCreateReservation(Reservation reservation) {
+        validatePastReservation(reservation, ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_CREATE);
+        validateDuplicatedReservation(reservation);
+    }
+
+    private void validatePastReservation(Reservation reservation, ErrorCode errorCode) {
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new CustomUnprocessableEntityException(errorCode);
+        }
+    }
+
+    private void validateDuplicatedReservation(Reservation reservation) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(), reservation.getTime().getId(),
+                reservation.getTheme().getId())) {
+            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION);
+        }
+    }
+
+    private ReservationTime readReservationTime(Long timeId) {
+        return reservationTimeRepository.read(timeId)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION_TIME));
+    }
+
+    private Theme readTheme(Long themeId) {
+        return themeRepository.read(themeId)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME));
+    }
+
+    private Reservation readReservation(Long reservationId) {
+        return reservationRepository.readById(reservationId)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION));
     }
 }

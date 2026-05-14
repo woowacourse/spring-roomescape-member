@@ -16,4 +16,6 @@ public interface ThemeRepository {
     void delete(Long id);
 
     List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit);
+
+    boolean existById(Long id);
 }

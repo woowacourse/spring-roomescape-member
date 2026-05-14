@@ -42,6 +42,14 @@ public class ThemeService {
     }
 
     public List<ServiceThemeResponse> readRanking(LocalDate startDate, LocalDate endDate) {
+        validateRankingPeriod(startDate, endDate);
+
+        return themeRepository.readRanking(startDate, endDate, RANKING_LIMIT).stream()
+                .map(ServiceThemeResponse::from)
+                .toList();
+    }
+
+    private void validateRankingPeriod(LocalDate startDate, LocalDate endDate) {
         LocalDate localDate = LocalDate.now();
 
         if (startDate.isAfter(localDate) || endDate.isAfter(localDate)) {
@@ -53,17 +61,17 @@ public class ThemeService {
         if (ChronoUnit.DAYS.between(startDate, endDate) > MAX_RANKING_PERIOD) {
             throw new CustomUnprocessableEntityException(ErrorCode.LONG_RANKING_PERIOD);
         }
-
-        return themeRepository.readRanking(startDate, endDate, RANKING_LIMIT).stream()
-                .map(ServiceThemeResponse::from)
-                .toList();
     }
 
     @Transactional
     public void delete(Long id) {
+        validateReferencedTheme(id);
+        themeRepository.delete(id);
+    }
+
+    private void validateReferencedTheme(Long id) {
         if (reservationRepository.existByThemeId(id)) {
             throw new CustomConflictException(ErrorCode.REFERENCED_THEME);
         }
-        themeRepository.delete(id);
     }
 }

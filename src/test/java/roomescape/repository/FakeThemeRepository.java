@@ -63,4 +63,10 @@ public class FakeThemeRepository implements ThemeRepository {
         }
         return ranking.subList(0, limit);
     }
+
+    @Override
+    public boolean existById(Long id) {
+        return fakeDatabase.readAll(THEME_TABLE, Theme.class).stream()
+                .anyMatch(theme -> theme.getId().equals(id));
+    }
 }
