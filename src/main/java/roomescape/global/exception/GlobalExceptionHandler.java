@@ -25,12 +25,22 @@ import roomescape.global.exception.response.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoHandlerFound(
+            NoResourceFoundException e
+    ) {
+        return ErrorResponse.of(
+                GlobalErrorCode.NOT_FOUND.getMessage()
+        );
+    }
+
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(
             BadRequestException e
     ) {
-        log.info("BadRequestException 발생: {}", e.getMessage(), e);
+        log.info("BadRequestException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -39,7 +49,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleDuplicateException(
             DuplicateException e
     ) {
-        log.info("DuplicateException 발생: {}", e.getMessage(), e);
+        log.info("DuplicateException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -48,7 +58,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotFoundException(
             NotFoundException e
     ) {
-        log.info("NotFoundException 발생: {}", e.getMessage(), e);
+        log.info("NotFoundException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -57,7 +67,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleValidationException(
             InvalidException e
     ) {
-        log.info("InvalidException 발생: {}", e.getMessage(), e);
+        log.info("InvalidException 발생: {}", e.getMessage());
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 e.getErrors()
@@ -70,7 +80,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException e
     ) {
 
-        log.info("MethodArgumentNotValidException 발생: {}", e.getMessage(), e);
+        log.info("MethodArgumentNotValidException 발생: {}", e.getMessage());
         List<String> errors = e.getBindingResult().getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -87,7 +97,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
-        log.info("MethodArgumentTypeMismatchException 발생", e);
+        log.info("MethodArgumentTypeMismatchException 발생: {}", e.getMessage());
 
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
@@ -100,7 +110,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotReadable(
             HttpMessageNotReadableException e
     ) {
-        log.info("HttpMessageNotReadableException 발생", e);
+        log.info("HttpMessageNotReadableException 발생: {}", e.getMessage());
         return ErrorResponse.of(GlobalErrorCode.INVALID_JSON.getMessage());
     }
 
@@ -109,7 +119,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleMissingParameter(
             MissingServletRequestParameterException e
     ) {
-        log.info("MissingServletRequestParameterException 발생", e);
+        log.info("MissingServletRequestParameterException 발생: {}", e.getMessage());
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 List.of(e.getParameterName() + " 파라미터가 누락되었습니다.")
@@ -146,16 +156,6 @@ public class GlobalExceptionHandler {
         log.error("DataIntegrityViolationException 발생", e);
 
         return ErrorResponse.of(GlobalErrorCode.BAD_REQUEST.getMessage());
-    }
-
-    @ExceptionHandler(NoResourceFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNoHandlerFound(
-            NoResourceFoundException e
-    ) {
-        return ErrorResponse.of(
-                GlobalErrorCode.NOT_FOUND.getMessage()
-        );
     }
 
     @ExceptionHandler(Exception.class)
