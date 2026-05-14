@@ -28,10 +28,10 @@ public class ThemeRepositoryTest {
 
         // then
         assertAll(
-                () -> assertEquals(18L, newTheme.getId()),
-                () -> assertEquals("테스트 테마", newTheme.getName()),
-                () -> assertEquals("테스트 테마입니다", newTheme.getDescription()),
-                () -> assertEquals("url.com", newTheme.getUrl())
+                () -> assertEquals(18L, newTheme.id()),
+                () -> assertEquals("테스트 테마", newTheme.name()),
+                () -> assertEquals("테스트 테마입니다", newTheme.description()),
+                () -> assertEquals("url.com", newTheme.url())
         );
     }
 
@@ -58,11 +58,11 @@ public class ThemeRepositoryTest {
         Optional<Theme> theme = themeRepository.findById(themeId);
 
         assertAll(
-                () -> assertEquals(themeId, theme.get().getId()),
-                () -> assertEquals("루팡의 예고장", theme.get().getName()),
+                () -> assertEquals(themeId, theme.get().id()),
+                () -> assertEquals("루팡의 예고장", theme.get().name()),
                 () -> assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?",
-                        theme.get().getDescription()),
-                () -> assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().getUrl())
+                        theme.get().description()),
+                () -> assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().url())
         );
     }
 
@@ -76,12 +76,12 @@ public class ThemeRepositoryTest {
                 lastWeekDate.toString(), limit);
 
         assertAll(
-                () -> assertEquals(themes.get(0).getId(), 5),
-                () -> assertEquals(themes.get(1).getId(), 2),
-                () -> assertEquals(themes.get(2).getId(), 1),
-                () -> assertEquals(themes.get(3).getId(), 3),
-                () -> assertEquals(themes.get(4).getId(), 4),
-                () -> assertEquals(themes.get(5).getId(), 6)
+                () -> assertEquals(themes.get(0).id(), 5),
+                () -> assertEquals(themes.get(1).id(), 2),
+                () -> assertEquals(themes.get(2).id(), 1),
+                () -> assertEquals(themes.get(3).id(), 3),
+                () -> assertEquals(themes.get(4).id(), 4),
+                () -> assertEquals(themes.get(5).id(), 6)
         );
     }
 }

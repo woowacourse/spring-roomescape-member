@@ -13,7 +13,7 @@ public class ThemeTest {
         };
 
         int size = 5;
-        int nameSize = theme.getName().length();
+        int nameSize = theme.name().length();
 
         Assertions.assertEquals(size, nameSize);
     }
