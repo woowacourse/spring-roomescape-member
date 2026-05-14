@@ -24,6 +24,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
@@ -279,6 +280,27 @@ class ReservationServiceTest {
             // when & then
             assertThatThrownBy(() -> reservationService.update(jamesId, updateToBrownTime))
                     .isInstanceOf(DuplicateResourceException.class);
+        }
+
+        @Test
+        @DisplayName("취소된 예약은 예약 가능하다.")
+        void updateCanceled() {
+            // given
+            LocalDate reservationDate1 = futureDate.toLocalDate();
+            Long timeId1 = insertReservationTime(futureDate.toLocalTime());
+            ReservationRequest request1 = new ReservationRequest("브라운", reservationDate1, timeId1, themeId);
+            Long brownId = insertReservation(request1, ReservationStatus.CANCELED);
+
+            LocalDate reservationDate2 = futureDate.toLocalDate();
+            Long timeId2 = insertReservationTime(futureDate.toLocalTime().minusHours(1));
+            ReservationRequest request2 = new ReservationRequest("제임스", reservationDate2, timeId2, themeId);
+            Long jamesId = insertReservation(request2, ReservationStatus.RESERVED);
+
+            ReservationRequest updateToBrownTime = new ReservationRequest("제임스", futureDate.toLocalDate(), timeId1, themeId);
+
+            // when & then
+            assertThatCode(() ->  reservationService.update(jamesId, updateToBrownTime))
+                    .doesNotThrowAnyException();
         }
     }
 
