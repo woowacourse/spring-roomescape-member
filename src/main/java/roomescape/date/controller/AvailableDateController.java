@@ -10,7 +10,7 @@ import roomescape.date.dto.response.AvailableDateDetailDto;
 import roomescape.date.service.AvailableDateService;
 
 @RestController
-@RequestMapping("/avilable-dates")
+@RequestMapping("/available-dates")
 public class AvailableDateController {
     private final AvailableDateService availableDateService;
 
