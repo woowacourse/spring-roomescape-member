@@ -206,7 +206,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             updated.getName().value(),
             Date.valueOf(updated.getDateValue()),
             updated.getTimeId(),
-            updated.getThemeId()
+            updated.getThemeId(),
+            id
         );
     }
 
