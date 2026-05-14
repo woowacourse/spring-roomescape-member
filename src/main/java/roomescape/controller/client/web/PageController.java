@@ -20,4 +20,9 @@ public class PageController {
     public String index() {
         return "forward:/index.html";
     }
+
+    @GetMapping("/search")
+    public String search() {
+        return "forward:/search.html";
+    }
 }

@@ -2,22 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>관리자 · RoomEscape</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles/common.css" />
-  <link rel="stylesheet" href="/styles/admin.css" />
+  <link href="/styles/common.css" rel="stylesheet" />
+  <link href="/styles/admin.css" rel="stylesheet" />
 </head>
 <body>
   <nav class="top-nav">
     <div class="nav-inner">
-      <a href="/" class="nav-logo">RoomEscape</a>
+      <a class="nav-logo" href="/">RoomEscape</a>
       <div class="nav-links">
         <a href="/">홈</a>
         <a href="/reserve">예약하기</a>
-        <a href="/admin" class="active">관리자</a>
+        <a href="/search">예약확인</a>
+        <a class="active" href="/admin">관리자</a>
       </div>
     </div>
   </nav>
@@ -28,9 +29,9 @@
   </header>
 
   <div class="tab-bar" data-role="tab-bar">
-    <button class="tab-btn active" type="button" data-tab="theme">테마</button>
-    <button class="tab-btn" type="button" data-tab="reservation">예약</button>
-    <button class="tab-btn" type="button" data-tab="time">시간</button>
+    <button class="tab-btn active" data-tab="theme" type="button">테마</button>
+    <button class="tab-btn" data-tab="reservation" type="button">예약</button>
+    <button class="tab-btn" data-tab="time" type="button">시간</button>
   </div>
 
   <main class="tab-content">
@@ -41,15 +42,15 @@
           <form data-role="theme-form">
             <div class="form-group">
               <label class="form-label" for="themeName">이름</label>
-              <input id="themeName" name="name" class="form-input" type="text" placeholder="테마 이름" maxlength="20" />
+              <input class="form-input" id="themeName" maxlength="20" name="name" placeholder="테마 이름" type="text" />
             </div>
             <div class="form-group">
               <label class="form-label" for="themeDescription">설명</label>
-              <input id="themeDescription" name="description" class="form-input" type="text" placeholder="테마 설명" maxlength="255" />
+              <input class="form-input" id="themeDescription" maxlength="255" name="description" placeholder="테마 설명" type="text" />
             </div>
             <div class="form-group">
               <label class="form-label" for="themeThumbnail">썸네일 URL</label>
-              <input id="themeThumbnail" name="thumbnailImageUrl" class="form-input" type="text" placeholder="https://..." />
+              <input class="form-input" id="themeThumbnail" name="thumbnailImageUrl" placeholder="https://..." type="text" />
             </div>
             <button class="btn-primary" type="submit">추가하기</button>
           </form>
@@ -82,21 +83,21 @@
           <form data-role="reservation-form">
             <div class="form-group">
               <label class="form-label" for="reservationName">예약자 이름</label>
-              <input id="reservationName" name="name" class="form-input" type="text" placeholder="이름" maxlength="20" />
+              <input class="form-input" id="reservationName" maxlength="20" name="name" placeholder="이름" type="text" />
             </div>
             <div class="form-group">
               <label class="form-label" for="reservationDate">날짜</label>
-              <input id="reservationDate" name="date" class="form-input" type="date" />
+              <input class="form-input" id="reservationDate" name="date" type="date" />
             </div>
             <div class="form-group">
               <label class="form-label" for="reservationTheme">테마</label>
-              <select id="reservationTheme" name="themeId" class="form-input">
+              <select class="form-input" id="reservationTheme" name="themeId">
                 <option value="">테마 선택</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label" for="reservationTime">시간</label>
-              <select id="reservationTime" name="timeId" class="form-input">
+              <select class="form-input" id="reservationTime" name="timeId">
                 <option value="">시간 선택</option>
               </select>
             </div>
@@ -132,7 +133,7 @@
           <form data-role="time-form">
             <div class="form-group">
               <label class="form-label" for="timeStartAt">시작 시간</label>
-              <input id="timeStartAt" name="startAt" class="form-input" type="time" />
+              <input class="form-input" id="timeStartAt" name="startAt" type="time" />
             </div>
             <button class="btn-primary" type="submit">추가하기</button>
           </form>
@@ -160,6 +161,6 @@
 
   <div class="toast" data-role="toast"></div>
 
-  <script type="module" src="/js/admin/main.js"></script>
+  <script src="/js/admin/main.js" type="module"></script>
 </body>
 </html>
