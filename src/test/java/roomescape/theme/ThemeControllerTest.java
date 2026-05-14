@@ -80,11 +80,12 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4))
-                .body("[0].id", is(1))
-                .body("[1].id", is(2))
-                .body("[2].id", is(3))
-                .body("[3].id", is(4));
+                .body("success", is(true))
+                .body("data.size()", is(4))
+                .body("data[0].id", is(1))
+                .body("data[1].id", is(2))
+                .body("data[2].id", is(3))
+                .body("data[3].id", is(4));
     }
 
     @Test
@@ -100,10 +101,11 @@ public class ThemeControllerTest {
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3))
-                .body("[0].id", is(2))
-                .body("[1].id", is(1))
-                .body("[2].id", is(3));
+                .body("success", is(true))
+                .body("data.size()", is(3))
+                .body("data[0].id", is(2))
+                .body("data[1].id", is(1))
+                .body("data[2].id", is(3));
     }
 
     @Test
@@ -112,10 +114,11 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4))
-                .body("[0].id", is(1))
-                .body("[1].id", is(2))
-                .body("[2].id", is(3))
-                .body("[3].id", is(4));
+                .body("success", is(true))
+                .body("data.size()", is(4))
+                .body("data[0].id", is(1))
+                .body("data[1].id", is(2))
+                .body("data[2].id", is(3))
+                .body("data[3].id", is(4));
     }
 }

@@ -37,7 +37,8 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("success", is(true))
+                .body("data.size()", is(5));
 
         RestAssured.given().log().all()
                 .when().delete("/times/5")
@@ -55,8 +56,9 @@ public class ReservationTimeControllerTest {
                 .params(options)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(1))
-                .body("[0].isAvailable", is(false))
+                .body("success", is(true))
+                .body("data.size()", is(1))
+                .body("data[0].isAvailable", is(false))
                 .statusCode(200);
     }
 
@@ -72,8 +74,9 @@ public class ReservationTimeControllerTest {
                 .params(options)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(1))
-                .body("[0].isAvailable", is(true))
+                .body("success", is(true))
+                .body("data.size()", is(1))
+                .body("data[0].isAvailable", is(true))
                 .statusCode(200);
 
         // 예약 생성
@@ -99,8 +102,9 @@ public class ReservationTimeControllerTest {
                 .params(options1)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(1))
-                .body("[0].isAvailable", is(false))
+                .body("success", is(true))
+                .body("data.size()", is(1))
+                .body("data[0].isAvailable", is(false))
                 .statusCode(200);
     }
 }

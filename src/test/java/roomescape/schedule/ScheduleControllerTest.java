@@ -33,10 +33,11 @@ public class ScheduleControllerTest {
                 .when().post("/schedules")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(6))
-                .body("date", is("2026-05-06"))
-                .body("time_id", is(1))
-                .body("theme_id", is(4));
+                .body("success", is(true))
+                .body("data.id", is(6))
+                .body("data.date", is("2026-05-06"))
+                .body("data.time_id", is(1))
+                .body("data.theme_id", is(4));
     }
 
     @Test
@@ -45,10 +46,11 @@ public class ScheduleControllerTest {
                 .when().get("/schedules/1")
                 .then().log().all()
                 .statusCode(200)
-                .body("id", is(1))
-                .body("date", is("2026-05-05"))
-                .body("time_id", is(1))
-                .body("theme_id", is(1));
+                .body("success", is(true))
+                .body("data.id", is(1))
+                .body("data.date", is("2026-05-05"))
+                .body("data.time_id", is(1))
+                .body("data.theme_id", is(1));
     }
 
     @Test
@@ -64,7 +66,8 @@ public class ScheduleControllerTest {
                 .when().post("/schedules")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(6));
+                .body("success", is(true))
+                .body("data.id", is(6));
 
         RestAssured.given().log().all()
                 .when().delete("/schedules/6")

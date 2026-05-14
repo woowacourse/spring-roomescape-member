@@ -34,7 +34,8 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(5));
+                .body("success", is(true))
+                .body("data.id", is(5));
     }
 
     @Test
@@ -43,7 +44,8 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4)); // 테스트 더미데이터의 예약이 총 4개라 4개 반환
+                .body("success", is(true))
+                .body("data.size()", is(4)); // 테스트 더미데이터의 예약이 총 4개라 4개 반환
     }
 
     @Test
@@ -60,13 +62,15 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(5));
+                .body("success", is(true))
+                .body("data.id", is(5));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("success", is(true))
+                .body("data.size()", is(5));
 
         RestAssured.given().log().all()
                 .params("name", "a")
@@ -78,7 +82,8 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("success", is(true))
+                .body("data.size()", is(4));
     }
 
     @Test
@@ -88,7 +93,8 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("success", is(true))
+                .body("data.size()", is(1));
 
         RestAssured.given().log().all()
                 .pathParam("id", 1)
@@ -102,6 +108,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("success", is(true))
+                .body("data.size()", is(0));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.ApiResponse;
 import roomescape.theme.dto.request.ThemeSaveRequest;
 import roomescape.theme.dto.response.ThemeFindResponse;
 import roomescape.theme.dto.response.ThemeSaveResponse;
@@ -26,38 +27,38 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @PostMapping
-    public ResponseEntity<ThemeSaveResponse> save(@RequestBody ThemeSaveRequest body) {
+    public ResponseEntity<ApiResponse<ThemeSaveResponse>> save(@RequestBody ThemeSaveRequest body) {
         ThemeSaveResponse response = themeService.save(body);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable long id) {
         themeService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success(null));
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeFindResponse>> findAll() {
+    public ResponseEntity<ApiResponse<List<ThemeFindResponse>>> findAll() {
         List<ThemeFindResponse> responses = themeService.findAll();
 
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responses));
     }
 
     @GetMapping(params = "date")
-    public ResponseEntity<List<ThemeFindResponse>> findScheduledThemesByDate(
+    public ResponseEntity<ApiResponse<List<ThemeFindResponse>>> findScheduledThemesByDate(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         List<ThemeFindResponse> responses = themeService.findScheduledThemesByDate(date);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responses));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeFindResponse>> findByDayAndLimit() {
+    public ResponseEntity<ApiResponse<List<ThemeFindResponse>>> findByDayAndLimit() {
         List<ThemeFindResponse> responses = themeService.findPopularTheme();
 
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responses));
     }
 }

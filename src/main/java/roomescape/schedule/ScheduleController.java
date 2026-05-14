@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.ApiResponse;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
 import roomescape.schedule.dto.response.ScheduleFindResponse;
 import roomescape.schedule.dto.response.ScheduleSaveResponse;
@@ -24,27 +25,27 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<List<ScheduleFindResponse>> findAll() {
+    public ResponseEntity<ApiResponse<List<ScheduleFindResponse>>> findAll() {
         List<ScheduleFindResponse> responses = scheduleService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responses));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleFindResponse> findById(@PathVariable long id) {
+    public ResponseEntity<ApiResponse<ScheduleFindResponse>> findById(@PathVariable long id) {
         ScheduleFindResponse response = scheduleService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
     @PostMapping
-    public ResponseEntity<ScheduleSaveResponse> save(
+    public ResponseEntity<ApiResponse<ScheduleSaveResponse>> save(
             @RequestBody @Valid ScheduleSaveRequest body) {
         ScheduleSaveResponse response = scheduleService.save(body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable long id) {
         scheduleService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success(null));
     }
 }
