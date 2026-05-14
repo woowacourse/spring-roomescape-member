@@ -2,15 +2,18 @@ package roomescape.global.exception;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.global.exception.exception.AuthenticationException;
 import roomescape.global.exception.exception.BadRequestException;
 import roomescape.global.exception.exception.DuplicateException;
 import roomescape.global.exception.exception.ForeignKeyConstraintException;
@@ -70,9 +73,38 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(
+            AuthenticationException e
+    ) {
+        log.warn("AuthenticationException 발생: {}", e.getMessage(), e);
+        return ErrorResponse.of(
+                GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(
+            MethodArgumentNotValidException e
+    ) {
+
+        log.warn("MethodArgumentNotValidException 발생: {}", e.getMessage(), e);
+        List<String> errors = e.getBindingResult().getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
+
+        return ErrorResponse.of(
+                GlobalErrorCode.BAD_REQUEST.getMessage(),
+                errors
+        );
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadable(
+    public ErrorResponse handleTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
         log.warn("MethodArgumentTypeMismatchException 발생", e);
@@ -101,7 +133,7 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 List.of(e.getParameterName() + " 파라미터가 누락되었습니다.")
-                );
+        );
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -109,7 +141,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleDataIntegrityViolation(
             DataIntegrityViolationException e
     ) {
-        log.warn("DataIntegrityViolationException 발생", e);
+        log.error("DataIntegrityViolationException 발생", e);
 
         return ErrorResponse.of(GlobalErrorCode.BAD_REQUEST.getMessage());
     }
@@ -119,8 +151,6 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNoHandlerFound(
             NoResourceFoundException e
     ) {
-        log.warn("NoResourceFoundException 발생", e);
-
         return ErrorResponse.of(
                 GlobalErrorCode.NOT_FOUND.getMessage()
         );
