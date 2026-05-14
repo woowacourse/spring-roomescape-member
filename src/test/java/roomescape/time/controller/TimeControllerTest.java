@@ -1,12 +1,14 @@
 package roomescape.time.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,9 @@ class TimeControllerTest {
     @MockitoBean
     private ThemeService themeService;
 
+    @DisplayName("날짜, 테마 ID로 예약 가능한 시간 목록을 조회한다.")
     @Test
-    void getAvailableTimes() throws Exception {
+    void 가능한_시간_목록_조회() throws Exception {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
@@ -49,12 +52,59 @@ class TimeControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("잘못된 날짜 형식으로 가능한 시간 조회 요청인 경우, 400을 반환한다.")
     @Test
-    void getAvailableTimes_잘못된_날짜형식이면_400() throws Exception {
+    void 잘못된_날짜_형식_가능한_시간_조회_400() throws Exception {
         mockMvc.perform(get("/times")
                         .queryParam("themeId", "1")
                         .queryParam("date", "2026/05/06")
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("startAt 없이 시간 생성 요청인 경우, 400을 반환한다.")
+    @Test
+    void startAt_누락_시간_생성_400() throws Exception {
+        String requestBody = """
+                {
+                    "endAt": "12:00"
+                }
+                """;
+
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("endAt 없이 시간 생성 요청인 경우, 400을 반환한다.")
+    @Test
+    void endAt_누락_시간_생성_400() throws Exception {
+        String requestBody = """
+                {
+                    "startAt": "10:00"
+                }
+                """;
+
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("잘못된 시간 형식으로 시간 생성 요청인 경우, 400을 반환한다.")
+    @Test
+    void 잘못된_시간_형식_시간_생성_400() throws Exception {
+        String requestBody = """
+                {
+                    "startAt": "10시",
+                    "endAt": "12:00"
+                }
+                """;
+
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isBadRequest());
     }
 }
