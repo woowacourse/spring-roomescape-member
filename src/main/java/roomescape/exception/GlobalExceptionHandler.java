@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
 
 @RestControllerAdvice
@@ -73,6 +74,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("지원하지 않는 요청 방식입니다."));
     }
 
+    //존재하지 않는 URL
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResource(NoResourceFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("요청하신 리소스를 찾을 수 없습니다."));
+    }
+
     // fallback 마지막 그물망
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
@@ -81,5 +90,6 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."));
     }
+
 
 }
