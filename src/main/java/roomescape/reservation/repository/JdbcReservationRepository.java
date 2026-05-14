@@ -112,9 +112,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void update(long id, long themeId, LocalDate date, long timeId) {
+    public void update(Reservation reservation) {
         String sql = "UPDATE reservation SET theme_id = ?, date = ?, time_id = ? WHERE id = ?";
-        jdbcTemplate.update(sql, themeId, date, timeId, id);
+        jdbcTemplate.update(sql, reservation.getTheme().getId(),reservation.getDate(), reservation.getTime().getId(), reservation.getId());
     }
 
     @Override

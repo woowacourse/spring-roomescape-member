@@ -102,8 +102,7 @@ public class ReservationService {
 
         validateDuplicate(updateReservation);
 
-        reservationRepository.update(id, reservationRequest.themeId(), reservationRequest.date(),
-                reservationRequest.timeId());
+        reservationRepository.update(updateReservation);
 
         return ReservationResponse.from(updateReservation);
     }
