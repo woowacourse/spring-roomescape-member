@@ -18,12 +18,16 @@ import roomescape.theme.domain.ThemeSortType;
 @Transactional(readOnly = true)
 public class ThemeService {
 
-    private final ReservationRepository reservationRepository;
+    private final ThemeValidator themeValidator;
     private final ThemeRepository themeRepository;
     private final PopularThemeRepository popularThemeRepository;
 
-    public ThemeService(ThemeRepository themeRepository, PopularThemeRepository popularThemeRepository, ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
+    public ThemeService(
+            ThemeValidator themeValidator,
+            ThemeRepository themeRepository,
+            PopularThemeRepository popularThemeRepository
+    ) {
+        this.themeValidator = themeValidator;
         this.themeRepository = themeRepository;
         this.popularThemeRepository = popularThemeRepository;
     }
@@ -51,9 +55,7 @@ public class ThemeService {
     }
 
     public void deleteById(Long id) {
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new BusinessException(ThemeErrorCode.THEME_IN_USE);
-        }
+        themeValidator.validateNotReferencedByReservation(id);
         themeRepository.deleteById(id);
     }
 }
