@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.mission;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
