@@ -1,5 +1,7 @@
 package roomescape.global.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,6 +15,8 @@ import roomescape.global.exception.customException.NotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "서버 내부 오류 발생\n 관리자에게 문의해주세요";
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 404 NotFound - BusinessException
     @ExceptionHandler(NotFoundException.class)
@@ -53,18 +57,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponseBody> handleException(RuntimeException e) {
-        ErrorResponseBody errorResponseBody = new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE);
+    public ResponseEntity<ErrorResponseBody> handleRuntimeException(RuntimeException e) {
+        log.error("RuntimeException 발생 : ", e);
         return ResponseEntity
-                .status(500)
-                .body(errorResponseBody);
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseBody> handleException(Exception e) {
-        ErrorResponseBody errorResponseBody = new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE);
+        log.error("Exception 발생 : ", e);
         return ResponseEntity
-                .status(500)
-                .body(errorResponseBody);
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE));
     }
 }
