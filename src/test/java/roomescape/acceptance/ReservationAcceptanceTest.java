@@ -202,24 +202,58 @@ class ReservationAcceptanceTest {
     }
 
     @Test
-    void DELETE_reservations_id_예약을_삭제한다() {
+    void DELETE_reservations_id_본인의_예약을_취소한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
         insertReservation("브라운", 1L, "2026-05-06", 1L);
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("name", "브라운"))
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
+    void DELETE_reservations_id_이름이_일치하지_않으면_403과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-05-06", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("name", "다른사람"))
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("message", equalTo("본인의 예약만 취소 혹은 변경 가능합니다."));
+    }
+
+    @Test
     void DELETE_reservations_id_없는_id면_404과_메시지를_반환한다() {
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("name", "브라운"))
                 .when().delete("/reservations/9999")
                 .then().log().all()
                 .statusCode(404)
                 .body("message", equalTo("예약을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
+    void DELETE_reservations_id_본문의_name이_누락되면_400과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-05-06", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of())
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("name은(는) 필수 입력값입니다."));
     }
 
     private void insertTheme(Long id, String name) {

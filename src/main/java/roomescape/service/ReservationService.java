@@ -10,6 +10,7 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -71,6 +72,20 @@ public class ReservationService {
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
             throw new ResourceNotFoundException("예약", id);
+        }
+    }
+
+    public void cancelOwnReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약", id));
+        validateReservationOwner(name, reservation);
+        
+        reservationRepository.deleteById(id);
+    }
+
+    private static void validateReservationOwner(String name, Reservation reservation) {
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationOwnerMismatchException();
         }
     }
 

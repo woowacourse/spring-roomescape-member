@@ -155,18 +155,22 @@ class ReservationControllerTest {
 
     @Test
     void DELETE_reservations_id_200을_반환하고_서비스에_위임한다() throws Exception {
-        mockMvc.perform(delete("/reservations/3"))
+        mockMvc.perform(delete("/reservations/3")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"브라운\"}"))
                 .andExpect(status().isOk());
 
-        verify(reservationService).deleteReservation(3L);
+        verify(reservationService).cancelOwnReservation(3L, "브라운");
     }
 
     @Test
     void DELETE_reservations_id_서비스가_ResourceNotFoundException을_던지면_404과_메시지를_반환한다() throws Exception {
         org.mockito.BDDMockito.willThrow(new roomescape.exception.ResourceNotFoundException("예약", 9999L))
-                .given(reservationService).deleteReservation(9999L);
+                .given(reservationService).cancelOwnReservation(9999L, "브라운");
 
-        mockMvc.perform(delete("/reservations/9999"))
+        mockMvc.perform(delete("/reservations/9999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"브라운\"}"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("예약을(를) 찾을 수 없습니다. id=9999"));
     }
