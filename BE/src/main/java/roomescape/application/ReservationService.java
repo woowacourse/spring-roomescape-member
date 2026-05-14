@@ -155,13 +155,13 @@ public class ReservationService {
 
     private void validatePastTimeReservation(LocalDate date, ReservationTime time) {
         if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_PAST_TIME);
+            throw new BusinessException(ReservationErrorCode.RESERVATION_PAST_DATE);
         }
     }
 
     private void validateOwner(Reservation reservation, String name) {
         if (!reservation.getName().equals(name)) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_UPDATE_OWNER_MISMATCH);
+            throw new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH);
         }
     }
 
@@ -182,7 +182,7 @@ public class ReservationService {
 
     private void validateOwnerForDelete(Reservation reservation, String name) {
         if (!reservation.getName().equals(name)) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_DELETE_OWNER_MISMATCH);
+            throw new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH);
         }
     }
 

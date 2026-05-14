@@ -231,7 +231,7 @@ class ReservationServiceTest {
                 request.themeId())
         )
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("지난 날짜로는 예약할 수 없습니다.");
+                .hasMessageContaining("지난 일정으로 예약할 수 없습니다.");
     }
 
     @Test
@@ -255,7 +255,7 @@ class ReservationServiceTest {
                 request.themeId())
         )
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("현재 시각보다 이전 시간으로는 예약할 수 없습니다.");
+                .hasMessageContaining("지난 일정으로 예약할 수 없습니다.");
     }
 
     @Test
@@ -369,7 +369,7 @@ class ReservationServiceTest {
                 "포비"
         ))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("본인의 예약만 수정할 수 있습니다.");
+                .hasMessageContaining("수정할 수 있는 권한이 없습니다.");
     }
 
     @Test

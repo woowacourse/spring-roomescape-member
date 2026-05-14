@@ -330,15 +330,15 @@ class ReservationControllerTest {
     @DisplayName("DELETE /reservations/me/{id} - 본인 예약이 아니면 에러 응답을 반환한다.")
     void deleteMyReservation_fail_with_invalid_owner() throws Exception {
         // given
-        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_DELETE_OWNER_MISMATCH))
+        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH))
                 .given(reservationService)
                 .deleteReservationByName(1L, "브라운");
 
         // when & then
         mockMvc.perform(delete("/reservations/me/1")
                         .param("name", "브라운"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("본인의 예약만 취소할 수 있습니다."));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("수정할 수 있는 권한이 없습니다."));
     }
 
     @Test
