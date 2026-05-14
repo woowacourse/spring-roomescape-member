@@ -11,48 +11,97 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableEntityException;
 import roomescape.dto.request.ReservationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationServiceTest {
+    private final String name = "브라운";
+    private final LocalDate futureDate = LocalDate.parse(FUTURE_DATE);
+    private final Long timeId = 1L;
+    private final Long themeId = 1L;
 
     @Autowired
     private ReservationService reservationService;
 
     @Test
-    @DisplayName("존재하지 않는 timeId로 예약하면 예외가 발생한다")
-    void save_fail_invalid_time_id() {
+    @DisplayName("정상 예약을 생성하면 통과한다.")
+    void 정상_예약_생성_테스트() {
+        ReservationRequest request = new ReservationRequest(
+                name,
+                futureDate,
+                timeId,
+                themeId
+        );
+
+        assertDoesNotThrow(() -> reservationService.save(request));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간 식별자로 예약하면 예외가 발생한다")
+    void 없는_시간_식별자_예외_테스트() {
         Long invalidTimeId = 999L;
         ReservationRequest request = new ReservationRequest(
-                "아나키",
-                LocalDate.parse(FUTURE_DATE),
+                name,
+                futureDate,
                 invalidTimeId,
-                1L
+                themeId
         );
 
         assertThatThrownBy(() -> reservationService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("존재하지 않는 시간입니다.");
     }
 
     @Test
-    @DisplayName("이미 존재하는 예약 건과 중복으로 예약하면 예외가 발생한다")
-    void throwsException_whenDuplicateReservationExists() {
-        LocalDate date = LocalDate.parse(TODAY);
-
-        ReservationRequest request = new ReservationRequest("아나키", date, 1L, 11L);
+    @DisplayName("존재하지 않는 테마 식별자로 예약하면 예외가 발생한다")
+    void 없는_테마_식별자_예외_테스트() {
+        Long invalidThemeId = 999L;
+        ReservationRequest request = new ReservationRequest(
+                name,
+                futureDate,
+                timeId,
+                invalidThemeId
+        );
 
         assertThatThrownBy(() -> reservationService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 존재하는 예약 건입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("존재하지 않는 테마입니다.");
     }
 
     @Test
-    @DisplayName("중복되지 않는 시간에 예약을 하면 통과한다.")
-    void 중복이_없는_정상_예약_테스트() {
-        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026, 5, 14), 1L, 1L);
+    @DisplayName("과거의 시점으로 예약을 하면 예외가 발생한다.")
+    void 과거_예약_생성_예외_테스트() {
+        LocalDate date = LocalDate.parse(TODAY);
+        Long timeId = 1L;
+        ReservationRequest request = new ReservationRequest(
+                name,
+                date,
+                timeId,
+                themeId
+        );
 
-        assertDoesNotThrow(() -> reservationService.save(request));
+        assertThatThrownBy(() -> reservationService.save(request))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessageContaining("이미 지난 시간입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약 건과 중복으로 예약하면 예외가 발생한다.")
+    void 중복_예약_예외_테스트() {
+        Long timeId = 5L;
+        ReservationRequest request = new ReservationRequest(
+                name,
+                futureDate,
+                timeId,
+                themeId
+        );
+
+        assertThatThrownBy(() -> reservationService.save(request))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("이미 존재하는 예약 건입니다.");
     }
 }

@@ -38,13 +38,13 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(25));
+                .body("size()", is(26));
 
         RestAssured.given().log().all()
                 .when().get("/reservations?userName=" + userName)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(25));
+                .body("size()", is(26));
     }
 
     @Test

@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableEntityException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -60,7 +63,7 @@ public class ReservationService {
 
     public ReservationResponse update(Long id, ReservationRequest request) {
         if (!reservationDao.existsById(id)) {
-            throw new IllegalArgumentException("변경하려는 예약이 존재하지 않습니다.");
+            throw new NotFoundException("변경하려는 예약이 존재하지 않습니다.");
         }
 
         Reservation reservation = converToReservation(id, request);
@@ -72,10 +75,10 @@ public class ReservationService {
 
     private Reservation converToReservation(Long id, ReservationRequest request) {
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Theme theme = themeDao.findThemeById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
 
         validate(request.date(), time, theme);
 
@@ -92,11 +95,11 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime requestDateTime = LocalDateTime.of(date, time.getStartAt());
         if (requestDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("이미 지난 시간입니다.");
+            throw new UnprocessableEntityException("이미 지난 시간입니다.");
         }
 
         if (reservationDao.existsBy(date, theme, time)) {
-            throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
+            throw new ConflictException("이미 존재하는 예약 건입니다.");
         }
     }
 

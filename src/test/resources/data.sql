@@ -54,3 +54,5 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '20
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2026-05-10', 2, 11);
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2026-05-11', 2, 12);
+
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2026-05-12', 5, 1);
