@@ -118,7 +118,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void 예약이_존재하지_않는_테마를_삭제하면_404를_반환한다() {
+    void 존재하지_않는_테마를_삭제하면_404를_반환한다() {
         Map<String, Object> adminThemeParams = themeParams();
         adminThemeParams.put("userName", "ADMIN");
         RestAssured.given().log().all()

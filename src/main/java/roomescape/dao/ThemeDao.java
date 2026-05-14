@@ -98,7 +98,6 @@ public class ThemeDao {
                 WHERE ranked.theme_rank <= 10
                 ORDER BY ranked.theme_rank;
                 """;
-        return jdbcTemplate.query(sql, popularThemeRowMapper, from.toString(),
-                to.toString());
+        return jdbcTemplate.query(sql, popularThemeRowMapper, from, to);
     }
 }
