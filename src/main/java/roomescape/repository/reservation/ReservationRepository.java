@@ -2,6 +2,7 @@ package roomescape.repository.reservation;
 
 import java.util.List;
 import roomescape.domain.Reservation;
+import roomescape.domain.vo.MemberName;
 
 public interface ReservationRepository {
 
@@ -14,4 +15,6 @@ public interface ReservationRepository {
     Reservation findById(Long id);
 
     boolean existsByTimeId(Long timeId);
+
+    List<Reservation> findReservationsByName(MemberName memberName);
 }

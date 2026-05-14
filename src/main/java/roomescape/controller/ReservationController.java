@@ -4,15 +4,9 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
+import roomescape.domain.vo.MemberName;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
@@ -31,7 +25,15 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ReservationsResponseDto getReservations() {
+    public ReservationsResponseDto getReservations(
+            @RequestParam(value = "name", required = false) String name
+    ) {
+        if (name != null) {
+            return new ReservationsResponseDto(reservationService.findReservationsByName(new MemberName(name)).stream()
+                    .map(ReservationResponseDto::from)
+                    .toList());
+        }
+
         return new ReservationsResponseDto(reservationService.getReservations().stream()
                 .map(ReservationResponseDto::from)
                 .toList());
@@ -39,14 +41,18 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceIdResponseDto addReservation(@Valid @RequestBody ReservationRequestDto requestDto) {
+    public ResourceIdResponseDto addReservation(
+            @Valid @RequestBody ReservationRequestDto requestDto
+    ) {
         Reservation reservation = reservationService.addReservation(requestDto);
         return new ResourceIdResponseDto(reservation.getId());
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable Long id) {
+    public void deleteReservation(
+            @PathVariable Long id
+    ) {
         reservationService.deleteReservation(id);
     }
 }

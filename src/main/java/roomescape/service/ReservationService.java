@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.exception.BusinessException;
@@ -99,5 +100,9 @@ public class ReservationService {
         }
 
         return timesWithAvailability;
+    }
+
+    public List<Reservation> findReservationsByName(MemberName name) {
+        return reservationRepository.findReservationsByName(name);
     }
 }
