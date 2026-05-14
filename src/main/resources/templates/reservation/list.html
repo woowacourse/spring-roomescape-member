@@ -64,12 +64,13 @@
 
     <p class="message" hidden id="message"></p>
 
-    <section class="card user-grid" aria-label="사용자 이름 지정">
+    <section aria-label="사용자 이름 지정" class="card user-grid">
         <form id="user-form">
             <label>사용자 이름 <input id="user-name" required type="text"></label>
             <button type="submit">이름 적용</button>
         </form>
-        <p class="hint">현재 인증/회원 검증이 없으므로 예약 페이지에서 사용할 이름을 먼저 지정합니다. 예약 조회·취소는 <code>Authorization: Bearer <span id="auth-preview"></span></code> 헤더로 요청합니다.</p>
+        <p class="hint">현재 인증/회원 검증이 없으므로 예약 페이지에서 사용할 이름을 먼저 지정합니다. 예약 조회·취소는 <code>Authorization: Bearer <span
+                id="auth-preview"></span></code> 헤더로 요청합니다.</p>
     </section>
 
     <section class="top-grid">
@@ -112,7 +113,8 @@
     <section class="bottom-grid">
         <article class="card">
             <h2>내 예약 현황</h2>
-            <p class="hint">위에서 지정한 예약자 이름으로 <code>Authorization</code> 헤더를 만들어 <code>GET /reservations</code>를 호출합니다.</p>
+            <p class="hint">위에서 지정한 예약자 이름으로 <code>Authorization</code> 헤더를 만들어 <code>GET /reservations</code>를 호출합니다.
+            </p>
             <div class="list" id="reservation-list"></div>
             <p class="hint" hidden id="reservation-empty">등록된 예약이 없습니다.</p>
         </article>
@@ -128,7 +130,7 @@
         </article>
     </section>
 
-    <section class="card docs-grid" aria-label="API 사용 안내">
+    <section aria-label="API 사용 안내" class="card docs-grid">
         <div class="api-card">
             <h3>사용자 예약 API</h3>
             <ul>
