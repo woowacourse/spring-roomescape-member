@@ -1,8 +1,11 @@
 package roomescape.theme.domain;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Theme {
 
     public static final String DEFAULT_THUMBNAIL_URL = "dummy-url";
@@ -12,14 +15,6 @@ public class Theme {
     private String description;
     private String thumbnailUrl;
     private boolean isActive;
-
-    private Theme(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
-        this.isActive = isActive;
-    }
 
     public static Theme create(String name, String description, String thumbnailUrl) {
         validate(name, description, thumbnailUrl);

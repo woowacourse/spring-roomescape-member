@@ -1,21 +1,18 @@
 package roomescape.date.domain;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReservationDate {
 
     private Long id;
     private LocalDate date;
     private boolean isActive;
-
-    private ReservationDate(Long id, LocalDate date, boolean isActive) {
-        this.id = id;
-        this.date = date;
-        this.isActive = isActive;
-    }
 
     public static ReservationDate create(LocalDate date) {
         validateDate(date);

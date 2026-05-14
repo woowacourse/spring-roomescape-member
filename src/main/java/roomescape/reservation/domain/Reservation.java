@@ -4,28 +4,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import roomescape.date.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reservation {
+
     private Long id;
     private String name;
     private ReservationDate date;
     private ReservationTime time;
     private Theme theme;
     private ReservationStatus status;
-
-    private Reservation(Long id, String name, ReservationDate reservationDate, ReservationTime time, Theme theme, ReservationStatus status) {
-        this.id = id;
-        this.name = name;
-        this.date = reservationDate;
-        this.time = time;
-        this.theme = theme;
-        this.status = status;
-    }
 
     public static Reservation create(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
         validate(name, reservationDate, time, theme);
