@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 public class ReservationAcceptanceTest extends AcceptanceTestSupport{
 
     @Test
-    @DisplayName("이름으로 예약을 조회하면 200 상태 코드와 예약 내역을 반환한다.")
+    @DisplayName("이름으로 예약을 조회하면 200 상태 코드와 예약 내역들을 반환한다.")
     void findReservationsByNameTest() {
         jdbcTemplate.update("""
             INSERT INTO reservation_time
@@ -57,6 +57,50 @@ public class ReservationAcceptanceTest extends AcceptanceTestSupport{
                 .body("[0].theme.thumbnailUrl", is("https://picsum.photos/seed/space/400/300"))
                 .body("[0].theme.description", is("은하계를 누비는 우주 탐험"));
     }
+
+    @Test
+    @DisplayName("id로 예약을 조회하면 200 상태 코드와 예약 내역을 반환한다.")
+    void findReservationByIdTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
+            """);
+
+        LocalDate reservedDate = LocalDate.now().plusDays(1);
+        String name = "타스";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", reservedDate);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        long id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201).extract().jsonPath().getLong("id");
+
+        RestAssured.given().log().all()
+                .when().get("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("타스"))
+                .body("date", is(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(reservedDate)))
+                .body("time.id", is(1))
+                .body("time.startAt", is("10:00"))
+                .body("theme.id", is(1))
+                .body("theme.name", is("우주 탐험대"))
+                .body("theme.thumbnailUrl", is("https://picsum.photos/seed/space/400/300"))
+                .body("theme.description", is("은하계를 누비는 우주 탐험"));
+    }
+
 
     @Test
     @DisplayName("예약자 명으로 예약 조회 시 예약자 이름이 누락된 경우 400 상태코드와 검증 실패 메시지를 반환한다.")

@@ -4,6 +4,7 @@ import java.nio.channels.FileChannel;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -99,11 +100,11 @@ public class ReservationDao {
                 WHERE reservation.id = ?
                 """;
 
-        Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, reservationId);
-        if (reservation == null) {
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, reservationId);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(ErrorMessage.RESERVATION_NOT_FOUND);
         }
-        return reservation;
     }
 
     public void delete(long reservationId) {

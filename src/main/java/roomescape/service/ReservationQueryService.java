@@ -23,4 +23,8 @@ public class ReservationQueryService {
                 .map(ReservationResponse::from)
                 .toList();
     }
+
+    public ReservationResponse getReservationById(Long id) {
+        return ReservationResponse.from(reservationDao.findById(id));
+    }
 }
