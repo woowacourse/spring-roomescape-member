@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TimeAllResponse;
 import roomescape.dto.TimeRequest;
@@ -11,6 +12,7 @@ import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
 
+@Slf4j
 @Service
 public class TimeService {
 
@@ -25,6 +27,13 @@ public class TimeService {
     public TimeAllResponse readAll() {
         List<ReservationTime> times = timeRepository.findAll();
         List<TimeResponse> responses = times.stream()
+                .filter(time -> {
+                    if (time.startAt().getMinute() != 0) {
+                        log.warn("유효하지 않는 시간 데이터 발견: id:{}, startAt:{}", time.id(), time.startAt());
+                        return false;
+                    }
+                    return true;
+                })
                 .map(TimeResponse::from)
                 .toList();
         return new TimeAllResponse(responses);
@@ -54,6 +63,9 @@ public class TimeService {
         }
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
             throw new RoomescapeException(ErrorCode.TIME_DUPLICATE);
+        }
+        if (timeRequest.startAt().getMinute() != 0) {
+            throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
         }
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);

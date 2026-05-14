@@ -57,4 +57,12 @@ public class TimeServiceTest {
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
+
+    @Test
+    public void 정각이_아닌_시간을_등록하는_경우_예외가_발생한다() {
+        TimeRequest timeRequest = new TimeRequest(LocalTime.of(10, 30));
+
+        Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
 }

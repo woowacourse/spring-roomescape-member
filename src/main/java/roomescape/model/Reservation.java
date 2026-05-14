@@ -9,12 +9,12 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     private static final int MAX_NAME_LENGTH = 20;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        validateName(name);
     }
 
     private void validateName(String name) {
