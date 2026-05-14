@@ -27,71 +27,71 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TimeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTimeNotFound(TimeNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(ErrorCode.TIME_NOT_FOUND, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.TIME_NOT_FOUND));
     }
 
     @ExceptionHandler(ReservationTimeConflictException.class)
     public ResponseEntity<ErrorResponse> handleReservationTimeConflict(ReservationTimeConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(ErrorCode.TIME_IN_USE, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.TIME_IN_USE));
     }
 
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleReservationNotFound(ReservationNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(ErrorCode.RESERVATION_NOT_FOUND, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
     @ExceptionHandler(DuplicateReservationException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateReservation(DuplicateReservationException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(ErrorCode.DUPLICATE_RESERVATION, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.DUPLICATE_RESERVATION));
     }
 
     @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<ErrorResponse> handlePastReservation(PastReservationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.PAST_RESERVATION, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.PAST_RESERVATION));
     }
 
     @ExceptionHandler(ThemeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleThemeNotFound(ThemeNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(ErrorCode.THEME_NOT_FOUND, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.THEME_NOT_FOUND));
     }
 
     @ExceptionHandler(HolidayNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleHolidayNotFound(Exception e) {
+    public ResponseEntity<ErrorResponse> handleHolidayNotFound(HolidayNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(ErrorCode.HOLIDAY_NOT_FOUND, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.HOLIDAY_NOT_FOUND));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST, e.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST));
     }
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<ErrorResponse> handleBadRequest() {
+    public ResponseEntity<ErrorResponse> handleInvalidFormat() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST, "요청 형식이 올바르지 않습니다."));
+                .body(ErrorResponse.of(ErrorCode.INVALID_FORMAT));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST, "입력값이 유효하지 않습니다."));
+                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnhandled(Exception e) {
         log.error("Unhandled exception", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."));
+                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
 
