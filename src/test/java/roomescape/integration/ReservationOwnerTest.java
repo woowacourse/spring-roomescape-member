@@ -1,5 +1,7 @@
 package roomescape.integration;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.sql.Date;
@@ -56,6 +58,11 @@ public class ReservationOwnerTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?)",
+                Boolean.class,
+                1L)).isFalse();
 
     }
 
@@ -165,6 +172,11 @@ public class ReservationOwnerTest {
                 .then().log().all()
                 .statusCode(204);
 
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT reservation_date FROM reservation WHERE id = ?",
+                Date.class,
+                1L).toLocalDate()).isEqualTo(LocalDate.of(2026, 5, 10));
+
         Map<String, Object> paramsWithTimeId = new HashMap<>();
         paramsWithTimeId.put("timeId", 2L);
 
@@ -175,6 +187,11 @@ public class ReservationOwnerTest {
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT time_id FROM reservation WHERE id = ?",
+                Long.class,
+                1L)).isEqualTo(2L);
     }
 
     @DisplayName("예약 변경 시, 변경하려는 예약이 존재하지 않으면 예외가 발생한다.")
