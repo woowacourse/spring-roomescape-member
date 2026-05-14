@@ -11,6 +11,8 @@ import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationsResponseDto;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -51,8 +53,19 @@ public class ReservationController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "name", required = false) MemberName name,
             @PathVariable Long id
     ) {
-        reservationService.deleteReservation(id);
+        if ("admin".equals(role)) {
+            reservationService.deleteReservation(id);
+            return;
+        }
+
+        if (name == null) {
+            throw new BusinessException(ErrorCode.MISSING_CREDENTIALS);
+        }
+
+        reservationService.deleteReservation(id, name);
     }
 }

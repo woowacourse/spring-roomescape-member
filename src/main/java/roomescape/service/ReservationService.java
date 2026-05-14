@@ -74,6 +74,16 @@ public class ReservationService {
     }
 
     @Transactional
+    public void deleteReservation(Long id, MemberName memberName) {
+        Reservation reservation = reservationRepository.findById(id);
+        if (reservation.getName() != memberName) {
+            throw new BusinessException(ErrorCode.RESERVATION_ACCESS_DENIED);
+        }
+
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new BusinessException(ErrorCode.TIME_IN_USE);
