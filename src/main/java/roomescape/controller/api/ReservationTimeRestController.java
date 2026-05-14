@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
@@ -26,6 +27,13 @@ public class ReservationTimeRestController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @PostMapping("/admin/times")
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeCreateRequest reservationTimeReq) {
+        ReservationTimeResponse newReservationTime = reservationTimeService.create(reservationTimeReq);
+        URI uri = URI.create("/times/" + newReservationTime.getId());
+        return ResponseEntity.created(uri).body(newReservationTime);
+    }
+
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> read(
             @RequestParam(required = false) LocalDate date,
@@ -35,16 +43,9 @@ public class ReservationTimeRestController {
         return ResponseEntity.ok(reservationTimes);
     }
 
-    @PostMapping("/admin/times")
-    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeCreateRequest reservationTimeReq) {
-        ReservationTimeResponse newReservationTime = reservationTimeService.create(reservationTimeReq);
-        URI uri = URI.create("/times/" + newReservationTime.getId());
-        return ResponseEntity.created(uri).body(newReservationTime);
-    }
-
     @PutMapping("/admin/times/{id}")
-    public ResponseEntity<Void> update(@RequestBody ReservationTimeCreateRequest newReservationTimeReq, @PathVariable Long id) {
-        reservationTimeService.update(newReservationTimeReq, id);
+    public ResponseEntity<Void> update(@RequestBody ReservationTimeUpdateRequest newReservationTimeReq, @PathVariable Long id) {
+        reservationTimeService.update(id, newReservationTimeReq);
         return ResponseEntity.ok().build();
     }
 

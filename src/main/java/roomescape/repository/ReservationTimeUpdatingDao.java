@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
 
 @Repository
 public class ReservationTimeUpdatingDao {
@@ -26,7 +27,7 @@ public class ReservationTimeUpdatingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public void update(Long id, ReservationTimeCreateRequest reservationTimeReq) {
+    public void update(Long id, ReservationTimeUpdateRequest reservationTimeReq) {
         String sql = "update reservation_time SET start_at = :start_at where id = :id";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("start_at", reservationTimeReq.getStartAt())

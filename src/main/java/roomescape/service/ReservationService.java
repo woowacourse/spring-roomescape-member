@@ -45,19 +45,19 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.THEME_NOT_FOUND));
 
         if (reservationReq.getDate().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
+            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
         }
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), reservationReq.getDate(), findReservationTime.getId());
         if (savedReservation.isPresent()) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
         }
 
         Long generatedId;
         try {
             generatedId = reservationUpdatingDao.save(reservationReq);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
         }
 
         Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
@@ -69,7 +69,7 @@ public class ReservationService {
         );
 
         if (!standard.isAfter(findReservation.getCreatedAt())) {
-            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
+            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
         }
 
         return ReservationResponse.from(findReservation);

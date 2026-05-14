@@ -63,4 +63,17 @@ public class ReservationTimeQueryingDao {
                 .addValue("theme_id", themeId);
         return jdbcTemplate.query(sql, param, reservationTimeRowMapper);
     }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation_time as r
+                WHERE r.id = :id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
 }
