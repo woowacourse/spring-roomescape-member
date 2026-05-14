@@ -1,7 +1,6 @@
 package roomescape.policy;
 
-import roomescape.command.ReservationSaveCommand;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservation;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.UnprocessableCode;
 
@@ -11,12 +10,12 @@ import java.time.LocalDateTime;
 public class UserReservationSavePolicy implements ReservationSavePolicy {
 
     @Override
-    public void validate(ReservationSaveCommand command, ReservationTime reservationTime, LocalDateTime now) {
+    public void validate(Reservation reservation, LocalDateTime now) {
         LocalDate today = now.toLocalDate();
-        if (command.date().isBefore(today)) {
+        if (reservation.isDateBefore(today)) {
             throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
         }
-        if (command.date().isEqual(today) && reservationTime.isBefore(now.toLocalTime())) {
+        if (reservation.isDateTimeBefore(now)) {
             throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
         }
     }

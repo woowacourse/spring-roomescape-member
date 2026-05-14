@@ -15,6 +15,8 @@ import roomescape.exception.NotFoundException;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.BadRequestCode;
 import roomescape.exception.code.ConflictCode;
+import roomescape.exception.code.NotFoundCode;
+import roomescape.exception.code.UnprocessableCode;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -40,7 +42,7 @@ class ReservationServiceTest {
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
-    private static final LocalDateTime now = LocalDateTime.of(FIXED_TODAY, LocalTime.of(12, 0));
+    private static final LocalDateTime NOW = LocalDateTime.of(FIXED_TODAY, LocalTime.of(12, 0));
     private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
     @Mock
     private ReservationRepository reservationRepository;
@@ -69,7 +71,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
-        Reservation saved = reservationService.saveReservation(saveCommand, now, userPolicy);
+        Reservation saved = reservationService.saveReservation(saveCommand, NOW, userPolicy);
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
@@ -83,7 +85,7 @@ class ReservationServiceTest {
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -94,7 +96,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -147,7 +149,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(pastTime));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(UnprocessableException.class);
     }
 
@@ -158,7 +160,7 @@ class ReservationServiceTest {
 
         given(reservationRepository.countReservationsOf(date, TIME_ID, THEME_ID)).willReturn(1);
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
     }
@@ -172,7 +174,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(BadRequestCode.BLANK_RESERVATION_NAME.getMessage());
     }
@@ -187,8 +189,41 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(BadRequestCode.INVALID_RESERVATION_NAME.getMessage());
+    }
+
+    @Test
+    void 예약을_취소하면_repository에_id가_전달된다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
+
+        reservationService.updateCancelled(1L, NOW);
+
+        verify(reservationRepository).updateCancelled(eq(1L));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하면_404_예외가_발생한다() {
+        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.updateCancelled(999L, NOW))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(NotFoundCode.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 이미_지난_예약은_취소할_수_없다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation past = new Reservation(7L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
+        given(reservationRepository.findById(7L)).willReturn(Optional.of(past));
+
+        assertThatThrownBy(() -> reservationService.updateCancelled(7L, NOW))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_ALREADY_STARTED.getMessage());
     }
 }

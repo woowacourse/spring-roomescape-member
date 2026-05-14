@@ -2,8 +2,9 @@ package roomescape.policy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.command.ReservationSaveCommand;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.UnprocessableCode;
 
@@ -21,6 +22,7 @@ class UserReservationSavePolicyTest {
     private static final LocalDateTime FIXED_NOW = LocalDateTime.of(FIXED_TODAY, FIXED_NOW_TIME);
     private static final ReservationTime FUTURE_TIME = new ReservationTime(1L, LocalTime.of(18, 0));
     private static final ReservationTime PAST_TIME = new ReservationTime(1L, LocalTime.of(9, 0));
+    private static final Theme THEME = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
 
     private UserReservationSavePolicy policy;
 
@@ -31,33 +33,33 @@ class UserReservationSavePolicyTest {
 
     @Test
     void 지난_날짜는_예외가_발생한다() {
-        ReservationSaveCommand command = new ReservationSaveCommand("브라운", FIXED_TODAY.minusDays(1), 1L, 1L);
+        Reservation reservation = new Reservation(null, "브라운", FIXED_TODAY.minusDays(1), FUTURE_TIME, THEME);
 
-        assertThatThrownBy(() -> policy.validate(command, FUTURE_TIME, FIXED_NOW))
+        assertThatThrownBy(() -> policy.validate(reservation, FIXED_NOW))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage(UnprocessableCode.RESERVATION_PAST_DATE.getMessage());
     }
 
     @Test
     void 오늘_날짜의_지난_시간은_예외가_발생한다() {
-        ReservationSaveCommand command = new ReservationSaveCommand("브라운", FIXED_TODAY, 1L, 1L);
+        Reservation reservation = new Reservation(null, "브라운", FIXED_TODAY, PAST_TIME, THEME);
 
-        assertThatThrownBy(() -> policy.validate(command, PAST_TIME, FIXED_NOW))
+        assertThatThrownBy(() -> policy.validate(reservation, FIXED_NOW))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage(UnprocessableCode.RESERVATION_PAST_TIME.getMessage());
     }
 
     @Test
     void 오늘_날짜의_미래_시간은_예약할_수_있다() {
-        ReservationSaveCommand command = new ReservationSaveCommand("브라운", FIXED_TODAY, 1L, 1L);
+        Reservation reservation = new Reservation(null, "브라운", FIXED_TODAY, FUTURE_TIME, THEME);
 
-        assertThatCode(() -> policy.validate(command, FUTURE_TIME, FIXED_NOW)).doesNotThrowAnyException();
+        assertThatCode(() -> policy.validate(reservation, FIXED_NOW)).doesNotThrowAnyException();
     }
 
     @Test
     void 미래_날짜는_예약할_수_있다() {
-        ReservationSaveCommand command = new ReservationSaveCommand("브라운", FIXED_TODAY.plusDays(1), 1L, 1L);
+        Reservation reservation = new Reservation(null, "브라운", FIXED_TODAY.plusDays(1), FUTURE_TIME, THEME);
 
-        assertThatCode(() -> policy.validate(command, PAST_TIME, FIXED_NOW)).doesNotThrowAnyException();
+        assertThatCode(() -> policy.validate(reservation, FIXED_NOW)).doesNotThrowAnyException();
     }
 }
