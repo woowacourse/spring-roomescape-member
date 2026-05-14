@@ -116,7 +116,7 @@
                 <td class="muted">${reservation.id}</td>
                 <td>${reservation.date}</td>
                 <td class="accent">${formatTime(reservation.time?.startAt)}</td>
-                <td class="theme-name">${reservation.theme?.name || ''}</td>
+                <td class="theme-name">${escapeHtml(reservation.theme?.name || '')}</td>
                 <td class="right">
                     <div class="action-buttons">
                         <button type="button" class="btn-text" onclick="openEditForm(${reservation.id})">변경</button>
@@ -137,7 +137,7 @@
                 <td colspan="5">
                     <div class="edit-panel">
                         <div class="edit-current">
-                            현재 예약: ${reservation.date} ${formatTime(reservation.time?.startAt)} · ${reservation.theme?.name || ''}
+                            현재 예약: ${reservation.date} ${formatTime(reservation.time?.startAt)} · ${escapeHtml(reservation.theme?.name || '')}
                         </div>
                         <div class="edit-grid">
                             <label class="edit-field">
@@ -350,6 +350,15 @@
 
     function formatTime(value) {
         return value ? value.slice(0, 5) : '';
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
     }
 
     function handleResponse(response) {

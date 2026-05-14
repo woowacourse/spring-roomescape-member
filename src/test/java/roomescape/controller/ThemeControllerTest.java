@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.result.PopularThemeResult;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
@@ -63,6 +64,22 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$[0].time.id").value(1))
                 .andExpect(jsonPath("$[0].time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$[0].available").value(true));
+    }
+
+    @Test
+    void 존재하지_않는_테마의_예약_가능_시간_조회시_에러_응답() throws Exception {
+        // given
+        given(reservationService.findAvailableTime(
+                eq(999L),
+                eq(LocalDate.of(2099, 1, 1))))
+                .willThrow(new NotFoundException("존재하지 않는 테마입니다."));
+
+        // when & then
+        mockMvc.perform(get("/themes/999/times")
+                        .param("date", "2099-01-01"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.detail").value("존재하지 않는 테마입니다."));
     }
 
     @Test

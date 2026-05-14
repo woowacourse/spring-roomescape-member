@@ -96,8 +96,8 @@
         body.innerHTML = rows.map(theme => `
             <tr>
                 <td class="muted">${theme.id}</td>
-                <td>${theme.name}</td>
-                <td>${theme.description || ''}</td>
+                <td>${escapeHtml(theme.name)}</td>
+                <td>${escapeHtml(theme.description || '')}</td>
                 <td class="muted">${createThumbnailLink(theme.thumbnail)}</td>
                 <td class="right"><button class="btn-danger" onclick="deleteTheme(${theme.id})">삭제</button></td>
             </tr>

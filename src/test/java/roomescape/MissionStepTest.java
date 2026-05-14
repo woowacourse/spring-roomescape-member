@@ -167,7 +167,9 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/themes/1/times?date=2026-05-05")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("detail", is("존재하지 않는 테마입니다."));
 
         RestAssured.given().log().all()
                 .when().get("/themes/popular")

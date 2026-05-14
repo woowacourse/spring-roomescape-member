@@ -699,6 +699,8 @@ class ReservationServiceTest {
         Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
         Reservation reservation = new Reservation(1L, "브라운", date, reservedTime, theme);
 
+        when(themeRepository.findBy(themeId))
+                .thenReturn(Optional.of(theme));
         when(reservationTimeRepository.findAll())
                 .thenReturn(List.of(reservedTime, availableTime));
         when(reservationRepository.findReservationsByThemeAndDate(themeId, date))
@@ -710,7 +712,25 @@ class ReservationServiceTest {
         // then
         assertThat(result).extracting(TimeAvailabilityResult::available)
                 .containsExactly(false, true);
+        verify(themeRepository).findBy(themeId);
         verify(reservationTimeRepository).findAll();
         verify(reservationRepository).findReservationsByThemeAndDate(themeId, date);
+    }
+
+    @Test
+    void 존재하지_않는_테마의_예약_가능_시간_조회시_예외_발생() {
+        // given
+        Long themeId = 1L;
+        when(themeRepository.findBy(themeId))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> service.findAvailableTime(themeId, date))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+
+        verify(themeRepository).findBy(themeId);
+        verifyNoInteractions(reservationTimeRepository);
+        verifyNoInteractions(reservationRepository);
     }
 }

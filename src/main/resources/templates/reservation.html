@@ -141,12 +141,12 @@
             card.dataset.id = t.id;
             card.innerHTML = `
                 ${t.thumbnail
-                ? `<img class="theme-card-img" src="${t.thumbnail}" alt="${t.name}" onerror="this.parentElement.querySelector('.theme-card-img-placeholder').style.display='flex'; this.style.display='none';">`
+                ? `<img class="theme-card-img" src="${escapeHtml(t.thumbnail)}" alt="${escapeHtml(t.name)}" onerror="this.parentElement.querySelector('.theme-card-img-placeholder').style.display='flex'; this.style.display='none';">`
                 : ''}
                 <div class="theme-card-img-placeholder" style="display:${t.thumbnail ? 'none' : 'flex'}">${emojis[i % emojis.length]}</div>
                 <div class="theme-card-body">
-                    <div class="theme-card-name">${t.name}</div>
-                    <div class="theme-card-desc">${t.description || ''}</div>
+                    <div class="theme-card-name">${escapeHtml(t.name)}</div>
+                    <div class="theme-card-desc">${escapeHtml(t.description || '')}</div>
                 </div>
             `;
             card.onclick = () => selectTheme(t.id);
@@ -329,6 +329,15 @@
             .catch(error => {
                 throw new Error(error.message || '요청을 처리하지 못했습니다');
             });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
     }
 
     function getTodayString() {

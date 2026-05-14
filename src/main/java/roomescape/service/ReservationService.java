@@ -82,6 +82,7 @@ public class ReservationService {
     }
 
     public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
+        validateThemeExists(themeId);
         List<ReservationTime> times = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
 
@@ -202,6 +203,10 @@ public class ReservationService {
         if (date == null && timeId == null) {
             throw new InvalidInputException("변경할 날짜 또는 시간이 필요합니다.");
         }
+    }
+
+    private void validateThemeExists(Long themeId) {
+        findTheme(themeId);
     }
 
     private Theme findTheme(Long themeId) {

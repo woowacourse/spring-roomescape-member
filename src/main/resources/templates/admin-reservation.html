@@ -91,7 +91,7 @@
             .then(data => {
                 themes = data;
                 const select = document.getElementById('theme-select');
-                select.innerHTML = themes.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('');
+                select.innerHTML = themes.map(theme => `<option value="${theme.id}">${escapeHtml(theme.name)}</option>`).join('');
             });
     }
 
@@ -130,10 +130,10 @@
         body.innerHTML = rows.map(reservation => `
             <tr>
                 <td class="muted">${reservation.id}</td>
-                <td>${reservation.name}</td>
+                <td>${escapeHtml(reservation.name)}</td>
                 <td>${reservation.date}</td>
                 <td class="accent">${formatTime(reservation.time?.startAt)}</td>
-                <td>${reservation.theme?.name || ''}</td>
+                <td>${escapeHtml(reservation.theme?.name || '')}</td>
                 <td class="right"><button class="btn-danger" onclick="deleteReservation(${reservation.id})">삭제</button></td>
             </tr>
         `).join('');
@@ -223,6 +223,15 @@
 
     function formatTime(value) {
         return value ? value.slice(0, 5) : '';
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
     }
 
     function handleResponse(response) {
