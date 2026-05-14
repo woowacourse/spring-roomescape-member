@@ -26,7 +26,10 @@ public enum ErrorCode {
     RESERVATIONTIME_NOT_FOUND("RESERVATIONTIME_404", "시간(%d번)이 존재하지 않습니다."),
 
     // Theme
-    THEME_NOT_FOUND("THEME_404", "테마(%d번)이 존재하지 않습니다.")
+    THEME_NOT_FOUND("THEME_404", "테마(%d번)이 존재하지 않습니다."),
+
+    // 요청 값
+    INVALID_INPUT("INVALID_INPUT_400", "요청 값이 올바르지 않습니다.");
     ;
 
     private final String code;
