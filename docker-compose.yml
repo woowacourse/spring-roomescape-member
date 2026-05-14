@@ -1,0 +1,14 @@
+services:
+  backend:
+    build: ./spring-roomescape-member
+    ports:
+      - "8080:8080"
+    restart: always
+
+  frontend:
+    build: ./spring-roomescape-member-front
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+    restart: always
