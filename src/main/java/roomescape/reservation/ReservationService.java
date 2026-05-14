@@ -60,6 +60,8 @@ public class ReservationService {
         ReservationDetailProjection oldReservation = reservationRepository.findDetailByIdAndName(reservationId, name)
                 .orElseThrow(() -> new IllegalStateException("해당 id와 name을 가진 예약이 존재하지 않습니다. id=" + reservationId + "name=" + name));
 
+        validateNotPast(oldReservation);
+
         if (request.date() == null && request.timeId() == null) {
             throw new IllegalStateException("수정될 내용이 존재하지 않습니다.");
         }

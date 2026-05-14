@@ -281,6 +281,71 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("과거 날짜의 예약을 변경하려할 경우 변경에 실패한다.")
+    void update_실패_레포지토리_테스트4() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 7),
+                5L
+        );
+        long oldReservationId = 4L;
+        String oldReservationName = "d";
+
+        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
+                oldReservationId, oldReservationName,
+                LocalDate.of(2026, 5, 6),
+                new ThemeFindResponse(2L, "theme", "desc", "url"),
+                new TimeInformation(2L, LocalTime.of(11, 0))
+        );
+
+        when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(oldReservation.date());
+
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(reservationRepository).findDetailByIdAndName(anyLong(), anyString());
+        verify(scheduleService).validateNotPastDate(any(LocalDate.class));
+        verify(scheduleService, never()).validateNotPastTime(any(LocalDate.class), any(LocalTime.class));
+        verify(scheduleService, never()).findScheduleIdByDateAndTimeIdAndThemeId(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).existsByScheduleIdAndIdNot(anyLong(), anyLong());
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("날짜는 오늘날짜와 같지만 과거시간으로 변경하려할 경우 변경에 실패한다.")
+    void update_실패_레포지토리_테스트5() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 7),
+                5L
+        );
+        long oldReservationId = 4L;
+        String oldReservationName = "d";
+
+        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
+                oldReservationId, oldReservationName,
+                LocalDate.of(2026, 5, 6),
+                new ThemeFindResponse(2L, "theme", "desc", "url"),
+                new TimeInformation(2L, LocalTime.of(11, 0))
+        );
+
+        when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
+        doNothing().when(scheduleService).validateNotPastDate(oldReservation.date());
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastTime(oldReservation.date(), oldReservation.getTime());
+
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(reservationRepository).findDetailByIdAndName(anyLong(), anyString());
+        verify(scheduleService).validateNotPastDate(any(LocalDate.class));
+        verify(scheduleService).validateNotPastTime(any(LocalDate.class), any(LocalTime.class));
+        verify(scheduleService, never()).findScheduleIdByDateAndTimeIdAndThemeId(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).existsByScheduleIdAndIdNot(anyLong(), anyLong());
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
     @DisplayName("예약 저장 성공 테스트")
     void save_성공_테스트() {
         // given
