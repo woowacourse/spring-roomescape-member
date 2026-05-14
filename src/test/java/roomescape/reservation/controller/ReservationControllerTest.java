@@ -38,30 +38,6 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약_목록을_조회한다() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "밀란");
-        params.put("date", "2099-05-03");
-        params.put("timeId", 1L);
-        params.put("themeId", 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("name", hasItem("밀란"))
-                .body("date", hasItem("2099-05-03"))
-                .body("time.id", hasItem(1));
-    }
-
-    @Test
     void 예약을_삭제한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
@@ -85,10 +61,75 @@ class ReservationControllerTest {
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .queryParam("name", "밀란")
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    void 이름으로_예약_목록을_조회한다() {
+        Map<String, Object> params1 = new HashMap<>();
+        params1.put("name", "밀란");
+        params1.put("date", "2099-05-03");
+        params1.put("timeId", 1L);
+        params1.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params1)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> params2 = new HashMap<>();
+        params2.put("name", "밀란");
+        params2.put("date", "2099-05-04");
+        params2.put("timeId", 2L);
+        params2.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params2)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> params3 = new HashMap<>();
+        params3.put("name", "브라운");
+        params3.put("date", "2099-05-03");
+        params3.put("timeId", 2L);
+        params3.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params3)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "밀란")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", is("밀란"))
+                .body("[0].date", is("2099-05-04"))
+                .body("[0].time.id", is(2))
+                .body("[1].name", is("밀란"))
+                .body("[1].date", is("2099-05-03"))
+                .body("[1].time.id", is(1));
+    }
+
+    @Test
+    void 이름_없이_예약_목록을_조회하면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("name: 입력값이 필요합니다."));
     }
 
     @Test

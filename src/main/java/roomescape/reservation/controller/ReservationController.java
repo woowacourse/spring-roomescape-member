@@ -36,8 +36,8 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponse> getAllReservations() {
-        return reservationService.findAll()
+    public List<ReservationResponse> getReservations(@RequestParam String name) {
+        return reservationService.findByName(name)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

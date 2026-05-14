@@ -63,6 +63,26 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 이름으로_예약을_조회하는_테스트() {
+        LocalDate date = LocalDate.of(2099, 5, 6);
+        ReservationTime reservationTime1 = reservationTimeRepository.findById(1L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
+        ReservationTime reservationTime2 = reservationTimeRepository.findById(2L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(2L));
+        Theme theme = themeRepository.findById(1L)
+                .orElseThrow(() -> new ThemeNotFoundException(1L));
+
+        Reservation reservation1 = reservationRepository.save(Reservation.of("봉구스", date, reservationTime1, theme));
+        Reservation reservation2 = reservationRepository.save(Reservation.of("봉구스", date, reservationTime2, theme));
+        reservationRepository.save(Reservation.of("밀란", date, reservationTime1, themeRepository.findById(2L)
+                .orElseThrow(() -> new ThemeNotFoundException(2L))));
+
+        List<Reservation> reservations = reservationRepository.findByName("봉구스");
+
+        assertThat(reservations).containsExactly(reservation2, reservation1);
+    }
+
+    @Test
     void 예약을_취소하는_테스트() {
         String name = "봉구스";
         LocalDate date = LocalDate.of(2099, 5, 6);

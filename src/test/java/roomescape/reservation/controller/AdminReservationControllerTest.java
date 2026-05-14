@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -13,6 +14,30 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql({"/create_reservation_time.sql", "/create_theme.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AdminReservationControllerTest {
+
+    @Test
+    void 관리자가_예약_목록을_조회한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "밀란");
+        params.put("date", "2099-05-03");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", hasItem("밀란"))
+                .body("date", hasItem("2099-05-03"))
+                .body("time.id", hasItem(1));
+    }
 
     @Test
     void 관리자가_예약을_삭제한다() {
@@ -37,7 +62,7 @@ class AdminReservationControllerTest {
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));

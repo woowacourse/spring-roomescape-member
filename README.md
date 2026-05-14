@@ -39,6 +39,7 @@
 | 기능           | 메서드 / URL                           | 요청 본문                                | 응답 본문                                                                                                 |
 |--------------|-------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------|
 | (어드민)        |                                     |
+| 예약 조회        | `GET /admin/reservations`           |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
 | 예약 삭제        | `DELETE /admin/reservations/{id}`   |                                      |                                                                                                       |
 | 시간 추가        | `POST /admin/times`                 | `{startAt}`                          | `{id, startAt}`                                                                                       |
 | 시간 삭제        | `DELETE /admin/times/{id}`          |                                      |                                                                                                       |
@@ -47,7 +48,7 @@
 | (유저)         |                                     |                                      |
 | 예약 추가        | `POST /reservations`                | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
 | 이름으로 예약 삭제   | `DELETE /reservations/{id}?name={}` |                                      |                                                                                                       |
-| 예약 조회        | `GET /reservations`                 |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 이름으로 예약 조회   | `GET /reservations?name={}`         |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
 | 시간 조회        | `GET /times`                        |                                      | `[{id, startAt}, ...]`                                                                                |
 | 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}`     |                                      | `[{id, startAt}, ...]`                                                                                |
 | 테마 조회        | `GET /themes`                       |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
@@ -58,7 +59,6 @@
 | 기능         | 메서드 / URL                          | 요청 본문                                       | 응답 본문                                                                                                 |
 |------------|------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------|
 | (유저)       |                                    |                                             |
-| 이름으로 예약 조회 | `GET /reservations?name={}`        |                                             | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
 | 예약 변경      | `PATCH /reservations/{id}?name={}` | `{date, time_id, theme_id}`(필요 없는 필드 삭제 가능) | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
 
 ## 예외 처리
@@ -140,8 +140,8 @@
 
 ### 단계 3 - 내 예약 조회/변경/취소
 
-- [ ] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
-    - [ ] 이름으로 예약 조회 API 생성
+- [x] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
+    - [x] 이름으로 예약 조회 API 생성
 - [x] 사용자가 본인의 예약을 취소할 수 있다.
     - [x] 기존의 예약 삭제 API를 관리자용 API로 변경 후 이름으로 예약 삭제 API 생성
     - [x] 이름이 다른 경우 403에러 반환

@@ -116,8 +116,17 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "ORDER BY r.id";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "ORDER BY r.date DESC, rt.start_at DESC";
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        String sql =
+                SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = :name ORDER BY r.date DESC, rt.start_at DESC";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name);
+        return namedParameterJdbcTemplate.query(sql, params, reservationRowMapper);
     }
 
     @Override

@@ -79,6 +79,20 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 이름으로_예약목록을_조회한다() {
+        ReservationRequest reservationRequest1 = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        ReservationRequest reservationRequest2 = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 2L, 1L);
+        ReservationRequest otherReservationRequest = new ReservationRequest("밀란", LocalDate.of(2099, 5, 6), 3L, 1L);
+        Reservation reservation1 = reservationService.save(reservationRequest1);
+        Reservation reservation2 = reservationService.save(reservationRequest2);
+        reservationService.save(otherReservationRequest);
+
+        List<Reservation> reservations = reservationService.findByName("봉구스");
+
+        assertThat(reservations).containsExactly(reservation2, reservation1);
+    }
+
+    @Test
     void 예약을_올바르게_삭제하는지_확인하는_테스트() {
         ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
         Reservation reservation = reservationService.save(reservationRequest);
