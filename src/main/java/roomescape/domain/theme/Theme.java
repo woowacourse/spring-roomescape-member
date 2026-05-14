@@ -4,22 +4,24 @@ import java.util.Objects;
 
 public class Theme {
     private final long id;
-    private final String name;
+    private final ThemeName name;
     private final String description;
     private final String thumbnailUrl;
 
-    private Theme(long id, String name, String description, String thumbnailUrl) {
+    private Theme(long id, ThemeName name, String description, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static Theme of(long id, String name, String description, String thumbnailUrl) {
+    public static Theme of(long id, ThemeName name, String description, String thumbnailUrl) {
+        Objects.requireNonNull(name);
         return new Theme(id, name, description, thumbnailUrl);
     }
 
-    public static Theme of(String name, String description, String thumbnailUrl) {
+    public static Theme of(ThemeName name, String description, String thumbnailUrl) {
+        Objects.requireNonNull(name);
         return new Theme(0L, name, description, thumbnailUrl);
     }
 
@@ -27,7 +29,7 @@ public class Theme {
         return id;
     }
 
-    public String getName() {
+    public ThemeName getName() {
         return name;
     }
 

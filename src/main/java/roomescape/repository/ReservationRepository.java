@@ -13,6 +13,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeName;
 
 @Repository
 public class ReservationRepository {
@@ -21,7 +22,7 @@ public class ReservationRepository {
             Name.from(resultSet.getString("name")),
             ReservationDate.from(resultSet.getDate("date").toLocalDate()),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
-            Theme.of(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+            Theme.of(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"), resultSet.getString("thumbnail_url")));
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,

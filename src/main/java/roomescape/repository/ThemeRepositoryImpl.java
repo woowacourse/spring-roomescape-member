@@ -9,12 +9,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeName;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {
 
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
-            Theme.of(rs.getLong("id"), rs.getString("name"), rs.getString("description"),
+            Theme.of(rs.getLong("id"), new ThemeName(rs.getString("name")), rs.getString("description"),
                     rs.getString("thumbnail_url"));
     private static final String EXISTS_BY_ID = """
             SELECT EXISTS (
