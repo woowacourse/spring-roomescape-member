@@ -17,6 +17,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotAcceptableReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -113,7 +114,10 @@ public class ReservationService {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId);
+            throw new EntityNotFoundException(
+                    ErrorCode.RESERVATION_NOT_FOUND,
+                    "삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId
+            );
         }
     }
 
@@ -150,7 +154,8 @@ public class ReservationService {
             EntityId timeId
     ) {
         if (reservationRepository.existByDateAndThemeIdAndTimeId(date, themeId, timeId)) {
-            throw new DuplicateReservationException("같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
+            throw new DuplicateReservationException(
+                    "같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
                     + " 요청한 날짜: " + date
                     + ", 요청한 테마 ID: " + themeId
                     + ", 요청한 시간 ID: " + timeId
@@ -160,7 +165,10 @@ public class ReservationService {
 
     private void validateNameEquality(Reservation reservation, String name) {
         if (reservation.hasDifferentName(name)) {
-            throw new NotAcceptableReservationException("본인의 예약만 삭제할 수 있습니다.");
+            throw new NotAcceptableReservationException(
+                    ErrorCode.NOT_RESERVATION_OWNER,
+                    "본인의 예약만 삭제할 수 있습니다."
+            );
         }
     }
 
@@ -175,16 +183,25 @@ public class ReservationService {
 
     private Reservation findReservationById(EntityId reservationId) {
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("예약을 조회할 수 없습니다. reservationId = " + reservationId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ErrorCode.RESERVATION_NOT_FOUND,
+                        "예약을 조회할 수 없습니다. reservationId = " + reservationId
+                ));
     }
 
     private ReservationTime findTimeById(EntityId timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("예약 시간을 조회할 수 없습니다. timeId = " + timeId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ErrorCode.RESERVATION_TIME_NOT_FOUND,
+                        "예약 시간을 조회할 수 없습니다. timeId = " + timeId
+                ));
     }
 
     private Theme findThemeById(EntityId themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("테마를 조회할 수 없습니다. themeId = " + themeId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ErrorCode.THEME_NOT_FOUND,
+                        "테마를 조회할 수 없습니다. themeId = " + themeId
+                ));
     }
 }

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidInputException;
 
 class EntityIdTest {
 
@@ -15,7 +16,7 @@ class EntityIdTest {
         @Test
         void 값이_없다면_예외를_던진다() {
             assertThatThrownBy(() -> EntityId.fromUuid(null))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(InvalidInputException.class)
                     .hasMessage("EntityId는 빈 값을 지닐 수 없습니다.");
         }
         @Test

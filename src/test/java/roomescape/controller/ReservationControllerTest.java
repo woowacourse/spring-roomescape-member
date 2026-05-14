@@ -13,6 +13,7 @@ import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +77,8 @@ class ReservationControllerTest {
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.PAST_RESERVATION.name()));
         }
 
         @Test
@@ -92,7 +94,8 @@ class ReservationControllerTest {
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_TIME_NOT_FOUND.name()));
         }
 
         @Test
@@ -108,7 +111,8 @@ class ReservationControllerTest {
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.THEME_NOT_FOUND.name()));
         }
 
         @Test
@@ -141,7 +145,8 @@ class ReservationControllerTest {
                     .body(secondRequest)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(409);
+                    .statusCode(409)
+                    .body("errorCode", is(ErrorCode.DUPLICATE_RESERVATION.name()));
         }
     }
 
@@ -225,7 +230,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.PAST_RESERVATION.name()));
         }
 
         @Test
@@ -245,7 +251,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.PAST_RESERVATION.name()));
         }
 
         @Test
@@ -265,7 +272,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.NOT_RESERVATION_OWNER.name()));
         }
 
         @Test
@@ -282,7 +290,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + UUID.randomUUID())
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_NOT_FOUND.name()));
         }
 
         @Test
@@ -302,7 +311,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_TIME_NOT_FOUND.name()));
         }
 
         @Test
@@ -326,7 +336,8 @@ class ReservationControllerTest {
                     .body(updateRequest)
                     .when().patch("/reservations/" + firstReservationId)
                     .then().log().all()
-                    .statusCode(409);
+                    .statusCode(409)
+                    .body("errorCode", is(ErrorCode.DUPLICATE_RESERVATION.name()));
         }
     }
 
@@ -368,7 +379,8 @@ class ReservationControllerTest {
                     .param("name", "다른이름")
                     .when().delete("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.NOT_RESERVATION_OWNER.name()));
         }
 
         @Test
@@ -382,7 +394,8 @@ class ReservationControllerTest {
                     .param("name", "브라운")
                     .when().delete("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(403);
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.PAST_RESERVATION.name()));
         }
 
         @Test
@@ -391,7 +404,8 @@ class ReservationControllerTest {
                     .param("name", "브라운")
                     .when().delete("/reservations/" + UUID.randomUUID())
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_NOT_FOUND.name()));
         }
     }
 }

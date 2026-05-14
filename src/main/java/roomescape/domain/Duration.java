@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidInputException;
 
 public record Duration(
         LocalDate startDate,
@@ -13,19 +15,26 @@ public record Duration(
 
     private void validateNotNull(LocalDate startDate, LocalDate endDate) {
         if (startDate == null) {
-            throw new IllegalArgumentException("시작일이 필요합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_DURATION,
+                    "시작일이 필요합니다."
+            );
         }
         if (endDate == null) {
-            throw new IllegalArgumentException("종료일이 필요합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_DURATION,
+                    "종료일이 필요합니다."
+            );
         }
     }
 
     private void validateDateOrder(LocalDate startDate, LocalDate endDate) {
         if (endDate.isBefore(startDate)) {
-            throw new IllegalArgumentException("시작일은 종료일과 같거나 앞서야 합니다."
+            String message = "시작일은 종료일과 같거나 앞서야 합니다."
                     + " startDate = " + startDate
-                    + " endDate = " + endDate
-            );
+                    + " endDate = " + endDate;
+
+            throw new InvalidInputException(ErrorCode.INVALID_DURATION, message);
         }
     }
 }

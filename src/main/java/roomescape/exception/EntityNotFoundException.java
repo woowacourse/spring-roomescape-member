@@ -1,8 +1,8 @@
 package roomescape.exception;
 
-public class EntityNotFoundException extends RuntimeException {
+public class EntityNotFoundException extends CodeException {
 
-    public EntityNotFoundException(String message) {
-        super(message);
+    public EntityNotFoundException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
     }
 }

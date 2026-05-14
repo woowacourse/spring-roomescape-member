@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.ErrorCode;
 
 @RestControllerAdvice
 @Slf4j
@@ -18,7 +19,7 @@ public class DbExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIntegrityViolation(DataIntegrityViolationException exception) {
         log.warn("[Integrity Violation]", exception);
 
-        ErrorResponse response = new ErrorResponse("데이터 무결성 문제가 발생했습니다.");
+        ErrorResponse response = new ErrorResponse("데이터 무결성 문제가 발생했습니다.", ErrorCode.DATA_INTEGRITY_VIOLATION);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -28,7 +29,7 @@ public class DbExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataAccessError(DataAccessException exception) {
         log.error("[Data Access]", exception);
 
-        ErrorResponse response = new ErrorResponse("예상하지 못한 데이터베이스 문제가 발생했습니다.");
+        ErrorResponse response = new ErrorResponse("예상하지 못한 데이터베이스 문제가 발생했습니다.", ErrorCode.DATABASE_ERROR);
 
         return ResponseEntity.internalServerError()
                 .body(response);

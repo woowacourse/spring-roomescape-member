@@ -7,6 +7,7 @@ import static roomescape.test.util.RoomEscapeTestFixture.BROWN_RESERVATION_ID;
 import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_RESERVATION_COUNT;
 
 import io.restassured.RestAssured;
+import roomescape.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,8 @@ class AdminReservationControllerTest {
             RestAssured.given().log().all()
                     .when().delete("/admin/reservations/" + nonExistentReservationId)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_NOT_FOUND.name()));
         }
     }
 }

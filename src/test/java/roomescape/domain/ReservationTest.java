@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.InvalidInputException;
 
 class ReservationTest {
 
@@ -24,7 +25,7 @@ class ReservationTest {
                 DEFAULT_DATE,
                 TIME_ID,
                 THEME_ID
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약엔 식별자가 존재해야 합니다.");
     }
     @Nested
@@ -39,7 +40,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     TIME_ID,
                     THEME_ID
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidInputException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
 
@@ -51,7 +52,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     TIME_ID,
                     THEME_ID
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidInputException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
     }
@@ -64,7 +65,7 @@ class ReservationTest {
                 null,
                 TIME_ID,
                 THEME_ID
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약엔 날짜가 존재해야 합니다.");
     }
 
@@ -76,7 +77,7 @@ class ReservationTest {
                 DEFAULT_DATE,
                 null,
                 THEME_ID
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약엔 시간이 존재해야 합니다.");
     }
 
@@ -88,7 +89,7 @@ class ReservationTest {
                 DEFAULT_DATE,
                 TIME_ID,
                 null
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약엔 테마가 존재해야 합니다.");
     }
 }

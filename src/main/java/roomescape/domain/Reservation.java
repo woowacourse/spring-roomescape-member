@@ -3,6 +3,8 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 import org.springframework.util.StringUtils;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidInputException;
 
 public record Reservation(
         EntityId id,
@@ -22,31 +24,46 @@ public record Reservation(
 
     private void validateId(EntityId id) {
         if (id == null) {
-            throw new IllegalArgumentException("예약엔 식별자가 존재해야 합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_RESERVATION,
+                    "예약엔 식별자가 존재해야 합니다."
+            );
         }
     }
 
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("예약엔 이름이 존재해야 합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_RESERVATION,
+                    "예약엔 이름이 존재해야 합니다."
+            );
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약엔 날짜가 존재해야 합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_RESERVATION,
+                    "예약엔 날짜가 존재해야 합니다."
+            );
         }
     }
 
     private void validateTime(EntityId timeId) {
         if (timeId == null) {
-            throw new IllegalArgumentException("예약엔 시간이 존재해야 합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_RESERVATION,
+                    "예약엔 시간이 존재해야 합니다."
+            );
         }
     }
 
     private void validateTheme(EntityId themeId) {
         if (themeId == null) {
-            throw new IllegalArgumentException("예약엔 테마가 존재해야 합니다.");
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_RESERVATION,
+                    "예약엔 테마가 존재해야 합니다."
+            );
         }
     }
 

@@ -9,6 +9,7 @@ import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
+import roomescape.exception.ErrorCode;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -148,7 +149,8 @@ class ThemeControllerTest {
                     .queryParam("endDate", endDate.toString())
                     .when().get("/themes/most-reserved")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(400)
+                    .body("errorCode", is(ErrorCode.INVALID_REQUEST.name()));
         }
 
         @Test
@@ -160,7 +162,8 @@ class ThemeControllerTest {
                     .queryParam("startDate", startDate.toString())
                     .when().get("/themes/most-reserved")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(400)
+                    .body("errorCode", is(ErrorCode.INVALID_REQUEST.name()));
         }
 
         @Test
@@ -174,7 +177,8 @@ class ThemeControllerTest {
                     .queryParam("endDate", endDate.toString())
                     .when().get("/themes/most-reserved")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(400)
+                    .body("errorCode", is(ErrorCode.INVALID_DURATION.name()));
         }
     }
 
@@ -203,7 +207,8 @@ class ThemeControllerTest {
             RestAssured.given().log().all()
                     .when().delete("/themes/" + WESTERN_THEME_ID.getValueAsString())
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(409)
+                    .body("errorCode", is(ErrorCode.THEME_IN_USE.name()));
         }
 
         @Test
@@ -213,7 +218,8 @@ class ThemeControllerTest {
             RestAssured.given().log().all()
                     .when().delete("/themes/" + nonExistentTimeId)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.THEME_NOT_FOUND.name()));
         }
     }
 }

@@ -15,6 +15,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDateTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InUseEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;
@@ -95,13 +97,19 @@ public class ReservationTimeService {
 
     private void validateTimeNotUsed(EntityId timeId) {
         if (reservationRepository.existByTimeId(timeId)) {
-            throw new IllegalStateException("사용되지 않는 시간만 제거할 수 있습니다. timeId = " + timeId.getValueAsString());
+            throw new InUseEntityException(
+                    ErrorCode.TIME_IN_USE,
+                    "사용되지 않는 시간만 제거할 수 있습니다. timeId = " + timeId.getValueAsString()
+            );
         }
     }
 
     private void validateDeleted(boolean deleted, EntityId timeId) {
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 시간을 조회하지 못했습니다. timeId = " + timeId);
+            throw new EntityNotFoundException(
+                    ErrorCode.RESERVATION_TIME_NOT_FOUND,
+                    "삭제할 시간을 조회하지 못했습니다. timeId = " + timeId
+            );
         }
     }
 }

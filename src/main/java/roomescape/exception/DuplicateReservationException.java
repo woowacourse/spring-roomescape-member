@@ -1,8 +1,8 @@
 package roomescape.exception;
 
-public class DuplicateReservationException extends RuntimeException {
+public class DuplicateReservationException extends CodeException {
 
     public DuplicateReservationException(String message) {
-        super(message);
+        super(ErrorCode.DUPLICATE_RESERVATION, message);
     }
 }

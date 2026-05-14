@@ -6,6 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.ErrorCode;
 
 
 @RestControllerAdvice
@@ -17,7 +18,7 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
         log.error("[Internal Server Error]", exception);
 
-        ErrorResponse response = new ErrorResponse("예상하지 못한 예외가 발생했습니다.");
+        ErrorResponse response = new ErrorResponse("예상하지 못한 예외가 발생했습니다.", ErrorCode.INTERNAL_SERVER_ERROR);
 
         return ResponseEntity.internalServerError()
                 .body(response);

@@ -1,8 +1,8 @@
 package roomescape.exception;
 
-public class NotAcceptableReservationException extends RuntimeException {
+public class NotAcceptableReservationException extends CodeException {
 
-    public NotAcceptableReservationException(String message) {
-        super(message);
+    public NotAcceptableReservationException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
     }
 }

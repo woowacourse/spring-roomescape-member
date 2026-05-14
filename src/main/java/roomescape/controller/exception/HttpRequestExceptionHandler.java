@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import roomescape.exception.ErrorCode;
 
 @RestControllerAdvice
 @Slf4j
@@ -25,7 +26,7 @@ public class HttpRequestExceptionHandler {
 
         String message = "필수 경로 변수가 누락되었습니다: "
                 + exception.getVariableName();
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -37,10 +38,8 @@ public class HttpRequestExceptionHandler {
     ) {
         log.warn("[Missing Request Parameter]", exception);
 
-        ErrorResponse response = new ErrorResponse(
-                "필수 파라미터가 누락되었습니다: "
-                        + exception.getParameterName()
-        );
+        String message = "필수 파라미터가 누락되었습니다: " + exception.getParameterName();
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -56,7 +55,7 @@ public class HttpRequestExceptionHandler {
                 + " 필드명: " + exception.getName()
                 + " 입력값: " + exception.getValue()
                 + " 기대 타입: " + exception.getRequiredType();
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -74,7 +73,7 @@ public class HttpRequestExceptionHandler {
                     + ", 기대 타입" + invalidFormat.getTargetType()
                     + ")";
         }
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);

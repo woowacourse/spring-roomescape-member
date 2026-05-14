@@ -12,6 +12,7 @@ import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
 
 import io.restassured.RestAssured;
 import java.time.LocalTime;
+import roomescape.exception.ErrorCode;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,8 @@ class ReservationTimeControllerTest {
                     .body(Map.of())
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(400)
+                    .body("errorCode", is(ErrorCode.INVALID_RESERVATION_TIME.name()));
         }
     }
 
@@ -163,11 +165,12 @@ class ReservationTimeControllerTest {
         }
 
         @Test
-        void 예약에서_사용_중인_시간이라면_400을_응답한다() {
+        void 예약에서_사용_중인_시간이라면_409을_응답한다() {
             RestAssured.given().log().all()
                     .when().delete("/times/" + MORNING_TIME_ID.getValueAsString())
                     .then().log().all()
-                    .statusCode(400);
+                    .statusCode(409)
+                    .body("errorCode", is(ErrorCode.TIME_IN_USE.name()));
         }
 
         @Test
@@ -177,7 +180,8 @@ class ReservationTimeControllerTest {
             RestAssured.given().log().all()
                     .when().delete("/times/" + nonExistentTimeId)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("errorCode", is(ErrorCode.RESERVATION_TIME_NOT_FOUND.name()));
         }
     }
 }

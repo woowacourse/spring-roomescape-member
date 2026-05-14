@@ -13,6 +13,8 @@ import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InUseEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
@@ -79,13 +81,19 @@ public class ThemeService {
 
     private void validateThemeNotUsed(EntityId themeId) {
         if (reservationRepository.existByThemeId(themeId)) {
-            throw new IllegalStateException("사용되지 않는 테마만 제거할 수 있습니다. themeId = " + themeId.getValueAsString());
+            throw new InUseEntityException(
+                    ErrorCode.THEME_IN_USE,
+                    "사용되지 않는 테마만 제거할 수 있습니다. themeId = " + themeId.getValueAsString()
+            );
         }
     }
 
     private void validateDeleted(boolean deleted, EntityId themeId) {
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 테마를 조회하지 못했습니다. themeId = " + themeId);
+            throw new EntityNotFoundException(
+                    ErrorCode.THEME_NOT_FOUND,
+                    "삭제할 테마를 조회하지 못했습니다. themeId = " + themeId
+            );
         }
     }
 
@@ -105,7 +113,10 @@ public class ThemeService {
         Theme theme = themes.get(themeId);
 
         if (theme == null) {
-            throw new EntityNotFoundException("테마를 조회할 수 없습니다. themeId = " + themeId);
+            throw new EntityNotFoundException(
+                    ErrorCode.THEME_NOT_FOUND,
+                    "테마를 조회할 수 없습니다. themeId = " + themeId
+            );
         }
 
         return new ReservedTheme(
