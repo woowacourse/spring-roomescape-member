@@ -47,7 +47,6 @@ public class ThemeService {
                 .toList();
     }
 
-    // todo: limit을 매개변수로? 랭킹 조회 쿼리에 비지니스 로직 얼마나? (정렬, limit)
     public List<ThemeResponse> getThemeRankings() {
         LocalDate baseDate = LocalDate.now(clock);
         LocalDate startDate = baseDate.minusDays(POPULAR_THEME_PERIOD_DAYS);

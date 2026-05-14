@@ -63,7 +63,6 @@ public class ReservationTimeService {
         }
     }
 
-    //todo: Date 객체로 생성?
     private void validateDate(LocalDate date) {
         boolean exists = date.isBefore(LocalDate.now());
         if (exists) {
