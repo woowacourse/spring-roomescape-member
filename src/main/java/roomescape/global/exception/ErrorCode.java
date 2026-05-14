@@ -19,7 +19,8 @@ public enum ErrorCode {
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "RESERVATION_DUPLICATED", "이미 예약이 존재합니다."),
     RESERVATION_TIME_DELETE_NOT_ALLOWED(HttpStatus.CONFLICT, "RESERVATION_TIME_DELETE_NOT_ALLOWED", "예약이 존재하는 시간은 삭제할 수 없습니다."),
     RESERVATION_IN_PAST_NOT_ALLOWED(HttpStatus.CONFLICT, "RESERVATION_IN_PAST_NOT_ALLOWED", "과거 시간은 예약할 수 없습니다. 다른 날짜 및 시간을 선택해주세요."),
-    CANCEL_IN_PAST_NOT_ALLOWED(HttpStatus.CONFLICT, "CANCEL_IN_PAST_NOT_ALLOWED", "과거 예약은 취소할 수 없습니다.");
+    CANCEL_IN_PAST_NOT_ALLOWED(HttpStatus.CONFLICT, "CANCEL_IN_PAST_NOT_ALLOWED", "과거 예약은 취소할 수 없습니다."),
+    RESERVATION_ALREADY_CANCELLED(HttpStatus.CONFLICT, "RESERVATION_ALREADY_CANCELLED", "이미 취소된 예약입니다");
 
     private final HttpStatus status;
     private final String code;

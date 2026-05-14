@@ -83,6 +83,11 @@ public class ReservationRepository {
         return reservationDao.deleteById(id);
     }
 
+    @Transactional
+    public int cancelById(Long id) {
+        return reservationDao.updateCancelledById(id, true);
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(DuplicateReservationCondition condition) {
         return reservationDao.existsReservationAt(condition.themeId(), condition.date(), condition.timeId());
     }
