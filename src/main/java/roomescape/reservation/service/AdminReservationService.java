@@ -1,10 +1,12 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -39,6 +41,8 @@ public class AdminReservationService {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
+        } catch (DataIntegrityViolationException e) {
+            throw new InvalidRequestException("요청이 데이터 무결성 조건을 위반했습니다.");
         }
     }
 

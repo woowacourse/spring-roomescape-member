@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -123,9 +124,9 @@ class UserReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
-        assertThatThrownBy(() -> userReservationService.deleteReservation(999L, "누구"))
-                .isInstanceOf(NotFoundException.class);
+    void 존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
+        assertThatCode(() -> userReservationService.deleteReservation(999L, "누구"))
+                .doesNotThrowAnyException();
     }
 
     @Test

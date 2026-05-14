@@ -1,6 +1,9 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.BusinessRuleException;
+import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -37,6 +40,22 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public void validateOwner(String name) {
+        if (!this.name.equals(name)) {
+            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
+        }
+    }
+
+    public void validateIsActive() {
+        if (LocalDateTime.of(date, time.startAt()).isBefore(LocalDateTime.now())) {
+            throw new BusinessRuleException("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
+        }
+    }
+
+    public boolean isSameSlot(LocalDate newDate, long newTimeId) {
+        return this.date.equals(newDate) && this.time.id().equals(newTimeId);
     }
 
     @Override
