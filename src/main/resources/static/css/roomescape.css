@@ -551,6 +551,7 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
+      white-space: pre-line;
     }
 
     .message.ok {
@@ -561,6 +562,86 @@
     .message.error {
       color: var(--danger);
       font-weight: 750;
+    }
+
+    .my-reservations-section {
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .my-reservations-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 470px);
+      gap: 16px;
+      align-items: end;
+    }
+
+    .lookup-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .lookup-field {
+      min-width: 0;
+    }
+
+    .my-reservation-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .my-reservation-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 14px;
+      display: grid;
+      gap: 13px;
+      box-shadow: 0 10px 20px rgba(43, 35, 24, 0.06);
+    }
+
+    .my-reservation-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .reservation-actions,
+    .edit-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .reservation-edit {
+      border-top: 1px solid var(--line);
+      padding-top: 13px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .edit-time-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .edit-time-grid .time-button {
+      height: 44px;
+      font-size: 14px;
     }
 
     .admin-header {
@@ -778,6 +859,7 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
+      white-space: pre-line;
     }
 
     .admin-message.ok {
@@ -859,6 +941,8 @@
       .popular-band,
       .reservation-layout,
       .control-strip,
+      .my-reservations-head,
+      .edit-grid,
       .admin-layout,
       .admin-header {
         grid-template-columns: 1fr;
@@ -873,6 +957,10 @@
       }
 
       .time-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .edit-time-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
@@ -964,12 +1052,26 @@
       }
 
       .theme-list-row,
-      .list-row {
+      .list-row,
+      .my-reservation-main,
+      .lookup-form {
         grid-template-columns: 1fr;
       }
 
+      .reservation-actions,
+      .edit-actions {
+        justify-content: stretch;
+      }
+
+      .reservation-actions button,
+      .edit-actions button,
+      .lookup-form button {
+        width: 100%;
+      }
+
       .admin-reserve-grid,
-      .admin-time-grid {
+      .admin-time-grid,
+      .edit-time-grid {
         grid-template-columns: 1fr;
       }
 

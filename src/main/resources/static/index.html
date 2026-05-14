@@ -97,6 +97,24 @@
           <p id="formMessage" class="message"></p>
         </aside>
       </section>
+
+      <section class="my-reservations-section" aria-labelledby="myReservationTitle">
+        <div class="my-reservations-head">
+          <div>
+            <p class="section-kicker">내 예약</p>
+            <h2 id="myReservationTitle" class="area-title">예약 조회·변경·취소</h2>
+          </div>
+          <div class="lookup-form">
+            <label class="field lookup-field">
+              <span class="label">예약자 이름</span>
+              <input id="myReservationName" class="name-input" type="text" placeholder="이름" autocomplete="name" />
+            </label>
+            <button id="myReservationButton" class="secondary-button" type="button">조회</button>
+          </div>
+        </div>
+        <p id="myReservationMessage" class="message"></p>
+        <div id="myReservationList" class="my-reservation-list" aria-label="내 예약 목록"></div>
+      </section>
     </main>
   </div>
 
