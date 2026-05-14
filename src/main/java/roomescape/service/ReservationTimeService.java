@@ -29,10 +29,6 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        if(!reservationTimeDao.existsById(reservationTime.getId())){
-            throw new IllegalArgumentException("시간 ID가 존재하지 않습니다.");
-        }
-
         if (reservationTimeDao.existsByStartAt(reservationTime.getStartAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약시간입니다.");
         }
