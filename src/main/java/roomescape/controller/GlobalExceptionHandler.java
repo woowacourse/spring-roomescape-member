@@ -63,6 +63,12 @@ public class GlobalExceptionHandler {
         return parseOf(e.getCode());
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        printErrorStatus(e);
+        return parseOf(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
     private void printErrorStatus(Exception e) {
         log.error("[{}] {}", e.getClass().getSimpleName(), e.getMessage(), e);
     }
