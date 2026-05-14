@@ -6,8 +6,9 @@ public enum ErrorCode {
 
     NOT_FOUND_RESERVATION("[ERROR] 해당 ID의 예약을 찾을 수 없습니다."),
     DUPLICATED_RESERVATION("[ERROR] 해당 시간에 예약이 이미 존재합니다. 예약 가능한 시간으로 다시 시도해 주세요."),
-    PAST_TIME_RESERVATION("[ERROR] 지나간 시간에는 예약할 수 없습니다. 예약 시간을 변경해 주세요."),
-    PAST_TIME_RESERVATION_DELETE("[ERROR] 지나간 시간의 예약은 삭제할 수 없습니다."),
+    NOT_ALLOW_PAST_TIME_RESERVATION_CREATE("[ERROR] 지나간 시간에는 예약할 수 없습니다. 예약 시간을 변경해 주세요."),
+    NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE("[ERROR] 지나간 시간의 예약은 수정할 수 없습니다."),
+    NOT_ALLOW_PAST_TIME_RESERVATION_DELETE("[ERROR] 지나간 시간의 예약은 삭제할 수 없습니다."),
 
     NOT_FOUND_RESERVATION_TIME("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."),
     DUPLICATED_RESERVATION_TIME("[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."),

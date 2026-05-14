@@ -3,11 +3,12 @@ package roomescape.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION;
+import static roomescape.exception.ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_CREATE;
+import static roomescape.exception.ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_DELETE;
+import static roomescape.exception.ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE;
 import static roomescape.exception.ErrorCode.NOT_FOUND_RESERVATION;
 import static roomescape.exception.ErrorCode.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
-import static roomescape.exception.ErrorCode.PAST_TIME_RESERVATION;
-import static roomescape.exception.ErrorCode.PAST_TIME_RESERVATION_DELETE;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,7 +90,7 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
                 .isInstanceOf(CustomUnprocessableEntityException.class)
-                .hasMessage(PAST_TIME_RESERVATION.getMessage());
+                .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_CREATE.getMessage());
     }
 
     @Test
@@ -134,7 +135,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void updatePastReservationExceptionTest() {
+    void updatePastReservationCreateExceptionTest() {
         ReservationTime reservationTime = reservationTimeRepository.create(
                 new ReservationTime(futureDateTime.toLocalTime()));
         Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
@@ -145,7 +146,22 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
                 .isInstanceOf(CustomUnprocessableEntityException.class)
-                .hasMessage(PAST_TIME_RESERVATION.getMessage());
+                .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_CREATE.getMessage());
+    }
+
+    @Test
+    void updatePastReservationUpdateExceptionTest() {
+        ReservationTime reservationTime = reservationTimeRepository.create(
+                new ReservationTime(futureDateTime.toLocalTime()));
+        Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+        reservationRepository.create(new Reservation("fizz", LocalDate.now().minusDays(1), reservationTime, theme));
+
+        ServiceReservationUpdateRequest request = new ServiceReservationUpdateRequest(futureDateTime.toLocalDate(),
+                reservationTime.getId());
+
+        assertThatThrownBy(() -> reservationService.update(1L, request))
+                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE.getMessage());
     }
 
     @Test
@@ -182,7 +198,7 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.delete(1L))
                 .isInstanceOf(CustomUnprocessableEntityException.class)
-                .hasMessage(PAST_TIME_RESERVATION_DELETE.getMessage());
+                .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_DELETE.getMessage());
     }
 
     @Test
