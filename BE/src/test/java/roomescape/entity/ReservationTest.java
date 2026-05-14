@@ -102,13 +102,17 @@ class ReservationTest {
     @Test
     @DisplayName("날짜와 시간을 업데이트한다.")
     void update_success() {
-        LocalDate newDate = LocalDate.of(2026, 5, 13);
-        ReservationTime newTime = ReservationTime.createWithId(2L, LocalTime.of(11, 0));
 
-        Reservation updated = reservation.update(newDate, newTime);
+        LocalDate newDate = LocalDate.of(2026, 5, 13);
+        LocalTime newTime = LocalTime.of(11, 0);
+        LocalDateTime updateAt = LocalDateTime.of(newDate, newTime).minusDays(1);
+
+        ReservationTime newReservationTime = ReservationTime.createWithId(2L, newTime);
+
+        Reservation updated = reservation.update(newDate, newReservationTime, updateAt);
 
         assertThat(updated.date()).isEqualTo(newDate);
-        assertThat(updated.time()).isEqualTo(newTime);
+        assertThat(updated.time()).isEqualTo(newReservationTime);
         assertThat(updated.name()).isEqualTo(reservation.name());
         assertThat(updated.theme()).isEqualTo(reservation.theme());
     }

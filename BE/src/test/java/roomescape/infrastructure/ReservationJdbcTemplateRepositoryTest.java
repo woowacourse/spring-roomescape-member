@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -39,9 +40,11 @@ class ReservationJdbcTemplateRepositoryTest {
     })
     void save_success() {
         // given
-        ReservationTime time = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+        LocalTime reservationTime = LocalTime.of(10, 0);
+        LocalDateTime saveNowTime = LocalDateTime.of(DATE_5_5, reservationTime);
+        ReservationTime time = ReservationTime.createWithId(1L, reservationTime);
         Theme theme = Theme.createWithId(1L, "테마", "설명", "https://thumb.com");
-        Reservation reservation = Reservation.createWithNullId("홍길동", DATE_5_5, time, theme);
+        Reservation reservation = Reservation.createWithNullId("홍길동", DATE_5_6, time, theme, saveNowTime);
 
         // when
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -219,7 +222,7 @@ class ReservationJdbcTemplateRepositoryTest {
     })
     void existsByDateAndTimeIdAndThemeId_returns_true_when_exists() {
         // when
-        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(DATE_5_5, 1L, 1L);
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(DATE_5_6, 1L, 1L);
 
         // then
         Assertions.assertTrue(exists);
@@ -233,7 +236,7 @@ class ReservationJdbcTemplateRepositoryTest {
     })
     void existsByDateAndTimeIdAndThemeId_returns_false_when_not_exists() {
         // when
-        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(DATE_5_6, 1L, 1L);
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(DATE_5_5, 1L, 1L);
 
         // then
         Assertions.assertFalse(exists);
@@ -247,9 +250,12 @@ class ReservationJdbcTemplateRepositoryTest {
     })
     void save_fail_when_duplicated_at_db_level() {
         // given
-        ReservationTime time = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+        LocalTime testStartAt = LocalTime.of(10, 0);
+        LocalDateTime saveAt = LocalDateTime.of(DATE_5_5, testStartAt);
+
+        ReservationTime time = ReservationTime.createWithId(1L, testStartAt);
         Theme theme = Theme.createWithId(1L, "테마", "설명", "thumb");
-        Reservation duplicate = Reservation.createWithNullId("다른사람", DATE_5_5, time, theme);
+        Reservation duplicate = Reservation.createWithNullId("다른사람", DATE_5_6, time, theme, saveAt);
 
         // when & then
         assertThatThrownBy(() -> reservationRepository.save(duplicate))

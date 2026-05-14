@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -139,8 +140,10 @@ class ReservationServiceTest {
     @DisplayName("삭제 시 도메인 제약 사항 위반 시 예외가 전파된다")
     void deleteById_fail_due_to_domain_rule_propagation() {
         // given
+        LocalDateTime deleteAt = LocalDateTime.of(today, savedTime.startAt());
+        LocalDateTime saveNowTimeValue = LocalDateTime.of(yesterday.minusDays(1), savedTime.startAt());
         Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
-                TESTER_NAME, yesterday, savedTime, savedTheme
+                TESTER_NAME, yesterday, savedTime, savedTheme, saveNowTimeValue
         ));
 
         // when & then

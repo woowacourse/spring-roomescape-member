@@ -15,8 +15,11 @@ public record Reservation(
         ReservationTime time,
         Theme theme
 ) {
-    public static Reservation createWithNullId(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    public static Reservation createWithNullId(String name, LocalDate date, ReservationTime time, Theme theme,
+                                               LocalDateTime now) {
+        Reservation newReservation = new Reservation(null, name, date, time, theme);
+        newReservation.validateFuture(now);
+        return newReservation;
     }
 
     public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -55,13 +58,15 @@ public record Reservation(
         }
     }
 
-    public Reservation update(LocalDate date, ReservationTime time) {
-        return new Reservation(
+    public Reservation update(LocalDate date, ReservationTime time, LocalDateTime now) {
+        Reservation updatedReservation = new Reservation(
                 this.id,
                 this.name,
                 date,
                 time,
                 this.theme
         );
+        updatedReservation.validateFuture(now);
+        return updatedReservation;
     }
 }

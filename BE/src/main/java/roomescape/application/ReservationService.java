@@ -39,10 +39,10 @@ public class ReservationService {
                 name,
                 date,
                 findTargetTimeById(timeId),
-                findTargetThemeById(themeId)
+                findTargetThemeById(themeId),
+                LocalDateTime.now()
         );
 
-        reservation.validateFuture(LocalDateTime.now());
         reservation.validateUniqueness(
                 reservationRepository.findByDateAndThemeId(reservation.date(), reservation.theme().id()));
 
@@ -52,10 +52,7 @@ public class ReservationService {
     @Transactional
     public Reservation updateDateAndTime(Long id, String name, LocalDate date, Long timeId) {
         Reservation updated = createNewReservation(id, name, date, timeId);
-
-        updated.validateFuture(LocalDateTime.now());
         updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.theme().id()));
-
         reservationRepository.update(updated);
         return updated;
     }
@@ -67,7 +64,7 @@ public class ReservationService {
         LocalDate newDate = decideNewLocalDateValue(date, target.date());
         ReservationTime newTime = decideNewReservationTimeValue(timeId, target.time());
 
-        return target.update(newDate, newTime);
+        return target.update(newDate, newTime, LocalDateTime.now());
     }
 
     private ReservationTime decideNewReservationTimeValue(Long timeId, ReservationTime originReservationTime) {

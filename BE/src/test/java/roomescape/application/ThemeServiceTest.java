@@ -3,6 +3,7 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -79,13 +80,21 @@ class ThemeServiceTest {
     @DisplayName("예약이 걸려있는 테마를 삭제하면 예외가 발생한다")
     void deleteById_fail_when_referenced_by_reservation() {
         // given
+        LocalTime testReservationTime = LocalTime.of(10, 0);
+        LocalDate testReservationDate = LocalDate.of(2026, 5, 5);
+        LocalDateTime fixedNowTimeValue = LocalDateTime.of(
+                testReservationDate.minusDays(1),
+                testReservationTime
+        );
+
         Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        ReservationTime time = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+        ReservationTime time = ReservationTime.createWithId(1L, testReservationTime);
         reservationRepository.save(Reservation.createWithNullId(
                 "라티",
-                LocalDate.of(2026, 5, 5),
+                testReservationDate,
                 time,
-                saved
+                saved,
+                fixedNowTimeValue
         ));
 
         // when & then
