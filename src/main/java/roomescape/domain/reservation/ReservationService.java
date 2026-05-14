@@ -12,16 +12,14 @@ import roomescape.domain.reservation.dto.ReservationCreationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.domain.reservationdate.ReservationDate;
-import roomescape.domain.reservationdate.ReservationDateRepository;
+import roomescape.domain.reservationdate.ReservationDateService;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeRepository;
-import roomescape.support.exception.ReservationDateErrorCode;
+import roomescape.domain.theme.ThemeService;
 import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
-import roomescape.support.exception.ThemeErrorCode;
 
 @Slf4j
 @Service
@@ -29,22 +27,19 @@ import roomescape.support.exception.ThemeErrorCode;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationDateRepository reservationDateRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationDateService reservationDateService;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationCreationResponse createReservation(ReservationCreationRequest request) {
-        ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
-            .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
-        LocalDateTime dateTime = LocalDateTime.of(reservationDate.getPlayDay(), reservationTime.getStartAt());
-
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new RoomescapeException(ReservationTimeErrorCode.PAST_TIME_NOT_ALLOWED);
+        ReservationDate reservationDate = reservationDateService.findById(request.dateId());
+        ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
+        validateAvailableDateTime(reservationDate, reservationTime);
+        Theme theme = themeService.findById(request.themeId());
+        if (reservationRepository.existsByDateIdAndTimeIdAndThemeId(
+            request.dateId(), request.timeId(), request.themeId())) {
+            throw new RoomescapeException(ReservationErrorCode.RESERVATION_DUPLICATED);
         }
-        Theme theme = themeRepository.findById(request.themeId())
-            .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
         Reservation savedReservation = reservationRepository.save(
             request.toEntity(reservationDate, reservationTime, theme));
         return ReservationCreationResponse.from(savedReservation);
@@ -92,6 +87,13 @@ public class ReservationService {
         LocalDate playDay = reservation.getDate().getPlayDay();
         if (playDay.isBefore(today) || playDay.isEqual(today)) {
             throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_CANCEL);
+        }
+    }
+
+    private void validateAvailableDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+        LocalDateTime dateTime = LocalDateTime.of(reservationDate.getPlayDay(), reservationTime.getStartAt());
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(ReservationTimeErrorCode.PAST_TIME_NOT_ALLOWED);
         }
     }
 }

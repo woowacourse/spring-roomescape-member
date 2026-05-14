@@ -48,4 +48,9 @@ public class ReservationDateService {
             .map(ReservationDateResponse::from)
             .toList();
     }
+
+    public ReservationDate findById(Long id) {
+        return reservationDateRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
+    }
 }

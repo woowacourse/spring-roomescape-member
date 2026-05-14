@@ -24,4 +24,6 @@ public interface ReservationRepository {
     Optional<Reservation> findById(Long id);
 
     int updateReservation(Long id, Long dateId, Long timeId);
+
+    boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId);
 }

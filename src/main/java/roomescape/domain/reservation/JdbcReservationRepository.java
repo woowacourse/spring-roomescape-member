@@ -95,6 +95,15 @@ public class JdbcReservationRepository implements ReservationRepository {
             where id = ?
             """;
 
+    private static final String EXIST_BY_DATE_TIME_THEME_SQL =
+        """
+            select exists(
+            select 1
+            from reservation
+            where date_id = ? and time_id = ? and theme_id = ?
+            );
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -175,6 +184,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public int updateReservation(Long id, Long dateId, Long timeId) {
         return jdbcTemplate.update(UPDATE_DATE_TIME_SQL, dateId, timeId, id);
+    }
+
+    @Override
+    public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
+        return jdbcTemplate.queryForObject(EXIST_BY_DATE_TIME_THEME_SQL, Boolean.class, dateId, timeId, themeId);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
