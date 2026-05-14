@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record UserReservationUpdateRequest(
-        @FutureOrPresent(message = "예약일은 현재 이후여야 합니다.") LocalDate date,
+        @NotNull @FutureOrPresent(message = "예약일은 현재 이후여야 합니다.") LocalDate date,
         @NotNull Long timeId) {
 
 }

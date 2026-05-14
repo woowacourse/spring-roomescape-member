@@ -19,24 +19,10 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        validateName(name);
-        validateDate(date);
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    private void validateName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("예약자명이 유효하지 않습니다.");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜가 유효하지 않습니다.");
-        }
     }
 
     public Long getId() {

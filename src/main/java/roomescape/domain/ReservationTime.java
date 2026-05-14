@@ -10,15 +10,8 @@ public class ReservationTime {
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateTime(startAt);
         this.id = id;
         this.startAt = startAt;
-    }
-
-    private void validateTime(LocalTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("예약 시간이 유효하지 않습니다.");
-        }
     }
 
     public Long getId() {
