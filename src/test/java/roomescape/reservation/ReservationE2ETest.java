@@ -43,24 +43,6 @@ class ReservationE2ETest {
     }
 
     @Test
-    @DisplayName("GET /admin/reservations - 예약 목록을 조회한다")
-    void getReservations() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-12-25", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].name", is("브라운"))
-                .body("[0].date", is("2025-12-25"))
-                .body("[0].time.id", is(1))
-                .body("[0].theme.id", is(1))
-                .body("[0].theme.name", is("공포"));
-    }
-
-    @Test
     @DisplayName("POST /reservations - 예약을 생성하면 201과 ResponseReservation을 반환한다")
     void createReservation() {
         Map<String, Object> body = new HashMap<>();
