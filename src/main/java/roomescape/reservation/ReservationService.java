@@ -62,10 +62,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest reservationUpdateRequest) {
         Reservation reservation = getReservation(id);
-
-        if (!reservation.belongsTo(reservationUpdateRequest.userName())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
-        }
+        reservation.checkOwner(reservationUpdateRequest.userName());
 
         ReservationTime reservationTime = getReservationTime(reservationUpdateRequest.timeId());
         Theme theme = getTheme(reservationUpdateRequest.themeId());

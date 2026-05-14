@@ -28,8 +28,7 @@ public class Reservation {
     }
 
     public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time, LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        validateReservationTime(reservationDateTime, now);
+        validateNotPast(date, time, now);
         this.userName = userName;
         this.theme = theme;
         this.date = date;
@@ -62,19 +61,23 @@ public class Reservation {
 
     public void cancel(LocalDateTime now) {
         validateActiveReservation();
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        validateReservationTime(reservationDateTime, now);
+        validateNotPast(date, time, now);
         this.deletedAt = now;
     }
 
     public Reservation change(Theme newTheme, LocalDate newDate, ReservationTime newTime, LocalDateTime now) {
         validateActiveReservation();
-        LocalDateTime newReservationDateTime = LocalDateTime.of(newDate, newTime.getStartAt());
-        validateReservationTime(newReservationDateTime, now);
+        validateNotPast(newDate, newTime, now);
         return new Reservation(this.id, this.userName, newTheme, newDate, newTime, null);
     }
 
-    public boolean belongsTo(String userName) {
+    public void checkOwner(String userName) {
+        if (!belongsTo(userName)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
+        }
+    }
+
+    private boolean belongsTo(String userName) {
         return Objects.equals(this.userName, userName);
     }
 
@@ -84,8 +87,8 @@ public class Reservation {
         }
     }
 
-    private void validateReservationTime(LocalDateTime reservationDateTime, LocalDateTime now) {
-        if (reservationDateTime.isBefore(now)) {
+    private void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+        if (time.isPast(date, now)) {
             throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
         }
     }
