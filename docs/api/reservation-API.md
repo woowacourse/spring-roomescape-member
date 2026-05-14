@@ -27,6 +27,7 @@
 | `400 Bad Request`           | `VALIDATION_FAILED`     | `@Valid` 위반 또는 요청 본문 파싱 실패                      |
 | `400 Bad Request`           | `INVALID_PATH`          | 경로 파라미터 타입 변환 실패 (예: `/admin/reservations/abc`) |
 | `400 Bad Request`           | `INVALID_REQUEST`       | 도메인 외 `IllegalArgumentException`                |
+| `400 Bad Request`           | `OMITTED_QUERY_PARAM`   | 필수 쿼리 파라미터 누락 (예: `GET /reservations` 의 `name`) |
 | `404 Not Found`             | `RESOURCE_NOT_FOUND`    | 매핑된 핸들러가 없는 경로                                  |
 | `500 Internal Server Error` | `INTERNAL_SERVER_ERROR` | 미처리 예외                                          |
 
