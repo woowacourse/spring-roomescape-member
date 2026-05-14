@@ -40,7 +40,7 @@ class ReservationServiceTest extends ServiceTest {
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
         Theme theme = saveTheme("테마1");
 
-        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId());
+        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
 
         // when
         ReservationResponse response = reservationService.create(request);
@@ -63,7 +63,7 @@ class ReservationServiceTest extends ServiceTest {
     void 예약_생성시_예약시간이_존재하지_않으면_예외가_발생한다() {
         // given
         Theme theme = saveTheme("테마1");
-        ReservationRequest request = createReservationRequest(0L, theme.getId());
+        ReservationRequest request = createReservationRequest(0L, theme.getId(), LocalDate.of(2026, 5, 8));
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(request))
@@ -75,7 +75,7 @@ class ReservationServiceTest extends ServiceTest {
     void 예약_생성시_테마가_존재하지_않으면_예외가_발생한다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
-        ReservationRequest request = createReservationRequest(reservationTime.getId(), 0L);
+        ReservationRequest request = createReservationRequest(reservationTime.getId(), 0L, LocalDate.of(2026, 5, 8));
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(request))
@@ -88,7 +88,7 @@ class ReservationServiceTest extends ServiceTest {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
         Theme theme = saveTheme("테마1");
-        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId());
+        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
         reservationService.create(request);
 
         // when & then
@@ -103,7 +103,7 @@ class ReservationServiceTest extends ServiceTest {
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
         Theme theme = saveTheme("테마1");
 
-        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId());
+        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
         ReservationResponse response = reservationService.create(request);
 
         int beforeSize = reservationService.getReservations().size();
@@ -129,6 +129,35 @@ class ReservationServiceTest extends ServiceTest {
                 .hasMessage(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
 
+    @Test
+    void 예약_취소_마감_기한이_지난_예약은_삭제할_수_없다() {
+        // given
+        ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
+        Theme theme = saveTheme("테마1");
+
+        ReservationRequest request = createReservationRequest(
+                reservationTime.getId(),
+                theme.getId(),
+                LocalDate.of(2026, 5, 5)
+        );
+        ReservationResponse response = reservationService.create(request);
+
+        int beforeSize = reservationService.getReservations().size();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(response.id()))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(ReservationErrorCode.RESERVATION_CANCEL_DEADLINE_PASSED.getMessage());
+
+        List<ReservationResponse> reservations = reservationService.getReservations();
+        assertAll(
+                () -> assertThat(reservations).hasSize(beforeSize),
+                () -> assertThat(reservations)
+                        .extracting(ReservationResponse::id)
+                        .contains(response.id())
+        );
+    }
+
     private ReservationTime saveReservationTime(LocalTime startAt) {
         ReservationTime reservationTime = new ReservationTime(startAt);
         return reservationTimeDao.save(reservationTime);
@@ -139,10 +168,10 @@ class ReservationServiceTest extends ServiceTest {
         return themeDao.save(theme);
     }
 
-    private ReservationRequest createReservationRequest(long timeId, long themeId) {
+    private ReservationRequest createReservationRequest(long timeId, long themeId, LocalDate localDate) {
         return new ReservationRequest(
                 "예약1",
-                LocalDate.of(2026, 5, 8),
+                localDate,
                 timeId,
                 themeId
         );

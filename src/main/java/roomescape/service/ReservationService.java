@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -70,12 +71,22 @@ public class ReservationService {
     }
 
     //todo: 본인만 삭제 가능
-    //todo: 날짜 지난 예약 삭제 불가
     public void delete(long reservationId) {
-        int affectedRows = reservationDao.delete(reservationId);
+        Reservation reservation = getReservation(reservationId);
+        validateCancelable(reservation);
+        reservationDao.delete(reservationId);
+    }
 
-        if (affectedRows == 0) {
-            throw new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+    private Reservation getReservation(long reservationId) {
+        return reservationDao.findById(reservationId)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateCancelable(Reservation reservation) {
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        if (reservation.isCancelDeadlinePassed(now)) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_CANCEL_DEADLINE_PASSED);
         }
     }
 }

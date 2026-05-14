@@ -8,6 +8,8 @@ import roomescape.exception.domain.ReservationException;
 
 public class Reservation {
 
+    private static final int CANCEL_DEADLINE_DAYS_BEFORE = 1;
+
     private Long id;
     private final String name;
     private final LocalDate date;
@@ -41,6 +43,15 @@ public class Reservation {
 
     public Reservation createWithId(long id) {
         return new Reservation(id, this.name, this.date, this.time, this.theme);
+    }
+
+    public boolean isCancelDeadlinePassed(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(
+                date,
+                time.getStartAt()
+        );
+        LocalDateTime cancelDeadline = reservationDateTime.minusDays(CANCEL_DEADLINE_DAYS_BEFORE);
+        return now.isAfter(cancelDeadline);
     }
 
     public Long getId() {

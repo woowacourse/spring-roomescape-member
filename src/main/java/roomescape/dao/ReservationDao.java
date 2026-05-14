@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -77,6 +79,32 @@ public class ReservationDao {
                 ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    public Optional<Reservation> findById(long reservationId) {
+        String sql = """
+                SELECT r.id, 
+                       r.name as reservation_name, 
+                       r.date,
+                       rt.id as time_id,
+                       rt.start_at,
+                       t.id as theme_id,
+                       t.name as theme_name,
+                       t.description,
+                       t.thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt 
+                    ON r.time_id = rt.id
+                INNER JOIN theme AS t 
+                    ON r.theme_id = t.id
+                WHERE r.id = ?
+                """;
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId));
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
     }
 
     public boolean existsByReservationTime(long reservationTimeId) {

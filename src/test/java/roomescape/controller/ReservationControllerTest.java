@@ -88,7 +88,7 @@ public class ReservationControllerTest extends AcceptanceTest {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        long reservationId = createReservation("브라운", "2026-05-05", timeId, themeId);
+        long reservationId = createReservation("브라운", "2026-05-06", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)
