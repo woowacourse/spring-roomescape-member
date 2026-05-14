@@ -45,9 +45,9 @@ public class ReservationService {
     @Transactional
     public Reservation saveReservation(ReservationCreateCommand createCommand) {
         ReservationTime time = reservationTimeRepository.findById(createCommand.timeId())
-                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND, createCommand.timeId()));
         Theme theme = themeRepository.findById(createCommand.themeId())
-                .orElseThrow(() -> new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND, createCommand.themeId()));
 
         reservationValidator.validateAlreadyReservation(createCommand);
         reservationPolicy.pastDateTime(createCommand.date(), time);
@@ -75,9 +75,9 @@ public class ReservationService {
     @Transactional
     public void updateReservationSchedule(ReservationUpdateCommand updateCommand) {
         ReservationTime time = reservationTimeRepository.findById(updateCommand.timeId())
-                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND, updateCommand.timeId()));
         Reservation targetReservation = reservationRepository.findById(updateCommand.id())
-                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, updateCommand.id()));
 
         targetReservation.validateOwner(updateCommand.name());
         targetReservation.validatePast();
@@ -98,7 +98,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservationByName(Long id, String name) {
         Reservation targetReservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, id));
         targetReservation.validateOwner(name);
         targetReservation.validatePast();
         reservationRepository.deleteByIdAndName(id, name);
