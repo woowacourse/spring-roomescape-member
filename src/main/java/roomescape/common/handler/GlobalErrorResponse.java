@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.common.handler;
 
 import java.util.List;
 
