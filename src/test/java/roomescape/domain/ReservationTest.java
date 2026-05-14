@@ -50,7 +50,7 @@ class ReservationTest {
 
             assertThatCode(() -> reservation.validateCancel(NOW))
                     .doesNotThrowAnyException();
-            assertThat(reservation.getReservationStatus()).isEqualTo(ReservationStatus.CANCELED);
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
 
         @Test

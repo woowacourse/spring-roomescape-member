@@ -23,15 +23,17 @@ CREATE TABLE themes
 
 CREATE TABLE reservations
 (
-    id       BIGINT      NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(20) NOT NULL,
-    date     DATE        NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
-    status   VARCHAR(20) NOT NULL DEFAULT 'BOOKED',
+    id         BIGINT      NOT NULL AUTO_INCREMENT,
+    name       VARCHAR(20) NOT NULL,
+    date       DATE        NOT NULL,
+    time_id    BIGINT,
+    theme_id   BIGINT,
+    status     VARCHAR(20) NOT NULL DEFAULT 'BOOKED',
+    deleted_at TIMESTAMP   NULL     DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES times (id),
-    FOREIGN KEY (theme_id) REFERENCES themes (id)
+    FOREIGN KEY (theme_id) REFERENCES themes (id),
+    UNIQUE (theme_id, date, time_id, deleted_at)
 );
 
 

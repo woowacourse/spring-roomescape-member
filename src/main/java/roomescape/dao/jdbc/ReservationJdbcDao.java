@@ -1,5 +1,6 @@
 package roomescape.dao.jdbc;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,15 +32,18 @@ public class ReservationJdbcDao implements ReservationDao {
                     resultSet.getLong("time_id"),
                     LocalTime.parse(resultSet.getString("time_start_at"))
             );
-    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) ->
-            new Reservation(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    LocalDate.parse(rs.getString("date")),
-                    TIME_ROW_MAPPER.mapRow(rs, rowNum),
-                    THEME_ROW_MAPPER.mapRow(rs, rowNum),
-                    ReservationStatus.valueOf(rs.getString("status"))
-            );
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
+        Timestamp deletedAt = rs.getTimestamp("deleted_at");
+        return new Reservation(
+                rs.getLong("id"),
+                rs.getString("name"),
+                LocalDate.parse(rs.getString("date")),
+                TIME_ROW_MAPPER.mapRow(rs, rowNum),
+                THEME_ROW_MAPPER.mapRow(rs, rowNum),
+                ReservationStatus.valueOf(rs.getString("status")),
+                deletedAt != null ? deletedAt.toLocalDateTime() : null
+        );
+    };
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -49,7 +53,7 @@ public class ReservationJdbcDao implements ReservationDao {
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservations")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "date", "time_id", "theme_id", "status");
+                .usingColumns("name", "date", "time_id", "theme_id");
     }
 
     @Override
@@ -60,6 +64,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.name,
                     r.date,
                     r.status,
+                    r.deleted_at,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -81,6 +86,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.name,
                     r.date,
                     r.status,
+                    r.deleted_at,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -103,8 +109,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId())
-                .addValue("status", reservation.getReservationStatus().name());
+                .addValue("theme_id", reservation.getTheme().getId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
         return new Reservation(
@@ -112,8 +117,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme(),
-                reservation.getReservationStatus()
+                reservation.getTheme()
         );
     }
 
@@ -121,7 +125,8 @@ public class ReservationJdbcDao implements ReservationDao {
     public int update(Reservation reservation) {
         String sql = """
                 UPDATE reservations
-                SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId, status = :status
+                SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId,
+                    status = :status, deleted_at = :deletedAt
                 WHERE id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
@@ -129,7 +134,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId())
-                .addValue("status", reservation.getReservationStatus().name())
+                .addValue("status", reservation.getStatus().name())
+                .addValue("deletedAt", reservation.getDeletedAt())
                 .addValue("id", reservation.getId());
         return jdbcTemplate.update(sql, params);
     }
@@ -153,7 +159,6 @@ public class ReservationJdbcDao implements ReservationDao {
                 )
                 """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
     }
 
@@ -172,9 +177,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("themeId", themeId)
                 .addValue("timeId", timeId)
                 .addValue("date", date);
-
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
-
     }
 
     @Override

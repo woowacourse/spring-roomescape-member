@@ -42,31 +42,38 @@ VALUES ('오모테나시', 'https://www.seoul-escape.com/storage/episode/2024_11
         '난이도: NORMAL 3/5');
 
 -- 테마 1 (많이 예약되도록)
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('A', CURRENT_DATE, 10, 2);
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('B', CURRENT_DATE, 10, 3);
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('C', CURRENT_DATE, 10, 1);
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('D', CURRENT_DATE, 10, 4);
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('A', CURRENT_DATE, 10, 2, 'BOOKED');
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('B', CURRENT_DATE, 10, 3, 'BOOKED');
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('C', CURRENT_DATE, 10, 1, 'BOOKED');
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('D', CURRENT_DATE, 10, 4, 'BOOKED');
 
 -- 테마 2 (중간 정도)
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('E', CURRENT_DATE, 9, 3);
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('F', CURRENT_DATE, 9, 1);
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('E', CURRENT_DATE, 9, 3, 'BOOKED');
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('F', CURRENT_DATE, 9, 1, 'BOOKED');
 
 -- 테마 3 (적게)
-INSERT INTO reservations(name, date, theme_id, time_id)
-
-VALUES ('G', CURRENT_DATE, 8, 2);
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('G', CURRENT_DATE, 8, 2, 'BOOKED');
 
 -- 테마 4 (없음 → 테스트용)
 -- intentionally no reservations
 
 -- 다양한 날짜 테스트용
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('H', '2026-10-01', 10, 5);
-INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('I', '2026-06-02', 9, 6);
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('H', '2026-10-01', 10, 5, 'BOOKED');
+INSERT INTO reservations(name, date, theme_id, time_id, status)
+VALUES ('I', '2026-06-02', 9, 6, 'BOOKED');
+
+-- 취소된 예약
+INSERT INTO reservations(name, date, theme_id, time_id, status, deleted_at)
+VALUES ('J', '2026-05-10', 7, 1, 'CANCELED', '2026-05-08 10:30:00');
+INSERT INTO reservations(name, date, theme_id, time_id, status, deleted_at)
+VALUES ('K', '2026-06-15', 8, 3, 'CANCELED', '2026-05-01 14:00:00');
+INSERT INTO reservations(name, date, theme_id, time_id, status, deleted_at)
+VALUES ('L', '2026-07-20', 9, 2, 'CANCELED', '2026-04-20 09:15:00');

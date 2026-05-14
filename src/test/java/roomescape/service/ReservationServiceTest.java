@@ -253,7 +253,7 @@ class ReservationServiceTest {
             reservationService.cancel(saved.getId());
 
             Reservation canceled = reservationDao.findById(saved.getId()).orElseThrow();
-            assertThat(canceled.getReservationStatus()).isEqualTo(ReservationStatus.CANCELED);
+            assertThat(canceled.getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
 
         @Test

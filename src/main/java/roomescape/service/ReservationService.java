@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
-import roomescape.domain.ReservationStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
@@ -40,7 +39,7 @@ public class ReservationService {
 
     public Reservation findActiveById(Long id) {
         Reservation reservation = findById(id);
-        if (reservation.getReservationStatus() == ReservationStatus.CANCELED) {
+        if (!reservation.isActive()) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }
         return reservation;

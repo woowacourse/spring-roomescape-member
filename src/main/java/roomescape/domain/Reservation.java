@@ -10,48 +10,53 @@ public class Reservation {
     private final Theme theme;
     private LocalDate date;
     private Time time;
-    private ReservationStatus reservationStatus;
+    private ReservationStatus status;
+    private LocalDateTime deletedAt;
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, ReservationStatus status) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme,
+                       ReservationStatus status, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.reservationStatus = status;
+        this.status = status;
+        this.deletedAt = deletedAt;
     }
 
     public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
-        this(id, name, date, time, theme, ReservationStatus.BOOKED);
+        this(id, name, date, time, theme, ReservationStatus.BOOKED, null);
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
-        this(null, name, date, time, theme);
+        this(null, name, date, time, theme, ReservationStatus.BOOKED, null);
     }
 
     public void validateCreate(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("지난 시간에 대한 예약 생성은 불가능합니다. 관리자에게 문의하세요");
+            throw new IllegalArgumentException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
-    }
-
-    public void cancel() {
-        reservationStatus = ReservationStatus.CANCELED;
     }
 
     public void validateCancel(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("지난 예약은 취소 불가능합니다. 관리자에게 문의하세요");
+            throw new IllegalArgumentException("지난 예약은 취소 불가능합니다.");
         }
-        cancel();
+        this.status = ReservationStatus.CANCELED;
+        this.deletedAt = now;
     }
 
     public void update(LocalDate date, Time time) {
         this.date = date;
         this.time = time;
     }
+
+    public boolean isActive() {
+        return status == ReservationStatus.BOOKED;
+    }
+
 
     @Override
     public int hashCode() {
@@ -68,7 +73,6 @@ public class Reservation {
         if (!(o instanceof Reservation that)) {
             return false;
         }
-
         return Objects.equals(id, that.id) && Objects.equals(name, that.name)
                 && Objects.equals(date, that.date) && Objects.equals(time, that.time)
                 && Objects.equals(theme, that.theme);
@@ -94,7 +98,11 @@ public class Reservation {
         return theme;
     }
 
-    public ReservationStatus getReservationStatus() {
-        return reservationStatus;
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 }
