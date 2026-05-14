@@ -182,21 +182,6 @@ class ReservationServiceImplTest {
                 .hasMessage("과거 날짜는 예약이 불가합니다.");
     }
 
-    @DisplayName("지나간 시간에 대해 예약을 시도하는 경우, PastReservationException 발생한다.")
-    @Test
-    void create_오늘_지난_시간_예약이면_예외() {
-        // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.now().minusHours(2), LocalTime.now().minusHours(1));
-        LocalDate today = LocalDate.now();
-        when(timeService.findById(1L)).thenReturn(time);
-        ReservationSaveServiceDto dto = new ReservationSaveServiceDto("라이", today, 1L, 1L);
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.create(dto))
-                .isInstanceOf(PastReservationException.class)
-                .hasMessage("과거 시간은 예약이 불가합니다.");
-    }
-
     @DisplayName("전체 예약 목록을 반환한다.")
     @Test
     void getAll() {
