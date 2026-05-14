@@ -1,11 +1,14 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
-import static roomescape.reservation.exception.ReservaitonErrorInformation.RESERVATION_ALREADY_BOOKED;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 import io.restassured.RestAssured;
@@ -22,7 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -131,7 +133,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(DATE_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(DATE_NOT_FOUND.getMessage()));
     }
 
     @Test
@@ -151,7 +154,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(TIME_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(TIME_NOT_FOUND.getMessage()));
     }
 
     @Test
@@ -171,7 +175,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(THEME_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(THEME_NOT_FOUND.getMessage()));
     }
 
     private Integer createReservationByAdmin(String name, Integer dateId, Integer timeId, Integer themeId) {
@@ -237,8 +242,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().patch("/admin/reservations/" + reservationId + "/schedule")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 취소된 예약입니다."));
+                .statusCode(RESERVATION_ALREADY_CANCELED.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_CANCELED.getMessage()));
     }
 
     @Test
@@ -261,7 +266,7 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().patch("/admin/reservations/" + reservationId + "/schedule")
                 .then().log().all()
-                .statusCode(HttpStatus.CONFLICT.value())
+                .statusCode(RESERVATION_ALREADY_BOOKED.getHttpStatus().value())
                 .body("message", is(RESERVATION_ALREADY_BOOKED.getMessage()));
     }
 
@@ -288,8 +293,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().patch("/admin/reservations/" + reservationId + "/schedule")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 지난 날짜/시간을 예약할 수 없습니다."));
+                .statusCode(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getHttpStatus().value())
+                .body("message", is(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage()));
     }
 
 }

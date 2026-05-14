@@ -1,10 +1,14 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 import io.restassured.RestAssured;
@@ -134,7 +138,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(DATE_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(DATE_NOT_FOUND.getMessage()));
     }
 
     @Test
@@ -154,7 +159,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(TIME_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(TIME_NOT_FOUND.getMessage()));
     }
 
     @Test
@@ -174,7 +180,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(THEME_NOT_FOUND.getHttpStatus().value())
+                .body("message", is(THEME_NOT_FOUND.getMessage()));
     }
 
     @Test
@@ -197,8 +204,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("해당 날짜/시간/테마는 이미 예약되었습니다."));
+                .statusCode(RESERVATION_ALREADY_BOOKED.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_BOOKED.getMessage()));
     }
 
     @Test
@@ -289,8 +296,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/cancel")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+                .statusCode(RESERVATION_NOT_OWNER.getHttpStatus().value())
+                .body("message", is(RESERVATION_NOT_OWNER.getMessage()));
     }
 
     @Test
@@ -311,8 +318,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/cancel")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 취소된 예약입니다."));
+                .statusCode(RESERVATION_ALREADY_CANCELED.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_CANCELED.getMessage()));
     }
 
     @Test
@@ -333,8 +340,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + sqlSavedId + "/cancel")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 지난 예약입니다."));
+                .statusCode(RESERVATION_ALREADY_PAST.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_PAST.getMessage()));
     }
 
     @Test
@@ -383,8 +390,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + notOwnerName)
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+                .statusCode(RESERVATION_NOT_OWNER.getHttpStatus().value())
+                .body("message", is(RESERVATION_NOT_OWNER.getMessage()));
     }
 
     @Test
@@ -407,8 +414,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + reservationName)
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 취소된 예약입니다."));
+                .statusCode(RESERVATION_ALREADY_CANCELED.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_CANCELED.getMessage()));
     }
 
     @Test
@@ -433,8 +440,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + sqlSavedId + "/schedule?name=" + sqlRequsterName)
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 지난 예약입니다."));
+                .statusCode(RESERVATION_ALREADY_PAST.getHttpStatus().value())
+                .body("message", is(RESERVATION_ALREADY_PAST.getMessage()));
     }
 
     @Test
@@ -460,8 +467,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().patch("/member/reservations/" + reservationId + "/schedule?name=" + reservationName)
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이미 지난 날짜/시간을 예약할 수 없습니다."));
+                .statusCode(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getHttpStatus().value())
+                .body("message", is(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage()));
     }
 
 }

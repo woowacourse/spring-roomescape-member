@@ -19,6 +19,7 @@ import java.util.Map;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.exception.ReservationTimeErrorInformation.START_AT_IS_NULL;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 import static roomescape.time.fixture.ReservationTimeApiFixture.updateTimeStatus;
 
@@ -90,7 +91,8 @@ class ReservationTimeAdminControllerTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(START_AT_IS_NULL.getHttpStatus().value())
+                .body("message", is(START_AT_IS_NULL.getMessage()));
     }
 
     @Test

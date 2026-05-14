@@ -2,6 +2,7 @@ package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.exception.ReservationDateErrorInformation.DATE_ALREADY_EXISTS;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_IS_NULL;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -82,7 +84,7 @@ class ReservationDateAdminControllerTest {
                 .body(params)
                 .when().post("/admin/dates")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(HttpStatus.CONFLICT.value())
                 .body("message", is(DATE_ALREADY_EXISTS.getMessage()));
     }
 
@@ -117,7 +119,8 @@ class ReservationDateAdminControllerTest {
                 .body(params)
                 .when().post("/admin/dates")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(DATE_IS_NULL.getHttpStatus().value())
+                .body("message", is(DATE_IS_NULL.getMessage()));
     }
 
     @Test

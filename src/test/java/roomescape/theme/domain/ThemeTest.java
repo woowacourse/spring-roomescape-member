@@ -58,7 +58,7 @@ class ThemeTest {
         // when
         Assertions.assertThatThrownBy(() -> Theme.load(nullId, name, description, description, loadStatus))
                 .isInstanceOf(ThemeException.class)
-                .hasMessage("테마 ID는 필수입니다.");
+                .hasMessage(ID_IS_NULL.getMessage());
     }
 
     @Test
