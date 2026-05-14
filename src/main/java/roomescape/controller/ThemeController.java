@@ -40,6 +40,13 @@ public class ThemeController {
         return ResponseEntity.ok(themeResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponse> getTheme(@PathVariable long id) {
+        Theme theme = themeService.getTheme(id);
+
+        return ResponseEntity.ok(ThemeResponse.from(theme));
+    }
+
     @PostMapping()
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
         Theme addedTheme = themeService.addTheme(addThemeRequest);

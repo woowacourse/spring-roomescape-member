@@ -98,6 +98,7 @@ src/main/java/roomescape/
 
 ### 3. 테마 관리
 - **테마 조회**: 모든 방탈출 테마 목록 조회
+- **테마 단일 조회**: 특정 테마 정보 조회
 - **테마 추가**: 새로운 방탈출 테마 생성
 - **테마 삭제**: 기존 방탈출 테마 삭제
 - **인기 테마 조회**: 특정 기간 내 예약 횟수 기준 인기 테마 조회
@@ -207,6 +208,7 @@ src/main/java/roomescape/
 | 메서드 | URL | 설명 | 상태 코드 |
 |--------|-----|------|-----------|
 | GET | `/themes` | 모든 테마 조회 | 200 |
+| GET | `/themes/{id}` | 특정 테마 단일 조회 | 200 |
 | POST | `/themes` | 새로운 테마 추가 | 201 |
 | DELETE | `/themes/{id}` | 테마 삭제 | 204 |
 | GET | `/themes/popular` | 인기 테마 조회 | 200 |
@@ -218,7 +220,7 @@ src/main/java/roomescape/
 | description | String | Y | 테마 설명 |
 | imageUrl | String | Y | 썸네일 이미지 URL |
 
-**GET /themes, POST /themes - Response**
+**GET /themes, GET /themes/{id}, POST /themes - Response**
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | id | long | 테마 고유 ID |
@@ -229,8 +231,8 @@ src/main/java/roomescape/
 **GET /themes/popular - Query Parameters**
 | 파라미터 | 타입 | 필수 | 설명 |
 |----------|------|------|------|
-| start_date | String | Y | 조회 시작 날짜 (YYYY-MM-DD) |
-| end_date | String | Y | 조회 종료 날짜 (YYYY-MM-DD) |
+| startDate | String | Y | 조회 시작 날짜 (YYYY-MM-DD) |
+| endDate | String | Y | 조회 종료 날짜 (YYYY-MM-DD) |
 | size | long | Y | 조회할 테마 개수 |
 
 **GET /themes/popular - Response**

@@ -9,6 +9,7 @@ import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.exception.DataReferencedException;
 import roomescape.exception.exception.DuplicatedResourceException;
+import roomescape.exception.exception.NotFoundResourceException;
 import roomescape.exception.dto.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -39,6 +40,11 @@ public class ThemeService {
 
     public List<Theme> getAllTheme() {
         return themeRepository.getAllTheme();
+    }
+
+    public Theme getTheme(long id) {
+        return themeRepository.getTheme(id)
+                .orElseThrow(() -> new NotFoundResourceException(ErrorCode.NOT_FOUND_THEME));
     }
 
     @Transactional
