@@ -2,6 +2,14 @@ package roomescape.schedule;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
+import roomescape.exception.schedule.PastScheduleException;
+import roomescape.exception.schedule.ScheduleDeleteFailedException;
+import roomescape.exception.schedule.ScheduleNotFoundException;
+import roomescape.exception.schedule.ScheduleThemeInUseException;
+import roomescape.exception.schedule.ScheduleTimeInUseException;
+import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
 import roomescape.schedule.dto.response.ScheduleFindResponse;
@@ -22,23 +30,8 @@ public class ScheduleService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    public void validateTimeDeletable(long timeId) {
-        if (scheduleRepository.existsByTimeId(timeId)) {
-            throw new IllegalStateException("timeId= " + timeId + " 인 시간을 사용하는 스케줄이 있어 삭제할 수 없습니다.");
-        }
-    }
-
-    public void validateThemeDeletable(long themeId) {
-        if (scheduleRepository.existsByThemeId(themeId)) {
-            throw new IllegalStateException("themeId= " + themeId + " 인 테마를 사용하는 스케줄이 있어 삭제할 수 없습니다.");
-        }
-    }
-
     public long findScheduleIdByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        return scheduleRepository.findScheduleIdByDateAndTimeIdAndThemeId(date, timeId, themeId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 조건을 가진 일정이 없습니다. date: " + date + "timeId: " + timeId + "themeId: " + themeId
-                ));
+        return getScheduleIdOrThrow(date, timeId, themeId);
     }
 
     public List<ScheduleFindResponse> findAll() {
@@ -57,22 +50,35 @@ public class ScheduleService {
     }
 
     public void deleteById(long scheduleId) {
-        if (scheduleRepository.deleteById(scheduleId) != 1) {
-            throw new IllegalStateException("해당 ID를 가진 스케줄을 삭제하지 못하였습니다 ID=" + scheduleId);
+        if (scheduleRepository.deleteById(scheduleId) <= 1) {
+            return;
+        }
+        throw new ScheduleDeleteFailedException(ErrorCode.RESERVATION_DELETE_FAILED);
+    }
+
+    public void validateTimeDeletable(long timeId) {
+        if (scheduleRepository.existsByTimeId(timeId)) {
+            throw new ScheduleTimeInUseException(ErrorCode.SCHEDULE_TIME_IN_USE, timeId);
+        }
+    }
+
+    public void validateThemeDeletable(long themeId) {
+        if (scheduleRepository.existsByThemeId(themeId)) {
+            throw new ScheduleThemeInUseException(ErrorCode.SCHEDULE_THEME_IN_USE, themeId);
         }
     }
 
     public void validateSchedule(LocalDate date, Long timeId, Long themeId) {
         validateNotPastDate(date);
         reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalStateException("해당 id를 가진 시간 데이터가 존재하지 않습니다."));
+                .orElseThrow(() -> new ReservationTimeNotFoundException(ErrorCode.RESERVATIONTIME_NOT_FOUND, timeId));
         themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalStateException("해당 id를 가진 테마 데이터가 존재하지 않습니다."));
+                .orElseThrow(() -> new ThemeNotFoundException(ErrorCode.THEME_NOT_FOUND, themeId));
     }
 
     public void validateNotPastDate(LocalDate date) {
         if (date.isBefore(LocalDate.now(clock))) {
-            throw new IllegalStateException("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
+            throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
         }
     }
 
@@ -81,12 +87,17 @@ public class ScheduleService {
         LocalTime currentTime = LocalTime.now(clock);
 
         if (date.isEqual(currentDate) && time.isBefore(currentTime)) {
-            throw new IllegalStateException("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
+            throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
         }
+    }
+
+    private long getScheduleIdOrThrow(LocalDate date, long timeId, long themeId) {
+        return scheduleRepository.findScheduleIdByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .orElseThrow(() -> new ScheduleNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND_WITH_CONDITION, date, timeId, themeId));
     }
 
     private Schedule getScheduleOrElseThrow(long scheduleId) {
         return scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalStateException("해당 ID를 가진 스케줄이 존재하지 않습니다. ID=" + scheduleId));
+                .orElseThrow(() -> new ScheduleNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND, scheduleId));
     }
 }

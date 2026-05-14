@@ -6,6 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
+import roomescape.exception.schedule.PastScheduleException;
+import roomescape.exception.schedule.ScheduleDeleteFailedException;
+import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
@@ -74,22 +78,43 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("스케줄 삭제에 성공한다.")
-    void delete_성공_테스트() {
-        when(scheduleRepository.deleteById(1L)).thenReturn(1);
+    @DisplayName("삭제 결과가 0이면 예외가 발생하지 않는다.")
+    void deleteById_테스트_1() {
+        // given
+        when(scheduleRepository.deleteById(1L)).thenReturn(0);
 
-        scheduleService.deleteById(1L);
-
+        // when, then
+        assertThatCode(() -> scheduleService.deleteById(1L))
+                .doesNotThrowAnyException();
         verify(scheduleRepository).deleteById(1L);
     }
 
     @Test
-    @DisplayName("삭제할 스케줄이 없으면 삭제에 실패한다.")
-    void delete_실패_테스트() {
-        when(scheduleRepository.deleteById(1L)).thenReturn(0);
+    @DisplayName("삭제 결과가 1이면 예외가 발생하지 않는다.")
+    void deleteById_테스트_2() {
+        when(scheduleRepository.deleteById(1L)).thenReturn(1);
+
+        assertThatCode(() -> scheduleService.deleteById(1L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("삭제 결과가 2이면 예외가 발생한다.")
+    void delete_테스트_3() {
+        when(scheduleRepository.deleteById(1L)).thenReturn(2);
 
         assertThatThrownBy(() -> scheduleService.deleteById(1L))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ScheduleDeleteFailedException.class);
+        verify(scheduleRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("없는 id의 스케줄로 삭제요청이 들어와도 예외가 발생하지 않는다.")
+    void deleteById_테스트_4() {
+        when(scheduleRepository.deleteById(999L)).thenReturn(0);
+
+        assertThatCode(() -> scheduleService.deleteById(999L))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -108,8 +133,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(beforeDate, testTimeId, testThemeId))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
+                .isInstanceOf(PastScheduleException.class);
     }
 
     @Test
@@ -128,8 +152,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(date, testTimeId, testThemeId))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 id를 가진 시간 데이터가 존재하지 않습니다.");
+                .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 
     @Test
@@ -151,8 +174,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(date, testTimeId, testThemeId))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 id를 가진 테마 데이터가 존재하지 않습니다.");
+                .isInstanceOf(ThemeNotFoundException.class);
     }
 
     @Test

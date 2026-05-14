@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.reservation.ReservationAlreadyExistsException;
+import roomescape.exception.reservation.ReservationInternalServerErrorException;
+import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
@@ -117,7 +120,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReservationInternalServerErrorException.class);
 
         verify(reservationRepository).findDetailByIdAndName(reservationId, name);
         verify(scheduleService).validateNotPastDate(reservationDetail.date());
@@ -231,8 +234,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("중복된 예약이 있어 예약을 수정할 수 없습니다.");
+                .isInstanceOf(ReservationAlreadyExistsException.class);
         verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
     }
 
@@ -248,8 +250,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.update(request, 4L, "x"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 id와 name을 가진 예약이 존재하지 않습니다. id=4name=x");
+                .isInstanceOf(ReservationNotFoundException.class);
         verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
     }
 
@@ -415,11 +416,11 @@ class ReservationServiceTest {
         );
         long scheduleId = 1L;
 
-        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId).thenReturn(scheduleId);
-        doThrow(IllegalStateException.class).when(reservationRepository).existsByScheduleId(scheduleId);
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId);
+        when(reservationRepository.existsByScheduleId(scheduleId)).thenReturn(true);
 
         assertThatThrownBy(() -> reservationService.save(body))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReservationAlreadyExistsException.class);
 
         verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository).existsByScheduleId(scheduleId);
