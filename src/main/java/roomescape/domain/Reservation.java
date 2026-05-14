@@ -63,6 +63,10 @@ public class Reservation {
         return reservationDateTime.isBefore(LocalDateTime.now());
     }
 
+    public boolean isBooker(MemberName otherName) {
+        return memberName.equals(otherName);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

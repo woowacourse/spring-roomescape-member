@@ -89,10 +89,54 @@ class ReservationTest {
         }
     }
 
+    @Nested
+    @DisplayName("예약자가 맞는 지 확인한다")
+    class IsBooker {
+
+        @Test
+        void 예약자_명이_동일하다면_예약자가_맞다() {
+            //given
+            MemberName name = new MemberName("korogoo");
+            Reservation reservation = reservation(name);
+
+            //when
+            boolean isBooker = reservation.isBooker(name);
+
+            //then
+            assertThat(isBooker).isTrue();
+        }
+
+        @Test
+        void 예약자_명이_다르다면_예약자가_아니다() {
+            //given
+            MemberName name = new MemberName("korogoo");
+            Reservation reservation = reservation(name);
+
+            MemberName otherName = new MemberName("other");
+
+            //when
+            boolean isBooker = reservation.isBooker(otherName);
+
+            //then
+            assertThat(isBooker).isFalse();
+        }
+
+    }
+
     private Reservation reservation() {
         return new Reservation(
             null,
             new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().plusDays(1)),
+            TIME,
+            THEME
+        );
+    }
+
+    private Reservation reservation(MemberName name) {
+        return new Reservation(
+            null,
+            name,
             new ReservationLocalDate(LocalDate.now().plusDays(1)),
             TIME,
             THEME
