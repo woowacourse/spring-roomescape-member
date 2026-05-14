@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ReservationErrorCode {
     RESERVATION_NAME_NOT_BLANK("예약자 이름은 비어있을 수 없습니다."),
     RESERVATION_NAME_TOO_LONG("예약자 이름은 최대 10자까지 입력할 수 있습니다."),
-    RESERVATION_NAME_MISMATCH("예약자 이름이 일치하지 않습니다."),
+    RESERVATION_NOT_OWNER("예약자만 예약을 수정하거나 취소할 수 있습니다."),
     RESERVATION_DATE_NOT_NULL("예약 날짜는 비어있을 수 없습니다."),
     RESERVATION_PAST_DATE("예약 날짜는 과거일 수 없습니다."),
     RESERVATION_TIME_NOT_NULL("예약 시간 정보가 없습니다."),

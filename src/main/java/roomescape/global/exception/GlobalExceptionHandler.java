@@ -16,6 +16,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.global.exception.exception.AuthenticationException;
 import roomescape.global.exception.exception.BadRequestException;
 import roomescape.global.exception.exception.DuplicateException;
+import roomescape.global.exception.exception.ForbiddenException;
 import roomescape.global.exception.exception.ForeignKeyConstraintException;
 import roomescape.global.exception.exception.InvalidException;
 import roomescape.global.exception.exception.NotFoundException;
@@ -50,6 +51,15 @@ public class GlobalExceptionHandler {
             DuplicateException e
     ) {
         log.info("DuplicateException 발생: {}", e.getMessage());
+        return ErrorResponse.of(e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handlerForbiddenException(
+            ForbiddenException e
+    ) {
+        log.info("ForbiddenException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 

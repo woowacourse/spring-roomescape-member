@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum GlobalErrorCode {
-    INVALID_INPUT("잘못된 요청입니다."),
+    INVALID_INPUT("잘못된 입력입니다."),
     INVALID_JSON("잘못된 JSON 형식입니다."),
     AUTHENTICATION_FAILED("인증에 실패했습니다."),
     NOT_FOUND("잘못된 경로입니다."),

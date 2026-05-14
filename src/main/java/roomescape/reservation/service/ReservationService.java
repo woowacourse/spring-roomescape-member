@@ -11,6 +11,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.exception.ReservationErrorCode;
+import roomescape.reservation.exception.ReservationForbiddenException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationResult;
@@ -40,8 +41,7 @@ public class ReservationService {
 
         validateDuplicate(date, timeId);
 
-        Reservation reservation =
-                Reservation.createNew(name, date, reservationTime.getId());
+        Reservation reservation = Reservation.createNew(name, date, reservationTime.getId());
 
         validateDateTime(reservation, reservationTime.getStartAt());
 
@@ -97,17 +97,13 @@ public class ReservationService {
 
     private void validateDateTime(final Reservation reservation, final LocalTime time) {
         if (reservation.isPastTime(time, LocalDateTime.now())) {
-            throw new ReservationBadRequestException(
-                    ReservationErrorCode.RESERVATION_PAST_DATE.getMessage()
-            );
+            throw new ReservationBadRequestException(ReservationErrorCode.RESERVATION_PAST_DATE.getMessage());
         }
     }
 
     private void validateOwner(final String name, final Reservation reservation) {
         if (!reservation.getName().equals(name)) {
-            throw new ReservationBadRequestException(
-                    ReservationErrorCode.RESERVATION_NAME_MISMATCH.getMessage()
-            );
+            throw new ReservationForbiddenException(ReservationErrorCode.RESERVATION_NOT_OWNER.getMessage());
         }
     }
 

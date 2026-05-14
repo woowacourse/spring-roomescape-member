@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
+import roomescape.reservation.exception.ReservationForbiddenException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -123,8 +124,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
-                .isInstanceOf(ReservationBadRequestException.class)
-                .hasMessageContaining("예약자 이름이 일치하지 않습니다.");
+                .isInstanceOf(ReservationForbiddenException.class)
+                .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
     @Test
@@ -166,8 +167,8 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class)
-                .hasMessageContaining("예약자 이름이 일치하지 않습니다.");
+                .isInstanceOf(ReservationForbiddenException.class)
+                .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
     @Test
