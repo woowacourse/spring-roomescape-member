@@ -7,14 +7,14 @@ public enum ErrorCode {
     // 테마
     THEME_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 테마입니다.", null),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다.", "존재하는 테마 ID로 다시 요청해주세요."),
-    THEME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "예약 내역이 존재하는 테마입니다.", null),
+    THEME_HAS_RESERVATIONS(HttpStatus.UNPROCESSABLE_ENTITY, "예약 내역이 존재하는 테마입니다.", null),
 
     // 예약 시간
     TIME_NOT_ON_THE_HOUR(HttpStatus.UNPROCESSABLE_ENTITY, "예약 시작 시간은 정각이어야 합니다.",
             "startAt 값을 정각(HH:00 형식)으로 맞춰 보내주세요."),
     TIME_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 예약 시간입니다.", null),
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다.", null),
-    TIME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "해당 시간에 예약 내역이 존재합니다. ", null),
+    TIME_HAS_RESERVATIONS(HttpStatus.UNPROCESSABLE_ENTITY, "해당 시간에 예약 내역이 존재합니다.", null),
 
     // 예약
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 예약입니다.", "다른 테마, 날짜, 시간으로 예약을 시도해주세요."),
