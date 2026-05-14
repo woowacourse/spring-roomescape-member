@@ -87,6 +87,14 @@
     location.href = '/themes';
   }
 
+  function todayString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const date = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${date}`;
+  }
+
   async function loadMyReservations() {
     const name = getVal('name');
     if (!name) {
@@ -128,6 +136,7 @@
                  id="date-${reservation.id}"
                  class="form-control form-control-sm"
                  value="${reservation.date}"
+                 min="${todayString()}"
                  data-previous-date="${reservation.date}"
                  onchange="handleReservationDateChange(${reservation.id}, ${reservation.theme.id})">
         </td>
@@ -152,9 +161,8 @@
 
     const selectedDate = dateInput.value;
     const previousDate = dateInput.dataset.previousDate;
-    const today = new Date().toISOString().split('T')[0];
 
-    if (selectedDate < today) {
+    if (selectedDate < todayString()) {
       alert('지난 시점으로는 변경할 수 없습니다.');
       dateInput.value = previousDate;
       return;

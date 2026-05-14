@@ -24,7 +24,7 @@
     </div>
     <div class="mb-3">
       <label>날짜</label>
-      <input type="date" id="date" class="form-control" onchange="loadTimes()" required>
+      <input type="date" id="date" class="form-control" data-previous-date="" onchange="handleDateChange()" required>
     </div>
     <div class="mb-3">
       <label>시간</label>
@@ -59,10 +59,21 @@
     }
   }
 
+  function todayString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const date = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${date}`;
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const themeIdFromUrl = urlParams.get('themeId');
     const savedName = localStorage.getItem('roomescapeVisitorName');
+    const dateInput = document.getElementById('date');
+
+    dateInput.min = todayString();
 
     if (!savedName) {
       alert('사용자 이름을 입력해주세요.');
@@ -99,6 +110,21 @@
       console.error('테마 정보를 불러오는데 실패했습니다:', error);
     }
   });
+
+  async function handleDateChange() {
+    const dateInput = document.getElementById('date');
+    const selectedDate = dateInput.value;
+    const previousDate = dateInput.dataset.previousDate;
+
+    if (selectedDate < todayString()) {
+      alert('지난 시점으로는 예약할 수 없습니다.');
+      dateInput.value = previousDate;
+      return;
+    }
+
+    dateInput.dataset.previousDate = selectedDate;
+    await loadTimes();
+  }
 
   async function loadTimes() {
     const date = getVal('date');
