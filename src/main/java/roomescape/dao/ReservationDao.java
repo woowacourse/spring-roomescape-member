@@ -88,18 +88,56 @@ public class ReservationDao {
                 reservation.getTheme());
     }
 
+    public void update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET name = ?, date = ?, time_id = ?, theme_id = ?
+                WHERE id = ?;
+                """;
+
+        jdbcTemplate.update(
+                sql,
+                reservation.getName().value(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+    }
+
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM reservation
+                    WHERE id = ?
+                )
+                """;
+
+        Boolean result = jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                id
+        );
+
+        return Boolean.TRUE.equals(result);
+    }
+
     public boolean existsByTimeId(Long timeId) {
-        Boolean result = jdbcTemplate.queryForObject("""
-                        SELECT EXISTS(
-                            SELECT 1
-                            FROM reservation
-                            WHERE time_id = ?
-                        )
-                        """,
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+
+        Boolean result = jdbcTemplate.queryForObject(
+                sql,
                 Boolean.class,
                 timeId
         );

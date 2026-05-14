@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -50,32 +51,53 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
+        Reservation reservation = converToReservation(null, request);
+
+        Reservation saved = reservationDao.save(reservation);
+
+        return ReservationResponse.from(saved);
+    }
+
+    public ReservationResponse update(Long id, ReservationRequest request) {
+        if (!reservationDao.existsById(id)) {
+            throw new IllegalArgumentException("변경하려는 예약이 존재하지 않습니다.");
+        }
+
+        Reservation reservation = converToReservation(id, request);
+
+        reservationDao.update(reservation);
+
+        return ReservationResponse.from(reservation);
+    }
+
+    private Reservation converToReservation(Long id, ReservationRequest request) {
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
-        if (requestDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("이미 지난 시간입니다.");
-        }
 
         Theme theme = themeDao.findThemeById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        if (reservationDao.existsBy(request.date(), theme, time)) {
-            throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
-        }
+        validate(request.date(), time, theme);
 
-        Reservation reservation = new Reservation(
+        return new Reservation(
+                id,
                 UserName.parse(request.name()),
                 request.date(),
                 time,
                 theme
         );
+    }
 
-        Reservation saved = reservationDao.save(reservation);
+    private void validate(LocalDate date, ReservationTime time, Theme theme) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime requestDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (requestDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("이미 지난 시간입니다.");
+        }
 
-        return ReservationResponse.from(saved);
+        if (reservationDao.existsBy(date, theme, time)) {
+            throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
+        }
     }
 
     public void delete(Long id) {
