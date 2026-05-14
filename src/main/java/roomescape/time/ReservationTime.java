@@ -6,7 +6,7 @@ import roomescape.exception.InvalidStateException;
 
 public class ReservationTime {
 
-    private Long id;
+    private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {

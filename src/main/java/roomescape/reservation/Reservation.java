@@ -7,7 +7,7 @@ import roomescape.time.ReservationTime;
 
 public class Reservation {
 
-    private Long id;
+    private final Long id;
     private final String userName;
     private final Theme theme;
     private final LocalDate date;
