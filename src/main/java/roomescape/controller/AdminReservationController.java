@@ -20,7 +20,7 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<AdminReservationsResponse> getAllReservations() {
-        final List<AdminReservationResponse> reservations = reservationService.findAll()
+        List<AdminReservationResponse> reservations = reservationService.findAll()
                 .stream()
                 .map(r -> AdminReservationResponse.from(r, r.getTheme()))
                 .toList();

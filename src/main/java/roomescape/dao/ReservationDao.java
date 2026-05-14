@@ -35,7 +35,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        final String sql = """
+        String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
@@ -47,7 +47,7 @@ public class ReservationDao {
     }
 
     public Optional<Reservation> findById(long id) {
-        final String sql = """
+        String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
@@ -60,7 +60,7 @@ public class ReservationDao {
     }
 
     public Reservation save(Reservation reservation) {
-        final long id = jdbcInsert.executeAndReturnKey(Map.of(
+        long id = jdbcInsert.executeAndReturnKey(Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "created_at", reservation.getCreatedAt(),
@@ -72,19 +72,19 @@ public class ReservationDao {
     }
 
     public boolean existsByTimeId(long timeId) {
-        final Integer count = jdbcTemplate.queryForObject(
+        Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE time_id = ?", Integer.class, timeId);
         return count > 0;
     }
 
     public boolean existsByThemeId(long themeId) {
-        final Integer count = jdbcTemplate.queryForObject(
+        Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId);
         return count > 0;
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        final Integer count = jdbcTemplate.queryForObject(
+        Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
                 Integer.class, date, timeId, themeId);
         return count > 0;
@@ -100,7 +100,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByName(String username) {
-        final String sql = """
+        String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail

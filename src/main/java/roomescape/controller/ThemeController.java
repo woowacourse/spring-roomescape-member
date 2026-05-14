@@ -26,7 +26,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<ThemesResponse> getAllThemes() {
-        final List<ThemeResponse> responses = themeService.getAllThemes()
+        List<ThemeResponse> responses = themeService.getAllThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -36,10 +36,10 @@ public class ThemeController {
     @GetMapping("/popular")
     public ResponseEntity<ThemesResponse> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
-        final LocalDate today = LocalDate.now();
-        final LocalDate startDate = today.minusDays(7);
-        final LocalDate endDate = today.minusDays(1);
-        final List<ThemeResponse> responses = themeService.getPopularThemes(size, startDate, endDate)
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
+        List<ThemeResponse> responses = themeService.getPopularThemes(size, startDate, endDate)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -50,7 +50,7 @@ public class ThemeController {
     public ResponseEntity<AvailableReservationTimesResponse> getReservationTimes(
             @PathVariable long id,
             @RequestParam LocalDate date) {
-        final List<AvailableReservationTimeResponse> responses = themeService.getAvailableTimes(id, date)
+        List<AvailableReservationTimeResponse> responses = themeService.getAvailableTimes(id, date)
                 .stream()
                 .map(AvailableReservationTimeResponse::from)
                 .toList();

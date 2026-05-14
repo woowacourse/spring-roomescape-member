@@ -35,7 +35,7 @@ class AdminThemeControllerTest extends ControllerTest {
         params.put("description", "공포의 폐병원");
         params.put("thumbnailUrl", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
 
-        final String location = RestAssured.given().log().all()
+        String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/themes")
@@ -44,7 +44,7 @@ class AdminThemeControllerTest extends ControllerTest {
                 .extract()
                 .header("Location");
 
-        final long id = Long.parseLong(location.split("/")[2]);
+        long id = Long.parseLong(location.split("/")[2]);
 
         RestAssured.given().log().all()
                 .pathParam("id", id)

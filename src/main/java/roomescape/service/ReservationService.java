@@ -28,14 +28,14 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(String name, LocalDate date, long timeId, long themeId) {
-        final ReservationTime time = reservationTimeDao.findById(timeId)
+        ReservationTime time = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-        final Theme theme = themeDao.findById(themeId)
+        Theme theme = themeDao.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
-        final Reservation reservation = Reservation.create(name, date, LocalDateTime.now(), time, theme);
+        Reservation reservation = Reservation.create(name, date, LocalDateTime.now(), time, theme);
         return reservationDao.save(reservation);
     }
 
@@ -43,7 +43,7 @@ public class ReservationService {
     public Reservation update(long id, LocalDate date, long timeId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
-        final ReservationTime newTime = reservationTimeDao.findById(timeId)
+        ReservationTime newTime = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
         if (LocalDateTime.of(date, newTime.getStartAt()).isBefore(LocalDateTime.now())) {
             throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");

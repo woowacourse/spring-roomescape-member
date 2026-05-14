@@ -49,7 +49,7 @@ public class ThemeDao {
     }
 
     public List<Theme> findPopularThemes(int size, LocalDate from, LocalDate to) {
-        final String sql = """
+        String sql = """
                 SELECT
                     th.id,
                     th.name,
@@ -70,7 +70,7 @@ public class ThemeDao {
     }
 
     public List<AvailableTime> findAvailableTimeById(long themeId, LocalDate date) {
-        final String sql = """
+        String sql = """
                 SELECT
                       rt.id,
                       rt.start_at,

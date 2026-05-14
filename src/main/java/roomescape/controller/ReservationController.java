@@ -31,7 +31,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<ReservationsResponse> getReservations(@RequestParam String username) {
-        final List<ReservationResponse> responses = reservationService.findAllByName(username)
+        List<ReservationResponse> responses = reservationService.findAllByName(username)
                 .stream()
                 .map(r -> ReservationResponse.from(r, r.getTheme()))
                 .toList();
@@ -40,10 +40,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        final Reservation reservation = reservationService.save(
+        Reservation reservation = reservationService.save(
                 request.name(), request.date(), request.timeId(), request.themeId());
-        final ReservationResponse response = ReservationResponse.from(reservation, reservation.getTheme());
-        final URI location = URI.create("/reservations/" + response.id());
+        ReservationResponse response = ReservationResponse.from(reservation, reservation.getTheme());
+        URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);
     }
 
@@ -51,7 +51,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable long id,
             @Valid @RequestBody ReservationUpdateRequest request) {
-        final Reservation reservation = reservationService.update(id, request.date(), request.timeId());
+        Reservation reservation = reservationService.update(id, request.date(), request.timeId());
         return ResponseEntity.ok(ReservationResponse.from(reservation, reservation.getTheme()));
     }
 

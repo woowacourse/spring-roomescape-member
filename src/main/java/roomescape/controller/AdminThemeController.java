@@ -23,8 +23,8 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<Void> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
-        final long themeId = themeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
-        final URI location = URI.create("/themes/" + themeId);
+        long themeId = themeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
+        URI location = URI.create("/themes/" + themeId);
         return ResponseEntity.created(location).build();
     }
 
