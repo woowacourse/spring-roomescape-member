@@ -6,9 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +26,7 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -146,5 +145,51 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(2);
         assertThat(reservations).extracting(Reservation::getName)
                 .allSatisfy(name -> assertThat(name.value().equals(testName)));
+    }
+
+    @Test
+    void 관리자가_id로_예약을_삭제한다() {
+        // given
+        Long reservationId = 1L;
+
+        // when
+        reservationService.deleteReservation(reservationId);
+
+        // then
+        verify(reservationRepository, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void 사용자가_id로_자신의_예약을_삭제한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        Long reservationId = 1L;
+
+        Reservation reservation = new Reservation(reservationId, name, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(reservation);
+
+        // when
+        reservationService.deleteReservation(reservationId, name);
+
+        // then
+        verify(reservationRepository, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void 사용자가_타인의_예약을_삭제하려하면_예외가_발생한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        MemberName otherName = new MemberName("브라운");
+        Long reservationId = 1L;
+
+        Reservation reservation = new Reservation(reservationId, otherName, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(reservation);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservation(reservationId, name))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.RESERVATION_ACCESS_DENIED.getMessage());
     }
 }

@@ -19,6 +19,8 @@ import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationsResponseDto;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -26,6 +28,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -74,17 +78,59 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약을_삭제한다() {
+    void 관리자가_예약을_삭제한다() {
         // given & when
         Response response = RestAssured
                 .given().log().all()
                 .pathParam("id", 1)
+                .queryParam("role", "admin")
                 .when().delete("/reservations/{id}");
 
         // then
         response
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void 사용자가_이름으로_자신의_예약을_삭제한다() {
+        // given & when
+        Response response = RestAssured
+                .given().log().all()
+                .pathParam("id", 1)
+                .queryParam("name", "브라운")
+                .when().delete("/reservations/{id}");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void 사용자가_타인의_예약을_삭제하려하면_예외가_발생한다() {
+        // given
+        MemberName otherName = new MemberName("파도");
+        doThrow(new BusinessException(ErrorCode.RESERVATION_ACCESS_DENIED))
+                .when(reservationService).deleteReservation(1L, otherName);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .pathParam("id", 1L)
+                .queryParam("name", "파도")
+                .when().delete("/reservations/{id}");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+
+        String errorCode = response.jsonPath().getString("code");
+        String errorMessage = response.jsonPath().getString("message");
+
+        assertThat(errorCode).isEqualTo("RESERVATION_004");
+        assertThat(errorMessage).isEqualTo("타인의 예약은 수정/삭제할 수 없습니다.");
     }
 
     @Test
