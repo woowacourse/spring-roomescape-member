@@ -33,7 +33,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 같은_날짜_및_시간이더라도_테마가_다르면_예약_가능하다() {
+    void 같은_날짜_및_시간이더라도_테마가_다르면_예약이_가능하다() {
         // given
         int timeId = createTime("10:00");
         int themeId1 = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");

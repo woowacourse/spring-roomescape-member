@@ -43,7 +43,17 @@ public class AdminThemeControllerTest {
         createTheme("방탈출1", "설명", "올바르지않은URL")
                 .statusCode(400);
     }
-    
+
+    @Test
+    void 이미_존재하는_테마를_추가하면_409를_반환한다() {
+        // given
+        createTheme("방탈출1", "설명", "https://asdfsdf.sdfs").statusCode(201);
+
+        // when & then
+        createTheme("방탈출1", "설명2", "https://asdfsdf2.sdfs")
+                .statusCode(409);
+    }
+
     @Test
     void 테마를_삭제한다() {
         // given
@@ -59,16 +69,6 @@ public class AdminThemeControllerTest {
     }
 
     @Test
-    void 이미_존재하는_테마를_추가하면_409를_반환한다() {
-        // given
-        createTheme("방탈출1", "설명", "https://asdfsdf.sdfs").statusCode(201);
-
-        // when & then
-        createTheme("방탈출1", "설명2", "https://asdfsdf2.sdfs")
-                .statusCode(409);
-    }
-
-    @Test
     void 존재하지_않는_테마를_삭제하면_404를_반환한다() {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/999")
@@ -77,7 +77,7 @@ public class AdminThemeControllerTest {
     }
 
     @Test
-    void 예약이_존재하는_테마를_삭제하면_422를_반환한다() {
+    void 예약에_존재하는_테마를_삭제하면_422를_반환한다() {
         // given
         int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs")
                 .statusCode(201)
