@@ -15,6 +15,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    int update(Reservation reservation);
+
     void deleteById(Long id);
 
     int deleteByNameAndDateAndTimeIdAndThemeId(String name, LocalDate date, Long timeId, Long themeId);

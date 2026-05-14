@@ -180,4 +180,50 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(reservationRepository.findById(saved.getId())).isEmpty();
     }
+
+    @DisplayName("예약의 날짜와 시간을 변경한다")
+    @Test
+    void 전달한_예약_도메인_객체와_동일한_id를_가지는_행의_날짜와_시간을_변경한다() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.parse("10:00"))
+        );
+        ReservationTime timeForUpdate = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.parse("14:00"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+
+        Reservation saved = reservationRepository.save(
+                Reservation.withoutId(
+                        "루드비코",
+                        LocalDate.now().plusDays(1),
+                        time,
+                        theme
+                )
+        );
+
+        // when
+        Reservation reservationForUpdate = new Reservation(
+                saved.getId(),
+                "루드비코",
+                LocalDate.now().plusDays(1),
+                timeForUpdate,
+                theme
+        );
+        reservationRepository.update(reservationForUpdate);
+
+        // then
+        Reservation foundAfterUpdate = reservationRepository.findById(saved.getId())
+                .orElseThrow();
+        assertThat(foundAfterUpdate)
+                .usingRecursiveComparison()
+                .comparingOnlyFields("id", "name")
+                .isEqualTo(saved);
+        assertThat(foundAfterUpdate)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "name")
+                .isEqualTo(reservationForUpdate);
+    }
 }
