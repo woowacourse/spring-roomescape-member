@@ -1,13 +1,12 @@
 package roomescape.policy;
 
-import roomescape.command.ReservationSaveCommand;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservation;
 
 import java.time.LocalDateTime;
 
 public class AdminReservationSavePolicy implements ReservationSavePolicy {
 
     @Override
-    public void validate(ReservationSaveCommand command, ReservationTime reservationTime, LocalDateTime now) {
+    public void validate(Reservation reservation, LocalDateTime now) {
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -20,6 +22,27 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     public JdbcTemplateReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                            "t.id AS time_id, t.start_at, " +
+                            "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
+                            "th.thumbnail_url AS theme_thumbnail_url " +
+                            "FROM reservation r " +
+                            "JOIN reservation_time t ON r.time_id = t.id " +
+                            "JOIN theme th ON r.theme_id = th.id " +
+                            "WHERE r.id = ?",
+                    reservationRowMapper(),
+                    id
+            );
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -82,6 +105,18 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    @Override
+    public void updateCancelled(Long id) {
+        int archived = jdbcTemplate.update(
+                "INSERT INTO canceled_reservation (id, name, date, time_id, theme_id) " +
+                        "SELECT id, name, date, time_id, theme_id FROM reservation WHERE id = ?",
+                id);
+        if (archived == 0) {
+            throw new EmptyResultDataAccessException(1);
+        }
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 

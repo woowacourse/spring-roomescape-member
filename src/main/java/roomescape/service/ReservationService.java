@@ -1,14 +1,19 @@
 package roomescape.service;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.ConflictCode;
 import roomescape.exception.code.NotFoundCode;
+import roomescape.exception.code.UnprocessableCode;
 import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -16,6 +21,7 @@ import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -40,16 +46,36 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public void updateCancelled(Long id, LocalDateTime now) {
+        try {
+            Reservation reservation = getValidReservation(id, now);
+            reservationRepository.updateCancelled(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND);
+        }
+    }
+
+    @NonNull
+    private Reservation getValidReservation(Long id, LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
+        if (reservation.isDateTimeBefore(now))  {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_ALREADY_STARTED);
+        }
+        return reservation;
+    }
+
     public Reservation saveReservation(ReservationSaveCommand command, LocalDateTime now, ReservationSavePolicy policy) {
         checkIfReservationPossible(command);
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.THEME_NOT_FOUND));
+        Reservation reservation =Reservation.forSave(command, reservationTime, theme);
+        policy.validate(reservation, now);
 
-        policy.validate(command, reservationTime, now);
-
-        return reservationRepository.addReservation(Reservation.forSave(command, reservationTime, theme));
+        return reservationRepository.addReservation(reservation);
     }
 
     private void checkIfReservationPossible(ReservationSaveCommand command) {

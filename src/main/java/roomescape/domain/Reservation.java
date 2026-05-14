@@ -5,9 +5,16 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.code.BadRequestCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+public record Reservation(
+        Long id,
+        String name,
+        LocalDate date,
+        ReservationTime time,
+        Theme theme) {
+
     public Reservation {
         validateName(name);
         validateDate(date);
@@ -63,5 +70,13 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public boolean isDateTimeBefore(LocalDateTime dateTime) {
+        return LocalDateTime.of(this.date, this.time.startAt()).isBefore(dateTime);
+    }
+
+    public boolean isDateBefore(LocalDate today) {
+        return this.date.isBefore(today);
     }
 }

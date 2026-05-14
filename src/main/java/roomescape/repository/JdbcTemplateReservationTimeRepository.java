@@ -85,9 +85,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
                     long timeId = rs.getLong("time_id");
                     LocalTime time = rs.getTime("start_at").toLocalTime();
 
-                    ReservationTime reservationTime = new ReservationTime(timeId, time);
-
-                    return reservationTime;
+                    return new ReservationTime(timeId, time);
                 },
                 themeId,
                 date
