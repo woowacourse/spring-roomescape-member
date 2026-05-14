@@ -1,26 +1,13 @@
 package roomescape.domain.reservation;
 
-import common.exception.ErrorCode;
-import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class ReservationDate {
     private final LocalDate date;
 
-    private ReservationDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public static ReservationDate from(LocalDate date) {
-        validateIsNull(date);
-        return new ReservationDate(date);
-    }
-
-    private static void validateIsNull(Object value) {
-        if (value == null) {
-            throw new RoomEscapeException(ErrorCode.DATE_MUST_NOT_BE_NULL);
-        }
+    public ReservationDate(LocalDate date) {
+        this.date = Objects.requireNonNull(date);
     }
 
     public boolean isBefore(LocalDate target) {

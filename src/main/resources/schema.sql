@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS theme;
 
 CREATE TABLE theme (
     id      BIGINT      NOT NULL AUTO_INCREMENT,
-    reservationName    VARCHAR(20) NOT NULL,
+    name    VARCHAR(20) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail_url VARCHAR(255)  NOT NULL,
     PRIMARY KEY (id)
@@ -18,7 +18,7 @@ CREATE TABLE reservation_time (
 
 CREATE TABLE reservation (
     id      BIGINT       NOT NULL AUTO_INCREMENT,
-    reservationName    VARCHAR(20) NOT NULL,
+    name    VARCHAR(20) NOT NULL,
     date    DATE NOT NULL,
     time_id BIGINT NOT NULL,
     theme_id BIGINT NOT NULL,

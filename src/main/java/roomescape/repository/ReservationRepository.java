@@ -20,19 +20,19 @@ import roomescape.domain.theme.ThumbnailUrl;
 public class ReservationRepository {
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
-            ReservationName.from(resultSet.getString("reservationName")),
-            ReservationDate.from(resultSet.getDate("date").toLocalDate()),
+            ReservationName.from(resultSet.getString("name")),
+            new ReservationDate(resultSet.getDate("date").toLocalDate()),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
             Theme.of(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"), new ThumbnailUrl(resultSet.getString("thumbnail_url"))));
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,
-                   r.reservationName,
+                   r.name,
                    r.date,
                    rt.id  AS time_id,
                    rt.start_at,
                    t.id   AS theme_id,
-                   t.reservationName AS theme_name,
+                   t.name AS theme_name,
                    t.description,
                    t.thumbnail_url
             FROM reservation r
@@ -42,14 +42,14 @@ public class ReservationRepository {
     private static final String UPDATE = """
             UPDATE reservation
                 SET
-                    reservationName = ?,
+                    name = ?,
                     date = ?,
                     time_id = ?,
                     theme_id = ?
             WHERE id = ?
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
-    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.reservationName = ?";
+    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.name = ?";
     private static final String EXISTS_BY_DATE_AND_TIME_AND_THEME_ID = """
             SELECT EXISTS (
                 SELECT 1
@@ -93,7 +93,7 @@ public class ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "reservationName", reservation.getName().getValue(),
+                "name", reservation.getName().getValue(),
                 "date", reservation.getDate().getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()

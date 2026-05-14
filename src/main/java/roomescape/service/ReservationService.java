@@ -51,7 +51,7 @@ public class ReservationService {
                 () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         Reservation reservation = Reservation.reserve(ReservationName.from(request.getName()),
-                ReservationDate.from(request.getDate()),
+                new ReservationDate(request.getDate()),
                 reservationTime, theme, now);
 
         validateIsDuplicateReservation(request.getTimeId(), request.getThemeId(), request.getDate());
@@ -79,7 +79,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        ReservationDate reservationDate = ReservationDate.from(request.getDate());
+        ReservationDate reservationDate = new ReservationDate(request.getDate());
         ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId()).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
