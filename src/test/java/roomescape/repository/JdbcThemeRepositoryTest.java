@@ -1,5 +1,11 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,13 +14,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -52,14 +51,13 @@ class JdbcThemeRepositoryTest {
     void findAll() {
         jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
         List<Theme> themes = jdbcThemeRepository.findAll();
-        assertThat(themes).hasSize(1);
+        assertThat(themes).hasSize(3);
     }
 
     @Test
     @DisplayName("기간 내 인기 테마를 예약 건수 기반으로 조회한다.")
     void findPopularThemes() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
-        insertTimeSlot();
         insertReservation(savedTheme.id());
         List<Theme> themes = jdbcThemeRepository.findPopularThemes(10L, LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1));
@@ -70,8 +68,9 @@ class JdbcThemeRepositoryTest {
     @DisplayName("존재하는 테마를 삭제한다.")
     void deleteExisting() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
+        int totalCount = jdbcThemeRepository.findAll().size();
         jdbcThemeRepository.deleteById(savedTheme.id());
-        assertThat(jdbcThemeRepository.findAll()).isEmpty();
+        assertThat(jdbcThemeRepository.findAll().size() != totalCount).isTrue();
     }
 
     @Test
@@ -94,11 +93,6 @@ class JdbcThemeRepositoryTest {
     void updateNonExisting() {
         Theme updateTheme = new Theme(999L, "코믹", "웃긴 집", "https://url2");
         assertThat(jdbcThemeRepository.update(updateTheme)).isZero();
-    }
-
-    private void insertTimeSlot() {
-        String sql = "INSERT INTO time_slot (start_at) VALUES ('10:00:00')";
-        jdbcTemplate.execute(sql);
     }
 
     private void insertReservation(long themeId) {

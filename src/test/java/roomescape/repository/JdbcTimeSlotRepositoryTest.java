@@ -1,5 +1,12 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,14 +18,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -58,9 +57,10 @@ class JdbcTimeSlotRepositoryTest {
     @Test
     @DisplayName("존재하는 예약 시간을 삭제한다.")
     void deleteExisting() {
+        int defaultSize = timeRepository.findAll().size();
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
         timeRepository.deleteById(savedTimeSlot.id());
-        assertThat(timeRepository.findAll()).isEmpty();
+        assertThat(timeRepository.findAll().size() == defaultSize).isTrue();
     }
 
     @Test
@@ -90,7 +90,8 @@ class JdbcTimeSlotRepositoryTest {
     void deleteTimeSlot_WithReservation() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
         Theme savedTheme = themeRepository.save(Theme.transientOf("공포", "설명", "url"));
-        reservationRepository.save(Reservation.transientOf("브라운", LocalDate.now().plusDays(1), savedTimeSlot, savedTheme));
+        reservationRepository.save(
+                Reservation.transientOf("브라운", LocalDate.now().plusDays(1), savedTimeSlot, savedTheme));
 
         assertThatThrownBy(() -> timeRepository.deleteById(savedTimeSlot.id()))
                 .isInstanceOf(DataIntegrityViolationException.class);

@@ -136,7 +136,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                   AND r.time_id = ? 
                   AND r.theme_id = ?
                 """;
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), date, timeId, themeId));
+        return jdbcTemplate.query(sql, rowMapper(), date, timeId, themeId)
+                .stream()
+                .findAny();
     }
 
     @Override
