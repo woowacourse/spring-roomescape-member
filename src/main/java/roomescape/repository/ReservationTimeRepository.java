@@ -41,22 +41,16 @@ public class ReservationTimeRepository {
         return ReservationTime.of(generatedKey, time.getStartAt());
     }
 
-    public Optional<ReservationTime> findById(long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
-        List<ReservationTime> result = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
-        return result.stream().findFirst();
-    }
-
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
 
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
     }
 
-    public void delete(long id) {
-        String sql = "delete from reservation_time where id = ?";
-
-        jdbcTemplate.update(sql, id);
+    public Optional<ReservationTime> findById(long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        List<ReservationTime> result = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
+        return result.stream().findFirst();
     }
 
     public List<ReservationTime> findByDateAndTheme(LocalDate date, long themeId) {
@@ -70,6 +64,12 @@ public class ReservationTimeRepository {
                 )
                 """;
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, date, themeId);
+    }
+
+    public void delete(long id) {
+        String sql = "delete from reservation_time where id = ?";
+
+        jdbcTemplate.update(sql, id);
     }
 
     public boolean existsById(long reservationTimeId) {

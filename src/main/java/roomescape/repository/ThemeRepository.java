@@ -14,7 +14,6 @@ import roomescape.domain.theme.ThumbnailUrl;
 
 @Repository
 public class ThemeRepository {
-
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             Theme.of(rs.getLong("id"), new ThemeName(rs.getString("name")), rs.getString("description"),
                     new ThumbnailUrl(rs.getString("thumbnail_url")));
@@ -36,16 +35,6 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public void deleteById(long themeId) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, themeId);
-    }
-
-    public boolean existsById(long themeId) {
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, themeId));
-    }
-
     public Theme save(Theme theme) {
         Map<String, Object> params = Map.of(
                 "name", theme.getName(),
@@ -54,12 +43,6 @@ public class ThemeRepository {
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Theme.of(generatedKey, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
-    }
-
-    public Optional<Theme> findById(long themeId) {
-        String sql = "SELECT id, name, description, thumbnail_url FROM THEME WHERE id = ?";
-        List<Theme> result = jdbcTemplate.query(sql, THEME_ROW_MAPPER, themeId);
-        return result.stream().findFirst();
     }
 
     public List<Theme> findAll() {
@@ -86,5 +69,21 @@ public class ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
+    }
+
+    public void deleteById(long themeId) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, themeId);
+    }
+
+    public boolean existsById(long themeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, themeId));
+    }
+
+    public Optional<Theme> findById(long themeId) {
+        String sql = "SELECT id, name, description, thumbnail_url FROM THEME WHERE id = ?";
+        List<Theme> result = jdbcTemplate.query(sql, THEME_ROW_MAPPER, themeId);
+        return result.stream().findFirst();
     }
 }

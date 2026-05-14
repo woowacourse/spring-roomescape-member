@@ -57,13 +57,6 @@ public class ReservationRepository {
                 WHERE date = ? AND time_id = ? AND theme_id = ?
             )
             """;
-    private static final String EXISTS_BY_ID = """
-            SELECT EXISTS (
-                SELECT 1 
-                    FROM reservation
-                    WHERE id = ?
-                    )
-            """;
     private static final String EXISTS_BY_TIME_ID = """
             SELECT EXISTS (
                 SELECT 1 
@@ -89,13 +82,17 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    public List<Reservation> findAll() {
+        return jdbcTemplate.query(SELECT_ALL, RESERVATION_ROW_MAPPER);
+    }
+
+    public List<Reservation> findAllByName(String reservationName) {
+        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, reservationName);
+    }
+
     public Optional<Reservation> findById(long reservationId) {
         List<Reservation> result = jdbcTemplate.query(SELECT_BY_ID, RESERVATION_ROW_MAPPER, reservationId);
         return result.stream().findFirst();
-    }
-
-    public List<Reservation> findAll() {
-        return jdbcTemplate.query(SELECT_ALL, RESERVATION_ROW_MAPPER);
     }
 
     public Reservation save(Reservation reservation) {
@@ -113,26 +110,6 @@ public class ReservationRepository {
                 reservation.getTheme());
     }
 
-    public void deleteById(Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    public boolean existsByTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date) {
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(EXISTS_BY_DATE_AND_TIME_AND_THEME_ID, Boolean.class, date, timeId,
-                        themeId));
-    }
-
-    public boolean existsByTimeId(long reservationTimeId) {
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
-    }
-
-    public List<Reservation> findAllByName(String reservationName) {
-        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, reservationName);
-    }
-
     public Reservation update(long id, Reservation target) {
         jdbcTemplate.update(UPDATE, target.getName().getValue(), target.getDate(), target.getTime().getId(),
                 target.getTheme().getId(), id);
@@ -140,8 +117,24 @@ public class ReservationRepository {
         return Reservation.load(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());
     }
 
+    public void deleteById(Long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean existsByTimeId(long reservationTimeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
+    }
+
     public boolean existsByThemeId(long themeId) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(EXISTS_BY_THEME_ID, Boolean.class, themeId));
+    }
+
+    public boolean existsByTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_DATE_AND_TIME_AND_THEME_ID, Boolean.class, date, timeId,
+                        themeId));
     }
 }
