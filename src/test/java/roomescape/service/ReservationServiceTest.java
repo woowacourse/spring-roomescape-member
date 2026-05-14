@@ -99,7 +99,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
         Reservation reservation = new Reservation(id, name, date, time, theme);
 
-        when(reservationRepository.existWith(date, timeId, themeId))
+        when(reservationRepository.existsWith(date, timeId, themeId))
                 .thenReturn(false);
         when(reservationTimeRepository.findBy(timeId))
                 .thenReturn(Optional.of(time));
@@ -123,7 +123,7 @@ class ReservationServiceTest {
                 () -> assertThat(result.getTime()).isEqualTo(time),
                 () -> assertThat(result.getTheme()).isEqualTo(theme));
 
-        verify(reservationRepository).existWith(date, timeId, themeId);
+        verify(reservationRepository).existsWith(date, timeId, themeId);
         verify(reservationTimeRepository).findBy(timeId);
         verify(themeRepository).findBy(themeId);
         verify(reservationRepository).insert(captor.capture());
@@ -153,7 +153,7 @@ class ReservationServiceTest {
 
         when(reservationTimeRepository.findBy(timeId))
                 .thenReturn(Optional.of(time));
-        when(reservationRepository.existWith(date, timeId, themeId))
+        when(reservationRepository.existsWith(date, timeId, themeId))
                 .thenReturn(false);
         when(themeRepository.findBy(themeId))
                 .thenReturn(Optional.of(theme));
@@ -174,7 +174,7 @@ class ReservationServiceTest {
                 () -> assertThat(result.getTheme()).isEqualTo(theme));
 
         verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existWith(date, timeId, themeId);
+        verify(reservationRepository).existsWith(date, timeId, themeId);
         verify(themeRepository).findBy(themeId);
         verify(reservationRepository).insert(any(Reservation.class));
         verify(reservationRepository).findById(id);
@@ -223,7 +223,7 @@ class ReservationServiceTest {
         ReservationTime time = new ReservationTime(timeId, LocalTime.parse("08:00"));
         when(reservationTimeRepository.findBy(timeId))
                 .thenReturn(Optional.of(time));
-        when(reservationRepository.existWith(date, timeId, themeId))
+        when(reservationRepository.existsWith(date, timeId, themeId))
                 .thenReturn(true);
 
         // when & then
@@ -232,7 +232,7 @@ class ReservationServiceTest {
                 .hasMessage("이미 예약된 시간입니다.");
 
         verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existWith(date, timeId, themeId);
+        verify(reservationRepository).existsWith(date, timeId, themeId);
         verifyNoInteractions(themeRepository);
         verify(reservationRepository, never()).insert(any(Reservation.class));
     }
@@ -242,7 +242,7 @@ class ReservationServiceTest {
         // given
         Long timeId = 999L;
         Long themeId = 1L;
-        when(reservationRepository.existWith(date, timeId, themeId))
+        when(reservationRepository.existsWith(date, timeId, themeId))
                 .thenReturn(false);
         when(reservationTimeRepository.findBy(timeId))
                 .thenReturn(Optional.empty());
@@ -253,7 +253,7 @@ class ReservationServiceTest {
                 .hasMessage("존재하지 않는 예약 시간입니다.");
 
         verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository, never()).existWith(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).existsWith(any(LocalDate.class), anyLong(), anyLong());
         verifyNoInteractions(themeRepository);
         verify(reservationRepository, never()).insert(any(Reservation.class));
     }
@@ -264,7 +264,7 @@ class ReservationServiceTest {
         Long timeId = 1L;
         Long themeId = 999L;
         ReservationTime time = new ReservationTime(timeId, LocalTime.parse("08:00"));
-        when(reservationRepository.existWith(date, timeId, themeId))
+        when(reservationRepository.existsWith(date, timeId, themeId))
                 .thenReturn(false);
         when(reservationTimeRepository.findBy(timeId))
                 .thenReturn(Optional.of(time));
@@ -277,7 +277,7 @@ class ReservationServiceTest {
                 .hasMessage("존재하지 않는 테마입니다.");
 
         verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existWith(date, timeId, themeId);
+        verify(reservationRepository).existsWith(date, timeId, themeId);
         verify(themeRepository).findBy(themeId);
         verify(reservationRepository, never()).insert(any(Reservation.class));
     }
@@ -408,6 +408,7 @@ class ReservationServiceTest {
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
         verify(reservationRepository, times(2)).findById(id);
         verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository).existsWith(updateDate, timeId, theme.getId());
         verify(reservationRepository).update(captor.capture());
         Reservation captured = captor.getValue();
         assertAll(
@@ -440,6 +441,7 @@ class ReservationServiceTest {
                 () -> assertThat(result.getTime()).isEqualTo(time));
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
         verifyNoInteractions(reservationTimeRepository);
+        verify(reservationRepository).existsWith(updateDate, time.getId(), theme.getId());
         verify(reservationRepository).update(captor.capture());
         Reservation captured = captor.getValue();
         assertAll(
@@ -472,6 +474,7 @@ class ReservationServiceTest {
                 () -> assertThat(result.getTime()).isEqualTo(updateTime));
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
         verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository).existsWith(date, timeId, theme.getId());
         verify(reservationRepository).update(captor.capture());
         Reservation captured = captor.getValue();
         assertAll(
@@ -500,6 +503,35 @@ class ReservationServiceTest {
 
         verify(reservationRepository).findById(id);
         verifyNoInteractions(reservationTimeRepository);
+        verify(reservationRepository, never()).update(any(Reservation.class));
+    }
+
+    @Test
+    void 이미_예약된_시간으로_예약_변경시_예외_발생() {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        Long timeId = 2L;
+        LocalDate updateDate = date.plusDays(1);
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.parse("08:00"));
+        ReservationTime updateTime = new ReservationTime(timeId, LocalTime.parse("10:00"));
+        Theme theme = new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소");
+        Reservation reservation = new Reservation(id, name, date, originalTime, theme);
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findBy(timeId))
+                .thenReturn(Optional.of(updateTime));
+        when(reservationRepository.existsWith(updateDate, timeId, theme.getId()))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessage("이미 예약된 시간입니다.");
+
+        verify(reservationRepository).findById(id);
+        verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository).existsWith(updateDate, timeId, theme.getId());
         verify(reservationRepository, never()).update(any(Reservation.class));
     }
 

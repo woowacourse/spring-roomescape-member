@@ -123,6 +123,23 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void 날짜_시간_테마에_해당하는_예약이_존재하는지_확인한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("15:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        reservationRepository.insert(new Reservation(null, "브라운", date, time, theme));
+
+        // when
+        boolean exists = reservationRepository.existsWith(date, time.getId(), theme.getId());
+        boolean notExists = reservationRepository.existsWith(date.plusDays(1), time.getId(), theme.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(exists).isTrue(),
+                () -> assertThat(notExists).isFalse());
+    }
+
+    @Test
     void 테마_id에_해당하는_예약이_존재하는지_확인한다() {
         // given
         ReservationTime time = findTimeByStartAt("15:00");

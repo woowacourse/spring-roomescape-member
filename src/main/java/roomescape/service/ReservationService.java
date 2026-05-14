@@ -75,6 +75,10 @@ public class ReservationService {
         validateReservationNotLocked(reservation);
         Reservation updatedReservation = createUpdatedReservation(reservation, date, timeId);
         validateNotPast(updatedReservation.getDate(), updatedReservation.getTime());
+        validateAlreadyReserved(
+                updatedReservation.getDate(),
+                updatedReservation.getTime().getId(),
+                updatedReservation.getTheme().getId());
         reservationRepository.update(updatedReservation);
         return findUpdatedReservation(id);
     }
@@ -139,7 +143,7 @@ public class ReservationService {
     }
 
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existWith(date, timeId, themeId)) {
+        if (reservationRepository.existsWith(date, timeId, themeId)) {
             throw new DuplicateReservationException("이미 예약된 시간입니다.");
         }
     }

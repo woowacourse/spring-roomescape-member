@@ -324,6 +324,26 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_본인_예약_변경시_이미_예약된_시간이면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 2)),
+                eq(2L)))
+                .willThrow(new DuplicateReservationException("이미 예약된 시간입니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("이미 예약된 시간입니다."));
+    }
+
+    @Test
     void 사용자_본인_예약_변경시_변경할_값이_없으면_에러_응답() throws Exception {
         // given
         Long id = 1L;
