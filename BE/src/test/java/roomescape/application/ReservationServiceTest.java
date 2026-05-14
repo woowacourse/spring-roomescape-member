@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import roomescape.entity.ThemeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ConflictException;
 import roomescape.global.exception.customException.DomainRuleViolationException;
 import roomescape.global.exception.customException.NotFoundException;
@@ -163,7 +161,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(
-                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, Optional.of(newDate), Optional.of(newTime.id()))
+                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, newDate, newTime.id())
         ).doesNotThrowAnyException();
     }
 
@@ -176,12 +174,12 @@ class ReservationServiceTest {
 
         // 1. 소유권 위반 (NotFoundException 전파)
         assertThatThrownBy(
-                () -> reservationService.updateDateAndTime(saved.id(), "다른사람", Optional.empty(), Optional.empty())
+                () -> reservationService.updateDateAndTime(saved.id(), "다른사람", null, null)
         ).isInstanceOf(NotFoundException.class);
 
         // 2. 과거 날짜 수정 (DomainRuleViolationException 전파)
         assertThatThrownBy(
-                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, Optional.of(yesterday), Optional.empty())
+                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, yesterday, null)
         ).isInstanceOf(DomainRuleViolationException.class);
     }
 }

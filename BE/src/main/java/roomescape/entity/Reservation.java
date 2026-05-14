@@ -3,7 +3,6 @@ package roomescape.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ConflictException;
 import roomescape.global.exception.customException.DomainRuleViolationException;
@@ -56,12 +55,12 @@ public record Reservation(
         }
     }
 
-    public Reservation update(Optional<LocalDate> date, Optional<ReservationTime> time) {
+    public Reservation update(LocalDate date, ReservationTime time) {
         return new Reservation(
                 this.id,
                 this.name,
-                date.orElse(this.date),
-                time.orElse(this.time),
+                date,
+                time,
                 this.theme
         );
     }

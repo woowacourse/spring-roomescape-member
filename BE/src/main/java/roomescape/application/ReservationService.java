@@ -50,17 +50,38 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateDateAndTime(Long id, String name, Optional<LocalDate> date, Optional<Long> timeId) {
-        Reservation target = findById(id);
-        target.checkOwnership(name);
-
-        Reservation updated = target.update(date, timeId.map(this::findTargetTimeById));
+    public Reservation updateDateAndTime(Long id, String name, LocalDate date, Long timeId) {
+        Reservation updated = createNewReservation(id, name, date, timeId);
 
         updated.validateFuture(LocalDateTime.now());
         updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.theme().id()));
 
         reservationRepository.update(updated);
         return updated;
+    }
+
+    private Reservation createNewReservation(Long id, String name, LocalDate date, Long timeId) {
+        Reservation target = findById(id);
+        target.checkOwnership(name);
+
+        LocalDate newDate = decideNewLocalDateValue(date, target.date());
+        ReservationTime newTime = decideNewReservationTimeValue(timeId, target.time());
+
+        return target.update(newDate, newTime);
+    }
+
+    private ReservationTime decideNewReservationTimeValue(Long timeId, ReservationTime originReservationTime) {
+        if (timeId != null) {
+            return findTargetTimeById(timeId);
+        }
+        return originReservationTime;
+    }
+
+    private LocalDate decideNewLocalDateValue(LocalDate newDate, LocalDate originDate) {
+        if (newDate != null) {
+            return newDate;
+        }
+        return originDate;
     }
 
     private Theme findTargetThemeById(Long themeId) {

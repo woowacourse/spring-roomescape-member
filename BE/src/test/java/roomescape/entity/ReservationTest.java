@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +84,8 @@ class ReservationTest {
     @Test
     @DisplayName("목록 내에 충돌하는 예약이 없으면 검증을 통과한다.")
     void validateUniqueness_success() {
-        Reservation other = Reservation.createWithId(2L, "다른사람", today, ReservationTime.createWithId(2L, LocalTime.of(11, 0)), theme);
+        Reservation other = Reservation.createWithId(2L, "다른사람", today,
+                ReservationTime.createWithId(2L, LocalTime.of(11, 0)), theme);
         assertThatCode(() -> reservation.validateUniqueness(List.of(other)))
                 .doesNotThrowAnyException();
     }
@@ -105,20 +105,11 @@ class ReservationTest {
         LocalDate newDate = LocalDate.of(2026, 5, 13);
         ReservationTime newTime = ReservationTime.createWithId(2L, LocalTime.of(11, 0));
 
-        Reservation updated = reservation.update(Optional.of(newDate), Optional.of(newTime));
+        Reservation updated = reservation.update(newDate, newTime);
 
         assertThat(updated.date()).isEqualTo(newDate);
         assertThat(updated.time()).isEqualTo(newTime);
         assertThat(updated.name()).isEqualTo(reservation.name());
         assertThat(updated.theme()).isEqualTo(reservation.theme());
-    }
-
-    @Test
-    @DisplayName("업데이트 시 값이 없으면 기존 값을 유지한다.")
-    void update_keep_existing() {
-        Reservation updated = reservation.update(Optional.empty(), Optional.empty());
-
-        assertThat(updated.date()).isEqualTo(reservation.date());
-        assertThat(updated.time()).isEqualTo(reservation.time());
     }
 }

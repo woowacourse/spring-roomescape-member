@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,8 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.name").value(reservation.name()))
                 .andExpect(jsonPath("$.date").value(reservation.date().toString()))
                 .andExpect(jsonPath("$.time.id").value(reservation.time().id()))
-                .andExpect(jsonPath("$.time.startAt").value(reservation.time().startAt().format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
+                .andExpect(jsonPath("$.time.startAt").value(
+                        reservation.time().startAt().format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
                 .andExpect(jsonPath("$.theme.id").value(reservation.theme().id()))
                 .andExpect(jsonPath("$.theme.name").value(reservation.theme().name()));
     }
@@ -202,10 +202,10 @@ class ReservationControllerTest {
         Long newTimeId = 2L;
 
         Reservation updated = sampleReservation(id, name, newDate, newTimeId, "11:00", 1L, "테마A");
-        given(reservationService.updateDateAndTime(id, name, Optional.of(newDate), Optional.of(newTimeId)))
+        given(reservationService.updateDateAndTime(id, name, newDate, newTimeId))
                 .willReturn(updated);
 
-        ReservationUpdateRequest request = new ReservationUpdateRequest(Optional.of(newDate), Optional.of(newTimeId));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, newTimeId);
 
         // when & then
         ResultActions actions = mockMvc.perform(patch("/reservations/{id}", id)
@@ -215,7 +215,7 @@ class ReservationControllerTest {
                 .andExpect(status().isOk());
 
         verifyReservationResponse(actions, updated);
-        then(reservationService).should().updateDateAndTime(id, name, Optional.of(newDate), Optional.of(newTimeId));
+        then(reservationService).should().updateDateAndTime(id, name, newDate, newTimeId);
     }
 
     @Test
