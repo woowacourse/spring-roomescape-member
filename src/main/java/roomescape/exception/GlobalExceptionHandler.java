@@ -48,6 +48,14 @@ public class GlobalExceptionHandler {
                         "RESERVATION400_002"));
     }
 
+    @ExceptionHandler(ReservationOwnerMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleReservationOwnerMismatch() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        ERROR_PREFIX + "예약자의 이름이 일치하지 않습니다.",
+                        "RESERVATION400_003"));
+    }
+
     @ExceptionHandler(ReservationTimeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleReservationTimeNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

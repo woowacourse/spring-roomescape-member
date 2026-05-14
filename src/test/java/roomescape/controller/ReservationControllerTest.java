@@ -401,6 +401,33 @@ public class ReservationControllerTest {
                 .body("errorCode", is("RESERVATION400_002"));
     }
 
+    @Test
+    void 사용자가_본인의_예약_시간을_변경할_수_있다() {
+        createDefaultThemes();
+        createDefaultTimes();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", 3L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/api/v1/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("time.startAt", is("12:00"));
+    }
+
     private void createDefaultTimes() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");

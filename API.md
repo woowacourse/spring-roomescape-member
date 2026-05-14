@@ -166,6 +166,77 @@
 | `RESERVATION400_002` | 이미 지난 예약은 취소할 수 없음 |
 | `RESERVE404_001` | 존재하지 않는 예약 |
 
+### 1-4. 예약 날짜·시간 변경
+
+- `PATCH /api/v1/reservations/{id}`
+
+#### 경로 변수
+
+| 이름 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | `Long` | 예약 ID |
+
+#### 요청 본문
+
+```json
+{
+  "date": "2026-05-15",
+  "name": "브라운",
+  "timeId": 2
+}
+```
+
+#### 요청 필드
+
+| 필드 | 타입 | 필수 | 설명 |
+| --- | --- | --- | --- |
+| `date` | `String` | Y | 변경할 예약 날짜 |
+| `name` | `String` | Y | 예약자 이름 |
+| `timeId` | `Long` | Y | 변경할 예약 시간 ID |
+
+#### 검증 규칙
+
+- `date`: null 불가, `yyyy-MM-dd` 형식
+- `name`: 공백 불가, 2자 이상 10자 이하, 한글/영문만 허용
+- `timeId`: null 불가, 양수
+- 예약자 이름이 기존 예약의 이름과 일치해야 한다.
+- 존재하는 예약 시간으로만 변경할 수 있다.
+- 지나간 날짜·시간으로 변경할 수 없다.
+
+#### 응답 예시
+
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2026-05-15",
+  "time": {
+    "id": 2,
+    "startAt": "11:00"
+  },
+  "themeId": 1
+}
+```
+
+#### 응답 코드
+
+| 상태 코드 | 설명 |
+| --- | --- |
+| `200 OK` | 예약 변경 성공 |
+| `400 Bad Request` | 입력값 오류, 잘못된 날짜 형식, 지나간 날짜·시간, 예약자 이름 불일치 |
+| `404 Not Found` | 존재하지 않는 예약 또는 예약 시간 |
+
+#### 주요 에러 코드
+
+| 에러 코드 | 설명 |
+| --- | --- |
+| `COMMON400_001` | 유효하지 않은 요청 필드 |
+| `COMMON400_004` | 올바르지 않은 입력값 형식 |
+| `RESERVATION400_001` | 지나간 날짜와 시간으로 변경 시도 |
+| `RESERVATION400_003` | 예약자 이름 불일치 |
+| `RESERVE404_001` | 존재하지 않는 예약 |
+| `RESERVATION_TIME404_001` | 존재하지 않는 예약 시간 |
+
 ---
 
 ## 2. 예약 시간
@@ -468,6 +539,7 @@
 | `GET` | `/api/v1/reservations` | 예약 목록 조회 |
 | `GET` | `/api/v1/reservations?userName={userName}` | 이름으로 예약 목록 조회 |
 | `POST` | `/api/v1/reservations` | 예약 생성 |
+| `PATCH` | `/api/v1/reservations/{id}` | 예약 날짜·시간 변경 |
 | `DELETE` | `/api/v1/reservations/{id}` | 예약 삭제 |
 | `GET` | `/api/v1/reservation/times` | 예약 시간 목록 조회 |
 | `GET` | `/api/v1/reservation/times/availability?date={date}&themeId={themeId}` | 예약 가능 시간 조회 |

@@ -18,6 +18,8 @@ import roomescape.exception.PastReservationCancelNotAllowedException;
 import roomescape.exception.PastReservationNotAllowedException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationOwnerMismatchException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 public class ReservationServiceTest {
 
@@ -52,8 +54,7 @@ public class ReservationServiceTest {
         when(reservationDao.insertWithKeyHolder("정콩이", futureDate, 1L, 1L))
                 .thenThrow(new DuplicateKeyException("Duplicate key exception"));
 
-        assertThatThrownBy(
-                () -> reservationService.createReservation("정콩이", futureDate, 1L, 1L))
+        assertThatThrownBy(() -> reservationService.createReservation("정콩이", futureDate, 1L, 1L))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
     }
 
@@ -64,8 +65,7 @@ public class ReservationServiceTest {
                         1L,
                         LocalTime.of(10, 0)
                 ));
-        assertThatThrownBy(
-                () -> reservationService.createReservation("정콩이", LocalDate.of(2025, 1, 1), 1L, 1L))
+        assertThatThrownBy(() -> reservationService.createReservation("정콩이", LocalDate.of(2025, 1, 1), 1L, 1L))
                 .isInstanceOf(PastReservationNotAllowedException.class);
     }
 
@@ -80,8 +80,132 @@ public class ReservationServiceTest {
                         new ReservationTime(1L, LocalTime.of(10, 0)),
                         1L
                 ));
-        assertThatThrownBy(
-                () -> reservationService.deleteReservation(1L))
+        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
                 .isInstanceOf(PastReservationCancelNotAllowedException.class);
+    }
+
+    @Test
+    void 예약자_이름이_일치하지_않으면_예약을_변경할_수_없다() {
+        Long reservationId = 1L;
+        Long timeId = 2L;
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        when(reservationTimeDao.findReservationTimeById(timeId))
+                .thenReturn(new ReservationTime(
+                        timeId,
+                        LocalTime.of(11, 0)
+                ));
+        when(reservationDao.findReservationById(reservationId))
+                .thenReturn(new Reservation(
+                        reservationId,
+                        "브라운",
+                        futureDate,
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        1L
+                ));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(
+                reservationId,
+                futureDate,
+                "정콩이",
+                timeId
+        )).isInstanceOf(ReservationOwnerMismatchException.class);
+    }
+
+    @Test
+    void 존재하지않는_예약시간으로는_예약을_변경할_수_없다() {
+        Long reservationId = 1L;
+        Long timeId = 999L;
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        when(reservationTimeDao.findReservationTimeById(timeId))
+                .thenThrow(new EmptyResultDataAccessException(1));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(
+                reservationId,
+                futureDate,
+                "브라운",
+                timeId
+        )).isInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @Test
+    void 이미_예약된_시간으로는_예약을_변경할_수_없다() {
+        Long reservationId = 1L;
+        Long timeId = 2L;
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        when(reservationTimeDao.findReservationTimeById(timeId))
+                .thenReturn(new ReservationTime(
+                        timeId,
+                        LocalTime.of(11, 0)
+                ));
+        when(reservationDao.findReservationById(reservationId))
+                .thenReturn(new Reservation(
+                        reservationId,
+                        "브라운",
+                        futureDate,
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        1L
+                ));
+        when(reservationDao.updateById(reservationId, futureDate, timeId))
+                .thenThrow(new DuplicateKeyException("Duplicate key exception"));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(
+                reservationId,
+                futureDate,
+                "브라운",
+                timeId
+        )).isInstanceOf(ReservationAlreadyExistsException.class);
+    }
+
+    @Test
+    void 존재하지않는_예약은_변경할_수_없다() {
+        Long reservationId = 1L;
+        Long timeId = 2L;
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        when(reservationTimeDao.findReservationTimeById(timeId))
+                .thenReturn(new ReservationTime(
+                        timeId,
+                        LocalTime.of(11, 0)
+                ));
+        when(reservationDao.findReservationById(reservationId))
+                .thenThrow(new EmptyResultDataAccessException(1));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(
+                reservationId,
+                futureDate,
+                "브라운",
+                timeId
+        )).isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 지난_날짜로는_예약을_변경할_수_없다() {
+        Long timeId = 1L;
+        Long reservationId = 2L;
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+
+        when(reservationTimeDao.findReservationTimeById(timeId))
+                .thenReturn(new ReservationTime(
+                        timeId,
+                        LocalTime.of(11, 0)
+                ));
+        when(reservationDao.findReservationById(reservationId))
+                .thenReturn(new Reservation(
+                        reservationId,
+                        "브라운",
+                        LocalDate.now().plusDays(1),
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        1L
+                ));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(
+                reservationId,
+                pastDate,
+                "브라운",
+                timeId
+        )).isInstanceOf(PastReservationNotAllowedException.class);
     }
 }

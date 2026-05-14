@@ -554,29 +554,62 @@
             line-height: 1.45;
         }
 
-        .reservation-cancel-button {
+        .reservation-edit-form {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(215, 198, 174, 0.9);
+        }
+
+        .reservation-edit-form .field {
+            margin-bottom: 0;
+        }
+
+        .reservation-edit-time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .reservation-action-button {
             height: 32px;
             padding: 0 12px;
             border: 1px solid rgba(159, 47, 36, 0.16);
             border-radius: 999px;
-            background: var(--danger-soft);
-            color: var(--danger);
             font-size: 0.82rem;
             font-weight: 800;
             cursor: pointer;
             transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
         }
 
-        .reservation-cancel-button:hover {
+        .reservation-action-button:hover {
             border-color: var(--accent);
-            background: #f3cfc0;
             transform: translateY(-1px);
         }
 
-        .reservation-cancel-button:disabled {
+        .reservation-action-button:disabled {
             cursor: not-allowed;
             opacity: 0.56;
             transform: none;
+        }
+
+        .reservation-edit-button {
+            background: #e5d7c5;
+            color: var(--text);
+        }
+
+        .reservation-edit-button:hover {
+            background: #dcc9b2;
+        }
+
+        .reservation-cancel-button {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .reservation-cancel-button:hover {
+            background: #f3cfc0;
         }
 
         .skeleton {
@@ -874,6 +907,7 @@
         RESERVATION409_001: "이미 예약된 시간입니다. 다른 시간을 선택해 주세요.",
         RESERVATION400_001: "지나간 날짜와 시간은 예약할 수 없습니다. 다른 날짜나 시간을 선택해 주세요.",
         RESERVATION400_002: "이미 지난 예약은 취소할 수 없습니다.",
+        RESERVATION400_003: "본인 예약만 변경할 수 있습니다. 예약자 이름을 다시 확인해 주세요.",
         RESERVATION_TIME404_001: "선택한 예약 시간을 찾을 수 없습니다. 가능 시간을 다시 조회해 주세요.",
         RESERVATION_TIME409_001: "이미 예약이 존재하는 시간입니다. 다른 시간을 선택해 주세요.",
         THEME404_001: "선택한 테마를 찾을 수 없습니다. 테마를 다시 선택해 주세요.",
@@ -1121,7 +1155,8 @@
                     <span class="reservation-card-title">${escapeHtml(theme?.name || `테마 번호 ${reservation.themeId}`)}</span>
                     <div class="reservation-card-head-group">
                         <span class="reservation-card-id">예약 #${reservation.id}</span>
-                        <button class="reservation-cancel-button" type="button">예약 취소</button>
+                        <button class="reservation-action-button reservation-edit-button" type="button">예약 변경</button>
+                        <button class="reservation-action-button reservation-cancel-button" type="button">예약 취소</button>
                     </div>
                 </div>
                 <div class="reservation-meta">
@@ -1130,10 +1165,182 @@
                     <span>시간: ${escapeHtml(reservation.time.startAt)}</span>
                 </div>
             `;
+            const editButton = card.querySelector(".reservation-edit-button");
             const cancelButton = card.querySelector(".reservation-cancel-button");
+            editButton.addEventListener("click", () => toggleReservationEditForm(reservation, userName, card));
             cancelButton.addEventListener("click", () => cancelReservation(reservation.id, userName, cancelButton));
             reservationLookupList.appendChild(card);
         });
+    }
+
+    function toggleReservationEditForm(reservation, userName, card) {
+        const existingForm = card.querySelector(".reservation-edit-form");
+
+        if (existingForm) {
+            existingForm.remove();
+            return;
+        }
+
+        reservationLookupList.querySelectorAll(".reservation-edit-form").forEach((form) => form.remove());
+        card.appendChild(createReservationEditForm(reservation, userName));
+    }
+
+    function createReservationEditForm(reservation, userName) {
+        const form = document.createElement("div");
+        form.className = "reservation-edit-form";
+        form.innerHTML = `
+            <div class="field">
+                <label>변경 날짜</label>
+                <input class="reservation-edit-date" type="date" value="${escapeHtml(reservation.date)}" required>
+            </div>
+            <div class="button-row">
+                <button class="button secondary reservation-edit-load-button" type="button">변경 가능 시간 조회</button>
+                <button class="button primary reservation-edit-submit-button" type="button" disabled>변경하기</button>
+            </div>
+            <div class="reservation-edit-time-grid" aria-live="polite"></div>
+            <p class="helper reservation-edit-helper">변경할 날짜를 고른 뒤 가능 시간을 조회해 주세요.</p>
+        `;
+
+        const dateInput = form.querySelector(".reservation-edit-date");
+        const loadButton = form.querySelector(".reservation-edit-load-button");
+        const submitButton = form.querySelector(".reservation-edit-submit-button");
+        const timeGrid = form.querySelector(".reservation-edit-time-grid");
+        const helper = form.querySelector(".reservation-edit-helper");
+        let selectedTimeId = null;
+
+        dateInput.addEventListener("change", () => {
+            selectedTimeId = null;
+            submitButton.disabled = true;
+            timeGrid.innerHTML = "";
+            helper.textContent = "날짜가 변경되었습니다. 가능 시간을 다시 조회해 주세요.";
+        });
+        loadButton.addEventListener("click", () => loadReservationEditTimes(
+                reservation,
+                dateInput,
+                timeGrid,
+                helper,
+                submitButton,
+                (timeId) => {
+                    selectedTimeId = timeId;
+                }
+        ));
+        submitButton.addEventListener("click", () => updateReservation(
+                reservation.id,
+                userName,
+                dateInput.value,
+                selectedTimeId,
+                submitButton
+        ));
+
+        return form;
+    }
+
+    async function loadReservationEditTimes(reservation, dateInput, timeGrid, helper, submitButton, selectTimeId) {
+        if (!dateInput.value) {
+            setStatus("변경할 날짜를 선택해 주세요.", "error");
+            dateInput.focus();
+            return;
+        }
+
+        timeGrid.innerHTML = "";
+        submitButton.disabled = true;
+        selectTimeId(null);
+        helper.textContent = "변경 가능한 시간을 조회하는 중입니다.";
+        setStatus("변경 가능한 시간을 조회하는 중입니다.", "neutral");
+
+        try {
+            const searchParams = new URLSearchParams({
+                date: dateInput.value,
+                themeId: reservation.themeId
+            });
+            const response = await fetch(`/api/v1/reservation/times/availability?${searchParams.toString()}`);
+            await ensureOk(response, "변경 가능한 시간을 불러오지 못했습니다.");
+
+            const times = await response.json();
+            renderReservationEditTimes(times, reservation, dateInput.value, timeGrid, helper, submitButton, selectTimeId);
+            setStatus("변경할 시간을 선택해 주세요.", "success");
+        } catch (error) {
+            timeGrid.innerHTML = "";
+            helper.textContent = error.message;
+            setStatus(error.message, "error");
+        }
+    }
+
+    function renderReservationEditTimes(times, reservation, selectedDate, timeGrid, helper, submitButton, selectTimeId) {
+        timeGrid.innerHTML = "";
+
+        if (times.length === 0) {
+            helper.textContent = "등록된 시간이 없습니다.";
+            return;
+        }
+
+        helper.textContent = "변경 가능한 시간만 선택할 수 있습니다.";
+
+        times.forEach((time) => {
+            const isCurrentReservationTime = selectedDate === reservation.date && time.id === reservation.time.id;
+            const canSelect = time.available || isCurrentReservationTime;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "time-slot";
+            button.disabled = !canSelect;
+            button.dataset.timeId = String(time.id);
+            button.innerHTML = `
+                <strong>${escapeHtml(time.time)}</strong>
+                <small class="${canSelect ? "available" : "booked"}">${isCurrentReservationTime ? "현재 예약" : time.available ? "변경 가능" : "예약 완료"}</small>
+            `;
+
+            if (canSelect) {
+                button.addEventListener("click", () => {
+                    selectTimeId(time.id);
+                    submitButton.disabled = false;
+
+                    timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
+                        slot.classList.toggle("selected", Number(slot.dataset.timeId) === time.id);
+                    });
+                    setStatus(`${time.time} 시간으로 변경할 수 있습니다.`, "neutral");
+                });
+            }
+
+            timeGrid.appendChild(button);
+        });
+    }
+
+    async function updateReservation(reservationId, userName, date, timeId, button) {
+        if (!timeId) {
+            setStatus("변경할 시간을 선택해 주세요.", "error");
+            return;
+        }
+
+        button.disabled = true;
+        setStatus("예약을 변경하는 중입니다.", "neutral");
+
+        try {
+            const response = await fetch(`/api/v1/reservations/${reservationId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: userName,
+                    date,
+                    timeId
+                })
+            });
+            await ensureOk(response, "예약 변경에 실패했습니다.");
+
+            const updatedReservation = await response.json();
+            await loadUserReservations();
+            await loadPopularThemes();
+
+            if (state.selectedThemeId && reservationDateInput.value) {
+                await loadAvailableTimes();
+            }
+
+            setStatus(`예약 #${updatedReservation.id}을 변경했습니다.`, "success");
+        } catch (error) {
+            button.disabled = false;
+            setStatus(error.message, "error");
+        }
     }
 
     async function cancelReservation(reservationId, userName, button) {

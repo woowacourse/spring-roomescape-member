@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.exception.PastReservationCancelNotAllowedException;
 import roomescape.exception.PastReservationNotAllowedException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationOwnerMismatchException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -55,11 +58,38 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
+    @Transactional
+    public Reservation updateReservation(Long id, LocalDate date, String name, Long timeId) {
+        ReservationTime reservationTime = findReservationTime(timeId);
+        validateReservationOwnerName(name, findReservation(id));
+        validatePastReservationCreate(date, reservationTime.getStartAt());
+        try {
+            reservationDao.updateById(id, date, timeId);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationAlreadyExistsException();
+        }
+        return reservationDao.findReservationById(id);
+    }
+
+    private void validateReservationOwnerName(String name, Reservation reservation) {
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationOwnerMismatchException();
+        }
+    }
+
     private Reservation findReservation(Long id) {
         try {
             return reservationDao.findReservationById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new ReservationNotFoundException();
+        }
+    }
+
+    private ReservationTime findReservationTime(Long id) {
+        try {
+            return reservationTimeDao.findReservationTimeById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReservationTimeNotFoundException();
         }
     }
 

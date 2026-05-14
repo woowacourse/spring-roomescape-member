@@ -82,6 +82,11 @@ public class ReservationDao {
         return reservation;
     }
 
+    public int updateById(Long id, LocalDate date, Long timeId) {
+        String sql = "update reservation set date = ?, time_id = ? where id = ?";
+        return jdbcTemplate.update(sql, date.toString(), timeId, id);
+    }
+
     public Long insertWithKeyHolder(String name, LocalDate date, Long timeId, Long themeId) {
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
