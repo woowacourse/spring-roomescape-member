@@ -3,7 +3,7 @@ package roomescape.service.stub;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.Theme;
 import roomescape.repository.ThemeRepository;
 
 public class StubThemeRepository implements ThemeRepository {

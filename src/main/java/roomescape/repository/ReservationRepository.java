@@ -8,11 +8,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Name;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 @Repository
 public class ReservationRepository {

@@ -17,11 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationUpdateRequest;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Name;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -35,7 +35,7 @@ class ReservationServiceTest {
             ReservationTime.of(1L, LocalTime.of(10, 0)),
             Theme.of(1L, "any", "any", "any")
     );
-    
+
     @Mock
     private ReservationRepository reservationRepository;
 
@@ -50,18 +50,18 @@ class ReservationServiceTest {
 
     @Test
     void 예약_취소_성공() {
-        given(reservationRepository.existsById(1L)).willReturn(true);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
 
-        reservationService.cancel(1L);
+        reservationService.cancel(1L, LocalDateTime.MIN);
 
         verify(reservationRepository).deleteById(1L);
     }
 
     @Test
     void 존재하지_않는_예약_취소시_예외_발생() {
-        given(reservationRepository.existsById(999L)).willReturn(false);
+        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
 
-        Assertions.assertThatThrownBy(() -> reservationService.cancel(999L))
+        Assertions.assertThatThrownBy(() -> reservationService.cancel(999L, LocalDateTime.MIN))
                 .isInstanceOf(RoomEscapeException.class);
     }
 

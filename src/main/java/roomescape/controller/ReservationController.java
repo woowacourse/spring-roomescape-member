@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.controller.dto.ReservationUpdateRequest;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -56,7 +56,7 @@ public class ReservationController {
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
-        reservationService.cancel(id);
+        reservationService.cancel(id, LocalDateTime.now());
     }
 
     @PutMapping("/reservations/{id}")

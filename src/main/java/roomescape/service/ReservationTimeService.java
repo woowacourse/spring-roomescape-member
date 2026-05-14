@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.AvailableTimeFindRequest;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 

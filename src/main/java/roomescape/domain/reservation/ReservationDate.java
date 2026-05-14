@@ -1,0 +1,54 @@
+package roomescape.domain.reservation;
+
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
+import java.time.LocalDate;
+import java.util.Objects;
+
+public class ReservationDate {
+    private final LocalDate date;
+
+    private ReservationDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public static ReservationDate from(LocalDate date) {
+        validateIsNull(date);
+        return new ReservationDate(date);
+    }
+
+    private static void validateIsNull(Object value) {
+        if (value == null) {
+            throw new RoomEscapeException(ErrorCode.DATE_MUST_NOT_BE_NULL);
+        }
+    }
+
+    public boolean isBefore(LocalDate target) {
+        return date.isBefore(target);
+    }
+
+    public boolean isEqual(LocalDate target) {
+        return date.isEqual(target);
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationDate that = (ReservationDate) o;
+        return Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date);
+    }
+}

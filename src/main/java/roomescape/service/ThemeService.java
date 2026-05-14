@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.Theme;
 import roomescape.repository.ThemeRepository;
 
 @Service

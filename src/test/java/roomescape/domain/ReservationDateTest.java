@@ -4,6 +4,7 @@ import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.ReservationDate;
 
 public class ReservationDateTest {
     @Test
