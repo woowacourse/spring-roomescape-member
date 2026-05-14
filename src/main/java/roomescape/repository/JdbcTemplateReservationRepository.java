@@ -50,20 +50,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         }
     }
 
-    @Override
-    public List<Reservation> findAllReservations() {
-        return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
-                        "t.id AS time_id, t.start_at, " +
-                        "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
-                        "th.thumbnail_url AS theme_thumbnail_url " +
-                        "FROM reservation r " +
-                        "JOIN reservation_time t ON r.time_id = t.id " +
-                        "JOIN theme th ON r.theme_id = th.id",
-                reservationRowMapper()
-        );
-    }
-
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
@@ -81,6 +67,20 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     reservationTime,
                     theme);
         };
+    }
+
+    @Override
+    public List<Reservation> findAllReservations() {
+        return jdbcTemplate.query(
+                "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                        "t.id AS time_id, t.start_at, " +
+                        "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
+                        "th.thumbnail_url AS theme_thumbnail_url " +
+                        "FROM reservation r " +
+                        "JOIN reservation_time t ON r.time_id = t.id " +
+                        "JOIN theme th ON r.theme_id = th.id",
+                reservationRowMapper()
+        );
     }
 
     @Override

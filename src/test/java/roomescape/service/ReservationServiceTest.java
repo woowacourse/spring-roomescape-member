@@ -244,7 +244,8 @@ class ReservationServiceTest {
         given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
         given(reservationRepository.countReservationsOf(any(), anyLong(), anyLong())).willReturn(1);
         assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
     }
 
     @Test

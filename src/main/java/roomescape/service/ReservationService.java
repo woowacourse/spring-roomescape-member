@@ -81,11 +81,13 @@ public class ReservationService {
         return reservationRepository.findReservationsByName(name);
     }
 
+    @Transactional
     public Reservation editReservation(Long id, ReservationEditCommand command, LocalDateTime now) {
         Reservation reservation = getValidReservation(id, now);
         int reservationCount = reservationRepository.countReservationsOf(command.date(), command.timeId(),
                 reservation.themeId());
         checkReservationDuplication(reservationCount);
+
         try {
             reservationRepository.updateReservation(id, command);
             return getValidReservation(id, now);
