@@ -1,16 +1,13 @@
 package roomescape.fake;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.http.HttpStatus;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.ThemeSortType;
-import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ThemeErrorCode;
+import roomescape.global.exception.customException.EntityNotFoundException;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -44,7 +41,7 @@ public class FakeThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         Theme removed = store.remove(id);
         if (removed == null) {
-            throw new EntityNotFoundException("요청한 테마를 찾을 수 없습니다.");
+            throw new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND);
         }
     }
 

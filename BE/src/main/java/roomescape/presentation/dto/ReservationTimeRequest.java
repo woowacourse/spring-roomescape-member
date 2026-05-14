@@ -1,7 +1,8 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalTime;
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ReservationTimeErrorCode;
+import roomescape.global.exception.customException.BadRequestException;
 
 public record ReservationTimeRequest(
         LocalTime startAt
@@ -12,9 +13,7 @@ public record ReservationTimeRequest(
 
     private void validateStartAtNotEmpty(LocalTime startAt) {
         if (startAt == null) {
-            throw new EntityNotFoundException("예약 시간을 입력해 주세요. startAt: %s"
-                    .formatted(startAt)
-            );
+            throw new BadRequestException(ReservationTimeErrorCode.RESERVATION_TIME_START_AT_REQUIRED);
         }
     }
 }

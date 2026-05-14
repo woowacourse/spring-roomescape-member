@@ -10,7 +10,8 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.domain.ThemeSortType;
-import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ThemeErrorCode;
+import roomescape.global.exception.customException.BusinessException;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,9 +46,7 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new BusinessException("예약이 연결된 테마는 삭제할 수 없습니다. themeId: %d"
-                    .formatted(id)
-            );
+            throw new BusinessException(ThemeErrorCode.THEME_IN_USE);
         }
         themeRepository.deleteById(id);
     }

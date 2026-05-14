@@ -1,6 +1,8 @@
 package roomescape.presentation.dto;
 
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.ThemeErrorCode;
+import roomescape.global.exception.customException.BadRequestException;
 
 public record ThemeRequest(
         String name,
@@ -14,26 +16,20 @@ public record ThemeRequest(
     }
 
     private static void validateNameNotEmpty(String name) {
-        validateStringValueNotEmpty(name, new EntityNotFoundException("테마 이름을 입력해 주세요. name: %s"
-                .formatted(name)
-        ));
+        validateStringValueNotEmpty(name, ThemeErrorCode.THEME_NAME_REQUIRED);
     }
 
     private static void validateDescriptionNotEmpty(String description) {
-        validateStringValueNotEmpty(description, new EntityNotFoundException("테마 설명을 입력해 주세요. description: %s"
-                .formatted(description))
-        );
+        validateStringValueNotEmpty(description, ThemeErrorCode.THEME_DESCRIPTION_REQUIRED);
     }
 
     private static void validateThumbnailNotEmpty(String thumbnail) {
-        validateStringValueNotEmpty(thumbnail, new EntityNotFoundException("테마 썸네일을 입력해 주세요. thumbnail: %s"
-                .formatted(thumbnail))
-        );
+        validateStringValueNotEmpty(thumbnail, ThemeErrorCode.THEME_THUMBNAIL_REQUIRED);
     }
 
-    private static void validateStringValueNotEmpty(String description, EntityNotFoundException reservationException) {
+    private static void validateStringValueNotEmpty(String description, ErrorCode errorCode) {
         if (description == null || description.trim().isBlank()) {
-            throw reservationException;
+            throw new BadRequestException(errorCode);
         }
     }
 }

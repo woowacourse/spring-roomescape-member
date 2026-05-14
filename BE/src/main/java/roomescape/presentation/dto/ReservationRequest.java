@@ -1,7 +1,8 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalDate;
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ReservationErrorCode;
+import roomescape.global.exception.customException.BadRequestException;
 
 public record ReservationRequest(
         String name,
@@ -18,33 +19,25 @@ public record ReservationRequest(
 
     private static void validateNameNotEmpty(String name) {
         if (name == null || name.trim().isBlank()) {
-            throw new EntityNotFoundException("예약자 이름을 입력해 주세요. name: %s"
-                    .formatted(name)
-            );
+            throw new BadRequestException(ReservationErrorCode.RESERVATION_NAME_REQUIRED);
         }
     }
     
     private static void validateTimeIdNotEmpty(Long timeId) {
         if (timeId == null) {
-            throw new EntityNotFoundException("예약 시간을 선택해 주세요. timeId: %d"
-                    .formatted(timeId)
-            );
+            throw new BadRequestException(ReservationErrorCode.RESERVATION_TIME_REQUIRED);
         }
     }
 
     private static void validateThemeIdNotEmpty(Long themeId) {
         if (themeId == null) {
-            throw new EntityNotFoundException("예약 테마를 선택해 주세요. themeId: %d"
-                    .formatted(themeId)
-            );
+            throw new BadRequestException(ReservationErrorCode.RESERVATION_THEME_REQUIRED);
         }
     }
 
     private static void validateDateNotEmpty(LocalDate date) {
         if (date == null) {
-            throw new EntityNotFoundException("예약 날짜를 선택해 주세요. date: %s"
-                    .formatted(date)
-            );
+            throw new BadRequestException(ReservationErrorCode.RESERVATION_DATE_REQUIRED);
         }
     }
 }
