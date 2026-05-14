@@ -70,7 +70,7 @@
     **Response (200 OK)**
   ```json
   {
-    "availableTimes": [
+    "times": [
       {
         "timeId": 1,
         "time": "18:00",

@@ -69,15 +69,15 @@ class ThemeServiceTest {
         when(reservationTimeRepository.findAll()).thenReturn(reservationTimes);
         when(themeRepository.findReservedTimeIds(any(), any())).thenReturn(reservedTimeIds);
 
-        List<AvailableTime> result = themeService.findAvailableTimes(1L, LocalDate.of(2026, 5, 6));
+        List<TimeAvailability> result = themeService.findAvailableTimes(1L, LocalDate.of(2026, 5, 6));
 
         verify(reservationTimeRepository, times(1)).findAll();
         verify(themeRepository, times(1)).findReservedTimeIds(any(), any());
         assertThat(result).containsExactly(
-                new AvailableTime(1L, LocalTime.of(13, 0), false),
-                new AvailableTime(2L, LocalTime.of(15, 0), true),
-                new AvailableTime(3L, LocalTime.of(18, 0), false),
-                new AvailableTime(4L, LocalTime.of(20, 0), true)
+                new TimeAvailability(1L, LocalTime.of(13, 0), false),
+                new TimeAvailability(2L, LocalTime.of(15, 0), true),
+                new TimeAvailability(3L, LocalTime.of(18, 0), false),
+                new TimeAvailability(4L, LocalTime.of(20, 0), true)
         );
     }
 

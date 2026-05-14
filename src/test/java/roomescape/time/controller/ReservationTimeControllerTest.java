@@ -41,8 +41,8 @@ class ReservationTimeControllerTest {
 
         mockMvc.perform(get("/times"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].startAt").value("11:00"));
+                .andExpect(jsonPath("$.times.length()").value(4))
+                .andExpect(jsonPath("$.times[0].id").value(1L))
+                .andExpect(jsonPath("$.times[1].startAt").value("11:00"));
     }
 }

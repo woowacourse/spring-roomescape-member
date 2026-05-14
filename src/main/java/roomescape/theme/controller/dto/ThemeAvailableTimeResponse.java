@@ -1,7 +1,7 @@
 package roomescape.theme.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomescape.theme.service.AvailableTime;
+import roomescape.theme.service.TimeAvailability;
 
 import java.time.LocalTime;
 
@@ -11,11 +11,11 @@ public record ThemeAvailableTimeResponse(
         LocalTime startAt,
         Boolean isAvailable
 ) {
-    public static ThemeAvailableTimeResponse from(AvailableTime availableTime) {
+    public static ThemeAvailableTimeResponse from(TimeAvailability timeAvailability) {
         return new ThemeAvailableTimeResponse(
-                availableTime.id(),
-                availableTime.time(),
-                availableTime.isAvailable()
+                timeAvailability.id(),
+                timeAvailability.startAt(),
+                timeAvailability.isAvailable()
         );
     }
 }

@@ -49,8 +49,8 @@ class ThemeE2ETest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("name", contains("공포", "추리"));
+                .body("themes.size()", is(2))
+                .body("themes.name", contains("공포", "추리"));
     }
 
     @Test
@@ -67,9 +67,9 @@ class ThemeE2ETest {
                 .when().get("/themes/1/available-times?date=2026-05-07")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("find { it.id == 1 }.isAvailable", is(false))
-                .body("find { it.id == 2 }.isAvailable", is(true));
+                .body("times.size()", is(2))
+                .body("times.find { it.id == 1 }.isAvailable", is(false))
+                .body("times.find { it.id == 2 }.isAvailable", is(true));
     }
 
     @Test
@@ -94,11 +94,11 @@ class ThemeE2ETest {
                 .when().get("/themes/popular?days=7&limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("[0].name", is("추리"))
-                .body("[0].rank", is(1))
-                .body("[1].name", is("공포"))
-                .body("[1].rank", is(2));
+                .body("themes.size()", is(2))
+                .body("themes[0].name", is("추리"))
+                .body("themes[0].rank", is(1))
+                .body("themes[1].name", is("공포"))
+                .body("themes[1].rank", is(2));
     }
 
     @Test
@@ -136,6 +136,6 @@ class ThemeE2ETest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("themes.size()", is(0));
     }
 }

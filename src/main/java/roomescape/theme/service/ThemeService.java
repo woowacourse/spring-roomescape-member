@@ -27,12 +27,12 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<AvailableTime> findAvailableTimes(Long id, LocalDate date) {
+    public List<TimeAvailability> findAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(id, date);
+        List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(themeId, date);
 
         return reservationTimes.stream()
-                .map(t -> AvailableTime.of(
+                .map(t -> TimeAvailability.of(
                         t.getId(),
                         t.getStartAt(),
                         !reservedTimeIds.contains(t.getId())))

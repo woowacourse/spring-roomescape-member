@@ -47,14 +47,14 @@ public class ThemeRepository {
         }
     }
 
-    public List<Long> findReservedTimeIds(Long id, LocalDate date) {
+    public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
         String sql = "SELECT r.time_id FROM reservation r " +
                 "JOIN reservation_time rt ON r.time_id = rt.id " +
                 "WHERE r.theme_id = ? AND r.date = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 rs.getLong("time_id"),
-                id, date);
+                themeId, date);
     }
 
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
