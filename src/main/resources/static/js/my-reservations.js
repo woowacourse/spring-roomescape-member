@@ -48,7 +48,7 @@ function buildRow(r) {
   row.appendChild(cell(r.id));
   row.appendChild(cell(r.theme ? r.theme.name : '-'));
   row.appendChild(cell(r.date));
-  row.appendChild(cell(formatTime(r.time && r.time.startAt)));
+  row.appendChild(cell(formatTime(r.time)));
 
   const actions = document.createElement('td');
   actions.className = 'actions-cell';
@@ -75,7 +75,7 @@ function startEdit(row, r) {
     const opt = document.createElement('option');
     opt.value = t.id;
     opt.textContent = formatTime(t.startAt);
-    if (r.time && t.id === r.time.id) opt.selected = true;
+    if (t.startAt === r.time) opt.selected = true;
     timeSelect.appendChild(opt);
   });
   cells[3].appendChild(timeSelect);
