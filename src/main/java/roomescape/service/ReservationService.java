@@ -1,7 +1,8 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationAllResponse;
@@ -23,12 +24,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository, Clock clock) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public ReservationAllResponse read() {
@@ -67,13 +70,12 @@ public class ReservationService {
     }
 
     private void reservationRequestDayCheck(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        if (date.isBefore(now.toLocalDate())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_DATE);
         }
-        if (date.isEqual(LocalDate.now())) {
-            if (time.startAt().getHour() <= LocalTime.now().getHour()) {
-                throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_TIME);
-            }
+        if (date.isEqual(now.toLocalDate()) && time.startAt().getHour() <= now.getHour()) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_TIME);
         }
     }
 
