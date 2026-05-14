@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,12 @@ public class ReservationService {
     @Transactional
     public Reservation cancel(Long id) {
         Reservation reservation = getReservation(id);
+
+        if (LocalDateTime.of(reservation.date(), reservation.time()).isBefore(LocalDateTime.now())) {
+            log.warn("Cannot cancel past reservation: id={}, date={}, time={}", id, reservation.date(), reservation.time());
+            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+
         reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);
         log.info("Reservation canceled: id={}, name={}, date={}, time={}, theme={}", reservation.id(), reservation.name(), reservation.date(), reservation.time(), reservation.theme().name());

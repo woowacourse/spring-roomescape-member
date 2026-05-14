@@ -17,6 +17,7 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
@@ -34,6 +35,9 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     private final String name = "한다";
     private final LocalDate date1 = LocalDate.now().plusWeeks(1);
@@ -119,7 +123,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
-    void updateStatus_canceled() {
+    void cancel() {
         // given
         Reservation savedReservation = reservationService.create(name, date1, reservationTime1.id(), theme1.id());
 
@@ -128,5 +132,21 @@ class ReservationServiceTest {
 
         // then
         assertThat(actual.status()).isEqualTo(ReservationStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약 취소 시 예외가 발생한다.")
+    void cancel_past_reservation() {
+        // given
+        Reservation pastReservation = Reservation.load(
+                null, "한다", LocalDate.of(2000, 1, 1),
+                reservationTime1.startAt(),
+                theme1, ReservationStatus.RESERVED);
+        Reservation saved = reservationRepository.save(pastReservation);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancel(saved.id()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
     }
 }
