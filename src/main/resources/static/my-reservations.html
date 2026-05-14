@@ -232,6 +232,30 @@
             padding: 32px 0;
             text-align: center;
         }
+
+        .toast {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 12px 24px;
+            background: #1d6b1f;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
     </style>
 </head>
 <body>
@@ -240,6 +264,7 @@
     <a href="index.html">← 메인으로</a>
 </header>
 <main>
+    <div id="toast" class="toast"></div>
     <div class="lookup">
         <input type="text" id="name-input" placeholder="이름을 입력하세요" maxlength="30">
         <button id="lookup-btn">조회</button>
@@ -363,8 +388,8 @@
                 {method: 'DELETE'}
             );
             if (res.status === 204) {
-                card.style.opacity = '0.4';
-                setTimeout(() => lookup(), 500);
+                showToast('예약이 취소되었습니다.');
+                await lookup();
                 return;
             }
             const msg = await extractErrorMessage(res);
@@ -423,7 +448,9 @@
 
     async function onSubmitUpdate(card, id, themeId) {
         const date = card.querySelector('.update-date').value;
-        const timeId = card.querySelector('.update-time').value;
+        const timeSelect = card.querySelector('.update-time');
+        const timeId = timeSelect.value;
+        const timeText = timeSelect.selectedOptions[0]?.text || '';  // ← 추가
         const msgEl = card.querySelector('.card-message');
 
         msgEl.className = 'card-message';
@@ -440,9 +467,8 @@
             });
 
             if (res.ok) {
-                msgEl.className = 'card-message success';
-                msgEl.textContent = '변경되었습니다.';
-                setTimeout(() => lookup(), 800);
+                showToast(`${date} ${timeText}로 변경되었습니다.`);
+                await lookup();
                 return;
             }
 
@@ -450,6 +476,7 @@
             msgEl.className = 'card-message error';
             msgEl.textContent = msg;
         } catch (e) {
+            console.error('변경 처리 중 오류:', e);
             msgEl.className = 'card-message error';
             msgEl.textContent = '변경에 실패했습니다.';
         }
@@ -462,6 +489,13 @@
         } catch {
             return '알 수 없는 오류가 발생했습니다.';
         }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     function escapeHtml(s) {
