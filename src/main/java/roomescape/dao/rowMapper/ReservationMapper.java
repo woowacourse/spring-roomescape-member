@@ -5,6 +5,7 @@ import roomescape.domain.reservation.UserName;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.ThemeName;
+import roomescape.domain.reservation.theme.ThumbnailUrl;
 import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
 
@@ -19,7 +20,7 @@ public final class ReservationMapper {
                 rs.getLong("theme_id"),
                 ThemeName.parse(rs.getString("theme_name")),
                 Description.parse(rs.getString("description")),
-                rs.getString("url")
+                ThumbnailUrl.parse(rs.getString("url"))
         );
         return new Reservation(
                 rs.getLong("id"),

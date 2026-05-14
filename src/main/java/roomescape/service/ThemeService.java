@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.ThemeName;
+import roomescape.domain.reservation.theme.ThumbnailUrl;
 import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
 import roomescape.dto.request.ThemeRequest;
@@ -67,7 +68,7 @@ public class ThemeService {
                 null,
                 ThemeName.parse(request.name()),
                 Description.parse(request.description()),
-                imageUrl
+                ThumbnailUrl.parse(imageUrl)
         );
 
         Theme saved = themeDao.save(theme);

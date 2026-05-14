@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.Theme;
 import roomescape.domain.reservation.theme.ThemeName;
+import roomescape.domain.reservation.theme.ThumbnailUrl;
 
 public final class ThemeMapper {
 
@@ -12,7 +13,7 @@ public final class ThemeMapper {
                 rs.getLong("id"),
                 ThemeName.parse(rs.getString("name")),
                 Description.parse(rs.getString("description")),
-                rs.getString("url")
+                ThumbnailUrl.parse(rs.getString("url"))
         );
     };
 
