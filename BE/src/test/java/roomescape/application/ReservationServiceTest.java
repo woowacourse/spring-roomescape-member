@@ -21,6 +21,7 @@ import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.customException.ConflictException;
 import roomescape.global.exception.customException.DomainRuleViolationException;
+import roomescape.global.exception.customException.ForbiddenException;
 import roomescape.global.exception.customException.NotFoundException;
 import roomescape.presentation.dto.ReservationRequest;
 
@@ -137,10 +138,9 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("삭제 시 도메인 제약 사항 위반 시 예외가 전파된다")
-    void deleteById_fail_due_to_domain_rule_propagation() {
+    @DisplayName("과거 기록 삭제 시도하면 DomainRuleViolationException이 전파된다")
+    void deleteById_fail_due_to_delete_past_reservation() {
         // given
-        LocalDateTime deleteAt = LocalDateTime.of(today, savedTime.startAt());
         LocalDateTime saveNowTimeValue = LocalDateTime.of(yesterday.minusDays(1), savedTime.startAt());
         Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
                 TESTER_NAME, yesterday, savedTime, savedTheme, saveNowTimeValue
@@ -150,6 +150,21 @@ class ReservationServiceTest {
         assertThatThrownBy(
                 () -> reservationService.deleteById(savedReservation.id(), TESTER_NAME)
         ).isInstanceOf(DomainRuleViolationException.class);
+    }
+
+    @Test
+    @DisplayName("나의 것이 아닌 예약을 삭제 시도하면 ForbiddenException이 전파된다")
+    void deleteById_fail_due_to_domain_rule_propagation() {
+        // given
+        LocalDateTime saveNowTimeValue = LocalDateTime.of(today, savedTime.startAt());
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
+                TESTER_NAME, tomorrow, savedTime, savedTheme, saveNowTimeValue
+        ));
+
+        // when & then
+        assertThatThrownBy(
+                () -> reservationService.deleteById(savedReservation.id(), "다른 사람")
+        ).isInstanceOf(ForbiddenException.class);
     }
 
     @Test
@@ -175,10 +190,10 @@ class ReservationServiceTest {
         Reservation saved = reservationService.save(TESTER_NAME, tomorrow, savedTime.id(),
                 savedTheme.id());
 
-        // 1. 소유권 위반 (NotFoundException 전파)
+        // 1. 소유권 위반 (ForbiddenException 전파)
         assertThatThrownBy(
                 () -> reservationService.updateDateAndTime(saved.id(), "다른사람", null, null)
-        ).isInstanceOf(NotFoundException.class);
+        ).isInstanceOf(ForbiddenException.class);
 
         // 2. 과거 날짜 수정 (DomainRuleViolationException 전파)
         assertThatThrownBy(

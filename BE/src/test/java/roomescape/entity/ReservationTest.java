@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ConflictException;
 import roomescape.global.exception.customException.DomainRuleViolationException;
-import roomescape.global.exception.customException.NotFoundException;
+import roomescape.global.exception.customException.ForbiddenException;
 
 class ReservationTest {
 
@@ -42,8 +42,8 @@ class ReservationTest {
     @DisplayName("본인의 예약이 아닐 경우 예외가 발생한다.")
     void checkOwnership_fail() {
         assertThatThrownBy(() -> reservation.checkOwnership("다른사람"))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage(ErrorCode.RESERVATION_NOT_FOUND_BY_NAME.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(ErrorCode.FORBIDDEN.getMessage());
     }
 
     @Test

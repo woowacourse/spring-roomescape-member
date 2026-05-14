@@ -3,7 +3,6 @@ package roomescape.application;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.entity.Reservation;
@@ -115,16 +114,13 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id, String name) {
-        List<Reservation> ownReservations = reservationRepository.findByName(name);
+        Reservation deleteTarget = reservationRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND_BY_ID)
+        );
 
-        Optional<Reservation> deleteTargetWithWrapper = ownReservations.stream().filter(
-                reservation -> reservation.id().equals(id)
-        ).findAny();
+        deleteTarget.checkOwnership(name);
+        deleteTarget.validateFuture(LocalDateTime.now());
 
-        if (deleteTargetWithWrapper.isPresent()) {
-            Reservation deleteTarget = deleteTargetWithWrapper.get();
-            deleteTarget.validateFuture(LocalDateTime.now());
-            reservationRepository.deleteById(id);
-        }
+        reservationRepository.deleteById(id);
     }
 }

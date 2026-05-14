@@ -6,7 +6,7 @@ import java.util.List;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ConflictException;
 import roomescape.global.exception.customException.DomainRuleViolationException;
-import roomescape.global.exception.customException.NotFoundException;
+import roomescape.global.exception.customException.ForbiddenException;
 
 public record Reservation(
         Long id,
@@ -32,7 +32,7 @@ public record Reservation(
 
     public void checkOwnership(String name) {
         if (!this.name.equals(name)) {
-            throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND_BY_NAME);
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
         }
     }
 
