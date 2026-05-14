@@ -43,7 +43,8 @@ class ReservationTimeServiceTest {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository, themeRepository);
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository,
+                themeRepository);
     }
 
     @Test

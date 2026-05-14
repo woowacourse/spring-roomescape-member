@@ -12,13 +12,15 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationInvalidException;
+import roomescape.reservation.exception.ReservationNotOwnerException;
+import roomescape.reservation.exception.ReservationPastDateException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
 
-    @DisplayName("예약 정상 생성")
     @Test
+    @DisplayName("예약 정상 생성")
     void createReservation_success() {
         // given
         String name = "쿠다";
@@ -43,8 +45,9 @@ class ReservationTest {
                 .isInstanceOf(ReservationInvalidException.class);
     }
 
-    @DisplayName("예약 날짜 null 예외")
+
     @Test
+    @DisplayName("예약 날짜 null 예외")
     void validateDate_throws() {
         // given
         String name = "쿠다";
@@ -56,8 +59,9 @@ class ReservationTest {
                 .isInstanceOf(ReservationInvalidException.class);
     }
 
-    @DisplayName("예약 시간 null 예외")
+
     @Test
+    @DisplayName("예약 시간 null 예외")
     void validateTime_throws() {
         // given
         String name = "쿠다";
@@ -66,6 +70,54 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, null))
                 .isInstanceOf(ReservationInvalidException.class);
+    }
+
+
+    @Test
+    @DisplayName("예약자 이름 최대 길이 초과 예외")
+    void validateNameLength_throws() {
+        // given
+        String name = "쿠다쿠다쿠다쿠다쿠다쿠"; // 11자
+        LocalDate date = LocalDate.parse("2026-03-08");
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
+
+        // when & then
+        assertThatThrownBy(() -> Reservation.createNew(name, date, 1L))
+                .isInstanceOf(ReservationInvalidException.class);
+
+    }
+
+    @Test
+    @DisplayName("예약 날짜 과거 예외")
+    void validatePastDate_throws() {
+        // given
+        String name = "쿠다";
+        LocalDate date = LocalDate.now().minusDays(1);
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
+        Reservation reservation = Reservation.createNew(name, date, 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservation.validateNotPast(time.getStartAt()))
+                .isInstanceOf(ReservationPastDateException.class);
+
+    }
+
+    @Test
+    @DisplayName("예약 이름 동일하지 않은 경우 예외")
+    void validateNameNotSame_throws() {
+        // given
+        String name1 = "쿠다";
+        String name2 = "쿠다쿠다";
+        LocalDate date = LocalDate.parse("2026-03-08");
+
+        Reservation reservation = Reservation.createNew(name1, date, 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservation.validateOwner(name2))
+                .isInstanceOf(ReservationNotOwnerException.class);
+
     }
 
 }

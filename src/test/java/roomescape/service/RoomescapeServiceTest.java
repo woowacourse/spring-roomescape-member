@@ -5,13 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
-import roomescape.reservation.service.ReservationService;
 import roomescape.testexecutionlistener.TestDatabaseInitializer;
-import roomescape.testexecutionlistener.TestPortInitializer;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

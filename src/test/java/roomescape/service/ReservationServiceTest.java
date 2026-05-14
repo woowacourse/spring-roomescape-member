@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationPastDateException;
 import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.exception.ReservationNotOwnerException;
+import roomescape.reservation.exception.ReservationPastDateException;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
@@ -38,7 +38,7 @@ class ReservationServiceTest {
     private ThemeRepository themeRepository;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
