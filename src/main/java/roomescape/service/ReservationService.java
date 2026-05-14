@@ -46,12 +46,11 @@ public class ReservationService {
 
     public ReservationResult create(ReservationCreateCommand command) {
         validateCommand(command);
-
         ReservationTimeEntity timeEntity = reservationTimeRepository.findById(command.getTimeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다: " + command.getTimeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
 
         ThemeEntity themeEntity = themeRepository.findById(command.getThemeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다: " + command.getThemeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
 
         validateNotPast(command.getDate().atTime(timeEntity.getTime().getStartAt()));
         validateNotDuplicated(command.getDate(), timeEntity.getId(), themeEntity.getId());
