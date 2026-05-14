@@ -14,6 +14,36 @@ import org.junit.jupiter.api.Test;
 public class ReservationAcceptanceTest extends AcceptanceTestSupport{
 
     @Test
+    @DisplayName("예약 삭제 테스트")
+    void deleteReservationTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO reservation
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
+            """);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "user_a")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
     @DisplayName("이름으로 예약을 조회하면 200 상태 코드와 예약 내역들을 반환한다.")
     void findReservationsByNameTest() {
         jdbcTemplate.update("""
