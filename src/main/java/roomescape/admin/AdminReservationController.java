@@ -20,8 +20,7 @@ public class AdminReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        LocalDateTime now = LocalDateTime.now();
-        reservationService.deleteByAdmin(id, now);
+        reservationService.deleteByAdmin(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

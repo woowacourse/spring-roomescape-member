@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -23,17 +24,21 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest reservationRequest, LocalDateTime now) {
-
+    public ReservationResponse create(ReservationRequest reservationRequest) {
+        LocalDateTime now = LocalDateTime.now(clock);
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(reservationRequest.themeId()).stream().findFirst()
@@ -74,8 +79,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse update(long id, ReservationRequest reservationRequest, String userName,
-                                      LocalDateTime now) {
+    public ReservationResponse update(long id, ReservationRequest reservationRequest, String userName) {
+        LocalDateTime now = LocalDateTime.now(clock);
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
@@ -108,7 +113,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteByAdmin(Long id, LocalDateTime now) {
+    public void deleteByAdmin(Long id) {
+        LocalDateTime now = LocalDateTime.now(clock);
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
@@ -120,7 +126,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(Long id, String userName, LocalDateTime now) {
+    public void delete(Long id, String userName) {
+        LocalDateTime now = LocalDateTime.now(clock);
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 

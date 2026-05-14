@@ -76,7 +76,7 @@ class ReservationControllerTest {
         ReservationResponse reservationResponse = new ReservationResponse(
                 1L, "동키", themeResponse, LocalDate.of(2026, 6, 1), timeResponse
         );
-        given(reservationService.update(anyLong(), any(), anyString(), any()))
+        given(reservationService.update(anyLong(), any(), anyString()))
                 .willReturn(reservationResponse);
 
         Map<String, Object> body = new HashMap<>();
@@ -95,8 +95,7 @@ class ReservationControllerTest {
     @Test
     void 예약_삭제() throws Exception {
         String decodeUserName = URLDecoder.decode("동키", StandardCharsets.UTF_8);
-        LocalDateTime now = LocalDateTime.now();
-        willDoNothing().given(reservationService).delete(1L, "동키", now);
+        willDoNothing().given(reservationService).delete(1L, "동키");
 
         mockMvc.perform(delete("/api/reservations/1")
                         .header("X-User-Name", decodeUserName))
@@ -126,7 +125,7 @@ class ReservationControllerTest {
     @Test
     void 다른_사용자_예약_삭제_요청시_403() throws Exception {
         willThrow(new ForbiddenException("본인의 예약만 삭제할 수 있습니다."))
-                .given(reservationService).delete(anyLong(), anyString(), any(LocalDateTime.class));
+                .given(reservationService).delete(anyLong(), anyString());
 
         mockMvc.perform(delete("/api/reservations/1")
                         .header("X-User-Name", "그해"))

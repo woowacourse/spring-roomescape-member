@@ -3,7 +3,10 @@ package roomescape.theme;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +22,20 @@ class ThemeServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
+    @Mock
+    private Clock clock;
+
     @InjectMocks
     private ThemeService themeService;
 
     @Test
     void 인기_테마_조회() {
         LocalDate testDate = LocalDate.of(2026, 5, 10);
+        Instant fixedInstant = testDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        given(clock.instant()).willReturn(fixedInstant);
+        given(clock.getZone()).willReturn(ZoneId.systemDefault());
+
         LocalDate expectedStart = testDate.minusDays(7);
         LocalDate expectedEnd = testDate.minusDays(1);
         int limit = 10;
@@ -34,7 +45,7 @@ class ThemeServiceTest {
         given(themeRepository.findPopularThemes(expectedStart, expectedEnd, limit))
                 .willReturn(List.of(theme));
 
-        ThemesResponse themes = themeService.readPopularThemes(testDate);
+        ThemesResponse themes = themeService.readPopularThemes();
 
         assertThat(themes.themes()).hasSize(1);
         assertThat(themes.themes().get(0).id()).isEqualTo(5L);

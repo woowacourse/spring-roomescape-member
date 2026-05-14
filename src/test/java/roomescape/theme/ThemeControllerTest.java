@@ -51,7 +51,7 @@ class ThemeControllerTest {
 
     @Test
     void 인기_테마_조회() throws Exception {
-        given(themeService.readPopularThemes(any(LocalDate.class)))
+        given(themeService.readPopularThemes())
                 .willReturn(ThemesResponse.from(List.of(
                         new ThemeResponse(5L, "초보자 방",
                                 "방탈출이 처음이신 분들을 위한 입문 테마.",
