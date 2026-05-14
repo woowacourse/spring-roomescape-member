@@ -43,6 +43,8 @@ public class ThemeService {
     }
 
     public ThemeReservationTimesResponse findAllThemeReservationTimes(Long themeId, LocalDate date) {
+        findThemeByIdOrThrow(themeId);
+
         List<ThemeReservationTimeResult> timeResults = themeRepository.findAllReservationTimesByThemeIdAndDate(
                 themeId,
                 date
@@ -92,8 +94,7 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse updateTheme(Long id, ThemeUpdateRequest request) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+        Theme theme = findThemeByIdOrThrow(id);
 
         if (themeRepository.existsByNameAndIdNot(request.name(), id)) {
             throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
@@ -115,5 +116,10 @@ public class ThemeService {
         } catch (DataIntegrityViolationException exception) {
             throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
         }
+    }
+
+    private Theme findThemeByIdOrThrow(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
     }
 }

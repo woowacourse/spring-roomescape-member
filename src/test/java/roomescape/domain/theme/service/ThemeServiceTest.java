@@ -21,9 +21,11 @@ import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.exception.ThemeErrorCode;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.theme.repository.ThemeReservationTimeResult;
 import roomescape.domain.theme.request.ThemeCreateRequest;
 import roomescape.domain.theme.request.ThemeUpdateRequest;
 import roomescape.domain.theme.response.PopularThemesResponse;
+import roomescape.domain.theme.response.ThemeReservationTimesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
 class ThemeServiceTest {
@@ -97,6 +99,42 @@ class ThemeServiceTest {
                 );
 
         verify(themeRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("특정 테마의 예약 가능 시간을 조회한다.")
+    void findAllThemeReservationTimes() {
+        // given
+        Long themeId = 1L;
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        when(themeRepository.findById(themeId))
+                .thenReturn(java.util.Optional.of(Theme.of(themeId, "테마", "설명", "url")));
+        when(themeRepository.findAllReservationTimesByThemeIdAndDate(themeId, date))
+                .thenReturn(List.of(new ThemeReservationTimeResult(1L, java.time.LocalTime.of(10, 0), true)));
+
+        // when
+        ThemeReservationTimesResponse response = themeService.findAllThemeReservationTimes(themeId, date);
+
+        // then
+        assertThat(response.times()).hasSize(1);
+        assertThat(response.times().get(0).id()).isEqualTo(1L);
+        verify(themeRepository).findById(themeId);
+        verify(themeRepository).findAllReservationTimesByThemeIdAndDate(themeId, date);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마의 예약 가능 시간을 조회하면 예외가 발생한다.")
+    void findAllThemeReservationTimes_throwsException_whenThemeNotFound() {
+        // given
+        Long themeId = 999L;
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        when(themeRepository.findById(themeId))
+                .thenReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> themeService.findAllThemeReservationTimes(themeId, date))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ThemeErrorCode.THEME_NOT_FOUND.getMessage());
     }
 
     @Test

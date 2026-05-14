@@ -88,6 +88,16 @@ class ThemeControllerTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 테마의 예약 가능 시간 조회는 실패한다.")
+    void getAllThemeReservationTimesWithNotFoundThemeThrowException() {
+        RestAssured.given().log().all()
+                .queryParam("date", "2026-05-05")
+                .when().get("/themes/999/times")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
     @DisplayName("인기 테마 목록을 조회한다.")
     void getPopularThemes() {
         RestAssured.given().log().all()
