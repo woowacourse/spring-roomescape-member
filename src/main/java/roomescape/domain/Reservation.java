@@ -8,8 +8,8 @@ public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
+    private LocalDate date;
+    private ReservationTime time;
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -25,6 +25,11 @@ public class Reservation {
 
     public static Reservation withoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(null, name, date, time, theme);
+    }
+
+    public void changeDateAndTime(LocalDate date, ReservationTime time) {
+        this.date = date;
+        this.time = time;
     }
 
     public Long getId() {

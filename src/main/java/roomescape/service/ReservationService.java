@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -10,10 +11,13 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.dto.ReservationUpdateDtoDateAndTimeIdOnly;
 import roomescape.exception.CannotDeleteReservationException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.exception.ReservationDoesNotExistsException;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
+import roomescape.exception.ThemeDoesNotExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -63,7 +67,7 @@ public class ReservationService {
                 .orElseThrow();
 
         validateNotPast(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
-        validateNotDuplicated(reservationRequestDTO, time, theme);
+        validateNotDuplicated(reservationRequestDTO.date(), time, theme);
 
         Reservation reservation = Reservation.withoutId(
                 reservationRequestDTO.name(),
@@ -74,6 +78,22 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponseDTO.from(savedReservation);
+    }
+
+    public int update(Long reservationId, ReservationUpdateDtoDateAndTimeIdOnly updateDto) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationDoesNotExistsException::new);
+        Theme theme = themeRepository.findById(reservation.getThemeId())
+                .orElseThrow(ThemeDoesNotExistsException::new);
+        ReservationTime reservationTimeForUpdate = reservationTimeRepository.findById(updateDto.timeId())
+                .orElseThrow(ReservationTimeDoesNotExistsException::new);
+
+        validateNotPast(LocalDateTime.of(updateDto.date(), reservationTimeForUpdate.getStartAt()));
+        validateNotDuplicated(updateDto.date(), reservationTimeForUpdate, theme);
+
+        reservation.changeDateAndTime(updateDto.date(), reservationTimeForUpdate);
+
+        return reservationRepository.update(reservation);
     }
 
     // TODO: 도메인 맞게 cancel로 바꾸고, 예약도 booking 고려
@@ -106,13 +126,13 @@ public class ReservationService {
         }
     }
 
-    private void validateNotDuplicated(ReservationRequestDTO reservationRequestDTO, ReservationTime time, Theme theme) {
+    private void validateNotDuplicated(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
-                reservationRequestDTO.date(),
+                date,
                 time.getId(),
                 theme.getId()
         )) {
-            throw new DuplicatedReservationException(reservationRequestDTO.date(), time.getStartAt(), theme.getName());
+            throw new DuplicatedReservationException(date, time.getStartAt(), theme.getName());
         }
     }
 }
