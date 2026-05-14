@@ -186,6 +186,27 @@ class ReservationControllerTest {
     }
 
     @Test
+    void GET_reservations_page가_음수면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/reservations?page=-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("page은(는) 0 이상이어야 합니다."));
+    }
+
+    @Test
+    void GET_reservations_size가_0이면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/reservations?size=0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("size은(는) 1 이상이어야 합니다."));
+    }
+
+    @Test
+    void GET_reservations_size가_상한_초과면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/reservations?size=101"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("size은(는) 100 이하여야 합니다."));
+    }
+
+    @Test
     void GET_reservations_id가_숫자가_아니면_400과_메시지를_반환한다() throws Exception {
         mockMvc.perform(get("/reservations/abc"))
                 .andExpect(status().isBadRequest())

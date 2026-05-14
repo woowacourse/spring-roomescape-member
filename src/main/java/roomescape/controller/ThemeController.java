@@ -1,7 +1,10 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +16,7 @@ import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.ThemeResponses;
 import roomescape.service.ThemeService;
 
+@Validated
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
@@ -25,8 +29,8 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<ThemeResponses> readThemes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
         return ResponseEntity.ok(themeService.getThemes(page, size));
     }
@@ -43,7 +47,8 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<PopularThemeResponses> readPopularThemes(@RequestParam Integer limit) {
+    public ResponseEntity<PopularThemeResponses> readPopularThemes(
+            @RequestParam @Min(1) @Max(100) Integer limit) {
         return ResponseEntity.ok(PopularThemeResponses.from(themeService.getPopularThemes(limit)));
     }
 }
