@@ -74,6 +74,15 @@ class TimeServiceTest {
                 new TimeResponseDto(3L, startAt.plusHours(2))
             );
         }
+
+        @Test
+        void 예약_시간이_없으면_빈_목록을_반환한다() {
+            // when
+            List<TimeResponseDto> actual = timeService.getTimes();
+
+            // then
+            assertThat(actual).isEmpty();
+        }
     }
 
     @Nested

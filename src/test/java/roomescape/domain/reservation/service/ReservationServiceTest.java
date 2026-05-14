@@ -85,6 +85,15 @@ class ReservationServiceTest {
                     ThemeMapper.toResponseDto(theme))
             );
         }
+
+        @Test
+        void 예약이_없으면_빈_목록을_반환한다() {
+            // when
+            List<ReservationResponseDto> actual = reservationService.getReservations();
+
+            // then
+            assertThat(actual).isEmpty();
+        }
     }
 
     @Nested
