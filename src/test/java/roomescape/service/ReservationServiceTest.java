@@ -170,15 +170,16 @@ class ReservationServiceTest {
     }
 
     @DisplayName("존재하지 않는 예약은 취소할 수 없다")
+    @Sql("/initialize_theme_and_time.sql")
     @Test
     void 존재하지_않는_예약을_취소하면_ReservationDoesNotExistsException을_던진다() {
         // when and then
         assertThatThrownBy(() -> reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(
                 new ReservationRequestDTO(
                         "루드비코",
-                        LocalDate.now().plusDays(1),
-                        Long.MAX_VALUE,
-                        Long.MAX_VALUE
+                        LocalDate.now().plusDays(7),
+                        1L,
+                        1L
                 )
         )).isExactlyInstanceOf(ReservationDoesNotExistsException.class);
     }

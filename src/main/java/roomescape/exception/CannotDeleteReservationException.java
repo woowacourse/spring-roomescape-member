@@ -7,4 +7,8 @@ public class CannotDeleteReservationException extends IllegalArgumentException {
     public CannotDeleteReservationException(String additionalMessage) {
         super(ERROR_MESSAGE + additionalMessage);
     }
+
+    public CannotDeleteReservationException(String additionalMessage, Throwable cause) {
+        super(additionalMessage, cause);
+    }
 }

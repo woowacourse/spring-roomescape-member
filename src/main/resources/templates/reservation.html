@@ -156,17 +156,18 @@
         return;
       }
 
-      fetch('/reservations', {
+      fetch('/api/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ themeId: parseInt(themeId), name, date, timeId: selectedTimeId })
       })
-      .then(res => {
+      .then(async res => {
         if (res.status === 201) {
           alert('예약 성공!');
           location.href = '/';
         } else {
-          alert('예약 실패');
+          const errorMsg = await res.text();
+          alert('예약 실패: ' + (errorMsg || '알 수 없는 오류가 발생했습니다.'));
         }
       });
     });

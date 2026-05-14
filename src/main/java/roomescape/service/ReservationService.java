@@ -103,8 +103,13 @@ public class ReservationService {
     }
 
     public int deleteReservationByUsernameAndDateAndTimeIdAndThemeId(ReservationRequestDTO requestDTO) {
-        if (requestDTO.date().isBefore(LocalDate.now())) {
-            throw new CannotDeleteReservationException("과거 시점의 예약입니다.");
+        ReservationTime time = reservationTimeRepository.findById(requestDTO.timeId())
+                .orElseThrow(ReservationTimeDoesNotExistsException::new);
+
+        try {
+            validateNotPast(LocalDateTime.of(requestDTO.date(), time.getStartAt()));
+        } catch (ReservationByPastDateTimeException e) {
+            throw new CannotDeleteReservationException("과거 시점의 예약은 취소할 수 없습니다.", e);
         }
 
         int deletedRows = reservationRepository.deleteByNameAndDateAndTimeIdAndThemeId(
