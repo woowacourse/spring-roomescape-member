@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,6 @@ import roomescape.repository.ReservationTimeRepository;
 @Service
 @Transactional(readOnly = true)
 public class ReservationTimeService {
-    public static final String TIME_SLOT_DOES_NOT_EXIST = "조회된 타임 슬롯이 없습니다.";
-    public static final String INVALID_TIME_ID = "요청한 시간을 찾을 수 없습니다";
-    private static final String DATE_SHOULD_NOT_BE_PAST = "기준 날짜는 과거일 수 없습니다.";
-
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -34,7 +32,7 @@ public class ReservationTimeService {
 
     public ReservationTime find(long reservationTimeId) {
         return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     public List<ReservationTime> findAll() {
@@ -44,7 +42,7 @@ public class ReservationTimeService {
     public List<ReservationTime> findAvailable(AvailableTimeFindRequest request) {
         LocalDate now = LocalDate.now();
         if (now.isAfter(request.getDate())) {
-            throw new IllegalArgumentException(DATE_SHOULD_NOT_BE_PAST);
+            throw new RoomEscapeException(ErrorCode.PAST_DATE_NOT_ALLOWED);
         }
 
         return reservationTimeRepository.findByDateAndTheme(request.getDate(), request.getThemeId());
@@ -53,11 +51,11 @@ public class ReservationTimeService {
     @Transactional
     public void delete(long reservationTimeId) {
         if (!reservationTimeRepository.existsById(reservationTimeId)) {
-            throw new IllegalArgumentException(INVALID_TIME_ID);
+            throw new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
         }
 
         if (reservationRepository.existsByTimeId(reservationTimeId)) {
-            throw new IllegalArgumentException("시간을 사용하는 예약이 존재합니다. 관련 예약을 지우고 요청해 주세요. ");
+            throw new RoomEscapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
 
         reservationTimeRepository.delete(reservationTimeId);

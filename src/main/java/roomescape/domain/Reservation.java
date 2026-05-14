@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
 import java.time.LocalDateTime;
 
 public class Reservation {
@@ -42,13 +44,11 @@ public class Reservation {
     private static void validateAvailableDateTime(ReservationDate requestDate, ReservationTime requestTime,
                                                   LocalDateTime now) {
         if (requestDate.isBefore(now.toLocalDate())) {
-            throw new IllegalArgumentException("지나간 날짜에 대한 예약 생성은 불가능합니다.");
-            // TODO: 예외 처리 클래스 및 메시지
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
 
         if (requestDate.isEqual(now.toLocalDate()) && requestTime.isBefore(now.toLocalTime())) {
-            throw new IllegalArgumentException("지나간 시에 대한 예약 생성은 불가능합니다.");
-            // TODO: 예외 처리 클래스 및 메시지
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
     }
 

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -19,7 +20,7 @@ public class ThemeServiceTest {
         themeService = new ThemeService(themeRepository);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> themeService.find(999L)).isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> themeService.find(999L)).isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
@@ -29,7 +30,7 @@ public class ThemeServiceTest {
         themeService = new ThemeService(themeRepository);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> themeService.delete(999L)).isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> themeService.delete(999L)).isInstanceOf(RoomEscapeException.class);
     }
 
     @Test

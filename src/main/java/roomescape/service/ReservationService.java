@@ -1,8 +1,7 @@
 package roomescape.service;
 
-import static roomescape.service.ReservationTimeService.TIME_SLOT_DOES_NOT_EXIST;
-import static roomescape.service.ThemeService.THEME_DOES_NOT_EXISTS;
-
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,6 @@ import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
-    public static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
-    private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -39,15 +35,15 @@ public class ReservationService {
 
     public Reservation find(long reservationId) {
         return reservationRepository.findById(reservationId).orElseThrow(
-                () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+                () -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
     @Transactional
     public Reservation reserve(ReservationCreateRequest request, LocalDateTime now) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId())
-                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(
-                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS));
+                () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         Reservation reservation = Reservation.reserve(Name.from(request.getName()),
                 ReservationDate.from(request.getDate()),
@@ -55,7 +51,7 @@ public class ReservationService {
 
         if (reservationRepository.existsByTimeAndThemeAndDate(request.getTimeId(), request.getThemeId(),
                 request.getDate())) {
-            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+            throw new RoomEscapeException(ErrorCode.DUPLICATE_RESERVATION);
         }
 
         return reservationRepository.save(reservation);
@@ -64,7 +60,7 @@ public class ReservationService {
     @Transactional
     public void cancel(long reservationId) {
         if (!reservationRepository.existsById(reservationId)) {
-            throw new IllegalArgumentException(INVALID_RESERVATION_ID);
+            throw new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
         }
         reservationRepository.deleteById(reservationId);
     }

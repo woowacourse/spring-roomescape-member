@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.mockito.BDDMockito.given;
 
+import common.exception.RoomEscapeException;
 import java.time.LocalTime;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -37,16 +38,16 @@ public class ReservationTimeServiceTest {
         given(reservationTimeRepository.existsById(999L)).willReturn(false);
 
         Assertions.assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
     void 예약이_있는_시간_삭제시_예외() {
         given(reservationTimeRepository.existsById(1L)).willReturn(true);
-        given(reservationRepository.existsByTimeId(1L)).willThrow(IllegalArgumentException.class);
+        given(reservationRepository.existsByTimeId(1L)).willThrow(RoomEscapeException.class);
 
         Assertions.assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test

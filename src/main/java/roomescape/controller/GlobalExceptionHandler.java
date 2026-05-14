@@ -1,11 +1,12 @@
 package roomescape.controller;
 
 import common.exception.ErrorResponse;
+import common.exception.RoomEscapeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanInstantiationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,18 +19,11 @@ public class GlobalExceptionHandler {
     public static final String DATABASE_ERROR = "데이터 베이스 관련 오류가 발생했습니다. 관리자에게 문의해주세요";
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(DataAccessException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse dataAccessExceptionHandle(DataAccessException e) {
-        log.error("데이터베이스 관련 오류가 발생했습니다", e);
-        return ErrorResponse.create(DATABASE_ERROR);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse illegalArgumentExceptionHandle(IllegalArgumentException e) {
-        log.error("잘못된 요청입니다.", e);
-        return ErrorResponse.create(e.getMessage());
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorResponse> dataAccessExceptionHandle(RoomEscapeException e) {
+        log.error("도메인 관련 오류가 발생했습니다.", e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(ErrorResponse.create(DATABASE_ERROR));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,11 +40,11 @@ public class GlobalExceptionHandler {
         return ErrorResponse.create(e.getMessage());
     }
 
-    @ExceptionHandler(BeanInstantiationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse bindingHandle(BeanInstantiationException e) {
-        log.error("빈 초기화중 문제가 발생했습니다.", e);
-        return ErrorResponse.create(e.getMessage());
+    @ExceptionHandler(DataAccessException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse dataAccessExceptionHandle(DataAccessException e) {
+        log.error("데이터베이스 관련 오류가 발생했습니다", e);
+        return ErrorResponse.create(DATABASE_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

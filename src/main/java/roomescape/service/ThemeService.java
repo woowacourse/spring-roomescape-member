@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,6 @@ import roomescape.repository.ThemeRepository;
 public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
-    public static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
-    private static final String THEME_ID_DOES_NOT_EXIST = "존재하지 않는 ID입니다.";
 
     private final ThemeRepository themeRepository;
 
@@ -25,7 +25,7 @@ public class ThemeService {
 
     public Theme find(long themeId) {
         return themeRepository.findById(themeId).orElseThrow(
-                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS));
+                () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public List<Theme> findAll() {
@@ -41,7 +41,7 @@ public class ThemeService {
     @Transactional
     public void delete(long id) {
         if (!themeRepository.existsById(id)) {
-            throw new IllegalArgumentException(THEME_ID_DOES_NOT_EXIST);
+            throw new RoomEscapeException(ErrorCode.THEME_NOT_FOUND);
         }
         themeRepository.deleteById(id);
     }

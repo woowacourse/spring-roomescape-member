@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -49,7 +50,7 @@ class ReservationServiceTest {
         given(reservationRepository.existsById(999L)).willReturn(false);
 
         Assertions.assertThatThrownBy(() -> reservationService.cancel(999L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
@@ -60,7 +61,7 @@ class ReservationServiceTest {
                 1L);
 
         Assertions.assertThatThrownBy(() -> reservationService.reserve(request, LocalDateTime.MAX))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
