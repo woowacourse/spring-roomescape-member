@@ -5,7 +5,7 @@
 ## 📋 목차
 
 - [프로젝트 구조](#-프로젝트-구조)
-- [API 명세](#-api-명세)
+- [API 명세 및 예약 규칙](#api-명세-및-예약-규칙)
 - [2단계 - 사용자 예약](#2단계---사용자-예약)
 - [테스트 케이스](#-테스트-케이스)
 
@@ -56,19 +56,7 @@
 
 ---
 
-### Controller
-
-#### ReservationController
-
-예약 관련 HTTP 요청을 처리한다.
-
-#### ReservationTimeController
-
-시간 관련 HTTP 요청을 처리한다.
-
----
-
-## API 명세
+## API 명세 및 예약 규칙
 
 | 기능 | 메서드 / URL | 요청 본문 | 응답 |
 |------|-------------|-----------|------|
@@ -85,18 +73,24 @@
 | 테마별 가능 시간 | `GET /times?themeId=&date=yyyy-MM-dd` | — | `[{id, startAt, endAt}, ...]` |
 | 인기 테마 조회 | `GET /themes/best?date=yyyy-MM-dd` | — | `[{id, name}, ...]` |
 
----
+### 비즈니스 규칙
 
-## 예약 규칙 및 에러 처리
-
-예약 생성 및 삭제 요청은 아래 정책을 모두 만족해야 한다. 위반 시 `400 Bad Request` 또는 `409 Conflict`를 반환한다.
-
-| # | 정책 | 위반 시 응답 |
-|---|------|------------|
-| 1 | 지나간 날짜·시간에 대한 예약 생성 불가 | `400 Bad Request` |
+|  | 정책 | 위반 시 응답 |
+|--|--------------------------------------|------------|
+| 1 | 지나간 날짜 및 시간에 대한 예약 생성 불가             | `400 Bad Request` |
 | 2 | 같은 날짜 + 시간 + 테마에 이미 예약이 있으면 중복 예약 거부 | `409 Conflict` |
-| 3 | 예약이 존재하는 시간은 삭제 불가 | `409 Conflict` |
-| 4 | 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등) 거부 | `400 Bad Request` |
+| 3 | 예약이 존재하는 시간은 삭제 불가                   | `409 Conflict` |
+
+### 입력값 유효성 검증
+
+| 도메인 | 필드 | 조건 | 위반 시 응답 |
+|--------|------|------|------------|
+| 예약 | `name` | 필수, 공백 불가 (`@NotBlank`) | `400 Bad Request` |
+| 예약 | `date` | 필수, `yyyy-MM-dd` 형식 (`@NotNull`) | `400 Bad Request` |
+| 예약 | `themeId`, `timeId` | 필수 (`@NotNull`) | `400 Bad Request` |
+| 시간 | `startAt`, `endAt` | 필수, `HH:mm` 형식 (`@NotNull`) | `400 Bad Request` |
+| 테마 | `name`, `description` | 필수, 공백 불가 (`@NotBlank`) | `400 Bad Request` |
+| 휴일 | `date` | 필수, `yyyy-MM-dd` 형식 (`@NotNull`) | `400 Bad Request` |
 
 ---
 
@@ -412,70 +406,143 @@ Content-Type: application/json
 
 ## ✅ 테스트 케이스
 
-### ReservationAPITest
+### RoomescapeApplicationTest
 
-- [x] 예약자 이름, 날짜, 시간으로 예약을 생성한다.
-- [x] 생성된 예약 정보를 조회한다.
-- [x] 예약 ID로 예약을 삭제한다.
-- [x] 예약자 이름 없이 예약을 생성하는 경우, 400을 반환한다.
-- [x] 존재하지 않는 시간 ID로 예약을 생성하는 경우, 400을 반환한다.
-- [x] 과거 날짜로 예약을 생성하는 경우, 400을 반환한다.
+- [x] `contextLoads`
 
-### ReservationTimeAPITest
+### MissionStepTest
 
-- [x] 시작 시간으로 예약 시간을 생성한다.
-- [x] 생성된 예약 시간 목록을 조회한다.
-- [x] 예약 시간 ID로 예약 시간을 삭제한다.
-- [x] 시작 시간 없이 예약 시간을 생성하는 경우, 400을 반환한다.
-- [x] 예약과 시간이 올바르게 연결된다.
+- [x] `예약_조회`
+- [x] `예약_추가_및_삭제`
+- [x] `같은_날짜와_시간이라도_테마가_다르면_각각_예약_가능하다`
+- [x] `없는_예약_삭제시_204_응답`
+- [x] `시간_관리_API`
+- [x] `예약과_시간_연결`
+- [x] `예약_시간이_없으면_400_에러_응답`
 
-### DBTest
+### DatabaseMissionStepTest
 
-- [x] H2 데이터베이스 연결 및 테이블 생성을 확인한다.
-- [x] DB에서 예약 목록을 조회한다.
-- [x] DB에 예약을 추가하고 삭제한다.
+- [x] `데이터베이스_연동`
+- [x] `DB_조회_API_전환`
+- [x] `DB_추가_삭제_API_전환`
 
-### LayerSeparationTest
+### TimeTest
 
-- [x] 컨트롤러에 JdbcTemplate이 직접 주입되지 않는다.
+- [x] `시간_관리_API`
+- [x] `없는_시간_삭제시_404_에러_응답`
+- [x] `예약과_시간_연결`
 
-### ThemeAPITest
+### ReservationControllerTest
 
-- [ ] 이름·설명으로 테마를 생성한다.
-- [ ] 생성된 테마 목록을 조회한다.
-- [ ] 테마 ID로 테마를 삭제한다.
-- [ ] 이름 없이 테마를 생성하는 경우, 400을 반환한다.
-- [ ] 존재하지 않는 테마 ID로 삭제하는 경우, 404를 반환한다.
+- [x] `예약_목록_조회_테스트`
+- [x] `예약_생성_테스트`
+- [x] `빈_이름_예약_생성_400_반환_테스트`
+- [x] `공백_이름_예약_생성_400_반환_테스트`
+- [x] `잘못된_날짜_형식_예약_생성_400_반환_테스트`
+- [x] `날짜_누락_예약_생성_400_반환_테스트`
+- [x] `예약_취소_테스트`
 
-### ThemeTimeAPITest
+### ReservationServiceImplTest
 
-- [ ] 날짜·테마 ID로 해당 테마의 예약 가능한 시간 목록을 조회한다.
-- [ ] 이미 예약된 시간 슬롯은 목록에 포함되지 않는다.
+- [x] `create_정상_예약을_저장하고_반환`
+- [x] `create_timeId가_null이면_예외`
+- [x] `create_존재하지_않는_timeId이면_예외`
+- [x] `create_themeId가_null이면_예외`
+- [x] `create_존재하지_않는_themeId이면_예외`
+- [x] `create_휴일이면_예외`
+- [x] `create_중복_예약이면_예외`
+- [x] `create_과거_날짜_예약이면_예외`
+- [x] `create_오늘_지난_시간_예약이면_예외`
+- [x] `getAll`
+- [x] `cancel`
 
-### AvailableDateAPITest
+### JdbcReservationRepositoryTest
 
-- [ ] 사용 가능한 날짜 목록을 조회한다.
-- [ ] `month` 쿼리로 특정 월만 필터하여 조회한다.
-- [ ] 영업일이 아닌 날(휴일)은 `holiday` 테이블 기준으로 목록에서 제외한다.
+- [x] `findTimeIdsByThemeIdAndDate`
+- [x] `findTimeIdsByThemeIdAndDate_다른테마의_예약시간은_조회하지_않는다`
 
-### HolidayDBTest
+### TimeControllerTest
 
-- [ ] 영업일이 아닌 날(휴일) 정보를 저장하기 위한 `holiday` 테이블을 생성한다.
-- [ ] `holiday` 테이블 컬럼은 `id`, `date`를 가진다.
-- [ ] `holiday` 데이터를 추가하고 조회한다.
-- [ ] `holiday` 데이터를 삭제한다.
+- [x] `가능한_시간_목록_조회`
+- [x] `잘못된_날짜_형식_가능한_시간_조회_400`
+- [x] `startAt_누락_시간_생성_400`
+- [x] `endAt_누락_시간_생성_400`
+- [x] `잘못된_시간_형식_시간_생성_400`
 
-### UserReservationAPITest
+### TimeServiceImplTest
 
-- [ ] 이름·날짜·테마 ID·시간 ID로 사용자 예약을 생성한다.
-- [ ] 생성된 사용자 예약 응답에 시간·테마 정보가 포함된다.
-- [ ] 예약 ID로 사용자 예약을 취소한다.
-- [ ] 필수 값 누락으로 예약을 생성하는 경우, 400을 반환한다.
-- [ ] 존재하지 않는 테마·시간 ID로 예약을 생성하는 경우, 400을 반환한다.
-- [ ] 과거 날짜로 예약을 생성하는 경우, 400을 반환한다.
-- [ ] 존재하지 않는 예약 ID로 취소하는 경우, 404를 반환한다.
+- [x] `create_정상_저장하고_반환`
+- [x] `findAll_전체_목록_반환`
+- [x] `findById_정상_조회`
+- [x] `findById_없는_id이면_예외`
+- [x] `deleteById_정상_삭제`
+- [x] `deleteById_예약이_있으면_예외`
+- [x] `deleteById_없는_id이면_예외`
 
-### ThemeBestAPITest
+### ThemeControllerTest
 
-- [ ] 날짜 쿼리로 인기 테마 목록을 조회한다.
-- [ ] 해당 날짜의 예약 건수 기준으로 인기 순이 결정된다.
+- [x] `테마_목록_조회`
+- [x] `테마_생성`
+- [x] `테마_삭제`
+- [x] `존재하지_않는_테마_삭제_404`
+- [x] `빈_이름_테마_생성_400`
+- [x] `공백_이름_테마_생성_400`
+- [x] `빈_설명_테마_생성_400`
+
+### ThemeIntegrationTest
+
+- [x] `getAll`
+- [x] `create`
+- [x] `delete`
+- [x] `없는_테마_삭제시_404_에러_응답`
+
+### ThemeServiceImplTest
+
+- [x] `getAll`
+- [x] `create`
+- [x] `deleteById`
+- [x] `deleteById_없으면_예외`
+- [x] `getAvailableTimes_테마가없으면_예외`
+- [x] `getAvailableTimes_휴일이면_빈리스트`
+- [x] `getAvailableTimes_예약된시간은_제외한다`
+- [x] `getAvailableTimes_예약이없으면_전체시간을_반환한다`
+
+### JdbcThemeRepositoryTest
+
+- [x] `findAll`
+- [x] `save`
+- [x] `deleteById`
+- [x] `existsById`
+- [x] `findBestThemesByDate`
+
+### AdminHolidayControllerTest
+
+- [x] `휴일_목록_조회`
+- [x] `휴일_생성`
+- [x] `휴일_삭제`
+- [x] `날짜_누락_휴일_생성_400`
+- [x] `잘못된_날짜_형식_휴일_생성_400`
+
+### HolidayServiceImplTest
+
+- [x] `delete_throwsException_whenHolidayNotFound`
+
+### JdbcHolidayRepositoryTest
+
+- [x] `JdbcHolidayIsNotNull`
+- [x] `save`
+- [x] `findAll`
+- [x] `delete`
+- [x] `existsByDate`
+
+### RoomescapePageControllerTest
+
+- [x] `dashboardPageRenders`
+- [x] `reservationsPageRendersReservationData`
+- [x] `availabilityPageRendersThemeOptionsAndResults`
+- [x] `createReservation_redirectsWithSuccessMessage`
+- [x] `createReservation_redirectsWithSafeFailureMessage`
+- [x] `deleteTheme_redirectsWithSafeFailureMessage`
+- [x] `deleteTime_redirectsWithSafeFailureMessage`
+- [x] `cancelReservation_redirectsWithSafeFailureMessage`
+- [x] `deleteHoliday_redirectsWithSafeFailureMessage`
