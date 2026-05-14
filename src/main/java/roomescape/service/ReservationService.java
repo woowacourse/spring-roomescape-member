@@ -47,14 +47,14 @@ public class ReservationService {
 
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, timeId, themeId)) {
-            throw new ConflictException("이미 예약된 시간입니다.");
+            throw new ConflictException("이미 예약된 시간입니다. 다른 날짜 혹은 테마를 선택해주세요.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다. 예약을 확인해주세요."));
 
         reservation.validateCancelable(LocalDateTime.now());
         reservationRepository.delete(id);
@@ -62,18 +62,18 @@ public class ReservationService {
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다. 시간대를 확인해주세요."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다. 테마를 확인해주세요."));
     }
 
     @Transactional
     public Reservation update(Long id, LocalDate date, Long timeId) {
         Reservation nowReservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다. 예약을 확인해주세요."));
 
         ReservationTime updateTime = findReservationTime(timeId);
         validateDuplicateReservation(date, timeId, nowReservation.getTheme().getId());

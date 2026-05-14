@@ -35,17 +35,17 @@ public class ReservationTimeService {
 
     private void validateDuplicateStartAt(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new ConflictException("이미 추가된 예약 시간대입니다.");
+            throw new ConflictException("이미 추가된 예약 시간대입니다. 다른 시간을 선택해주세요.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약 시간대입니다.");
+            throw new NotFoundException("존재하지 않는 예약 시간대입니다. 다시 확인해주세요.");
         }
         if (reservationRepository.existsByTimeId(id)) {
-            throw new ConflictException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new ConflictException("해당 시간에 예약이 존재하여 삭제할 수 없습니다. 예약을 확인해주세요.");
         }
         reservationTimeRepository.delete(id);
     }

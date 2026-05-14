@@ -43,17 +43,17 @@ public class ThemeService {
 
     private void validateDuplicateName(String name) {
         if (themeRepository.existsByName(name)) {
-            throw new ConflictException("이미 추가된 테마입니다.");
+            throw new ConflictException("이미 추가된 테마입니다. 다른 테마 이름을 입력해주세요.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!themeRepository.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다. 테마를 확인해주세요.");
         }
         if (reservationRepository.existsByThemeId(id)) {
-            throw new ConflictException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
+            throw new ConflictException("해당 테마의 예약이 존재하여 삭제할 수 없습니다. 예약을 확인해주세요.");
         }
         themeRepository.delete(id);
     }
