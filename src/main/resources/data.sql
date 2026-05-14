@@ -49,10 +49,10 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('차은우', '20
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('수지', '2026-05-12', 2, 6);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('박보검', '2026-05-11', 2, 7);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김연아', '2026-05-12', 3, 7);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('손흥민', '2026-05-11', 3, 8);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('황희찬', '2026-05-12', 4, 8);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김연경', '2026-05-11', 4, 9);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('류현진', '2026-05-11', 5, 10);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이정후', '2026-05-11', 1, 11);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('박찬호', '2026-05-11', 2, 12);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이대호', '2026-05-11', 3, 13);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-15', 3, 8);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-15', 4, 8);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-11', 4, 9);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-11', 5, 10);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-12', 1, 11);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-13', 2, 12);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('어셔', '2026-05-14', 3, 13);

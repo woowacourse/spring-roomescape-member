@@ -100,22 +100,49 @@
         .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
 
         /* ── 토스트 ── */
+        #toast {
+            position: fixed;
+            top: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            pointer-events: none;
+        }
         .toast {
-            border-radius: 10px;
-            padding: 0.85rem 1rem;
-            font-size: 0.875rem;
-            margin-bottom: 1.25rem;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            animation: toast-slide 0.25s ease-out;
+            pointer-events: auto;
+            min-width: 280px;
+        }
+        @keyframes toast-slide {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .toast-success {
-            background: #14532d33;
-            border: 1px solid #22c55e55;
-            color: #86efac;
+            background: #14532d;
+            border: 1px solid #22c55e;
+            color: #bbf7d0;
         }
+        .toast-success::before { content: '✓'; font-size: 1.2rem; color: #4ade80; }
         .toast-error {
-            background: #7f1d1d33;
-            border: 1px solid #ef444455;
-            color: #fca5a5;
+            background: #7f1d1d;
+            border: 1px solid #ef4444;
+            color: #fecaca;
         }
+        .toast-error::before { content: '✕'; font-size: 1.2rem; color: #f87171; }
 
         /* ── 예약 카드 ── */
         .res-list {
@@ -497,6 +524,7 @@
             ${escapeHtml(r.date)} · ${escapeHtml(r.time.startAt)}
         `;
         $('cancel-modal-confirm').disabled = false;
+        $('cancel-modal-confirm').textContent = '취소하기';
         $('cancel-modal').classList.add('show');
     }
     function closeCancelModal() {
@@ -539,6 +567,7 @@
         $('edit-date').min = new Date().toISOString().slice(0, 10);
         $('edit-times').innerHTML = '<p class="state-msg" style="grid-column: 1 / -1; padding: 1rem;">날짜를 선택해주세요.</p>';
         $('edit-modal-confirm').disabled = true;
+        $('edit-modal-confirm').textContent = '변경하기';
         $('edit-modal').classList.add('show');
     }
     function closeEditModal() {
@@ -605,8 +634,13 @@
                 btn.textContent = '변경하기';
                 return;
             }
+            const updated = await res.json();
             closeEditModal();
-            showToast('success', `#${reservation.id} 예약이 변경되었습니다.`);
+            showToast(
+                'success',
+                `예약이 변경되었습니다 — ${updated.theme.name} · ${updated.date} ${updated.time.startAt}`,
+                4000
+            );
             await searchReservations();
         } catch {
             showToast('error', '변경에 실패했습니다.');
