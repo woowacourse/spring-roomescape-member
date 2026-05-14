@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import common.exception.ErrorCode;
 import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
+import roomescape.controller.dto.ReservationUpdateRequest;
+import roomescape.domain.Name;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
@@ -23,7 +28,14 @@ import roomescape.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
-
+    private static final Reservation DUMMY = Reservation.of(
+            1L,
+            Name.from("anyone"),
+            ReservationDate.from(LocalDate.of(2099, 1, 1)),
+            ReservationTime.of(1L, LocalTime.of(10, 0)),
+            Theme.of(1L, "any", "any", "any")
+    );
+    
     @Mock
     private ReservationRepository reservationRepository;
 
@@ -114,5 +126,41 @@ class ReservationServiceTest {
         Assertions.assertThatNoException().isThrownBy(
                 () -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 11, 0, 1)));
 
+    }
+
+    @Test
+    void 예약_수정시_ID가_없으면_예외가_발생한다() {
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
+        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> reservationService.update(request, 999L, LocalDateTime.MIN))
+                .isInstanceOf(RoomEscapeException.class).hasMessage(
+                        ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 예약_수정시_시간을_찾을_수_없으면_예외가_발생한다() {
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> reservationService.update(request, 1L, LocalDateTime.MIN))
+                .isInstanceOf(RoomEscapeException.class).hasMessage(
+                        ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 예약_수정시_사용_불가능한_날짜가_들어오면_예외가_발생한다() {
+        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.parse("11:00"));
+
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(reservationRepository.existsByTimeAndThemeAndDate(request.getTimeId(), request.getThemeId(),
+                request.getDate())).willReturn(true);
+
+        Assertions.assertThatThrownBy(() -> reservationService.update(request, 1L, LocalDateTime.MIN))
+                .isInstanceOf(RoomEscapeException.class).hasMessage(
+                        ErrorCode.DUPLICATE_RESERVATION.getMessage());
     }
 }

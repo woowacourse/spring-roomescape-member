@@ -37,6 +37,15 @@ public class ReservationRepository {
             INNER JOIN reservation_time rt ON r.time_id  = rt.id
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
+    private static final String UPDATE = """
+            UPDATE reservation
+                SET
+                    name = ?,
+                    date = ?,
+                    time_id = ?,
+                    theme_id = ?
+            WHERE id = ?
+            """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
     private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.name = ?";
     private static final String EXISTS_BY_DATE_AND_TIME_AND_THEME_ID = """
@@ -90,7 +99,7 @@ public class ReservationRepository {
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return Reservation.of(generatedKey, Name.from(reservation.getName()), reservation.getDate(),
+        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme());
     }
@@ -118,5 +127,12 @@ public class ReservationRepository {
 
     public List<Reservation> findAllByName(String name) {
         return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, name);
+    }
+
+    public Reservation update(long id, Reservation target) {
+        jdbcTemplate.update(UPDATE, target.getName().getValue(), target.getDate(), target.getTime().getId(),
+                target.getTheme().getId(), id);
+
+        return Reservation.of(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());
     }
 }

@@ -40,7 +40,6 @@ public class Reservation {
         }
     }
 
-
     private static void validateAvailableDateTime(ReservationDate requestDate, ReservationTime requestTime,
                                                   LocalDateTime now) {
         if (requestDate.isBefore(now.toLocalDate())) {
@@ -56,8 +55,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getValue();
+    public Name getName() {
+        return name;
     }
 
     public ReservationDate getDate() {

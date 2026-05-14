@@ -20,7 +20,7 @@ public class ReservationResponse {
     }
 
     public static ReservationResponse toDto(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(),
+        return new ReservationResponse(reservation.getId(), reservation.getName().getValue(),
                 reservation.getDate().getDate(),
                 ReservationTimeResponse.toDto(reservation.getTime()),
                 ThemeResponse.toDto(reservation.getTheme()));
