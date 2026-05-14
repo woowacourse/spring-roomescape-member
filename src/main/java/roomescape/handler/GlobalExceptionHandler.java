@@ -2,85 +2,28 @@ package roomescape.handler;
 
 import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.CannotDeleteReservationException;
-import roomescape.exception.CannotDeleteReservationTimeException;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.EmptyNameException;
-import roomescape.exception.ReservationByPastDateTimeException;
-import roomescape.exception.ReservationDoesNotExistsException;
-import roomescape.exception.ReservationTimeDoesNotExistsException;
-import roomescape.exception.ThemeDoesNotExistsException;
+import roomescape.exception.BusinessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ReservationByPastDateTimeException.class)
-    public ResponseEntity<String> handleReservationByPastDateTimeException(ReservationByPastDateTimeException ex) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ProblemDetail> handleClientException(BusinessException ex) {
         return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(EmptyNameException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(CannotDeleteReservationTimeException.class)
-    public ResponseEntity<String> handleCannotDeleteReservationTimeException(CannotDeleteReservationTimeException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(DuplicatedReservationException.class)
-    public ResponseEntity<String> handleDuplicatedReservationException(DuplicatedReservationException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT.value())
-                .body(ex.getMessage());
+                .status(ex.getStatusCode())
+                .body(ex.getBody());
     }
 
     @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
+    public ResponseEntity<ProblemDetail> handleDateTimeParseException(DateTimeParseException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY,
+                "날짜 형식이 잘못되었습니다.");
         return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(ReservationTimeDoesNotExistsException.class)
-    public ResponseEntity<String> handleReservationTimeDoesNotExistsException(
-            ReservationTimeDoesNotExistsException ex
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(ThemeDoesNotExistsException.class)
-    public ResponseEntity<String> handleThemeDoesNotExistsException(
-            ThemeDoesNotExistsException ex
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(CannotDeleteReservationException.class)
-    public ResponseEntity<String> handleCannotDeleteReservationException(CannotDeleteReservationException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(ReservationDoesNotExistsException.class)
-    public ResponseEntity<String> handleReservationDoesNotExistsException(ReservationDoesNotExistsException ex) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND.value())
-                .body(ex.getMessage());
+                .status(problemDetail.getStatus())
+                .body(problemDetail);
     }
 }
