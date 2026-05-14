@@ -28,7 +28,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> getThemes() {
-        return convertThemesToDto(themeRepository.findAllThemes());
+        return convertThemesToDto(themeRepository.findAllByDeletedAtIsNull());
     }
 
     public List<ThemeResponseDto> getPopularThemes() {

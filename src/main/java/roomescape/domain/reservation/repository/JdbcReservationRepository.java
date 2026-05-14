@@ -28,7 +28,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllReservations() {
+    public List<Reservation> findReservationsByDeletedAtIsNull() {
         return jdbcTemplate.query(
             """
                 SELECT r.id, r.name, r.date,
@@ -37,14 +37,25 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
+                WHERE r.deleted_at IS NULL
                 """,
             (rs, rowNum) -> mapReservation(rs)
         );
     }
 
     @Override
-    public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
+    public List<Long> findTimeIdsByDateAndThemeIdAndDeletedAtIsNull(LocalDate date, Long themeId) {
+        String sql = """
+            SELECT time_id
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.date = :date
+              AND r.theme_id = :themeId
+              AND r.deleted_at IS NULL
+              AND rt.deleted_at IS NULL
+              AND t.deleted_at IS NULL
+            """;
         SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
             "date", date,
             "themeId", themeId
@@ -91,18 +102,19 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteReservationById(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = :id";
+        String sql = "UPDATE reservation SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
     }
 
     @Override
-    public boolean existsReservationById(Long id) {
+    public boolean existsReservationByIdAndDeletedAtIsNull(Long id) {
         String sql = """
             SELECT EXISTS (
                 SELECT 1
                 FROM reservation
                 WHERE id = :id
+                  AND deleted_at IS NULL
             )
             """;
 
@@ -112,7 +124,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsReservationByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme) {
+    public boolean existsReservationByDateAndTimeAndThemeAndDeletedAtIsNull(LocalDate date, Time time, Theme theme) {
         String sql = """
             SELECT EXISTS (
                 SELECT 1
@@ -120,6 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE date = :date
                   AND time_id = :timeId
                   AND theme_id = :themeId
+                  AND deleted_at IS NULL
             )
             """;
 

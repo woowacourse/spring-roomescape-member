@@ -28,8 +28,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllThemes() {
-        String sql = "SELECT id, name, description, image_url FROM theme";
+    public List<Theme> findAllByDeletedAtIsNull() {
+        String sql = "SELECT id, name, description, image_url FROM theme WHERE deleted_at IS NULL";
         return jdbcTemplate.query(
             sql,
             (resultSet, rowNum) -> Theme.reconstruct(
@@ -53,15 +53,15 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteThemeById(Long id) {
-        final String sql = "DELETE FROM theme WHERE id = :id";
+        final String sql = "UPDATE theme SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
         jdbcTemplate.update(sql, parameters);
     }
 
     @Override
-    public Optional<Theme> findThemeById(Long id) {
-        final String sql = "SELECT id, name, description, image_url FROM theme WHERE id = :id";
+    public Optional<Theme> findThemeByIdAndDeletedAtIsNull(Long id) {
+        final String sql = "SELECT id, name, description, image_url FROM theme WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             Theme theme = jdbcTemplate.queryForObject(
@@ -81,12 +81,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existsThemeById(Long id) {
+    public boolean existsThemeByIdAndDeletedAtIsNull(Long id) {
         String sql = """
             SELECT EXISTS (
                 SELECT 1
                 FROM theme
                 WHERE id = :id
+                  AND deleted_at IS NULL
             )
             """;
 
@@ -101,7 +102,11 @@ public class JdbcThemeRepository implements ThemeRepository {
             SELECT t.id, t.name, t.description, t.image_url
             FROM theme t
             JOIN reservation r ON t.id = r.theme_id
+            JOIN reservation_time rt ON r.time_id = rt.id
             WHERE r.date BETWEEN :startDate AND :endDate
+              AND t.deleted_at IS NULL
+              AND r.deleted_at IS NULL
+              AND rt.deleted_at IS NULL
             GROUP BY t.id, t.name, t.description, t.image_url
             ORDER BY COUNT(r.id) DESC, t.id ASC
             LIMIT :limit

@@ -37,8 +37,8 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public List<Time> findAllTimes() {
-        String sql = "SELECT id, start_at FROM reservation_time";
+    public List<Time> findAllByDeletedAtIsNull() {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE deleted_at IS NULL";
         return jdbcTemplate.query(
             sql,
             (rs, rowNum) -> Time.reconstruct(
@@ -49,8 +49,8 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public Optional<Time> findTimeById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
+    public Optional<Time> findTimeByIdAndDeletedAtIsNull(Long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id AND deleted_at IS NULL";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             Time time = jdbcTemplate.queryForObject(
@@ -68,12 +68,13 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public boolean existsTimeById(Long id) {
+    public boolean existsTimeByIdAndDeletedAtIsNull(Long id) {
         String sql = """
             SELECT EXISTS (
                 SELECT 1
                 FROM reservation_time
                 WHERE id = :id
+                  AND deleted_at IS NULL
             )
             """;
 
@@ -83,12 +84,13 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public boolean existsTimeByStartAt(LocalTime startAt) {
+    public boolean existsTimeByStartAtAndDeletedAtIsNull(LocalTime startAt) {
         String sql = """
             SELECT EXISTS (
                 SELECT 1
                 FROM reservation_time
                 WHERE start_at = :startAt
+                  AND deleted_at IS NULL
             )
             """;
 
@@ -99,7 +101,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public void deleteTimeById(Long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = :id";
+        final String sql = "UPDATE reservation_time SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
         jdbcTemplate.update(sql, parameters);

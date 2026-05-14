@@ -30,21 +30,21 @@ public class TimeService {
     }
 
     public List<TimeResponseDto> getTimes() {
-        return timeRepository.findAllTimes()
+        return timeRepository.findAllByDeletedAtIsNull()
             .stream()
             .map(TimeMapper::toResponseDto)
             .toList();
     }
 
     public List<TimeResponseDto> getAvailableTimes(LocalDate date, Long themeId) {
-        if (!themeRepository.existsThemeById(themeId)) {
+        if (!themeRepository.existsThemeByIdAndDeletedAtIsNull(themeId)) {
             throw new GeneralNotFoundException(TimeErrorType.FIELD_RESOURCE_NOT_FOUND,
                 List.of(new ParameterErrorResponseDto("themeId", "존재 하지 않는 테마입니다.")));
         }
 
-        List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndThemeId(date, themeId);
+        List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndThemeIdAndDeletedAtIsNull(date, themeId);
 
-        return timeRepository.findAllTimes()
+        return timeRepository.findAllByDeletedAtIsNull()
             .stream()
             .filter(time -> !reservedTimeIds.contains(time.getId()))
             .map(TimeMapper::toResponseDto)
@@ -52,7 +52,7 @@ public class TimeService {
     }
 
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
-        if (timeRepository.existsTimeByStartAt(requestDto.startAt())) {
+        if (timeRepository.existsTimeByStartAtAndDeletedAtIsNull(requestDto.startAt())) {
             throw new GeneralException(TimeErrorType.ALREADY_EXIST_TIME);
         }
 
@@ -61,7 +61,7 @@ public class TimeService {
     }
 
     public void deleteTimeById(Long id) {
-        if (!timeRepository.existsTimeById(id)) {
+        if (!timeRepository.existsTimeByIdAndDeletedAtIsNull(id)) {
             throw new GeneralException(TimeErrorType.TIME_NOT_FOUND);
         }
 

@@ -8,15 +8,15 @@ import roomescape.domain.time.entity.Time;
 
 public interface ReservationRepository {
 
-    List<Reservation> findAllReservations();
+    List<Reservation> findReservationsByDeletedAtIsNull();
 
-    List<Long> findTimeIdsByDateAndThemeId(LocalDate localDate, Long themeId);
+    List<Long> findTimeIdsByDateAndThemeIdAndDeletedAtIsNull(LocalDate localDate, Long themeId);
 
     Reservation save(Reservation reservation);
 
     void deleteReservationById(Long id);
 
-    boolean existsReservationById(Long id);
+    boolean existsReservationByIdAndDeletedAtIsNull(Long id);
 
-    boolean existsReservationByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme);
+    boolean existsReservationByDateAndTimeAndThemeAndDeletedAtIsNull(LocalDate date, Time time, Theme theme);
 }

@@ -33,7 +33,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDto> getReservations() {
-        List<Reservation> reservations = reservationRepository.findAllReservations();
+        List<Reservation> reservations = reservationRepository.findReservationsByDeletedAtIsNull();
         return convertReservationsToDto(reservations);
     }
 
@@ -46,7 +46,8 @@ public class ReservationService {
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
 
-        if (reservationRepository.existsReservationByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(),
+        if (reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNull(reservation.getDate(),
+            reservation.getTime(),
             reservation.getTheme())) {
             throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
         }
@@ -58,12 +59,12 @@ public class ReservationService {
 
         List<ParameterErrorResponseDto> parameterErrorResponses = new ArrayList<>();
 
-        Time time = timeRepository.findTimeById(requestDto.timeId()).orElse(null);
+        Time time = timeRepository.findTimeByIdAndDeletedAtIsNull(requestDto.timeId()).orElse(null);
         if (time == null) {
             parameterErrorResponses.add(new ParameterErrorResponseDto("timeId", "존재 하지 않는 시간대입니다."));
         }
 
-        Theme theme = themeRepository.findThemeById(requestDto.themeId()).orElse(null);
+        Theme theme = themeRepository.findThemeByIdAndDeletedAtIsNull(requestDto.themeId()).orElse(null);
         if (theme == null) {
             parameterErrorResponses.add(new ParameterErrorResponseDto("themeId", "존재 하지 않는 테마입니다."));
         }
@@ -76,7 +77,7 @@ public class ReservationService {
     }
 
     public void deleteReservationById(Long id) {
-        if (!reservationRepository.existsReservationById(id)) {
+        if (!reservationRepository.existsReservationByIdAndDeletedAtIsNull(id)) {
             throw new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND);
         }
 
