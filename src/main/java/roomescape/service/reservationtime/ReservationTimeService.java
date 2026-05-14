@@ -41,6 +41,7 @@ public class ReservationTimeService {
 
         return reservationTimeRepository.findAll().stream()
                 .filter(reservationTime -> !reservedTimeIds.contains(reservationTime.getId()))
+                .filter(reservationTime -> isAvailableOn(date, reservationTime))
                 .toList();
     }
 
@@ -58,5 +59,19 @@ public class ReservationTimeService {
     public ReservationTime getById(final long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ResourceNotFoundException("RESERVATION_TIME_NOT_FOUND", "찾는 시간이 없습니다"));
+    }
+
+    private boolean isAvailableOn(final LocalDate date, final ReservationTime reservationTime) {
+        LocalDate today = LocalDate.now();
+
+        if (date.isBefore(today)) {
+            return false;
+        }
+
+        if (date.isAfter(today)) {
+            return true;
+        }
+
+        return !reservationTime.getStartAt().isBefore(LocalTime.now());
     }
 }

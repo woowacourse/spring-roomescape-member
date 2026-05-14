@@ -2,6 +2,7 @@ package roomescape.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,6 +72,57 @@ class ReservationTimeServiceTest {
         assertThat(availableTimes)
                 .extracting(ReservationTime::getId)
                 .containsExactly(eleven.getId());
+    }
+
+    @Test
+    @DisplayName("지난 날짜에 대해서는 예약 가능 시간이 조회되지 않는다")
+    void findAvailableTimesInPastDate() {
+        ReservationTimeRepository reservationTimeRepository = new TestReservationTimeRepository();
+        MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                reservationTimeRepository,
+                reservationRepository
+        );
+
+        reservationTimeRepository.save(ReservationTime.createNew(LocalTime.parse("10:00")));
+        reservationTimeRepository.save(ReservationTime.createNew(LocalTime.parse("11:00")));
+
+        List<ReservationTime> availableTimes = reservationTimeService.findAvailableTimes(
+                LocalDate.now().minusDays(1),
+                1L
+        );
+
+        assertThat(availableTimes).isEmpty();
+    }
+
+    @Test
+    @DisplayName("오늘 날짜 조회 시 이미 지난 시간은 예약 가능 시간에서 제외된다")
+    void findAvailableTimesTodayExcludesPastTimes() {
+        assumeTrue(LocalTime.now().isBefore(LocalTime.of(23, 59)));
+
+        ReservationTimeRepository reservationTimeRepository = new TestReservationTimeRepository();
+        MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                reservationTimeRepository,
+                reservationRepository
+        );
+
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        LocalTime futureTime = now.plusMinutes(1);
+
+        ReservationTime past = reservationTimeRepository.save(ReservationTime.createNew(pastTime));
+        ReservationTime future = reservationTimeRepository.save(ReservationTime.createNew(futureTime));
+
+        List<ReservationTime> availableTimes = reservationTimeService.findAvailableTimes(
+                LocalDate.now(),
+                1L
+        );
+
+        assertThat(availableTimes)
+                .extracting(ReservationTime::getId)
+                .contains(future.getId())
+                .doesNotContain(past.getId());
     }
 
     @Test
