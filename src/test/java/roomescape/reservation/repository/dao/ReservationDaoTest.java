@@ -92,6 +92,43 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 기준_날짜_이후의_예약만_조회한다() {
+        //given
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        reservationDao.insert("userA", yesterday, 1L, 1L);
+        reservationDao.insert("userB", today, 1L, 1L);
+        reservationDao.insert("userC", tomorrow, 1L, 1L);
+
+        //when
+        List<LocalDate> findDates = reservationDao.findAllOnOrAfter(today).stream()
+                .map(ReservationEntity::getDate)
+                .toList();
+
+        //then
+        Assertions.assertThat(findDates).containsExactly(today, tomorrow);
+    }
+
+    @Test
+    void 취소된_예약은_유효한_예약으로_취급하지_않는다() {
+        //given
+        Long timeId = 1L;
+        Long themeId = 1L;
+        LocalDate date = LocalDate.now().plusDays(1);
+
+        Long reservationId = reservationDao.insert("userC", date, timeId, themeId);
+
+        //예약을 취소한 경우, 해당 예약은 유효하지 않다
+        reservationDao.updateCancelledById(reservationId, true);
+
+        //when & then
+        Assertions.assertThat(reservationDao.existsValidReservationAt(themeId, date, timeId))
+                .isFalse();
+    }
+
+    @Test
     void 예약을_삭제한다() {
         //given
         String name = "user";
@@ -126,23 +163,5 @@ class ReservationDaoTest {
         Assertions.assertThat(entity.isCancelled()).isTrue();
     }
 
-    @Test
-    void 기준_날짜_이후의_예약만_조회한다() {
-        //given
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        LocalDate today = LocalDate.now();
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        reservationDao.insert("userA", yesterday, 1L, 1L);
-        reservationDao.insert("userB", today, 1L, 1L);
-        reservationDao.insert("userC", tomorrow, 1L, 1L);
-
-        //when
-        List<LocalDate> findDates = reservationDao.findAllOnOrAfter(today).stream()
-                .map(ReservationEntity::getDate)
-                .toList();
-
-        //then
-        Assertions.assertThat(findDates).containsExactly(today, tomorrow);
-    }
 }

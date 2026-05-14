@@ -71,13 +71,14 @@ public class ReservationDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean existsReservationAt(Long themeId, LocalDate date, Long timeId) {
+    public boolean existsValidReservationAt(Long themeId, LocalDate date, Long timeId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
                 WHERE theme_id = ?
                   AND date = ?
                   AND time_id = ?
+                  AND is_cancelled = FALSE
                   AND is_deleted = FALSE
                 """;
 
