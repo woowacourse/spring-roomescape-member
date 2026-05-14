@@ -3,12 +3,10 @@ package roomescape.domain.theme;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.theme.dto.ThemeResponse;
 
 @RestController
-@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -17,13 +15,13 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/top")
+    @GetMapping("/themes/top")
     public ResponseEntity<List<ThemeResponse>> getTopThemes() {
         List<ThemeResponse> responses = themeService.getTopThemes();
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<ThemeResponse> responses = themeService.getAllThemes();
         return ResponseEntity.ok(responses);
