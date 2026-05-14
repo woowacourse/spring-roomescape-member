@@ -48,6 +48,38 @@ class ReservationApiTest {
     }
 
     @Test
+    void 예약_사용자_시간_변경_API() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", userName);
+        reservation.put("date", FUTURE_DATE);
+        reservation.put("timeId", 2L);
+        reservation.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().put("/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 예약_사용자_날짜_변경_API() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", userName);
+        reservation.put("date", "2026-05-13");
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().put("/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     @DisplayName("사용자 이름이 null이면 상태코드 400을 반환한다.")
     void 요청_이름_null_테스트() {
         Map<String, Object> params = new HashMap<>();
