@@ -282,6 +282,31 @@ class JdbcReservationRepositoryTest {
                 .containsExactly("우테코", "페어");
     }
 
+    @DisplayName("name, date, themeId, timeId가 같고 id가 다른 예약이 있는지 조회한다.")
+    @Test
+    void existByDateAndTimeIdAndThemeIdExceptId() {
+        //given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        Reservation saved = saveReservation("브라운", LocalDate.of(2024, 5, 1), time, theme);
+
+        //when & then
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeIdExceptId(
+                saved.getDate(),
+                saved.getTime().getId(),
+                saved.getTheme().getId(),
+                saved.getId() + 1
+        )).isTrue();
+
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeIdExceptId(
+                saved.getDate(),
+                saved.getTime().getId(),
+                saved.getTheme().getId(),
+                saved.getId()
+        )).isFalse();
+    }
+
     private ReservationTime createTime(LocalTime time) {
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (start_at) VALUES (?)",

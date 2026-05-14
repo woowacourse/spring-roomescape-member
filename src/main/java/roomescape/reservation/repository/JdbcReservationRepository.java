@@ -230,4 +230,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                 limit
         );
     }
+
+    @Override
+    public boolean existByDateAndTimeIdAndThemeIdExceptId(LocalDate date, Long timeId, Long themeId, Long id) {
+        String sql = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation
+            WHERE reservation_date = ? AND time_id = ? AND theme_id = ? AND id != ?
+        )
+        """;
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, id);
+        return Boolean.TRUE.equals(exists);
+    }
 }

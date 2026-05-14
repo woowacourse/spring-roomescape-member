@@ -317,4 +317,41 @@ public class ReservationOwnerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @DisplayName("예약 변경 시, 변경하려는 예약이 기존의 다른 예약과 겹치면 예외가 발생한다.")
+    @Test
+    void updateMyReservation_duplicate() {
+        //given
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(LocalTime.of(10, 0))
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "테마", "설명", "thumbnailUrl"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, reservation_date, time_id,  theme_id) VALUES (?, ?, ?, ?)",
+                "brown", Date.valueOf(LocalDate.of(2026, 5, 5)), 1L, 1L
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, reservation_date, time_id,  theme_id) VALUES (?, ?, ?, ?)",
+                "pobi", Date.valueOf(LocalDate.of(2026, 5, 6)), 1L, 1L
+        );
+
+        //when & then
+        Map<String, Object> paramsWithDate = new HashMap<>();
+        paramsWithDate.put("date", "2026-05-06");
+
+        RestAssured.given().log().all()
+                .header("Authorization", "brown")
+                .contentType(ContentType.JSON)
+                .body(paramsWithDate)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }

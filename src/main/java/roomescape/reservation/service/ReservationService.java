@@ -117,6 +117,15 @@ public class ReservationService {
                 updated.getTime().getStartAt()
         );
 
+        if (reservationRepository.existByDateAndTimeIdAndThemeIdExceptId(
+                updated.getDate(),
+                updated.getTime().getId(),
+                updated.getTheme().getId(),
+                updated.getId()
+        )) {
+            throw new DuplicateReservationException();
+        }
+
         reservationRepository.update(updated);
     }
 

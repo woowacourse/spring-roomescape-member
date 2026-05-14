@@ -22,4 +22,6 @@ public interface ReservationRepository {
     List<Reservation> findAll();
 
     List<PopularThemeQueryResult> findPopularThemes(LocalDate from, LocalDate to, int limit);
+
+    boolean existByDateAndTimeIdAndThemeIdExceptId(LocalDate date, Long timeId, Long themeId, Long id);
 }
