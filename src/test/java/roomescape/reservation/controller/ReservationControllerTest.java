@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class ReservationControllerTest {
     private ReservationService reservationService;
 
     @Test
-    void getAll() throws Exception {
+    void 예약_목록_조회_테스트() throws Exception {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
@@ -49,7 +50,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void create() throws Exception {
+    void 예약_생성_테스트() throws Exception {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
@@ -76,8 +77,79 @@ public class ReservationControllerTest {
                 .andExpect(jsonPath("$.name").value("라이"));
     }
 
+    @DisplayName("빈 문자열 이름으로 예약 요청인 경우, MethodArgumentNotValidException이 발생한다.")
     @Test
-    void cancel() throws Exception {
+    void 빈_이름_예약_생성_400_반환_테스트() throws Exception {
+        String requestBody = """
+                {
+                    "name": "",
+                    "date": "2026-05-20",
+                    "themeId": 1,
+                    "timeId": 1
+                }
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("공백으로만 이루어진 이름으로 예약 요청인 경우, MethodArgumentNotValidException이 발생한다.")
+    @Test
+    void 공백_이름_예약_생성_400_반환_테스트() throws Exception {
+        String requestBody = """
+                {
+                    "name": "   ",
+                    "date": "2026-05-20",
+                    "themeId": 1,
+                    "timeId": 1
+                }
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("잘못된 날짜 형식으로 예약 요청인 경우, HttpMessageNotReadableException이 발생한다.")
+    @Test
+    void 잘못된_날짜_형식_예약_생성_400_반환_테스트() throws Exception {
+        String requestBody = """
+                {
+                    "name": "라이",
+                    "date": "2026/05/20",
+                    "themeId": 1,
+                    "timeId": 1
+                }
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("날짜 없이 예약 요청인 경우, MethodArgumentNotValidException이 발생한다.")
+    @Test
+    void 날짜_누락_예약_생성_400_반환_테스트() throws Exception {
+        String requestBody = """
+                {
+                    "name": "라이",
+                    "themeId": 1,
+                    "timeId": 1
+                }
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_취소_테스트() throws Exception {
         // when & then
         mockMvc.perform(delete("/reservations/{id}", 1L))
                 .andExpect(status().isNoContent());
