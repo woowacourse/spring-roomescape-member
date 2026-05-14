@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -25,6 +27,7 @@ import roomescape.repository.time.ReservationTimeRepository;
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
+    private static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
     private static final ReservationTime RESERVATION_TIME = new ReservationTime(LocalTime.of(12, 0));
     private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
 
@@ -325,5 +328,44 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(exists).isFalse();
+    }
+
+    @Nested
+    @DisplayName("특정 테마를 사용하는 예약이 있는 지 조회한다")
+    class ExistsReservationByThemeId {
+
+        @Test
+        void 해당_테마를_사용하고_있는_테마가_있는_경우_TRUE를_반환한다() {
+            // given
+            Theme savedTheme = themeRepository.createTheme(
+                new Theme("n", "d", ThemeImageUrl.defaultImageUrl().value()));
+            ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+
+            reservationRepository.createReservation(new Reservation("n", TOMORROW, savedTime, savedTheme));
+
+            // when
+            boolean exists = reservationRepository.existsByThemeId(savedTheme.getId());
+
+            // then
+            assertThat(exists).isTrue();
+        }
+
+        @Test
+        void 해당_테마를_사용하고_있는_테마가_없는_경우_FALSE를_반환한다() {
+            // given
+            Theme savedTheme = themeRepository.createTheme(
+                new Theme("n", "d", ThemeImageUrl.defaultImageUrl().value()));
+            Theme otherTheme = themeRepository.createTheme(
+                new Theme("n", "d", ThemeImageUrl.defaultImageUrl().value()));
+            ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+
+            reservationRepository.createReservation(new Reservation("n", TOMORROW, savedTime, savedTheme));
+
+            // when
+            boolean exists = reservationRepository.existsByThemeId(otherTheme.getId());
+
+            // then
+            assertThat(exists).isFalse();
+        }
     }
 }

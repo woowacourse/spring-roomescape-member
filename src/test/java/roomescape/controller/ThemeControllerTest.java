@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,6 +30,8 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.theme.PopularThemesResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -148,6 +151,29 @@ class ThemeControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(themeService, times(1)).deleteThemeById(THEME_ID);
+        verifyNoMoreInteractions(themeService);
+    }
+
+    @Test
+    void 예약이_존재하는_테마를_삭제할_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.THEME_HAS_RESERVATIONS);
+        doThrow(exception)
+            .when(themeService).deleteThemeById(THEME_ID);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .pathParam("id", THEME_ID)
+            .when().delete("/themes/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
 
         verify(themeService, times(1)).deleteThemeById(THEME_ID);
         verifyNoMoreInteractions(themeService);

@@ -209,4 +209,18 @@ public class JdbcReservationRepository implements ReservationRepository {
             updated.getThemeId()
         );
     }
+
+    @Override
+    public boolean existsByThemeId(long themeId) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE theme_id = ?
+                """,
+            Integer.class,
+            themeId
+        );
+
+        return count != null && count != 0;
+    }
 }

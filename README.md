@@ -284,6 +284,7 @@
 | `INVALID_REQUEST_URI_VARIABLE_TYPE` | 400     | URL 경로 변수 타입 오류 (예: `/reservations/abc`)         |
 | `VALIDATION_FAILED`                 | 400     | 필수값 누락, 필드 유효성 검증 실패 (`@NotBlank`, `@NotNull` 등) |
 | `TIME_HAS_RESERVATIONS`             | 400     | 오늘 이후 예약이 존재하는 시간 삭제 시도                          |
+| `THEME_HAS_RESERVATIONS`            | 400     | 예약이 존재하는 테마 삭제 시도                                 |
 | `FORBIDDEN`                         | 403     | 접근 권한 없음                                         |
 | `NOT_FOUND`                         | 404     | 매핑되지 않는 URL 요청                                   |
 | `RESERVATION_NOT_FOUND`             | 404     | 존재하지 않는 예약                                       |
@@ -339,6 +340,10 @@
 - [x]  존재하지 않는 예약은 취소할 수 없다. -> `NOT_FOUND` (404)
 - [x]  이미 지난 예약은 취소할 수 없다. -> `PAST_RESERVATION_CANCEL` (422)
 - [x]  취소하려는 예약이 본인의 예약이 아닌 경우 예외가 발생한다 -> `FORBIDDEN` (403)
+
+#### 추가 검증
+
+- [x] 예약을 사용하는 테마가 존재하는 경우 삭제할 수 없다
 
 ---
 

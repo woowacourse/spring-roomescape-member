@@ -14,6 +14,7 @@ public enum ErrorCode {
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다"),
     DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "같은 날짜, 시간, 테마 의 예약이 이미 존재합니다"),
     TIME_HAS_RESERVATIONS(HttpStatus.BAD_REQUEST, "예약이 존재하는 시간은 삭제할 수 없습니다"),
+    THEME_HAS_RESERVATIONS(HttpStatus.BAD_REQUEST, "예약이 존재하는 테마는 삭제할 수 없습니다"),
     PAST_RESERVATION_CANCEL(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 날짜의 예약은 취소할 수 없습니다"),
     PAST_RESERVATION_UPDATE(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 날짜의 예약은 수정할 수 없습니다"),
     PAST_DATE_RESERVATION(HttpStatus.UNPROCESSABLE_ENTITY, "과거 날짜로 예약을 추가/변경할 수 없습니다"),
