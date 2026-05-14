@@ -122,11 +122,45 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByName(String name) {
-        String sql =
-                SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = :name ORDER BY r.date DESC, rt.start_at DESC";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME
+                + "WHERE r.name = :name ORDER BY r.date DESC, rt.start_at DESC";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name);
         return namedParameterJdbcTemplate.query(sql, params, reservationRowMapper);
+    }
+
+    @Override
+    public Reservation update(Reservation reservation) {
+        int affectedRows = executeUpdate(reservation);
+        if (affectedRows == 0) {
+            throw new ReservationNotFoundException(reservation.getId());
+        }
+        return reservation;
+    }
+
+    private int executeUpdate(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date = :date,
+                    time_id = :timeId,
+                    theme_id = :themeId
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservation.getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
+
+        try {
+            return namedParameterJdbcTemplate.update(sql, params);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationDuplicatedException(
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
+        }
     }
 
     @Override

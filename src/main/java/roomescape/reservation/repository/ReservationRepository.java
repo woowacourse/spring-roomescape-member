@@ -17,6 +17,8 @@ public interface ReservationRepository {
 
     List<Reservation> findByName(String name);
 
+    Reservation update(Reservation reservation);
+
     void deleteById(Long id);
 
 }

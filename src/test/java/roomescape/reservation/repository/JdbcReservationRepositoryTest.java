@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationDuplicatedException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -80,6 +83,55 @@ class JdbcReservationRepositoryTest {
         List<Reservation> reservations = reservationRepository.findByName("봉구스");
 
         assertThat(reservations).containsExactly(reservation2, reservation1);
+    }
+
+    @Test
+    void 예약을_수정하는_테스트() {
+        LocalDate date = LocalDate.of(2099, 5, 6);
+        ReservationTime reservationTime1 = reservationTimeRepository.findById(1L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
+        ReservationTime reservationTime2 = reservationTimeRepository.findById(2L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(2L));
+        Theme theme = themeRepository.findById(1L)
+                .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = reservationRepository.save(Reservation.of("봉구스", date, reservationTime1, theme));
+
+        Reservation updatedReservation = reservationRepository.update(
+                Reservation.of(reservation.getId(), "봉구스", LocalDate.of(2099, 5, 7), reservationTime2, theme)
+        );
+
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2099, 5, 7));
+        assertThat(updatedReservation.getTime()).isEqualTo(reservationTime2);
+        assertThat(reservationRepository.findById(reservation.getId())).contains(updatedReservation);
+    }
+
+    @Test
+    void 없는_예약을_수정하면_에러를_던진다() {
+        ReservationTime reservationTime = reservationTimeRepository.findById(1L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
+        Theme theme = themeRepository.findById(1L)
+                .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = Reservation.of(999L, "봉구스", LocalDate.of(2099, 5, 6), reservationTime, theme);
+
+        assertThatThrownBy(() -> reservationRepository.update(reservation))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 이미_예약된_날짜_시간_테마로_수정하면_에러를_던진다() {
+        LocalDate date = LocalDate.of(2099, 5, 6);
+        ReservationTime reservationTime1 = reservationTimeRepository.findById(1L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
+        ReservationTime reservationTime2 = reservationTimeRepository.findById(2L)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(2L));
+        Theme theme = themeRepository.findById(1L)
+                .orElseThrow(() -> new ThemeNotFoundException(1L));
+        reservationRepository.save(Reservation.of("봉구스", date, reservationTime1, theme));
+        Reservation reservation = reservationRepository.save(Reservation.of("밀란", date, reservationTime2, theme));
+        Reservation duplicatedReservation = Reservation.of(reservation.getId(), "밀란", date, reservationTime1, theme);
+
+        assertThatThrownBy(() -> reservationRepository.update(duplicatedReservation))
+                .isInstanceOf(ReservationDuplicatedException.class);
     }
 
     @Test
