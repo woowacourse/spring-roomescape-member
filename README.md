@@ -43,10 +43,9 @@
 
 요청 본문의 형식 또는 값이 잘못된 경우.
 
-| code | 발생 상황 | message 예시 |
-|---|---|---|
-| `VALIDATION_FAILED` | `@Valid` 검증 실패 (null, 빈 값, 범위 초과 등) | `요청 값 검증에 실패했습니다.` |
-| `INVALID_REQUEST` | 도메인 레이어의 값 검증 실패 (빈 이름, null 필드 등) | `예약자 이름은 반드시 입력해야 합니다.` |
+| code | 발생 상황                                        | message 예시 |
+|---|----------------------------------------------|---|
+| `VALIDATION_FAILED` | `@Valid` DTO 단에서의 검증 실패 (null, 빈 값, 범위 초과 등) | `요청 값 검증에 실패했습니다.` |
 
 **예시**
 
@@ -157,6 +156,7 @@ HTTP/1.1 422 Unprocessable Entity
 | code | 발생 상황 | message |
 |---|---|---|
 | `INTERNAL_ERROR` | 처리되지 않은 모든 예외 | `일시적인 오류가 발생했습니다.` |
+| `INTERNAL_ERROR` | 도메인 레이어의 값 검증 실패 (빈 이름, null 필드 등) | `예약자 이름은 반드시 입력해야 합니다.` |
 
 ```json
 HTTP/1.1 500 Internal Server Error
@@ -165,6 +165,16 @@ HTTP/1.1 500 Internal Server Error
   "message": "일시적인 오류가 발생했습니다."
 }
 ```
+```
+클라이언트 요청
+  → DTO @Valid (400 Bad Request)  ← 여기서 걸러져야 한다.
+  → Service
+  → Domain                        ← 여기까지 null 오면 서버 버그로 판단한다.
+```
+
+DTO에서 @NotNull로 막았는데 Domain까지 null이 왔다는 건 검증 로직이 뚫렸거나 개발자 실수라는 뜻이다.
+따라서, Domain 에 NULL이 전달될 경우 이것은 서버 에러로 판단한다. 그러므로, 500 에러를 반환한다.
+
 
 ---
 
