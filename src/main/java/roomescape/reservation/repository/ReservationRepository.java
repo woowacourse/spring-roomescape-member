@@ -89,6 +89,6 @@ public class ReservationRepository {
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(DuplicateReservationCondition condition) {
-        return reservationDao.existsReservationAt(condition.themeId(), condition.date(), condition.timeId());
+        return reservationDao.existsValidReservationAt(condition.themeId(), condition.date(), condition.timeId());
     }
 }

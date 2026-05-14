@@ -27,6 +27,5 @@ CREATE TABLE reservation
     is_cancelled BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (date, time_id, theme_id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
