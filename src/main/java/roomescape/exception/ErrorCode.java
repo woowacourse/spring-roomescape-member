@@ -14,6 +14,7 @@ public enum ErrorCode {
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 테마를 찾을 수 없습니다."),
 
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 잘못되었습니다."),
+    INVALID_ID_FORMAT(HttpStatus.BAD_REQUEST, "ID 형식이 잘못되었습니다."),
     INVALID_REQUEST_FORMAT(HttpStatus.BAD_REQUEST, "요청 형식이 올바르지 않습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에서 에러가 발생했습니다.");

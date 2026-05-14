@@ -44,27 +44,35 @@ public class GlobalExceptionHandler {
         log.warn("Type Mismatch Error: ", exception);
         Throwable cause = exception.getCause();
 
-        if (isLocalDateFormatException(cause)) {
+        if (isFormatExceptionFor(cause, LocalDate.class)) {
             return buildErrorResponse(ErrorCode.INVALID_DATE_FORMAT);
+        }
+
+        if (isFormatExceptionFor(cause, Long.class)) {
+            return buildErrorResponse(ErrorCode.INVALID_ID_FORMAT);
         }
 
         return buildErrorResponse(ErrorCode.INVALID_REQUEST_FORMAT);
     }
 
-    private boolean isLocalDateFormatException(Throwable cause) {
+    private boolean isFormatExceptionFor(Throwable cause, Class<?> targetType) {
         if (!(cause instanceof InvalidFormatException invalidFormatException)) {
             return false;
         }
 
-        Class<?> targetType = invalidFormatException.getTargetType();
-        return LocalDate.class.equals(targetType);
+        return targetType.equals(invalidFormatException.getTargetType());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponseDto> handleTypeMismatchException(MethodArgumentTypeMismatchException exception) {
         log.warn("Type Mismatch Error: ", exception);
+
         if (LocalDate.class.equals(exception.getRequiredType())) {
             return buildErrorResponse(ErrorCode.INVALID_DATE_FORMAT);
+        }
+
+        if (Long.class.equals(exception.getRequiredType())) {
+            return buildErrorResponse(ErrorCode.INVALID_ID_FORMAT);
         }
         return buildErrorResponse(ErrorCode.INVALID_REQUEST_FORMAT);
     }
