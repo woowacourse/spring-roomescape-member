@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +36,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(long id) {
         return reservationDao.findById(id);
+    }
+
+    @Override
+    public boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        return reservationDao.existsByDateTimeAndTheme(date, timeId, themeId);
     }
 }

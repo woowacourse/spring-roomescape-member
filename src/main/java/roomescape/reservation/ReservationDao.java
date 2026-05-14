@@ -118,4 +118,15 @@ public class ReservationDao {
 
         return results.stream().findFirst();
     }
+
+    public boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+        return count != null && count > 0;
+    }
 }

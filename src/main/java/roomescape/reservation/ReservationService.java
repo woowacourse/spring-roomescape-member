@@ -45,10 +45,11 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
 
-        validateReservationDateTme(date, time.startAt());
-
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
+
+        validateReservationDateTme(date, time.startAt());
+        validateDuplicateReservation(date, timeId, themeId);
 
         try {
             return reservationRepository.save(new Reservation(name, date, time, theme));
@@ -65,6 +66,14 @@ public class ReservationService {
         }
         if (date.equals(today) && time.isBefore(LocalTime.now())) {
             throw new BadRequestException("예약 시간은 현재 시간 이후여야 합니다.");
+        }
+    }
+
+    private void validateDuplicateReservation(LocalDate date, long timeId, long themeId) {
+        boolean isDuplicate = reservationRepository.existsByDateTimeAndTheme(date, timeId, themeId);
+
+        if (isDuplicate) {
+            throw new DuplicateException("해당 날짜와 시간, 테마는 이미 예약이 완료되었습니다.");
         }
     }
 
