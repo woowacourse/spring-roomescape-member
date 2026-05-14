@@ -66,7 +66,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약된_시간은_isNotReserved가_false다() {
+    void 예약된_시간이면_isNotReserved가_false다() {
         // given
         ReservationTime time1 = saveTime(10, 0);
         ReservationTime time2 = saveTime(11, 0); // 추가
@@ -107,7 +107,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약이_존재하는_시간을_삭제하면_예외가_발생한다() {
+    void 예약에_존재하는_시간을_삭제하면_예외가_발생한다() {
         // given
         ReservationTime time = saveTime(10, 0);
         Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");

@@ -130,7 +130,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
+    void 예약에_존재하는_테마를_삭제하면_예외가_발생한다() {
         // given
         Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
         ReservationTime time = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
