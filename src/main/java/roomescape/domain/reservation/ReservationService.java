@@ -6,14 +6,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.ReservationFixRequest;
-import roomescape.domain.reservation.dto.ReservationsResponse;
+import roomescape.domain.reservation.dto.MyReservationsResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.domain.theme.Theme;
 import roomescape.admin.theme.AdminThemeRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservation.dto.ReservationRequest;
-import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationtime.dto.TimeResponse;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 
@@ -56,6 +55,10 @@ public class ReservationService {
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND))
             .getStartAt();
 
+        validatePastReservation(reservationDate, reservationTime);
+    }
+
+    private void validatePastReservation(LocalDate reservationDate, LocalTime reservationTime) {
         if (reservationDate.isBefore(LocalDate.now())
             || (reservationDate.isEqual(LocalDate.now()) && reservationTime.isAfter(LocalTime.now()))) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
@@ -94,24 +97,21 @@ public class ReservationService {
         }
     }
 
-    public ReservationsResponse getMyReservations(String name) {
+    public MyReservationsResponse getMyReservations(String name) {
         List<Reservation> reservations = reservationRepository.findByName(name);
-        return ReservationsResponse.from(reservations);
+        return MyReservationsResponse.from(reservations);
     }
 
     public void updateMyReservation(Long id, ReservationFixRequest fixRequest) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_ID_NOT_FOUND));
         validateNewRequest(fixRequest);
-        ReservationTime reservationTime = reservationTimeRepository.findById(fixRequest.timeId())
+        reservationTimeRepository.findById(fixRequest.timeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
 
         validateReservationOwner(fixRequest.name(), reservation.getName());
 
-        reservation.update(
-            fixRequest.date(),
-            reservationTime
-        );
+        reservationRepository.updateDateAndTime(id, fixRequest.date(), fixRequest.timeId());
     }
 
     private void validateNewRequest(ReservationFixRequest newRequest) {

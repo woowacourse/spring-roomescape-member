@@ -42,6 +42,14 @@ public class ReservationRepository {
     private final RowMapper<Long> idRowMapper = (resultSet, rowNum)
         -> resultSet.getLong("theme_id");
 
+    private final RowMapper<Reservation> myReservationMapper = (resultSet, rowNum) -> Reservation.of(
+        resultSet.getLong("reservation_id"),
+        resultSet.getString("name"),
+        resultSet.getDate("date").toLocalDate(),
+        ReservationTime.of(null, resultSet.getTime("time_start_at").toLocalTime(), null),
+        Theme.of(null, resultSet.getString("theme_name"), null, null)
+    );
+
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -72,10 +80,9 @@ public class ReservationRepository {
 
     public List<Long> findTimeByDateAndThemeId(LocalDate date, Long themeId) {
         String query = """
-            SELECT                                                                                                                                                                                                                                \s
-                  r.time_id                                                                                                                                                                                                                \s
-              FROM reservation as r                                                                                                                                                                               \s
-              WHERE r.date = ? AND r.theme_id = ?
+            SELECT r.time_id
+            FROM reservation r
+            WHERE r.date = ? AND r.theme_id = ?
             """;
         return jdbcTemplate.query(query, timeMapper, date, themeId);
     }
@@ -120,18 +127,27 @@ public class ReservationRepository {
 
     public List<Reservation> findByName(String name) {
         String query = """
-            SELECT *
-            FROM reservation as r                                                                                                                                                                               \s
+            SELECT r.id AS reservation_id, r.name, r.date,
+                   t.start_at AS time_start_at,
+                   th.name AS theme_name
+            FROM reservation r
+            JOIN reservation_time t ON r.time_id = t.id
+            JOIN theme th ON r.theme_id = th.id
             WHERE r.name = ?
             """;
 
-        return jdbcTemplate.query(query, rowMapper, name);
+        return jdbcTemplate.query(query, myReservationMapper, name);
     }
 
     public Optional<Reservation> findById(Long id) {
         String query = """
-            SELECT *
-            FROM reservation as r
+            SELECT r.id AS reservation_id, r.name, r.date,
+                   t.id AS time_id, t.start_at AS time_start_at, t.finish_at AS time_finish_at,
+                   th.id AS theme_id, th.name AS theme_name, th.description AS theme_description,
+                   th.image_url AS theme_image_url
+            FROM reservation r
+            JOIN reservation_time t ON r.time_id = t.id
+            JOIN theme th ON r.theme_id = th.id
             WHERE r.id = ?
             """;
 

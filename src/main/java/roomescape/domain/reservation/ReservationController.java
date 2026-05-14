@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.dto.ReservationFixRequest;
 import roomescape.domain.reservation.dto.ReservationRequest;
-import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.MyReservationsResponse;
 import roomescape.domain.reservationtime.dto.TimeResponse;
 
 @RestController
@@ -41,6 +41,14 @@ public class ReservationController {
     ) {
         List<TimeResponse> responses = reservationService.getReservations(date, themeId);
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/reservations/mine")
+    public ResponseEntity<MyReservationsResponse> getMyReservations(
+        @RequestParam String name
+    ) {
+        MyReservationsResponse response = reservationService.getMyReservations(name);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/reservation/{id}")
