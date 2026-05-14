@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,7 @@ class AdminTimeTest {
     @Test
     @DisplayName("시간 생성 / 조회 / 삭제 api 테스트")
     void managingTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("startAt", "11:00");
 
         RestAssured.given().log().all()
