@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
+import static roomescape.reservation.exception.ReservaitonExceptionInformation.RESERVATION_ALREADY_BOOKED;
+import static roomescape.reservation.exception.ReservaitonExceptionInformation.RESERVATION_NOT_FOUND;
 import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
 import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
 
@@ -14,6 +16,7 @@ import roomescape.date.exception.ReservationDateException;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeException;
@@ -114,12 +117,12 @@ public class ReservationService {
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new ReservationException(RESERVATION_NOT_FOUND));
     }
 
     private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.getId())) {
-            throw new IllegalArgumentException("해당 날짜/시간/테마는 이미 예약되었습니다.");
+            throw new ReservationException(RESERVATION_ALREADY_BOOKED);
         }
     }
 

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 import static roomescape.reservation.domain.ReservationStatus.RESERVED;
+import static roomescape.reservation.exception.ReservaitonExceptionInformation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.ReservationDateFixture;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -114,12 +116,12 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(nullName, reservationDate, reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NAME_IS_NULL.getMessage());
 
         assertThatThrownBy(() -> Reservation.create(emptyName, reservationDate, reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NAME_IS_NULL.getMessage());
     }
 
     @Test
@@ -130,8 +132,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(name, reservationDate, nullTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시간은 필수입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_TIME_IS_NULL.getMessage());
     }
 
     @Test
@@ -142,8 +144,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(name, nullDate, reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜는 필수입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_DATE_IS_NULL.getMessage());
     }
 
     @Test
@@ -154,8 +156,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.load(nullId, name, reservationDate, reservationTime, theme, RESERVED))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 ID는 필수입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ID_IS_NULL.getMessage());
     }
 
     @Test
@@ -181,8 +183,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.cancel(notOwerName))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("본인의 예약만 취소할 수 있습니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NOT_OWNER.getMessage());
     }
 
     @Test
@@ -194,8 +196,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.cancel(name))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 취소된 예약입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_CANCELED.getMessage());
     }
 
     @Test
@@ -206,8 +208,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.cancel(name))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 예약입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_PAST.getMessage());
     }
 
     @Test
@@ -240,8 +242,8 @@ class ReservationTest {
 
         // when && then
         Assertions.assertThatThrownBy(() -> reserved.changeSchedule(notOwerName, changedDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("본인의 예약만 취소할 수 있습니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NOT_OWNER.getMessage());
     }
 
     @Test
@@ -254,8 +256,8 @@ class ReservationTest {
 
         // when && then
         Assertions.assertThatThrownBy(() -> reserved.changeSchedule(name, changedDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 취소된 예약입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_CANCELED.getMessage());
     }
 
     @Test
@@ -267,8 +269,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.changeSchedule(name, changedDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 예약입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_PAST.getMessage());
     }
 
     @Test
@@ -279,8 +281,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.changeSchedule(name, pastDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage());
     }
 
     @Test
@@ -313,8 +315,8 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reserved.changeScheduleByManager(yesterday, time))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage());
     }
 
     @Test
@@ -327,8 +329,8 @@ class ReservationTest {
 
         // when && then
         Assertions.assertThatThrownBy(() -> reserved.changeScheduleByManager(changedDate, reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 취소된 예약입니다.");
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(RESERVATION_ALREADY_CANCELED.getMessage());
     }
 
 }
