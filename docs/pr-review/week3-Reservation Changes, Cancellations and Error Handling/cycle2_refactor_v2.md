@@ -10,7 +10,7 @@
   - `controller/dto/time/` — ReservationTimeRequest, ReservationTimeResponse, ReservationTimesResponse, AvailableReservationTimeResponse, AvailableReservationTimesResponse
   - `controller/dto/theme/` — ThemeRequest, ThemeResponse, ThemesResponse
   - `ErrorResponse`는 루트(`controller/dto/`)에 유지
-- [ ] **3. GlobalExceptionHandler 테스트 작성**
+- [x] **3. GlobalExceptionHandler 테스트 작성**
   - `@WebMvcTest` + 인라인 더미 컨트롤러 방식으로 각 예외별 HTTP status / 응답 body 검증
   - 대상: `IllegalArgumentException` → 400, `ReservationConflictException` → 409, `PastReservationException` → 422, `MethodArgumentNotValidException` → 400, `HttpMessageNotReadableException` → 400, `NoResourceFoundException` → 404, `Exception` → 500
 - [x] **4. IllegalArgumentException 처리 개선**
