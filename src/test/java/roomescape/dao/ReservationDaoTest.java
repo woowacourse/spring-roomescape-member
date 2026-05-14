@@ -69,6 +69,52 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 특정_시간에_예약이_존재하면_true를_반환한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        reservationDao.insert(Reservation.createWithoutId("브라운", LocalDate.of(2026, 5, 5), time, theme));
+
+        // when
+        boolean result = reservationDao.existsByTimeId(time.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 특정_시간에_예약이_존재하지_않으면_false를_반환한다() {
+        // when
+        boolean result = reservationDao.existsByTimeId(999L);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 특정_테마에_예약이_존재하면_true를_반환한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        reservationDao.insert(Reservation.createWithoutId("브라운", LocalDate.of(2026, 5, 5), time, theme));
+
+        // when
+        boolean result = reservationDao.existsByThemeId(theme.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 특정_테마에_예약이_존재하지_않으면_false를_반환한다() {
+        // when
+        boolean result = reservationDao.existsByThemeId(999L);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
     void 테마_아이디와_선택_날짜에_해당하는_예약_목록을_조회한다() {
         // given
         ReservationTime savedTime = saveTime(10, 0);
@@ -87,6 +133,35 @@ class ReservationDaoTest {
                 () -> assertThat(result).hasSize(1),
                 () -> assertThat(result.getFirst().getName()).isEqualTo("러키")
         );
+    }
+
+    @Test
+    void 날짜_시간_테마가_모두_같은_예약이_존재하면_true를_반환한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        LocalDate date = LocalDate.of(2026, 5, 5);
+        reservationDao.insert(Reservation.createWithoutId("브라운", date, time, theme));
+
+        // when
+        boolean result = reservationDao.existsByDateAndTimeIdAndThemeId(date, time.getId(), theme.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 날짜_시간_테마가_모두_같은_예약이_없으면_false를_반환한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        LocalDate date = LocalDate.of(2026, 5, 5);
+
+        // when
+        boolean result = reservationDao.existsByDateAndTimeIdAndThemeId(date, time.getId(), theme.getId());
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
