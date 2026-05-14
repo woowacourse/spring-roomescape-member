@@ -31,12 +31,7 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> getReservations(@RequestParam(value = "name", required = false) String name) {
-        if (name != null) {
-            return reservationService.findByName(name).stream()
-                    .map(ReservationResponse::from)
-                    .toList();
-        }
-        return reservationService.findAll().stream()
+        return reservationService.findAll(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

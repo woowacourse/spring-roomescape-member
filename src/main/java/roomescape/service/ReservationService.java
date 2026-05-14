@@ -29,12 +29,11 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(String name) {
+        if (name != null) {
+            return reservationRepository.findByName(name);
+        }
         return reservationRepository.findAll();
-    }
-
-    public List<Reservation> findByName(String name) {
-        return reservationRepository.findByName(name);
     }
 
     @Transactional
