@@ -10,16 +10,16 @@ public record ErrorResponse(
 
     public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, RoomescapeException exception) {
         return ResponseEntity.status(httpStatus)
-            .body(new ErrorResponse(exception.getErrorCode().getCode(), exception.getMessage()));
+            .body(new ErrorResponse(exception.getErrors().getCode(), exception.getMessage()));
     }
 
-    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, ErrorCode errorCode) {
+    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, Errors errors) {
         return ResponseEntity.status(httpStatus)
-            .body(new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
+            .body(new ErrorResponse(errors.getCode(), errors.getMessage()));
     }
 
-    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, ErrorCode errorCode, String message) {
+    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, Errors errors, String message) {
         return ResponseEntity.status(httpStatus)
-            .body(new ErrorResponse(errorCode.getCode(), message));
+            .body(new ErrorResponse(errors.getCode(), message));
     }
 }

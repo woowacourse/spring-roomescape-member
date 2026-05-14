@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public abstract class RoomescapeException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final Errors errors;
 
-    public RoomescapeException(ErrorCode errorCode, Object... args) {
-        super(String.format(errorCode.getMessage(), args));
-        this.errorCode = errorCode;
+    public RoomescapeException(Errors errors, Object... args) {
+        super(String.format(errors.getMessage(), args));
+        this.errors = errors;
     }
 }

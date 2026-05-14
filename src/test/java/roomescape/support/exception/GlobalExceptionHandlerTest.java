@@ -11,7 +11,7 @@ class GlobalExceptionHandlerTest {
     void RoomescapeException을_에러_응답으로_변환한다() {
         // given
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
-        BadRequestException exception = new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_NAME);
+        BadRequestException exception = new BadRequestException(ReservationErrors.INVALID_RESERVATION_NAME);
 
         // when
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequestException(exception);

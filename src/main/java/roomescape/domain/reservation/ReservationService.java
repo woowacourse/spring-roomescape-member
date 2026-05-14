@@ -21,10 +21,10 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.BadRequestException;
 import roomescape.support.exception.NotFoundException;
-import roomescape.support.exception.ReservationDateErrorCode;
-import roomescape.support.exception.ReservationErrorCode;
-import roomescape.support.exception.ReservationTimeErrorCode;
-import roomescape.support.exception.ThemeErrorCode;
+import roomescape.support.exception.ReservationDateErrors;
+import roomescape.support.exception.ReservationErrors;
+import roomescape.support.exception.ReservationTimeErrors;
+import roomescape.support.exception.ThemeErrors;
 
 @Slf4j
 @Service
@@ -41,12 +41,12 @@ public class ReservationService {
     @Transactional
     public CreateReservationResponse createReservation(CreateReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new NotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ReservationTimeErrors.RESERVATION_TIME_NOT_EXIST));
         ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
-            .orElseThrow(() -> new NotFoundException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ReservationDateErrors.RESERVATION_DATE_NOT_EXIST));
         validateReservationScheduleToCreate(reservationDate, reservationTime);
         Theme theme = themeRepository.findById(request.themeId())
-            .orElseThrow(() -> new NotFoundException(ThemeErrorCode.THEME_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ThemeErrors.THEME_NOT_EXIST));
         validateDuplicated(reservationTime, reservationDate, theme);
         Reservation savedReservation = reservationRepository.save(
             request.toEntity(reservationDate, reservationTime, theme));
@@ -75,7 +75,7 @@ public class ReservationService {
     @Transactional
     public void deleteUserReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
         validateUserCanDeleteReservation(reservation);
         reservationRepository.deleteById(id);
     }
@@ -83,7 +83,7 @@ public class ReservationService {
     @Transactional
     public void updateReservation(Long id, UpdateReservationRequest request) {
         Reservation reservation = reservationRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
         ReservationTime reservationTime = reservation.getTime();
         ReservationDate reservationDate = reservation.getDate();
         reservationTime = getReservationTime(request, reservationTime);
@@ -97,7 +97,7 @@ public class ReservationService {
             reservation.getTheme()
         );
         reservationRepository.update(id, updatedReservation)
-            .orElseThrow(() -> new NotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
     }
 
     private void validateReservationScheduleToCreate(
@@ -107,16 +107,16 @@ public class ReservationService {
         LocalDate today = LocalDate.now(clock);
         LocalTime now = LocalTime.now(clock);
         if (isPastDate(reservationDate, today)) {
-            throw new BadRequestException(ReservationDateErrorCode.RESERVATION_DATE_MUST_BE_TODAY_OR_LATER, today);
+            throw new BadRequestException(ReservationDateErrors.RESERVATION_DATE_MUST_BE_TODAY_OR_LATER, today);
         }
         if (isPastTimeToday(reservationDate, reservationTime, today, now)) {
-            throw new BadRequestException(ReservationTimeErrorCode.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER, now);
+            throw new BadRequestException(ReservationTimeErrors.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER, now);
         }
     }
 
     private void validateDuplicated(ReservationTime reservationTime, ReservationDate reservationDate, Theme theme) {
         if (isExistReservation(reservationTime, reservationDate, theme)) {
-            throw new BadRequestException(ReservationErrorCode.DUPLICATED_RESERVATION);
+            throw new BadRequestException(ReservationErrors.DUPLICATED_RESERVATION);
         }
     }
 
@@ -136,7 +136,7 @@ public class ReservationService {
             reservationDate.getId(),
             theme.getId()
         )) {
-            throw new BadRequestException(ReservationErrorCode.DUPLICATED_RESERVATION);
+            throw new BadRequestException(ReservationErrors.DUPLICATED_RESERVATION);
         }
     }
 
@@ -144,10 +144,10 @@ public class ReservationService {
         LocalDate today = LocalDate.now(clock);
         LocalTime now = LocalTime.now(clock);
         if (isPastDate(reservation.getDate(), today)) {
-            throw new BadRequestException(ReservationDateErrorCode.PAST_RESERVATION_DATE_CANNOT_BE_DELETED, today);
+            throw new BadRequestException(ReservationDateErrors.PAST_RESERVATION_DATE_CANNOT_BE_DELETED, today);
         }
         if (isPastTimeToday(reservation.getDate(), reservation.getTime(), today, now)) {
-            throw new BadRequestException(ReservationTimeErrorCode.PAST_RESERVATION_TiME_CANNOT_BE_DELETED, now);
+            throw new BadRequestException(ReservationTimeErrors.PAST_RESERVATION_TiME_CANNOT_BE_DELETED, now);
         }
     }
 
@@ -167,7 +167,7 @@ public class ReservationService {
     private ReservationDate getReservationDate(UpdateReservationRequest request, ReservationDate reservationDate) {
         if (request.startWhen() != null) {
             reservationDate = reservationDateRepository.findByDate(request.startWhen())
-                .orElseThrow(() -> new NotFoundException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
+                .orElseThrow(() -> new NotFoundException(ReservationDateErrors.RESERVATION_DATE_NOT_EXIST));
         }
         return reservationDate;
     }
@@ -175,7 +175,7 @@ public class ReservationService {
     private ReservationTime getReservationTime(UpdateReservationRequest request, ReservationTime reservationTime) {
         if (request.startAt() != null) {
             reservationTime = reservationTimeRepository.findByStartAt(request.startAt())
-                .orElseThrow(() -> new NotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
+                .orElseThrow(() -> new NotFoundException(ReservationTimeErrors.RESERVATION_TIME_NOT_EXIST));
         }
         return reservationTime;
     }

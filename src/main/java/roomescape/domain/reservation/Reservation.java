@@ -5,9 +5,9 @@ import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.support.exception.BadRequestException;
-import roomescape.support.exception.ReservationErrorCode;
-import roomescape.support.exception.ReservationTimeErrorCode;
-import roomescape.support.exception.ThemeErrorCode;
+import roomescape.support.exception.ReservationErrors;
+import roomescape.support.exception.ReservationTimeErrors;
+import roomescape.support.exception.ThemeErrors;
 
 @Getter
 public class Reservation {
@@ -76,16 +76,16 @@ public class Reservation {
 
     private static void validate(String name, ReservationDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_NAME);
+            throw new BadRequestException(ReservationErrors.INVALID_RESERVATION_NAME);
         }
         if (date == null) {
-            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_DATE);
+            throw new BadRequestException(ReservationErrors.INVALID_RESERVATION_DATE);
         }
         if (time == null) {
-            throw new BadRequestException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
+            throw new BadRequestException(ReservationTimeErrors.INVALID_RESERVATION_TIME);
         }
         if (theme == null) {
-            throw new BadRequestException(ThemeErrorCode.INVALID_THEME);
+            throw new BadRequestException(ThemeErrors.INVALID_THEME);
         }
     }
 }

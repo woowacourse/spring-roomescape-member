@@ -1,6 +1,6 @@
 package roomescape.support.exception;
 
-public interface ErrorCode {
+public interface Errors {
 
     String getMessage();
 

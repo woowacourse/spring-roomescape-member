@@ -38,20 +38,20 @@ public class GlobalExceptionHandler {
             .stream()
             .findFirst()
             .map(ObjectError::getDefaultMessage)
-            .orElse(RoomescapeErrorCode.INPUT_VALIDATION_ERROR.getMessage());
+            .orElse(RoomescapeErrors.INPUT_VALIDATION_ERROR.getMessage());
 
-        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrorCode.INPUT_VALIDATION_ERROR, message);
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrors.INPUT_VALIDATION_ERROR, message);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
         HttpMessageNotReadableException e
     ) {
-        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrorCode.INPUT_FORMAT_ERROR);
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrors.INPUT_FORMAT_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, RoomescapeErrorCode.INTERNAL_SERVER_ERROR);
+        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, RoomescapeErrors.INTERNAL_SERVER_ERROR);
     }
 }

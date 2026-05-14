@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.support.exception.InternalServerException;
-import roomescape.support.exception.RoomescapeErrorCode;
+import roomescape.support.exception.RoomescapeErrors;
 
 @Repository
 @RequiredArgsConstructor
@@ -75,7 +75,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private long extractId(KeyHolder keyHolder) {
         if (keyHolder.getKey() == null) {
-            throw new InternalServerException(RoomescapeErrorCode.INVALID_GENERATED_KEY);
+            throw new InternalServerException(RoomescapeErrors.INVALID_GENERATED_KEY);
         }
         return keyHolder.getKey().longValue();
     }

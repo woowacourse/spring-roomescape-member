@@ -3,7 +3,7 @@ package roomescape.support.exception;
 import lombok.Getter;
 
 @Getter
-public enum ReservationTimeErrorCode implements ErrorCode {
+public enum ReservationTimeErrors implements Errors {
 
     INVALID_RESERVATION_TIME("시간은 필수입니다."),
     INVALID_RESERVATION_TIME_FORMAT("시간은 HH:MM 형식이어야 합니다."),
@@ -15,7 +15,7 @@ public enum ReservationTimeErrorCode implements ErrorCode {
 
     private final String message;
 
-    ReservationTimeErrorCode(String message) {
+    ReservationTimeErrors(String message) {
         this.message = message;
     }
 

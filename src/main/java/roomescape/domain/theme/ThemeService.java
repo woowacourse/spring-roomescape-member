@@ -12,7 +12,7 @@ import roomescape.domain.theme.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.support.exception.ConflictException;
-import roomescape.support.exception.ThemeErrorCode;
+import roomescape.support.exception.ThemeErrors;
 
 @Slf4j
 @Service
@@ -38,7 +38,7 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationRepository.countByThemeId(id) > 0) {
-            throw new ConflictException(ThemeErrorCode.THEME_IN_USE);
+            throw new ConflictException(ThemeErrors.THEME_IN_USE);
         }
         int deletedCount = themeRepository.deleteById(id);
         if (deletedCount == 0) {

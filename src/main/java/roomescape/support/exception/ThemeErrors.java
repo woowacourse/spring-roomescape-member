@@ -3,7 +3,7 @@ package roomescape.support.exception;
 import lombok.Getter;
 
 @Getter
-public enum ThemeErrorCode implements ErrorCode {
+public enum ThemeErrors implements Errors {
 
     INVALID_THEME("테마는 필수입니다."),
     THEME_NOT_EXIST("존재하지 않는 테마 입니다."),
@@ -12,7 +12,7 @@ public enum ThemeErrorCode implements ErrorCode {
 
     private final String message;
 
-    ThemeErrorCode(String message) {
+    ThemeErrors(String message) {
         this.message = message;
     }
 
