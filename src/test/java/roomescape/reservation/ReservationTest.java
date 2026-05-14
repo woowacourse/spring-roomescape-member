@@ -93,10 +93,18 @@ class ReservationTest {
     }
 
     @Test
-    void 본인_예약_확인() {
+    void 본인이면_통과() {
         Reservation reservation = new Reservation(1L, "동키", theme, LocalDate.of(2026, 12, 31), time, null);
 
-        assertThat(reservation.belongsTo("동키")).isTrue();
-        assertThat(reservation.belongsTo("그해")).isFalse();
+        assertThatCode(() -> reservation.checkOwner("동키"))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 본인이_아니면_예외() {
+        Reservation reservation = new Reservation(1L, "동키", theme, LocalDate.of(2026, 12, 31), time, null);
+
+        assertThatThrownBy(() -> reservation.checkOwner("그해"))
+                .isInstanceOf(RoomescapeException.class);
     }
 }
