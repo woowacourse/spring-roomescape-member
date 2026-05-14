@@ -6,4 +6,8 @@ public class ReservationNotFoundException extends RuntimeException {
         super("존재하지 않는 예약입니다. id=" + id);
     }
 
+    public ReservationNotFoundException(String name) {
+        super("존재하지 않는 예약입니다. name=" + name);
+    }
+
 }

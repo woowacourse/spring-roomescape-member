@@ -36,7 +36,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_저장하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2026, 5, 10);
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(theme("테마"));
         Reservation reservation = reservation(name, date, reservationTime, theme);
@@ -53,7 +53,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 모든_예약을_조회하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2026, 5, 10);
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(theme("테마"));
         Reservation reservation = reservation(name, date, reservationTime, theme);
@@ -67,13 +67,28 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_취소하는_테스트() {
         String name = "봉구스";
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2026, 5, 10);
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(theme("테마"));
         Reservation reservation = reservation(name, date, reservationTime, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);
         reservationRepository.deleteById(savedReservation.getId());
+
+        List<Reservation> reservations = reservationRepository.findAll();
+        assertThat(reservations).doesNotContain(savedReservation);
+    }
+
+    @Test
+    void 예약을_이름으로_취소하는_테스트() {
+        String name = "밀란";
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(theme("테마"));
+        Reservation reservation = reservation(name, date, reservationTime, theme);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+        reservationRepository.deleteByName(savedReservation.getName());
 
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).doesNotContain(savedReservation);

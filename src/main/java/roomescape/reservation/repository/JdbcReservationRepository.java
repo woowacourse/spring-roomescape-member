@@ -122,4 +122,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public int deleteByName(String name) {
+        String sql = "DELETE FROM reservation WHERE name = ?";
+        return jdbcTemplate.update(sql, name);
+    }
+
 }

@@ -16,4 +16,6 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
+    int deleteByName(String name);
+    
 }

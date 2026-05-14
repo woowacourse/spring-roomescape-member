@@ -162,6 +162,24 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 예약을_이름으로_올바르게_삭제하는지_확인하는_테스트() {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        ReservationRequest reservationRequest = reservationRequest(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.save(reservationRequest);
+
+        reservationService.deleteByName(reservation.getName());
+
+        List<Reservation> reservations = reservationService.findAll();
+        assertThat(reservations).doesNotContain(reservation);
+    }
+
+    @Test
     void 없는_예약을_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> reservationService.deleteById(999L))
                 .isInstanceOf(ReservationNotFoundException.class);
@@ -194,7 +212,7 @@ class ReservationServiceTest {
         );
         Reservation savedReservation = reservationService.save(reservationRequest);
 
-        List<Reservation> reservations = reservationService.findMyReservations("밀란");
+        List<Reservation> reservations = reservationService.findAllByName("밀란");
 
         assertThat(reservations).contains(savedReservation);
 

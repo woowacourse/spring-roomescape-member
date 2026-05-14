@@ -63,7 +63,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findMyReservations(String name) {
+    public List<Reservation> findAllByName(String name) {
         return reservationRepository.findAllByName(name);
     }
 
@@ -72,6 +72,14 @@ public class ReservationService {
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
             throw new ReservationNotFoundException(id);
+        }
+    }
+
+    @Transactional
+    public void deleteByName(String name) {
+        int affected = reservationRepository.deleteByName(name);
+        if (affected == 0) {
+            throw new ReservationNotFoundException(name);
         }
     }
 

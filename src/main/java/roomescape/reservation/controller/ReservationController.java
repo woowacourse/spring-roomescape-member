@@ -43,7 +43,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> getMyReservations(
             @RequestParam(name = "name") String name
     ) {
-        List<ReservationResponse> reservationResponses = reservationService.findMyReservations(name).stream()
+        List<ReservationResponse> reservationResponses = reservationService.findAllByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
 
@@ -56,6 +56,14 @@ public class ReservationController {
             @PathVariable Long id
     ) {
         reservationService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteReservation(
+            @RequestParam(name = "name") String name
+    ) {
+        reservationService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

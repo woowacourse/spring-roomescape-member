@@ -111,6 +111,26 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 예약을_이름으로_삭제한다() throws Exception {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        Map<String, Object> request = reservationRequestBody(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        int id = postReservation(request);
+
+        mockMvc.perform(delete("/reservations?name={name}", "밀란"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/admin/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(0));
+    }
+
+    @Test
     void 이름으로_예약들을_조회한다() throws Exception {
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
         Theme theme = themeService.save(themeRequest("테마"));
@@ -122,7 +142,7 @@ class ReservationControllerTest {
         );
         postReservation(request);
 
-        mockMvc.perform(get("/reservations?name=밀란")
+        mockMvc.perform(get("/reservations?name={name}", "밀란")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
