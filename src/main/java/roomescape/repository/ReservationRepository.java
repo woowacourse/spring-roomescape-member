@@ -111,7 +111,7 @@ public class ReservationRepository {
     }
 
     public Reservation update(long id, Reservation target) {
-        jdbcTemplate.update(UPDATE, target.getName().getValue(), target.getDate(), target.getTime().getId(),
+        jdbcTemplate.update(UPDATE, target.getName().getValue(), target.getDate().getDate(), target.getTime().getId(),
                 target.getTheme().getId(), id);
 
         return Reservation.load(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());

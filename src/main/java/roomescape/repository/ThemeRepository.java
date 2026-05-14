@@ -37,9 +37,9 @@ public class ThemeRepository {
 
     public Theme save(Theme theme) {
         Map<String, Object> params = Map.of(
-                "name", theme.getName(),
+                "name", theme.getName().getValue(),
                 "description", theme.getDescription(),
-                "thumbnail_url", theme.getThumbnailUrl()
+                "thumbnail_url", theme.getThumbnailUrl().getValue()
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Theme.of(generatedKey, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
