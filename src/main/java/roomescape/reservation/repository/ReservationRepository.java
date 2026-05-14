@@ -68,7 +68,7 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean existsByTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
         Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
         return row != null && row > 0;
@@ -154,5 +154,13 @@ public class ReservationRepository {
                     theme
             );
         };
+    }
+
+    public int update(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation " +
+                "SET date = ?, time_id = ? " +
+                "WHERE id = ?";
+
+        return jdbcTemplate.update(sql, date, timeId, id);
     }
 }

@@ -40,7 +40,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
         validatePastDateTime(date, time);
-        if (reservationRepository.existsByTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
         Reservation reservation = new Reservation(null, name, date, time, theme);
@@ -76,6 +76,32 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
         }
         reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!reservation.isOwnedBy(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+
+        if (reservation.isExpired(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
+        }
+
+        ReservationTime newTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        validatePastDateTime(date, newTime);
+
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
+            throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
+        }
+
+        reservationRepository.update(id, date, timeId);
+        return new Reservation(id, name, date, newTime, reservation.getTheme());
     }
 
     private void validatePastDateTime(LocalDate date, ReservationTime time) {
