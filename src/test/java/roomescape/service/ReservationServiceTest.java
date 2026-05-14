@@ -84,6 +84,20 @@ class ReservationServiceTest extends ServiceTest {
     }
 
     @Test
+    void 예약_생성시_동일한_조건의_예약이_이미_존재하면_예외가_발생한다() {
+        // given
+        ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
+        Theme theme = saveTheme("테마1");
+        ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId());
+        reservationService.create(request);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(request))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(ReservationErrorCode.RESERVATION_ALREADY_EXISTS.getMessage());
+    }
+
+    @Test
     void 예약을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));

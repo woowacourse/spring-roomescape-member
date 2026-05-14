@@ -81,6 +81,48 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 테마와_날짜_및_시간이_일치하는_예약이_존재하는지_확인한다() {
+        // given
+        ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime otherReservationTime = saveReservationTime(LocalTime.of(11, 0));
+
+        Theme savedTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        Theme otherTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:Fasdg/dfgt");
+
+        LocalDate date = LocalDate.of(2026, 5, 5);
+        LocalDate otherDate = LocalDate.of(2026, 5, 6);
+
+        saveReservation("브라운", date, savedReservationTime, savedTheme);
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationDao.existsByThemeAndDateAndTime(
+                        savedTheme.getId(),
+                        date,
+                        savedReservationTime.getId()
+                )).isTrue(),
+
+                () -> assertThat(reservationDao.existsByThemeAndDateAndTime(
+                        otherTheme.getId(),
+                        date,
+                        savedReservationTime.getId()
+                )).isFalse(),
+
+                () -> assertThat(reservationDao.existsByThemeAndDateAndTime(
+                        savedTheme.getId(),
+                        otherDate,
+                        savedReservationTime.getId()
+                )).isFalse(),
+
+                () -> assertThat(reservationDao.existsByThemeAndDateAndTime(
+                        savedTheme.getId(),
+                        date,
+                        otherReservationTime.getId()
+                )).isFalse()
+        );
+    }
+
+    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));

@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +84,10 @@ public class ReservationDao {
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation
-                    WHERE time_id= ?
+                    WHERE time_id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId));
     }
 
     public boolean existsByTheme(long themeId) {
@@ -94,10 +95,23 @@ public class ReservationDao {
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation
-                    WHERE theme_id= ?
+                    WHERE theme_id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, themeId));
+    }
+
+    public boolean existsByThemeAndDateAndTime(long themeId, LocalDate date, long reservationTimeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                        AND date = ? 
+                        AND time_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, themeId, date, reservationTimeId));
     }
 
     public int delete(long reservationId) {
