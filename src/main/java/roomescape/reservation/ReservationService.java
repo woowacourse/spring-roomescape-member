@@ -86,6 +86,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
 
         Reservation updateReservation = new Reservation(
+                id,
                 reservation.getUserName(),
                 theme,
                 reservationRequest.date(),
