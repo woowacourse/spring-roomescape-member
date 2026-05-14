@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import common.exception.RoomEscapeException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +13,7 @@ public class NameTest {
     @ParameterizedTest
     @ValueSource(strings = {UNDER_SIZE_NAME, OVER_SIZE_NAME})
     void 이름이_범위를_벗어나면_예외가_발생한다(String name) {
-        Assertions.assertThatThrownBy(() -> Name.from(name)).isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> Name.from(name)).isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
@@ -24,6 +25,6 @@ public class NameTest {
     @Test
     void null이_입력되면_예외가_발생한다() {
         String name = null;
-        Assertions.assertThatThrownBy(() -> Name.from(name)).isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> Name.from(name)).isInstanceOf(RoomEscapeException.class);
     }
 }

@@ -78,19 +78,15 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        // 각 입력이 도메인을 위반하지 않는지 확인
         ReservationDate reservationDate = ReservationDate.from(request.getDate());
         ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId()).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
-        // TODO: 해당 날짜/시간이 사용 가능한지 확인
         validateIsDuplicateReservation(request.getTimeId(), request.getThemeId(), request.getDate());
 
-        // TODO: 예약 날짜가 과거인지 확인
         Reservation target = Reservation.reserve(reservation.getName(), reservationDate, reservationTime,
                 reservation.getTheme(), now);
 
-        // 업데이트 요청 및 반환
         return reservationRepository.update(id, target);
     }
 }

@@ -1,10 +1,11 @@
 package roomescape.domain;
 
+import common.exception.ErrorCode;
+import common.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class ReservationDate {
-    public static final String DATE_SHOULD_NOT_BE_NULL = "날짜를 입력해야 합니다.";
     private final LocalDate date;
 
     private ReservationDate(LocalDate date) {
@@ -18,7 +19,7 @@ public class ReservationDate {
 
     private static void validateIsNull(Object value) {
         if (value == null) {
-            throw new IllegalArgumentException(DATE_SHOULD_NOT_BE_NULL);
+            throw new RoomEscapeException(ErrorCode.DATE_MUST_NOT_BE_NULL);
         }
     }
 

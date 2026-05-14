@@ -91,7 +91,7 @@ public class ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
+                "name", reservation.getName().getValue(),
                 "date", reservation.getDate().getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
