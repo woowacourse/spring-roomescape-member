@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.Admin;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.presentation.dto.ReservationRequest;
-import roomescape.reservation.presentation.dto.ReservationResponse;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
+import roomescape.reservation.presentation.dto.request.ReservationCreateRequest;
+import roomescape.reservation.presentation.dto.request.ReservationUpdateRequest;
+import roomescape.reservation.presentation.dto.response.ReservationResponse;
 
 @RestController
 @RequestMapping("/reservations")
@@ -30,14 +33,15 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(
-            @RequestBody ReservationRequest request
+            @RequestBody ReservationCreateRequest request
     ) {
-        ReservationResponse response = ReservationResponse.from(service.saveReservation(
+        ReservationCreateCommand createCommand = new ReservationCreateCommand(
                 request.name(),
                 request.date(),
                 request.timeId(),
                 request.themeId()
-        ));
+        );
+        ReservationResponse response = ReservationResponse.from(service.saveReservation(createCommand));
         return ResponseEntity.created(URI.create("/reservations/" + response.id()))
                 .body(response);
     }
@@ -63,11 +67,15 @@ public class ReservationController {
     @PatchMapping("/me/{id}")
     public ResponseEntity<Void> updateUserReservation(
             @PathVariable Long id,
-            @RequestParam LocalDate date,
-            @RequestParam Long timeId,
-            @RequestParam String name
+            @RequestBody ReservationUpdateRequest request
     ) {
-        service.updateReservationSchedule(date, timeId, id, name);
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(
+                id,
+                request.date(),
+                request.timeId(),
+                request.name()
+        );
+        service.updateReservationSchedule(updateCommand);
         return ResponseEntity.noContent().build();
     }
 

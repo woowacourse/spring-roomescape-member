@@ -1,16 +1,16 @@
-package roomescape.reservation.presentation.dto;
+package roomescape.reservation.presentation.dto.request;
 
 import java.time.LocalDate;
 import roomescape.global.exception.ReservationErrorCode;
 import roomescape.global.exception.customException.BadRequestException;
 
-public record ReservationRequest(
+public record ReservationCreateRequest(
         String name,
         LocalDate date,
         Long timeId,
         Long themeId
 ) {
-    public ReservationRequest{
+    public ReservationCreateRequest{
         validateNameNotEmpty(name);
         validateDateNotEmpty(date);
         validateTimeIdNotEmpty(timeId);
