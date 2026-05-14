@@ -191,6 +191,43 @@ HTTP/1.1 204
 
 ---
 
+## 관리자 - 예약 삭제
+
+<details>
+<summary>Request</summary>
+<div markdown="1">
+
+```
+DELETE /reservations/{reservationId} HTTP/1.1
+```
+
+</div>
+</details>
+
+<details>
+<summary>Response</summary>
+<div markdown="1">
+
+```
+HTTP/1.1 204
+```
+
+</div>
+</details>
+
+<details>
+<summary>Exception</summary>
+<div markdown="1">
+
+- [x] 예외: 존재하지 않는 예약을 삭제할 수 없다.
+    - 상태 코드: 404
+    - 예외 메시지: "존재하지 않는 예약입니다."
+
+</div>
+</details>
+
+---
+
 ## 사용자 - 예약 시간 전체 조회
 
 <details>
@@ -462,14 +499,24 @@ Content-Type: application/json
 
 ---
 
-## 사용자 - 예약 삭제
+## 사용자 - 내 예약 조회
 
+<details>
+<summary>Query Parameter</summary>
+<div markdown="1">
+
+- name (필수・string)
+    - 예약자 이름입니다.
+
+</div>
+
+</details>
 <details>
 <summary>Request</summary>
 <div markdown="1">
 
 ```
-DELETE /reservations/{reservationId} HTTP/1.1
+GET /reservations?name=브라운 HTTP/1.1
 ```
 
 </div>
@@ -480,7 +527,60 @@ DELETE /reservations/{reservationId} HTTP/1.1
 <div markdown="1">
 
 ```
-HTTP/1.1 204
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "name": "브라운",
+    "date": "2026-05-05",
+    "time": {
+      "id": 1,
+      "startAt": "10:00"
+    },
+    "theme": {
+      "id": 1,
+      "name": "공포의 저택",
+      "description": "오래된 저택에서 탈출하세요.",
+      "thumbnail": "https://example.com/theme1.jpg"
+    }
+  }
+]
+
+```
+
+</div>
+</details>
+
+---
+
+## 사용자 - 예약 취소
+
+<details>
+<summary>Request</summary>
+<div markdown="1">
+
+```
+PATCH /reservations/{reservationId}/cancel HTTP/1.1
+```
+
+</div>
+</details>
+
+<details>
+<summary>Response</summary>
+<div markdown="1">
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+  "id": 1,
+  "status": "CANCELLED"
+}
+
 ```
 
 </div>
@@ -490,9 +590,78 @@ HTTP/1.1 204
 <summary>Exception</summary>
 <div markdown="1">
 
-- [x] 예외: 존재하지 않는 예약을 삭제할 수 없다.
+- [ ] 예외: 존재하지 않는 예약을 취소할 수 없다.
     - 상태 코드: 404
     - 예외 메시지: "존재하지 않는 예약입니다."
+- [ ] 예외: 이미 지난 예약은 취소할 수 없다.
+    - 상태 코드: 400
+    - 예외 메시지: "이미 지난 예약은 취소할 수 없습니다."
+
+</div>
+</details>
+
+---
+
+## 사용자 - 예약 날짜·시간 변경
+
+<details>
+<summary>Request</summary>
+<div markdown="1">
+
+```
+PATCH /reservations/{reservationId} HTTP/1.1
+Content-Type: application/json
+
+{
+  "date": "2026-05-05",
+  "timeId": 1
+}
+```
+
+</div>
+</details>
+
+<details>
+<summary>Response</summary>
+<div markdown="1">
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2026-05-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+   "theme": {
+    "id": 1,
+    "name": "공포의 저택",
+    "description": "오래된 저택에서 탈출하세요.",
+    "thumbnail": "https://example.com/theme1.jpg"
+  }
+}
+```
+
+</div>
+</details>
+
+<details>
+<summary>Exception</summary>
+<div markdown="1">
+
+- [ ] 예외: 존재하지 않는 예약을 변경할 수 없다.
+    - 상태 코드: 404
+    - 예외 메시지: "존재하지 않는 예약입니다."
+- [ ] 예외: 이미 지난 날짜·시간으로 변경할 수 없다.
+    - 상태 코드: 422
+    - 예외 메시지: "지나간 날짜·시간으로 변경할 수 없습니다."
+- [ ] 예외: 변경하려는 날짜+시간+테마에 이미 예약이 있으면 변경을 거부한다.
+    - 상태 코드: 409
+    - 예외 메시지: "동일한 날짜, 시간, 테마에 이미 예약이 존재합니다."
 
 </div>
 </details>
