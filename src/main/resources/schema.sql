@@ -28,10 +28,10 @@ CREATE TABLE reservations
     date     DATE        NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
+    status   VARCHAR(20) NOT NULL DEFAULT 'BOOKED',
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES times (id),
-    FOREIGN KEY (theme_id) REFERENCES themes (id),
-    UNIQUE (theme_id, time_id, date)
+    FOREIGN KEY (theme_id) REFERENCES themes (id)
 );
 
 

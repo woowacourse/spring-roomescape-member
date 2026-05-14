@@ -38,7 +38,7 @@ public class ReservationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponseDto> findById(@PathVariable Long id) {
-        Reservation reservationById = reservationService.findById(id);
+        Reservation reservationById = reservationService.findActiveById(id);
         return ResponseEntity.ok(ReservationResponseDto.from(reservationById));
     }
 

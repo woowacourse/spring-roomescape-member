@@ -12,13 +12,17 @@ public class Reservation {
     private Time time;
     private ReservationStatus reservationStatus;
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, ReservationStatus status) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.reservationStatus = ReservationStatus.BOOKED;
+        this.reservationStatus = status;
+    }
+
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+        this(id, name, date, time, theme, ReservationStatus.BOOKED);
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {

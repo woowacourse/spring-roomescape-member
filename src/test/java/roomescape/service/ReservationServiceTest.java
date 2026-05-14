@@ -24,6 +24,7 @@ import roomescape.dao.jdbc.ReservationJdbcDao;
 import roomescape.dao.jdbc.ThemeJdbcDao;
 import roomescape.dao.jdbc.TimeJdbcDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
@@ -98,6 +99,29 @@ class ReservationServiceTest {
         @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.findById(-1L))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class FindActiveById {
+
+        @Test
+        @DisplayName("BOOKED 상태의 예약을 조회한다")
+        void returnsActiveReservation() {
+            Reservation saved = reservationService.create(requestDto1);
+
+            assertThat(reservationService.findActiveById(saved.getId())).isEqualTo(saved);
+        }
+
+        @Test
+        @DisplayName("CANCELED 상태의 예약을 조회하면 예외를 반환한다")
+        void throwsWhenCanceled() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+            reservationService.cancel(saved.getId());
+
+            assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -221,14 +245,15 @@ class ReservationServiceTest {
     class Cancel {
 
         @Test
-        @DisplayName("미래 예약을 취소한다")
+        @DisplayName("미래 예약을 취소하면 상태가 CANCELED로 변경된다")
         void cancelsReservation() {
             Reservation saved = reservationDao.insert(
                     new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             reservationService.cancel(saved.getId());
 
-            assertThat(reservationDao.existsById(saved.getId())).isFalse();
+            Reservation canceled = reservationDao.findById(saved.getId()).orElseThrow();
+            assertThat(canceled.getReservationStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
 
         @Test
@@ -236,6 +261,18 @@ class ReservationServiceTest {
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.cancel(-1L))
                     .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("취소 후 같은 슬롯을 재예약할 수 있다")
+        void allowsRebookingAfterCancel() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+            reservationService.cancel(saved.getId());
+
+            Reservation rebooked = reservationService.create(requestDto1);
+
+            assertThat(rebooked.getId()).isNotNull();
         }
 
         @Test

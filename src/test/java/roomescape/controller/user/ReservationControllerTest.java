@@ -3,7 +3,8 @@ package roomescape.controller.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -44,17 +46,48 @@ class ReservationControllerTest {
     }
 
     @Nested
+    class Get {
+
+        @Test
+        @DisplayName("BOOKED 예약을 조회하면 200을 반환한다")
+        void returnsReservationById() {
+            given(reservationService.findActiveById(reservation.getId())).willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
+                    .when().get("/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(ReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("CANCELED 예약을 조회하면 404를 반환한다")
+        void returnsNotFoundWhenCanceled() {
+            willThrow(new NotFoundException("존재하지 않는 예약입니다."))
+                    .given(reservationService).findActiveById(reservation.getId());
+
+            RestAssuredMockMvc.given()
+                    .when().get("/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Nested
     class Delete {
 
         @Test
         @DisplayName("예약을 취소하면 204를 반환한다")
         void cancelsReservation() {
-            willDoNothing().given(reservationService).cancel(reservation.getId());
-
             RestAssuredMockMvc.given()
                     .when().delete("/reservations/" + reservation.getId())
                     .then()
                     .status(HttpStatus.NO_CONTENT);
+
+            then(reservationService).should().cancel(reservation.getId());
         }
     }
 

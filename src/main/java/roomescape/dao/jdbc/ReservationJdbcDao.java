@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
@@ -36,7 +37,8 @@ public class ReservationJdbcDao implements ReservationDao {
                     rs.getString("name"),
                     LocalDate.parse(rs.getString("date")),
                     TIME_ROW_MAPPER.mapRow(rs, rowNum),
-                    THEME_ROW_MAPPER.mapRow(rs, rowNum)
+                    THEME_ROW_MAPPER.mapRow(rs, rowNum),
+                    ReservationStatus.valueOf(rs.getString("status"))
             );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -47,7 +49,7 @@ public class ReservationJdbcDao implements ReservationDao {
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservations")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "date", "time_id", "theme_id");
+                .usingColumns("name", "date", "time_id", "theme_id", "status");
     }
 
     @Override
@@ -57,6 +59,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.id,
                     r.name,
                     r.date,
+                    r.status,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -77,6 +80,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.id,
                     r.name,
                     r.date,
+                    r.status,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -99,7 +103,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("status", reservation.getReservationStatus().name());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
         return new Reservation(
@@ -107,7 +112,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme()
+                reservation.getTheme(),
+                reservation.getReservationStatus()
         );
     }
 
@@ -115,7 +121,7 @@ public class ReservationJdbcDao implements ReservationDao {
     public int update(Reservation reservation) {
         String sql = """
                 UPDATE reservations
-                SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId
+                SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId, status = :status
                 WHERE id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
@@ -123,6 +129,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId())
+                .addValue("status", reservation.getReservationStatus().name())
                 .addValue("id", reservation.getId());
         return jdbcTemplate.update(sql, params);
     }
@@ -158,6 +165,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     WHERE r.theme_id = :themeId
                     AND r.time_id = :timeId
                     AND r.date = :date
+                    AND r.status = 'BOOKED'
                 )
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
