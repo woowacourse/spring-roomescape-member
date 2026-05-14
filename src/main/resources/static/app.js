@@ -368,7 +368,12 @@ async function handleMyReservationClick(event) {
       return;
     }
 
-    await request(`/reservations/${reservation.id}?name=${encodeURIComponent(reservation.name)}`, { method: "DELETE" });
+    const requesterName = $("#my-reservation-name").value.trim() || state.myReservationName;
+    if (!requesterName) {
+      throw new Error("예약자 이름을 입력해주세요.");
+    }
+
+    await request(`/reservations/${reservation.id}?name=${encodeURIComponent(requesterName)}`, { method: "DELETE" });
     await Promise.all([loadReservations(), loadMyReservations({ quiet: true })]);
     showToast("예약이 취소되었습니다.");
   });
