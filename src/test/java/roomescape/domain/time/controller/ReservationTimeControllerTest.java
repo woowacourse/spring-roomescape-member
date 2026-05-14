@@ -74,4 +74,15 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간은 삭제할 수 없다.")
+    void deleteReservationTime_throwsException_whenReservationExists() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESERVATION_TIME_DELETE_CONFLICT"))
+                .body("message", is("예약이 존재하는 시간은 삭제할 수 없습니다."));
+    }
 }
