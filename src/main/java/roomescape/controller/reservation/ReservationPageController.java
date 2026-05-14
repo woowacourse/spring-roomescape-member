@@ -49,18 +49,17 @@ public class ReservationPageController {
     ) {
         Long selectedThemeId = null;
         LocalDate selectedDate = null;
+        ThemeResponse selectedTheme = null;
         String resolvedErrorCode = errorCode;
 
         try {
             selectedThemeId = parseLongValue(themeId);
             selectedDate = parseDate(date);
+            selectedTheme = getSelectedTheme(selectedThemeId);
         } catch (ApiException exception) {
             resolvedErrorCode = resolveErrorCode(resolvedErrorCode, exception.getCode());
         }
 
-        model.addAttribute("reservations", reservationService.getAll().stream()
-                .map(ReservationResponse::from)
-                .toList());
         model.addAttribute("themes", themeService.getAll().stream()
                 .map(ThemeResponse::from)
                 .toList());
@@ -68,7 +67,7 @@ public class ReservationPageController {
                 .map(ThemeResponse::from)
                 .toList());
         model.addAttribute("selectedThemeId", selectedThemeId);
-        model.addAttribute("selectedTheme", getSelectedTheme(selectedThemeId));
+        model.addAttribute("selectedTheme", selectedTheme);
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("reservationName", reservationName);
         model.addAttribute("period", period);
@@ -79,7 +78,7 @@ public class ReservationPageController {
                 .toList());
 
         List<ReservationTimeResponse> availableTimes = List.of();
-        if (selectedThemeId != null && selectedDate != null) {
+        if (selectedTheme != null && selectedDate != null) {
             availableTimes = reservationTimeService.findAvailableTimes(selectedDate, selectedThemeId).stream()
                     .map(ReservationTimeResponse::from)
                     .toList();

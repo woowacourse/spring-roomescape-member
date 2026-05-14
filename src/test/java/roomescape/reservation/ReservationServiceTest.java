@@ -133,10 +133,10 @@ class ReservationServiceTest {
 
     private static class Fixture {
         private final MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
-        private final ReservationTimeService reservationTimeService =
-                new ReservationTimeService(new TestReservationTimeRepository(), reservationRepository);
         private final ThemeService themeService =
                 new ThemeService(new TestThemeRepository(), reservationRepository);
+        private final ReservationTimeService reservationTimeService =
+                new ReservationTimeService(new TestReservationTimeRepository(), reservationRepository, themeService);
         private final ReservationService reservationService =
                 new ReservationService(reservationRepository, reservationTimeService, themeService);
     }

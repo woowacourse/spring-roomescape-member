@@ -10,19 +10,23 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.service.theme.ThemeService;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
+    private final ThemeService themeService;
 
     public ReservationTimeService(
             final ReservationTimeRepository reservationTimeRepository,
-            final ReservationRepository reservationRepository
+            final ReservationRepository reservationRepository,
+            final ThemeService themeService
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
+        this.themeService = themeService;
     }
 
 
@@ -37,6 +41,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> findAvailableTimes(final LocalDate date, final long themeId) {
+        themeService.getById(themeId);
         Set<Long> reservedTimeIds = Set.copyOf(reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId));
 
         return reservationTimeRepository.findAll().stream()
