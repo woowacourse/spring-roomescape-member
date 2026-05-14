@@ -24,6 +24,8 @@ public class ReservationService {
                                   LocalDate date,
                                   long timeId,
                                   long themeId) {
+        validateReservationDateNotPast(date);
+
         Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
         if (findTime.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
@@ -33,6 +35,8 @@ public class ReservationService {
         if (findTheme.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
+
+        validateDuplicateReservation(date, timeId, themeId);
 
         return reservationRepository.save(Reservation.of(name, date, findTime.get(), findTheme.get()));
     }
@@ -52,5 +56,18 @@ public class ReservationService {
         }
 
         return findReservation.get();
+    }
+
+    private void validateReservationDateNotPast(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("예약 날짜는 오늘 이후여야 합니다.");
+        }
+    }
+
+    private void validateDuplicateReservation(LocalDate date, long timeId, long themeId) {
+        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .ifPresent(r -> {
+                    throw new IllegalArgumentException("이미 예약이 존재하는 시간입니다.");
+                });
     }
 }
