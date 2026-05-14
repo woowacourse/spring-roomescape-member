@@ -29,7 +29,8 @@ public class ReservationService {
     }
 
     public ReservationResponse find(String name) {
-        Reservation response = reservationDao.findByName(name);
+        Reservation response = reservationDao.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 예약이 존재하지 않습니다"));
         return ReservationResponse.from(response);
     }
 

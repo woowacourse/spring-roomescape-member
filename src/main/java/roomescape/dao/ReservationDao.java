@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -90,8 +91,8 @@ public class ReservationDao {
         );
     }
 
-    public Reservation findByName(String name) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Reservation> findByName(String name) {
+        return jdbcTemplate.query(
                 """
                             SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at,
                             t.id AS theme_id, t.name AS theme_name, t.description, t.url
@@ -120,7 +121,7 @@ public class ReservationDao {
                     );
                 },
                 name
-        );
+        ).stream().findFirst();
     }
 
     public boolean existsBy(LocalDate date, Theme theme, ReservationTime time) {
