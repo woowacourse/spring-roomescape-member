@@ -1,5 +1,6 @@
 package roomescape.common.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +37,37 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(CommonErrorCode.VALIDATION_FAILED, errors));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException exception
+    ) {
+        List<FieldErrorMessage> errors = exception.getConstraintViolations()
+                .stream()
+                .map(error -> new FieldErrorMessage(
+                        extractFieldName(error.getPropertyPath().toString()),
+                        error.getMessage()
+                ))
+                .toList();
+
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(CommonErrorCode.VALIDATION_FAILED, errors));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         log.error("예상하지 못한 서버 예외가 발생했습니다.", exception);
 
         return ResponseEntity.internalServerError()
                 .body(ErrorResponse.of(CommonErrorCode.INTERNAL_SERVER_ERROR));
+    }
+
+    private String extractFieldName(String propertyPath) {
+        int lastDotIndex = propertyPath.lastIndexOf('.');
+
+        if (lastDotIndex == -1) {
+            return propertyPath;
+        }
+
+        return propertyPath.substring(lastDotIndex + 1);
     }
 }

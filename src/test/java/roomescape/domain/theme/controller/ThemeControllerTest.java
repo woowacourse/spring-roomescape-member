@@ -108,4 +108,26 @@ class ThemeControllerTest {
                 .body("popularThemes[1].thumbnailUrl", is("https://example.com/basement.png"))
                 .body("popularThemes[1].rank", is(2));
     }
+
+    @Test
+    @DisplayName("인기 테마 조회 기간은 양수여야 한다.")
+    void getPopularThemesWithInvalidPeriodThrowException() {
+        RestAssured.given().log().all()
+                .queryParam("period", 0)
+                .queryParam("limit", 2)
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회 개수는 양수여야 한다.")
+    void getPopularThemesWithInvalidLimitThrowException() {
+        RestAssured.given().log().all()
+                .queryParam("period", 7)
+                .queryParam("limit", 0)
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
