@@ -252,17 +252,47 @@ class ThemeServiceTest {
     @Nested
     class DeleteThemeTest {
 
-        @Test
-        void 성공() {
-            // given
-            themeRepository.save(Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
+        @Nested
+        class Success {
 
-            // when
-            themeService.deleteThemeById(1L);
-            List<ThemeResponseDto> actual = themeService.getThemes();
+            @Test
+            void 성공() {
+                // given
+                themeRepository.save(
+                    Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
 
-            // then
-            assertThat(actual).isEmpty();
+                // when
+                themeService.deleteThemeById(1L);
+                List<ThemeResponseDto> actual = themeService.getThemes();
+
+                // then
+                assertThat(actual).isEmpty();
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void 테마_ID가_존재하지_않으면_예외가_발생한다() {
+                // when & then
+                assertThatThrownBy(() -> themeService.deleteThemeById(999L))
+                    .isInstanceOf(GeneralException.class)
+                    .hasMessage("테마를 찾을 수 없습니다.");
+            }
+
+            @Test
+            void 이미_삭제된_테마_ID이면_예외가_발생한다() {
+                // given
+                Theme deletedTheme = themeRepository.save(
+                    Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
+                themeRepository.deleteThemeById(deletedTheme.getId());
+
+                // when & then
+                assertThatThrownBy(() -> themeService.deleteThemeById(deletedTheme.getId()))
+                    .isInstanceOf(GeneralException.class)
+                    .hasMessage("테마를 찾을 수 없습니다.");
+            }
         }
     }
 
