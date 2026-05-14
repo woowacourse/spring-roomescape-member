@@ -8,7 +8,7 @@ import roomescape.exception.domain.ReservationException;
 
 public class Reservation {
 
-    private static final int CANCEL_DEADLINE_DAYS_BEFORE = 1;
+    private static final int RESERVATION_CHANGE_DEADLINE_PASSED = 1;
 
     private Long id;
     private final String name;
@@ -45,12 +45,12 @@ public class Reservation {
         return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
-    public boolean isCancelDeadlinePassed(LocalDateTime now) {
+    public boolean isNotModifiableAt(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(
                 date,
                 time.getStartAt()
         );
-        LocalDateTime cancelDeadline = reservationDateTime.minusDays(CANCEL_DEADLINE_DAYS_BEFORE);
+        LocalDateTime cancelDeadline = reservationDateTime.minusDays(RESERVATION_CHANGE_DEADLINE_PASSED);
         return now.isAfter(cancelDeadline);
     }
 

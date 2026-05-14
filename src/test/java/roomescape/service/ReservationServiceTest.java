@@ -16,6 +16,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ReservationTimeErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
@@ -38,7 +40,7 @@ class ReservationServiceTest extends ServiceTest {
     void 예약을_생성할_수_있다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
-        Theme theme = saveTheme("테마1");
+        Theme theme = saveTheme("테마1", "로지와 러키의 방탈출", "https:fsof/ommff");
 
         ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
 
@@ -62,7 +64,7 @@ class ReservationServiceTest extends ServiceTest {
     @Test
     void 예약_생성시_예약시간이_존재하지_않으면_예외가_발생한다() {
         // given
-        Theme theme = saveTheme("테마1");
+        Theme theme = saveTheme("테마1", "로지와 러키의 방탈출", "https:fsof/ommff");
         ReservationRequest request = createReservationRequest(0L, theme.getId(), LocalDate.of(2026, 5, 8));
 
         // when & then
@@ -87,7 +89,7 @@ class ReservationServiceTest extends ServiceTest {
     void 예약_생성시_동일한_조건의_예약이_이미_존재하면_예외가_발생한다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
-        Theme theme = saveTheme("테마1");
+        Theme theme = saveTheme("테마1", "로지와 러키의 방탈출", "https:fsof/ommff");
         ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
         reservationService.create(request);
 
@@ -98,10 +100,109 @@ class ReservationServiceTest extends ServiceTest {
     }
 
     @Test
+    void 예약을_수정할_수_있다() {
+        // given
+        ReservationTime originalTime = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime changedTime = saveReservationTime(LocalTime.of(20, 0));
+
+        Theme originalTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        Theme changedTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
+
+        ReservationRequest createRequest = createReservationRequest(
+                originalTime.getId(),
+                originalTheme.getId(),
+                LocalDate.of(2026, 5, 10)
+        );
+        ReservationResponse savedReservation = reservationService.create(createRequest);
+
+        ReservationRequest updateRequest = new ReservationRequest(
+                "브라운",
+                LocalDate.of(2026, 5, 12),
+                changedTime.getId(),
+                changedTheme.getId()
+        );
+
+        // when
+        ReservationResponse response = reservationService.update(savedReservation.id(), updateRequest);
+
+        // then
+        assertAll(
+                () -> assertThat(response)
+                        .extracting(
+                                ReservationResponse::id,
+                                ReservationResponse::name,
+                                ReservationResponse::date
+                        )
+                        .containsExactly(
+                                savedReservation.id(),
+                                "브라운",
+                                LocalDate.of(2026, 5, 12)
+                        ),
+                () -> assertThat(response.time())
+                        .extracting(
+                                ReservationTimeResponse::id,
+                                ReservationTimeResponse::startAt
+                        )
+                        .containsExactly(
+                                changedTime.getId(),
+                                changedTime.getStartAt()
+                        ),
+                () -> assertThat(response.theme())
+                        .extracting(
+                                ThemeResponse::id,
+                                ThemeResponse::name,
+                                ThemeResponse::description,
+                                ThemeResponse::thumbnail
+                        )
+                        .containsExactly(
+                                changedTheme.getId(),
+                                changedTheme.getName(),
+                                changedTheme.getDescription(),
+                                changedTheme.getThumbnail()
+                        )
+        );
+    }
+
+    @Test
+    void 이미_예약된_날짜_시간_테마로는_예약을_수정할_수_없다() {
+        // given
+        ReservationTime alreadyReservedTime = saveReservationTime(LocalTime.of(20, 0));
+        Theme alreadyReservedTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
+        ReservationRequest alreadyReservedRequest = new ReservationRequest(
+                "로지",
+                LocalDate.of(2026, 5, 12),
+                alreadyReservedTime.getId(),
+                alreadyReservedTheme.getId()
+        );
+        reservationService.create(alreadyReservedRequest);
+
+        ReservationTime originalTime = saveReservationTime(LocalTime.of(10, 0));
+        Theme originalTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        ReservationRequest createRequest = createReservationRequest(
+                originalTime.getId(),
+                originalTheme.getId(),
+                LocalDate.of(2026, 5, 10)
+        );
+        ReservationResponse savedReservation = reservationService.create(createRequest);
+
+        ReservationRequest updateRequest = new ReservationRequest(
+                "브라운",
+                LocalDate.of(2026, 5, 12),
+                alreadyReservedTime.getId(),
+                alreadyReservedTheme.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(savedReservation.id(), updateRequest))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(ReservationErrorCode.RESERVATION_ALREADY_EXISTS.getMessage());
+    }
+
+    @Test
     void 예약을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
-        Theme theme = saveTheme("테마1");
+        Theme theme = saveTheme("테마1", "로지와 러키의 방탈출", "https:fsof/ommff");
 
         ReservationRequest request = createReservationRequest(reservationTime.getId(), theme.getId(), LocalDate.of(2026, 5, 8));
         ReservationResponse response = reservationService.create(request);
@@ -133,7 +234,7 @@ class ReservationServiceTest extends ServiceTest {
     void 예약_취소_마감_기한이_지난_예약은_삭제할_수_없다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));
-        Theme theme = saveTheme("테마1");
+        Theme theme = saveTheme("테마1", "로지와 러키의 방탈출", "https:fsof/ommff");
 
         ReservationRequest request = createReservationRequest(
                 reservationTime.getId(),
@@ -163,8 +264,8 @@ class ReservationServiceTest extends ServiceTest {
         return reservationTimeDao.save(reservationTime);
     }
 
-    private Theme saveTheme(String name) {
-        Theme theme = new Theme(name, "설명", "https://adsf.dsaf");
+    private Theme saveTheme(String name, String description, String thumbnail) {
+        Theme theme = new Theme(name, description, thumbnail);
         return themeDao.save(theme);
     }
 

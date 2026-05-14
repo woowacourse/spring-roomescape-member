@@ -77,22 +77,47 @@ public class ReservationService {
                 .toList();
     }
 
+    public ReservationResponse update(long reservationId, ReservationRequest request) {
+        Reservation reservation = getReservation(reservationId);
+        validateModifiable(reservation);
+
+        ReservationTime reservationTime = getTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        validateUniqueReservationForUpdate(reservationId, theme, request.date(), reservationTime);
+
+        Reservation updatedReservation = new Reservation(
+                reservationId, request.name(),
+                request.date(), reservationTime, theme);
+        reservationDao.update(updatedReservation);
+        return ReservationResponse.from(updatedReservation);
+    }
+
+    private void validateModifiable(Reservation reservation) {
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        if (reservation.isNotModifiableAt(now)) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_CANCEL_DEADLINE_PASSED);
+        }
+    }
+
+    private void validateUniqueReservationForUpdate(long reservationId, Theme theme,
+                                                    LocalDate date, ReservationTime reservationTime) {
+        boolean exists = reservationDao.existsByThemeAndDateAndTimeAndIdNot(
+                theme.getId(), date,
+                reservationTime.getId(), reservationId);
+        if (exists) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
+        }
+    }
+
     public void delete(long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        validateCancelable(reservation);
+        validateModifiable(reservation);
         reservationDao.delete(reservationId);
     }
 
     private Reservation getReservation(long reservationId) {
         return reservationDao.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-    }
-
-    private void validateCancelable(Reservation reservation) {
-        LocalDateTime now = LocalDateTime.now(clock);
-
-        if (reservation.isCancelDeadlinePassed(now)) {
-            throw new ReservationException(ReservationErrorCode.RESERVATION_CANCEL_DEADLINE_PASSED);
-        }
     }
 }

@@ -164,6 +164,116 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 자신의_예약이_아닌_다른_예약이_같은_테마_날짜_시간에_존재하면_중복이라_판단한다() {
+        // given
+        ReservationTime originalTime = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime alreadyReservedTime = saveReservationTime(LocalTime.of(20, 0));
+
+        Theme originalTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        Theme alreadyReservedTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
+
+        Reservation myReservation = saveReservation(
+                "러키",
+                LocalDate.of(2026, 5, 10),
+                originalTime,
+                originalTheme
+        );
+
+        saveReservation(
+                "브라운",
+                LocalDate.of(2026, 5, 12),
+                alreadyReservedTime,
+                alreadyReservedTheme
+        );
+
+        // when
+        boolean exists = reservationDao.existsByThemeAndDateAndTimeAndIdNot(
+                alreadyReservedTheme.getId(),
+                LocalDate.of(2026, 5, 12),
+                alreadyReservedTime.getId(),
+                myReservation.getId()
+        );
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void 자기_자신의_예약만_있으면_같은_테마_날짜_시간의_예약이_존재하지_않는다고_판단한다() {
+        // given
+        ReservationTime reservationTime = saveReservationTime(LocalTime.of(10, 0));
+        Theme theme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        Reservation existReservation = saveReservation("브라운", date, reservationTime, theme);
+
+        // when
+        boolean exists = reservationDao.existsByThemeAndDateAndTimeAndIdNot(
+                theme.getId(),
+                date,
+                reservationTime.getId(),
+                existReservation.getId()
+        );
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 예약을_수정한다() {
+        // given
+        ReservationTime originalTime = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime changedTime = saveReservationTime(LocalTime.of(20, 0));
+
+        Theme originalTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+        Theme changedTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
+
+        Reservation savedReservation = saveReservation(
+                "브라운",
+                LocalDate.of(2026, 5, 5),
+                originalTime,
+                originalTheme
+        );
+
+        Reservation changedReservation = new Reservation(
+                savedReservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 10),
+                changedTime,
+                changedTheme
+        );
+
+        // when
+        reservationDao.update(changedReservation);
+
+        // then
+        Reservation foundReservation = reservationDao.findById(savedReservation.getId()).get();
+
+        assertThat(foundReservation)
+                .extracting(
+                        Reservation::getId,
+                        Reservation::getName,
+                        Reservation::getDate,
+                        reservation -> reservation.getTime().getId(),
+                        reservation -> reservation.getTime().getStartAt(),
+                        reservation -> reservation.getTheme().getId(),
+                        reservation -> reservation.getTheme().getName(),
+                        reservation -> reservation.getTheme().getDescription(),
+                        reservation -> reservation.getTheme().getThumbnail()
+                )
+                .containsExactly(
+                        savedReservation.getId(),
+                        "브라운",
+                        LocalDate.of(2026, 5, 10),
+                        changedTime.getId(),
+                        changedTime.getStartAt(),
+                        changedTheme.getId(),
+                        changedTheme.getName(),
+                        changedTheme.getDescription(),
+                        changedTheme.getThumbnail()
+                );
+    }
+
+    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));

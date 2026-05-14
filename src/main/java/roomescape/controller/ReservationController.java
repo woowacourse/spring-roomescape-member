@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +44,14 @@ public class ReservationController {
         }
         List<ReservationResponse> responses = reservationService.getReservationsByName(name);
         return ResponseEntity.ok(responses);
+    }
+
+    @PutMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> update(@PathVariable("reservationId") long reservationId,
+                                                      @Valid @RequestBody ReservationRequest request) {
+        ReservationResponse response = reservationService.update(reservationId, request);
+        return ResponseEntity.ok(response);
+
     }
 
     @DeleteMapping("/{reservationId}")

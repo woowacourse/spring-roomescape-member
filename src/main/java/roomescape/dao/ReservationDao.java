@@ -165,6 +165,34 @@ public class ReservationDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, themeId, date, reservationTimeId));
     }
 
+    public boolean existsByThemeAndDateAndTimeAndIdNot(long themeId, LocalDate date,
+                                                       long reservationTimeId, long reservationId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                      AND date = ?
+                      AND time_id = ?
+                      AND id != ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, reservationTimeId, reservationId);
+    }
+
+    public void update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET name = ?,
+                    date = ?,
+                    time_id = ?,
+                    theme_id = ?
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(),
+                reservation.getTime().getId(), reservation.getTheme().getId(), reservation.getId());
+    }
+
     public int delete(long reservationId) {
         String sql = """
                 DELETE FROM reservation

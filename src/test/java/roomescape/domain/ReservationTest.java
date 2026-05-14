@@ -74,7 +74,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.parse(nowText);
 
         // when
-        boolean result = reservation.isCancelDeadlinePassed(now);
+        boolean result = reservation.isNotModifiableAt(now);
 
         // then
         assertThat(result).isEqualTo(expected);
