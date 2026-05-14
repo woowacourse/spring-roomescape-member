@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class ReservationTimeController {
     @GetMapping("/available")
     public ResponseEntity<AvailableReservationTimesResponse> getAvailableReservationTimes(
             @RequestParam Long themeId,
-            @RequestParam String date,
+            @RequestParam LocalDate date,
             @RequestParam(required = false) Boolean available
     ) {
         AvailableReservationTimesResult result = reservationTimeService.getAvailableReservationTimes(

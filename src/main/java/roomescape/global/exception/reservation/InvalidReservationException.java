@@ -1,11 +1,10 @@
 package roomescape.global.exception.reservation;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.BadRequestException;
 
-public class InvalidReservationException extends RoomescapeException {
+public class InvalidReservationException extends BadRequestException {
 
     public InvalidReservationException(String message) {
-        super(ErrorCode.INVALID_RESERVATION, message);
+        super(message);
     }
 }

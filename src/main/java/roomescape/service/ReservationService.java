@@ -35,9 +35,9 @@ public class ReservationService {
     @Transactional
     public ReservationResult createReservation(CreateReservationCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(ReservationTimeNotFoundException::new);
+                .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(ThemeNotFoundException::new);
+                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
         ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
                 theme.getId(),
                 command.date()

@@ -36,9 +36,9 @@ public class TestDataInitializer {
 
     public void createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
+                .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(ThemeNotFoundException::new);
+                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
         reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
     }
 }

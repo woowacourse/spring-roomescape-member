@@ -30,8 +30,8 @@
 - [ ] 최근 예약 건수를 기준으로 인기 테마를 조회한다.
 - [x] 테마 이름은 null이거나 빈 공백일 수 없다.
 - [x] 테마 설명은 null일 수 없다.
-- [x] 테마 이미지 링크는 null일 수 없다.
-- [x] 테마 이미지 링크는 `/images/themes/`로 시작하는 경로이어야 한다.
+- [x] 테마 이미지 경로는 null일 수 없다.
+- [x] 테마 이미지 경로는 `/images/themes/`로 시작하는 경로이어야 한다.
 - [ ] 존재하지 않는 테마로 예약할 수 없다.
 
 ### 예약 시간
@@ -84,7 +84,7 @@
 {
   "name": "고대 이집트의 비밀",
   "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-  "imageUrl": "https://example.com/images/egypt.webp"
+  "imagePath": "/images/themes/egypt.webp"
 }
 ```
 
@@ -95,7 +95,7 @@
   "id": 1,
   "name": "고대 이집트의 비밀",
   "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-  "imageUrl": "https://example.com/images/egypt.webp"
+  "imagePath": "/images/themes/egypt.webp"
 }
 ```
 
@@ -110,7 +110,7 @@
         "id": 1,
         "name": "고대 이집트의 비밀",
         "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-        "imageUrl": "https://example.com/images/egypt.webp"
+        "imagePath": "/images/themes/egypt.webp"
       }
     }
   ]
@@ -151,7 +151,7 @@
     "id": 1,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.webp"
+    "imagePath": "/images/themes/egypt.webp"
   },
   "availableTimes": [
     {
@@ -208,7 +208,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.webp"
+    "imagePath": "/images/themes/egypt.webp"
   },
   "status": "RESERVED"
 }
@@ -235,7 +235,7 @@
         "id": 3,
         "name": "고대 이집트의 비밀",
         "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-        "imageUrl": "https://example.com/images/egypt.webp"
+        "imagePath": "/images/themes/egypt.webp"
       },
       "status": "RESERVED"
     },
@@ -251,7 +251,7 @@
         "id": 5,
         "name": "좀비 바이러스",
         "description": "좀비 바이러스를 피해 연구소에서 탈출하세요.",
-        "imageUrl": "https://example.com/images/zombie.webp"
+        "imagePath": "/images/themes/zombie.webp"
       },
       "status": "CANCELLED"
     }
@@ -288,7 +288,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.webp"
+    "imagePath": "/images/themes/egypt.webp"
   },
   "status": "RESERVED"
 }
@@ -322,7 +322,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.webp"
+    "imagePath": "/images/themes/egypt.webp"
   },
   "status": "CANCELLED"
 }
@@ -336,7 +336,7 @@
 
 커스텀 예외는 HTTP 상태 코드의 맥락을 가지는 부모 예외를 상속받아 구현한다.
 
-- `RoomEscapeException`: 최상위 도메인 예외
+- `RoomescapeException`: 최상위 도메인 예외
 - `BadRequestException`: 잘못된 요청 예외, 400 응답
 - `NotFoundException`: 리소스를 찾을 수 없는 예외, 404 응답
 - `ConflictException`: 현재 리소스 상태와 요청이 충돌하는 예외, 409 응답
@@ -356,17 +356,18 @@
 보안 원칙: 소유권 불일치 상황에서는 `403 Forbidden` 대신 `404 Not Found`를 반환한다.
 이를 통해 리소스 존재 여부를 노출하지 않고, Blind IDOR(Insecure Direct Object Reference, 직접 객체 참조 취약점) 공격 가능성을 낮춘다.
 
-| 상태 코드                   | 부모 예외             | 발생 케이스                                       | 응답 메시지 예시                                 |
-| --------------------------- | --------------------- | ------------------------------------------------- | ------------------------------------------------ |
-| `400 Bad Request`           | `BadRequestException` | 이름 형식이 올바르지 않은 경우                    | `"이름 형식이 올바르지 않습니다."`               |
-| `400 Bad Request`           | `BadRequestException` | 날짜 형식이 올바르지 않은 경우                    | `"날짜 형식이 올바르지 않습니다."`               |
-| `400 Bad Request`           | `BadRequestException` | 과거 날짜 또는 시간으로 예약하는 경우             | `"과거 날짜/시간으로는 예약할 수 없습니다."`     |
-| `400 Bad Request`           | `BadRequestException` | 오늘 기준 30일을 초과한 날짜로 예약하는 경우      | `"30일을 초과한 날짜로는 예약할 수 없습니다."`   |
-| `404 Not Found`             | `NotFoundException`   | 존재하지 않는 예약을 조회, 변경, 취소하는 경우    | `"해당 예약을 찾을 수 없습니다."`                |
-| `404 Not Found`             | `NotFoundException`   | 예약자 이름이 일치하지 않는 경우                  | `"해당 예약을 찾을 수 없습니다."`                |
-| `404 Not Found`             | `NotFoundException`   | 존재하지 않는 예약 시간으로 예약하는 경우         | `"선택한 예약 시간이 존재하지 않습니다."`        |
-| `404 Not Found`             | `NotFoundException`   | 존재하지 않는 테마로 예약하는 경우                | `"선택한 테마가 존재하지 않습니다."`             |
-| `409 Conflict`              | `ConflictException`   | 같은 날짜, 시간, 테마에 이미 예약이 존재하는 경우 | `"해당 시간과 테마에는 이미 예약이 존재합니다."` |
-| `409 Conflict`              | `ConflictException`   | 이미 취소된 예약을 변경하거나 다시 취소하는 경우  | `"이미 취소된 예약입니다."`                      |
-| `409 Conflict`              | `ConflictException`   | 예약이 존재하는 시간을 삭제하는 경우              | `"예약이 존재하는 시간은 삭제할 수 없습니다."`   |
-| `500 Internal Server Error` | `Exception`           | 서버 내부 오류                                    | `"서버에 일시적인 문제가 발생했습니다."`         |
+| 상태 코드                   | 부모 예외/처리기               | 발생 케이스                                       | 응답 메시지 예시                                 |
+| --------------------------- | ------------------------------ | ------------------------------------------------- | ------------------------------------------------ |
+| `400 Bad Request`           | `HttpMessageNotReadableException` | JSON 본문이 잘못되었거나 날짜/시간 역직렬화에 실패한 경우 | `"요청 본문 형식이 올바르지 않습니다."`          |
+| `400 Bad Request`           | `MethodArgumentNotValidException` | `@Valid` 검증에 실패한 경우                       | `"예약자 이름은 2자 이상 20자 이하여야 합니다."` |
+| `400 Bad Request`           | `MethodArgumentTypeMismatchException` | 요청 파라미터 타입 변환에 실패한 경우             | `"요청 값 형식이 올바르지 않습니다."`            |
+| `400 Bad Request`           | `BadRequestException`          | 과거 날짜 또는 시간으로 예약하는 경우             | `"과거 날짜/시간으로는 예약할 수 없습니다."`     |
+| `400 Bad Request`           | `BadRequestException`          | 오늘 기준 30일을 초과한 날짜로 예약하는 경우      | `"30일을 초과한 날짜로는 예약할 수 없습니다."`   |
+| `404 Not Found`             | `NotFoundException`            | 존재하지 않는 예약을 조회, 변경, 취소하는 경우    | `"해당 예약을 찾을 수 없습니다."`                |
+| `404 Not Found`             | `NotFoundException`            | 예약자 이름이 일치하지 않는 경우                  | `"해당 예약을 찾을 수 없습니다."`                |
+| `404 Not Found`             | `NotFoundException`            | 존재하지 않는 예약 시간으로 예약하는 경우         | `"선택한 예약 시간이 존재하지 않습니다."`        |
+| `404 Not Found`             | `NotFoundException`            | 존재하지 않는 테마로 예약하는 경우                | `"선택한 테마가 존재하지 않습니다."`             |
+| `409 Conflict`              | `ConflictException`            | 같은 날짜, 시간, 테마에 이미 예약이 존재하는 경우 | `"해당 시간과 테마에는 이미 예약이 존재합니다."` |
+| `409 Conflict`              | `ConflictException`            | 이미 취소된 예약을 변경하거나 다시 취소하는 경우  | `"이미 취소된 예약입니다."`                      |
+| `409 Conflict`              | `ConflictException`            | 예약이 존재하는 시간을 삭제하는 경우              | `"예약이 존재하는 시간은 삭제할 수 없습니다."`   |
+| `500 Internal Server Error` | `Exception`                    | 서버 내부 오류                                    | `"서버에 일시적인 문제가 발생했습니다."`         |

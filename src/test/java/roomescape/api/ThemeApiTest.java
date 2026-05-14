@@ -124,17 +124,17 @@ class ThemeApiTest {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         // 테마 A에 예약 3개
-        dataInitializer.createReservation("사용자1", yesterday, timeA.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자2", yesterday, timeB.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자3", yesterday, timeC.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자일", yesterday, timeA.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자이", yesterday, timeB.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자삼", yesterday, timeC.getId(), themeA.getId());
 
         // 테마 B에 예약 1개
-        dataInitializer.createReservation("사용자4", yesterday, timeA.getId(), themeB.getId());
+        dataInitializer.createReservation("사용자사", yesterday, timeA.getId(), themeB.getId());
 
         // 테마 C에 예약 3개
-        dataInitializer.createReservation("사용자5", yesterday, timeA.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자6", yesterday, timeB.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자7", yesterday, timeC.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자오", yesterday, timeA.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자육", yesterday, timeB.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자칠", yesterday, timeC.getId(), themeC.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)
@@ -151,7 +151,7 @@ class ThemeApiTest {
     void getPopularThemesWithDefaultQueryParams() {
         Theme theme = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
-        dataInitializer.createReservation("사용자1", LocalDate.now().minusDays(1), time.getId(), theme.getId());
+        dataInitializer.createReservation("사용자일", LocalDate.now().minusDays(1), time.getId(), theme.getId());
 
         RestAssured.given().log().all()
                 .when().get("/themes/rank")
@@ -171,10 +171,10 @@ class ThemeApiTest {
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
         LocalDate today = LocalDate.now();
 
-        dataInitializer.createReservation("사용자1", today.minusDays(7), time.getId(), includedStartTheme.getId());
-        dataInitializer.createReservation("사용자2", today.minusDays(1), time.getId(), includedEndTheme.getId());
-        dataInitializer.createReservation("사용자3", today, time.getId(), excludedTodayTheme.getId());
-        dataInitializer.createReservation("사용자4", today.minusDays(8), time.getId(), excludedBeforeRangeTheme.getId());
+        dataInitializer.createReservation("사용자일", today.minusDays(7), time.getId(), includedStartTheme.getId());
+        dataInitializer.createReservation("사용자이", today.minusDays(1), time.getId(), includedEndTheme.getId());
+        dataInitializer.createReservation("사용자삼", today, time.getId(), excludedTodayTheme.getId());
+        dataInitializer.createReservation("사용자사", today.minusDays(8), time.getId(), excludedBeforeRangeTheme.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)

@@ -89,7 +89,7 @@ public class ReservationRepository {
         int deletedCount = jdbcTemplate.update(sql, parameters);
 
         if (deletedCount == 0) {
-            throw new ReservationNotFoundException();
+            throw new ReservationNotFoundException("해당 예약을 찾을 수 없습니다.");
         }
     }
 }

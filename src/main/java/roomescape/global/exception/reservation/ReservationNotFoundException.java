@@ -1,11 +1,9 @@
 package roomescape.global.exception.reservation;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.NotFoundException;
 
-public class ReservationNotFoundException extends RoomescapeException {
-
-    public ReservationNotFoundException() {
-        super(ErrorCode.RESERVATION_NOT_FOUND, "존재하지 않는 예약 번호입니다.");
+public class ReservationNotFoundException extends NotFoundException {
+    public ReservationNotFoundException(String message) {
+        super(message);
     }
 }

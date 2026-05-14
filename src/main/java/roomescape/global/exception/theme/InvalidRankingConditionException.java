@@ -1,11 +1,10 @@
 package roomescape.global.exception.theme;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.BadRequestException;
 
-public class InvalidRankingConditionException extends RoomescapeException {
+public class InvalidRankingConditionException extends BadRequestException {
 
     public InvalidRankingConditionException(String message) {
-        super(ErrorCode.INVALID_RANKING_CONDITION, message);
+        super(message);
     }
 }

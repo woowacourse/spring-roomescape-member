@@ -1,11 +1,10 @@
 package roomescape.global.exception.reservation;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.BadRequestException;
 
-public class InvalidReservationPagingException extends RoomescapeException {
+public class InvalidReservationPagingException extends BadRequestException {
 
     public InvalidReservationPagingException(String message) {
-        super(ErrorCode.INVALID_RESERVATION_PAGING, message);
+        super(message);
     }
 }

@@ -14,7 +14,7 @@ public class ReservedTimes {
 
     public void validateAvailable(Long timeId) {
         if (isReserved(timeId)) {
-            throw new DuplicateReservationException();
+            throw new DuplicateReservationException("해당 시간과 테마에는 이미 예약이 존재합니다.");
         }
     }
 

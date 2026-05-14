@@ -9,8 +9,8 @@ public record AvailableReservationTimesQuery(
         Boolean available
 ) {
 
-    public static AvailableReservationTimesQuery toQuery(Long themeId, String date, Boolean available) {
-        return new AvailableReservationTimesQuery(themeId, LocalDate.parse(date), available);
+    public static AvailableReservationTimesQuery toQuery(Long themeId, LocalDate date, Boolean available) {
+        return new AvailableReservationTimesQuery(themeId, date, available);
     }
 
     public AvailableReservationTimesCondition toCondition() {

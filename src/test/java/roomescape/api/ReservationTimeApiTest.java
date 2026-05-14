@@ -68,7 +68,7 @@ class ReservationTimeApiTest {
                 .body(params)
                 .when().post("/reservation-times")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
     @ParameterizedTest
@@ -183,7 +183,7 @@ class ReservationTimeApiTest {
         RestAssured.given().log().all()
                 .when().delete("/reservation-times/{id}", time.getId())
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
 }

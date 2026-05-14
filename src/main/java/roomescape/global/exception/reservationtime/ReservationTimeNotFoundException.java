@@ -1,15 +1,9 @@
 package roomescape.global.exception.reservationtime;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.NotFoundException;
 
-public class ReservationTimeNotFoundException extends RoomescapeException {
-
-    public ReservationTimeNotFoundException() {
-        super(ErrorCode.RESERVATION_TIME_NOT_FOUND, "존재하지 않는 예약 시간입니다.");
-    }
-
+public class ReservationTimeNotFoundException extends NotFoundException {
     public ReservationTimeNotFoundException(String message) {
-        super(ErrorCode.RESERVATION_TIME_NOT_FOUND, message);
+        super(message);
     }
 }
