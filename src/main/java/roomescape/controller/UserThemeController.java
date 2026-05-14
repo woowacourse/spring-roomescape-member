@@ -1,8 +1,10 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import roomescape.service.ThemeService;
 
 @RestController
 @RequestMapping("/user/themes")
+@Validated
 public class UserThemeController {
 
     private final ThemeService themeService;
@@ -38,7 +41,7 @@ public class UserThemeController {
 
     @GetMapping("/{themeId}/available-times")
     public List<ReservationTimeResponse> availableTimes(
-            @PathVariable Long themeId,
+            @PathVariable @Positive(message = "themeId는 0보다 커야합니다.") Long themeId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         return reservationTimeService.findAvailable(date, themeId).stream()
