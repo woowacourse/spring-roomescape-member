@@ -62,6 +62,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public ServiceReservationResponse update(Long id, ServiceReservationUpdateRequest request) {
         Reservation beforeReservation = readReservation(id);
         validatePastReservation(beforeReservation, ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE);
