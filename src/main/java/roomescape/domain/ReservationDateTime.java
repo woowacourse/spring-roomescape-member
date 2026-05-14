@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomescape.exception.NotAcceptableReservationException;
 
 public class ReservationDateTime {
 
@@ -18,7 +19,7 @@ public class ReservationDateTime {
 
     public void validateAvailable(LocalDateTime current) {
         if (!isAvailable(current)) {
-            throw new IllegalStateException(
+            throw new NotAcceptableReservationException(
                     "미래 시간의 예약만 생성/취소/수정할 수 있습니다."
                     + " 예약 희망 시간: " + schedule
                     + " 현재 시간: " + current

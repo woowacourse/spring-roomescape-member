@@ -15,7 +15,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDateTime;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.NotAcceptableReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -39,6 +41,7 @@ public class ReservationService {
             ReservationCreateCommand command
     ) {
         validateReservationNotDuplicate(command.date(), command.themeId(), command.timeId());
+        validateThemeExist(command.themeId());
 
         ReservationTime time = findTimeById(command.timeId());
         validateReservationAvailable(command.date(), time.startAt());
@@ -76,9 +79,7 @@ public class ReservationService {
             ReservationUpdateCommand command
     ) {
         Reservation reservation = findReservationById(command.reservationId());
-        if (reservation.hasDifferentName(command.name())) {
-            throw new IllegalArgumentException("본인의 예약만 수정할 수 있습니다.");
-        }
+        validateNameEquality(reservation, command.name());
 
         ReservationTime existTime = findTimeById(reservation.timeId());
         validateReservationAvailable(reservation.date(), existTime.startAt());
@@ -99,9 +100,7 @@ public class ReservationService {
     @Transactional
     public void delete(EntityId reservationId, String name) {
         Reservation reservation = findReservationById(reservationId);
-        if (reservation.hasDifferentName(name)) {
-            throw new IllegalArgumentException("본인의 예약만 삭제할 수 있습니다.");
-        }
+        validateNameEquality(reservation, name);
 
         ReservationTime time = findTimeById(reservation.timeId());
         validateReservationAvailable(reservation.date(), time.startAt());
@@ -151,7 +150,7 @@ public class ReservationService {
             EntityId timeId
     ) {
         if (reservationRepository.existByDateAndThemeIdAndTimeId(date, themeId, timeId)) {
-            throw new IllegalStateException("같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
+            throw new DuplicateReservationException("같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
                     + " 요청한 날짜: " + date
                     + ", 요청한 테마 ID: " + themeId
                     + ", 요청한 시간 ID: " + timeId
@@ -159,9 +158,19 @@ public class ReservationService {
         }
     }
 
+    private void validateNameEquality(Reservation reservation, String name) {
+        if (reservation.hasDifferentName(name)) {
+            throw new NotAcceptableReservationException("본인의 예약만 삭제할 수 있습니다.");
+        }
+    }
+
     private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {
         new ReservationDateTime(dateForReservation, timeForReservation)
                 .validateAvailable(LocalDateTime.now());
+    }
+
+    private void validateThemeExist(EntityId themeId) {
+        findThemeById(themeId);
     }
 
     private Reservation findReservationById(EntityId reservationId) {
