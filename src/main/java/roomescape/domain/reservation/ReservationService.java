@@ -111,7 +111,7 @@ public class ReservationService {
 
     private void validatePastReservation(LocalDate reservationDate, LocalTime reservationTime) {
         if (reservationDate.isBefore(LocalDate.now())
-            || (reservationDate.isEqual(LocalDate.now()) && reservationTime.isAfter(LocalTime.now()))) {
+            || (reservationDate.isEqual(LocalDate.now()) && reservationTime.isBefore(LocalTime.now()))) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
         }
     }
