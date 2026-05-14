@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.service;
 
 public class ReservationConflictException extends RuntimeException {
     public ReservationConflictException(String message) {

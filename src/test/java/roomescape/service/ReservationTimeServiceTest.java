@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.exception.InvalidInputException;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -26,7 +27,7 @@ class ReservationTimeServiceTest {
         given(reservationTimeDao.existsByStartAt(startAt)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.save(startAt))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
@@ -44,7 +45,7 @@ class ReservationTimeServiceTest {
         given(reservationDao.existsByTimeId(1L)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약에 사용 중인 시간은 삭제할 수 없습니다.");
     }
 }

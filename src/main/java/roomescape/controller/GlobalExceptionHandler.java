@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -8,16 +10,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
-import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationConflictException;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
+import roomescape.service.ReservationConflictException;
+import roomescape.service.ReservationNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidInput(InvalidInputException e) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("INVALID_INPUT", e.getMessage()));
+    }
+
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleReservationNotFound(ReservationNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("RESERVATION_NOT_FOUND", e.getMessage()));
     }
 
     @ExceptionHandler(ReservationConflictException.class)
@@ -56,6 +68,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.warn("예상치 못한 예외 발생: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("SERVER_ERROR", "서버 오류가 발생했습니다."));
     }

@@ -3,7 +3,8 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.exception.PastReservationException;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
 
 public class Reservation {
     private final Long id;
@@ -79,16 +80,16 @@ public class Reservation {
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
+            throw new InvalidInputException("예약자 이름은 비어있을 수 없습니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new InvalidInputException("예약 날짜는 필수입니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+            throw new InvalidInputException("예약 시간은 필수입니다.");
         }
         if (theme == null) {
-            throw new IllegalArgumentException("테마는 필수입니다.");
+            throw new InvalidInputException("테마는 필수입니다.");
         }
     }
 }

@@ -13,7 +13,7 @@
 - [ ] **3. GlobalExceptionHandler 테스트 작성**
   - `@WebMvcTest` + 인라인 더미 컨트롤러 방식으로 각 예외별 HTTP status / 응답 body 검증
   - 대상: `IllegalArgumentException` → 400, `ReservationConflictException` → 409, `PastReservationException` → 422, `MethodArgumentNotValidException` → 400, `HttpMessageNotReadableException` → 400, `NoResourceFoundException` → 404, `Exception` → 500
-- [ ] **4. IllegalArgumentException 처리 개선**
+- [x] **4. IllegalArgumentException 처리 개선**
   - 도메인 전용 커스텀 예외(`InvalidInputException` 등) 생성
   - 비즈니스 로직에서 `IllegalArgumentException` 대신 커스텀 예외 사용
   - `IllegalArgumentException` 핸들러는 예상치 못한 경우로 분리 — `e.getMessage()` 노출 제거, 경고 로그 + 제네릭 메시지 반환
@@ -23,7 +23,7 @@
   - 과거 날짜 체크를 `create()`에서 private 생성자의 `validate()`로 이동
   - `createdAt`이 파라미터로 들어오므로 신규/복원 모두 동일 조건식으로 처리 가능
   - `restore()` 팩토리 메서드 제거, 단일 생성 경로로 통일
-- [ ] **7. 예외 클래스 발생 위치로 이동 — exception 패키지 제거**
+- [x] **7. 예외 클래스 발생 위치로 이동 — exception 패키지 제거**
   - `PastReservationException` → `domain` 패키지 (핵심 규칙이 `Reservation`에 있음)
   - `ReservationConflictException` → `service` 패키지 (`ReservationService`에서만 발생)
 - [x] **8. 로컬 변수 final 일관성 정리**
@@ -38,7 +38,7 @@
 - [ ] **10. delete() 멱등성 처리 — 존재하지 않는 예약 삭제 시 성공 응답**
   - 존재하지 않으면 조용히 반환 (`return`) — 목적(예약 없는 상태) 달성으로 간주
   - `isCanceled` 소프트 딜리트는 이력 보존 요구사항이 생길 때 도입 — 지금은 오버엔지니어링
-- [ ] **11. 커스텀 예외 사용 기준 정립 및 적용**
+- [x] **11. 커스텀 예외 사용 기준 정립 및 적용**
   - 현재: HTTP 상태 코드가 400이 아닐 때만 커스텀 예외 사용 — 명확한 기준 없음
   - 기준: 도메인 규칙 위반은 모두 커스텀 예외, `IllegalArgumentException`은 예상치 못한 프로그래밍 오류에만
   - `ReservationNotFoundException` 등 도메인 의미를 담은 예외로 교체 (4번 항목과 연계)

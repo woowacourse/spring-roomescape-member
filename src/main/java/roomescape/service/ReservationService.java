@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationConflictException;
 
 @Service
 public class ReservationService {
@@ -29,9 +29,9 @@ public class ReservationService {
     @Transactional
     public Reservation save(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeDao.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 테마입니다."));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
@@ -42,9 +42,9 @@ public class ReservationService {
     @Transactional
     public Reservation update(long id, LocalDate date, long timeId) {
         Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         ReservationTime newTime = reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 예약 시간입니다."));
         if (LocalDateTime.of(date, newTime.getStartAt()).isBefore(LocalDateTime.now())) {
             throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
@@ -57,7 +57,7 @@ public class ReservationService {
     @Transactional
     public void delete(long id) {
         Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         if (LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()).isBefore(LocalDateTime.now())) {
             throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
         }

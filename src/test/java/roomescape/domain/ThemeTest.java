@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.InvalidInputException;
 
 class ThemeTest {
 
@@ -20,36 +21,36 @@ class ThemeTest {
     @Test
     void 이름이_null이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, null, "설명", "https://example.com/img.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 이름이_공백이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, "   ", "설명", "https://example.com/img.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 설명이_null이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, "공포의 저택", null, "https://example.com/img.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 설명이_공백이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, "공포의 저택", "   ", "https://example.com/img.jpg"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 썸네일_URL이_null이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, "공포의 저택", "설명", null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 썸네일_URL이_공백이면_예외() {
         assertThatThrownBy(() -> new Theme(1L, "공포의 저택", "설명", "   "))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 }

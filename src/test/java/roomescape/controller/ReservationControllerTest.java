@@ -163,9 +163,9 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("존재하지 않는 예약 변경하면 400")
+    @DisplayName("존재하지 않는 예약 변경하면 404")
     @Test
-    void 존재하지_않는_예약_변경하면_400() {
+    void 존재하지_않는_예약_변경하면_404() {
         Map<String, Object> params = new HashMap<>();
         params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1);
@@ -175,7 +175,7 @@ class ReservationControllerTest extends ControllerTest {
                 .body(params)
                 .when().patch("/reservations/{id}", 999)
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", equalTo("존재하지 않는 예약입니다."));
     }
 

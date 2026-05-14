@@ -2,13 +2,9 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import roomescape.exception.ReservationConflictException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-
-import java.util.Optional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -58,7 +55,7 @@ class ReservationServiceTest {
         given(reservationTimeDao.findById(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.save("브라운", LocalDate.now().plusDays(1), 99L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
@@ -68,7 +65,7 @@ class ReservationServiceTest {
         given(themeDao.findById(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.save("브라운", LocalDate.now().plusDays(1), 1L, 99L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 
@@ -95,4 +92,12 @@ class ReservationServiceTest {
         then(reservationDao).should().delete(1L);
     }
 
+    @Test
+    void delete_존재하지_않는_예약이면_예외() {
+        given(reservationDao.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.delete(999L))
+                .isInstanceOf(ReservationNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
 }

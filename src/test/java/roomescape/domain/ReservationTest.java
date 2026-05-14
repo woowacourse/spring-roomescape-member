@@ -3,7 +3,8 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import roomescape.exception.PastReservationException;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,25 +36,25 @@ class ReservationTest {
     @Test
     void 이름이_null이면_예외() {
         assertThatThrownBy(() -> Reservation.restore(1L, null, LocalDate.of(2023, 8, 5), createdAt, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 이름이_공백이면_예외() {
         assertThatThrownBy(() -> Reservation.restore(1L, "   ", LocalDate.of(2023, 8, 5), createdAt, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 날짜가_null이면_예외() {
         assertThatThrownBy(() -> Reservation.restore(1L, "브라운", null, createdAt, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 시간이_null이면_예외() {
         assertThatThrownBy(() -> Reservation.restore(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, null, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
