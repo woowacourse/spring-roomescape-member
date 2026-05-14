@@ -26,7 +26,7 @@ public class ReservationRepository {
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("description"),
-                rs.getString("image_url")
+                rs.getString("image_path")
         );
         return Reservation.from(
                 rs.getLong("id"),
@@ -58,7 +58,7 @@ public class ReservationRepository {
                     t.id AS theme_id,
                     t.name AS theme_name,
                     t.description,
-                    t.image_url
+                    t.image_path
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id

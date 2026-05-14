@@ -41,7 +41,7 @@ class ThemeApiTest {
         Map<String, String> request = new HashMap<>();
         request.put("name", "귀신의 집");
         request.put("description", "무서워요");
-        request.put("imageUrl", "/resources/image/ghost.png");
+        request.put("imagePath", "/images/themes/ghost.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -61,8 +61,8 @@ class ThemeApiTest {
     @DisplayName("전체 테마 목록을 조회한다.")
     void getThemes() {
         // given
-        createThemeHelper("귀신의 집", "무서워요", "/resources/image/1");
-        createThemeHelper("물고기", "어푸", "/resources/image/2");
+        createThemeHelper("귀신의 집", "무서워요", "/images/themes/1.webp");
+        createThemeHelper("물고기", "어푸", "/images/themes/2.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -78,14 +78,14 @@ class ThemeApiTest {
         assertThat(response.jsonPath().getList("themes.id")).doesNotContainNull();
         assertThat(response.jsonPath().getList("themes.name")).contains("귀신의 집", "물고기");
         assertThat(response.jsonPath().getList("themes.description")).contains("무서워요", "어푸");
-        assertThat(response.jsonPath().getList("themes.imageUrl")).doesNotContainNull();
+        assertThat(response.jsonPath().getList("themes.imagePath")).doesNotContainNull();
     }
 
     @Test
     @DisplayName("테마를 삭제한다.")
     void deleteTheme() {
         // given
-        int themaId = createThemeHelper("삭제할 테마", "삭제될 예정입니다", "/resources/image/delete");
+        int themaId = createThemeHelper("삭제할 테마", "삭제될 예정입니다", "/images/themes/delete.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -98,11 +98,11 @@ class ThemeApiTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private int createThemeHelper(String name, String description, String imageUrl) {
+    private int createThemeHelper(String name, String description, String imagePath) {
         Map<String, String> request = new HashMap<>();
         request.put("name", name);
         request.put("description", description);
-        request.put("imageUrl", imageUrl);
+        request.put("imagePath", imagePath);
 
         return RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -114,9 +114,9 @@ class ThemeApiTest {
     @Test
     @DisplayName("인기 테마를 예약 많은 순, 예약 수가 같다면 이름 순으로 조회한다.")
     void getPopularThemes() {
-        Theme themeA = dataInitializer.createTheme("A 테마", "설명A", "urlA");
-        Theme themeB = dataInitializer.createTheme("B 테마", "설명B", "urlB");
-        Theme themeC = dataInitializer.createTheme("C 테마", "설명C", "urlC");
+        Theme themeA = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
+        Theme themeB = dataInitializer.createTheme("B 테마", "설명B", "/images/themes/b.webp");
+        Theme themeC = dataInitializer.createTheme("C 테마", "설명C", "/images/themes/c.webp");
 
         ReservationTime timeA = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         ReservationTime timeB = dataInitializer.createReservationTime(LocalTime.of(11, 0));
@@ -149,7 +149,7 @@ class ThemeApiTest {
     @Test
     @DisplayName("인기 테마 조회는 days와 limit를 생략하면 기본값을 사용한다.")
     void getPopularThemesWithDefaultQueryParams() {
-        Theme theme = dataInitializer.createTheme("A 테마", "설명A", "urlA");
+        Theme theme = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
         dataInitializer.createReservation("사용자1", LocalDate.now().minusDays(1), time.getId(), theme.getId());
 
@@ -164,10 +164,10 @@ class ThemeApiTest {
     @Test
     @DisplayName("인기 테마 조회는 오늘을 제외하고 days일 범위만 조회한다.")
     void getPopularThemesExcludesTodayAndIncludesExactDaysBeforeToday() {
-        Theme includedStartTheme = dataInitializer.createTheme("시작일 포함 테마", "설명", "url");
-        Theme includedEndTheme = dataInitializer.createTheme("종료일 포함 테마", "설명", "url");
-        Theme excludedTodayTheme = dataInitializer.createTheme("오늘 제외 테마", "설명", "url");
-        Theme excludedBeforeRangeTheme = dataInitializer.createTheme("범위 이전 제외 테마", "설명", "url");
+        Theme includedStartTheme = dataInitializer.createTheme("시작일 포함 테마", "설명", "/images/themes/start.webp");
+        Theme includedEndTheme = dataInitializer.createTheme("종료일 포함 테마", "설명", "/images/themes/end.webp");
+        Theme excludedTodayTheme = dataInitializer.createTheme("오늘 제외 테마", "설명", "/images/themes/today.webp");
+        Theme excludedBeforeRangeTheme = dataInitializer.createTheme("범위 이전 제외 테마", "설명", "/images/themes/before.webp");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
         LocalDate today = LocalDate.now();
 

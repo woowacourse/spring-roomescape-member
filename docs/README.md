@@ -28,11 +28,11 @@
 - [x] 테마 목록을 조회한다.
 - [x] 테마를 삭제한다.
 - [x] 최근 예약 건수를 기준으로 인기 테마를 조회한다.
-- [ ] 테마 이름은 null이거나 빈 공백일 수 없다.
-- [ ] 테마 설명은 null일 수 없다.
-- [ ] 테마 이미지 링크는 null일 수 없다.
-- [ ] 테마 이미지 링크는 `https://`로 시작하는 URL(Uniform Resource Locator) 형식이어야 한다.
-- [ ] 존재하지 않는 테마로 예약할 수 없다.
+- [x] 테마 이름은 null이거나 빈 공백일 수 없다.
+- [x] 테마 설명은 null일 수 없다.
+- [x] 테마 이미지 링크는 null일 수 없다.
+- [x] 테마 이미지 링크는 `/images/themes/`로 시작하는 경로이어야 한다.
+- [x] 존재하지 않는 테마로 예약할 수 없다.
 
 ### 예약 시간
 
@@ -73,20 +73,18 @@
 
 ### 1. 테마 (Theme)
 
-| 기능           | HTTP(HyperText Transfer Protocol) Method | URL(Uniform Resource Locator)  | 설명                                            |
-| -------------- | ---------------------------------------- | ------------------------------ | ----------------------------------------------- |
-| 테마 목록 조회 | `GET`                                    | `/themes`                      | 등록된 모든 테마 목록을 조회한다.               |
-| 인기 테마 조회 | `GET`                                    | `/themes/rank?days=7&limit=10` | 최근 N일간 예약 건수 기준 인기 테마를 조회한다. |
-| 테마 등록      | `POST`                                   | `/themes`                      | 새로운 테마를 등록한다.                         |
-| 테마 삭제      | `DELETE`                                 | `/themes/{id}`                 | 특정 테마를 삭제한다.                           |
-
-#### 테마 등록 요청
+| 기능       | Method   | URL            | 설명                                   |
+|----------|----------|----------------|--------------------------------------|
+| 테마 목록 조회 | `GET`    | `/themes`      | 등록된 모든 테마 목록 반환                      |
+| 인기 테마 조회 | `GET`    | `/themes/rank` | 최근 N일간 예약 순위 조회 (`days`, `limit` 필요) |
+| 테마 추가    | `POST`   | `/themes`      | 새로운 테마 등록                            |
+| 테마 삭제    | `DELETE` | `/themes/{id}` | 특정 테마 삭제                             |
 
 ```json
 {
   "name": "고대 이집트의 비밀",
   "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-  "imageUrl": "https://example.com/images/egypt.png"
+  "imageUrl": "https://example.com/images/egypt.webp"
 }
 ```
 
@@ -97,7 +95,7 @@
   "id": 1,
   "name": "고대 이집트의 비밀",
   "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-  "imageUrl": "https://example.com/images/egypt.png"
+  "imageUrl": "https://example.com/images/egypt.webp"
 }
 ```
 
@@ -112,23 +110,21 @@
         "id": 1,
         "name": "고대 이집트의 비밀",
         "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-        "imageUrl": "https://example.com/images/egypt.png"
+        "imageUrl": "https://example.com/images/egypt.webp"
       }
     }
   ]
 }
 ```
 
----
+### 2. 예약 시간 (Time)
 
-### 2. 예약 시간 (Reservation Time)
-
-| 기능                | HTTP Method | URL                                | 설명                                               |
-| ------------------- | ----------- | ---------------------------------- | -------------------------------------------------- |
-| 예약 시간 목록 조회 | `GET`       | `/times`                           | 등록된 모든 예약 시간을 조회한다.                  |
-| 예약 가능 시간 조회 | `GET`       | `/times?themeId=1&date=2026-05-20` | 특정 날짜와 테마에 대한 예약 가능 시간을 조회한다. |
-| 예약 시간 등록      | `POST`      | `/times`                           | 새로운 예약 시간을 등록한다.                       |
-| 예약 시간 삭제      | `DELETE`    | `/times/{id}`                      | 특정 예약 시간을 삭제한다.                         |
+| 기능          | Method   | URL                                | 설명                            |
+|-------------|----------|------------------------------------|-------------------------------|
+| 예약 시간 목록 조회 | `GET`    | `/times`                           | 등록된 모든 예약 시간을 조회한다.           |
+| 예약 가능 시간 조회 | `GET`    | `/times?themeId=1&date=2026-05-20` | 특정 날짜와 테마에 대한 예약 가능 시간을 조회한다. |
+| 예약 시간 등록    | `POST`   | `/times`                           | 새로운 예약 시간을 등록한다.              |
+| 예약 시간 삭제    | `DELETE` | `/times/{id}`                      | 특정 예약 시간을 삭제한다.               |
 
 #### 예약 시간 등록 요청
 
@@ -155,7 +151,7 @@
     "id": 1,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.png"
+    "imageUrl": "https://example.com/images/egypt.webp"
   },
   "availableTimes": [
     {
@@ -176,7 +172,7 @@
 
 ### 3. 예약 (Reservation)
 
-| 기능                  | HTTP Method | URL                               | 설명                                                |
+| 기능                  | Method | URL                               | 설명                                                |
 | --------------------- | ----------- | --------------------------------- | --------------------------------------------------- |
 | 전체 예약 목록 조회   | `GET`       | `/reservations`                   | 전체 예약 목록을 조회한다.                          |
 | 사용자 예약 목록 조회 | `GET`       | `/reservations?name=고래`         | 사용자가 자신의 이름으로 본인 예약 목록을 조회한다. |
@@ -212,7 +208,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.png"
+    "imageUrl": "https://example.com/images/egypt.webp"
   },
   "status": "RESERVED"
 }
@@ -239,7 +235,7 @@
         "id": 3,
         "name": "고대 이집트의 비밀",
         "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-        "imageUrl": "https://example.com/images/egypt.png"
+        "imageUrl": "https://example.com/images/egypt.webp"
       },
       "status": "RESERVED"
     },
@@ -255,7 +251,7 @@
         "id": 5,
         "name": "좀비 바이러스",
         "description": "좀비 바이러스를 피해 연구소에서 탈출하세요.",
-        "imageUrl": "https://example.com/images/zombie.png"
+        "imageUrl": "https://example.com/images/zombie.webp"
       },
       "status": "CANCELLED"
     }
@@ -292,7 +288,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.png"
+    "imageUrl": "https://example.com/images/egypt.webp"
   },
   "status": "RESERVED"
 }
@@ -326,7 +322,7 @@
     "id": 3,
     "name": "고대 이집트의 비밀",
     "description": "파라오의 무덤에 숨겨진 비밀을 찾아 탈출하세요.",
-    "imageUrl": "https://example.com/images/egypt.png"
+    "imageUrl": "https://example.com/images/egypt.webp"
   },
   "status": "CANCELLED"
 }

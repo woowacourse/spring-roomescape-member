@@ -23,7 +23,7 @@ class ReservationTest {
     @BeforeEach
     void setUp() {
         time = ReservationTime.createNew(LocalTime.of(10, 0));
-        theme = Theme.createNew("공포의 저택", "무서운 테마입니다.", "https://image.url");
+        theme = Theme.createNew("공포의 저택", "무서운 테마입니다.", "/images/themes/test.webp");
         date = LocalDate.now();
     }
 

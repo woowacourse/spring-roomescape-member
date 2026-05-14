@@ -25,7 +25,7 @@ public class ThemeService {
         Theme theme = Theme.createNew(
                 command.name(),
                 command.description(),
-                command.imageUrl()
+                command.imagePath()
         );
         Theme savedTheme = themeRepository.save(theme);
 

@@ -20,7 +20,7 @@ public class ThemeRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
-                    rs.getString("image_url")
+                    rs.getString("image_path")
             );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -42,10 +42,10 @@ public class ThemeRepository {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
-                .addValue("image_url", theme.getImageUrl());
+                .addValue("image_path", theme.getImagePath());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return Theme.from(id, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        return Theme.from(id, theme.getName(), theme.getDescription(), theme.getImagePath());
     }
 
     public void deleteById(Long id) {
@@ -76,12 +76,12 @@ public class ThemeRepository {
                     t.id,
                     t.name,
                     t.description,
-                    t.image_url
+                    t.image_path
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
                 WHERE r.date >= :fromDate
                   AND r.date <= :toDate
-                GROUP BY t.id, t.name, t.description, t.image_url
+                GROUP BY t.id, t.name, t.description, t.image_path
                 ORDER BY COUNT(r.id) DESC , t.name
                 LIMIT :limit
                 """;

@@ -6,7 +6,7 @@ public record ThemeResult(
         Long id,
         String name,
         String description,
-        String imageUrl
+        String imagePath
 ) {
 
     public static ThemeResult from(Theme theme) {
@@ -14,7 +14,7 @@ public record ThemeResult(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
-                theme.getImageUrl()
+                theme.getImagePath()
         );
     }
 }

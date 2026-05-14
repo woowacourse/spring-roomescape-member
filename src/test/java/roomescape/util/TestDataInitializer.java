@@ -30,8 +30,8 @@ public class TestDataInitializer {
         return reservationTimeRepository.save(ReservationTime.createNew(localTime.withSecond(0).withNano(0)));
     }
 
-    public Theme createTheme(String name, String description, String imageUrl) {
-        return themeRepository.save(Theme.createNew(name, description, imageUrl));
+    public Theme createTheme(String name, String description, String imagePath) {
+        return themeRepository.save(Theme.createNew(name, description, imagePath));
     }
 
     public void createReservation(String name, LocalDate date, Long timeId, Long themeId) {

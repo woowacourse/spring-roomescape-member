@@ -71,7 +71,7 @@ class ReservationTimeApiTest {
     @Test
     void 예약과_시간_연결() {
         dataInitializer.createReservationTime(LocalTime.now());
-        dataInitializer.createTheme("hello", "world", "/resources/image/...");
+        dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -98,7 +98,7 @@ class ReservationTimeApiTest {
         // given
         ReservationTime ten = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         ReservationTime eleven = dataInitializer.createReservationTime(LocalTime.of(11, 0));
-        Theme theme = dataInitializer.createTheme("hello", "world", "/resources/image/...");
+        Theme theme = dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
 
         LocalDate date = LocalDate.now().plusDays(1);
         dataInitializer.createReservation("라텔", date, ten.getId(), theme.getId());
@@ -123,7 +123,7 @@ class ReservationTimeApiTest {
     void 예약된_시간만_조회한다() {
         ReservationTime ten = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         dataInitializer.createReservationTime(LocalTime.of(11, 0));
-        Theme theme = dataInitializer.createTheme("hello", "world", "/resources/image/...");
+        Theme theme = dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
 
         LocalDate date = LocalDate.now().plusDays(1);
         dataInitializer.createReservation("라텔", date, ten.getId(), theme.getId());

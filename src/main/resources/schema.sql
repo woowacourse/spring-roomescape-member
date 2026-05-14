@@ -11,7 +11,7 @@ CREATE TABLE theme
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    image_url   VARCHAR(512) NOT NULL,
+    image_path  VARCHAR(512) NOT NULL,
     PRIMARY KEY (id)
 );
 

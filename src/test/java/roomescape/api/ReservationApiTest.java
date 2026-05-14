@@ -35,7 +35,7 @@ class ReservationApiTest {
     @Test
     void 예약_추가_및_삭제() {
         dataInitializer.createReservationTime(LocalTime.now());
-        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -79,7 +79,7 @@ class ReservationApiTest {
     }, nullValues = "NULL")
     void 예약_생성_요청값이_유효하지_않으면_400을_반환한다(String name, String date) {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
-        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -97,7 +97,7 @@ class ReservationApiTest {
 
     @Test
     void 존재하지_않는_예약_시간으로_예약을_생성하면_404를_반환한다() {
-        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -134,7 +134,7 @@ class ReservationApiTest {
     @Test
     void 같은_날짜_시간_테마로_중복_예약하면_409를_반환한다() {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
-        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
         dataInitializer.createReservation("브라운", LocalDate.of(2023, 8, 5), 1L, 1L);
 
         Map<String, Object> params = new HashMap<>();
