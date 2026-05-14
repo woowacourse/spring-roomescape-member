@@ -367,9 +367,9 @@ DELETE /reservations/{id}?name=레서
 | 존재하지 않는 예약 | 404 | RESERVATION_NOT_FOUND | 존재하지 않는 예약입니다. |
 | 중복 예약 | 409 | DUPLICATE_RESERVATION | 이미 예약된 시간입니다. |
 | 지난 날짜/시간 예약 생성 | 400 | PAST_RESERVATION | 지난 시간은 예약할 수 없습니다. |
-| 지난 예약 변경 | 400 | PAST_RESERVATION_UPDATE | 지난 예약은 변경할 수 없습니다. |
-| 지난 예약 취소 | 400 | PAST_RESERVATION_DELETE | 지난 예약은 취소할 수 없습니다. |
-| 존재하지 않는 예약 시간 | 400 | RESERVATION_TIME_NOT_FOUND | 존재하지 않는 예약 시간입니다. |
+| 지난 예약 변경 | 409 | PAST_RESERVATION_UPDATE | 지난 예약은 변경할 수 없습니다. |
+| 지난 예약 취소 | 409 | PAST_RESERVATION_DELETE | 지난 예약은 취소할 수 없습니다. |
+| 존재하지 않는 예약 시간 | 404 | RESERVATION_TIME_NOT_FOUND | 존재하지 않는 예약 시간입니다. |
 | 예약이 존재하는 시간 삭제 | 409 | RESERVATION_TIME_IN_USE | 예약이 존재하는 시간입니다. |
 | 존재하지 않는 테마 | 404 | THEME_NOT_FOUND | 존재하지 않는 테마입니다. |
 

@@ -141,12 +141,12 @@ class ReservationE2ETest {
                 .queryParam("name", "브라운")
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("name", is("PAST_RESERVATION_DELETE"));
     }
 
     @Test
-    @DisplayName("POST /reservations - 존재하지 않는 시간 ID로 예약을 생성하면 400을 반환한다")
+    @DisplayName("POST /reservations - 존재하지 않는 시간 ID로 예약을 생성하면 404를 반환한다")
     void createReservation_invalidTimeId() {
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
@@ -159,6 +159,6 @@ class ReservationE2ETest {
                 .body(body)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 }
