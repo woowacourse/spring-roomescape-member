@@ -14,7 +14,7 @@ docker-compose up
 | 프론트엔드 | http://localhost:4173 |
 
 - 백엔드는 레포지터리 소스를 기반으로 직접 빌드됩니다.
-- 프론트엔드는 Docker Hub(`alstj2384/roomescape-frontend:latest`)에서 이미지를 pull합니다.
+- 프론트엔드는 Docker Hub(`alstj2384/roomescape-frontend:latest`)에서 이미지를 pull합니다!
 
 ---
 
