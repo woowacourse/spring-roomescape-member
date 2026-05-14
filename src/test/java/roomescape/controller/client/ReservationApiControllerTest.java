@@ -26,6 +26,7 @@ import roomescape.common.Page;
 import roomescape.common.Pageable;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.client.api.ReservationApiController;
+import roomescape.controller.client.api.dto.ReservationChangeRequest;
 import roomescape.controller.client.api.dto.ReservationRequest;
 import roomescape.controller.client.api.dto.ReservationResponse;
 import roomescape.controller.client.fixture.ReservationApiRequestFixture;
@@ -133,5 +134,26 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("예약 취소 식별자는 양수입니다."));
+    }
+
+    @Test
+    void 예약_변경_식별자와_변경할_시간으로_예약_변경_요청시_변경_로직_실행_후_200OK() {
+        // given
+        ReservationChangeRequest request = new ReservationChangeRequest(LocalDate.now(), 1L);
+        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now(), "ACTIVE");
+        ReservationResult result = new ReservationResult(1L, "예약자", LocalDate.now(), timeResult);
+        when(reservationService.change(anyLong(), any(ReservationCommand.class))).thenReturn(result);
+
+        // when
+        ReservationResponse response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .body(request)
+                .when().patch("/api/reservations/{id}", 1L)
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract().as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).isEqualTo(ReservationResponse.from(result));
     }
 }

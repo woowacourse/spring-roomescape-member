@@ -7,6 +7,7 @@ import integration.BaseIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,5 +98,27 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 존재하는_ID로_예약을_조회하면_Optional에_담겨_반환된다() {
+        // given
+        Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation saved = reservationRepository.save(reservation);
+
+        // when:
+        Optional<Reservation> find = reservationRepository.findById(saved.getId());
+
+        // then
+        assertThat(find).isPresent();
+    }
+
+    @Test
+    void 존재하지_않는_ID로_예약을_조회하면_빈_Optional이_반환된다() {
+        // when:
+        Optional<Reservation> find = reservationRepository.findById(1L);
+
+        // then
+        assertThat(find).isEmpty();
     }
 }

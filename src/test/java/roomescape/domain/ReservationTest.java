@@ -53,4 +53,33 @@ class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(expectedMessage);
     }
+
+    @Test
+    void 예약의_날짜와_시간을_정상적으로_변경한다() {
+        // given
+        Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+
+        LocalDate newDate = LocalDate.now().plusDays(2);
+        ReservationTime newTime = new ReservationTime(2L, java.time.LocalTime.of(15, 0), TimeStatus.ACTIVE);
+
+        // when
+        reservation.update(newDate, newTime);
+
+        // then
+        assertThat(reservation)
+                .extracting(Reservation::getDate, Reservation::getTime)
+                .containsExactly(newDate, newTime);
+    }
+
+    @Test
+    void 이미_지나간_과거_일시로_예약을_변경하려고_하면_예외가_발생한다() {
+        // given
+        Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+
+        // when & then
+        assertThatThrownBy(() -> reservation.update(pastDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이전 날짜로 예약 할 수 없습니다.");
+    }
 }

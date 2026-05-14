@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.Page;
 import roomescape.common.Pageable;
+import roomescape.controller.client.api.dto.ReservationChangeRequest;
 import roomescape.controller.client.api.dto.ReservationRequest;
 import roomescape.controller.client.api.dto.ReservationResponse;
 import roomescape.query.ReservationQuery;
@@ -40,23 +42,28 @@ public class ReservationApiController {
         return ResponseEntity.status(CREATED).body(ReservationResponse.from(result));
     }
 
-    @GetMapping
-    public ResponseEntity<Page<ReservationSearchResponse>> searchBy(
-            @ModelAttribute @Valid
-            ReservationSearchCondition condition,
-            Pageable pageable
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> changeReservation(
+            @PathVariable @Positive(message = "예약 변경 식별자는 양수입니다.") Long id,
+            @Valid @RequestBody ReservationChangeRequest request
     ) {
-        return ResponseEntity.ok(reservationQuery.search(condition, pageable));
+        ReservationResult result = reservationService.change(id, request.toCommand());
+        return ResponseEntity.ok(ReservationResponse.from(result));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancel(
-            @PathVariable
-            @Positive(message = "예약 취소 식별자는 양수입니다.") Long id
+            @PathVariable @Positive(message = "예약 취소 식별자는 양수입니다.") Long id
     ) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
     }
 
-
+    @GetMapping
+    public ResponseEntity<Page<ReservationSearchResponse>> searchBy(
+            @ModelAttribute @Valid ReservationSearchCondition condition,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(reservationQuery.search(condition, pageable));
+    }
 }

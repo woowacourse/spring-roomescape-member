@@ -4,16 +4,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode(of = "id")
+@ToString
 public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
     private final Theme theme;
-    private final ReservationTime time;
+    private LocalDate date;
+    private ReservationTime time;
 
     public Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time) {
         validateReservation(name, date, theme, time);
@@ -25,11 +27,16 @@ public class Reservation {
     }
 
     public static Reservation createNew(String name, LocalDate date, Theme theme, ReservationTime time) {
+        Reservation reservation = new Reservation(null, name, date, theme, time);
+        validatePastDateTime(date, time);
+        return reservation;
+    }
+
+    private static void validatePastDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime reservationDateTime = time.toReservationDateTime(date);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이전 날짜로 새로운 예약 정보를 생성할 수 없습니다.");
+            throw new IllegalArgumentException("이전 날짜로 예약 할 수 없습니다.");
         }
-        return new Reservation(null, name, date, theme, time);
     }
 
     private static void validateReservation(String name, LocalDate date, Theme theme, ReservationTime time) {
@@ -54,5 +61,11 @@ public class Reservation {
         if (date == null || time == null) {
             throw new IllegalArgumentException("예약 날짜 및 시간 정보는 비어있을 수 없습니다.");
         }
+    }
+
+    public void update(LocalDate date, ReservationTime time) {
+        validatePastDateTime(date, time);
+        this.date = date;
+        this.time = time;
     }
 }

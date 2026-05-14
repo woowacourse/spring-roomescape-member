@@ -64,6 +64,60 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 존재하지_않는_예약_변경_시_예외가_발생한다() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.change(1L, null))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 예약 정보입니다.");
+    }
+
+    @Test
+    void 존재하지_않는_시간_정보로_예약_변경_시_예외가_발생한다() {
+        // given
+        Reservation saved = reservationRepository.save(ReservationFixture.createDefaultReservationWithName("이프"));
+        ReservationCommand command = new ReservationCommand(null, LocalDate.now(), 1L, 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.change(saved.getId(), command))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 시간 정보입니다.");
+    }
+
+    @Test
+    void 이미_존재하는_시간_정보로_예약을_변경할_경우_예외가_발생한다() {
+        // given
+        Reservation reservation = ReservationFixture.createDefaultReservationWithName("이프");
+        reservationTimeRepository.save(reservation.getTime());
+        reservationRepository.save(reservation);
+
+        ReservationCommand command = new ReservationCommand(null, reservation.getDate(), 1L, 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.change(1L, command))
+                .isInstanceOf(DuplicateEntityException.class)
+                .hasMessageContaining("이미 예약 된 날짜입니다.");
+    }
+
+
+    @Test
+    void 기존_예약_정보에서_예약_시간을_변경할_수_있다() {
+        // given
+        Reservation reservation = ReservationFixture.createDefaultReservationWithName("이프");
+        reservationTimeRepository.save(reservation.getTime());
+        Reservation saved = reservationRepository.save(reservation);
+
+        LocalDate nextDate = reservation.getDate().plusDays(1);
+        ReservationCommand command = new ReservationCommand(null, nextDate, 1L, 1L);
+
+        // when
+        ReservationResult result = reservationService.change(saved.getId(), command);
+
+        // then
+        assertThat(result.date()).isEqualTo(nextDate);
+        assertThat(result.time().id()).isEqualTo(1L);
+    }
+
+    @Test
     void 비활성화된_테마_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
         // given: 테마 ID가 등록되지 않음
         Theme theme = ThemeFixture.createDefaultTheme();
