@@ -51,7 +51,7 @@ class AdminReservationControllerTest {
                 new Reservation(2L, "포비", LocalDate.of(2023, 8, 6), time, theme),
                 new Reservation(3L, "조이", LocalDate.of(2023, 8, 7), time, theme)
         );
-        given(reservationService.findAllReservations()).willReturn(reservations);
+        given(reservationService.findAllReservations(1, 20)).willReturn(reservations);
 
         // when then
         MvcResult result = mockMvc.perform(get("/admin/reservations"))
@@ -68,7 +68,44 @@ class AdminReservationControllerTest {
 
         then(reservationService)
                 .should()
-                .findAllReservations();
+                .findAllReservations(1, 20);
+    }
+
+    @Test
+    @DisplayName("예약 목록을 요청한 페이지와 크기로 조회한다.")
+    public void getReservationList_withPaging() throws Exception {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme-1.png");
+        List<Reservation> reservations = List.of(
+                new Reservation(3L, "조이", LocalDate.of(2023, 8, 7), time, theme)
+        );
+        given(reservationService.findAllReservations(2, 2)).willReturn(reservations);
+
+        // when then
+        MvcResult result = mockMvc.perform(get("/admin/reservations")
+                        .param("page", "2")
+                        .param("size", "2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ReservationListResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                ReservationListResponse.class
+        );
+
+        assertThat(response.reservations()).hasSize(1)
+                .extracting(
+                        ReservationResponse::id,
+                        ReservationResponse::guestName,
+                        ReservationResponse::date
+                )
+                .containsExactly(tuple(3L, "조이", "2023-08-07"));
+
+        then(reservationService)
+                .should()
+                .findAllReservations(2, 2);
     }
 
     private static void assertReservationsResponse(ReservationListResponse response) {

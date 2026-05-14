@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.controller.dto.PageRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -14,9 +15,9 @@ public class AdminReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<ReservationListResponse> getAllReservations() {
+    public ResponseEntity<ReservationListResponse> getAllReservations(@ModelAttribute PageRequest pageRequest) {
         return ResponseEntity.ok(
-                ReservationListResponse.from(reservationService.findAllReservations()
+                ReservationListResponse.from(reservationService.findAllReservations(pageRequest.page(), pageRequest.size())
                         .stream()
                         .map(ReservationResponse::from)
                         .toList()));

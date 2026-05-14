@@ -35,7 +35,7 @@ public class ApiExceptionLoggingAspect {
                 request.getMethod() + " " + request.getRequestURI(),
                 responseEntity.getStatusCode(),
                 errorResponse.getCode(),
-                errorResponse.getMessage());
+                errorResponse.getMessage() != null ? errorResponse.getMessage() : errorResponse.getMessages());
     }
 
     private HttpServletRequest findHttpServletRequest(Object[] args) {

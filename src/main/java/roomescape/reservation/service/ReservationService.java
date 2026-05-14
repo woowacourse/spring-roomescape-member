@@ -29,11 +29,6 @@ public class ReservationService {
 
     private final Clock clock;
 
-    @Transactional(readOnly = true)
-    public List<Reservation> findAllReservations() {
-        return reservationRepository.findAll();
-    }
-
     @Transactional
     public Reservation create(String guestName, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = getReservationTime(timeId);
@@ -168,5 +163,10 @@ public class ReservationService {
         )) {
             throw new DomainException(RESERVATION_ALREADY_EXISTS);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reservation> findAllReservations(int page, int size) {
+        return reservationRepository.findAll(page, size);
     }
 }

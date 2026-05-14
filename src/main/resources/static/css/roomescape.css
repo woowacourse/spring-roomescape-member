@@ -670,34 +670,6 @@
       line-height: 1.45;
     }
 
-    .admin-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(88px, 1fr));
-      gap: 8px;
-      min-width: 320px;
-    }
-
-    .metric {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      padding: 10px;
-      display: grid;
-      gap: 4px;
-    }
-
-    .metric-value {
-      font-size: 22px;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .metric-label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 750;
-    }
-
     .admin-layout {
       display: grid;
       grid-template-columns: 390px minmax(0, 1fr);
@@ -809,6 +781,57 @@
       overflow-y: auto;
       padding-right: 3px;
       scrollbar-width: thin;
+    }
+
+    .admin-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .page-size-control {
+      display: grid;
+      grid-template-columns: auto 78px;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .page-size-control .label {
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-button {
+      width: 40px;
+      min-width: 40px;
+      padding: 0;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .secondary-button:disabled {
+      color: #a8b3af;
+      background: #f4f2ec;
+      cursor: not-allowed;
+    }
+
+    .page-label {
+      min-width: 72px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     .list-row {
@@ -963,9 +986,6 @@
         align-items: start;
       }
 
-      .admin-metrics {
-        min-width: 0;
-      }
     }
 
     @media (max-width: 620px) {
@@ -1041,8 +1061,13 @@
         font-size: 24px;
       }
 
-      .admin-metrics {
-        grid-template-columns: 1fr;
+      .admin-pagination {
+        display: grid;
+        align-items: start;
+      }
+
+      .page-controls {
+        justify-content: space-between;
       }
 
       .theme-list-row,

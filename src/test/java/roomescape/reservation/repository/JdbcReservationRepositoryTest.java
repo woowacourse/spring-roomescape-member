@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 @JdbcTest
 @Import(JdbcReservationRepository.class)
@@ -59,31 +60,24 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약의 목록을 조회한다")
-    void findAll() {
+    @DisplayName("예약의 목록을 페이지 단위로 조회한다")
+    void findAllWithPaging() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
         Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+        insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+        Reservation reservation2 = insertReservation("포비", LocalDate.of(2023, 8, 6), time, theme);
+        insertReservation("조이", LocalDate.of(2023, 8, 7), time, theme);
 
         // when
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll(2, 1);
 
         // then
-        assertThat(reservations).hasSize(1);
-
-        Reservation found = reservations.getFirst();
-        assertThat(found.getId()).isEqualTo(reservation.getId());
-        assertThat(found.getGuestName()).isEqualTo("브라운");
-        assertThat(found.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
-
-        assertThat(found.getTime().getId()).isEqualTo(time.getId());
-        assertThat(found.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
-
-        assertThat(found.getTheme().getId()).isEqualTo(theme.getId());
-        assertThat(found.getTheme().getName()).isEqualTo(theme.getName());
-        assertThat(found.getTheme().getDescription()).isEqualTo(theme.getDescription());
-        assertThat(found.getTheme().getThumbnail()).isEqualTo(theme.getThumbnail());
+        assertThat(reservations)
+                .extracting(Reservation::getId, Reservation::getGuestName, Reservation::getDate)
+                .containsExactly(
+                        tuple(reservation2.getId(), "포비", LocalDate.of(2023, 8, 6))
+                );
     }
 
     @Test
@@ -208,7 +202,7 @@ class JdbcReservationRepositoryTest {
         boolean deleted = reservationRepository.deleteById(reservation.getId());
 
         assertThat(deleted).isTrue();
-        assertThat(reservationRepository.findAll()).isEmpty();
+        assertThat(reservationRepository.findById(reservation.getId())).isEmpty();
     }
 
     @Test

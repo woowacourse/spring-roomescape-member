@@ -30,7 +30,10 @@ const API_BASE = "";
       editAvailableTimes: [],
       adminSelectedThemeId: null,
       adminSelectedTimeId: null,
-      adminAvailableTimes: []
+      adminAvailableTimes: [],
+      adminReservationPage: 1,
+      adminReservationSize: 20,
+      adminReservationHasNext: false
     };
 
     const demoThemes = Array.from({ length: 12 }, (_, index) => {
@@ -109,9 +112,6 @@ const API_BASE = "";
       editReservationButton: $("#editReservationButton"),
       editReservationMessage: $("#editReservationMessage"),
       editCancelButton: $("#editCancelButton"),
-      themeMetric: $("#themeMetric"),
-      timeMetric: $("#timeMetric"),
-      reservationMetric: $("#reservationMetric"),
       themeForm: $("#themeForm"),
       timeForm: $("#timeForm"),
       adminThemeName: $("#adminThemeName"),
@@ -131,6 +131,10 @@ const API_BASE = "";
       adminThemeList: $("#adminThemeList"),
       adminTimeList: $("#adminTimeList"),
       reservationCount: $("#reservationCount"),
+      adminReservationPageSize: $("#adminReservationPageSize"),
+      adminReservationPrevPage: $("#adminReservationPrevPage"),
+      adminReservationNextPage: $("#adminReservationNextPage"),
+      adminReservationPageLabel: $("#adminReservationPageLabel"),
       adminThemeCount: $("#adminThemeCount"),
       adminTimeCount: $("#adminTimeCount"),
       toast: $("#toast")
@@ -258,8 +262,8 @@ const API_BASE = "";
       return fallback;
     }
 
-    async function getReservationListData() {
-      return getJson("/admin/reservations");
+    async function getReservationListData(page = state.adminReservationPage, size = state.adminReservationSize) {
+      return getJson(`/admin/reservations?page=${page}&size=${size}`);
     }
 
     function escapeHtml(value) {
@@ -877,14 +881,13 @@ const API_BASE = "";
     }
 
     function renderAdmin() {
-      elements.themeMetric.textContent = state.themes.length;
-      elements.timeMetric.textContent = state.times.length;
-      elements.reservationMetric.textContent = state.reservations.length;
-      elements.reservationCount.textContent = `GET /admin/reservations · ${state.reservations.length}건`;
+      elements.reservationCount.textContent =
+        `GET /admin/reservations?page=${state.adminReservationPage}&size=${state.adminReservationSize} · ${state.reservations.length}건`;
       elements.adminThemeCount.textContent = `${state.themes.length}개`;
       elements.adminTimeCount.textContent = `${state.times.length}개`;
       renderAdminReservationForm();
       renderAdminReservations();
+      renderAdminReservationPagination();
       renderAdminThemes();
       renderAdminTimes();
     }
@@ -963,9 +966,7 @@ const API_BASE = "";
         return;
       }
 
-      [...state.reservations]
-        .sort((a, b) => String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id))
-        .forEach((reservation) => {
+      state.reservations.forEach((reservation) => {
           const theme = getReservationTheme(reservation);
           const time = getReservationTime(reservation);
           const row = document.createElement("div");
@@ -979,6 +980,37 @@ const API_BASE = "";
           `;
           elements.adminReservationList.appendChild(row);
         });
+    }
+
+    function renderAdminReservationPagination() {
+      elements.adminReservationPageSize.value = String(state.adminReservationSize);
+      elements.adminReservationPageLabel.textContent = `${state.adminReservationPage} 페이지`;
+      elements.adminReservationPrevPage.disabled = state.adminReservationPage <= 1;
+      elements.adminReservationNextPage.disabled = !state.adminReservationHasNext;
+    }
+
+    function pagedDemoReservations() {
+      const start = (state.adminReservationPage - 1) * state.adminReservationSize;
+      const end = start + state.adminReservationSize;
+      const reservations = [...state.demoReservations]
+        .sort((a, b) => Number(a.id) - Number(b.id));
+      state.adminReservationHasNext = reservations.length > end;
+      return reservations.slice(start, end);
+    }
+
+    async function loadAdminReservations() {
+      if (!isAdminPage()) {
+        return;
+      }
+
+      if (state.mode === "live") {
+        const data = await getReservationListData();
+        state.reservations = data.reservations || [];
+        state.adminReservationHasNext = state.reservations.length === state.adminReservationSize;
+        return;
+      }
+
+      state.reservations = pagedDemoReservations();
     }
 
     function renderAdminThemes() {
@@ -1032,7 +1064,7 @@ const API_BASE = "";
     }
 
     async function syncAfterAdminChange() {
-      renderAdmin();
+      await loadAdminReservations();
       await loadAdminAvailability();
       renderAdmin();
     }
@@ -1120,7 +1152,6 @@ const API_BASE = "";
           };
           state.demoReservations = [...state.demoReservations, createdReservation];
         }
-        state.reservations = [...state.reservations, createdReservation];
         elements.adminReserveName.value = "";
         state.adminSelectedTimeId = null;
         setAdminReserveMessage("예약이 추가되었습니다.", "ok");
@@ -1181,7 +1212,6 @@ const API_BASE = "";
           await deleteJson(`/admin/reservations/${id}`);
         }
         state.demoReservations = state.demoReservations.filter((reservation) => reservation.id !== id);
-        state.reservations = state.reservations.filter((reservation) => reservation.id !== id);
         setAdminMessage("예약이 삭제되었습니다.", "ok");
         await syncAfterAdminChange();
       } catch (error) {
@@ -1194,7 +1224,8 @@ const API_BASE = "";
       state.themes = demoThemes;
       state.popularThemes = demoThemes.slice(0, 10);
       state.times = demoTimes.map(({ id, startAt }) => ({ id, startAt }));
-      state.reservations = [...state.demoReservations];
+      state.adminReservationPage = 1;
+      state.reservations = pagedDemoReservations();
       setSourceStatus();
 
       if (isAdminPage()) {
@@ -1224,6 +1255,7 @@ const API_BASE = "";
         return;
       } else {
         if (isAdminPage()) {
+          state.adminReservationPage = 1;
           elements.adminReserveDate.value = DEFAULT_DATE;
         } else {
           elements.dateInput.value = DEFAULT_DATE;
@@ -1238,7 +1270,7 @@ const API_BASE = "";
               getJson("/themes"),
               Promise.resolve({ themes: [] }),
               getJson("/times"),
-              getReservationListData()
+              getReservationListData(1, state.adminReservationSize)
             ])
           : await Promise.all([
               getJson("/themes"),
@@ -1251,6 +1283,7 @@ const API_BASE = "";
         state.popularThemes = popularityData.themes || popularityData.popularThemes || [];
         state.times = timeData.times || [];
         state.reservations = reservationData.reservations || [];
+        state.adminReservationHasNext = state.reservations.length === state.adminReservationSize;
         setSourceStatus();
 
         if (isAdminPage()) {
@@ -1333,6 +1366,28 @@ const API_BASE = "";
         if (button) {
           deleteReservation(Number(button.dataset.deleteReservationId));
         }
+      });
+      elements.adminReservationPageSize.addEventListener("change", async () => {
+        state.adminReservationSize = Number(elements.adminReservationPageSize.value);
+        state.adminReservationPage = 1;
+        await loadAdminReservations();
+        renderAdmin();
+      });
+      elements.adminReservationPrevPage.addEventListener("click", async () => {
+        if (state.adminReservationPage <= 1) {
+          return;
+        }
+        state.adminReservationPage -= 1;
+        await loadAdminReservations();
+        renderAdmin();
+      });
+      elements.adminReservationNextPage.addEventListener("click", async () => {
+        if (!state.adminReservationHasNext) {
+          return;
+        }
+        state.adminReservationPage += 1;
+        await loadAdminReservations();
+        renderAdmin();
       });
     }
 

@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    List<Reservation> findAll();
+    List<Reservation> findAll(int page, int size);
 
     List<Reservation> findByGuestName(String guestName);
 

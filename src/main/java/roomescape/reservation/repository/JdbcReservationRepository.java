@@ -49,7 +49,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         return jdbcTemplate.query("""
                 SELECT
                     r.id AS reservation_id,
@@ -66,7 +66,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
-                """, reservationRowMapper);
+                ORDER BY r.id
+                LIMIT ? OFFSET ?
+                """, reservationRowMapper, size, (page - 1) * size);
     }
 
     @Override
