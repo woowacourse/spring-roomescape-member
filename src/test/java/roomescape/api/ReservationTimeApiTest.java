@@ -10,6 +10,9 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -32,18 +35,18 @@ class ReservationTimeApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/reservation-times")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/reservation-times")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservationTimes.size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/reservation-times/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -56,14 +59,29 @@ class ReservationTimeApiTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/reservation-times")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/reservation-times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "   ", "1000", "10:0", "10-00", "25:00"})
+    void 예약_시간_요청값이_유효하지_않으면_400을_반환한다(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservation-times")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -112,7 +130,7 @@ class ReservationTimeApiTest {
         // when
         RestAssured.given().log().all()
                 .queryParams(params)
-                .when().get("/times/available")
+                .when().get("/reservation-times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.size()", is(1),
@@ -135,7 +153,7 @@ class ReservationTimeApiTest {
 
         RestAssured.given().log().all()
                 .queryParams(params)
-                .when().get("/times/available")
+                .when().get("/reservation-times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.size()", is(1),
@@ -150,9 +168,22 @@ class ReservationTimeApiTest {
         RestAssured.given().log().all()
                 .queryParam("date", LocalDate.now().plusDays(1).toString())
                 .queryParam("themeId", 999)
-                .when().get("/times/available")
+                .when().get("/reservation-times/available")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    void 예약이_존재하는_시간은_삭제할_수_없다() {
+        ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        Theme theme = dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
+        LocalDate date = LocalDate.now().plusDays(1);
+        dataInitializer.createReservation("라텔", date, time.getId(), theme.getId());
+
+        RestAssured.given().log().all()
+                .when().delete("/reservation-times/{id}", time.getId())
+                .then().log().all()
+                .statusCode(400);
     }
 
 }
