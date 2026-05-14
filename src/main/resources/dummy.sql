@@ -137,7 +137,7 @@ VALUES
 ('김성균', DATEADD(DAY, -2, CURRENT_DATE), 1, 15),
 
 -- [3건] 테마 10: 뱀파이어의 성
-('길', DATEADD(DAY, -9, CURRENT_DATE), 9, 10),
+('기리', DATEADD(DAY, -9, CURRENT_DATE), 9, 10),
 ('조세호', DATEADD(DAY, -6, CURRENT_DATE), 7, 10),
 ('보나', DATEADD(DAY, -3, CURRENT_DATE), 7, 10),
 

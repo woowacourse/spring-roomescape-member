@@ -7,7 +7,9 @@ import roomescape.global.exception.reservation.InvalidReservationException;
 @Getter
 public class Reservation {
 
-    private static final int MAX_NAME_LENGTH = 50;
+    private static final int MIN_NAME_LENGTH = 2;
+    private static final int MAX_NAME_LENGTH = 20;
+    private static final String NAME_PATTERN = "^[가-힣a-zA-Z ]+$";
 
     private final Long id;
     private final String name;
@@ -37,8 +39,14 @@ public class Reservation {
         if (name == null || name.isBlank()) {
             throw new InvalidReservationException("이름은 비어있을 수 없습니다.");
         }
+        if (name.length() < MIN_NAME_LENGTH) {
+            throw new InvalidReservationException("이름은 " + MIN_NAME_LENGTH + "자 이상이어야 합니다.");
+        }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidReservationException("이름의 길이는 " + MAX_NAME_LENGTH + "자를 넘을 수 없습니다.");
+            throw new InvalidReservationException("이름은 " + MAX_NAME_LENGTH + "자 이하여야 합니다.");
+        }
+        if (!name.matches(NAME_PATTERN)) {
+            throw new InvalidReservationException("이름은 완성형 한글, 영문, 공백만 허용합니다.");
         }
     }
 
