@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.controller.dto.ThemeResponseDto;
@@ -33,7 +34,7 @@ public class ThemeController {
 
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponseDto> create(
-            @RequestBody ThemeSaveRequestDto themeRequest) {
+            @RequestBody @Valid ThemeSaveRequestDto themeRequest) {
         ThemeResponseDto body = ThemeResponseDto.from(
                 themeService.create(themeRequest.toServiceDto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(body);

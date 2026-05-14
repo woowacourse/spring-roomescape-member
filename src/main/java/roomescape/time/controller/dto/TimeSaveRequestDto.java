@@ -3,8 +3,9 @@ package roomescape.time.controller.dto;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 
 public record TimeSaveRequestDto(
-    @JsonFormat(pattern = "HH:mm") LocalTime startAt,
-    @JsonFormat(pattern = "HH:mm") LocalTime endAt
+    @NotNull @JsonFormat(pattern = "HH:mm") LocalTime startAt,
+    @NotNull @JsonFormat(pattern = "HH:mm") LocalTime endAt
 ) {}
