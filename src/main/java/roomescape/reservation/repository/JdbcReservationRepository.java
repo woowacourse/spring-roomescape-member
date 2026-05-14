@@ -170,7 +170,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             sql.append(" and r.name = ?");
             params.add(name);
         }
-
         if (from != null) {
             sql.append(" and r.reservation_date >= ?");
             params.add(Date.valueOf(from));
