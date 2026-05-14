@@ -130,4 +130,21 @@ class ReservationServiceTest {
         return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(),
             reservation.getTime().getId(), reservation.getThemeId());
     }
+
+    @Test
+    void 사용자_이름으로_해당_사용자의_예약_목록을_조회한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        when(reservationRepository.findReservationsByName(testName))
+                .thenReturn(List.of(new Reservation(1L, testName, new ReservationDate(LocalDate.now().minusDays(1)),SAVED_TIME, SAVED_THEME),
+                        new Reservation(2L, testName, new ReservationDate(LocalDate.now().minusDays(2)),SAVED_TIME, SAVED_THEME)));
+
+        // when
+        List<Reservation> reservations = reservationService.findReservationsByName(testName);
+
+        // then
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations).extracting(Reservation::getName)
+                .allSatisfy(name -> assertThat(name.value().equals(testName)));
+    }
 }

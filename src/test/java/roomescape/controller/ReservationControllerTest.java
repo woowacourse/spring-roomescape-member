@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
@@ -21,6 +22,7 @@ import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +31,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
-    private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
+    private static final ReservationTime TIME = new ReservationTime(1L, LocalTime.now().plusHours(1));
     private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", ThemeImageUrl.defaultImageUrl());
     private static final Reservation RESERVATION = Reservation.create(
             "이름",
@@ -99,6 +101,35 @@ class ReservationControllerTest {
         // when
         Response response = RestAssured
                 .given().log().all()
+                .when().get("/reservations");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        ReservationsResponseDto responseDto = response.as(ReservationsResponseDto.class);
+        assertThat(responseDto.reservations()).hasSize(3);
+        assertThat(responseDto).isEqualTo(expected);
+    }
+
+    @Test
+    void 사용자_이름으로_사용자의_모든_예약을_조회한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        Reservation reservation = Reservation.create(testName.value(), LocalDate.now(), TIME, THEME);
+        List<Reservation> reservations = List.of(reservation.withId(1L), reservation.withId(2L), reservation.withId(3L));
+        ReservationsResponseDto expected = new ReservationsResponseDto(reservations.stream()
+                .map(ReservationResponseDto::from)
+                .toList());
+
+        when(reservationService.findReservationsByName(testName))
+                .thenReturn(reservations);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .queryParam("name", "브라운")
                 .when().get("/reservations");
 
         // then
