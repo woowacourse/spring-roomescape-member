@@ -111,7 +111,7 @@ public class ReservationService {
 
     public void updateDateTime(long reservationId, String requestName, ReservationUpdateRequest request) {
         if (!request.date().isAfter(LocalDate.now())) {
-            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
+            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
         }
 
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -130,7 +130,7 @@ public class ReservationService {
             throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
         if (reservation.isBeforeNow()) {
-            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
         }
 
         Reservation updated = reservation.updateDateTime(request.date(), reservationTime);

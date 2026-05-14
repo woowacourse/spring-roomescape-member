@@ -409,7 +409,7 @@ class ReservationServiceTest {
         //when
         assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
             .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
+            .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
 
         //then
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
@@ -601,7 +601,7 @@ class ReservationServiceTest {
         //when
         assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
             .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
+            .hasMessageContaining(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
 
         //then
         verify(reservationRepository, times(1)).findById(previous.getId());
