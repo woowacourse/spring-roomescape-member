@@ -6,7 +6,8 @@ public enum ErrorCode {
 
     DATA_CONFLICT(HttpStatus.CONFLICT, "요청한 데이터가 현재 상태와 충돌합니다."),
     RESERVATION_TIME_DELETE_CONFLICT(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다."),
-    PAST_DATE_RESERVATION(HttpStatus.BAD_REQUEST, "과거 날짜로 예약할 수 없습니다.");
+    PAST_DATE_RESERVATION(HttpStatus.BAD_REQUEST, "과거 날짜로 예약할 수 없습니다."),
+    DUPLICATE_RESERVATION(HttpStatus.UNPROCESSABLE_ENTITY, "이미 예약된 시간입니다.");
 
     private final HttpStatus status;
     private final String message;

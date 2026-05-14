@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.exception.DuplicateReservationException;
 import roomescape.domain.reservation.exception.PastReservationDateException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
@@ -155,6 +156,40 @@ class ReservationServiceTest {
                 .isInstanceOf(PastReservationDateException.class)
                 .hasMessageContaining("과거 날짜로 예약할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.")
+    void saveReservation_throwsException_whenDuplicateReservation() {
+        // given
+        Long themeId = 1L;
+        Long timeId = 1L;
+        LocalDate date = LocalDate.of(9999, 5, 10);
+
+        ReservationTime reservationTime = new ReservationTime(timeId, LocalTime.of(10, 0));
+        Theme theme = new Theme(themeId, "theme1", "description1", "thumbnail url 1");
+
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "브라운",
+                themeId,
+                date,
+                timeId
+        );
+
+        when(reservationTimeRepository.findById(timeId))
+                .thenReturn(Optional.of(reservationTime));
+        when(themeRepository.findById(themeId))
+                .thenReturn(Optional.of(theme));
+        when(reservationRepository.exists(any(Reservation.class)))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(request))
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessageContaining("이미 예약된 시간입니다.");
+
+        verify(reservationRepository).exists(any(Reservation.class));
+    }
+
 
     @Test
     @DisplayName("모든 예약을 조회한다.")

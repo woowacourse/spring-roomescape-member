@@ -41,6 +41,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE id = :id
             """;
 
+    private static final String EXISTS_RESERVATION_QUERY = """
+            SELECT COUNT(*)
+            FROM reservation
+            WHERE theme_id = :themeId
+              AND date = :date
+              AND time_id = :timeId
+            """;
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -95,6 +103,22 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 DELETE_RESERVATION_BY_ID_QUERY,
                 parameters
         );
+    }
+
+    @Override
+    public boolean exists(Reservation reservation) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId());
+
+        Integer count = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_QUERY,
+                parameters,
+                Integer.class
+        );
+
+        return count != null && count > 0;
     }
 
     private RowMapper<Reservation> reservationWithTimeRowMapper() {

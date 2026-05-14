@@ -3,6 +3,7 @@ package roomescape.domain.reservation.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.exception.DuplicateReservationException;
 import roomescape.domain.reservation.exception.PastReservationDateException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
@@ -61,6 +62,10 @@ public class ReservationService {
                 request.date(),
                 time
         );
+
+        if (reservationRepository.exists(reservation)) {
+            throw new DuplicateReservationException();
+        }
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
