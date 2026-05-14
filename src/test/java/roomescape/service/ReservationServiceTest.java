@@ -23,6 +23,7 @@ import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThumbnailUrl;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -34,7 +35,7 @@ class ReservationServiceTest {
             Name.from("anyone"),
             ReservationDate.from(LocalDate.of(2099, 1, 1)),
             ReservationTime.of(1L, LocalTime.of(10, 0)),
-            Theme.of(1L, new ThemeName("any"), "any", "any")
+            Theme.of(1L, new ThemeName("any"), "any", new ThumbnailUrl("any"))
     );
 
     @Mock
@@ -80,7 +81,7 @@ class ReservationServiceTest {
     @Test
     void 지나간_날짜로_예약_시_예외가_발생해야_한다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
-        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", "URL");
+        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", new ThumbnailUrl("URL"));
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
@@ -92,7 +93,7 @@ class ReservationServiceTest {
     @Test
     void 같은_날짜이며_시간이_1초_전이면_예약에_성공해야_한다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
-        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", "URL");
+        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", new ThumbnailUrl("URL"));
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
@@ -105,7 +106,7 @@ class ReservationServiceTest {
     @Test
     void 같은_날짜이며_시간이_1초_지났다면_예약에_실패해야_한다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
-        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", "URL");
+        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", new ThumbnailUrl("URL"));
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
@@ -118,7 +119,7 @@ class ReservationServiceTest {
     @Test
     void 미래로_예약하면_성공해야_한다() {
         ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
-        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", "URL");
+        Theme theme = Theme.of(1L, new ThemeName("테마1"), "설명", new ThumbnailUrl("URL"));
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));

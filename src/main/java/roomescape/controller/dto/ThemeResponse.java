@@ -17,7 +17,7 @@ public class ThemeResponse {
 
     public static ThemeResponse toDto(Theme theme) {
         return new ThemeResponse(theme.getId(), theme.getName().getValue(), theme.getDescription(),
-                theme.getThumbnailUrl());
+                theme.getThumbnailUrl().getValue());
     }
 
     public long getId() {

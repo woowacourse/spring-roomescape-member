@@ -9,6 +9,7 @@ public enum ErrorCode {
     DATE_MUST_NOT_BE_NULL("날짜는 필수로 입력해야 합니다.", HttpStatus.BAD_REQUEST),
     THEME_NAME_MUST_NOT_BE_NULL("테마 이름은 필수로 입력해야 합니다.", HttpStatus.BAD_REQUEST),
     INVALID_THEME_NAME_LENGTH("테마 이름 길이는 1자 ~ 50자 사이여야 합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_THUMBNAIL_URL("유효하지 않은 이미지 주소입니다. URL은 https로 시작해야 합니다.", HttpStatus.BAD_REQUEST),
 
     // 리소스가 존재하지 않음 (NOT FOUND)
     THEME_NOT_FOUND("존재하지 않는 테마입니다. 입력을 확인해 주세요.", HttpStatus.NOT_FOUND),
@@ -21,7 +22,8 @@ public enum ErrorCode {
 
     // 비즈니스 규칙 위반 (UNPROCESSABLE_ENTITY),
     PAST_DATE_NOT_ALLOWED("기준 날짜는 과거일 수 없습니다. 오늘 이후 날짜를 입력해 주세요", HttpStatus.UNPROCESSABLE_ENTITY),
-    PAST_RESERVATION_NOT_ALLOWED("과거 예약에 대한 조작은 불가능합니다. 오늘 이후 날짜와 시간으로 다시 시도해 주세요", HttpStatus.UNPROCESSABLE_ENTITY);
+    PAST_RESERVATION_NOT_ALLOWED("과거 예약에 대한 조작은 불가능합니다. 오늘 이후 날짜와 시간으로 다시 시도해 주세요", HttpStatus.UNPROCESSABLE_ENTITY),
+    ;
     private final String message;
     private final HttpStatus httpStatus;
 

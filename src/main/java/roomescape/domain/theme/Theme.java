@@ -6,22 +6,20 @@ public class Theme {
     private final long id;
     private final ThemeName name;
     private final String description;
-    private final String thumbnailUrl;
+    private final ThumbnailUrl thumbnailUrl;
 
-    private Theme(long id, ThemeName name, String description, String thumbnailUrl) {
+    private Theme(long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnailUrl = Objects.requireNonNull(thumbnailUrl);
     }
 
-    public static Theme of(long id, ThemeName name, String description, String thumbnailUrl) {
-        Objects.requireNonNull(name);
+    public static Theme of(long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         return new Theme(id, name, description, thumbnailUrl);
     }
 
-    public static Theme of(ThemeName name, String description, String thumbnailUrl) {
-        Objects.requireNonNull(name);
+    public static Theme of(ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         return new Theme(0L, name, description, thumbnailUrl);
     }
 
@@ -37,7 +35,7 @@ public class Theme {
         return description;
     }
 
-    public String getThumbnailUrl() {
+    public ThumbnailUrl getThumbnailUrl() {
         return thumbnailUrl;
     }
 
