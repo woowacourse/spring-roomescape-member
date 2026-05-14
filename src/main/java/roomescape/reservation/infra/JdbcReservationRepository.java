@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
