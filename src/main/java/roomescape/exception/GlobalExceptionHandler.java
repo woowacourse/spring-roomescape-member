@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(errorCode.getCode(), e.getMessage()));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(resolveHttpStatus(errorCode)).body(ApiResponse.fail(errorCode.getCode(), errorCode.getMessage()));
+    }
+
     private HttpStatus resolveHttpStatus(ErrorCode errorCode) {
         String code = errorCode.getCode();
         if (code.contains("400")) {
