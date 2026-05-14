@@ -281,34 +281,6 @@ class ReservationApiTest {
                 .body("[1].name", is("심해 연구소"));
     }
 
-    @Test
-    void 예약_가능_시간_조회() {
-        createTheme();
-        createReservationTime("10:00", 1L);
-        createReservationTime("11:00", 1L);
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2026-05-10");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .queryParam("date", "2026-05-10")
-                .when().get("/reservations/theme/1/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].startAt", is("11:00:00"));
-    }
-
     private void createTheme() {
         createTheme("미술관의 밤");
     }

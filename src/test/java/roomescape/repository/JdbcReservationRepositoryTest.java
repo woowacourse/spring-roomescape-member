@@ -135,22 +135,25 @@ class JdbcReservationRepositoryTest {
         Theme secondTheme = createTheme("심해 연구소");
 
         ReservationTime firstThemeFirstTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("10:00"), firstTheme)
+                ReservationTime.createNew(LocalTime.parse("10:00"))
         );
         ReservationTime firstThemeSecondTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("11:00"), firstTheme)
+                ReservationTime.createNew(LocalTime.parse("11:00"))
         );
         ReservationTime secondThemeTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("10:00"), secondTheme)
+                ReservationTime.createNew(LocalTime.parse("12:00"))
         );
 
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstThemeFirstTime));
-        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstThemeSecondTime));
-        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstThemeFirstTime));
-        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstTheme, firstThemeFirstTime));
+        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstTheme, firstThemeSecondTime));
+        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstTheme, firstThemeFirstTime));
+        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondTheme, secondThemeTime));
 
         // when
-        List<Long> reservedTimeIds = jdbcReservationRepository.findAllByDateAndThemeId(date, firstTheme.getId());
+        List<Long> reservedTimeIds = jdbcReservationRepository.findReservedTimeIdsByDateAndThemeId(
+                date,
+                firstTheme.getId()
+        );
 
         // then
         assertThat(reservedTimeIds)
