@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleBadRequestException(
             BadRequestException e
     ) {
-        log.warn("BadRequestException 발생: {}", e.getMessage(), e);
+        log.info("BadRequestException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleDuplicateException(
             DuplicateException e
     ) {
-        log.warn("DuplicateException 발생: {}", e.getMessage(), e);
+        log.info("DuplicateException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -48,16 +48,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotFoundException(
             NotFoundException e
     ) {
-        log.warn("NotFoundException 발생: {}", e.getMessage(), e);
-        return ErrorResponse.of(e.getMessage());
-    }
-
-    @ExceptionHandler(ForeignKeyConstraintException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConstraintException(
-            ForeignKeyConstraintException e
-    ) {
-        log.warn("ForeignKeyConstraintException 발생: {}", e.getMessage(), e);
+        log.info("NotFoundException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }
 
@@ -66,21 +57,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleValidationException(
             InvalidException e
     ) {
-        log.warn("InvalidException 발생: {}", e.getMessage(), e);
+        log.info("InvalidException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 e.getErrors()
-        );
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAuthenticationException(
-            AuthenticationException e
-    ) {
-        log.warn("AuthenticationException 발생: {}", e.getMessage(), e);
-        return ErrorResponse.of(
-                GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()
         );
     }
 
@@ -90,7 +70,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException e
     ) {
 
-        log.warn("MethodArgumentNotValidException 발생: {}", e.getMessage(), e);
+        log.info("MethodArgumentNotValidException 발생: {}", e.getMessage(), e);
         List<String> errors = e.getBindingResult().getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -107,7 +87,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
-        log.warn("MethodArgumentTypeMismatchException 발생", e);
+        log.info("MethodArgumentTypeMismatchException 발생", e);
 
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
@@ -120,7 +100,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotReadable(
             HttpMessageNotReadableException e
     ) {
-        log.warn("HttpMessageNotReadableException 발생", e);
+        log.info("HttpMessageNotReadableException 발생", e);
         return ErrorResponse.of(GlobalErrorCode.INVALID_JSON.getMessage());
     }
 
@@ -129,10 +109,32 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleMissingParameter(
             MissingServletRequestParameterException e
     ) {
-        log.warn("MissingServletRequestParameterException 발생", e);
+        log.info("MissingServletRequestParameterException 발생", e);
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 List.of(e.getParameterName() + " 파라미터가 누락되었습니다.")
+        );
+    }
+
+
+    @ExceptionHandler(ForeignKeyConstraintException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleConstraintException(
+            ForeignKeyConstraintException e
+    ) {
+        log.warn("ForeignKeyConstraintException 발생: {}", e.getMessage(), e);
+        return ErrorResponse.of(e.getMessage());
+    }
+
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(
+            AuthenticationException e
+    ) {
+        log.warn("AuthenticationException 발생: {}", e.getMessage(), e);
+        return ErrorResponse.of(
+                GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()
         );
     }
 
