@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS reservation
     status   ENUM('RESERVED', 'CANCELED') NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    CONSTRAINT uk_reservation_date_time_theme UNIQUE (date, start_at, theme_id)
+    CONSTRAINT uk_reservation_date_time_theme UNIQUE (date, theme_id, start_at)
 );
