@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
@@ -9,6 +10,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +31,7 @@ class ReservationAdminControllerTest {
     private final String reservationName = "브라운";
 
     private final String date = LocalDate.of(2099, 1, 1).toString();
-    private final String startAt = "10:00";
+    private final String startAt = "11:00";
 
     private final String themeName = "테마1";
 
@@ -183,6 +186,57 @@ class ReservationAdminControllerTest {
                 .statusCode(200)
                 .extract()
                 .path("id");
+    }
+
+    @Test
+    @DisplayName("관리자는 예약자 확인 없이, 예약 날짜/시간을 변경할 수 있다.")
+    void updateSchedule() {
+        String futureDate = LocalDate.now().plusDays(1).toString();
+        String futureTime = LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString();
+        Integer dateId = createReservationDate(date);
+        Integer changedDateId = createReservationDate(futureDate);
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(futureTime);
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is(futureDate))
+                .body("time", is(futureTime));
+    }
+
+    @Test
+    @DisplayName("관리자는 예약을 과거의 시간으로 변경할 수 있다.")
+    @Sql(
+            scripts = "classpath:past-reservation-time.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    void updateScheduleByManager_pastTime() {
+        Integer pastTimeId = 1;
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("dateId", dateId);
+        params.put("timeId", pastTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(200);
     }
 
 }

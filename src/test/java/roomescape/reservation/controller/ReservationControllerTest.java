@@ -350,7 +350,6 @@ class ReservationControllerTest {
         Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservationName);
         params.put("dateId", changedDateId);
         params.put("timeId", changedTimeId);
 
@@ -400,7 +399,6 @@ class ReservationControllerTest {
         cancelReservation(reservationId, reservationName);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservationName);
         params.put("dateId", changedDateId);
         params.put("timeId", changedTimeId);
 
@@ -427,7 +425,6 @@ class ReservationControllerTest {
         Long sqlSavedId = 1L;
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", sqlRequsterName);
         params.put("dateId", changedDateId);
         params.put("timeId", changedTimeId);
 
@@ -455,7 +452,6 @@ class ReservationControllerTest {
         Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservationName);
         params.put("dateId", pastDateId);
         params.put("timeId", changedTimeId);
 

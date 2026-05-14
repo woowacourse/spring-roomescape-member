@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.request.ReservationChangeScheduleDto;
 import roomescape.reservation.dto.response.ReservationDetailDto;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.service.ReservationService;
@@ -38,6 +39,16 @@ public class ReservationAdminController {
     @PatchMapping("/reservations/{id}/cancel")
     public ResponseEntity<ReservationDetailDto> cancelReservation(@PathVariable Long id) {
         Reservation reservation = reservationService.cancelByManager(id);
+        ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
+        return ResponseEntity.ok(responseData);
+    }
+
+    @PatchMapping("/reservations/{id}/schedule")
+    public ResponseEntity<ReservationDetailDto> updateSchedule(
+            @PathVariable Long id,
+            @RequestBody ReservationChangeScheduleDto dto
+    ) {
+        Reservation reservation = reservationService.changeScheduleByManager(id, dto.dateId(), dto.timeId());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }
