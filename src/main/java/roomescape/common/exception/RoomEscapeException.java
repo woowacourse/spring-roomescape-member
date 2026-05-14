@@ -6,11 +6,11 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class RoomEscapeException extends RuntimeException{
 
-    private final HttpStatus status;
+    private final ErrorInformation errorInformation;
 
-    protected RoomEscapeException(ErrorCode info) {
-        super(info.getMessage());
-        this.status = info.getHttpStatus();
+    protected RoomEscapeException(ErrorInformation errorInformation) {
+        super(errorInformation.getMessage());
+        this.errorInformation = errorInformation;
     }
 
 }

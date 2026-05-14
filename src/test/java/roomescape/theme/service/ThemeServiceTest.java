@@ -2,7 +2,7 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.theme.exception.ThemeErrorCode.THEME_NOT_FOUND;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.Collections;

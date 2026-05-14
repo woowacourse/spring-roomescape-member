@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static roomescape.date.exception.ReservationDateErrorCode.DATE_NOT_FOUND;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class MockReservationDateServiceTest {

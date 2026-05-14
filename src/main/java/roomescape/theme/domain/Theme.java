@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import roomescape.theme.exception.ThemeException;
 
-import static roomescape.theme.exception.ThemeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorInformation.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

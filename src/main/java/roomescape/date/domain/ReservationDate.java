@@ -7,7 +7,7 @@ import roomescape.date.exception.ReservationDateException;
 
 import java.time.LocalDate;
 
-import static roomescape.date.exception.ReservationDateErrorCode.*;
+import static roomescape.date.exception.ReservationDateErrorInformation.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

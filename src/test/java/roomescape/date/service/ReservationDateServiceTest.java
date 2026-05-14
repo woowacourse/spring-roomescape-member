@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.date.exception.ReservationDateErrorCode.DATE_ALREADY_EXISTS;
-import static roomescape.date.exception.ReservationDateErrorCode.DATE_NOT_FOUND;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_ALREADY_EXISTS;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 
 class ReservationDateServiceTest {
 

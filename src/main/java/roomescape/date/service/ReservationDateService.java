@@ -9,7 +9,7 @@ import roomescape.date.repository.ReservationDateRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static roomescape.date.exception.ReservationDateErrorCode.*;
+import static roomescape.date.exception.ReservationDateErrorInformation.*;
 
 @Service
 @Transactional(readOnly = true)

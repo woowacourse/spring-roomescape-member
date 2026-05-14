@@ -2,7 +2,7 @@ package roomescape.theme.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.theme.exception.ThemeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorInformation.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

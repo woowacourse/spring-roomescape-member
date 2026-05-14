@@ -1,7 +1,7 @@
 package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.date.exception.ReservationDateErrorCode.DATE_ALREADY_EXISTS;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_ALREADY_EXISTS;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;

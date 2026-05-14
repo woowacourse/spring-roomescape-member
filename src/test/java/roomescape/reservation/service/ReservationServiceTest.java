@@ -2,11 +2,11 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.reservation.exception.ReservaitonErrorCode.*;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
-import static roomescape.theme.exception.ThemeErrorCode.THEME_NOT_FOUND;
-import static roomescape.time.exception.ReservationTimeErrorCode.TIME_NOT_FOUND;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
+import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 
 import java.time.LocalDate;
 import java.util.List;
