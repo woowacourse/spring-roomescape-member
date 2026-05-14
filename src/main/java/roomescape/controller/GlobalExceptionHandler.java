@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> dataAccessExceptionHandle(RoomEscapeException e) {
         log.error("도메인 관련 오류가 발생했습니다.", e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(ErrorResponse.create(DATABASE_ERROR));
+                .body(ErrorResponse.create(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
