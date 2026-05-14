@@ -101,6 +101,13 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
+        LOGGER.warn("유효하지 않은 요청: {} {}: {}", request.getMethod(), request.getRequestURI(), e.getMessage());
+        BadRequestCode code = BadRequestCode.INVALID_REQUEST;
+        return toResponse(code, request, code.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e, HttpServletRequest request) {
         LOGGER.error("예상치 못한 예외 발생: {} {}", request.getMethod(), request.getRequestURI(), e);
