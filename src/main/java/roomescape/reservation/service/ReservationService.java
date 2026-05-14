@@ -3,10 +3,10 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
+import roomescape.reservationTime.domain.ReservationTime;
 
 @Service
 public class ReservationService {
@@ -38,6 +38,10 @@ public class ReservationService {
         }
 
         return reservationDao.insert(reservation);
+    }
+
+    public void update(Long id, String name, LocalDate date, Long timeId) {
+        reservationDao.update(id, name, date, timeId);
     }
 
     public void delete(Long id, String name) {

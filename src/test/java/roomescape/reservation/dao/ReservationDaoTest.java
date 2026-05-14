@@ -98,6 +98,13 @@ public class ReservationDaoTest {
     }
 
     @Test
+    void 본인_예약_변경_성공() {
+        int updateCount = reservationDao.update(2L, "도우너", LocalDate.parse("2025-05-14"), 7L);
+
+        assertThat(updateCount).isEqualTo(1);
+    }
+
+    @Test
     void 본인_예약_삭제_실패() {
         String name = "도우너";
         int deleteCount = reservationDao.delete(1L, name);

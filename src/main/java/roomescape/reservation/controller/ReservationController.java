@@ -1,11 +1,11 @@
 package roomescape.reservation.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +16,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationsResponse;
+import roomescape.reservation.dto.UpdateReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -51,6 +52,12 @@ public class ReservationController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 불가");
         }
+    }
+
+    @PatchMapping("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(@PathVariable Long id, @RequestParam String name, @RequestBody UpdateReservationRequest request) {
+        reservationService.update(id, name, request.date(), request.timeId());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/reservations/{id}")

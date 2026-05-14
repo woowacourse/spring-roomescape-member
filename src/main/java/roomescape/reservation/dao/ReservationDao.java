@@ -101,6 +101,12 @@ public class ReservationDao {
                 reservation.getThemeId());
     }
 
+    public int update(Long id, String name, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ? AND name = ?";
+
+        return jdbcTemplate.update(sql, date, timeId, id, name);
+    }
+
     public int delete(Long id, String name) {
         String sql = "delete from reservation where id = ? AND name = ?";
         return jdbcTemplate.update(sql, id, name);
