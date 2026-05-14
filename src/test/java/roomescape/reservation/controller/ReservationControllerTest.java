@@ -28,6 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.exception.ReservationDuplicatedException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.entity.Theme;
@@ -183,7 +185,8 @@ class ReservationControllerTest {
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() throws Exception {
         mockMvc.perform(delete("/reservations/{id}", 999))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(containsString(ReservationNotFoundException.MESSAGE)));
     }
 
     @Test
@@ -201,7 +204,8 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value(containsString(ReservationDuplicatedException.MESSAGE)));
     }
 
     @ParameterizedTest(name = "{0}은 올바른 예약자 이름이 아니다")
@@ -216,7 +220,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(containsString(expectedMessage)));
+                .andExpect(jsonPath("$.message").value(containsString(expectedMessage)));
     }
 
     private int postReservation(Map<String, Object> request) throws Exception {

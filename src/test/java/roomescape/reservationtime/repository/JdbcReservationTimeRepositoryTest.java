@@ -78,7 +78,7 @@ class JdbcReservationTimeRepositoryTest {
 
         assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime(startAt)))
                 .isInstanceOf(ReservationTimeDuplicatedException.class)
-                .hasMessageContaining("이미 등록된 예약 시간입니다.");
+                .hasMessageContaining(ReservationTimeDuplicatedException.MESSAGE);
     }
 
     @Test

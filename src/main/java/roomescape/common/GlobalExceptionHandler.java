@@ -19,38 +19,36 @@ import roomescape.theme.exception.ThemeNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // TODO: 에러 응답 객체 만들기 (내부에 어떤 필드?)
-
     @ExceptionHandler({
             ReservationNotFoundException.class,
             ReservationTimeNotFoundException.class,
             ThemeNotFoundException.class
     })
-    public ResponseEntity<String> handleNotFound(RuntimeException e) {
+    public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler({
             ReservationDuplicatedException.class,
             ReservationTimeDuplicatedException.class
     })
-    public ResponseEntity<String> handleDuplicatedException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse> handleDuplicatedException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler({
             ReservationTimeInUseException.class,
             ThemeInUseException.class
     })
-    public ResponseEntity<String> handleEntityInUseException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse> handleEntityInUseException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -58,19 +56,19 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(message);
+                .body(new ErrorResponse(message));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("요청 본문 형식이 올바르지 않습니다.");
+                .body(new ErrorResponse("요청 본문 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(ReservationPastDateTimeException.class)
-    public ResponseEntity<String> handleReservationPastDateTimeException(ReservationPastDateTimeException e) {
+    public ResponseEntity<ErrorResponse> handleReservationPastDateTimeException(ReservationPastDateTimeException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(e.getMessage());
+                .body(new ErrorResponse(e.getMessage()));
     }
 
 }

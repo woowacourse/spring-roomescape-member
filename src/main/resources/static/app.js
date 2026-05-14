@@ -387,8 +387,7 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `HTTP ${response.status}`);
+    throw new Error(await readErrorMessage(response));
   }
 
   if (response.status === 204) {
@@ -396,6 +395,23 @@ async function request(path, options = {}) {
   }
 
   return response.json();
+}
+
+async function readErrorMessage(response) {
+  const fallbackMessage = `HTTP ${response.status}`;
+  const contentType = response.headers.get("Content-Type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    try {
+      const body = await response.json();
+      return body.message || fallbackMessage;
+    } catch (error) {
+      return fallbackMessage;
+    }
+  }
+
+  const message = await response.text();
+  return message || fallbackMessage;
 }
 
 function route() {

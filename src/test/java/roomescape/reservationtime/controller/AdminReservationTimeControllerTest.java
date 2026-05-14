@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 
 @Transactional
 @AutoConfigureMockMvc
@@ -53,7 +55,8 @@ class AdminReservationTimeControllerTest {
     @Test
     void 존재하지_않는_예약_시간을_삭제하면_404를_응답한다() throws Exception {
         mockMvc.perform(delete("/admin/times/{id}", 999))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(containsString(ReservationTimeNotFoundException.MESSAGE)));
     }
 
     @ParameterizedTest(name = "{0}은 예약 시간 형식이 아니다")
@@ -64,7 +67,8 @@ class AdminReservationTimeControllerTest {
         mockMvc.perform(post("/admin/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     private int postReservationTime(Map<String, Object> request) throws Exception {
