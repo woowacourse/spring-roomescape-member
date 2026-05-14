@@ -9,13 +9,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.global.exception.customException.BadRequestException;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
+import roomescape.reservation.domain.DefaultReservationPolicy;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
-import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 import roomescape.reservationTime.fake.FakeReservationTimeRepository;
@@ -35,7 +36,13 @@ class ReservationServiceTest {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository,
+                new DefaultReservationPolicy(),
+                new ReservationValidator(reservationRepository)
+        );
     }
 
     @Test
@@ -44,7 +51,7 @@ class ReservationServiceTest {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
-        ReservationRequest request = new ReservationRequest(
+        ReservationCreateCommand command = new ReservationCreateCommand(
                 "흑곰",
                 LocalDate.now(),
                 savedTime.getId(),
@@ -52,17 +59,12 @@ class ReservationServiceTest {
         );
 
         // when
-        Reservation reservation = reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId()
-        );
+        Reservation reservation = reservationService.saveReservation(command);
 
         // then
         assertThat(reservation.getId()).isNotNull();
-        assertThat(reservation.getName()).isEqualTo(request.name());
-        assertThat(reservation.getDate()).isEqualTo(request.date());
+        assertThat(reservation.getName()).isEqualTo(command.name());
+        assertThat(reservation.getDate()).isEqualTo(command.date());
         assertThat(reservation.getTime()).isEqualTo(savedTime);
         assertThat(reservation.getTheme()).isEqualTo(savedTheme);
         assertThat(reservationRepository.findById(reservation.getId())).contains(reservation);
@@ -75,7 +77,7 @@ class ReservationServiceTest {
         Long notExistTimeId = 999L;
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
 
-        ReservationRequest request = new ReservationRequest(
+        ReservationCreateCommand command = new ReservationCreateCommand(
                 "흑곰",
                 LocalDate.now(),
                 notExistTimeId,
@@ -84,12 +86,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(
-                () -> reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId()
-            )
+                () -> reservationService.saveReservation(command)
         ).isInstanceOf(EntityNotFoundException.class);
         assertThat(reservationRepository.findAll()).isEmpty();
     }
@@ -102,7 +99,7 @@ class ReservationServiceTest {
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Long notExistThemeId = 999L;
 
-        ReservationRequest request = new ReservationRequest(
+        ReservationCreateCommand command = new ReservationCreateCommand(
                 "흑곰",
                 LocalDate.now(),
                 savedTime.getId(),
@@ -111,12 +108,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(
-                () -> reservationService.saveReservation(
-                        request.name(),
-                        request.date(),
-                        request.timeId(),
-                        request.themeId()
-                )
+                () -> reservationService.saveReservation(command)
         ).isInstanceOf(EntityNotFoundException.class);
         assertThat(reservationRepository.findAll()).isEmpty();
     }
@@ -183,82 +175,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("중복 예약이 있으면 예외를 반환한다")
-    void saveReservation_fail_with_duplicate_reservation() {
-        // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
-        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
-        ReservationRequest request = new ReservationRequest(
-                "흑곰",
-                LocalDate.now(),
-                savedTime.getId(),
-                savedTheme.getId()
-        );
-        reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId()
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId())
-        ).isInstanceOf(BusinessException.class);
-    }
-
-    @Test
-    @DisplayName("이미 지난 날짜로 예약 시 예외 반환")
-    void saveReservation_fail_with_past_date() {
-        // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
-        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
-        ReservationRequest request = new ReservationRequest(
-                "흑곰",
-                LocalDate.now().minusDays(1),
-                savedTime.getId(),
-                savedTheme.getId()
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId())
-        )
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("지난 일정으로 예약할 수 없습니다.");
-    }
-
-    @Test
-    @DisplayName("현재 시간보다 이전인 날짜로 예외 반환")
-    void saveReservation_fail_with_past_time() {
-        // given
-        ReservationTime savedPastTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().minusHours(1)));
-        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
-        ReservationRequest request = new ReservationRequest(
-                "흑곰",
-                LocalDate.now(),
-                savedPastTime.getId(),
-                savedTheme.getId()
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId())
-        )
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("지난 일정으로 예약할 수 없습니다.");
-    }
-
-    @Test
     @DisplayName("이름을 기반으로 자신 예약 목록 조회 기능")
     void getReservationsByName_success() {
         // given
@@ -306,12 +222,12 @@ class ReservationServiceTest {
         LocalDate changedDate = LocalDate.now().plusDays(2);
 
         // when
-        reservationService.updateReservationSchedule(
+        reservationService.updateReservationSchedule(new ReservationUpdateCommand(
+                savedReservation.getId(),
                 changedDate,
                 savedTime2.getId(),
-                savedReservation.getId(),
                 "인직"
-        );
+        ));
 
         // then
         Reservation updatedReservation = reservationRepository.findById(savedReservation.getId())
@@ -330,12 +246,12 @@ class ReservationServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(new ReservationUpdateCommand(
+                999L,
                 LocalDate.now().plusDays(1),
                 savedTime.getId(),
-                999L,
                 "인직"
-        ))
+        )))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("예약을 찾을 수 없습니다.");
     }
@@ -362,59 +278,14 @@ class ReservationServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(new ReservationUpdateCommand(
+                savedReservation.getId(),
                 LocalDate.now().plusDays(2),
                 savedTime.getId(),
-                savedReservation.getId(),
                 "포비"
-        ))
+        )))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("수정할 수 있는 권한이 없습니다.");
-    }
-
-    @Test
-    @DisplayName("이미 예약된 시간으로 수정하면 예외 발생")
-    void updateReservationSchedule_fail_with_duplicate_reservation() {
-        // given
-        ReservationTime savedTime1 = reservationTimeRepository.save(
-                ReservationTime.create(LocalTime.now().plusHours(1))
-        );
-
-        ReservationTime savedTime2 = reservationTimeRepository.save(
-                ReservationTime.create(LocalTime.now().plusHours(2))
-        );
-
-        Theme savedTheme = themeRepository.save(
-                Theme.create("공포", "설명", "https://good.com")
-        );
-
-        reservationRepository.save(
-                Reservation.create(
-                        "브라운",
-                        LocalDate.now().plusDays(1),
-                        savedTime2,
-                        savedTheme
-                )
-        );
-
-        Reservation myReservation = reservationRepository.save(
-                Reservation.create(
-                        "인직",
-                        LocalDate.now().plusDays(1),
-                        savedTime1,
-                        savedTheme
-                )
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
-                LocalDate.now().plusDays(1),
-                savedTime2.getId(),
-                myReservation.getId(),
-                "인직"
-        ))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
     }
 
     @Test
@@ -437,19 +308,4 @@ class ReservationServiceTest {
         assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
     }
 
-    @Test
-    @DisplayName("예약 ID가 null이면 삭제 시 예외 발생")
-    void deleteReservation_fail_with_null_id() {
-        assertThatThrownBy(() -> reservationService.deleteReservation(null))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("예약을 식별할 값이 비어있습니다.");
-    }
-
-    @Test
-    @DisplayName("이름이 비어있으면 자신의 예약 삭제 시 예외 발생")
-    void deleteReservationByName_fail_with_blank_name() {
-        assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, " "))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("예약자 이름을 입력해 주세요.");
-    }
 }

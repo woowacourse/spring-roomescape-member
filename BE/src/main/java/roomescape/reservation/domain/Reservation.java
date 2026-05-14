@@ -1,6 +1,9 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.global.exception.ReservationErrorCode;
+import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -30,6 +33,19 @@ public class Reservation {
 
     public Reservation appendId(Long id) {
         return new Reservation(id, name, date, time, theme);
+    }
+
+    public void validateOwner(String name) {
+        if (!this.getName().equals(name)) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH);
+        }
+    }
+
+    public void validatePast() {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_MODIFY_IN_PAST);
+        }
     }
 
     public Long getId() {

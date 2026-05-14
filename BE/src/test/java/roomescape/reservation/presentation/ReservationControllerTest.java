@@ -33,6 +33,8 @@ import roomescape.global.auth.AdminInterceptor;
 import roomescape.global.exception.ReservationErrorCode;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -75,7 +77,8 @@ class ReservationControllerTest {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
         Reservation reservation = sampleReservation(1L, "브라운", date, 1L, "10:00", 1L, "테스트-테마");
-        given(reservationService.saveReservation("브라운", date, 1L, 1L)).willReturn(reservation);
+        ReservationCreateCommand command = new ReservationCreateCommand("브라운", date, 1L, 1L);
+        given(reservationService.saveReservation(command)).willReturn(reservation);
 
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
@@ -98,7 +101,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테스트-테마"));
 
-        then(reservationService).should().saveReservation("브라운", date, 1L, 1L);
+        then(reservationService).should().saveReservation(command);
     }
 
     @Test
@@ -161,9 +164,10 @@ class ReservationControllerTest {
     void createReservation_fail_with_business_exception() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
+        ReservationCreateCommand command = new ReservationCreateCommand("브라운", date, 1L, 1L);
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS))
                 .given(reservationService)
-                .saveReservation("브라운", date, 1L, 1L);
+                .saveReservation(command);
 
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
@@ -259,31 +263,51 @@ class ReservationControllerTest {
     @Test
     @DisplayName("PATCH /reservations/me/{id} - 본인 예약 변경 요청을 서비스에 전달하고 204 응답을 반환한다.")
     void updateMyReservation_success() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-05");
+        body.put("timeId", 2);
+        ReservationUpdateCommand command = new ReservationUpdateCommand(
+                1L,
+                LocalDate.of(2026, 5, 5),
+                2L,
+                "브라운"
+        );
+
         // when & then
         mockMvc.perform(patch("/reservations/me/1")
-                        .param("name", "브라운")
-                        .param("date", "2026-05-05")
-                        .param("timeId", "2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
         then(reservationService).should()
-                .updateReservationSchedule(LocalDate.of(2026, 5, 5), 2L, 1L, "브라운");
+                .updateReservationSchedule(command);
     }
 
     @Test
     @DisplayName("PATCH /reservations/me/{id} - 이미 예약된 시간으로 변경하면 에러 응답을 반환한다.")
     void updateMyReservation_fail_with_duplicate_reservation() throws Exception {
         // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-05");
+        body.put("timeId", 2);
+        ReservationUpdateCommand command = new ReservationUpdateCommand(
+                1L,
+                LocalDate.of(2026, 5, 5),
+                2L,
+                "브라운"
+        );
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS))
                 .given(reservationService)
-                .updateReservationSchedule(LocalDate.of(2026, 5, 5), 2L, 1L, "브라운");
+                .updateReservationSchedule(command);
 
         // when & then
         mockMvc.perform(patch("/reservations/me/1")
-                        .param("name", "브라운")
-                        .param("date", "2026-05-05")
-                        .param("timeId", "2"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다. 다른 시간을 선택해 주세요."));
     }
