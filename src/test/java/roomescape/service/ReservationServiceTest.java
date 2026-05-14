@@ -13,6 +13,9 @@ import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.InvalidOwnershipException;
+import roomescape.exception.PastReservationControlException;
+import roomescape.exception.PastTimeException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.FakeTimeSlotRepository;
@@ -96,7 +99,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.saveReservation("브라운", pastDate, savedTimeSlot.id(), savedTheme.id()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastTimeException.class)
                 .hasMessage("지난 날짜로 예약하실 수 없습니다.");
     }
 
@@ -109,7 +112,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.saveReservation("브라운", today, pastTimeSlot.id(), savedTheme.id()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastTimeException.class)
                 .hasMessage("지난 시간으로 예약하실 수 없습니다.");
     }
 
@@ -122,7 +125,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.removeReservation(pastReservation.id(), "브라운"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastReservationControlException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
     }
 
@@ -136,7 +139,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.putReservation(
                 pastReservation.id(), "브라운", "브라운", LocalDate.now().plusDays(1), savedTimeSlot.id(), savedTheme.id()
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(PastReservationControlException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
     }
 
@@ -150,7 +153,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.patchReservation(
                 pastReservation.id(), "브라운", "브라운", null, null, null
-        )).isInstanceOf(IllegalArgumentException.class)
+        )).isInstanceOf(PastReservationControlException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
     }
 
@@ -163,7 +166,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.removeReservation(savedReservation.id(), "네오"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidOwnershipException.class)
                 .hasMessage("본인의 예약만 제어할 수 있습니다.");
     }
 
