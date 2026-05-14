@@ -25,7 +25,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
+    public ResponseEntity<List<ThemeResponse>> findThemes() {
         List<Theme> themes = themeService.findThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
@@ -34,7 +34,7 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/available-times")
-    public ResponseEntity<List<ThemeAvailableTimeResponse>> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
+    public ResponseEntity<List<ThemeAvailableTimeResponse>> findAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
         List<AvailableTime> availableTimes = themeService.findAvailableTimes(id, date);
         List<ThemeAvailableTimeResponse> response = availableTimes.stream()
                 .map(ThemeAvailableTimeResponse::from)
@@ -43,7 +43,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<PopularThemeResponse>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
+    public ResponseEntity<List<PopularThemeResponse>> findPopularThemes(@RequestParam int days, @RequestParam int limit) {
         List<PopularTheme> popularThemes = themeService.findPopularThemes(LocalDate.now(), days, limit);
         List<PopularThemeResponse> response = popularThemes.stream()
                 .map(PopularThemeResponse::from)

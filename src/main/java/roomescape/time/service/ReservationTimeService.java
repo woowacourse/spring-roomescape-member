@@ -23,14 +23,14 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    public List<ReservationTime> findTimes() {
+        return reservationTimeRepository.findAll();
+    }
+
     @Transactional
     public ReservationTime createTime(LocalTime startAt) {
         ReservationTime reservationTime = new ReservationTime(null, startAt);
         return reservationTimeRepository.save(reservationTime);
-    }
-
-    public List<ReservationTime> findTimes() {
-        return reservationTimeRepository.findAll();
     }
 
     @Transactional

@@ -23,7 +23,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationResponses> getReservations(
+    public ResponseEntity<ReservationResponses> findReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

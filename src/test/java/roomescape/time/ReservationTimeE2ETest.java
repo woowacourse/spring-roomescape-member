@@ -36,7 +36,7 @@ class ReservationTimeE2ETest {
 
     @Test
     @DisplayName("GET /times - 시간 목록을 조회한다")
-    void getTimes() {
+    void findTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
 

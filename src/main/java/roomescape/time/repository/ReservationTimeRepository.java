@@ -22,6 +22,11 @@ public class ReservationTimeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<ReservationTime> findAll() {
+        String sql = "SELECT * FROM reservation_time";
+        return jdbcTemplate.query(sql, reservationTimeRowsMapper());
+    }
+
     public Optional<ReservationTime> findById(Long timeId) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         try {
@@ -48,11 +53,6 @@ public class ReservationTimeRepository {
 
         long id = keyHolder.getKey().longValue();
         return new ReservationTime(id, reservationTime.getStartAt());
-    }
-
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, reservationTimeRowsMapper());
     }
 
     public void deleteById(Long id) {

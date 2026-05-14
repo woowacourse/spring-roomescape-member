@@ -71,17 +71,6 @@ class ThemeRepositoryTest {
     }
 
     @Test
-    void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
-        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
-
-        themeRepository.deleteById(saved.getId());
-
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM theme WHERE id = ?", Integer.class, saved.getId());
-        assertThat(count).isZero();
-    }
-
-    @Test
     void 지난_7일간_인기_테마_10개를_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         String recentDate = LocalDate.now().minusDays(3).toString();
@@ -120,10 +109,21 @@ class ThemeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "B", recentDate, 3L, 1L);
 
-        List<Long> availableTimes = themeRepository.findNotAvailableTimes(1L, LocalDate.now());
+        List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(1L, LocalDate.now());
 
-        assertThat(availableTimes.size()).isEqualTo(2L);
-        assertThat(availableTimes.get(0)).isEqualTo(1L);
-        assertThat(availableTimes.get(1)).isEqualTo(3L);
+        assertThat(reservedTimeIds.size()).isEqualTo(2L);
+        assertThat(reservedTimeIds.get(0)).isEqualTo(1L);
+        assertThat(reservedTimeIds.get(1)).isEqualTo(3L);
+    }
+
+    @Test
+    void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
+        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
+
+        themeRepository.deleteById(saved.getId());
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM theme WHERE id = ?", Integer.class, saved.getId());
+        assertThat(count).isZero();
     }
 }

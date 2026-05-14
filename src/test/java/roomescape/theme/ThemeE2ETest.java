@@ -39,7 +39,7 @@ class ThemeE2ETest {
 
     @Test
     @DisplayName("GET /themes - 테마 목록을 조회한다")
-    void getThemes() {
+    void findThemes() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "공포", "무서움", "thumb1.png");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
@@ -51,6 +51,54 @@ class ThemeE2ETest {
                 .statusCode(200)
                 .body("size()", is(2))
                 .body("name", contains("공포", "추리"));
+    }
+
+    @Test
+    @DisplayName("GET /themes/{id}/available-times - 예약된 시간은 isAvailable=false, 예약 안 된 시간은 true")
+    void findAvailableTimes() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "공포", "무서움", "thumb.png");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2026-05-07", 1L, 1L);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/1/available-times?date=2026-05-07")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("find { it.id == 1 }.isAvailable", is(false))
+                .body("find { it.id == 2 }.isAvailable", is(true));
+    }
+
+    @Test
+    @DisplayName("GET /themes/popular - 최근 7일 예약 수 기준으로 인기 테마를 반환한다")
+    void findPopularThemes() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "공포", "무서움", "thumb1.png");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "추리", "지능", "thumb2.png");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+
+        String recentDate = LocalDate.now().minusDays(3).toString();
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "A", recentDate, 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "B", recentDate, 1L, 2L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "C", recentDate, 2L, 2L);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/popular?days=7&limit=10")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", is("추리"))
+                .body("[0].rank", is(1))
+                .body("[1].name", is("공포"))
+                .body("[1].rank", is(2));
     }
 
     @Test
@@ -89,53 +137,5 @@ class ThemeE2ETest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
-    }
-
-    @Test
-    @DisplayName("GET /themes/{id}/available-times - 예약된 시간은 isAvailable=false, 예약 안 된 시간은 true")
-    void getAvailableTimes() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "공포", "무서움", "thumb.png");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2026-05-07", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .when().get("/themes/1/available-times?date=2026-05-07")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(2))
-                .body("find { it.id == 1 }.isAvailable", is(false))
-                .body("find { it.id == 2 }.isAvailable", is(true));
-    }
-
-    @Test
-    @DisplayName("GET /themes/popular - 최근 7일 예약 수 기준으로 인기 테마를 반환한다")
-    void getPopularThemes() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "공포", "무서움", "thumb1.png");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "추리", "지능", "thumb2.png");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
-
-        String recentDate = LocalDate.now().minusDays(3).toString();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "A", recentDate, 1L, 1L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "B", recentDate, 1L, 2L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "C", recentDate, 2L, 2L);
-
-        RestAssured.given().log().all()
-                .when().get("/themes/popular?days=7&limit=10")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(2))
-                .body("[0].name", is("추리"))
-                .body("[0].rank", is(1))
-                .body("[1].name", is("공포"))
-                .body("[1].rank", is(2));
     }
 }

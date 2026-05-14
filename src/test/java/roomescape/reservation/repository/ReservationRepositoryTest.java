@@ -52,15 +52,6 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void 예약을_저장한다() {
-        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
-
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
-        assertThat(count).isEqualTo(1);
-    }
-
-    @Test
     void 예약_전체를_조회한다() {
         reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
@@ -92,6 +83,15 @@ class ReservationRepositoryTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("레서");
+    }
+
+    @Test
+    void 예약을_저장한다() {
+        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
+        assertThat(count).isEqualTo(1);
     }
 
     @Test

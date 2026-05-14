@@ -21,30 +21,18 @@ public class ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme save(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?,?,?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnail());
-            return ps;
-        }, keyHolder);
-
-        long id = keyHolder.getKey().longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")));
     }
 
     public Optional<Theme> findById(Long themeId) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        try{
+        try {
             Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 Long id = rs.getLong("id");
                 String name = rs.getString("name");
@@ -59,16 +47,7 @@ public class ThemeRepository {
         }
     }
 
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")));
-    }
-
-    public List<Long> findNotAvailableTimes(Long id, LocalDate date) {
+    public List<Long> findReservedTimeIds(Long id, LocalDate date) {
         String sql = "SELECT r.time_id FROM reservation r " +
                 "JOIN reservation_time rt ON r.time_id = rt.id " +
                 "WHERE r.theme_id = ? AND r.date = ?";
@@ -93,5 +72,26 @@ public class ThemeRepository {
                 rs.getString("description"),
                 rs.getString("thumbnail")),
                 startDate, endDate, limit);
+    }
+
+    public Theme save(Theme theme) {
+        String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?,?,?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnail());
+            return ps;
+        }, keyHolder);
+
+        long id = keyHolder.getKey().longValue();
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

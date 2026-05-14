@@ -55,18 +55,18 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void 시간을_삭제하면_Repository_deleteById에_id를_전달한다() {
+        reservationTimeService.deleteTime(3L);
+
+        verify(reservationTimeRepository).deleteById(3L);
+    }
+
+    @Test
     void 시간_삭제_시_예약이_존재하는_시간이면_예외가_발생한다() {
         when(reservationRepository.existsByTimeId(any())).thenReturn(true);
         assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                         .isEqualTo(ErrorCode.RESERVATION_TIME_IN_USE);
-    }
-
-    @Test
-    void 시간을_삭제하면_Repository_deleteById에_id를_전달한다() {
-        reservationTimeService.deleteTime(3L);
-
-        verify(reservationTimeRepository).deleteById(3L);
     }
 }

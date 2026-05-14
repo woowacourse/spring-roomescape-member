@@ -44,7 +44,7 @@ class ReservationE2ETest {
 
     @Test
     @DisplayName("GET /reservations - 예약 목록을 조회한다")
-    void getReservations() {
+    void findReservations() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", "2025-12-25", 1L, 1L);
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
@@ -88,6 +88,23 @@ class ReservationE2ETest {
     }
 
     @Test
+    @DisplayName("POST /reservations - 존재하지 않는 시간 ID로 예약을 생성하면 400을 반환한다")
+    void createReservation_invalidTimeId() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2025-12-25");
+        body.put("timeId", 999);
+        body.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     @DisplayName("DELETE /reservations/{id} - 예약을 삭제하면 목록에서 제거된다")
     void deleteReservation() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
@@ -103,22 +120,5 @@ class ReservationE2ETest {
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.size()", is(0));
-    }
-
-    @Test
-    @DisplayName("POST /reservations - 존재하지 않는 시간 ID로 예약을 생성하면 400을 반환한다")
-    void createReservation_invalidTimeId() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("name", "브라운");
-        body.put("date", "2025-12-25");
-        body.put("timeId", 999);
-        body.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(body)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 }
