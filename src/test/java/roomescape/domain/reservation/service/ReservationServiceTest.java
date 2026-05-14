@@ -253,12 +253,6 @@ class ReservationServiceTest {
                 timeId
         );
 
-        when(reservationTimeRepository.findById(timeId))
-                .thenReturn(Optional.of(ReservationTime.of(timeId, futureTime)));
-
-        when(themeRepository.findById(themeId))
-                .thenReturn(Optional.of(Theme.of(themeId, "theme", "desc", "url")));
-
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
                 .isInstanceOf(BusinessException.class)
@@ -281,9 +275,6 @@ class ReservationServiceTest {
 
         when(reservationTimeRepository.findById(timeId))
                 .thenReturn(Optional.of(ReservationTime.of(timeId, pastTime)));
-
-        when(themeRepository.findById(themeId))
-                .thenReturn(Optional.of(Theme.of(themeId, "theme", "desc", "url")));
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
@@ -373,19 +364,10 @@ class ReservationServiceTest {
         // given
         Long reservationId = 1L;
         Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
-        Reservation existingReservation = Reservation.of(
-                reservationId,
-                "브라운",
-                theme,
-                nowDate,
-                ReservationTime.of(1L, futureTime)
-        );
 
         ReservationTime newTime = ReservationTime.of(2L, pastTime);
         ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), nowDate, newTime.getId());
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
-        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
         when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
 
         // when & then
@@ -411,9 +393,8 @@ class ReservationServiceTest {
         ReservationTime newTime = ReservationTime.of(2L, futureTime);
         ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), futureDate, newTime.getId());
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
-        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
         when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
 
         // when
         assertThatThrownBy(() -> reservationService.updateReservationByUser(reservationId, request))
