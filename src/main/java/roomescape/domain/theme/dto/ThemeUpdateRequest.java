@@ -1,12 +1,12 @@
-package roomescape.domain.theme;
+package roomescape.domain.theme.dto;
 
-public class ThemeRequest {
+public class ThemeUpdateRequest {
 
     private final String name;
     private final String description;
     private final String url;
 
-    public ThemeRequest(String name, String description, String url) {
+    public ThemeUpdateRequest(String name, String description, String url) {
         this.name = name;
         this.description = description;
         this.url = url;

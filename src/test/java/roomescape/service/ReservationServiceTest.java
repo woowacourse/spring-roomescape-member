@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationRequest;
-import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.CustomException;
@@ -63,7 +63,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성할 수 있다.")
     void 예약_생성_성공() {
         // given
-        ReservationRequest request = new ReservationRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -92,7 +92,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간인 경우 에러를 발생한다.")
     void 예약_생성_에러_예약시간_없음() {
         // given
-        ReservationRequest request = new ReservationRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.empty());
@@ -107,7 +107,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마인 경우 에러를 발생한다.")
     void 예약_생성_에러_테마_없음() {
         // given
-        ReservationRequest request = new ReservationRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -125,7 +125,7 @@ class ReservationServiceTest {
     @DisplayName("현재보다 이전의 날짜를 예약하는 경우 에러를 발생한다.")
     void 예약_생성_에러_과거_날짜_예약() {
         // given
-        ReservationRequest request = new ReservationRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -143,7 +143,7 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 시간인 경우 에러를 발생한다.")
     void 예약_생성_에러_이미_예약() {
         // given
-        ReservationRequest request = new ReservationRequest(name, date, reservationTimeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime));
@@ -175,7 +175,7 @@ class ReservationServiceTest {
 
         Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt);
 
-        ReservationRequest request = new ReservationRequest(name2, date2, reservationTimeId2, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name2, date2, reservationTimeId2, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime2));
@@ -209,7 +209,7 @@ class ReservationServiceTest {
 
         Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt);
 
-        ReservationRequest request = new ReservationRequest(name2, date2, reservationTimeId2, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(name2, date2, reservationTimeId2, themeId);
 
         when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime2));

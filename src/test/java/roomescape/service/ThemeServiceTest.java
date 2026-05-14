@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeRequest;
-import roomescape.domain.theme.ThemeResponse;
+import roomescape.domain.theme.dto.ThemeCreateRequest;
+import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -35,7 +35,7 @@ class ThemeServiceTest {
         String description = "공포 테마의 클래식, 밤마다 살아 움직이는 인형들이 가득한 저택을 탈출하세요.";
         String url = "https://example.com/1";
 
-        ThemeRequest request = new ThemeRequest(name, description, url);
+        ThemeCreateRequest request = new ThemeCreateRequest(name, description, url);
 
         // when
         ThemeResponse themeResponse = themeService.create(request);

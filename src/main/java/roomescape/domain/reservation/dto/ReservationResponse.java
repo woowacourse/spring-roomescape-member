@@ -1,7 +1,8 @@
-package roomescape.domain.reservation;
+package roomescape.domain.reservation.dto;
 
-import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.domain.theme.ThemeResponse;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.theme.dto.ThemeResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

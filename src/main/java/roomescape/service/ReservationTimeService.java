@@ -3,8 +3,8 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRequest;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.exception.CustomException;
 import roomescape.exception.CustomExceptionCode;
 import roomescape.repository.ReservationQueryingDao;
@@ -29,7 +29,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
+    public ReservationTimeResponse create(ReservationTimeCreateRequest reservationTimeReq) {
         Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
         return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
@@ -47,7 +47,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
+    public void update(ReservationTimeCreateRequest newReservationTimeReq, Long id) {
         reservationTimeUpdatingDao.update(id, newReservationTimeReq);
     }
 

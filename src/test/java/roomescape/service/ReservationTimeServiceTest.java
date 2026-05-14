@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRequest;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.exception.CustomException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
@@ -39,7 +39,7 @@ class ReservationTimeServiceTest {
     void 시간_생성_성공() {
         // given
         LocalTime time = LocalTime.of(10, 0);
-        ReservationTimeRequest request = new ReservationTimeRequest(time);
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(time);
 
         // when
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(request);

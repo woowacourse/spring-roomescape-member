@@ -4,8 +4,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationRequest;
-import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.CustomException;
@@ -37,7 +38,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest reservationReq) {
+    public ReservationResponse create(ReservationCreateRequest reservationReq) {
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
         Theme findTheme = themeQueryingDao.findThemeById(reservationReq.getThemeId())
@@ -88,16 +89,23 @@ public class ReservationService {
     }
 
     @Transactional
-    public void update(ReservationRequest newReservationReq, Long id) {
+    public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
+        if (!reservationQueryingDao.existsById(id)) {
+            throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
+        }
         reservationUpdatingDao.update(id, newReservationReq);
+
+        Reservation findReservation = reservationQueryingDao.findReservationById(id)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
+        return ReservationResponse.from(findReservation);
     }
 
     @Transactional
     public void delete(Long id) {
-        int count = reservationUpdatingDao.delete(id);
-
-        if (count == 0) {
+        if (!reservationQueryingDao.existsById(id)) {
             throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
         }
+
+        reservationUpdatingDao.delete(id);
     }
 }

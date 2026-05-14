@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationResponse;
 
 import java.sql.Connection;
 import java.sql.SQLException;

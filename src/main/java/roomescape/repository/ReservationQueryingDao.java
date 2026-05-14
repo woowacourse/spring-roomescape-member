@@ -109,4 +109,16 @@ public class ReservationQueryingDao {
         Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
         return count != null && count > 0;
     }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation as r
+                WHERE r.id = :id
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
 }

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.theme.ThemeRequest;
+import roomescape.domain.theme.dto.ThemeCreateRequest;
 
 @Repository
 public class ThemeUpdatingDao {
@@ -17,7 +17,7 @@ public class ThemeUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insert(ThemeRequest themeRequest) {
+    public Long insert(ThemeCreateRequest themeRequest) {
         String sql = "INSERT INTO theme (name, description, url) VALUES (:name, :description, :url);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 

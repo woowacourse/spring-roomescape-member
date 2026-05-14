@@ -1,4 +1,6 @@
-package roomescape.domain.theme;
+package roomescape.domain.theme.dto;
+
+import roomescape.domain.theme.Theme;
 
 public class ThemeResponse {
 

@@ -6,7 +6,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservation.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationCreateRequest;
+import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 
 @Repository
 public class ReservationUpdatingDao {
@@ -17,7 +18,7 @@ public class ReservationUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(ReservationRequest reservationReq) {
+    public Long save(ReservationCreateRequest reservationReq) {
         String sql = "insert into reservation(name, date, time_id, theme_id) values(:name, :date, :time_id, :theme_id)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource()
@@ -30,7 +31,7 @@ public class ReservationUpdatingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public void update(Long id, ReservationRequest reservationReq) {
+    public void update(Long id, ReservationUpdateRequest reservationReq) {
         String sql = "update reservation SET name = :name, date = :date, time_id = :time_id, theme_id = :theme_id where id = :id";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", reservationReq.getName())
