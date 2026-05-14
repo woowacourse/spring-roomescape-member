@@ -143,7 +143,18 @@ button:disabled {
   transition: all 0.15s ease;
 }
 
+#edit-available-times .chip {
+  min-width: 110px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
 #available-times .chip:hover:not(:disabled) {
+  border-color: #74c0fc;
+  background: #e7f5ff;
+}
+
+#edit-available-times .chip:hover:not(:disabled) {
   border-color: #74c0fc;
   background: #e7f5ff;
 }
@@ -156,13 +167,32 @@ button:disabled {
   transform: translateY(-1px);
 }
 
+#edit-available-times .chip.selected {
+  background: #1c7ed6;
+  border-color: #1864ab;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(116, 192, 252, 0.45);
+  transform: translateY(-1px);
+}
+
 #available-times .chip.selected::before {
+  content: "✓ ";
+  font-weight: 800;
+}
+
+#edit-available-times .chip.selected::before {
   content: "✓ ";
   font-weight: 800;
 }
 
 #available-times .chip.disabled,
 #available-times .chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#edit-available-times .chip.disabled,
+#edit-available-times .chip:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -267,6 +297,48 @@ button:disabled {
 
 .mt-40 { margin-top: 40px; }
 
+.admin-section-toggle {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  background: #fff;
+  margin: 16px 0;
+  padding: 0 12px 12px;
+}
+
+.admin-section-toggle > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-section-toggle > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-section-toggle > summary h2 {
+  margin: 0;
+}
+
+.admin-section-toggle > summary::after {
+  content: "▾";
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.admin-section-toggle[open] > summary {
+  border-bottom: 1px solid #f1f3f5;
+  margin-bottom: 12px;
+}
+
+.admin-section-toggle[open] > summary::after {
+  transform: rotate(180deg);
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -321,6 +393,111 @@ button:disabled {
 
 .danger-button:hover {
   background: #c92a2a;
+}
+
+.my-reservation-section {
+  margin-top: 20px;
+}
+
+.reservation-cards {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.reservation-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+}
+
+.reservation-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.reservation-card-head p {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.reservation-card-body p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.reservation-card-body span {
+  color: #6b7280;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+.menu-button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  padding: 0;
+}
+
+.menu-panel {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.menu-item {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  color: #111827;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.menu-item:hover {
+  background: #f3f4f6;
+}
+
+.menu-item.delete {
+  color: #dc2626;
+}
+
+.modal-card .row-form.modal-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.modal-card .row-form.modal-form label {
+  flex: none;
+  width: 100%;
+}
+
+.modal-card .row-form.modal-form input {
+  width: 100%;
+}
+
+.modal-card .row-form.modal-form button {
+  width: 100%;
 }
 
 @media (min-width: 860px) {

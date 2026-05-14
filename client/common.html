@@ -11,8 +11,9 @@
   <header class="page-header">
     <h1>방탈출 예약하기</h1>
     <div class="link-row">
+      <button type="button" id="my-info-open" class="link-button">내정보</button>
       <a class="link-button" href="./index.html">홈</a>
-      <a class="link-button admin-link" href="./admin.html">관리자 설정</a>
+      <a class="link-button admin-link" href="./admin.html">관리자 페이지</a>
     </div>
   </header>
 
@@ -59,8 +60,63 @@
     <ol id="popular-list" class="list popular-ranking"></ol>
   </section>
 
+  <hr class="divider">
+
+  <section class="my-reservation-section">
+    <h2>내 예약 정보</h2>
+    <p id="my-reservation-owner" class="empty-message">내정보 버튼을 눌러 이름을 입력해주세요.</p>
+    <div id="my-reservation-cards" class="reservation-cards"></div>
+  </section>
+
 <!--  <p id="status" class="status-bar"></p>-->
 </main>
+
+<div id="confirm-modal" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <h3 id="confirm-title">확인</h3>
+    <p id="confirm-message" class="modal-message"></p>
+    <div class="modal-actions">
+      <button type="button" id="confirm-cancel" class="link-button">취소</button>
+      <button type="button" id="confirm-ok" class="danger-button">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="my-info-modal" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <h3>내정보 조회</h3>
+    <form id="my-info-form" class="row-form admin-form modal-form">
+      <label>이름
+        <input type="text" id="my-info-name" required>
+      </label>
+      <button type="submit" class="search-button">조회</button>
+    </form>
+    <div class="modal-actions">
+      <button type="button" id="my-info-cancel" class="link-button">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="edit-reservation-modal" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <h3>예약 수정</h3>
+    <form id="edit-reservation-form" class="row-form admin-form modal-form">
+      <input type="hidden" id="edit-reservation-id">
+      <p id="edit-reservation-theme" class="empty-message"></p>
+      <label>방문 날짜
+        <input type="date" id="edit-reservation-date" required>
+      </label>
+      <div>
+        <p class="empty-message">예약 시간 선택</p>
+        <div id="edit-available-times" class="chips-container"></div>
+      </div>
+      <button type="submit" class="search-button">수정 저장</button>
+    </form>
+    <div class="modal-actions">
+      <button type="button" id="edit-reservation-cancel" class="link-button">닫기</button>
+    </div>
+  </div>
+</div>
 
 <div id="result-modal" class="modal-backdrop hidden">
   <div class="modal-card">
