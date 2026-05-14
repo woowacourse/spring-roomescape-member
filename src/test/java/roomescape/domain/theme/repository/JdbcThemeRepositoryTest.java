@@ -179,6 +179,44 @@ class JdbcThemeRepositoryTest {
     }
 
     @Nested
+    class ExistsThemeByNameTest {
+
+        @Test
+        void 존재하면_true를_반환한다() {
+            // given
+            themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+
+            // when
+            boolean actual = themeRepository.existsThemeByNameAndDeletedAtIsNull("테마1");
+
+            // then
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void 존재하지_않으면_false를_반환한다() {
+            // when
+            boolean actual = themeRepository.existsThemeByNameAndDeletedAtIsNull("테마1");
+
+            // then
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 삭제된_테마의_name이면_false를_반환한다() {
+            // given
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            themeRepository.deleteThemeById(theme.getId());
+
+            // when
+            boolean actual = themeRepository.existsThemeByNameAndDeletedAtIsNull("테마1");
+
+            // then
+            assertThat(actual).isFalse();
+        }
+    }
+
+    @Nested
     class FindPopularThemesDateBetweenTest {
 
         @Test

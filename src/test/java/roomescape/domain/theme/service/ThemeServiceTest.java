@@ -1,6 +1,7 @@
 package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -27,6 +28,7 @@ import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.error.exception.GeneralException;
 
 class ThemeServiceTest {
 
@@ -160,7 +162,7 @@ class ThemeServiceTest {
 
             List<Long> timeIds = saveTimeIdsOfReservations(timeDeletedTheme, targetDate, 3);
             timeIds.forEach(timeRepository::deleteTimeById);
-            
+
             themeRepository.deleteThemeById(deletedTheme.getId());
 
             // when
@@ -176,25 +178,74 @@ class ThemeServiceTest {
     @Nested
     class SaveThemeTest {
 
-        @Test
-        void 성공() {
-            // given
-            ThemeCreateRequestDto request = new ThemeCreateRequestDto(
-                "피온",
-                "테마 설명",
-                "https://roomescape.com/images/themes/prison-room.png"
-            );
+        @Nested
+        class Success {
 
-            // when
-            ThemeResponseDto actual = themeService.saveTheme(request);
+            @Test
+            void 성공() {
+                // given
+                ThemeCreateRequestDto request = new ThemeCreateRequestDto(
+                    "피온",
+                    "테마 설명",
+                    "https://roomescape.com/images/themes/prison-room.png"
+                );
 
-            // then
-            assertThat(actual).isEqualTo(new ThemeResponseDto(
-                1L,
-                "피온",
-                "테마 설명",
-                "https://roomescape.com/images/themes/prison-room.png"
-            ));
+                // when
+                ThemeResponseDto actual = themeService.saveTheme(request);
+
+                // then
+                assertThat(actual).isEqualTo(new ThemeResponseDto(
+                    1L,
+                    "피온",
+                    "테마 설명",
+                    "https://roomescape.com/images/themes/prison-room.png"
+                ));
+            }
+
+            @Test
+            void 삭제된_테마와_같은_name으로_생성할_수_있다() {
+                // given
+                Theme deletedTheme = themeRepository.save(Theme.create("피온", "기존 테마 설명",
+                    "https://roomescape.com/images/themes/existing.png"));
+                themeRepository.deleteThemeById(deletedTheme.getId());
+                ThemeCreateRequestDto request = new ThemeCreateRequestDto(
+                    "피온",
+                    "테마 설명",
+                    "https://roomescape.com/images/themes/prison-room.png"
+                );
+
+                // when
+                ThemeResponseDto actual = themeService.saveTheme(request);
+
+                // then
+                assertThat(actual).isEqualTo(new ThemeResponseDto(
+                    2L,
+                    "피온",
+                    "테마 설명",
+                    "https://roomescape.com/images/themes/prison-room.png"
+                ));
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void 같은_name의_테마가_이미_존재하면_예외가_발생한다() {
+                // given
+                themeRepository.save(Theme.create("피온", "기존 테마 설명",
+                    "https://roomescape.com/images/themes/existing.png"));
+                ThemeCreateRequestDto request = new ThemeCreateRequestDto(
+                    "피온",
+                    "테마 설명",
+                    "https://roomescape.com/images/themes/prison-room.png"
+                );
+
+                // when & then
+                assertThatThrownBy(() -> themeService.saveTheme(request))
+                    .isInstanceOf(GeneralException.class)
+                    .hasMessage("이미 등록된 테마입니다.");
+            }
         }
     }
 
