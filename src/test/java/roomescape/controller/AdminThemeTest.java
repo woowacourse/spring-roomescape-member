@@ -29,7 +29,7 @@ class AdminThemeTest {
     void managingThemeScenarioTest() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "공포");
-        params.put("thumbnailUrl", "test_url");
+        params.put("thumbnailUrl", "http://localhost:8080/roomescape.app/admin/themes");
         params.put("description", "공포_설명");
 
         RestAssured.given().log().all()
