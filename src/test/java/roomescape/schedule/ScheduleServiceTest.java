@@ -109,7 +109,7 @@ class ScheduleServiceTest {
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(beforeDate, testTimeId, testThemeId))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("지난 날짜로는 예약을 할 수 없습니다.");
+                .hasMessage("이미 지난 날짜/시간으로는 처리할 수 없습니다.");
     }
 
     @Test

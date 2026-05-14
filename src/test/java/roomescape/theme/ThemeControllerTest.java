@@ -2,20 +2,41 @@ package roomescape.theme;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.config.TestTimeConfig;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestTimeConfig.class)
 @Sql(scripts = {"/truncate.sql", "/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ThemeControllerTest {
+
+    @LocalServerPort
+    int port;
+
+    @MockitoBean
+    private Clock clock;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     void 테마_저장_API_테스트() {
@@ -68,6 +89,13 @@ public class ThemeControllerTest {
 
     @Test
     void 최근_7일_예약_개수에_따른_인기_테마_조회_API_테스트() {
+        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
+        when(clock.instant()).thenReturn(
+                LocalDate.of(2026, 5, 7)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+        );
+
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()

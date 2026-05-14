@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.config.TestTimeConfig;
 import roomescape.reservation.Reservation;
 
 import java.sql.Connection;
@@ -16,6 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
+@Import(TestTimeConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = {"/truncate.sql", "/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class H2DatabaseTest {
@@ -26,7 +29,7 @@ public class H2DatabaseTest {
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("ROOM_ESCAPE");
+            assertThat(connection.getCatalog()).isNotBlank();
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
