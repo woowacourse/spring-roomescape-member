@@ -1,10 +1,10 @@
 package roomescape.exception;
 
-public class CustomConflictException extends RuntimeException {
+public class CustomNotFoundException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public CustomConflictException(ErrorCode errorCode) {
+    public CustomNotFoundException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

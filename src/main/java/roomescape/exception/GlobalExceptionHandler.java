@@ -12,6 +12,15 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CustomNotFoundException.class)
+    public ErrorResponse handleCustomNotFoundException(CustomNotFoundException exception) {
+        log.warn("[Custom Error]", exception);
+
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.name(),
+                exception.getErrorCode().getMessage());
+    }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(CustomUnprocessableEntityException.class)

@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomConflictException;
 import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
@@ -86,7 +87,7 @@ public class ThemeServiceTest {
         reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
 
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomConflictException.class)
                 .hasMessage(REFERENCED_THEME.getMessage());
     }
 

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomConflictException;
+import roomescape.exception.CustomNotFoundException;
 import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
@@ -36,19 +38,19 @@ public class ReservationService {
     public ServiceReservationResponse create(ServiceReservationCreateRequest request) {
         Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
         if (reservationTime.isEmpty()) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
         Optional<Theme> theme = themeRepository.read(request.themeId());
         if (theme.isEmpty()) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_THEME);
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME);
         }
 
         boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(request.date(),
                 request.timeId(),
                 request.themeId());
         if (existReservation) {
-            throw new CustomUnprocessableEntityException(ErrorCode.DUPLICATED_RESERVATION);
+            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         Reservation reservationWithoutId = request.toEntity(reservationTime.get(), theme.get());
@@ -80,12 +82,12 @@ public class ReservationService {
     public ServiceReservationResponse update(Long id, ServiceReservationUpdateRequest request) {
         Optional<Reservation> beforeReservation = reservationRepository.readById(id);
         if (beforeReservation.isEmpty()) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION);
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION);
         }
 
         Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
         if (reservationTime.isEmpty()) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
         Reservation newReservation = request.toEntity(beforeReservation.get(), reservationTime.get());
@@ -95,7 +97,7 @@ public class ReservationService {
 
         if (reservationRepository.existByDateAndTimeIdAndThemeId(newReservation.getDate(),
                 newReservation.getTime().getId(), newReservation.getTheme().getId())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.DUPLICATED_RESERVATION);
+            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         reservationRepository.update(id, request.date(), request.timeId());
@@ -107,7 +109,7 @@ public class ReservationService {
     public void delete(Long id) {
         Optional<Reservation> reservation = reservationRepository.readById(id);
         if (reservation.isEmpty()) {
-            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION);
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_RESERVATION);
         }
         if (reservation.get().isPast(LocalDateTime.now())) {
             throw new CustomUnprocessableEntityException(ErrorCode.PAST_TIME_RESERVATION_DELETE);

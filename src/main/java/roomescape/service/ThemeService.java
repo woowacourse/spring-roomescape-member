@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomConflictException;
 import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
@@ -61,7 +62,7 @@ public class ThemeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new CustomUnprocessableEntityException(ErrorCode.REFERENCED_THEME);
+            throw new CustomConflictException(ErrorCode.REFERENCED_THEME);
         }
         themeRepository.delete(id);
     }

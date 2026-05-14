@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomConflictException;
+import roomescape.exception.CustomNotFoundException;
 import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
@@ -61,7 +63,7 @@ public class ReservationServiceTest {
                 futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomNotFoundException.class)
                 .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
@@ -72,7 +74,7 @@ public class ReservationServiceTest {
                 futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomNotFoundException.class)
                 .hasMessage(NOT_FOUND_THEME.getMessage());
     }
 
@@ -101,7 +103,7 @@ public class ReservationServiceTest {
         reservationService.create(request);
 
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomConflictException.class)
                 .hasMessage(DUPLICATED_RESERVATION.getMessage());
     }
 
@@ -113,7 +115,7 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomNotFoundException.class)
                 .hasMessage(NOT_FOUND_RESERVATION.getMessage());
     }
 
@@ -127,7 +129,7 @@ public class ReservationServiceTest {
         ServiceReservationUpdateRequest request = new ServiceReservationUpdateRequest(futureDateTime.toLocalDate(), 2L);
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomNotFoundException.class)
                 .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
@@ -158,14 +160,14 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomConflictException.class)
                 .hasMessage(DUPLICATED_RESERVATION.getMessage());
     }
 
     @Test
     void deleteNotFoundReservationExceptionTest() {
         assertThatThrownBy(() -> reservationService.delete(1L))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomNotFoundException.class)
                 .hasMessage(NOT_FOUND_RESERVATION.getMessage());
     }
 
