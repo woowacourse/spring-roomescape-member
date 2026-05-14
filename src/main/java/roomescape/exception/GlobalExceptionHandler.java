@@ -1,5 +1,8 @@
 package roomescape.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +20,8 @@ import roomescape.exception.response.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exception,
@@ -26,6 +31,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         CommonErrorCode errorCode = CommonErrorCode.INVALID_REQUEST_BODY;
         String message = extractFieldErrorMessage(exception);
+        log.warn("요청 검증 실패: path={}, errorCode={}, message={}",
+                getPath(request), errorCode.getCode(), message);
 
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
@@ -49,6 +56,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request
     ) {
         CommonErrorCode errorCode = CommonErrorCode.INVALID_REQUEST_BODY;
+        log.warn("요청 본문 파싱 실패: path={}, errorCode={}",
+                getPath(request), errorCode.getCode());
 
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
@@ -63,6 +72,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request
     ) {
         CommonErrorCode errorCode = CommonErrorCode.INVALID_REQUEST_PARAMETER_TYPE;
+        log.warn("요청 파라미터 타입 불일치: path={}, errorCode={}, parameter={}",
+                getPath(request), errorCode.getCode(), exception.getPropertyName());
 
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
@@ -72,6 +83,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(RoomescapeException roomescapeException) {
         ErrorCode errorCode = roomescapeException.getExceptionCode();
+        log.warn("비즈니스 예외 발생: errorCode={}, message={}",
+                errorCode.getCode(), roomescapeException.getMessage());
 
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
@@ -79,9 +92,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException() {
+    public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
+        log.error("예상하지 못한 서버 오류 발생: method={}, path={}",
+                request.getMethod(), request.getRequestURI(), exception);
         return ResponseEntity
                 .status(CommonErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
                 .body(new ErrorResponse(CommonErrorCode.INTERNAL_SERVER_ERROR));
+    }
+
+    private String getPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
     }
 }
