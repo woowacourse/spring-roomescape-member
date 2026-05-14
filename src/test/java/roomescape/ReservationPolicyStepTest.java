@@ -195,6 +195,51 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         }
     }
 
+    @Nested
+    @DisplayName("입력값 검증 정책")
+    class InputValidationPolicy {
+
+        @Test
+        @DisplayName("이름이 null이면 거부된다")
+        void 이름_null_거부() {
+            assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
+                    null, TODAY.plusDays(1), timeId10, themeId
+            )))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("날짜가 null이면 거부된다")
+        void 날짜_null_거부() {
+            assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
+                    "브라운", null, timeId10, themeId
+            )))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 날짜는 비어 있을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("시간 ID가 null이면 거부된다")
+        void 시간Id_null_거부() {
+            assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
+                    "브라운", TODAY.plusDays(1), null, themeId
+            )))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 시간을 선택해 주세요.");
+        }
+
+        @Test
+        @DisplayName("테마 ID가 null이면 거부된다")
+        void 테마Id_null_거부() {
+            assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
+                    "브라운", TODAY.plusDays(1), timeId10, null
+            )))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 테마를 선택해 주세요.");
+        }
+    }
+
 
     private Long insertTime(LocalTime startAt) {
         jdbcTemplate.update(

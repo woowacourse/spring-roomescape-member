@@ -45,6 +45,8 @@ public class ReservationService {
     }
 
     public ReservationResult create(ReservationCreateCommand command) {
+        validateCommand(command);
+
         ReservationTimeEntity timeEntity = reservationTimeRepository.findById(command.getTimeId())
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다: " + command.getTimeId()));
 
@@ -86,4 +88,20 @@ public class ReservationService {
             );
         }
     }
+
+    private void validateCommand(ReservationCreateCommand command) {
+        if (command.getName() == null || command.getName().isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+        }
+        if (command.getDate() == null) {
+            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
+        }
+        if (command.getTimeId() == null) {
+            throw new IllegalArgumentException("예약 시간을 선택해 주세요.");
+        }
+        if (command.getThemeId() == null) {
+            throw new IllegalArgumentException("예약 테마를 선택해 주세요.");
+        }
+    }
+
 }
