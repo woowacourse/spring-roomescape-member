@@ -49,13 +49,6 @@ const handleResponse = async (response) => {
     }
   }
 
-  const text = await response.text();
-  // Project-specific: 200 OK with error message in body (text/plain)
-  const errorKeywords = ['확인해주세요', '존재합니다', '선택해주세요', '입력해주세요', '권한이 필요합니다', '비어있습니다', '없습니다', '불가능합니다', '불일치'];
-  if (errorKeywords.some(keyword => text.includes(keyword)) && text.length < 200) {
-    throw new Error(text);
-  }
-  
   // If it's not JSON and not an error, return empty array as fallback for list methods
   return [];
 };
