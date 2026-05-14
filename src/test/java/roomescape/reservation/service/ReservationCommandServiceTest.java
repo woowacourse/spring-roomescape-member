@@ -3,16 +3,11 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -29,7 +24,6 @@ import roomescape.reservation.application.service.ReservationCommandService;
 import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
-import roomescape.support.TestClockConfig;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.infra.JdbcThemeRepository;
 
@@ -38,8 +32,7 @@ import roomescape.theme.infra.JdbcThemeRepository;
         ReservationCommandService.class,
         JdbcReservationRepository.class,
         JdbcThemeRepository.class,
-        JdbcReservationTimeRepository.class,
-        TestClockConfig.class
+        JdbcReservationTimeRepository.class
 })
 class ReservationCommandServiceTest {
 
@@ -140,17 +133,9 @@ class ReservationCommandServiceTest {
                 .hasMessage("이미 지나간 예약은 삭제할 수 없습니다.");
     }
 
-    static Stream<Arguments> futureDates() {
-        return Stream.of(
-                Arguments.of(TestClockConfig.CURRENT_DATE, LocalTime.of(0, 0)),
-                Arguments.of(ReservationFixture.futureReservationDate(), LocalTime.of(11, 0))
-        );
-    }
-
     @DisplayName("사용자의 방탈출 예약 날짜/시간 변경을 테스트합니다.")
-    @ParameterizedTest
-    @MethodSource("futureDates")
-    void update_reservation(LocalDate updateDate, LocalTime updateTime) {
+    @Test
+    void update_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(0, 0));
         Long reservationId = testHelper.insertReservation(
@@ -160,14 +145,14 @@ class ReservationCommandServiceTest {
                 timeId
         );
 
-        Long updateTimeId = testHelper.insertReservationTime(updateTime);
+        Long updateTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
         ReservationResult result = reservationCommandService.update(
                 reservationId,
-                new ReservationUpdateCommand(updateDate, updateTimeId)
+                new ReservationUpdateCommand(ReservationFixture.futureReservationDate(), updateTimeId)
         );
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(result.date()).isEqualTo(updateDate);
+            softly.assertThat(result.date()).isEqualTo(ReservationFixture.futureReservationDate());
             softly.assertThat(result.time().id()).isEqualTo(updateTimeId);
         });
     }
@@ -226,7 +211,7 @@ class ReservationCommandServiceTest {
         assertThatThrownBy(() ->
                 reservationCommandService.update(
                         reservationId,
-                        new ReservationUpdateCommand(TestClockConfig.CURRENT_DATE.minusDays(1), timeId)
+                        new ReservationUpdateCommand(ReservationFixture.pastReservationDate(), timeId)
                 ))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
