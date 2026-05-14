@@ -20,6 +20,11 @@ public enum ErrorCode {
     THEME_THUMBNAIL_EMPTY("테마 썸네일 주소가 비어있습니다. 주소를 입력해주세요."),
     RESERVATION_UPDATE_REQUEST_EMPTY("수정할 내용이 없습니다. 변경할 정보를 입력해주세요"),
 
+    // Bad Request - 400 (Generic)
+    INVALID_HTTP_MESSAGE("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."),
+
+    // Method Not Allowed - 405
+    METHOD_NOT_ALLOWED("지원하지 않는 요청 방법입니다. 주소 혹은 요청 방식을 확인해주세요."),
 
     // Conflict - 409
     RESERVATION_DUPLICATED("동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요."),

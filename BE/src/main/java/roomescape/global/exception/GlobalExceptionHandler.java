@@ -1,8 +1,8 @@
 package roomescape.global.exception;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -16,7 +16,6 @@ public class GlobalExceptionHandler {
     // 404 NotFound - BusinessException
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseBody> handleBusinessNotFoundException(NotFoundException e) {
-        new ErrorResponseBody(ErrorType.BUSINESS, e.getMessage());
         return ResponseEntity
                 .status(e.httpStatus())
                 .body(new ErrorResponseBody(ErrorType.BUSINESS, e.getMessage()));
@@ -41,7 +40,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseBody> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseBody(ErrorType.BUSINESS, ErrorCode.INVALID_REQUEST_FORMAT.getMessage()));
+                .body(new ErrorResponseBody(ErrorType.BUSINESS, ErrorCode.INVALID_HTTP_MESSAGE.getMessage()));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseBody> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ErrorResponseBody(ErrorType.BUSINESS, ErrorCode.METHOD_NOT_ALLOWED.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
