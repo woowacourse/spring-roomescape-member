@@ -16,6 +16,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
 import roomescape.domain.global.exception.custom.NotFoundException;
 import roomescape.domain.global.exception.custom.UnprocessableEntityException;
@@ -148,8 +149,8 @@ class ThemeServiceTest {
                     LocalDate.of(2026, 5, 31),
                     -1
                 ),
-                UnprocessableEntityException.class,
-                ErrorCode.COMMON_INVALID_LIMIT
+                BadRequestException.class,
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }
