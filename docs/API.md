@@ -70,37 +70,49 @@ Content-Type: application/json
 - 요청한 테마 혹은 시간 없음
 
 ```http
-HTTP/1.1 200 
-Content-Type: text/plain
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요.(혹은 테마를 찾을 수 없습니다. 테마 ID를 확인해주세요.)
+{
+  "errorType": "BUSINESS",
+  "message": "예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요.(혹은 테마를 찾을 수 없습니다. 테마 ID를 확인해주세요.)"
+}
 ```
 
 - 요청 값 누락
 
 ```http
-HTTP/1.1 400 
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
 
-예약 시간이 비어있습니다. 시간을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "예약 시간이 비어있습니다. 시간을 선택해주세요."
+}
 ```
 
 - 중복 예약 시
 
 ```http
-HTTP/1.1 409 
-Content-Type: text/plain
+HTTP/1.1 409 Conflict
+Content-Type: application/json
 
-동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요."
+}
 ```
 
 - 과거 날짜, 시간으로 요청
 
 ```http
-HTTP/1.1 422 
-Content-Type: text/plain
+HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/json
 
-지나간 날짜나 시간으로는 예약을 생성하거나 삭제할 수 없습니다. 현재 이후의 시간을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "지나간 날짜나 시간으로는 예약을 생성하거나 삭제할 수 없습니다. 현재 이후의 시간을 선택해주세요."
+}
 ```
 
 ## 1-2. 예약 전체 조회
@@ -244,10 +256,13 @@ Content-Type: application/json
 - 존재하지 않는 테마 ID 요청 시
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-테마를 찾을 수 없습니다. 테마 ID를 확인해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "테마를 찾을 수 없습니다. 테마 ID를 확인해주세요."
+}
 ```
 
 ## 1-4. 예약 조회 : 이름
@@ -311,10 +326,13 @@ Content-Type: application/json
 - 예약자 이름이 비어있는 경우
 
 ```http
-HTTP/1.1 400 
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
 
-예약자 이름이 비어있습니다. 이름을 입력해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "예약자 이름이 비어있습니다. 이름을 입력해주세요."
+}
 ```
 
 ## 1-5. 예약 수정
@@ -395,19 +413,25 @@ Content-Type: application/json
 - 본인의 예약이 아닌 경우 (이름 불일치) 혹은 예약을 찾을 수 없는 경우
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-예약을 찾을 수 없습니다. 예약 ID를 확인해주세요. (혹은 예약을 찾을 수 없습니다. 예약자 성함을 확인해주세요.)
+{
+  "errorType": "BUSINESS",
+  "message": "예약을 찾을 수 없습니다. 예약 ID를 확인해주세요. (혹은 예약을 찾을 수 없습니다. 예약자 성함을 확인해주세요.)"
+}
 ```
 
 - 수정하려는 예약 정보가 이미 존재하는 경우 (중복 예약)
 
 ```http
 HTTP/1.1 409 Conflict
-Content-Type: text/plain
+Content-Type: application/json
 
-동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요."
+}
 ```
 
 ## 1-6. 예약 삭제 : 본인
@@ -453,19 +477,25 @@ HTTP/1.1 204 No Content
 - 본인의 예약이 아닌 경우 (이름 불일치) 혹은 예약을 찾을 수 없는 경우
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-예약을 찾을 수 없습니다. 예약 ID를 확인해주세요. (혹은 예약을 찾을 수 없습니다. 예약자 성함을 확인해주세요.)
+{
+  "errorType": "BUSINESS",
+  "message": "예약을 찾을 수 없습니다. 예약 ID를 확인해주세요. (혹은 예약을 찾을 수 없습니다. 예약자 성함을 확인해주세요.)"
+}
 ```
 
 - 지나간 예약 삭제 시도 시
 
 ```http
 HTTP/1.1 422 Unprocessable Entity
-Content-Type: text/plain
+Content-Type: application/json
 
-지나간 날짜나 시간으로는 예약을 생성하거나 삭제할 수 없습니다. 현재 이후의 시간을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "지나간 날짜나 시간으로는 예약을 생성하거나 삭제할 수 없습니다. 현재 이후의 시간을 선택해주세요."
+}
 ```
 
 ## 1-7. 예약 삭제 : 관리자 전용
@@ -508,18 +538,24 @@ HTTP/1.1 204 No Content
 
 ```http
 HTTP/1.1 403 Forbidden
-Content-Type: text/plain;charset=UTF-8
+Content-Type: application/json
 
-관리자 권한이 필요합니다.
+{
+  "errorType": "BUSINESS",
+  "message": "관리자 권한이 필요합니다."
+}
 ```
 
 - 예약을 찾을 수 없는 경우
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-예약을 찾을 수 없습니다. 예약 ID를 확인해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "예약을 찾을 수 없습니다. 예약 ID를 확인해주세요."
+}
 ```
 
 # 2. 시간
@@ -575,9 +611,12 @@ Content-Type: application/json
 
 ```http
 HTTP/1.1 400 Bad Request
-Content-Type: text/plain;charset=UTF-8
+Content-Type: application/json
 
-예약 시간이 비어있습니다. 시간을 선택해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요."
+}
 ```
 
 ## 2-2. 시간 전체 조회
@@ -660,18 +699,24 @@ HTTP/1.1 204 No Content
 
 ```http
 HTTP/1.1 409 Conflict
-Content-Type: text/plain
+Content-Type: application/json
 
-사용 중인 예약 시간은 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "사용 중인 예약 시간은 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요."
+}
 ```
 
 - 존재하지 않는 시간 ID를 삭제하려는 경우
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요."
+}
 ```
 
 # 3. 테마
@@ -737,18 +782,24 @@ Content-Type: application/json
 
 ```http
 HTTP/1.1 403 Forbidden
-Content-Type: text/plain;charset=UTF-8
+Content-Type: application/json
 
-관리자 권한이 필요합니다.
+{
+  "errorType": "BUSINESS",
+  "message": "관리자 권한이 필요합니다."
+}
 ```
 
 - 필수 값(이름, 설명, 썸네일) 누락 시
 
 ```http
 HTTP/1.1 400 Bad Request
-Content-Type: text/plain;charset=UTF-8
+Content-Type: application/json
 
-테마 이름이 비어있습니다. 이름을 입력해주세요. (혹은 설명/썸네일 비어있음 메시지)
+{
+  "errorType": "BUSINESS",
+  "message": "테마 이름이 비어있습니다. 이름을 입력해주세요. (혹은 설명/썸네일 비어있음 메시지)"
+}
 ```
 
 ## 3-2. 테마 전체 조회
@@ -884,25 +935,34 @@ HTTP/1.1 204 No Content
 
 ```http
 HTTP/1.1 403 Forbidden
-Content-Type: text/plain;charset=UTF-8
+Content-Type: application/json
 
-관리자 권한이 필요합니다.
+{
+  "errorType": "BUSINESS",
+  "message": "관리자 권한이 필요합니다."
+}
 ```
 
 - 사용 중인 테마를 삭제하려는 경우
 
 ```http
 HTTP/1.1 409 Conflict
-Content-Type: text/plain
+Content-Type: application/json
 
-사용 중인 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "사용 중인 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요."
+}
 ```
 
 - 존재하지 않는 테마 ID를 삭제하려는 경우
 
 ```http
-HTTP/1.1 200 OK
-Content-Type: text/plain;charset=UTF-8
+HTTP/1.1 404 Not Found
+Content-Type: application/json
 
-테마를 찾을 수 없습니다. 테마 ID를 확인해주세요.
+{
+  "errorType": "BUSINESS",
+  "message": "테마를 찾을 수 없습니다. 테마 ID를 확인해주세요."
+}
 ```

@@ -11,6 +11,6 @@ public class NotFoundException extends BusinessException {
 
     @Override
     public HttpStatus httpStatus() {
-        return HttpStatus.OK;
+        return HttpStatus.NOT_FOUND;
     }
 }
