@@ -7,6 +7,7 @@ public enum ErrorCode {
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "동일한 예약이 이미 존재합니다."),
     RESERVATION_DATE_PASSED(HttpStatus.UNPROCESSABLE_ENTITY, "오늘보다 이전 날짜로 예약할 수 없습니다."),
     RESERVATION_TIME_PASSED(HttpStatus.UNPROCESSABLE_ENTITY, "현재 시각보다 이전 시간으로 예약할 수 없습니다."),
+    RESERVATION_ALREADY_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 예약은 변경하거나 취소할 수 없습니다."),
 
     RESERVATION_TIME_IN_USE(HttpStatus.CONFLICT, "해당 시간에 예약이 존재하여 삭제할 수 없습니다."),
     RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 예약 시간을 찾을 수 없습니다."),

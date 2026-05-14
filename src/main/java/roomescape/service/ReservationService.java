@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -81,8 +82,17 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
+        Reservation reservation = findReservation(id);
+        validateNotPastReservation(reservation);
         reservationDao.delete(id);
+    }
+
+    private void validateNotPastReservation(Reservation reservation) {
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
     }
 
     public List<ReservationResponseDto> getReservationsBy(String name) {
@@ -94,8 +104,9 @@ public class ReservationService {
     @Transactional
     public void update(Long reservationId, ReservationUpdateRequestDto request) {
         Reservation reservation = findReservation(reservationId);
-        ReservationTime time = findReservationTime(request.timeId());
+        validateNotPastReservation(reservation);
 
+        ReservationTime time = findReservationTime(request.timeId());
         validateNotPast(request.date(), time);
         validateNotDuplicated(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
 

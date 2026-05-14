@@ -57,7 +57,7 @@ public class ReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> update(
             @PathVariable Long id,
-            @RequestBody ReservationUpdateRequestDto request
+            @Valid @RequestBody ReservationUpdateRequestDto request
     ) {
         reservationService.update(id, request);
 

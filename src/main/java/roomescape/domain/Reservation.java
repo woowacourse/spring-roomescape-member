@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -49,6 +50,11 @@ public class Reservation {
 
     public Reservation changeSchedule(LocalDate newDate, ReservationTime newTime) {
         return new Reservation(this.id, this.name, newDate, newTime, this.theme);
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        LocalDateTime reservedAt = LocalDateTime.of(date, time.getStartAt());
+        return reservedAt.isBefore(now);
     }
 
     public Long getId() {
