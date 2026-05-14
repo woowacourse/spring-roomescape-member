@@ -8,19 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidRequestException;
 import roomescape.exception.ResourceInUseException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
 public class AdminReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
 
-    public AdminReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                       ReservationRepository reservationRepository) {
+    public AdminReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationRepository = reservationRepository;
     }
 
 
@@ -37,12 +33,10 @@ public class AdminReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(long id) {
-        int reservationCount = reservationRepository.countByTimeId(id);
-
-        if (reservationCount > 0) {
+        try {
+            reservationTimeRepository.delete(id);
+        } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다.");
         }
-
-        reservationTimeRepository.delete(id);
     }
 }

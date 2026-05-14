@@ -90,7 +90,11 @@ public class UserReservationService {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 
-        reservationRepository.update(id, newDate, newTimeId);
+        try {
+            reservationRepository.update(id, newDate, newTimeId);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
+        }
         return new Reservation(id, reservation.getName(), newDate, newTime, reservation.getTheme());
     }
 
