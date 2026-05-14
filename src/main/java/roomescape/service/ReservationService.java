@@ -55,11 +55,14 @@ public class ReservationService {
         } catch (DuplicateKeyException e){
             throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
         }
-
-
     }
 
-    public void delete(Long id) {
+    public void delete(LocalDateTime now, Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        if (now.isAfter(localDateTime )) {
+            throw new CustomException(ErrorCode.UNALLOWED_DELETE_PAST_RESERVATION);
+        }
         reservationDao.delete(id);
     }
 

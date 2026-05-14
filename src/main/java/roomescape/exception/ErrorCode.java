@@ -14,7 +14,9 @@ public enum ErrorCode{
     UNALLOWED_DELETE_RESERVED_TIME("TIME_409_2", "예약중인 시간은 삭제할 수 없습니다.", HttpStatus.CONFLICT),
 
 
-    PAST_DATE_RESERVATION("RESERVATION_400_1", "과거 날짜/시간은 예약할 수 없습니다. ", HttpStatus.BAD_REQUEST),
+    PAST_DATE_RESERVATION("RESERVATION_400_1", "지난 날짜/시간으로 예약할 수 없습니다.", HttpStatus.BAD_REQUEST),
+    UNALLOWED_DELETE_PAST_RESERVATION("RESERVATION_400_1", "이미 지난 예약은 취소할 수 없습니다. ", HttpStatus.BAD_REQUEST),
+
     RESERVATION_NAME_BLANK("RESERVATION_400_2", "예약자 이름은 비거나 공백일 수 없습니다.", HttpStatus.BAD_REQUEST),
     RESERVATION_NAME_TOO_LONG("RESERVATION_400_3", "예약자 이름은 255자를 초과할 수 없습니다.", HttpStatus.BAD_REQUEST),
     RESERVATION_DATE_NULL("RESERVATION_400_4", "예약 날짜는 null일 수 없습니다.", HttpStatus.BAD_REQUEST),

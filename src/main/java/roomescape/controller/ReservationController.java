@@ -58,6 +58,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteReservation(@PathVariable Long id) {
-        reservationService.delete(id);
+        LocalDateTime now = LocalDateTime.now();
+        reservationService.delete(now, id);
     }
 }
