@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -110,6 +111,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(
                         ERROR_PREFIX + "올바른 쿼리 스트링 형식이 아닙니다.",
                         "COMMON400_005"
+                ));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        ERROR_PREFIX + "유효하지 않은 쿼리 스트링 값입니다.",
+                        "COMMON400_006"
                 ));
     }
 

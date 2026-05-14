@@ -729,6 +729,7 @@
         COMMON400_002: "요청 경로가 올바르지 않습니다. 다시 시도해 주세요.",
         COMMON400_003: "필요한 조회 조건이 빠졌습니다. 날짜와 테마를 다시 확인해 주세요.",
         COMMON400_004: "입력 형식이 올바르지 않습니다. 날짜와 시간 형식을 다시 확인해 주세요.",
+        COMMON400_005: "조회 조건 형식이 올바르지 않습니다. 날짜 형식을 다시 확인해 주세요.",
         COMMON500_001: "문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
     });
 
@@ -804,7 +805,7 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
+            const response = await fetch(`/api/v1/themes/popular?${searchParams.toString()}`);
             await ensureOk(response, "인기 테마를 불러오지 못했습니다.");
 
             state.popularThemeProjections = await response.json();
@@ -937,7 +938,7 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/reservation/times?${searchParams.toString()}`);
+            const response = await fetch(`/api/v1/reservation/times/availability?${searchParams.toString()}`);
             await ensureOk(response, "가능 시간을 불러오지 못했습니다.");
 
             const times = await response.json();

@@ -31,6 +31,10 @@ public class ReservationService {
         return reservationDao.findAllReservations();
     }
 
+    public List<Reservation> getUserReservations(String userName) {
+        return reservationDao.findAllReservationsByUserName(userName);
+    }
+
     @Transactional
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         LocalTime startAt = reservationTimeDao.findReservationTimeById(timeId).getStartAt();

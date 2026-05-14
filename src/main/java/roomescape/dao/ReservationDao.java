@@ -40,6 +40,28 @@ public class ReservationDao {
         return reservations;
     }
 
+    public List<Reservation> findAllReservationsByUserName(String userName) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at,
+                    r.theme_id
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                  ON r.time_id = t.id
+                WHERE r.name = ?
+                """;
+        List<Reservation> reservations = jdbcTemplate.query(
+                sql,
+                reservationRowMapper(),
+                userName
+        );
+        return reservations;
+    }
+
     public Reservation findReservationById(Long id) {
         String sql = """
                 SELECT
