@@ -3,6 +3,7 @@ package roomescape.reservation;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
@@ -52,8 +53,13 @@ public class ReservationService {
                 reservationTime.getId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
-        Reservation saved = reservationRepository.save(reservation);
-        return ReservationResponse.from(saved);
+
+        try {
+            Reservation saved = reservationRepository.save(reservation);
+            return ReservationResponse.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+        }
     }
 
     public List<ReservationResponse> read() {
@@ -96,10 +102,13 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 
-        Reservation updated = reservation.change(theme, reservationUpdateRequest.date(), reservationTime,
-                LocalDateTime.now(clock));
-        reservationRepository.update(updated);
-
-        return ReservationResponse.from(updated);
+        try {
+            Reservation updated = reservation.change(theme, reservationUpdateRequest.date(), reservationTime,
+                    LocalDateTime.now(clock));
+            reservationRepository.update(updated);
+            return ReservationResponse.from(updated);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+        }
     }
 }

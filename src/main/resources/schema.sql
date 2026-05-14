@@ -21,13 +21,19 @@ CREATE TABLE IF NOT EXISTS theme
 
 CREATE TABLE IF NOT EXISTS reservation
 (
-    id        BIGINT       NOT NULL AUTO_INCREMENT,
-    user_name VARCHAR(255) NOT NULL,
-    theme_id  BIGINT       NOT NULL,
-    date      DATE         NOT NULL,
-    time_id   BIGINT       NOT NULL,
-    deleted_at TIMESTAMP NULL,
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    user_name  VARCHAR(255) NOT NULL,
+    theme_id   BIGINT       NOT NULL,
+    date       DATE         NOT NULL,
+    time_id    BIGINT       NOT NULL,
+    deleted_at TIMESTAMP    NULL,
+    active_key VARCHAR(255) GENERATED ALWAYS AS (
+        CASE WHEN deleted_at IS NULL
+             THEN CONCAT(date, '|', theme_id, '|', time_id)
+        END
+    ),
     PRIMARY KEY (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    UNIQUE (active_key)
 );
