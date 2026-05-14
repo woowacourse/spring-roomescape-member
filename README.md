@@ -80,7 +80,7 @@
 
 ### 3단계 - 내 예약 조회/변경/취소
 
-- [ ] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
+- [x] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
 - [ ] 사용자가 본인의 예약을 취소할 수 있다.
 - [ ] 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
 - [ ] 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
@@ -212,13 +212,14 @@ Content-Type: application/json
 | 기능           | 메서드 / URL                                    | 요청 본문                               | 응답 본문                                                                                               |
 |--------------|----------------------------------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------|
 | (어드민)        |                                              |
+| 모든 예약 조회     | `GET /admin/reservations`                    |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
 | 시간 추가        | `POST /admin/times`                          | `{startAt}`                         | `{id, startAt}`                                                                                     |
 | 시간 삭제        | `DELETE /admin/times/{id}`                   |                                     |                                                                                                     |
 | 테마 추가        | `POST /admin/themes`                         | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl, runtime}`                                                    |
 | 테마 삭제        | `DELETE /admin/themes/{id}`                  |                                     |                                                                                                     |
 | (유저)         |                                              |                                     |
 | 예약 추가        | `POST /reservations`                         | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
-| 예약 조회        | `GET /reservations`                          |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 이름으로 예약 조회   | `GET /reservations?name={}`                  |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
 | 예약 삭제        | `DELETE /reservations/{id}`                  |                                     |                                                                                                     |
 | 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |
 | 예약 가능한 시간 조회 | `GET /times/available/date={}&themeId={}`    |                                     | `[{id, startAt}, ...]`                                                                              |

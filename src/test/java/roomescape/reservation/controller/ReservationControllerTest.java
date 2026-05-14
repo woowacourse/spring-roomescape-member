@@ -82,7 +82,7 @@ class ReservationControllerTest {
         );
         postReservation(request);
 
-        mockMvc.perform(get("/reservations"))
+        mockMvc.perform(get("/admin/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].name", hasItem("밀란")))
                 .andExpect(jsonPath("$[*].date", hasItem("2026-05-10")))
@@ -105,9 +105,28 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/{id}", id))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/reservations"))
+        mockMvc.perform(get("/admin/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(0));
+    }
+
+    @Test
+    void 이름으로_예약들을_조회한다() throws Exception {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        Map<String, Object> request = reservationRequestBody(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        postReservation(request);
+
+        mockMvc.perform(get("/reservations?name=밀란")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].name", hasItem("밀란")));
     }
 
     @Test

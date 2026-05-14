@@ -21,7 +21,7 @@ import roomescape.theme.entity.Theme;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final String SELECT_RESERVATION_WITH_TIME = """
+    private static final String SELECT_RESERVATION_WITH_TIME_AND_THEME = """
             SELECT
                 r.id AS reservation_id,
                 r.name AS reservation_name,
@@ -97,7 +97,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = ?";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = ?";
 
         List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
 
@@ -106,8 +106,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = SELECT_RESERVATION_WITH_TIME + "ORDER BY r.id";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "ORDER BY r.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByName(String name) {
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     @Override

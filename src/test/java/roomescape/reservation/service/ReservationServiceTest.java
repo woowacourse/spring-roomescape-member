@@ -182,4 +182,22 @@ class ReservationServiceTest {
                 .isInstanceOf(ReservationPastDateTimeException.class);
     }
 
+    @Test
+    void 이름으로_예약들을_조회한다() {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        ReservationRequest reservationRequest = reservationRequest(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation savedReservation = reservationService.save(reservationRequest);
+
+        List<Reservation> reservations = reservationService.findMyReservations("밀란");
+
+        assertThat(reservations).contains(savedReservation);
+
+    }
+
 }

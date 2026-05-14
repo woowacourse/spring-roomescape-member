@@ -62,6 +62,11 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> findMyReservations(String name) {
+        return reservationRepository.findAllByName(name);
+    }
+
     @Transactional
     public void deleteById(Long id) {
         int affected = reservationRepository.deleteById(id);

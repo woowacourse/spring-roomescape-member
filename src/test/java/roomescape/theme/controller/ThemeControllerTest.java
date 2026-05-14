@@ -43,7 +43,7 @@ class ThemeControllerTest {
     @Test
     void 최근_1주_동안_예약이_많은_테마_상위_10개를_조회한다() throws Exception {
         mockMvc.perform(get("/themes/popular")
-                        .queryParam("days", "7")
+                        .queryParam("recentDays", "7")
                         .queryParam("limit", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)))
