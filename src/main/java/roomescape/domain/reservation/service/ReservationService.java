@@ -62,27 +62,14 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveReservationByUser(ReservationCreateRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+        validateReservationDateIsNotInPast(request.date());
 
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+        ReservationTime time = findTimeByIdOrThrow(request.timeId());
+        validateReservationTimeIsNotInPastWhenToday(request.date(), time.getStartAt());
 
-        if (request.date().isBefore(LocalDate.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
+        Theme theme = findThemeByIdOrThrow(request.themeId());
 
-        if (request.date().isEqual(LocalDate.now(clock)) && time.getStartAt().isBefore(LocalTime.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
-
-        if (reservationRepository.existsByThemeIdAndDateAndTimeId(
-                request.themeId(),
-                request.date(),
-                request.timeId())
-        ) {
-            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
-        }
+        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
 
         Reservation reservation = Reservation.create(
                 request.username(),
@@ -98,19 +85,10 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveReservationByAdmin(ReservationCreateRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+        ReservationTime time = findTimeByIdOrThrow(request.timeId());
+        Theme theme = findThemeByIdOrThrow(request.themeId());
 
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
-
-        if (reservationRepository.existsByThemeIdAndDateAndTimeId(
-                request.themeId(),
-                request.date(),
-                request.timeId())
-        ) {
-            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
-        }
+        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
 
         Reservation reservation = Reservation.create(
                 request.username(),
@@ -126,35 +104,17 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse updateReservationByUser(Long id, ReservationUpdateRequest request) {
-        if (request.date().isBefore(LocalDate.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
+        validateReservationDateIsNotInPast(request.date());
 
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        ReservationTime newTime = findTimeByIdOrThrow(request.timeId());
+        validateReservationTimeIsNotInPastWhenToday(request.date(), newTime.getStartAt());
 
-        Theme newTheme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+        Reservation reservation = findReservationByIdOrThrow(id);
+        validateReservationIsNotInPast(reservation);
 
-        ReservationTime newTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+        Theme newTheme = findThemeByIdOrThrow(request.themeId());
 
-        if (request.date().isEqual(LocalDate.now(clock)) && newTime.getStartAt().isBefore(LocalTime.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
-
-        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
-
-        if (reservation.getDate().isEqual(LocalDate.now(clock)) && reservation.getTime().getStartAt()
-                .isBefore(LocalTime.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
-
-        if (reservationRepository.existsByThemeIdAndDateAndTimeId(newTheme.getId(), request.date(), newTime.getId())) {
-            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
-        }
+        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
 
         reservation.update(newTheme, request.date(), newTime);
         reservationRepository.update(id, reservation);
@@ -164,18 +124,11 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse updateReservationByAdmin(Long id, ReservationUpdateRequest request) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = findReservationByIdOrThrow(id);
+        Theme newTheme = findThemeByIdOrThrow(request.themeId());
+        ReservationTime newTime = findTimeByIdOrThrow(request.timeId());
 
-        Theme newTheme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
-
-        ReservationTime newTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        if (reservationRepository.existsByThemeIdAndDateAndTimeId(newTheme.getId(), request.date(), newTime.getId())) {
-            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
-        }
+        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
 
         reservation.update(newTheme, request.date(), newTime);
         reservationRepository.update(id, reservation);
@@ -185,17 +138,9 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationByUser(Long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = findReservationByIdOrThrow(id);
 
-        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
-
-        if (reservation.getDate().isEqual(LocalDate.now(clock)) && reservation.getTime().getStartAt()
-                .isBefore(LocalTime.now(clock))) {
-            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
-        }
+        validateReservationIsNotInPast(reservation);
 
         reservationRepository.deleteById(id);
     }
@@ -203,8 +148,55 @@ public class ReservationService {
     @Transactional
     public void deleteReservationByAdmin(Long id) {
         int deletedCount = reservationRepository.deleteById(id);
+
         if (deletedCount == 0) {
             throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
         }
+    }
+
+    private void validateReservationDateIsNotInPast(LocalDate date) {
+        LocalDate nowDate = LocalDate.now(clock);
+
+        if (date.isBefore(nowDate)) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+    }
+
+    private void validateReservationTimeIsNotInPastWhenToday(LocalDate date, LocalTime time) {
+        LocalDate nowDate = LocalDate.now(clock);
+        LocalTime nowTime = LocalTime.now(clock);
+
+        if (date.isEqual(nowDate) && time.isBefore(nowTime)) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+    }
+
+    private void validateReservationIsNotInPast(Reservation reservation) {
+        validateReservationDateIsNotInPast(reservation.getDate());
+        validateReservationTimeIsNotInPastWhenToday(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
+        );
+    }
+
+    private void validateDuplicateReservation(Long themeId, LocalDate date, Long timeId) {
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, date, timeId)) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
+    }
+
+    private Reservation findReservationByIdOrThrow(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private ReservationTime findTimeByIdOrThrow(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+    }
+
+    private Theme findThemeByIdOrThrow(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
     }
 }
