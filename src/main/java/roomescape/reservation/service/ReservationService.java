@@ -41,10 +41,8 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요."));
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요."));
+        ReservationTime time = findTime(timeId);
+        Theme theme = findTheme(themeId);
 
         Reservation reservation = new Reservation(name, date, time, theme);
         validateNotPast(reservation, "현재 시각 이후의 날짜와 시간을 선택해주세요.");
@@ -75,25 +73,29 @@ public class ReservationService {
 
     @Transactional
     public void cancel(Long id, String name) {
-        Reservation reservation = reservationRepository.findByIdAndName(id, name)
-                .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
-
+        Reservation reservation = findByIdAndName(id, name);
         validateNotPast(reservation, "이미 지난 예약은 취소할 수 없습니다.");
-
-        if (!reservationRepository.deleteById(reservation.getId())) {
-            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
-        }
+        deleteReservation(id);
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationRepository.deleteById(id)) {
-            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
-        }
+        deleteReservation(id);
     }
+
     private ReservationTime findTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요."));
+    }
+
+    private Theme findTheme(Long themeId){
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요."));
+    }
+
+    private Reservation findByIdAndName(Long id, String name){
+        return reservationRepository.findByIdAndName(id, name)
+                .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
     }
 
     private Reservation findReservationByIdAndName(Long id, String name) {
@@ -120,6 +122,12 @@ public class ReservationService {
     private void updateReservation(Reservation reservation) {
         if (!reservationRepository.update(reservation)) {
             throw new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+        }
+    }
+
+    private void deleteReservation(Long id){
+        if (!reservationRepository.deleteById(id)) {
+            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
         }
     }
 }
