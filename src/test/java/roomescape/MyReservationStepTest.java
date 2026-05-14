@@ -354,6 +354,71 @@ public class MyReservationStepTest extends IntegrationTest {
         }
     }
 
+    @Nested
+    @DisplayName("내 예약 생애주기 시나리오")
+    class MyReservationLifecycle {
+
+        @Test
+        @DisplayName("예약 → 조회 → 변경 → 조회 → 취소 → 조회 흐름이 자연스럽게 이어진다")
+        void 예약_생애주기() {
+            // 1) 예약 생성
+            Map<String, Object> createBody = new HashMap<>();
+            createBody.put("name", "브라운");
+            createBody.put("date", FUTURE_DATE_1.toString());
+            createBody.put("timeId", timeId10);
+            createBody.put("themeId", themeId);
+
+            Long reservationId = RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(createBody)
+                    .when().post("/user/reservations")
+                    .then().log().all()
+                    .statusCode(201)
+                    .extract().jsonPath().getLong("id");
+
+            // 2) 조회 → 1건 보임
+            RestAssured.given()
+                    .when().get("/user/reservations?name=브라운")
+                    .then().statusCode(200)
+                    .body("size()", is(1))
+                    .body("[0].date", is(FUTURE_DATE_1.toString()))
+                    .body("[0].time.startAt", is("10:00"));
+
+            // 3) 변경 (date, time)
+            Map<String, Object> updateBody = new HashMap<>();
+            updateBody.put("name", "브라운");
+            updateBody.put("date", FUTURE_DATE_2.toString());
+            updateBody.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(updateBody)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(200);
+
+            // 4) 다시 조회 → 변경된 정보로 보임
+            RestAssured.given()
+                    .when().get("/user/reservations?name=브라운")
+                    .then().statusCode(200)
+                    .body("size()", is(1))
+                    .body("[0].date", is(FUTURE_DATE_2.toString()))
+                    .body("[0].time.startAt", is("11:00"));
+
+            // 5) 취소
+            RestAssured.given().log().all()
+                    .when().delete("/user/reservations/" + reservationId + "?name=브라운")
+                    .then().log().all()
+                    .statusCode(204);
+
+            // 6) 다시 조회 → 빈 목록
+            RestAssured.given()
+                    .when().get("/user/reservations?name=브라운")
+                    .then().statusCode(200)
+                    .body("size()", is(0));
+        }
+    }
+
 
     private Long insertReservationAndReturnId(String name, LocalDate date, Long timeId, Long themeId) {
         jdbcTemplate.update(
