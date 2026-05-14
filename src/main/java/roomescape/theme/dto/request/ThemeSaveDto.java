@@ -1,7 +1,7 @@
 package roomescape.theme.dto.request;
 
-import roomescape.common.validation.annotation.NotBlank;
-import roomescape.common.validation.annotation.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ThemeSaveDto(
 
@@ -11,7 +11,7 @@ public record ThemeSaveDto(
         @NotBlank(message = "description은 비어있을 수 없습니다.")
         String description,
 
-        @NotNull
+        @NotNull(message = "thumbnailUrl은 필수 입력값입니다.")
         String thumbnailUrl
 ) {
 }

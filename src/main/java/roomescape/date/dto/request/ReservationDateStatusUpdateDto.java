@@ -1,6 +1,9 @@
 package roomescape.date.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record ReservationDateStatusUpdateDto(
-        boolean isActive
+        @NotNull(message = "isActive는 필수 입력입니다.")
+        Boolean isActive
 ) {
 }

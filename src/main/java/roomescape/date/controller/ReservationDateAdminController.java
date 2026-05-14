@@ -40,7 +40,7 @@ public class ReservationDateAdminController {
 
     @PatchMapping("/dates/{id}/status")
     public ResponseEntity<ReservationDateDetailDto> updateStatus(
-            @PathVariable Long id, @RequestBody ReservationDateStatusUpdateDto dto) {
+            @PathVariable Long id, @Validated @RequestBody ReservationDateStatusUpdateDto dto) {
         ReservationDate reservationDate = reservationDateService.updateStatus(id, dto.isActive());
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
         return ResponseEntity.ok(responseData);

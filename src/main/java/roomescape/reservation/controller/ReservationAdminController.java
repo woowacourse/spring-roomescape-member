@@ -46,7 +46,7 @@ public class ReservationAdminController {
     @PatchMapping("/reservations/{id}/schedule")
     public ResponseEntity<ReservationDetailDto> updateSchedule(
             @PathVariable Long id,
-            @RequestBody ReservationChangeScheduleDto dto
+            @Validated @RequestBody ReservationChangeScheduleDto dto
     ) {
         Reservation reservation = reservationService.changeScheduleByManager(id, dto.dateId(), dto.timeId());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);

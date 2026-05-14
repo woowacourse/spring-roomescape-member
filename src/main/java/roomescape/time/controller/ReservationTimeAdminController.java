@@ -39,7 +39,7 @@ public class ReservationTimeAdminController {
 
     @PatchMapping("/times/{id}/status")
     public ResponseEntity<ReservationTimeDetailDto> updateStatus(
-            @PathVariable Long id, @RequestBody ReservationTimeStatusUpdateDto dto
+            @PathVariable Long id, @Validated @RequestBody ReservationTimeStatusUpdateDto dto
     ) {
         ReservationTime reservationTime = reservationTimeService.updateStatus(id, dto.isActive());
         ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);

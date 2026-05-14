@@ -1,6 +1,6 @@
 package roomescape.date.dto.request;
 
-import roomescape.common.validation.annotation.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 

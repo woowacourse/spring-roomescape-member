@@ -1,11 +1,11 @@
 package roomescape.reservation.dto.request;
 
-import roomescape.common.validation.annotation.NotBlank;
-import roomescape.common.validation.annotation.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ReservationSaveDto(
 
-        @NotBlank(message = "name은 비어있을 수 없습니다.")
+        @NotBlank(message = "name(예약자 이름)은 비어있을 수 없습니다.")
         String name,
 
         @NotNull(message = "dateId는 필수 입력값입니다.")

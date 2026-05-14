@@ -38,7 +38,7 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}/cancel")
-    public ResponseEntity<ReservationDetailDto> cancel(@PathVariable Long id, @RequestBody ReservationCancelDto dto) {
+    public ResponseEntity<ReservationDetailDto> cancel(@PathVariable Long id, @Validated @RequestBody ReservationCancelDto dto) {
         Reservation reservation = reservationService.cancel(id, dto.name());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
@@ -48,7 +48,7 @@ public class ReservationController {
     public ResponseEntity<ReservationDetailDto> updateSchedule(
             @PathVariable Long id,
             @RequestParam String name,
-            @RequestBody ReservationChangeScheduleDto dto
+            @Validated @RequestBody ReservationChangeScheduleDto dto
     ) {
         Reservation reservation = reservationService.changeSchedule(id, name, dto.dateId(), dto.timeId());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
