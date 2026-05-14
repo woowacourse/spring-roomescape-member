@@ -61,7 +61,6 @@ class ReservationControllerTest {
 
     }
 
-    // 과거 날짜로는 예약이 실패한다.
     @DisplayName("예약은 오늘 이후 날짜로만 가능하다.")
     @Test
     void reservationDateMustBeFuture() {
@@ -70,6 +69,31 @@ class ReservationControllerTest {
         params.put("date", LocalDate.now().minusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(500);
+    }
+
+    // 중복된 예약은 실패한다.
+    @DisplayName("중복된 예약은 실패한다.")
+    @Test
+    void duplicateReservation() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
