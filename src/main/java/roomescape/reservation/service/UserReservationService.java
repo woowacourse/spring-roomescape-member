@@ -85,12 +85,13 @@ public class UserReservationService {
         }
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
-        if (takenTimeIds.stream().anyMatch(tid -> tid.equals(newTimeId))) {
+        boolean isOwnCurrentSlot = newDate.equals(reservation.getDate()) && newTimeId == reservation.getTime().id();
+        if (!isOwnCurrentSlot && takenTimeIds.stream().anyMatch(tid -> tid.equals(newTimeId))) {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 
         reservationRepository.update(id, newDate, newTimeId);
-        return new Reservation(id, name, newDate, newTime, reservation.getTheme());
+        return new Reservation(id, reservation.getName(), newDate, newTime, reservation.getTheme());
     }
 
     private void validateOwnerAndActive(Reservation reservation, String name) {
