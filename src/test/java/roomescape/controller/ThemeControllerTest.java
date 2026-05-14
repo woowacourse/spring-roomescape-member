@@ -96,12 +96,12 @@ public class ThemeControllerTest {
     }
 
     @Test
-    public void 테마_삭제_시_예약이_존재하는_테마를_삭제하는_경우_409를_반환한다() {
+    public void 테마_삭제_시_예약이_존재하는_테마를_삭제하는_경우_422를_반환한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("admin/themes/1")
                 .then().log().all()
-                .statusCode(409)
+                .statusCode(422)
                 .body("message", is(ErrorCode.THEME_HAS_RESERVATIONS.getMessage()));
     }
 

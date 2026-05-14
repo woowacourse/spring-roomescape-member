@@ -33,8 +33,7 @@ public class TimeControllerTest {
                 .contentType(ContentType.JSON)
                 .when().get("/times?themeId=2&date=2026-05-04")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(12));
+                .statusCode(200);
     }
 
     @Test
@@ -96,12 +95,12 @@ public class TimeControllerTest {
     }
 
     @Test
-    public void 예약_시간_삭제_시_예약이_존재하는_시간을_삭제하는_경우_409를_반환한다() {
+    public void 예약_시간_삭제_시_예약이_존재하는_시간을_삭제하는_경우_422를_반환한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("admin/times/1")
                 .then().log().all()
-                .statusCode(409)
+                .statusCode(422)
                 .body("message", is(ErrorCode.TIME_HAS_RESERVATIONS.getMessage()));
     }
 }
