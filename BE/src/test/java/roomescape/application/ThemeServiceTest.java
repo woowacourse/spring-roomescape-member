@@ -19,7 +19,7 @@ import roomescape.domain.ThemeRepository;
 import roomescape.fake.FakePopularThemeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.customException.BusinessException;
 
 class ThemeServiceTest {
 

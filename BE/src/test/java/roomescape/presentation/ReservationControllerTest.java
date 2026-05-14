@@ -34,8 +34,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.auth.AdminInterceptor;
-import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ReservationErrorCode;
+import roomescape.global.exception.customException.BusinessException;
+import roomescape.global.exception.customException.EntityNotFoundException;
 
 @WebMvcTest(ReservationController.class)
 @Import({AdminInterceptor.class, ReservationControllerTest.TestWebConfig.class})
@@ -159,7 +160,7 @@ class ReservationControllerTest {
     void createReservation_fail_with_business_exception() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
-        willThrow(new BusinessException("이미 예약된 시간입니다."))
+        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS))
                 .given(reservationService)
                 .saveReservation("브라운", date, 1L, 1L);
 
@@ -174,7 +175,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다."));
+                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다. 다른 시간을 선택해 주세요."));
     }
 
     @Test
@@ -273,7 +274,7 @@ class ReservationControllerTest {
     @DisplayName("PATCH /reservations/me/{id} - 이미 예약된 시간으로 변경하면 에러 응답을 반환한다.")
     void updateMyReservation_fail_with_duplicate_reservation() throws Exception {
         // given
-        willThrow(new BusinessException("이미 예약된 시간입니다."))
+        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS))
                 .given(reservationService)
                 .updateReservationSchedule(LocalDate.of(2026, 5, 5), 2L, 1L, "브라운");
 
@@ -283,7 +284,7 @@ class ReservationControllerTest {
                         .param("date", "2026-05-05")
                         .param("timeId", "2"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다."));
+                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다. 다른 시간을 선택해 주세요."));
     }
 
     @Test
@@ -314,7 +315,7 @@ class ReservationControllerTest {
     @DisplayName("DELETE /reservations/me/{id} - 존재하지 않는 예약이면 에러 응답을 반환한다.")
     void deleteMyReservation_fail_with_not_found_reservation() throws Exception {
         // given
-        willThrow(new EntityNotFoundException("예약 ID를 찾을 수 없습니다."))
+        willThrow(new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND))
                 .given(reservationService)
                 .deleteReservationByName(1L, "브라운");
 
@@ -322,14 +323,14 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/me/1")
                         .param("name", "브라운"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("예약 ID를 찾을 수 없습니다."));
+                .andExpect(jsonPath("$.message").value("예약을 찾을 수 없습니다."));
     }
 
     @Test
     @DisplayName("DELETE /reservations/me/{id} - 본인 예약이 아니면 에러 응답을 반환한다.")
     void deleteMyReservation_fail_with_invalid_owner() throws Exception {
         // given
-        willThrow(new BusinessException("자신의 예약이 아닙니다."))
+        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_DELETE_OWNER_MISMATCH))
                 .given(reservationService)
                 .deleteReservationByName(1L, "브라운");
 
@@ -337,14 +338,14 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/me/1")
                         .param("name", "브라운"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("자신의 예약이 아닙니다."));
+                .andExpect(jsonPath("$.message").value("본인의 예약만 취소할 수 있습니다."));
     }
 
     @Test
     @DisplayName("DELETE /reservations/me/{id} - 지난 예약이면 취소할 수 없다는 에러 응답을 반환한다.")
     void deleteMyReservation_fail_with_past_reservation() throws Exception {
         // given
-        willThrow(new BusinessException("이미 지난 예약은 취소할 수 없습니다."))
+        willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_PAST))
                 .given(reservationService)
                 .deleteReservationByName(1L, "브라운");
 

@@ -10,16 +10,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.fake.FakeThemeRepository;
-import roomescape.global.exception.BusinessException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.global.exception.EntityNotFoundException;
+import roomescape.fake.FakeThemeRepository;
+import roomescape.global.exception.customException.BadRequestException;
+import roomescape.global.exception.customException.BusinessException;
+import roomescape.global.exception.customException.EntityNotFoundException;
 import roomescape.presentation.dto.ReservationRequest;
 
 class ReservationServiceTest {
@@ -336,7 +337,7 @@ class ReservationServiceTest {
                 "인직"
         ))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("수정할 예약을 찾을 수 없습니다.");
+                .hasMessageContaining("예약을 찾을 수 없습니다.");
     }
 
     @Test
@@ -440,7 +441,7 @@ class ReservationServiceTest {
     @DisplayName("예약 ID가 null이면 삭제 시 예외 발생")
     void deleteReservation_fail_with_null_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(null))
-                .isInstanceOf(EntityNotFoundException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("예약을 식별할 값이 비어있습니다.");
     }
 
@@ -448,7 +449,7 @@ class ReservationServiceTest {
     @DisplayName("이름이 비어있으면 자신의 예약 삭제 시 예외 발생")
     void deleteReservationByName_fail_with_blank_name() {
         assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, " "))
-                .isInstanceOf(EntityNotFoundException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("예약자 이름을 입력해 주세요.");
     }
 }

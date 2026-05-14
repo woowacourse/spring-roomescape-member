@@ -17,7 +17,7 @@ import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.customException.BusinessException;
 
 class ReservationTimeServiceTest {
 
