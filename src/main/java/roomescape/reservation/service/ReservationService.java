@@ -1,8 +1,11 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
@@ -44,7 +47,16 @@ public class ReservationService {
         reservationDao.update(id, name, date, timeId);
     }
 
-    public void delete(Long id, String name) {
+    public void delete(Long id, String name, LocalDateTime now) {
+        Reservation reservation = reservationDao.selectById(id);
+
+        if (!reservation.getName().equals(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+
+        if (reservation.isPast(now)) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
         reservationDao.delete(id, name);
     }
 }

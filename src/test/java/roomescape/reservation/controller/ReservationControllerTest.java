@@ -77,13 +77,29 @@ public class ReservationControllerTest {
     @Test
     void 예약_삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/api/reservations/2?name=도우너")
+                .when().delete("/api/reservations/14?name=도우너")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/api/reservations?name=도우너")
                 .then().log().all()
-                .body("count", is(0));
+                .body("count", is(1));
+    }
+
+    @Test
+    void 과거_예약_취소_테스트() {
+        RestAssured.given().log().all()
+                .when().delete("/api/reservations/2?name=도우너")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 본인_예약이_아닌_예약_삭제_테스트() {
+        RestAssured.given().log().all()
+                .when().delete("/api/reservations/2?name=브라운")
+                .then().log().all()
+                .statusCode(403);
     }
 }

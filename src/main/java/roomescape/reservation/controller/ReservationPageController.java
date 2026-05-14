@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,7 +55,7 @@ public class ReservationPageController {
 
     @PostMapping("/reservations/{id}/deleteById")
     public String deleteReservation(@PathVariable Long id, @RequestParam String name, RedirectAttributes redirectAttributes) {
-        reservationService.delete(id, name);
+        reservationService.delete(id, name, LocalDateTime.now());
         redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
         return "redirect:/";
     }

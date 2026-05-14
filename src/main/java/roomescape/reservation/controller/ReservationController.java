@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id, @RequestParam String name) {
-        reservationService.delete(id, name);
+        reservationService.delete(id, name, LocalDateTime.now());
         return ResponseEntity.noContent().build();
     }
 }

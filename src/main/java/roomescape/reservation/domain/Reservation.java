@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.reservationTime.domain.ReservationTime;
 
 public class Reservation {
@@ -43,6 +45,15 @@ public class Reservation {
 
     public Long getThemeId() {
         return themeId;
+    }
+
+    public boolean isPast(LocalDateTime now){
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        if (date.isBefore(nowDate)) return true;
+        if (date.equals(nowDate) && time.isBefore(nowTime)) return true;
+        return false;
     }
 
     private void validateName(String name) {
