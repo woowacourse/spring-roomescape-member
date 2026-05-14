@@ -1,14 +1,11 @@
 package roomescape.reservationTime.application;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.ReservationTimeErrorCode;
-import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
@@ -20,12 +17,16 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeValidator reservationTimeValidator;
 
     public ReservationTimeService(
-            ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository
+            ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository,
+            ReservationTimeValidator reservationTimeValidator
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
+        this.reservationTimeValidator = reservationTimeValidator;
     }
 
     @Transactional
@@ -54,9 +55,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteTime(Long id) {
-        if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new BusinessException(ReservationTimeErrorCode.RESERVATION_TIME_IN_USE);
-        }
+        reservationTimeValidator.validateNotReferencedByReservation(id);
         reservationTimeRepository.deleteById(id);
     }
 }
