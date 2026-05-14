@@ -1,8 +1,6 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,14 +35,6 @@ public class Reservation {
                 .build();
     }
 
-    public void validateNotPast(LocalTime startAt, LocalDateTime currentDateTime) {
-        validateNotBefore(startAt, currentDateTime, "현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
-    }
-
-    public void validateDeletable(LocalTime startAt, LocalDateTime currentDateTime) {
-        validateNotBefore(startAt, currentDateTime, "이미 지나간 예약은 삭제할 수 없습니다.");
-    }
-
     public Reservation updateDateAndTime(LocalDate date, Long timeId) {
         return Reservation.builder()
                 .id(this.id)
@@ -53,14 +43,6 @@ public class Reservation {
                 .themeId(this.themeId)
                 .timeId(timeId)
                 .build();
-    }
-
-    private void validateNotBefore(LocalTime startAt, LocalDateTime currentDateTime, String errorMessage) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
-
-        if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new RoomEscapeException(errorMessage);
-        }
     }
 
     private static String requireName(String name) {
