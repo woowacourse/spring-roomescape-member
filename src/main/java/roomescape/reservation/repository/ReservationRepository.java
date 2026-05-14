@@ -40,8 +40,31 @@ public class ReservationRepository {
                 ORDER BY r.id
                 LIMIT ? OFFSET ?
                 """;
-        int offset = page * size;
+        int offset = Math.max(page, 0) * size;
         return jdbcTemplate.query(sql, reservationRowsMapper(), size, offset);
+    }
+
+
+    public List<Reservation> findByName(String name, int page, int size) {
+        String sql = """
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id    AS theme_id,
+                       th.name    AS theme_name,
+                       th.description    AS theme_description,
+                       th.thumbnail    AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.name = ?
+                ORDER BY r.id
+                LIMIT ? OFFSET ?
+                """;
+        int offset = Math.max(page, 0) * size;
+        return jdbcTemplate.query(sql, reservationRowsMapper(), name, size, offset);
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

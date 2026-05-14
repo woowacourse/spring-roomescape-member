@@ -22,16 +22,25 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping(params = "!name")
     public ResponseEntity<ReservationResponses> findReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         List<Reservation> reservations = reservationService.findReservations(page, size);
-        List<ReservationResponse> response = reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(new ReservationResponses(response));
+        ReservationResponses response = ReservationResponses.from(reservations);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping(params = "name")
+    public ResponseEntity<ReservationResponses> findUserReservations(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<Reservation> reservations = reservationService.findUserReservations(name, page, size);
+        ReservationResponses response = ReservationResponses.from(reservations);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping

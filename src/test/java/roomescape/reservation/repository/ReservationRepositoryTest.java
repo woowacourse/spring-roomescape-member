@@ -86,6 +86,41 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void 이름으로_사용자_예약_목록을_페이지_단위로_조회한다() {
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 11), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 12), time, theme));
+
+        List<Reservation> result = reservationRepository.findByName("브라운", 0, 10);
+
+        assertThat(result).hasSize(2);
+        assertThat(result)
+                .extracting(Reservation::getName)
+                .containsExactly("브라운", "브라운");
+        assertThat(result)
+                .extracting(Reservation::getDate)
+                .containsExactly(LocalDate.of(2026, 5, 10), LocalDate.of(2026, 5, 12));
+    }
+
+    @Test
+    void 이름으로_사용자_예약_목록을_조회할_때_페이지를_적용한다() {
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 11), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 12), time, theme));
+
+        List<Reservation> result = reservationRepository.findByName("브라운", 1, 2);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getDate()).isEqualTo(LocalDate.of(2026, 5, 12));
+    }
+
+    @Test
     void 예약을_저장한다() {
         Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 

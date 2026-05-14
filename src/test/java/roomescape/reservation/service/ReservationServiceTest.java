@@ -64,6 +64,25 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 사용자_예약_목록을_조회하면_Repository_findByName_결과를_반환한다() {
+        List<Reservation> reservations = List.of(
+                new Reservation(
+                        1L,
+                        "브라운",
+                        LocalDate.of(2026, 5, 10),
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")
+                )
+        );
+        when(reservationRepository.findByName("브라운", 1, 5)).thenReturn(reservations);
+
+        List<Reservation> result = reservationService.findUserReservations("브라운", 1, 5);
+
+        verify(reservationRepository).findByName("브라운", 1, 5);
+        assertThat(result).isSameAs(reservations);
+    }
+
+    @Test
     void 예약을_생성하면_시간과_테마를_조회하고_예약을_저장한_뒤_예약을_반환한다() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "공포방", "무서운방입니다.", "image-url");

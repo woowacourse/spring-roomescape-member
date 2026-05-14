@@ -65,6 +65,30 @@ class ReservationE2ETest {
     }
 
     @Test
+    @DisplayName("GET /reservations?name={name} - 사용자 예약 목록을 조회한다")
+    void findUserReservations() {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2025-12-25", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "어셔", "2025-12-26", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2025-12-27", 1L, 1L);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .queryParam("page", 0)
+                .queryParam("size", 10)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(2))
+                .body("reservations[0].name", is("브라운"))
+                .body("reservations[0].date", is("2025-12-25"))
+                .body("reservations[1].name", is("브라운"))
+                .body("reservations[1].date", is("2025-12-27"));
+    }
+
+    @Test
     @DisplayName("POST /reservations - 예약을 생성하면 201과 ReservationResponse을 반환한다")
     void createReservation() {
         String futureDate = LocalDate.now().plusDays(7).toString();

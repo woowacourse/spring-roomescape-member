@@ -74,6 +74,32 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_예약_목록_조회_요청을_Service에_전달하고_결과를_반환한다() throws Exception {
+        List<Reservation> reservations = List.of(
+                new Reservation(1L, "레서",
+                        LocalDate.of(2026, 5, 6),
+                        new ReservationTime(1L, LocalTime.of(18, 0)),
+                        new Theme(1L, "공포방", "무서운방입니다.", "image-url"))
+        );
+        when(reservationService.findUserReservations("레서", 1, 5)).thenReturn(reservations);
+
+        mockMvc.perform(get("/reservations")
+                        .param("name", "레서")
+                        .param("page", "1")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations.length()").value(1))
+                .andExpect(jsonPath("$.reservations[0].id").value(1))
+                .andExpect(jsonPath("$.reservations[0].name").value("레서"))
+                .andExpect(jsonPath("$.reservations[0].date").value("2026-05-06"))
+                .andExpect(jsonPath("$.reservations[0].time.startAt").value("18:00"))
+                .andExpect(jsonPath("$.reservations[0].theme.name").value("공포방"));
+
+        verify(reservationService).findUserReservations("레서", 1, 5);
+        verify(reservationService, never()).findReservations(anyInt(), anyInt());
+    }
+
+    @Test
     void 예약_생성_요청을_받으면_DTO의_이름_날짜_시간_id_테마_id를_Service에_전달하고_결과를_반환한다() throws Exception {
         Reservation created = new Reservation(1L, "레서", LocalDate.of(2026, 5, 6),
                 new ReservationTime(1L, LocalTime.of(18,0)),
