@@ -10,6 +10,7 @@ import roomescape.exception.schedule.ScheduleNotFoundException;
 import roomescape.exception.schedule.ScheduleThemeInUseException;
 import roomescape.exception.schedule.ScheduleTimeInUseException;
 import roomescape.exception.theme.ThemeNotFoundException;
+import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
 import roomescape.schedule.dto.response.ScheduleFindResponse;
@@ -70,10 +71,9 @@ public class ScheduleService {
 
     public void validateSchedule(LocalDate date, Long timeId, Long themeId) {
         validateNotPastDate(date);
-        reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeNotFoundException(ErrorCode.RESERVATIONTIME_NOT_FOUND, timeId));
-        themeRepository.findById(themeId)
-                .orElseThrow(() -> new ThemeNotFoundException(ErrorCode.THEME_NOT_FOUND, themeId));
+        ReservationTime reservationTime = getReservationTimeOrThrow(timeId);
+        validateNotPastTime(date, reservationTime.getStartAt());
+        getThemeOrThrow(themeId);
     }
 
     public void validateNotPastDate(LocalDate date) {
@@ -89,6 +89,16 @@ public class ScheduleService {
         if (date.isEqual(currentDate) && time.isBefore(currentTime)) {
             throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
         }
+    }
+
+    private void getThemeOrThrow(Long themeId) {
+        themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeNotFoundException(ErrorCode.THEME_NOT_FOUND, themeId));
+    }
+
+    private ReservationTime getReservationTimeOrThrow(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(ErrorCode.RESERVATIONTIME_NOT_FOUND, timeId));
     }
 
     private long getScheduleIdOrThrow(LocalDate date, long timeId, long themeId) {

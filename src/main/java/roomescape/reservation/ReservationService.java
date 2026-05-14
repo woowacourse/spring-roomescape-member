@@ -27,9 +27,9 @@ public class ReservationService {
     private final ScheduleService scheduleService;
 
     public ReservationSaveResponse save(ReservationSaveRequest body) {
+        scheduleService.validateSchedule(body.date(), body.timeId(), body.themeId());
         long scheduleId = scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
         validateReservationAlreadyExistsNot(scheduleId);
-        scheduleService.validateSchedule(body.date(), body.timeId(), body.themeId());
         Reservation reservation = reservationRepository.save(body.toDomain(scheduleId));
 
         return ReservationSaveResponse.from(reservation);

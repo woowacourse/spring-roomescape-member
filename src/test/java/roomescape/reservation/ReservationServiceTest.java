@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationInternalServerErrorException;
 import roomescape.exception.reservation.ReservationNotFoundException;
+import roomescape.exception.schedule.PastScheduleException;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
@@ -379,7 +380,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("스케줄 검증이 실패할 경우 예외가 발생한다.")
+    @DisplayName("예약 요청이 들어왔을 때 스케줄 검증이 되지 않는다면 예외가 발생한다.")
     void save_실패_테스트_1() {
         // given
         ReservationSaveRequest body = new ReservationSaveRequest(
@@ -388,19 +389,12 @@ class ReservationServiceTest {
                 4L,
                 4L
         );
-        long scheduleId = 4L;
-
-        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId);
-        when(reservationRepository.existsByScheduleId(scheduleId)).thenReturn(false);
-        doThrow(IllegalStateException.class).when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        doThrow(PastScheduleException.class).when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
 
         // when, then
         assertThatThrownBy(() -> reservationService.save(body))
-                .isInstanceOf(IllegalStateException.class);
-
-        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
-        verify(reservationRepository).existsByScheduleId(scheduleId);
-        verify(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+                .isInstanceOf(PastScheduleException.class);
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
@@ -416,15 +410,17 @@ class ReservationServiceTest {
         );
         long scheduleId = 1L;
 
+        doNothing().when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
         when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId);
         when(reservationRepository.existsByScheduleId(scheduleId)).thenReturn(true);
 
+        // when, then
         assertThatThrownBy(() -> reservationService.save(body))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
 
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
         verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository).existsByScheduleId(scheduleId);
-        verify(scheduleService, never()).validateSchedule(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
@@ -441,12 +437,13 @@ class ReservationServiceTest {
 
         doThrow(IllegalStateException.class).when(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
 
+        // when, then
         assertThatThrownBy(() -> reservationService.save(body))
                 .isInstanceOf(IllegalStateException.class);
 
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
         verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).existsByScheduleId(anyLong());
-        verify(scheduleService, never()).validateSchedule(body.date(), body.timeId(), body.themeId());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
 }
