@@ -15,7 +15,6 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
     private static final String INVALID_NAME_BLANK = "이름은 필수입니다.";
     private static final String INVALID_NAME_LENGTH = "이름은 20자를 초과할 수 없습니다.";
 
-
     public ReservationCommand {
         validateName(name);
         validateDateValue(date);

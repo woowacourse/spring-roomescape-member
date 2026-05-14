@@ -27,7 +27,6 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    @Transactional
     public Theme addTheme(ReservationThemeCommand reservationThemeCommand) {
         return themeRepository.addTheme(reservationThemeCommand);
     }

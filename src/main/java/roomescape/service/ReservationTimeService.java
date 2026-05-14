@@ -31,7 +31,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.getAllReservationTime();
     }
 
-    @Transactional
     public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
         return reservationTimeRepository.addReservationTime(reservationTimeCommand);
     }

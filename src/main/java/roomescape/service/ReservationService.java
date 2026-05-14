@@ -61,7 +61,6 @@ public class ReservationService {
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);
     }
 
-    @Transactional
     public void deleteReservation(long id, String name) {
         Reservation reservation = getReservation(id);
 
@@ -76,7 +75,6 @@ public class ReservationService {
         reservationRepository.deleteReservation(id);
     }
 
-    @Transactional
     public void updateReservation(long id, String name, ReservationCommand reservationCommand) {
         Reservation reservation = getReservation(id);
 
