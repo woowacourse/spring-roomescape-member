@@ -13,13 +13,13 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
-                       Theme theme) {
+    private Reservation(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
+                        Theme theme) {
         this.id = id;
-        this.reservationName = reservationName;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this.reservationName = Objects.requireNonNull(reservationName);
+        this.date = Objects.requireNonNull(date);
+        this.time = Objects.requireNonNull(time);
+        this.theme = Objects.requireNonNull(theme);
     }
 
     public static Reservation of(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,

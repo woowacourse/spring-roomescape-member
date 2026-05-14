@@ -10,25 +10,14 @@ public class ReservationName {
 
     private final String value;
 
-    private ReservationName(String value) {
-        this.value = value;
+    public ReservationName(String value) {
+        Objects.requireNonNull(value);
+        String striped = value.strip();
+        validateLength(striped);
+        this.value = striped;
     }
-
-    public static ReservationName from(String value) {
-        validateIsNull(value);
-        String preprocessed = value.strip();
-        validateLength(preprocessed);
-
-        return new ReservationName(preprocessed);
-    }
-
-    private static void validateIsNull(String value) {
-        if (value == null) {
-            throw new RoomEscapeException(ErrorCode.NAME_MUST_NOT_BE_NULL);
-        }
-    }
-
-    public static void validateLength(String value) {
+    
+    public void validateLength(String value) {
         if (value.length() < MIN_NAME_LENGTH || value.length() > MAX_NAME_LENGTH) {
             throw new RoomEscapeException(ErrorCode.INVALID_NAME_LENGTH);
         }

@@ -33,7 +33,7 @@ class ReservationServiceTest {
     private static final String URL = "https://zeze.com/thumb.jpg";
     private static final Reservation DUMMY = Reservation.of(
             1L,
-            ReservationName.from("anyone"),
+            new ReservationName("anyone"),
             new ReservationDate(LocalDate.of(2099, 1, 1)),
             ReservationTime.of(1L, LocalTime.of(10, 0)),
             Theme.of(1L, new ThemeName("any"), "any", new ThumbnailUrl(URL))

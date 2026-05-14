@@ -9,7 +9,7 @@ public class ReservationTimeTest {
     @Test
     void null을_입력받으면_예외가_발생한다() {
         Assertions.assertThatThrownBy(() -> ReservationTime.of(1, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

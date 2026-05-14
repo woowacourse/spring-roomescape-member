@@ -20,7 +20,7 @@ import roomescape.domain.theme.ThumbnailUrl;
 public class ReservationRepository {
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
-            ReservationName.from(resultSet.getString("name")),
+            new ReservationName(resultSet.getString("name")),
             new ReservationDate(resultSet.getDate("date").toLocalDate()),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
             Theme.of(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),

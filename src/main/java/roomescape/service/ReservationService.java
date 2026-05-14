@@ -50,7 +50,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
-        Reservation reservation = Reservation.reserve(ReservationName.from(request.getName()),
+        Reservation reservation = Reservation.reserve(new ReservationName(request.getName()),
                 new ReservationDate(request.getDate()),
                 reservationTime, theme, now);
 
