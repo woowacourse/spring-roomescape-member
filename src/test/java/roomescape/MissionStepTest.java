@@ -23,7 +23,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.controller.AdminReservationController;
 import roomescape.reservation.domain.Reservation;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "spring.sql.init.data-locations=")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class MissionStepTest {
 

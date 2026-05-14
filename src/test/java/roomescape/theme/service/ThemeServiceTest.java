@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.theme.domain.Theme;
 
 @SpringBootTest
@@ -63,7 +64,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.findTheme(unregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("해당 테마가 존재하지 않습니다.");
     }
 
