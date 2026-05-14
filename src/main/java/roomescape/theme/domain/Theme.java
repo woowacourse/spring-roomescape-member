@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.theme.exception.InValidThemeException;
+import roomescape.theme.exception.ThemeInvalidException;
 import roomescape.theme.exception.ThemeErrorCode;
 
 @Getter
@@ -40,7 +40,7 @@ public class Theme {
         }
 
         if (!errors.isEmpty()) {
-            throw new InValidThemeException(errors);
+            throw new ThemeInvalidException(errors);
         }
     }
 

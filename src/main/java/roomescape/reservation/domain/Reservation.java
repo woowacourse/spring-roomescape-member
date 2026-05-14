@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.reservation.exception.InvalidReservationException;
+import roomescape.reservation.exception.ReservationInvalidException;
 import roomescape.reservation.exception.ReservationErrorCode;
 import roomescape.reservationtime.domain.ReservationTime;
 
@@ -47,7 +47,7 @@ public class Reservation {
         validateTime(time, errors);
 
         if (!errors.isEmpty()) {
-            throw new InvalidReservationException(errors);
+            throw new ReservationInvalidException(errors);
         }
     }
 
