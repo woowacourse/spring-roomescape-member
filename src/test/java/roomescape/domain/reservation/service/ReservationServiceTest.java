@@ -210,7 +210,7 @@ class ReservationServiceTest {
         class Failed {
 
             @Test
-            void R5_같은_날짜_시간_테마에_이미_예약이_있으면_예외가_발생한다() {
+            void 같은_날짜_시간_테마에_이미_예약이_있으면_예외가_발생한다() {
                 // given
                 LocalDate date = LocalDate.of(2026, 5, 1);
                 Theme theme = themeRepository.save(
@@ -227,7 +227,7 @@ class ReservationServiceTest {
             }
 
             @Test
-            void R4_1_timeId가_존재하지_않으면_예외가_발생한다() {
+            void timeId가_존재하지_않으면_예외가_발생한다() {
                 // given
                 Theme theme = themeRepository.save(
                     Theme.create("피온", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png")
@@ -246,7 +246,7 @@ class ReservationServiceTest {
             }
 
             @Test
-            void R4_2_themeId가_존재하지_않으면_예외가_발생한다() {
+            void themeId가_존재하지_않으면_예외가_발생한다() {
                 // given
                 Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
                 ReservationCreateRequestDto request = new ReservationCreateRequestDto(
@@ -263,7 +263,7 @@ class ReservationServiceTest {
             }
 
             @Test
-            void R4_timeId와_themeId가_모두_존재하지_않으면_필드_에러를_모두_포함한다() {
+            void timeId와_themeId가_모두_존재하지_않으면_필드_에러를_모두_포함한다() {
                 // given
                 ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
@@ -289,26 +289,42 @@ class ReservationServiceTest {
     @Nested
     class DeleteReservationByIdTest {
 
-        @Test
-        void 성공() {
-            // given
-            Time time1 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
-            Time time2 = timeRepository.save(Time.create(LocalTime.of(13, 0)));
-            Theme theme = themeRepository.save(
-                Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
-            Reservation savedReservation = reservationRepository.save(
-                Reservation.create("제이슨", LocalDate.of(2026, 5, 2), time1, theme));
-            reservationRepository.save(Reservation.create("시오", LocalDate.of(2026, 5, 3), time2, theme));
+        @Nested
+        class Success {
 
-            // when
-            reservationService.deleteReservationById(savedReservation.getId());
+            @Test
+            void 성공() {
+                // given
+                Time time1 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+                Time time2 = timeRepository.save(Time.create(LocalTime.of(13, 0)));
+                Theme theme = themeRepository.save(
+                    Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+                Reservation savedReservation = reservationRepository.save(
+                    Reservation.create("제이슨", LocalDate.of(2026, 5, 2), time1, theme));
+                reservationRepository.save(Reservation.create("시오", LocalDate.of(2026, 5, 3), time2, theme));
 
-            // then
-            List<ReservationResponseDto> actual = reservationService.getReservations();
-            assertThat(actual)
-                .hasSize(1)
-                .extracting(ReservationResponseDto::name)
-                .containsExactly("시오");
+                // when
+                reservationService.deleteReservationById(savedReservation.getId());
+
+                // then
+                List<ReservationResponseDto> actual = reservationService.getReservations();
+                assertThat(actual)
+                    .hasSize(1)
+                    .extracting(ReservationResponseDto::name)
+                    .containsExactly("시오");
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void 예약_ID가_존재하지_않으면_예외가_발생한다() {
+                // when & then
+                assertThatThrownBy(() -> reservationService.deleteReservationById(999L))
+                    .isInstanceOf(ReservationException.class)
+                    .hasMessage("예약을 찾을 수 없습니다.");
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ class ReservationCreateRequestDtoTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"", " "})
-        void R3_1_예약자명이_비어있거나_공백이면_검증_오류가_발생한다(String name) {
+        void 예약자명이_비어있거나_공백이면_검증_오류가_발생한다(String name) {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 name,
@@ -62,7 +62,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        void R3_2_예약자명이_20자를_초과하면_검증_오류가_발생한다() {
+        void 예약자명이_20자를_초과하면_검증_오류가_발생한다() {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "a".repeat(21),
@@ -79,7 +79,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        void R3_3_예약_날짜가_null이면_검증_오류가_발생한다() {
+        void 예약_날짜가_null이면_검증_오류가_발생한다() {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
@@ -96,7 +96,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        void R3_4_예약_날짜가_과거이면_검증_오류가_발생한다() {
+        void 예약_날짜가_과거이면_검증_오류가_발생한다() {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
@@ -113,7 +113,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        void R3_5_timeId가_null이면_검증_오류가_발생한다() {
+        void timeId가_null이면_검증_오류가_발생한다() {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
@@ -131,7 +131,7 @@ class ReservationCreateRequestDtoTest {
 
         @ParameterizedTest
         @ValueSource(longs = {0L, -1L})
-        void R3_6_timeId가_양수가_아니면_검증_오류가_발생한다(Long timeId) {
+        void timeId가_양수가_아니면_검증_오류가_발생한다(Long timeId) {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
@@ -148,7 +148,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        void R3_7_themeId가_null이면_검증_오류가_발생한다() {
+        void themeId가_null이면_검증_오류가_발생한다() {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
@@ -166,7 +166,7 @@ class ReservationCreateRequestDtoTest {
 
         @ParameterizedTest
         @ValueSource(longs = {0L, -1L})
-        void R3_8_themeId가_양수가_아니면_검증_오류가_발생한다(Long themeId) {
+        void themeId가_양수가_아니면_검증_오류가_발생한다(Long themeId) {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
