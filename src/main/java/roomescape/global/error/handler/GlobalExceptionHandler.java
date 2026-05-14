@@ -42,21 +42,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(
         HttpMessageNotReadableException e
     ) {
-        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청값이 올바르지 않습니다."));
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e
     ) {
-        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청값이 올바르지 않습니다."));
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponseDto> handleMissingServletRequestParameterException(
         MissingServletRequestParameterException e
     ) {
-        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청값이 올바르지 않습니다."));
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("요청 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
             .toList();
 
         return ResponseEntity.badRequest()
-            .body(new ParameterErrorResponsesDto("요청값이 올바르지 않습니다.", parameterErrors));
+            .body(new ParameterErrorResponsesDto("요청 값이 올바르지 않습니다.", parameterErrors));
     }
 
     private String getParameterName(ConstraintViolation<?> violation) {
