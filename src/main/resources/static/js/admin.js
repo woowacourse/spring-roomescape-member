@@ -334,14 +334,21 @@ async function toggleThemeStatus(id, isActive) {
 }
 
 // 예약 조회
+let reservations = [];
+let reschedulingReservation = null;
+let selectedDate = null;
+let selectedTime = null;
+
 async function loadReservations() {
     const response = await fetch("/admin/reservations");
-    const reservations = await response.json();
+    reservations = await response.json();
 
     const tbody = document.getElementById("reservation-table-body");
     tbody.innerHTML = "";
 
     reservations.forEach(reservation => {
+        const isCanceled = reservation.status === "CANCELED";
+
         tbody.insertAdjacentHTML("beforeend", `
             <tr>
                 <td>${reservation.id}</td>
@@ -351,13 +358,145 @@ async function loadReservations() {
                 <td>${reservation.theme.name}</td>
                 <td>${reservation.status}</td>
                 <td class="align-right">
-                    <button class="status-button" type="button" onclick="cancelReservation(${reservation.id})">
-                        취소
+                    <button class="reschedule-button" type="button" 
+                            ${isCanceled ? "style='display: none;'" : ""}
+                            onclick="openRescheduleModal(${reservation.id})">
+                        변경
+                    </button>
+                    <button class="status-button" type="button" 
+                            ${isCanceled ? "disabled" : ""}
+                            onclick="cancelReservation(${reservation.id})">
+                        ${isCanceled ? "취소 완료" : "취소"}
                     </button>
                 </td>
             </tr>
         `);
     });
+}
+
+function openRescheduleModal(reservationId) {
+    reschedulingReservation = reservations.find(r => r.id === reservationId);
+    if (!reschedulingReservation) {
+        alert("예약 정보를 찾을 수 없습니다.");
+        return;
+    }
+    
+    selectedDate = null;
+    selectedTime = null;
+
+    document.getElementById("reschedule-time-list").innerHTML = "<p style='color: #a9a9a9;'>날짜를 먼저 선택해주세요.</p>";
+    document.getElementById("reschedule-modal").style.display = "block";
+
+    loadRescheduleDates();
+}
+
+function closeRescheduleModal() {
+    document.getElementById("reschedule-modal").style.display = "none";
+    reschedulingReservation = null;
+    selectedDate = null;
+    selectedTime = null;
+}
+
+async function loadRescheduleDates() {
+    const response = await fetch("/member/dates");
+
+    if (!response.ok) {
+        alert("날짜 목록을 불러오지 못했습니다.");
+        return;
+    }
+
+    const dates = await response.json();
+    const dateList = document.getElementById("reschedule-date-list");
+    dateList.innerHTML = "";
+
+    dates.forEach(date => {
+        const localDate = new Date(date.date);
+        const month = localDate.toLocaleString("en-US", { month: "short" }).toUpperCase();
+        const day = localDate.getDate();
+
+        const button = document.createElement("button");
+        button.className = "date-card";
+        button.type = "button";
+        button.innerHTML = `
+            <span class="month">${month}</span>
+            <span class="day">${day}</span>
+        `;
+
+        button.addEventListener("click", () => {
+            document.querySelectorAll("#reschedule-date-list .date-card")
+                .forEach(item => item.classList.remove("selected"));
+
+            button.classList.add("selected");
+            selectedDate = date;
+            loadRescheduleTimes();
+        });
+
+        dateList.appendChild(button);
+    });
+}
+
+async function loadRescheduleTimes() {
+    const themeId = reschedulingReservation.theme.id;
+    const response = await fetch(`/member/times?dateId=${selectedDate.id}&themeId=${themeId}`);
+
+    if (!response.ok) {
+        alert("예약 가능 시간을 불러오지 못했습니다.");
+        return;
+    }
+
+    const times = await response.json();
+    const timeList = document.getElementById("reschedule-time-list");
+    timeList.innerHTML = "";
+    selectedTime = null;
+
+    if (times.length === 0) {
+        timeList.innerHTML = `<p style="color: #b5b5b5; grid-column: 1 / -1;">예약 가능한 시간이 없습니다.</p>`;
+        return;
+    }
+
+    times.forEach(time => {
+        const button = document.createElement("button");
+        button.className = "time-button";
+        button.type = "button";
+        button.textContent = formatTime(time.startAt);
+
+        button.addEventListener("click", () => {
+            document.querySelectorAll("#reschedule-time-list .time-button")
+                .forEach(item => item.classList.remove("selected"));
+
+            button.classList.add("selected");
+            selectedTime = time;
+        });
+
+        timeList.appendChild(button);
+    });
+}
+
+async function submitReschedule() {
+    if (!selectedDate || !selectedTime) {
+        alert("날짜와 시간을 모두 선택해주세요.");
+        return;
+    }
+
+    const response = await fetch(`/admin/reservations/${reschedulingReservation.id}/schedule`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            dateId: selectedDate.id,
+            timeId: selectedTime.id
+        })
+    });
+
+    if (!response.ok) {
+        alert("예약 변경에 실패했습니다.");
+        return;
+    }
+
+    alert("예약이 변경되었습니다.");
+    closeRescheduleModal();
+    await loadReservations();
 }
 
 async function cancelReservation(id) {

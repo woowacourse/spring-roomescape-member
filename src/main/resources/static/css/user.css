@@ -548,6 +548,12 @@ body {
     color: #ffffff;
 }
 
+.button-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
 @media (max-width: 1000px) {
     .header {
         padding: 0 30px;
@@ -622,4 +628,107 @@ body {
         height: 220px;
         flex: none;
     }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #0b0d10;
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid rgba(210, 180, 76, 0.3);
+    border-radius: 14px;
+    width: 600px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #1e2228;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #d2b44c;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.close-button {
+    color: #a9a9a9;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #ffffff;
+}
+
+.modal-body {
+    padding: 32px;
+}
+
+.modal-footer {
+    padding: 24px 32px;
+    border-top: 1px solid #1e2228;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.secondary-button {
+    height: 42px;
+    padding: 0 24px;
+    border: 1px solid #343944;
+    border-radius: 6px;
+    background: transparent;
+    color: #d8d8d8;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    border-color: #d2b44c;
+    color: #ffffff;
+}
+
+.reschedule-button {
+    width: 120px;
+    height: 36px;
+    margin-top: 14px;
+    margin-right: 8px;
+    border: 1px solid #8d7d31;
+    border-radius: 6px;
+    background: rgba(210, 180, 76, 0.1);
+    color: #d2b44c;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.reschedule-button:hover {
+    background: #8d7d31;
+    color: #080808;
 }
