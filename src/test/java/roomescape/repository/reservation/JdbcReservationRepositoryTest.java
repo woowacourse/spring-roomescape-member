@@ -87,6 +87,52 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 예약자_이름으로_예약_목록을_조회한다() {
+        // given
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        MemberName name = new MemberName("코로구");
+        reservationRepository.createReservation(new Reservation(name.value(), tomorrow, savedTime1, savedTheme));
+        reservationRepository.createReservation(new Reservation(name.value(), tomorrow, savedTime2, savedTheme));
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByMemberName(name);
+
+        // then
+        assertThat(reservations)
+            .extracting(Reservation::getTime)
+            .containsExactlyInAnyOrder(savedTime1, savedTime2);
+
+        assertThat(reservations)
+            .extracting(Reservation::getTheme)
+            .containsOnly(savedTheme);
+    }
+
+    @Test
+    void 예약자_이름으로_된_예약이_없다면_빈_목록을_반환한다() {
+        // given
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        String targetName = "코로구";
+        reservationRepository.createReservation(new Reservation(targetName, tomorrow, savedTime1, savedTheme));
+        reservationRepository.createReservation(new Reservation(targetName, tomorrow, savedTime2, savedTheme));
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByMemberName(new MemberName("다른 이름"));
+
+        // then
+        assertThat(reservations).hasSize(0);
+    }
+
+    @Test
     void 예약을_아이디로_삭제한다() {
         // given
         ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
@@ -252,7 +298,7 @@ class JdbcReservationRepositoryTest {
         LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
 
-        long otherTimeId = savedTheme.getId() + 1;
+        long otherTimeId = savedTime.getId() + 1;
 
         // when
         boolean exists = reservationRepository

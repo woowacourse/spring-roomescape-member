@@ -38,6 +38,9 @@ class ReservationServiceTest {
     private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:30");
     private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description",
         ThemeImageUrl.defaultImageUrl());
+    private static final MemberName NAME = new MemberName("name");
+    private static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
+
 
     @Mock
     private ThemeRepository themeRepository;
@@ -105,7 +108,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(request))
             .isInstanceOf(RoomEscapeException.class)
             .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
-        
+
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
@@ -222,6 +225,27 @@ class ReservationServiceTest {
             .hasMessageContaining(ErrorCode.PAST_RESERVATION_CANCEL.getMessage());
 
         verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 예약자_이름으로_된_예약_목록을_조회한다() {
+        // given
+        Reservation savedReservation1 = new Reservation(1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME,
+            SAVED_THEME);
+        Reservation savedReservation2 = new Reservation(2L, NAME, new ReservationLocalDate(TOMORROW.plusDays(1)),
+            SAVED_TIME, SAVED_THEME);
+
+        when(reservationRepository.findAllByMemberName(any()))
+            .thenReturn(List.of(savedReservation1, savedReservation2));
+
+        // when
+        List<Reservation> reservations = reservationService.getReservations(NAME.value());
+
+        // then
+        assertThat(reservations).containsExactlyInAnyOrder(savedReservation1, savedReservation2);
+
+        verify(reservationRepository, times(1)).findAllByMemberName(any());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 

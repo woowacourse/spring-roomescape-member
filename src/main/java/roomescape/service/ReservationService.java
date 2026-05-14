@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.exception.ErrorCode;
@@ -36,6 +37,12 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reservation> getReservations(String requestName) {
+        MemberName memberName = new MemberName(requestName);
+        return reservationRepository.findAllByMemberName(memberName);
     }
 
     public Reservation addReservation(ReservationRequest requestDto) {
