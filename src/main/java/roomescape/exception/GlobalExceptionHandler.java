@@ -43,6 +43,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(message));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
+        String message = "알 수 없는 서버 에러가 발생했습니다. 잠시 후 다시 시도해주세요.";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(message));
+    }
+
     private ResponseEntity<ErrorResponse> malformed(String field, Object value, Class<?> type) {
         String message = String.format(
                 "'%s' 값 '%s'은(는) %s 형식이어야 합니다.",

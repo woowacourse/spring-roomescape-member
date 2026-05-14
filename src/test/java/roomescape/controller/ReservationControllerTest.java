@@ -143,6 +143,17 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 서비스에서_예상치_못한_예외가_발생하면_500과_메시지를_반환한다() throws Exception {
+        org.mockito.BDDMockito.given(reservationService.getReservation(1L))
+                .willThrow(new RuntimeException("예기치 못한 오류"));
+
+        mockMvc.perform(get("/reservations/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message")
+                        .value("알 수 없는 서버 에러가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
+
+    @Test
     void DELETE_reservations_id_200을_반환하고_서비스에_위임한다() throws Exception {
         mockMvc.perform(delete("/reservations/3"))
                 .andExpect(status().isOk());
