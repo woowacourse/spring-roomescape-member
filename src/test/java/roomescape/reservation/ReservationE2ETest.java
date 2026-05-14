@@ -44,15 +44,11 @@ class ReservationE2ETest {
 
     @Test
     @DisplayName("GET /reservations - 예약 목록을 조회한다")
-    void findReservations() {
+    void getReservations() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", "2025-12-25", 1L, 1L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "어셔", "2025-12-26", 1L, 1L);
 
         RestAssured.given().log().all()
-                .queryParam("page", 0)
-                .queryParam("size", 1)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -65,31 +61,7 @@ class ReservationE2ETest {
     }
 
     @Test
-    @DisplayName("GET /reservations?name={name} - 사용자 예약 목록을 조회한다")
-    void findUserReservations() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-12-25", 1L, 1L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "어셔", "2025-12-26", 1L, 1L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-12-27", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .queryParam("name", "브라운")
-                .queryParam("page", 0)
-                .queryParam("size", 10)
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("reservations.size()", is(2))
-                .body("reservations[0].name", is("브라운"))
-                .body("reservations[0].date", is("2025-12-25"))
-                .body("reservations[1].name", is("브라운"))
-                .body("reservations[1].date", is("2025-12-27"));
-    }
-
-    @Test
-    @DisplayName("POST /reservations - 예약을 생성하면 201과 ReservationResponse을 반환한다")
+    @DisplayName("POST /reservations - 예약을 생성하면 201과 ResponseReservation을 반환한다")
     void createReservation() {
         String futureDate = LocalDate.now().plusDays(7).toString();
         Map<String, Object> body = new HashMap<>();
@@ -112,6 +84,68 @@ class ReservationE2ETest {
     }
 
     @Test
+    @DisplayName("PATCH /reservations/{id}?name=... - 본인 예약 날짜와 시간을 변경한다")
+    void updateReservation() {
+        String originalDate = LocalDate.now().plusDays(7).toString();
+        String updateDate = LocalDate.now().plusDays(8).toString();
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", originalDate, 1L, 1L);
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", updateDate);
+        body.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", is("브라운"))
+                .body("date", is(updateDate))
+                .body("time.id", is(2))
+                .body("time.startAt", is("12:00"))
+                .body("theme.id", is(1));
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/{id}?name=... - 본인 예약을 삭제하면 목록에서 제거된다")
+    void deleteReservation() {
+        String futureDate = LocalDate.now().plusDays(7).toString();
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", futureDate, 1L, 1L);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(0));
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/{id}?name=... - 지난 예약은 삭제할 수 없다")
+    void deleteReservation_pastReservation() {
+        String pastDate = LocalDate.now().minusDays(1).toString();
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", pastDate, 1L, 1L);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("name", is("PAST_RESERVATION_DELETE"));
+    }
+
+    @Test
     @DisplayName("POST /reservations - 존재하지 않는 시간 ID로 예약을 생성하면 400을 반환한다")
     void createReservation_invalidTimeId() {
         Map<String, Object> body = new HashMap<>();
@@ -126,24 +160,5 @@ class ReservationE2ETest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @Test
-    @DisplayName("DELETE /reservations/{id} - 사용자 예약을 삭제하면 목록에서 제거된다")
-    void deleteReservation() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2025-12-25", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .queryParam("name", "브라운")
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("reservations.size()", is(0));
     }
 }

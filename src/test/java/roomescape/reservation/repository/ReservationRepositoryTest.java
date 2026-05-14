@@ -130,6 +130,68 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void id와_이름으로_예약을_조회한다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        Reservation result = reservationRepository.findByIdAndName(savedReservation.getId(), "브라운").get();
+
+        assertThat(result.getId()).isEqualTo(savedReservation.getId());
+        assertThat(result.getName()).isEqualTo("브라운");
+        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
+        assertThat(result.getTime().getId()).isEqualTo(time.getId());
+        assertThat(result.getTheme().getId()).isEqualTo(theme.getId());
+    }
+
+    @Test
+    void id와_이름이_일치하지_않으면_예약을_조회하지_않는다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        assertThat(reservationRepository.findByIdAndName(savedReservation.getId(), "어셔")).isEmpty();
+    }
+
+    @Test
+    void id와_이름이_일치하는_예약의_날짜와_시간을_변경한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        ReservationTime newTime = jdbcTemplate.queryForObject(
+                "SELECT * FROM reservation_time WHERE start_at = ?",
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))),
+                "12:00"
+        );
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        int updatedRows = reservationRepository.updateDateAndTimeByIdAndName(
+                savedReservation.getId(), "브라운", LocalDate.of(2026, 5, 11), newTime.getId());
+
+        Reservation result = reservationRepository.findByIdAndName(savedReservation.getId(), "브라운").get();
+        assertThat(updatedRows).isEqualTo(1);
+        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 11));
+        assertThat(result.getTime().getId()).isEqualTo(newTime.getId());
+        assertThat(result.getTime().getStartAt()).isEqualTo(LocalTime.of(12, 0));
+    }
+
+    @Test
+    void 다른_예약과_겹치는_날짜_시간_테마가_있는지_자기_자신을_제외하고_확인한다() {
+        Reservation first = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        boolean onlySelf = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
+                first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+
+        Reservation second = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+        boolean anotherReservation = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
+                first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+
+        assertThat(onlySelf).isFalse();
+        assertThat(anotherReservation).isTrue();
+    }
+
+
+    @Test
     void 예약을_삭제하면_삭제된_행_수가_반환되고_DB에서_삭제된다() {
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));

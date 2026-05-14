@@ -129,6 +129,35 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 예약_변경_요청을_받으면_id와_이름_날짜_시간_id를_Service에_전달하고_결과를_반환한다() throws Exception {
+        Reservation updated = new Reservation(1L, "레서", LocalDate.of(2026, 5, 7),
+                new ReservationTime(2L, LocalTime.of(20, 0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
+
+        when(reservationService.updateReservation(any(), any(), any(), any())).thenReturn(updated);
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "레서")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                  {
+                                    "date": "2026-05-07",
+                                    "timeId": 2
+                                  }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("레서"))
+                .andExpect(jsonPath("$.date").value("2026-05-07"))
+                .andExpect(jsonPath("$.time.id").value(2))
+                .andExpect(jsonPath("$.time.startAt").value("20:00"))
+                .andExpect(jsonPath("$.theme.id").value(1))
+                .andExpect(jsonPath("$.theme.name").value("공포방"));
+
+        verify(reservationService).updateReservation(1L, "레서", LocalDate.of(2026, 5, 7), 2L);
+    }
+
+    @Test
     void 사용자_예약_삭제_요청을_받으면_PathVariable_id와_이름을_Service에_전달한다() throws Exception {
         mockMvc.perform(delete("/reservations/1")
                         .param("name", "레서"))

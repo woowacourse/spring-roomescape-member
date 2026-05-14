@@ -55,7 +55,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
-        validateNotPast(date, time.getStartAt(), clock);
+        validateNotPast(date, time.getStartAt());
         validateUnique(date, timeId, themeId);
 
         Reservation reservation = new Reservation(null, name, date, time, theme);
@@ -63,7 +63,25 @@ public class ReservationService {
     }
 
     @Transactional
+    public Reservation updateReservation(Long id, String name, LocalDate date, Long timeId) {
+        Reservation reservation = reservationRepository.findByIdAndName(id, name)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        ReservationTime time = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        validateExistingNotPast(reservation, ErrorCode.PAST_RESERVATION_UPDATE);
+        validateNotPast(date, time.getStartAt());
+        validateUniqueForUpdate(id, date, timeId, reservation.getTheme().getId());
+
+        if (reservationRepository.updateDateAndTimeByIdAndName(id, name, date, timeId) == 0) {
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+        return new Reservation(id, name, date, time, reservation.getTheme());
+    }
+    @Transactional
     public void deleteUserReservation(Long id, String name) {
+        reservationRepository.findByIdAndName(id, name)
+                .ifPresent(reservation -> validateExistingNotPast(reservation, ErrorCode.PAST_RESERVATION_DELETE));
         reservationRepository.deleteByIdAndName(id, name);
     }
 
@@ -73,9 +91,22 @@ public class ReservationService {
         }
     }
 
-    private void validateNotPast(LocalDate date, LocalTime time, Clock clock) {
+    private void validateNotPast(LocalDate date, LocalTime time) {
         if(LocalDateTime.of(date, time).isBefore(LocalDateTime.now(clock))) {
             throw new BusinessException(ErrorCode.PAST_RESERVATION);
+        }
+    }
+
+    private void validateExistingNotPast(Reservation reservation, ErrorCode errorCode) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
+            throw new BusinessException(errorCode);
+        }
+    }
+
+    private void validateUniqueForUpdate(Long id, LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(id, date, timeId, themeId)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }
 }
