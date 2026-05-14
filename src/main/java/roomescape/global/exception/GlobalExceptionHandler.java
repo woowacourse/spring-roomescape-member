@@ -1,7 +1,10 @@
 package roomescape.global.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +15,8 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleNotValidArgument(MethodArgumentNotValidException e) {
         List<FieldErrorDetail> fieldErrorDetails = e.getBindingResult()
@@ -19,15 +24,16 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(FieldErrorDetail::from)
                 .toList();
-
-        return ResponseEntity.status(ErrorCode.INVALID_INPUT.status()).
-                body(ErrorResponse.of(ErrorCode.INVALID_INPUT, fieldErrorDetails));
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
+        return ResponseEntity.status(errorCode.status()).
+                body(ErrorResponse.of(errorCode, fieldErrorDetails));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleNotReadableMessage(HttpMessageNotReadableException e) {
-        return ResponseEntity.status(ErrorCode.INVALID_REQUEST_FORMAT.status())
-                .body(ErrorResponse.of(ErrorCode.INVALID_REQUEST_FORMAT));
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST_FORMAT;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -39,15 +45,32 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DomainNotValidValueException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(DomainNotValidValueException e) {
+        log.error("Unexpected Domain error occurred", e);
         String message = e.getMessage();
-        ErrorCode error = ErrorCode.INVALID_VALUE;
-        return ResponseEntity.status(error.status())
-                .body(ErrorResponse.of(error, message));
+        ErrorCode errorCode = ErrorCode.INVALID_VALUE;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode, message));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingQueryParameter(MissingServletRequestParameterException e) {
-        return ResponseEntity.status(ErrorCode.MISSING_PARAMETER.status())
-                .body(ErrorResponse.of(ErrorCode.MISSING_PARAMETER));
+        ErrorCode errorCode = ErrorCode.MISSING_PARAMETER;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupport(HttpRequestMethodNotSupportedException e) {
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
+        log.error("Unexpected error occurred", e);
+        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
     }
 }
