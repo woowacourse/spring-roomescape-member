@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import roomescape.DatabaseInitializer;
 import roomescape.common.exception.AlreadyExistException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableException;
 import roomescape.config.TestConfig;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -126,6 +127,19 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteTheme(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
+        // given
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        ReservationTime time = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        reservationDao.insert(Reservation.createWithoutId("브라운", LocalDate.of(2026, 5, 5), time, theme));
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage("예약된 테마는 삭제할 수 없습니다.");
     }
 
     private Theme saveTheme(String name, String description, String thumbnail) {

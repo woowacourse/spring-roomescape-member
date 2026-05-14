@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.AlreadyExistException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -76,6 +78,36 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    void 중복_예약을_하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        LocalDate date = LocalDate.now().plusDays(1);
+        saveReservation("브라운", date, time, theme);
+
+        ReservationRequest request = new ReservationRequest("로지", date, time.getId(), theme.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(AlreadyExistException.class)
+                .hasMessage("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+    }
+
+    @Test
+    void 지나간_날짜로_예약하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 4, 1), time.getId(),
+                theme.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
     }
 
     @Test
