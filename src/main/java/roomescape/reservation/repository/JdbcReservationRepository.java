@@ -137,6 +137,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateAndTimeIdAndThemeIdAndIdNot(
+            LocalDate date, Long timeId, Long themeId, Long id) {
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+                """, Integer.class, date, timeId, themeId, id);
+        return count != null && count > 0;
+    }
+
+    @Override
     public boolean existByTimeId(Long timeId) {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)

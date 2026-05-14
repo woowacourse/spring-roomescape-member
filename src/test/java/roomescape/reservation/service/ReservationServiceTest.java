@@ -26,8 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static roomescape.reservation.exeption.ReservationErrorCode.*;
 import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
 
@@ -254,6 +253,23 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(RESERVATION_ALREADY_EXISTS.message());
+    }
+
+    @Test
+    @DisplayName("수정하려는 날짜 및 시간에 예약이 존재는 하는데 그게 본인의 예약인 경우 예외가 발생하지 않는다.")
+    public void editDateTime_fail4_2() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 6));
+
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        LocalDate date = LocalDate.of(2023, 8, 10);
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+
+        Reservation reservation = insertReservation("브라운", date, time, theme);
+
+        // when then
+        assertThatCode(() -> reservationService.editDateTime(reservation.getId(), date, time.getId(), reservation.getGuestName()))
+                .doesNotThrowAnyException();
     }
 
     @ParameterizedTest

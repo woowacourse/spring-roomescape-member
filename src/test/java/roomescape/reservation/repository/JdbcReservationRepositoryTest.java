@@ -2,6 +2,8 @@ package roomescape.reservation.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -161,6 +163,39 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "true, false",
+            "false, true"
+    })
+    @DisplayName("특정 예약이 아닌 예약 중에서 특정 날짜, 시간, 테마가 겹치는 예약이 존재하는지 확인한다.")
+    public void existsByDateAndTimeIdAndThemeIdAndIdNot(
+            boolean isTargetReservationId, boolean expected
+    ) {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        ReservationTime otherTime = insertReservationTime(LocalTime.of(12, 0));
+
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme otherTheme = insertTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
+
+        LocalDate targetDate = LocalDate.of(2023, 8, 5);
+        Reservation targetReservation = insertReservation("브라운", targetDate, time, theme);
+        Reservation otherReservation = insertReservation("제이", targetDate, otherTime, otherTheme);
+
+        Long excludedReservationId = isTargetReservationId
+                ? targetReservation.getId()
+                : otherReservation.getId();
+
+        // when
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
+                targetDate, time.getId(), theme.getId(), excludedReservationId);
+
+        // then
+        assertThat(exists).isEqualTo(expected);
     }
 
     @Test

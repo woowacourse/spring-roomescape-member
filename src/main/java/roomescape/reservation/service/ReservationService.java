@@ -36,10 +36,8 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(String guestName, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new DomainException(RESERVATION_TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new DomainException(THEME_NOT_FOUND));
+        ReservationTime time = getReservationTime(timeId);
+        Theme theme = getTheme(themeId);
 
         Reservation reservation = new Reservation(guestName, date, time, theme);
 
@@ -51,9 +49,7 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationRepository.deleteById(id)) {
-            throw new DomainException(RESERVATION_NOT_FOUND);
-        }
+        deleteReservation(id);
     }
 
     @Transactional
@@ -65,10 +61,14 @@ public class ReservationService {
         validateAlreadyStarted(reservation);
         validateIsMyReservation(guestName, reservation);
 
+        deleteReservation(id);
+
+    }
+
+    private void deleteReservation(Long id) {
         if(!reservationRepository.deleteById(id)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 삭제 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
             throw new DomainException(RESERVATION_NOT_FOUND);
         }
-
     }
 
     @Transactional(readOnly = true)
@@ -78,24 +78,57 @@ public class ReservationService {
 
     @Transactional
     public Reservation editDateTime(Long reservationId, LocalDate date, Long timeId, String guestName) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new DomainException(RESERVATION_NOT_FOUND));
+        Reservation reservation = getReservation(reservationId);
         validateAlreadyStarted(reservation);
         validateIsMyReservation(guestName, reservation);
 
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new DomainException(RESERVATION_TIME_NOT_FOUND));
-
-        Reservation editedReservation =
-                new Reservation(reservation.getId(), reservation.getGuestName(), date, reservationTime, reservation.getTheme());
-        validateNotDuplicated(editedReservation);
+        ReservationTime editedTime = getReservationTime(timeId);
+        Reservation editedReservation = createEditedReservation(reservation, date, editedTime);
+        validateNotDuplicatedExceptMine(editedReservation);
         validateNotPast(editedReservation);
 
-        if(!reservationRepository.updateDateAndTime(reservationId, date, timeId)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 수정 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
-            throw new DomainException(RESERVATION_NOT_FOUND);
-        }
+        updateReservation(editedReservation);
 
         return editedReservation;
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new DomainException(THEME_NOT_FOUND));
+    }
+
+    private Reservation getReservation(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new DomainException(RESERVATION_NOT_FOUND));
+    }
+
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new DomainException(RESERVATION_TIME_NOT_FOUND));
+    }
+
+    private Reservation createEditedReservation(
+            Reservation reservation,
+            LocalDate date,
+            ReservationTime reservationTime
+    ) {
+        return new Reservation(
+                reservation.getId(),
+                reservation.getGuestName(),
+                date,
+                reservationTime,
+                reservation.getTheme()
+        );
+    }
+
+    private void updateReservation(Reservation reservation) {
+        if (!reservationRepository.updateDateAndTime(
+                reservation.getId(),
+                reservation.getDate(),
+                reservation.getTime().getId()
+        )) {
+            throw new DomainException(RESERVATION_NOT_FOUND);
+        }
     }
 
     private void validateAlreadyStarted(Reservation reservation) {
@@ -121,6 +154,17 @@ public class ReservationService {
                 reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
+        )) {
+            throw new DomainException(RESERVATION_ALREADY_EXISTS);
+        }
+    }
+
+    private void validateNotDuplicatedExceptMine(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
         )) {
             throw new DomainException(RESERVATION_ALREADY_EXISTS);
         }
