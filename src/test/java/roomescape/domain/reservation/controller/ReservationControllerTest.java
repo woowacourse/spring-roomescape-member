@@ -1,18 +1,19 @@
 package roomescape.domain.reservation.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -51,7 +52,7 @@ class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "새로운 사용자");
         params.put("themeId", 3);
-        params.put("date", "2026-05-08");
+        params.put("date", "9999-05-08");
         params.put("timeId", 6);
 
         RestAssured.given().log().all()
@@ -67,7 +68,7 @@ class ReservationControllerTest {
                 .body("theme.name", is("우주 정거장"))
                 .body("theme.description", is("우주에서 살아남으세요."))
                 .body("theme.thumbnailUrl", is("https://example.com/space.png"))
-                .body("date", is("2026-05-08"))
+                .body("date", is("9999-05-08"))
                 .body("time.id", is(6))
                 .body("time.startAt", is("15:00"));
     }

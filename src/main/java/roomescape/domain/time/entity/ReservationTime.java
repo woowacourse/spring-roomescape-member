@@ -24,4 +24,8 @@ public class ReservationTime {
     public LocalTime getStartAt() {
         return startAt;
     }
+
+    public boolean isBefore(LocalTime time) {
+        return startAt.isBefore(time);
+    }
 }
