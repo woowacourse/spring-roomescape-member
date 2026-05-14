@@ -6,9 +6,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.policy.PastReservationCancelNotAllowedException;
-import roomescape.global.exception.policy.ReservationConflictException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.policy.PastReservationNotAllowedException;
+import roomescape.global.exception.policy.ReservationConflictException;
+import roomescape.global.exception.policy.ReservationUpdateNotAllowedException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -72,13 +73,32 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(Long id) {
+    public void deleteReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id);
-        if(isBeforeNow(reservation.getReservationDateTime())) {
-            throw new PastReservationCancelNotAllowedException();
-        }
+        validatedFutureOrPresent(reservation);
 
         reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void cancelReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id);
+        validateAlreadyCancelled(reservation);
+        validatedFutureOrPresent(reservation);
+
+        reservationRepository.cancelById(id);
+    }
+
+    private void validatedFutureOrPresent(Reservation reservation) {
+        if(isBeforeNow(reservation.getReservationDateTime())) {
+            throw new ReservationUpdateNotAllowedException();
+        }
+    }
+
+    private static void validateAlreadyCancelled(Reservation reservation) {
+        if(reservation.isCancel()) {
+            throw new ReservationUpdateNotAllowedException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
+        }
     }
 
     private boolean isBeforeNow(LocalDateTime reservationDateTime) {

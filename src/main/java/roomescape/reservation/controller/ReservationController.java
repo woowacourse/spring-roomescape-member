@@ -44,9 +44,15 @@ public class ReservationController {
                 .body(reservation);
     }
 
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservations(@PathVariable Long id) {
+        reservationService.cancelReservation(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
-        reservationService.cancelReservation(id);
+        reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 }

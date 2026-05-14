@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.global.exception.policy.PastReservationCancelNotAllowedException;
+import roomescape.global.exception.policy.ReservationUpdateNotAllowedException;
 import roomescape.global.exception.policy.ReservationConflictException;
 import roomescape.global.exception.policy.PastReservationNotAllowedException;
 import roomescape.global.exception.validation.ReservationNotFoundException;
@@ -56,7 +56,7 @@ class ReservationServiceTest {
             when(reservationRepository.findById(id)).thenThrow(new ReservationNotFoundException());
 
             // when & then
-            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(id))
+            Assertions.assertThatThrownBy(() -> reservationService.deleteReservation(id))
                     .isInstanceOf(ReservationNotFoundException.class);
         }
 
@@ -71,8 +71,8 @@ class ReservationServiceTest {
             when(reservationRepository.findById(any(Long.class))).thenReturn(pastReservation);
 
             // when & then
-            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(any(Long.class)))
-                    .isInstanceOf(PastReservationCancelNotAllowedException.class);
+            Assertions.assertThatThrownBy(() -> reservationService.deleteReservation(any(Long.class)))
+                    .isInstanceOf(ReservationUpdateNotAllowedException.class);
         }
 
         @Test
@@ -85,6 +85,70 @@ class ReservationServiceTest {
 
             when(reservationRepository.findById(any(Long.class))).thenReturn(reservation);
             when(reservationRepository.deleteById(any(Long.class))).thenReturn(1);
+
+            // when & then
+            Assertions.assertThatCode(() -> reservationService.deleteReservation(any(Long.class)))
+                    .doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    @DisplayName("예약 취소")
+    class cancelById {
+
+        @Test
+        void 취소_요청_시_이미_취소된_예약인_경우_예외가_발생한다() {
+            // given
+            Long id = 1L;
+            boolean cancel = true;
+            Reservation reservation = new Reservation(1L, "userA", LocalDate.now().plusDays(1), cancel,
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(id)).thenReturn(reservation);
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(id))
+                    .isInstanceOf(ReservationUpdateNotAllowedException.class);
+        }
+
+        @Test
+        void 취소_요청_시_이미_삭제된_예약인_경우_예외가_발생한다() {
+            // given
+            Long id = 1L;
+
+            when(reservationRepository.findById(id)).thenThrow(new ReservationNotFoundException());
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(id))
+                    .isInstanceOf(ReservationNotFoundException.class);
+        }
+
+        @Test
+        void 과거_예약을_취소하는_경우_거부한다() {
+            // given
+            LocalDate pastDate = LocalDate.now().minusDays(1);
+            Reservation pastReservation = new Reservation(1L, "userA", pastDate,
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(any(Long.class))).thenReturn(pastReservation);
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(any(Long.class)))
+                    .isInstanceOf(ReservationUpdateNotAllowedException.class);
+        }
+
+        @Test
+        void 식별자에_해당하는_예약을_취소한다() {
+            // given
+            LocalDate date = LocalDate.now().plusDays(1);
+            Reservation reservation = new Reservation(1L, "userA", date, false,
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(any(Long.class))).thenReturn(reservation);
+            when(reservationRepository.cancelById(any(Long.class))).thenReturn(1);
 
             // when & then
             Assertions.assertThatCode(() -> reservationService.cancelReservation(any(Long.class)))
