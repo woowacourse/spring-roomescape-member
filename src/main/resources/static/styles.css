@@ -371,6 +371,14 @@ button {
   font-weight: 800;
 }
 
+.secondary-button:disabled,
+.danger-button:disabled {
+  cursor: not-allowed;
+  border-color: var(--line);
+  background: #f4eee5;
+  color: var(--muted);
+}
+
 .reservation-list {
   display: grid;
   gap: 10px;
@@ -378,13 +386,24 @@ button {
 
 .reservation-item {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(90px, auto)) 92px;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 14px;
   background: #ffffff;
+}
+
+.reservation-item.is-editing {
+  align-items: stretch;
+}
+
+.reservation-summary {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) repeat(4, minmax(96px, auto));
+  gap: 10px;
+  align-items: center;
 }
 
 .reservation-item strong {
@@ -394,6 +413,54 @@ button {
 .reservation-item span {
   color: var(--muted);
   font-size: 14px;
+}
+
+.reservation-actions,
+.reservation-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.reservation-actions .secondary-button,
+.reservation-actions .danger-button,
+.reservation-edit-actions .primary-button,
+.reservation-edit-actions .secondary-button {
+  min-width: 68px;
+  padding: 0 12px;
+}
+
+.reservation-edit-form {
+  display: grid;
+  grid-template-columns: 180px minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.past-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: #eee7dc;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.reservation-item.is-editing .reservation-summary,
+.reservation-item.is-editing .reservation-edit-form {
+  grid-column: 1 / -1;
+}
+
+.edit-time-grid {
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
 }
 
 .result {
@@ -613,7 +680,8 @@ button {
   .summary-grid,
   .filter-form,
   .management-grid,
-  .compact-form {
+  .compact-form,
+  .reservation-edit-form {
     grid-template-columns: 1fr;
   }
 
@@ -643,7 +711,20 @@ button {
 
   .search-form,
   .reservation-item,
+  .reservation-summary,
   .admin-item {
     grid-template-columns: 1fr;
+  }
+
+  .reservation-actions,
+  .reservation-edit-actions {
+    justify-content: stretch;
+  }
+
+  .reservation-actions .secondary-button,
+  .reservation-actions .danger-button,
+  .reservation-edit-actions .primary-button,
+  .reservation-edit-actions .secondary-button {
+    flex: 1;
   }
 }

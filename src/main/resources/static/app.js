@@ -5,6 +5,11 @@ const state = {
   selectedDate: formatDate(new Date()),
   selectedTimeId: null,
   availableTimes: [],
+  editingReservationId: null,
+  editDate: null,
+  editThemeId: null,
+  editAvailableTimes: [],
+  editSelectedTimeId: null,
 };
 
 const elements = {
@@ -28,6 +33,7 @@ document.addEventListener("DOMContentLoaded", initialize);
 
 async function initialize() {
   elements.dateInput.value = state.selectedDate;
+  elements.dateInput.min = formatDate(new Date());
   bindEvents();
   await loadThemes();
   await loadRankingThemes();
@@ -56,6 +62,12 @@ async function loadRankingThemes() {
 }
 
 async function loadAvailableTimes() {
+  if (!state.selectedThemeId) {
+    state.availableTimes = [];
+    renderEmpty(elements.timeList, "테마를 먼저 선택하세요.");
+    updateSubmitButton();
+    return;
+  }
   resetSelectedTime();
   renderLoading(elements.timeList, "시간을 불러오는 중입니다.");
   updateSubmitButton();
@@ -176,7 +188,7 @@ function createTimeButton(timeAvailability) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = timeButtonClassName(timeAvailability);
-  button.disabled = !timeAvailability.available;
+  button.disabled = !isSelectableTime(state.selectedDate, timeAvailability);
   button.textContent = formatStartAt(timeAvailability.time.startAt);
   button.addEventListener("click", () => handleTimeSelect(timeAvailability.time.id));
   return button;
@@ -206,13 +218,10 @@ async function handleReservationSubmit(event) {
 async function handleReservationSearch(event) {
   event.preventDefault();
   renderLoading(elements.searchResult, "예약을 조회하는 중입니다.");
-  const reservations = await requestJson("/reservations");
-  renderSearchResult(filterReservationsByName(reservations));
-}
-
-function filterReservationsByName(reservations) {
   const name = elements.searchNameInput.value.trim();
-  return reservations.filter((reservation) => reservation.name === name);
+  const reservations = await requestJson(`/reservations?name=${encodeURIComponent(name)}`);
+  resetEditState();
+  renderSearchResult(reservations);
 }
 
 function renderSearchResult(reservations) {
@@ -229,12 +238,50 @@ function renderSearchResult(reservations) {
 function createReservationItem(reservation) {
   const item = document.createElement("article");
   item.className = "reservation-item";
-  item.append(createTextElement("strong", reservation.theme.name));
-  item.append(createTextElement("span", reservation.name));
-  item.append(createTextElement("span", reservation.date));
-  item.append(createTextElement("span", formatStartAt(reservation.time.startAt)));
-  item.append(createCancelButton(reservation));
+  if (state.editingReservationId === reservation.id) {
+    item.classList.add("is-editing");
+    item.append(createReservationSummary(reservation), createReservationEditForm(reservation));
+    return item;
+  }
+  item.append(createReservationSummary(reservation), createReservationActions(reservation));
   return item;
+}
+
+function createReservationSummary(reservation) {
+  const summary = document.createElement("div");
+  summary.className = "reservation-summary";
+  summary.append(createTextElement("strong", reservation.theme.name));
+  summary.append(createMetaText("예약자", reservation.name));
+  summary.append(createMetaText("날짜", reservation.date));
+  summary.append(createMetaText("시간", formatStartAt(reservation.time.startAt)));
+  if (isPastReservation(reservation)) {
+    summary.append(createPastBadge());
+  }
+  return summary;
+}
+
+function createMetaText(label, value) {
+  const element = document.createElement("span");
+  element.textContent = `${label}: ${value}`;
+  return element;
+}
+
+function createReservationActions(reservation) {
+  const actions = document.createElement("div");
+  actions.className = "reservation-actions";
+  actions.append(createEditButton(reservation), createCancelButton(reservation));
+  return actions;
+}
+
+function createEditButton(reservation) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "secondary-button";
+  button.textContent = "변경";
+  button.disabled = isPastReservation(reservation);
+  button.title = pastReservationTitle(reservation);
+  button.addEventListener("click", () => startReservationEdit(reservation));
+  return button;
 }
 
 function createCancelButton(reservation) {
@@ -242,11 +289,157 @@ function createCancelButton(reservation) {
   button.type = "button";
   button.className = "danger-button";
   button.textContent = "취소";
+  button.disabled = isPastReservation(reservation);
+  button.title = pastReservationTitle(reservation);
   button.addEventListener("click", () => confirmCancelReservation(reservation));
   return button;
 }
 
+async function startReservationEdit(reservation) {
+  if (isPastReservation(reservation)) {
+    showToast("지난 예약은 변경할 수 없습니다.", true);
+    return;
+  }
+  state.editingReservationId = reservation.id;
+  state.editDate = reservation.date;
+  state.editThemeId = reservation.theme.id;
+  state.editSelectedTimeId = null;
+  await loadEditAvailableTimes();
+  await refreshReservationSearch();
+}
+
+function createReservationEditForm(reservation) {
+  const form = document.createElement("form");
+  form.className = "reservation-edit-form";
+  form.append(createEditDateField(), createEditTimeField(), createEditActions(reservation));
+  form.addEventListener("submit", (event) => handleReservationEditSubmit(event, reservation));
+  return form;
+}
+
+function createEditDateField() {
+  const field = document.createElement("label");
+  field.className = "field";
+  field.textContent = "변경 날짜";
+
+  const input = document.createElement("input");
+  input.type = "date";
+  input.required = true;
+  input.min = formatDate(new Date());
+  input.value = state.editDate;
+  input.addEventListener("change", handleEditDateChange);
+  field.appendChild(input);
+
+  return field;
+}
+
+function createEditTimeField() {
+  const field = document.createElement("div");
+  field.className = "field";
+  field.appendChild(createTextElement("label", "변경 시간"));
+
+  const times = document.createElement("div");
+  times.className = "time-grid edit-time-grid";
+  if (state.editAvailableTimes.length === 0) {
+    renderEmpty(times, "선택 가능한 시간이 없습니다.");
+  } else {
+    state.editAvailableTimes.forEach((time) => times.appendChild(createEditTimeButton(time)));
+  }
+  field.appendChild(times);
+
+  return field;
+}
+
+function createEditTimeButton(timeAvailability) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = editTimeButtonClassName(timeAvailability);
+  button.disabled = !isSelectableTime(state.editDate, timeAvailability);
+  button.textContent = formatStartAt(timeAvailability.time.startAt);
+  button.addEventListener("click", () => handleEditTimeSelect(timeAvailability.time.id));
+  return button;
+}
+
+function editTimeButtonClassName(timeAvailability) {
+  if (timeAvailability.time.id === state.editSelectedTimeId) {
+    return "time-button is-selected";
+  }
+  return "time-button";
+}
+
+function createEditActions(reservation) {
+  const actions = document.createElement("div");
+  actions.className = "reservation-edit-actions";
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.className = "primary-button";
+  submit.textContent = "저장";
+  submit.disabled = !state.editSelectedTimeId;
+
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "secondary-button";
+  cancel.textContent = "닫기";
+  cancel.addEventListener("click", () => cancelReservationEdit(reservation));
+
+  actions.append(submit, cancel);
+  return actions;
+}
+
+async function handleEditDateChange(event) {
+  state.editDate = event.target.value;
+  state.editSelectedTimeId = null;
+  await loadEditAvailableTimes();
+  await refreshReservationSearch();
+}
+
+function handleEditTimeSelect(timeId) {
+  state.editSelectedTimeId = timeId;
+  refreshReservationSearch();
+}
+
+async function handleReservationEditSubmit(event, reservation) {
+  event.preventDefault();
+  await updateReservation(reservation.id);
+  showToast("예약이 변경되었습니다.");
+  resetEditState();
+  await refreshReservationSearch();
+  await loadAvailableTimes();
+}
+
+async function updateReservation(reservationId) {
+  const payload = {
+    date: state.editDate,
+    timeId: state.editSelectedTimeId,
+  };
+  return requestJson(`/reservations/${reservationId}`, createPatchOption(payload));
+}
+
+function cancelReservationEdit(reservation) {
+  resetEditState();
+  renderSearchResult([reservation]);
+  refreshReservationSearch();
+}
+
+async function loadEditAvailableTimes() {
+  renderLoading(elements.searchResult, "변경 가능한 시간을 불러오는 중입니다.");
+  state.editAvailableTimes = await requestJson(
+    `/times/available?date=${state.editDate}&themeId=${state.editThemeId}`
+  );
+}
+
+function resetEditState() {
+  state.editingReservationId = null;
+  state.editDate = null;
+  state.editThemeId = null;
+  state.editAvailableTimes = [];
+  state.editSelectedTimeId = null;
+}
+
 async function confirmCancelReservation(reservation) {
+  if (isPastReservation(reservation)) {
+    showToast("지난 예약은 취소할 수 없습니다.", true);
+    return;
+  }
   if (window.confirm(cancelConfirmMessage(reservation))) {
     await cancelReservation(reservation.id);
   }
@@ -266,8 +459,13 @@ async function cancelReservation(reservationId) {
 }
 
 async function refreshReservationSearch() {
-  const reservations = await requestJson("/reservations");
-  renderSearchResult(filterReservationsByName(reservations));
+  const name = elements.searchNameInput.value.trim();
+  if (name === "") {
+    elements.searchResult.innerHTML = "";
+    return;
+  }
+  const reservations = await requestJson(`/reservations?name=${encodeURIComponent(name)}`);
+  renderSearchResult(reservations);
 }
 
 async function createReservation() {
@@ -283,6 +481,14 @@ async function createReservation() {
 function createPostOption(payload) {
   return {
     method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  };
+}
+
+function createPatchOption(payload) {
+  return {
+    method: "PATCH",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(payload),
   };
@@ -364,6 +570,33 @@ function formatDate(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function isSelectableTime(date, timeAvailability) {
+  return timeAvailability.available && !isPastDateTime(date, timeAvailability.time.startAt);
+}
+
+function isPastReservation(reservation) {
+  return isPastDateTime(reservation.date, reservation.time.startAt);
+}
+
+function isPastDateTime(date, startAt) {
+  const reservationDateTime = new Date(`${date}T${formatStartAt(startAt)}:00`);
+  return reservationDateTime < new Date();
+}
+
+function createPastBadge() {
+  const badge = document.createElement("span");
+  badge.className = "past-badge";
+  badge.textContent = "지난 예약";
+  return badge;
+}
+
+function pastReservationTitle(reservation) {
+  if (isPastReservation(reservation)) {
+    return "지난 예약은 변경하거나 취소할 수 없습니다.";
+  }
+  return "";
 }
 
 function formatStartAt(startAt) {
