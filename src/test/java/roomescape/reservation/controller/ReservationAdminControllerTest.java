@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
@@ -215,20 +216,45 @@ class ReservationAdminControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약을 과거의 시간으로 변경할 수 있다.")
+    @DisplayName("이미 취소된 예약을 변경하면 예외가 발생한다.")
+    void updateScheduleByManager_already_canceled() {
+        Integer dateId = createReservationDate(date);
+        Integer changedDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer timeId = createReservationTime(startAt);
+        Integer changedTimeId = createReservationTime(LocalTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS).toString());
+        Integer themeId = createTheme(themeName);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
+        cancelReservation(reservationId, reservationName);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("dateId", changedDateId);
+        params.put("timeId", changedTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/reservations/" + reservationId + "/schedule")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 취소된 예약입니다."));
+    }
+
+    @Test
+    @DisplayName("관리자가 예약을 과거의 날짜/시간으로 변경하면 예외가 발생한다.")
     @Sql(
-            scripts = "classpath:past-reservation-time.sql",
+            scripts = "classpath:past-reservation-date.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
-    void updateScheduleByManager_pastTime() {
-        Integer pastTimeId = 1;
+    void updateScheduleByManager_pastDateTime() {
         Integer dateId = createReservationDate(date);
+        Integer pastSqlDateId = 1;
         Integer timeId = createReservationTime(startAt);
+        Integer pastTimeId = createReservationTime("00:01");
         Integer themeId = createTheme(themeName);
         Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("dateId", dateId);
+        params.put("dateId", pastSqlDateId);
         params.put("timeId", pastTimeId);
 
         RestAssured.given().log().all()
@@ -236,7 +262,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().patch("/admin/reservations/" + reservationId + "/schedule")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(400)
+                .body("message", is("이미 지난 날짜/시간을 예약할 수 없습니다."));
     }
 
 }

@@ -56,6 +56,10 @@ public class Reservation {
     }
 
     public void changeScheduleByManager(ReservationDate newDate, ReservationTime newTime) {
+        validateNotCanceled();
+        validateNotPast(date.date(), time.startAt());
+        validateNewScheduleIsPast(newDate.date(), newTime.startAt());
+
         this.date = newDate;
         this.time = newTime;
     }

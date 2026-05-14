@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.ReservationDateFixture;
-import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -305,36 +304,31 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약을 과거의 날짜로 변경할 수 있다.")
-    void changeScheduleByManager_pastDate() {
+    @DisplayName("관리자가 이미 지난 날짜/시간으로 변경할 시, 예외가 발생한다.")
+    void changeScheduleByManager_pastDateTime() {
         // given
         Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
+        ReservationDate yesterday = ReservationDate.load(2L, LocalDate.now().minusDays(1), true);
+        ReservationTime time = ReservationTimeFixture.activeTime15();
 
-        // when
-        reserved.changeScheduleByManager(pastDate, reservationTime);
-
-        // then
-        assertThat(reserved.date())
-                .usingRecursiveComparison()
-                .isEqualTo(pastDate);
+        // when & then
+        assertThatThrownBy(() -> reserved.changeScheduleByManager(yesterday, time))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
     }
 
     @Test
-    @DisplayName("관리자는 예약을 과거의 시간으로 변경할 수 있다.")
-    void changeScheduleByManager_pastTime() {
+    @DisplayName("관리자가 이미 취소된 예약을 변경하면 예외가 발생한다.")
+    void changeScheduleByManager_already_canceled() {
         // given
-        ReservationTime currentTime = ReservationTime.create(LocalTime.of(10, 0));
-        ReservationTime pastTime = ReservationTime.create(LocalTime.of(20, 0));
-        Reservation reserved = ReservationFixture.reservation(name, reservationDate, currentTime, theme);
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
+        reserved.updateStatus(CANCELED);
+        ReservationDate changedDate = ReservationDateFixture.activeOneWeekLater();
 
-        // when
-        reserved.changeScheduleByManager(reservationDate, pastTime);
-
-        // then
-        assertThat(reserved.time())
-                .usingRecursiveComparison()
-                .isEqualTo(pastTime);
+        // when && then
+        Assertions.assertThatThrownBy(() -> reserved.changeScheduleByManager(changedDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 취소된 예약입니다.");
     }
-
 
 }

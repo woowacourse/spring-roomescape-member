@@ -294,9 +294,8 @@ class ReservationServiceTest {
         reservationRepository.updateStatus(saved);
 
         // when
-        Assertions.assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id());
-                }).isInstanceOf(IllegalArgumentException.class)
+        Assertions.assertThatThrownBy(() -> reservationService.changeSchedule(saved.id(), name, reservationDate2.id(), reservationTime2.id()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 취소된 예약입니다.");
     }
 
@@ -344,37 +343,32 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약을 과거의 날짜로 변경할 수 있다.")
-    void changeScheduleByManager_pastDate() {
+    @DisplayName("이미 취소된 예약을 변경하면 예외가 발생한다.")
+    void changeScheduleByManager_already_canceled() {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
-        ReservationDate pastDate = reservationDateRepository.save(ReservationDate.load(1L, LocalDate.now().minusDays(1), true));
+        saved.updateStatus(ReservationStatus.CANCELED);
+        reservationRepository.updateStatus(saved);
 
         // when
-        reservationService.changeScheduleByManager(saved.id(), pastDate.id(), reservationTime2.id());
-
-        // then
-        Assertions.assertThat(saved.date())
-                .usingRecursiveComparison()
-                .isEqualTo(pastDate);
+        Assertions.assertThatThrownBy(() -> reservationService.changeScheduleByManager(saved.id(), reservationDate2.id(), reservationTime2.id()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 취소된 예약입니다.");
     }
 
     @Test
-    @DisplayName("관리자는 예약을 과거의 시간으로 변경할 수 있다.")
-    void changeScheduleByManager_pastTime() {
+    @DisplayName("관리자가 예약을 과거의 날짜/시간으로 변경하면 예외가 발생한다.")
+    void changeScheduleByManager_pastDateTime() {
         // given
-        ReservationTime currentTime = reservationTimeRepository.save(ReservationTimeFixture.time15());
+        Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationDate pastDate = reservationDateRepository.save(ReservationDate.load(1L, LocalDate.now().minusDays(1), true));
         ReservationTime pastTime = reservationTimeRepository.save(ReservationTimeFixture.time16());
 
-        Reservation saved = save(reservation(name, reservationDate1, currentTime, theme1));
-
-        // when
-        reservationService.changeScheduleByManager(saved.id(), reservationDate1.id(), pastTime.id());
-
-        // then
-        Assertions.assertThat(saved.time())
-                .usingRecursiveComparison()
-                .isEqualTo(pastTime);
+        // when & then
+        Assertions.assertThatThrownBy(() ->
+                        reservationService.changeScheduleByManager(saved.id(), pastDate.id(), pastTime.id()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
     }
 
     private Reservation save(Reservation reservation) {
