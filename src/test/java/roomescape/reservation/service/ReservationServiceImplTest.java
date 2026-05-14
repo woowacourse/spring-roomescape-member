@@ -22,6 +22,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.PastReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.domain.Theme;
@@ -29,6 +30,8 @@ import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.service.TimeService;
+
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplTest {
@@ -221,5 +224,129 @@ class ReservationServiceImplTest {
 
         // then
         verify(reservationRepository).deleteById(1L);
+    }
+
+    @DisplayName("이름으로 예약 목록을 조회한다.")
+    @Test
+    void getByName_예약_목록_반환() {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        List<Reservation> reservations = List.of(
+                new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L).withId(1L),
+                new Reservation("라이", LocalDate.of(2026, 5, 21), time, 1L).withId(2L)
+        );
+        when(reservationRepository.findByName("라이")).thenReturn(reservations);
+
+        // when
+        List<Reservation> result = reservationService.getByName("라이");
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).allMatch(r -> r.getName().equals("라이"));
+    }
+
+    @Test
+    void cancelForUser_정상_취소() {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        Reservation future = new Reservation("라이", LocalDate.now().plusDays(1), time, 1L).withId(1L);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(future));
+
+        // when
+        reservationService.cancelForUser(1L);
+
+        // then
+        verify(reservationRepository).deleteById(1L);
+    }
+
+    @DisplayName("존재하지 않는 예약을 사용자가 취소하는 경우, ReservationNotFoundException이 발생한다.")
+    @Test
+    void cancelForUser_존재하지_않는_예약이면_예외() {
+        // given
+        when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelForUser(999L))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("이미 지난 날짜의 예약을 취소하는 경우, PastReservationException이 발생한다.")
+    @Test
+    void cancelForUser_지난_날짜_예약이면_예외() {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        Reservation past = new Reservation("라이", LocalDate.of(2024, 1, 1), time, 1L).withId(1L);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(past));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelForUser(1L))
+                .isInstanceOf(PastReservationException.class);
+    }
+
+    @Test
+    void update_정상_변경() {
+        // given
+        ReservationTime oldTime = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(14, 0), LocalTime.of(16, 0));
+        LocalDate newDate = LocalDate.of(2026, 6, 1);
+        Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
+        Reservation existing = new Reservation("라이", LocalDate.of(2026, 5, 20), oldTime, 1L).withId(1L);
+        Reservation updated = new Reservation("라이", newDate, newTime, 1L).withId(1L).withTheme(theme);
+        when(reservationRepository.findById(1L))
+                .thenReturn(Optional.of(existing))
+                .thenReturn(Optional.of(updated));
+        when(timeService.findById(2L)).thenReturn(newTime);
+        when(reservationRepository.isDuplicated(1L, newTime, newDate)).thenReturn(false);
+
+        // when
+        Reservation result = reservationService.update(1L, newDate, 2L);
+
+        // then
+        assertThat(result.getDate()).isEqualTo(newDate);
+        assertThat(result.getTime().getId()).isEqualTo(2L);
+        verify(reservationRepository).update(1L, newDate, 2L);
+    }
+
+    @DisplayName("존재하지 않는 예약을 변경하는 경우, ReservationNotFoundException이 발생한다.")
+    @Test
+    void update_존재하지_않는_예약이면_예외() {
+        // given
+        when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(999L, LocalDate.of(2026, 6, 1), 1L))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("변경하려는 날짜가 과거인 경우, PastReservationException이 발생한다.")
+    @Test
+    void update_과거_날짜로_변경하면_예외() {
+        // given
+        ReservationTime oldTime = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(14, 0), LocalTime.of(16, 0));
+        Reservation existing = new Reservation("라이", LocalDate.of(2026, 5, 20), oldTime, 1L).withId(1L);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(timeService.findById(2L)).thenReturn(newTime);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(1L, LocalDate.of(2024, 1, 1), 2L))
+                .isInstanceOf(PastReservationException.class);
+    }
+
+    @DisplayName("변경하려는 시간이 이미 차 있는 경우, DuplicateReservationException이 발생한다.")
+    @Test
+    void update_중복_시간으로_변경하면_예외() {
+        // given
+        ReservationTime oldTime = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(14, 0), LocalTime.of(16, 0));
+        Reservation existing = new Reservation("라이", LocalDate.of(2026, 5, 20), oldTime, 1L).withId(1L);
+        LocalDate newDate = LocalDate.of(2026, 6, 1);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(timeService.findById(2L)).thenReturn(newTime);
+        when(reservationRepository.isDuplicated(1L, newTime, newDate)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(1L, newDate, 2L))
+                .isInstanceOf(DuplicateReservationException.class);
     }
 }
