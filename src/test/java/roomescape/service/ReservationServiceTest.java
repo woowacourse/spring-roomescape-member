@@ -199,6 +199,35 @@ class ReservationServiceTest extends ServiceTest {
     }
 
     @Test
+    void 현재_시간보다_이전_날짜로_예약을_수정하면_예외가_발생한다() {
+        ReservationTime originalTime = saveReservationTime(LocalTime.of(11, 0));
+        Theme originalTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
+
+        ReservationRequest createRequest = new ReservationRequest(
+                "러키",
+                LocalDate.of(2026, 5, 25),
+                originalTime.getId(),
+                originalTheme.getId()
+        );
+        ReservationResponse savedReservation = reservationService.create(createRequest);
+
+        ReservationTime pastTime = saveReservationTime(LocalTime.of(10, 0));
+        Theme updateTheme = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
+
+        ReservationRequest updateRequest = new ReservationRequest(
+                "러키",
+                LocalDate.of(2026, 5, 4),
+                pastTime.getId(),
+                updateTheme.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(savedReservation.id(), updateRequest))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage(ReservationErrorCode.PAST_DATE_NOT_ALLOWED.getMessage());
+    }
+
+    @Test
     void 예약을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(13, 0));

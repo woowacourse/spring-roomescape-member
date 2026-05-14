@@ -83,6 +83,7 @@ public class ReservationService {
 
         ReservationTime reservationTime = getTime(request.timeId());
         Theme theme = getTheme(request.themeId());
+        validateNotPastDateTime(request.date(), reservationTime, LocalDateTime.now(clock));
         validateUniqueReservationForUpdate(reservationId, theme, request.date(), reservationTime);
 
         Reservation updatedReservation = new Reservation(
@@ -90,6 +91,13 @@ public class ReservationService {
                 request.date(), reservationTime, theme);
         reservationDao.update(updatedReservation);
         return ReservationResponse.from(updatedReservation);
+    }
+
+    private void validateNotPastDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new ReservationException(ReservationErrorCode.PAST_DATE_NOT_ALLOWED);
+        }
     }
 
     private void validateModifiable(Reservation reservation) {
