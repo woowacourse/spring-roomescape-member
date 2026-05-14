@@ -8,8 +8,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
@@ -24,6 +24,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -50,6 +51,7 @@ public class ReservationService {
         return reservationRepository.findByName(name);
     }
 
+    @Transactional
     public Reservation saveReservation(String name, LocalDate date, Long timeId, Long themeId) {
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         validDuplicatedReservation(transientReservation);
@@ -61,6 +63,7 @@ public class ReservationService {
         reservationRepository.deleteById(reservationId);
     }
 
+    @Transactional
     public void putReservation(long id, String userName, @NotBlank String name, @NotNull LocalDate date,
                                @NotNull Long timeId, @NotNull Long themeId) {
         existsAndModifiableReservation(id, userName);
@@ -71,6 +74,7 @@ public class ReservationService {
         reservationRepository.update(reservation);
     }
 
+    @Transactional
     public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation existing = findReservationById(id);
         existing.validateModifiable(userName, LocalDateTime.now());
@@ -85,12 +89,10 @@ public class ReservationService {
         reservationRepository.update(patched);
     }
 
-    @NonNull
-    private Reservation existsAndModifiableReservation(long id, String userName) {
+    private void existsAndModifiableReservation(long id, String userName) {
         Reservation existingReservation = findReservationById(id);
         validOwnership(existingReservation.name(), userName);
         validNotPast(existingReservation.date(), existingReservation.timeSlot().startAt());
-        return existingReservation;
     }
 
     private void validOwnership(String ownerName, String requesterName) {

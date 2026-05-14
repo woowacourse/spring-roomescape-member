@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.TimeSlot;
 import roomescape.exception.ResourceInUseException;
 import roomescape.exception.TimeSlotNotFoundException;
@@ -13,6 +14,7 @@ import roomescape.repository.TimeSlotRepository;
 import roomescape.service.dto.AvailableTimeSlot;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
@@ -32,11 +34,13 @@ public class TimeSlotService {
                 .orElseThrow(() -> new TimeSlotNotFoundException(id));
     }
 
+    @Transactional
     public TimeSlot saveTime(LocalTime startAt) {
         TimeSlot timeSlot = TimeSlot.transientOf(startAt);
         return timeSlotRepository.save(timeSlot);
     }
 
+    @Transactional
     public void removeTime(long timeId) {
         try {
             timeSlotRepository.deleteById(timeId);
@@ -45,10 +49,12 @@ public class TimeSlotService {
         }
     }
 
+    @Transactional
     public void putTime(long id, LocalTime startAt) {
         timeSlotRepository.update(new TimeSlot(id, startAt));
     }
 
+    @Transactional
     public void patchTime(long id, LocalTime startAt) {
         TimeSlot timeSlot = findTimeSlotById(id);
         timeSlotRepository.update(timeSlot.patch(startAt));
