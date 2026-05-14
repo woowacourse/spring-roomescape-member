@@ -215,6 +215,7 @@
 
 <nav class="nav">
     <div class="nav-item active" onclick="showTab('reservation')">예약하기</div>
+    <div class="nav-item" onclick="showTab('myreservation')">내 예약 조회</div>
     <div class="nav-item" onclick="showTab('popular')">인기 테마</div>
 </nav>
 
@@ -255,6 +256,18 @@
         </div>
     </div>
 
+    <!-- 내 예약 조회 -->
+    <div class="section" id="section-myreservation">
+        <div class="card">
+            <div class="card-title">이름으로 예약 조회</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="search-name" placeholder="예약자 이름을 입력하세요" style="margin-bottom: 0;">
+                <button class="btn-primary" style="white-space: nowrap;" onclick="searchReservations()">조회</button>
+            </div>
+            <div id="search-result"></div>
+        </div>
+    </div>
+
     <!-- 인기 테마 -->
     <div class="section" id="section-popular">
         <div class="card">
@@ -271,11 +284,47 @@
 
     function showTab(name) {
         document.querySelectorAll('.nav-item').forEach((t, i) => {
-            t.classList.toggle('active', ['reservation', 'popular'][i] === name);
+            t.classList.toggle('active', ['reservation', 'myreservation', 'popular'][i] === name);
         });
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('section-' + name).classList.add('active');
         if (name === 'popular') loadPopularThemes();
+    }
+
+    async function searchReservations() {
+        const name = document.getElementById('search-name').value.trim();
+        const resultEl = document.getElementById('search-result');
+
+        if (!name) {
+            resultEl.innerHTML = '<div class="alert alert-error"><span>✕</span>이름을 입력해주세요.</div>';
+            return;
+        }
+
+        const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            resultEl.innerHTML = `<div class="alert alert-error"><span>✕</span>${err?.message ?? '조회에 실패했습니다.'}</div>`;
+            return;
+        }
+
+        const list = await res.json();
+
+        if (list.length === 0) {
+            resultEl.innerHTML = '<p class="empty-text">예약 내역이 없습니다.</p>';
+            return;
+        }
+
+        resultEl.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
+                ${list.map(r => `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: #f8fafc;">
+                        <div style="font-size: 0.78rem; font-weight: 600; color: #4f46e5; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">${r.theme.name}</div>
+                        <div style="font-size: 0.88rem; color: #475569; margin-bottom: 4px;">📅 ${r.date}</div>
+                        <div style="font-size: 0.88rem; color: #475569;">🕐 ${r.time.startAt}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
     }
 
     async function loadThemes() {

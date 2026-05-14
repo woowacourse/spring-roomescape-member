@@ -9,10 +9,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public abstract class AcceptanceTestSupport {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation_history");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");

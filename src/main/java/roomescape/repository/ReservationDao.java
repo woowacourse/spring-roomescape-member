@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.nio.channels.FileChannel;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -134,6 +135,29 @@ public class ReservationDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Reservation> findReservationsByName(String name) {
+        String sql = """
+                SELECT
+                    reservation.id as reservation_id,
+                    reservation.name,
+                    reservation.date,
+                    time.id as time_id,
+                    time.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.thumbnail_url as thumbnail_url,
+                    theme.description as theme_description
+                FROM reservation as reservation
+                INNER JOIN reservation_time as time
+                ON reservation.time_id = time.id
+                INNER JOIN theme as theme
+                ON reservation.theme_id = theme.id
+                WHERE reservation.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, name);
     }
 
     public boolean existsByTimeId(long timeId) {

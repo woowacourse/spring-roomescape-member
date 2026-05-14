@@ -1,23 +1,14 @@
 package roomescape.controller;
 
-import jakarta.validation.Valid;
-import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.service.ReservationCommandService;
 import roomescape.service.ReservationTimeQueryService;
 import roomescape.service.ThemeQueryService;
 
@@ -25,7 +16,6 @@ import roomescape.service.ThemeQueryService;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final ReservationCommandService reservationCommandService;
     private final ReservationTimeQueryService reservationTimeQueryService;
     private final ThemeQueryService themeQueryService;
 
@@ -34,19 +24,6 @@ public class UserController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId) {
         return ResponseEntity.ok(reservationTimeQueryService.findAvailableReservationTimes(date, themeId));
-    }
-
-    @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        LocalDateTime requestDateTime = LocalDateTime.now();
-        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(),
-                request.timeId(), request.themeId(), requestDateTime);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
-                .toUri();
-
-        return ResponseEntity.created(location).body(reservationResponse);
     }
 
     @GetMapping("/themes")
