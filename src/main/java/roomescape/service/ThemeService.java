@@ -11,6 +11,7 @@ import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThumbnailUrl;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -20,18 +21,11 @@ public class ThemeService {
     private static final long DEFAULT_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
-    }
-
-    public Theme find(long themeId) {
-        return themeRepository.findById(themeId).orElseThrow(
-                () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
-    }
-
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -41,15 +35,15 @@ public class ThemeService {
         return themeRepository.save(theme);
     }
 
-    @Transactional
-    public void delete(long id) {
-        if (!themeRepository.existsById(id)) {
-            throw new RoomEscapeException(ErrorCode.THEME_NOT_FOUND);
-        }
-        themeRepository.deleteById(id);
+    public Theme find(long themeId) {
+        return themeRepository.findById(themeId).orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
-    public List<Theme> findFamous(ThemeFamousFindRequest request) {
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
+    }
+
+    public List<Theme> findFamous(ThemeFamousFindRequest request, LocalDate now) {
         Long days = request.getDays();
         LocalDate date = request.getDate();
         Long limit = request.getLimit();
@@ -61,8 +55,21 @@ public class ThemeService {
             limit = DEFAULT_LIMIT;
         }
         if (date == null) {
-            date = LocalDate.now();
+            date = now;
         }
         return themeRepository.findFamous(days, date, limit);
+    }
+
+    @Transactional
+    public void delete(long themeId) {
+        if (!themeRepository.existsById(themeId)) {
+            throw new RoomEscapeException(ErrorCode.THEME_NOT_FOUND);
+        }
+
+        if (reservationRepository.existsByThemeId(themeId)) {
+            throw new RoomEscapeException(ErrorCode.THEME_IN_USE);
+        }
+
+        themeRepository.deleteById(themeId);
     }
 }

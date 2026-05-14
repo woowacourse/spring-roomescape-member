@@ -19,6 +19,7 @@ public enum ErrorCode {
     // DB 제약 조건 관련 위반 (CONFLICT)
     DUPLICATE_RESERVATION("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.", HttpStatus.CONFLICT),
     RESERVATION_TIME_IN_USE("시간을 사용하는 예약이 존재합니다. 관련 예약을 지우고 요청해 주세요.", HttpStatus.CONFLICT),
+    THEME_IN_USE("테마를 사용하는 예약이 존재합니다. 관련 예약을 지우고 요청해 주세요", HttpStatus.CONFLICT),
 
     // 비즈니스 규칙 위반 (UNPROCESSABLE_ENTITY),
     PAST_DATE_NOT_ALLOWED("기준 날짜는 과거일 수 없습니다. 오늘 이후 날짜를 입력해 주세요", HttpStatus.UNPROCESSABLE_ENTITY),

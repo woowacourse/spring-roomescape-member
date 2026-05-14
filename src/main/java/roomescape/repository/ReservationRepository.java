@@ -71,6 +71,13 @@ public class ReservationRepository {
                     WHERE time_id = ?
                     )
             """;
+    private static final String EXISTS_BY_THEME_ID = """
+            SELECT EXISTS (
+                SELECT 1 
+                    FROM reservation
+                    WHERE theme_id = ?
+                    )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -117,11 +124,6 @@ public class ReservationRepository {
                         themeId));
     }
 
-    public boolean existsById(long reservationId) {
-        return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, reservationId));
-    }
-
     public boolean existsByTimeId(long reservationTimeId) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
@@ -136,5 +138,10 @@ public class ReservationRepository {
                 target.getTheme().getId(), id);
 
         return Reservation.load(id, target.getName(), target.getDate(), target.getTime(), target.getTheme());
+    }
+
+    public boolean existsByThemeId(long themeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_THEME_ID, Boolean.class, themeId));
     }
 }
