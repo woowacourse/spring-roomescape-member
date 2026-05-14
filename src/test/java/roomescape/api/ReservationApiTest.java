@@ -66,4 +66,30 @@ class ReservationApiTest {
                 .statusCode(200)
                 .body("size()", is(0));
     }
+
+    @Test
+    void 사용자_예약_내역_조회() {
+        dataInitializer.initializeReservationTime(LocalTime.now());
+        dataInitializer.initializeTheme("귀신의집", "무서워요", "/resources/image/...");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "userA");
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=user")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
 }

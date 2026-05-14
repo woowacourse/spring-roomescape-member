@@ -34,6 +34,12 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findAllReservationsByName(String name) {
+        return reservationRepository.findByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @Transactional
     public ReservationResponse reserve(CreateReservationRequest request) {
         validateReservationAvailable(request.date(), request.timeId(), request.themeId());

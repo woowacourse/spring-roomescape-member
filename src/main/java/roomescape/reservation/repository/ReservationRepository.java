@@ -53,6 +53,17 @@ public class ReservationRepository {
                 ).toList();
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationDao.findByName(name).stream()
+                .map(reservation ->
+                        ReservationMapper.toReservation(reservation,
+                                reservationTimeDao.getByIdIncludingDeleted(reservation.getTimeId()),
+                                themeDao.getByIdIncludingDeleted(reservation.getThemeId()))
+                ).toList();
+    }
+
+
+
     @Transactional
     public Reservation save(CreateReservationParams params) {
         Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
