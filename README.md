@@ -61,7 +61,7 @@
 ## 5단계 - 에러 응답 설계
 
 - 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
-    - [ ] (우선순위) 상태 코드 선택 순서:
+    - [x] (우선순위) 상태 코드 선택 순서:
         1) 리소스가 존재하지 않는가? → 404
         2) 요청 형식·필수값이 잘못됐는가? → 400
         3) DB 제약조건이 걸린(걸려야 하는) 규칙 위반인가? → 409
@@ -69,11 +69,12 @@
         4) 나머지 비즈니스 규칙 위반 → 422
            (과거 날짜 예약, 운영 시간 외 예약 등)
 - 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
-    - [ ] 요청 url이 잘못된 경우 400 에러를 발생시킨다.
+    - [x] 요청 url이 잘못된 경우 404 에러를 발생시킨다.
+    - [x] 요청 method가 잘못된 경우 405 에러를 발생시킨다.
 - 에러 응답 본문에 어떤 정보를 담을지 결정한다.
-    - [ ] 응답 코드 + 메시지를 담는다.
+    - [x] 응답 코드 + 메시지를 담는다.
 - 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
-    - [ ] 클라이언트가 행동을 바꿔 재시도 가능한 상황이면 구체적인 다음 행동을 제시한다.
+    - [x] 클라이언트가 행동을 바꿔 재시도 가능한 상황이면 구체적인 다음 행동을 제시한다.
         - ex) 이미 예약이 존재하는 시간에 예약을 요청할 때: "[ERROR] 해당 시간에 예약이 이미 존재합니다. 다른 시간을 선택해 주세요."
 
 ## 6단계 - 내 예약 조회/변경/취소
@@ -119,12 +120,33 @@
 
 ### 공통
 
-- [ ] 요청 형식이 잘못된 경우 (검증 예외, 잘못된 url 등): `Http Status: 400 Bad Request`
+- [x] 요청 형식이 잘못된 경우 (검증 예외): `Http Status: 400 Bad Request`
 
     ```text
     {
-        "status": "BAD_REQUEST",
-        "message": "[ERROR] (~ 이유). 다시 시도해 주세요."
+        "status": 400,
+        "errorType": "BAD_REQUEST",
+        "message": "[ERROR] (~ 이유)"
+    }
+    ```
+
+- [x] 요청 url이 잘못된 경우: `Http Status: 404 Not Found`
+
+    ```text
+    {
+        "status": 404,
+        "errorType": "NOT_FOUND",
+        "message": "[ERROR] 잘못된 경로입니다. URL을 다시 한 번 확인해 주세요."
+    }
+    ```
+
+- [x] 요청 메서드가 잘못된 경우: `Http Status: 400 Bad Request`
+
+    ```text
+    {
+        "status": 405,
+        "errorType": "METHOD_NOT_ALLOWED",
+        "message": "[ERROR] 지원하지 않는 메서드입니다. 메서드를 다시 한 번 확인해 주세요."
     }
     ```
 
@@ -161,7 +183,8 @@
         - [x] 해당 테마를 사용하는 예약이 존재할 경우: `Http Status: 409 Conflict`
         ```text
         {
-            "status": "CONFLICT",
+            "status": 409,
+            "errorType": "CONFLICT",
             "message": "[ERROR] 현재 해당 테마를 사용하는 예약이 존재합니다. 연관된 예약을 삭제한 후 다시 시도해 주세요."
         }
         ```
@@ -219,7 +242,8 @@
         - [x] 시작 날짜 또는 종료 날짜가 미래인 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 조회 기간에 미래 날짜가 존재합니다. 현재보다 이전으로 기간을 설정해 주세요."
         }
         ```
@@ -227,7 +251,8 @@
         - [x] 종료 날짜가 시작 날짜보다 먼저 올 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 종료 날짜가 시작 날짜보다 빠릅니다. 종료 날짜가 시작 날짜보다 뒤에 오도록 요청해 주세요."
         }
         ```
@@ -235,7 +260,8 @@
         - [x] 조회 기간이 1년을 초과할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 조회 기간이 최대 기간을 초과했습니다. 기간이 1년 이내가 되도록 다시 요청해 주세요."
         }
         ```
@@ -277,7 +303,8 @@
         - [x] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."
         }
         ```
@@ -285,7 +312,8 @@
         - [x] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."
         }
         ```
@@ -293,7 +321,8 @@
         - [x] 존재하는 예약과 날짜, 시간, 테마가 동일한 예약일 경우: `Http Status: 409 Conflict`
         ```text
         {
-            "status": "CONFLICT",
+            "status": 409,
+            "errorType": "CONFLICT",
             "message": "[ERROR] 해당 시간에 예약이 이미 존재합니다. 예약 가능한 시간으로 다시 시도해 주세요."
         }
         ```
@@ -301,7 +330,8 @@
         - [x] 지나간 날짜, 시간일 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 지나간 시간에는 예약할 수 없습니다. 예약 시간을 변경해 주세요."
         }
         ```
@@ -410,7 +440,8 @@
         - [x] 예약 ID로 기존 예약을 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."
         }
         ```
@@ -418,7 +449,8 @@
         - [x] 예약 시간 ID로 예약 시간을 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."
         }
         ```
@@ -426,7 +458,8 @@
         - [x] 이미 지나간 날짜, 시간으로 예약을 변경할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 지나간 시간으로 예약을 변경할 수 없습니다."
         }
         ```
@@ -434,7 +467,8 @@
         - [x] 예약이 이미 존재하는 시간으로 변경할 경우: `Http Status: 409 Conflict`
         ```text
         {
-            "status": "CONFLICT",
+            "status": 409,
+            "errorType": "CONFLICT",
             "message": "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."
         }
         ```
@@ -448,7 +482,8 @@
         - [x] 예약 ID로 기존 예약을 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."
         }
         ```
@@ -456,7 +491,8 @@
         - [x] 이미 지나간 시간의 예약을 삭제할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 지나간 시간의 예약은 삭제할 수 없습니다."
         }
         ```
@@ -484,7 +520,8 @@
         - [x] 존재하는 예약 시간과 동일한 시간일 경우: `Http Status: 409 Conflict`
         ```text
         {
-            "status": "CONFLICT",
+            "status": 409,
+            "errorType": "CONFLICT",
             "message": "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."
         }
         ```
@@ -538,7 +575,8 @@
         - [x] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
-            "status": "NOT_FOUND",
+            "status": 404,
+            "errorType": "NOT_FOUND",
             "message": "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."
         }
         ```
@@ -546,7 +584,8 @@
         - [x] 이미 지나간 날짜로 조회할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
-            "status": "UNPROCESSABLE_ENTITY",
+            "status": 422,
+            "errorType": "UNPROCESSABLE_ENTITY",
             "message": "[ERROR] 지나간 날짜의 예약 가능 시간은 조회할 수 없습니다."
         }
         ```
@@ -560,7 +599,8 @@
         - [x] 해당 예약 시간을 사용하는 예약이 존재할 경우: `Http Status: 409 Conflict`
         ```text
         {
-            "status": "CONFLICT",
+            "status": 409,
+            "errorType": "CONFLICT",
             "message": "[ERROR] 현재 해당 예약 시간을 사용하는 예약이 존재합니다. 연관된 예약을 삭제한 후 다시 시도해 주세요."
         }
         ```
