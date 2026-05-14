@@ -109,6 +109,24 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 예약을_취소한다() {
+        //given
+        String name = "user";
+        LocalDate date = LocalDate.now();
+        Long timeId = 1L;
+        Long themeId = 1L;
+
+        Long savedId = reservationDao.insert(name, date, timeId, themeId);
+
+        //when
+        reservationDao.updateCancelledById(savedId, true);
+
+        //then
+        ReservationEntity entity = reservationDao.findById(savedId).orElseThrow();
+        Assertions.assertThat(entity.isCancelled()).isTrue();
+    }
+
+    @Test
     void 기준_날짜_이후의_예약만_조회한다() {
         //given
         LocalDate yesterday = LocalDate.now().minusDays(1);
