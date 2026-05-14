@@ -58,13 +58,17 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", reservation.getName());
+        params.put("name", reservation.getName().value());
         params.put("date", reservation.getDate());
         params.put("time_id", reservation.getTime().getId());
         params.put("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
                 reservation.getTheme());
     }
 

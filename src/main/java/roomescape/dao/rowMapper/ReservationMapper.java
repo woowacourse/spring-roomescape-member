@@ -1,6 +1,7 @@
 package roomescape.dao.rowMapper;
 
 import org.springframework.jdbc.core.RowMapper;
+import roomescape.domain.UserName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -20,7 +21,7 @@ public final class ReservationMapper {
         );
         return new Reservation(
                 rs.getLong("id"),
-                rs.getString("name"),
+                UserName.parse(rs.getString("name")),
                 rs.getDate("date").toLocalDate(),
                 time,
                 theme
