@@ -25,12 +25,11 @@ public class Reservation {
     }
 
     public static Reservation createNew(String name, LocalDate date, Theme theme, ReservationTime time) {
-        Reservation reservation = new Reservation(null, name, date, theme, time);
         LocalDateTime reservationDateTime = time.toReservationDateTime(date);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("이전 날짜로 새로운 예약 정보를 생성할 수 없습니다.");
         }
-        return reservation;
+        return new Reservation(null, name, date, theme, time);
     }
 
     private static void validateReservation(String name, LocalDate date, Theme theme, ReservationTime time) {

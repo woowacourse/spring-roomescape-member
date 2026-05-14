@@ -3,10 +3,14 @@ package roomescape.controller.client.api;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +28,7 @@ import roomescape.service.result.ReservationResult;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reservations")
+@Validated
 public class ReservationApiController {
 
     private final ReservationService reservationService;
@@ -43,4 +48,15 @@ public class ReservationApiController {
     ) {
         return ResponseEntity.ok(reservationQuery.search(condition, pageable));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancel(
+            @PathVariable
+            @Positive(message = "예약 취소 식별자는 양수입니다.") Long id
+    ) {
+        reservationService.cancelReservation(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

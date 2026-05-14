@@ -3,6 +3,9 @@ package roomescape.controller.client;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.restassured.common.mapper.TypeRef;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -108,5 +112,26 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("[name] 예약 정보 검색 시 사용자 명이 필요합니다."));
+    }
+
+    @Test
+    void 사용자가_예약_취소에_성공하면_삭제_로직_수행_후_204_noContent를_반환한다() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().delete("/api/reservations/{id}", 1L)
+                .then().log().all()
+                .status(HttpStatus.NO_CONTENT);
+        verify(reservationService, times(1)).cancelReservation(anyLong());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void 사용자가_예약_취소시_식별자가_양수가_아니라면_400_Bad_Request를_반환한다(int invalidId) {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().delete("/api/reservations/{id}", invalidId)
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("예약 취소 식별자는 양수입니다."));
     }
 }
