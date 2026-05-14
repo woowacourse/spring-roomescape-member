@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationUpdateRequest;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Name;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -66,10 +66,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(long reservationId) {
-        if (!reservationRepository.existsById(reservationId)) {
-            throw new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
+    public void cancel(long reservationId, LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.validateIsPast(now);
+
         reservationRepository.deleteById(reservationId);
     }
 

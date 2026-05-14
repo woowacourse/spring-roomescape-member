@@ -1,9 +1,10 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import common.exception.ErrorCode;
 import common.exception.RoomEscapeException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.domain.theme.Theme;
 
 public class Reservation {
     private final long id;
@@ -44,6 +45,10 @@ public class Reservation {
         if (requestDate.isEqual(now.toLocalDate()) && requestTime.isBefore(now.toLocalTime())) {
             throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
+    }
+
+    public void validateIsPast(LocalDateTime now) {
+        validateAvailableDateTime(date, time, now);
     }
 
     public long getId() {
