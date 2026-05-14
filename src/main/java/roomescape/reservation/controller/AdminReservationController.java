@@ -14,7 +14,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "관리자 예약 API", description = "예약 생성 및 전체 조회 관련 API")
+@Tag(name = "관리자 예약 API", description = "예약 생성, 전체 조회, 수정, 취소 관련 API")
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
@@ -27,13 +27,17 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readAll(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) Long themeId
     ) {
-        List<ReservationResponse> responses = reservationService.findByFilter(date, themeId)
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+        if (name != null) {
+            List<ReservationResponse> responses = reservationService.search(name, from, to, themeId).stream().map(ReservationResponse::from).toList();
+            return ResponseEntity.ok(responses);
+        }
+
+        List<ReservationResponse> responses = reservationService.findAll().stream().map(ReservationResponse::from).toList();
         return ResponseEntity.ok(responses);
     }
 
@@ -46,15 +50,15 @@ public class AdminReservationController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationRequest requestDto) {
+        Reservation reservation = reservationService.update(id, requestDto);
+        return ResponseEntity.ok(ReservationResponse.from(reservation));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAll() {
-        reservationService.deleteAll();
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        reservationService.cancelById(id);
+        return ResponseEntity.ok().build();
     }
 }

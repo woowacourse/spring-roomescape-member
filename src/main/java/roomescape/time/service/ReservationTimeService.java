@@ -52,14 +52,14 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAvailableTimes(themeId, date);
     }
 
+    public ReservationTime getById(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 예약 시간이 존재하지 않습니다. ID: " + id));
+    }
+
     private void validateDuplicateTime(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new DuplicateResourceException("해당 시간이 이미 존재합니다.");
         }
-    }
-
-    public ReservationTime getById(Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 예약 시간이 존재하지 않습니다. ID: " + id));
     }
 }

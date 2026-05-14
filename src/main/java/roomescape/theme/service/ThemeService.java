@@ -77,14 +77,14 @@ public class ThemeService {
         return updatedTheme;
     }
 
+    public Theme getById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 테마가 존재하지 않습니다. ID: " + id));
+    }
+
     private void validateDuplicateName(ThemeRequest request) {
         if (themeRepository.existsByName(request.name())) {
             throw new DuplicateResourceException("이미 존재하는 테마 이름입니다.");
         }
-    }
-
-    public Theme getById(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 테마가 존재하지 않습니다. ID: " + id));
     }
 }

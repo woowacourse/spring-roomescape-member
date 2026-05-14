@@ -95,6 +95,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             inner join theme t on r.theme_id = t.id
             where r.reservation_date >= ?
             and r.reservation_date < ?
+            and r.status = 'COMPLETED'
             group by t.id
             order by count(r.id) desc, t.id asc
             limit ?
