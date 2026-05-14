@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     ) {
         return ResponseEntity
                 .badRequest()
-                .body("필수 요청 파라미터가 누락되었습니다.");
+                .body(new ErrorResponse("필수 요청 파라미터가 누락되었습니다."));
     }
 
     @ExceptionHandler(BusinessException.class)
