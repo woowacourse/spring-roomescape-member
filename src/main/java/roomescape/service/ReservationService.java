@@ -6,9 +6,6 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -17,18 +14,22 @@ import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationUpdateRequestDto;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
-
 public class ReservationService {
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
@@ -40,13 +41,13 @@ public class ReservationService {
         validateNotDuplicated(request.date(), reservationTime.getId(), theme.getId());
 
         Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
-        Reservation reservation = reservationDao.create(reservationWithoutId);
+        Reservation reservation = reservationRepository.create(reservationWithoutId);
 
         return ReservationResponseDto.from(reservation);
     }
 
     private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
-        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
@@ -61,17 +62,17 @@ public class ReservationService {
     }
 
     private ReservationTime findReservationTime(Long id) {
-        return reservationTimeDao.findById(id)
+        return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme findTheme(Long id) {
-        return themeDao.findById(id)
+        return themeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public List<ReservationResponseDto> findAll() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponseDto::from)
                 .toList();
@@ -81,7 +82,7 @@ public class ReservationService {
     public void delete(Long id) {
         Reservation reservation = findReservation(id);
         validateNotPastReservation(reservation);
-        reservationDao.delete(id);
+        reservationRepository.delete(id);
     }
 
     private void validateNotPastReservation(Reservation reservation) {
@@ -91,7 +92,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDto> findByName(String name) {
-        return reservationDao.findAllByName(name).stream()
+        return reservationRepository.findAllByName(name).stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }
@@ -106,17 +107,17 @@ public class ReservationService {
         validateNotDuplicated(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
 
         Reservation updated = reservation.changeSchedule(request.date(), time);
-        reservationDao.update(updated);
+        reservationRepository.update(updated);
     }
 
     private Reservation findReservation(Long id) {
-        return reservationDao.findById(id)
+        return reservationRepository.findById(id)
                 .orElseThrow(() ->
                         new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
     private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId, Long excludeId) {
-        if (reservationDao.existsByDateAndTimeIdAndThemeIdExcludingId(date, timeId, themeId, excludeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdExcludingId(date, timeId, themeId, excludeId)) {
             throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }

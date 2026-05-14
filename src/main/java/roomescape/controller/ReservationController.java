@@ -21,7 +21,7 @@ import roomescape.dto.ReservationUpdateRequestDto;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping(value = "/reservations")
+@RequestMapping("/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
 
