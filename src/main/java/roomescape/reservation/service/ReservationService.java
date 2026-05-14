@@ -107,6 +107,41 @@ public class ReservationService {
         return reservation;
     }
 
+    @Transactional
+    public Reservation change(Long id, LocalDate newDate, Long newTimeId) {
+        Reservation reservation = getReservation(id);
+
+        if (LocalDateTime.of(reservation.date(), reservation.time()).isBefore(LocalDateTime.now())) {
+            log.warn("Cannot change past reservation: id={}", id);
+            throw new IllegalArgumentException("이미 지난 예약은 변경할 수 없습니다.");
+        }
+
+        ReservationTime newTime = reservationTimeRepository.findById(newTimeId)
+                .orElseThrow(() -> {
+                    log.warn("Reservation time not found: id={}", newTimeId);
+                    return new NotFoundException("존재하지 않는 예약 시간입니다.");
+                });
+
+        if (closedDateRepository.existsByDate(newDate)) {
+            log.warn("Cannot change to closed date: date={}", newDate);
+            throw new IllegalArgumentException("휴무일은 예약할 수 없습니다.");
+        }
+
+        if (LocalDateTime.of(newDate, newTime.startAt()).isBefore(LocalDateTime.now())) {
+            log.warn("Cannot change to past date/time: date={}, time={}", newDate, newTime.startAt());
+            throw new IllegalArgumentException("과거 날짜/시간으로는 변경할 수 없습니다.");
+        }
+
+        if (reservationRepository.existsByDateAndTimeAndThemeId(newDate, newTime.startAt(), reservation.theme().id(), id)) {
+            log.warn("Reservation already exists: date={}, time={}, theme={}", newDate, newTime.startAt(), reservation.theme().name());
+            throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
+        }
+
+        reservationRepository.updateDateAndTime(id, newDate, newTime.startAt());
+        log.info("Reservation changed: id={}, date={}, time={}", id, newDate, newTime.startAt());
+        return getReservation(id);
+    }
+
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> {

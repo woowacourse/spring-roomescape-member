@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.dto.request.ReservationUpdateDto;
 import roomescape.reservation.dto.response.ReservationDetailDto;
 import roomescape.reservation.service.ReservationService;
 
@@ -51,6 +52,17 @@ public class ReservationController {
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationDetailDto> cancelReservation(@PathVariable Long id) {
         ReservationDetailDto responseData = ReservationDetailDto.from(reservationService.cancel(id));
+        return ResponseEntity.ok(responseData);
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Update a reservation", description = "예약 날짜/시간을 변경하는 api")
+    public ResponseEntity<ReservationDetailDto> updateReservation(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateDto dto
+    ) {
+        ReservationDetailDto responseData = ReservationDetailDto.from(
+                reservationService.change(id, dto.date(), dto.timeId()));
         return ResponseEntity.ok(responseData);
     }
 }

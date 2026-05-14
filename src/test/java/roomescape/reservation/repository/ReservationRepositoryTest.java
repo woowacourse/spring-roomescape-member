@@ -175,6 +175,50 @@ class ReservationRepositoryTest {
                 .isEqualTo(cancelled);
     }
 
+    @Test
+    @DisplayName("자기 자신을 제외하고 날짜/시간/테마 중복 여부를 확인한다.")
+    void existsByDateAndTimeAndThemeId_excludeSelf() {
+        // given
+        Reservation saved = jdbcReservationRepository.save(
+                Reservation.create(name, date1, reservationTime1.startAt(), theme));
+
+        // when & then
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(
+                date1, reservationTime1.startAt(), theme.id(), saved.id()))
+                .isFalse();
+    }
+
+    @Test
+    @DisplayName("자기 자신 외 다른 예약이 있으면 true를 반환한다.")
+    void existsByDateAndTimeAndThemeId_excludeSelf_otherExists() {
+        // given
+        Reservation saved = jdbcReservationRepository.save(
+                Reservation.create(name, date1, reservationTime1.startAt(), theme));
+        jdbcReservationRepository.save(
+                Reservation.create("브라운", date1, reservationTime2.startAt(), theme));
+
+        // when & then
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(
+                date1, reservationTime2.startAt(), theme.id(), saved.id()))
+                .isTrue();
+    }
+
+    @Test
+    @DisplayName("예약 날짜/시간을 변경한다.")
+    void updateDateAndTime() {
+        // given
+        Reservation saved = jdbcReservationRepository.save(
+                Reservation.create(name, date1, reservationTime1.startAt(), theme));
+
+        // when
+        jdbcReservationRepository.updateDateAndTime(saved.id(), date2, reservationTime2.startAt());
+
+        // then
+        Reservation updated = jdbcReservationRepository.findById(saved.id()).get();
+        assertThat(updated.date()).isEqualTo(date2);
+        assertThat(updated.time()).isEqualTo(reservationTime2.startAt());
+    }
+
     private List<Reservation> saveAll(List<Reservation> reservations) {
         List<Reservation> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {

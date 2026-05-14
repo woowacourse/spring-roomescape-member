@@ -140,6 +140,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId, Long excludeId) {
+        String sql = """
+                SELECT COUNT(*) FROM reservation
+                WHERE date = :date
+                AND start_at = :start_at
+                AND theme_id = :theme_id
+                AND id != :excludeId
+                AND status = 'RESERVED'
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("start_at", time)
+                .addValue("theme_id", themeId)
+                .addValue("excludeId", excludeId);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
     public boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE name = :name AND date = :date AND start_at = :start_at";
         SqlParameterSource params = new MapSqlParameterSource()
@@ -168,6 +187,21 @@ public class JdbcReservationRepository implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", reservation.id())
                 .addValue("status", reservation.status().name());
+        int updatedCount = jdbcTemplate.update(sql, params);
+        return updatedCount > 0;
+    }
+
+    @Override
+    public boolean updateDateAndTime(Long id, LocalDate date, LocalTime time) {
+        String sql = """
+                UPDATE reservation
+                SET date = :date, start_at = :start_at
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("date", date)
+                .addValue("start_at", time);
         int updatedCount = jdbcTemplate.update(sql, params);
         return updatedCount > 0;
     }
