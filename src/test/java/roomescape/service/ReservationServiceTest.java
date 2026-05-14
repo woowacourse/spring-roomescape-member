@@ -127,6 +127,22 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 예약자_이름으로_예약을_조회한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        saveReservation("브라운", LocalDate.of(2026, 5, 5), time, theme);
+        saveReservation("로지", LocalDate.of(2026, 5, 6), time, theme);
+
+        // when
+        List<ReservationResponse> responses = reservationService.getMyReservation("로지");
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses).extracting(ReservationResponse::name).containsExactly("로지");
+    }
+
+    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime time = saveTime(10, 0);

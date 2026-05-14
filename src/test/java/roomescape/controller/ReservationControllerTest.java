@@ -86,6 +86,21 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 예약자_이름으로_예약_조회() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");
+        createReservation("브라운", LocalDate.now().plusDays(1).toString(), timeId, themeId).statusCode(201);
+
+        // when & then
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", hasItem("브라운"));
+    }
+
+    @Test
     void 예약_삭제() {
         // given
         int timeId = createTime("10:00");

@@ -80,6 +80,14 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> getMyReservation(String name) {
+        List<Reservation> reservations = reservationDao.selectByName(name);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public void delete(Long reservationId) {
         int deleted = reservationDao.delete(reservationId);
         if (deleted == 0) {

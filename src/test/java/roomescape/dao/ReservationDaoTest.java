@@ -69,6 +69,29 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 예약자_이름에_해당하는_예약_목록을_조회한다() {
+        // given
+        ReservationTime savedTime = saveTime(10, 0);
+        Theme savedTheme = saveTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+        LocalDate date = LocalDate.of(2026, 5, 5);
+
+        reservationDao.insert(Reservation.createWithoutId("브라운", date, savedTime, savedTheme));
+        reservationDao.insert(Reservation.createWithoutId("로지", date, savedTime, savedTheme));
+        reservationDao.insert(Reservation.createWithoutId("러키", date, savedTime, savedTheme));
+        reservationDao.insert(Reservation.createWithoutId("러로", date, savedTime, savedTheme));
+        reservationDao.insert(Reservation.createWithoutId("밤밤", date, savedTime, savedTheme));
+
+        // when
+        List<Reservation> reservations = reservationDao.selectByName("로지");
+
+        // then
+        assertAll(
+                () -> assertThat(reservations).hasSize(1),
+                () -> assertThat(reservations.getFirst().getName()).isEqualTo("로지")
+        );
+    }
+
+    @Test
     void 특정_시간에_예약이_존재하면_true를_반환한다() {
         // given
         ReservationTime time = saveTime(10, 0);
