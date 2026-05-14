@@ -1,7 +1,11 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import roomescape.exception.InvalidOwnershipException;
+import roomescape.exception.PastReservationControlException;
+import roomescape.exception.PastTimeException;
 
 public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
 
@@ -13,23 +17,42 @@ public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlo
     }
 
     public static Reservation transientOf(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
-        return new Reservation(
-                null,
-                name,
-                date,
-                timeSlot,
-                theme
-        );
+        return new Reservation(null, name, date, timeSlot, theme);
     }
 
-    public Reservation patch(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
-        return new Reservation(
-                this.id,
-                Optional.ofNullable(name).orElse(this.name),
-                Optional.ofNullable(date).orElse(this.date),
-                Optional.ofNullable(timeSlot).orElse(this.timeSlot),
-                Optional.ofNullable(theme).orElse(this.theme)
-        );
+    public void validateModifiable(String requesterName, LocalDateTime now) {
+        validateOwnership(requesterName);
+        validateNotPast(now);
+    }
+
+    public Reservation patch(String name, LocalDate date, TimeSlot timeSlot, Theme theme, LocalDateTime now) {
+        String patchedName = Objects.requireNonNullElse(name, this.name);
+        LocalDate patchedDate = Objects.requireNonNullElse(date, this.date);
+        TimeSlot patchedTime = Objects.requireNonNullElse(timeSlot, this.timeSlot);
+        Theme patchedTheme = Objects.requireNonNullElse(theme, this.theme);
+
+        validateTargetDateTime(patchedDate, patchedTime, now);
+        return new Reservation(this.id, patchedName, patchedDate, patchedTime, patchedTheme);
+    }
+
+    private void validateOwnership(String requesterName) {
+        if (!this.name.equals(requesterName)) {
+            throw new InvalidOwnershipException();
+        }
+    }
+
+    private void validateNotPast(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.timeSlot.startAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new PastReservationControlException();
+        }
+    }
+
+    private void validateTargetDateTime(LocalDate targetDate, TimeSlot targetTimeSlot, LocalDateTime now) {
+        LocalDateTime targetDateTime = LocalDateTime.of(targetDate, targetTimeSlot.startAt());
+        if (targetDateTime.isBefore(now)) {
+            throw new PastTimeException("지난 날짜/시간으로 예약하실 수 없습니다.");
+        }
     }
 
     private void validateName(String name) {
