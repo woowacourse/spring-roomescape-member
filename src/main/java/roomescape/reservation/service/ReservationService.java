@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservation.payload.ReservationRequest;
@@ -103,7 +104,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationNotFoundException(id));
 
         if (!reservation.getName().equals(name)) {
-            throw new ReservationNotFoundException(id);
+            throw new ReservationAccessDeniedException(id);
         }
 
         validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());

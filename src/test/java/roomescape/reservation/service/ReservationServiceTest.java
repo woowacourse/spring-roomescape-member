@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.exception.ReservationPastDateTimeException;
@@ -223,7 +224,7 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.save(reservationRequest);
 
         assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), "봉구스"))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(ReservationAccessDeniedException.class);
 
         assertThat(reservationService.findAll()).contains(reservation);
     }

@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
@@ -194,6 +195,23 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/{id}?name={name}", 999, "밀란"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString(ReservationNotFoundException.MESSAGE)));
+    }
+
+    @Test
+    void 다른_이름으로_예약을_삭제하면_403을_응답한다() throws Exception {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        Map<String, Object> request = reservationRequestBody(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        int id = postReservation(request);
+
+        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "봉구스"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value(containsString(ReservationAccessDeniedException.MESSAGE)));
     }
 
     @Test

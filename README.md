@@ -246,6 +246,7 @@ Content-Type: application/json
 | `201 Created`               | 정상적으로 생성됨                   |
 | `204 No Content`            | 반환값이 없음                     |
 | `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음          |
+| `403 Forbidden`             | 요청에 대한 권한이 없음               |
 | `404 Not Found`             | 없는 자원에 대한 접근                |
 | `409 Conflict`              | 서버의 현재 상태와 충돌               |
 | `422 Unprocessable Entity`  | 요청 형식은 맞으나, 내부 검증에서 통과하지 못함 |
