@@ -704,7 +704,15 @@ GET /api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
 
 ## 클라이언트 기능
 
-### 공통(사용자)
+### 공통
+
+#### 입장 기능
+
+사용자 이름과 역할을 입력하고, 적절한 페이지로 이동합니다.
+
+<img alt="이용자 정보 입력" src="https://github.com/user-attachments/assets/3f1ea831-06ab-40ac-97a8-0f60689dcf03" />
+
+### 사용자
 
 #### 인기 테마 조회 기능
 
@@ -724,6 +732,12 @@ GET /api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
 테마를 선택하고, 정해진 예약 폼에 맞춰 예약합니다.
 
 <img alt="예약 생성" src="https://github.com/user-attachments/assets/18155750-0c47-4979-9aec-481afeab4b06" />
+
+#### 내 예약 관리 기능
+
+내 예약 목록을 조회하고, 수정 및 취소를 수행합니다.
+
+<img alt="내 예약 관리" src="https://github.com/user-attachments/assets/5b11bd36-5016-4b58-87c7-376b700920a3" />
 
 ### 관리자
 
