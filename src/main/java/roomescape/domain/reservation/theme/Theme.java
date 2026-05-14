@@ -3,12 +3,12 @@ package roomescape.domain.reservation.theme;
 import java.util.Objects;
 
 public class Theme {
-    private Long id;
-    private ThemeName name;
-    private String description;
-    private String url;
+    private final Long id;
+    private final ThemeName name;
+    private final Description description;
+    private final String url;
 
-    public Theme(Long id, ThemeName name, String description, String url) {
+    public Theme(Long id, ThemeName name, Description description, String url) {
         validate(name, description, url);
         this.id = id;
         this.name = name;
@@ -16,7 +16,7 @@ public class Theme {
         this.url = url;
     }
 
-    private void validate(ThemeName name, String description, String url) {
+    private void validate(ThemeName name, Description description, String url) {
         Objects.requireNonNull(name, "테마 이름이 비어 있습니다.");
         Objects.requireNonNull(description, "테마 설명이 비어 있습니다.");
         Objects.requireNonNull(url, "테마 썸네일 주소가 비어 있습니다.");
@@ -30,7 +30,7 @@ public class Theme {
         return name;
     }
 
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 

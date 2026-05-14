@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.ThemeName;
 import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
@@ -65,7 +66,7 @@ public class ThemeService {
         Theme theme = new Theme(
                 null,
                 ThemeName.parse(request.name()),
-                request.description(),
+                Description.parse(request.description()),
                 imageUrl
         );
 

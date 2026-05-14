@@ -3,6 +3,7 @@ package roomescape.dao.rowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.reservation.UserName;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.theme.Description;
 import roomescape.domain.reservation.theme.ThemeName;
 import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
@@ -17,7 +18,7 @@ public final class ReservationMapper {
         Theme theme = new Theme(
                 rs.getLong("theme_id"),
                 ThemeName.parse(rs.getString("theme_name")),
-                rs.getString("description"),
+                Description.parse(rs.getString("description")),
                 rs.getString("url")
         );
         return new Reservation(
