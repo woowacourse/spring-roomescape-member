@@ -97,6 +97,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsReservationById(Long id) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE id = :id
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
     public boolean existsReservationByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme) {
         String sql = """
             SELECT EXISTS (

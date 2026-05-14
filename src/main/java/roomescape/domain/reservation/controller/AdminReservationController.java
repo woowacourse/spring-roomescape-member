@@ -1,7 +1,9 @@
 package roomescape.domain.reservation.controller;
 
 import java.util.List;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
 @RequestMapping("/api/admin/reservations")
+@Validated
 public class AdminReservationController {
 
     private final ReservationService reservationService;
@@ -26,8 +29,8 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable @Positive(message = "id의 값은 양수여야 합니다.") Long id) {
         reservationService.deleteReservationById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

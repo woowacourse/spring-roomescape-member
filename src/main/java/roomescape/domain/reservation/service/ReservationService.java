@@ -76,6 +76,10 @@ public class ReservationService {
     }
 
     public void deleteReservationById(Long id) {
+        if (!reservationRepository.existsReservationById(id)) {
+            throw new ReservationException(ReservationErrorType.RESERVATION_NOT_FOUND);
+        }
+
         reservationRepository.deleteReservationById(id);
     }
 }
