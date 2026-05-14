@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     public ReservationResponse register(ReservationRequest reservationRequest) {
-        reservationRequestValidate(reservationRequest);
+        validateNullFields(reservationRequest);
         ReservationTime time = timeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
         reservationRequestDayCheck(reservationRequest.date(), time);
@@ -77,7 +77,7 @@ public class ReservationService {
         }
     }
 
-    private void reservationRequestValidate(ReservationRequest reservationRequest) {
+    private void validateNullFields(ReservationRequest reservationRequest) {
         if (reservationRequest.name() == null) {
             throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_NAME);
         }
