@@ -1,5 +1,7 @@
 package roomescape.exception;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -12,10 +14,25 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 
+    private final Map<Class<? extends RoomescapeException>, HttpStatus> exceptionHttpStatusMap = new ConcurrentHashMap<>();
+
+    public ProblemDetailsAdvice() {
+        exceptionHttpStatusMap.put(ReservationNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(ThemeNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(TimeSlotNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(InvalidOwnershipException.class, HttpStatus.FORBIDDEN);
+        exceptionHttpStatusMap.put(PastReservationControlException.class, HttpStatus.BAD_REQUEST);
+        exceptionHttpStatusMap.put(PastTimeException.class, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<ProblemDetail> handleDomainException(RoomescapeException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(exception.getStatus(), exception.getMessage());
-        return ResponseEntity.status(exception.getStatus()).body(problemDetail);
+        HttpStatus status = exceptionHttpStatusMap.getOrDefault(exception.getClass(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, exception.getMessage());
+        problemDetail.setProperty("code", exception.getErrorCode());
+
+        return ResponseEntity.status(status).body(problemDetail);
     }
 
     @ExceptionHandler(DuplicateKeyException.class)

@@ -1,17 +1,15 @@
 package roomescape.exception;
 
-import org.springframework.http.HttpStatus;
-
 public abstract class RoomescapeException extends RuntimeException {
+    
+    private final String errorCode;
 
-    private final HttpStatus status;
-
-    public RoomescapeException(String message, HttpStatus status) {
+    public RoomescapeException(String errorCode, String message) {
         super(message);
-        this.status = status;
+        this.errorCode = errorCode;
     }
 
-    public HttpStatus getStatus() {
-        return status;
+    public String getErrorCode() {
+        return errorCode;
     }
 }
