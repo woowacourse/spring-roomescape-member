@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception e) {
         return ResponseEntity
                 .internalServerError()
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponse("서버 내부 예외가 발생했습니다."));
     }
 
     @ExceptionHandler(BusinessException.class)
