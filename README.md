@@ -6,6 +6,7 @@
 
 - [프로젝트 구조](#-프로젝트-구조)
 - [API 명세](#api-명세)
+- [에러 응답 명세](#에러-응답-명세)
 - [2단계 - 사용자 예약](#2단계---사용자-예약)
 - [테스트 케이스](#-테스트-케이스)
 
@@ -72,6 +73,9 @@
 | 사용 가능 날짜 | `GET /available-dates?month=YYYY-MM` | — | `["yyyy-MM-dd", ...]` |
 | 테마별 가능 시간 | `GET /times?themeId=&date=yyyy-MM-dd` | — | `[{id, startAt, endAt}, ...]` |
 | 인기 테마 조회 | `GET /themes/best?date=yyyy-MM-dd` | — | `[{id, name}, ...]` |
+| 내 예약 조회 | `GET /reservations/user?name=` | — | `[{id, name, date, time, theme}, ...]` |
+| 내 예약 취소 | `DELETE /reservations/user/{id}` | — | `204 No Content` |
+| 내 예약 변경 | `PUT /reservations/user/{id}` | `{date, timeId}` | `{id, name, date, time, theme}` |
 
 ### 비즈니스 규칙
 
@@ -80,6 +84,8 @@
 | 1 | 지나간 날짜 및 시간에 대한 예약 생성 불가             | `400 Bad Request` |
 | 2 | 같은 날짜 + 시간 + 테마에 이미 예약이 있으면 중복 예약 거부 | `409 Conflict` |
 | 3 | 예약이 존재하는 시간은 삭제 불가                   | `409 Conflict` |
+| 4 | 이미 지난 예약은 취소·변경 불가                   | `400 Bad Request` |
+| 5 | 변경하려는 날짜·시간 슬롯이 이미 예약된 경우 변경 거부      | `409 Conflict` |
 
 ### 입력값 유효성 검증
 
@@ -91,6 +97,46 @@
 | 시간 | `startAt`, `endAt` | 필수, `HH:mm` 형식 (`@NotNull`) | `400 Bad Request` |
 | 테마 | `name`, `description` | 필수, 공백 불가 (`@NotBlank`) | `400 Bad Request` |
 | 휴일 | `date` | 필수, `yyyy-MM-dd` 형식 (`@NotNull`) | `400 Bad Request` |
+| 예약 변경 | `date` | 필수, `yyyy-MM-dd` 형식 (`@NotNull`) | `400 Bad Request` |
+| 예약 변경 | `timeId` | 필수 (`@NotNull`) | `400 Bad Request` |
+
+---
+
+## 에러 응답 명세
+
+에러 응답은 아래 형식의 JSON 본문을 반환한다.
+
+```json
+{
+  "code": "에러_코드",
+  "message": "사람이 읽을 수 있는 설명"
+}
+```
+
+| HTTP 상태 | `code` | `message` | 발생 상황 |
+|-----------|--------|-----------|----------|
+| `400` | `PAST_RESERVATION` | 과거 날짜·시간은 예약이 불가합니다. | 과거 날짜·시간으로 예약 생성, 또는 이미 지난 예약을 취소·변경 |
+| `400` | `INVALID_REQUEST` | 입력값이 유효하지 않습니다. | `@NotBlank`, `@NotNull` 등 유효성 검증 실패, 또는 필수 필드 누락 |
+| `400` | `INVALID_FORMAT` | 요청 형식이 올바르지 않습니다. | 날짜·시간 형식 오류 (`2026/05/20` 등) |
+| `404` | `RESERVATION_NOT_FOUND` | 예약을 찾을 수 없습니다. | 존재하지 않는 예약 ID로 취소·변경 요청 |
+| `404` | `TIME_NOT_FOUND` | 예약 시간을 찾을 수 없습니다. | 존재하지 않는 시간 ID 참조 |
+| `404` | `THEME_NOT_FOUND` | 테마를 찾을 수 없습니다. | 존재하지 않는 테마 ID 참조 |
+| `404` | `HOLIDAY_NOT_FOUND` | 휴일 정보를 찾을 수 없습니다. | 존재하지 않는 휴일 ID 삭제 요청 |
+| `409` | `DUPLICATE_RESERVATION` | 중복 예약은 불가합니다. | 같은 날짜·시간·테마에 이미 예약 존재, 또는 변경하려는 시간이 이미 차 있음 |
+| `409` | `TIME_IN_USE` | 해당 시간에 예약이 존재하여 삭제할 수 없습니다. | 예약이 있는 시간 삭제 시도 |
+| `500` | `INTERNAL_SERVER_ERROR` | 서버 오류가 발생했습니다. | 처리되지 않은 예외 |
+
+**에러 응답 예시**
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+  "code": "RESERVATION_NOT_FOUND",
+  "message": "예약을 찾을 수 없습니다."
+}
+```
 
 ---
 
@@ -331,12 +377,12 @@ Content-Type: application/json
 
 ---
 
-### POST /users/reservations — 사용자 예약 추가
+### POST /reservations — 사용자 예약 추가
 
 **요청 예시**
 
 ```http
-POST /users/reservations HTTP/1.1
+POST /reservations HTTP/1.1
 Content-Type: application/json
 
 {
@@ -359,7 +405,8 @@ Content-Type: application/json
     "date": "2025-05-10",
     "time": {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "10:00",
+        "endAt": "12:00"
     },
     "theme": {
         "id": 1,
@@ -370,12 +417,112 @@ Content-Type: application/json
 
 ---
 
-### DELETE /users/reservations/{id} — 사용자 예약 취소
+### GET /reservations/user?name= — 내 예약 목록 조회
+
+**요청 예시**
+
+```http
+GET /reservations/user?name=브라운 HTTP/1.1
+```
+
+**응답 예시**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2025-05-10",
+        "time": {
+            "id": 1,
+            "startAt": "10:00",
+            "endAt": "12:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "테마명"
+        }
+    }
+]
+```
+
+---
+
+### DELETE /reservations/user/{id} — 내 예약 취소
+
+이미 지난 예약은 취소할 수 없습니다.
 
 **응답 예시**
 
 ```http
 HTTP/1.1 204 No Content
+```
+
+**에러 예시 (이미 지난 예약)**
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+
+{
+    "code": "PAST_RESERVATION",
+    "message": "과거 날짜·시간은 예약이 불가합니다."
+}
+```
+
+---
+
+### PUT /reservations/user/{id} — 내 예약 변경
+
+날짜와 시간을 변경합니다. 이미 지난 예약이거나 변경하려는 시간이 이미 차 있으면 거부합니다.
+
+**요청 예시**
+
+```http
+PUT /reservations/user/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "date": "2026-06-01",
+    "timeId": 2
+}
+```
+
+**응답 예시**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2026-06-01",
+    "time": {
+        "id": 2,
+        "startAt": "14:00",
+        "endAt": "16:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "테마명"
+    }
+}
+```
+
+**에러 예시 (시간 중복)**
+
+```http
+HTTP/1.1 409 Conflict
+Content-Type: application/json
+
+{
+    "code": "DUPLICATE_RESERVATION",
+    "message": "중복 예약은 불가합니다."
+}
 ```
 
 ---
@@ -442,6 +589,18 @@ Content-Type: application/json
 - [x] `날짜_누락_예약_생성_400_반환_테스트`
 - [x] `예약_취소_테스트`
 
+### UserReservationControllerTest
+
+- [x] `이름으로_예약_목록_조회_테스트`
+- [x] `예약_취소_테스트`
+- [x] `존재하지_않는_예약_취소_404_반환_테스트`
+- [x] `지난_예약_취소_400_반환_테스트`
+- [x] `예약_변경_테스트`
+- [x] `존재하지_않는_예약_변경_404_반환_테스트`
+- [x] `과거_날짜로_예약_변경_400_반환_테스트`
+- [x] `이미_찬_시간으로_예약_변경_409_반환_테스트`
+- [x] `date_누락_예약_변경_400_반환_테스트`
+
 ### ReservationServiceImplTest
 
 - [x] `create_정상_예약을_저장하고_반환`
@@ -455,6 +614,14 @@ Content-Type: application/json
 - [x] `create_오늘_지난_시간_예약이면_예외`
 - [x] `getAll`
 - [x] `cancel`
+- [x] `getByName_예약_목록_반환`
+- [x] `cancelForUser_존재하지_않는_예약이면_예외`
+- [x] `cancelForUser_지난_날짜_예약이면_예외`
+- [x] `cancelForUser_정상_취소`
+- [x] `update_존재하지_않는_예약이면_예외`
+- [x] `update_과거_날짜로_변경하면_예외`
+- [x] `update_중복_시간으로_변경하면_예외`
+- [x] `update_정상_변경`
 
 ### JdbcReservationRepositoryTest
 
