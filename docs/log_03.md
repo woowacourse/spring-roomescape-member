@@ -60,23 +60,36 @@ DB가 원자적으로 중복을 차단하는 가장 적합한 방법.
 - 하지만 Soft delete를 사용 중이라 취소된 행과 충돌 발생
 - → 직접 사용 불가
 
-**Partial Index (필터 인덱스)** ✅ 채택
+**Partial Index (필터 인덱스)** — 이론상 적합하나 H2에서 오류 발생
 
-`WHERE status <> 'CANCELED'` 조건으로 활성 예약에만 유니크 제약 적용.
-Soft delete와 Unique Constraint를 동시에 만족.
+`WHERE status <> 'CANCELED'` 조건으로 활성 예약에만 유니크 제약 적용하는 방식.
+Soft delete와 Unique Constraint를 동시에 만족하는 이론적으로 가장 깔끔한 해결책.
 
 ```sql
 CREATE UNIQUE INDEX idx_active_reservation ON reservations (date, time_id, theme_id) WHERE status <> 'CANCELED';
 ```
 
+→ 실제 적용 시 H2에서 `UNIQUE ... WHERE` 구문 오류 발생. H2가 문서상 지원한다고 알려졌지만 실제로는 동작하지 않았다.
+
+**deleted_at 컬럼** ✅ 최종 채택
+
+취소 시 `deleted_at`에 타임스탬프를 기록하고, `UNIQUE(date, time_id, theme_id, deleted_at)`을 적용.
+활성 예약은 `deleted_at = NULL`이므로 NULL은 유니크 인덱스에서 제외되어 중복 허용.
+취소된 예약은 각기 다른 타임스탬프를 가지므로 충돌 없음.
+
+```sql
+ALTER TABLE reservations ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE UNIQUE INDEX idx_active_reservation ON reservations (date, time_id, theme_id, deleted_at);
+```
+
 #### DB별 지원 현황
 
-| DB                                    | Partial Index |
-|---------------------------------------|---------------|
-| PostgreSQL, SQLite, H2, MS SQL Server | ✅             |
-| MySQL, MariaDB                        | ❌             |
-
-MySQL 전환 시 우회책: `deleted_at TIMESTAMP NULL` 컬럼 추가 후 `UNIQUE(date, time_id, theme_id, deleted_at)`
+| DB                    | Partial Index (`WHERE`) | deleted_at 우회책 |
+|-----------------------|-------------------------|-------------------|
+| PostgreSQL, MS SQL Server | ✅                  | 가능              |
+| H2                    | ❌ (실제 동작 안 함)    | ✅ 채택           |
+| MySQL, MariaDB        | ❌                      | ✅                |
+| SQLite                | ✅                      | 가능              |
 
 #### 핵심 인사이트
 
