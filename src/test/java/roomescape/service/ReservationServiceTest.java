@@ -17,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationUpdateRequest;
-import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
@@ -32,7 +32,7 @@ import roomescape.repository.ThemeRepository;
 class ReservationServiceTest {
     private static final Reservation DUMMY = Reservation.of(
             1L,
-            Name.from("anyone"),
+            ReservationName.from("anyone"),
             ReservationDate.from(LocalDate.of(2099, 1, 1)),
             ReservationTime.of(1L, LocalTime.of(10, 0)),
             Theme.of(1L, new ThemeName("any"), "any", new ThumbnailUrl("any"))

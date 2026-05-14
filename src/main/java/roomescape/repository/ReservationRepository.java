@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
@@ -20,19 +20,19 @@ import roomescape.domain.theme.ThumbnailUrl;
 public class ReservationRepository {
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
-            Name.from(resultSet.getString("name")),
+            ReservationName.from(resultSet.getString("reservationName")),
             ReservationDate.from(resultSet.getDate("date").toLocalDate()),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
             Theme.of(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"), new ThumbnailUrl(resultSet.getString("thumbnail_url"))));
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,
-                   r.name,
+                   r.reservationName,
                    r.date,
                    rt.id  AS time_id,
                    rt.start_at,
                    t.id   AS theme_id,
-                   t.name AS theme_name,
+                   t.reservationName AS theme_name,
                    t.description,
                    t.thumbnail_url
             FROM reservation r
@@ -42,14 +42,14 @@ public class ReservationRepository {
     private static final String UPDATE = """
             UPDATE reservation
                 SET
-                    name = ?,
+                    reservationName = ?,
                     date = ?,
                     time_id = ?,
                     theme_id = ?
             WHERE id = ?
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
-    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.name = ?";
+    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.reservationName = ?";
     private static final String EXISTS_BY_DATE_AND_TIME_AND_THEME_ID = """
             SELECT EXISTS (
                 SELECT 1
@@ -93,7 +93,7 @@ public class ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName().getValue(),
+                "reservationName", reservation.getName().getValue(),
                 "date", reservation.getDate().getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
@@ -127,8 +127,8 @@ public class ReservationRepository {
                 jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID, Boolean.class, reservationTimeId));
     }
 
-    public List<Reservation> findAllByName(String name) {
-        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, name);
+    public List<Reservation> findAllByName(String reservationName) {
+        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, reservationName);
     }
 
     public Reservation update(long id, Reservation target) {

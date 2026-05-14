@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationUpdateRequest;
-import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.repository.ReservationRepository;
@@ -50,7 +50,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
-        Reservation reservation = Reservation.reserve(Name.from(request.getName()),
+        Reservation reservation = Reservation.reserve(ReservationName.from(request.getName()),
                 ReservationDate.from(request.getDate()),
                 reservationTime, theme, now);
 

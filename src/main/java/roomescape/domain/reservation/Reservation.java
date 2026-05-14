@@ -8,32 +8,36 @@ import roomescape.domain.theme.Theme;
 
 public class Reservation {
     private final long id;
-    private final Name name;
+    private final ReservationName reservationName;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
+    public Reservation(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
+                       Theme theme) {
         this.id = id;
-        this.name = name;
+        this.reservationName = reservationName;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation of(long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+    public static Reservation of(long id, ReservationName reservationName, ReservationDate date, ReservationTime time,
+                                 Theme theme) {
+        return new Reservation(id, reservationName, date, time, theme);
     }
 
-    public static Reservation of(Name name, ReservationDate date, ReservationTime time, Theme theme) {
-        return new Reservation(0L, name, date, time, theme);
+    public static Reservation of(ReservationName reservationName, ReservationDate date, ReservationTime time,
+                                 Theme theme) {
+        return new Reservation(0L, reservationName, date, time, theme);
     }
 
-    public static Reservation reserve(Name name, ReservationDate date, ReservationTime time, Theme theme,
+    public static Reservation reserve(ReservationName reservationName, ReservationDate date, ReservationTime time,
+                                      Theme theme,
                                       LocalDateTime now) {
         Objects.requireNonNull(now);
         validateAvailableDateTime(date, time, now);
-        return new Reservation(0L, name, date, time, theme);
+        return new Reservation(0L, reservationName, date, time, theme);
     }
 
     private static void validateAvailableDateTime(ReservationDate requestDate, ReservationTime requestTime,
@@ -55,8 +59,8 @@ public class Reservation {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public ReservationName getName() {
+        return reservationName;
     }
 
     public ReservationDate getDate() {

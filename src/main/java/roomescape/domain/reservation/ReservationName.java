@@ -4,22 +4,22 @@ import common.exception.ErrorCode;
 import common.exception.RoomEscapeException;
 import java.util.Objects;
 
-public class Name {
+public class ReservationName {
     private static final int MIN_NAME_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 20;
 
     private final String value;
 
-    private Name(String value) {
+    private ReservationName(String value) {
         this.value = value;
     }
 
-    public static Name from(String value) {
+    public static ReservationName from(String value) {
         validateIsNull(value);
         String preprocessed = value.strip();
         validateLength(preprocessed);
 
-        return new Name(preprocessed);
+        return new ReservationName(preprocessed);
     }
 
     private static void validateIsNull(String value) {
@@ -46,8 +46,8 @@ public class Name {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Name name = (Name) o;
-        return Objects.equals(value, name.value);
+        ReservationName reservationName = (ReservationName) o;
+        return Objects.equals(value, reservationName.value);
     }
 
     @Override

@@ -16,7 +16,7 @@ import roomescape.domain.theme.ThumbnailUrl;
 public class ThemeRepositoryImpl implements ThemeRepository {
 
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
-            Theme.of(rs.getLong("id"), new ThemeName(rs.getString("name")), rs.getString("description"),
+            Theme.of(rs.getLong("id"), new ThemeName(rs.getString("reservationName")), rs.getString("description"),
                     new ThumbnailUrl(rs.getString("thumbnail_url")));
     private static final String EXISTS_BY_ID = """
             SELECT EXISTS (
@@ -51,7 +51,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         Map<String, Object> params = Map.of(
-                "name", theme.getName(),
+                "reservationName", theme.getName(),
                 "description", theme.getDescription(),
                 "thumbnail_url", theme.getThumbnailUrl()
         );
@@ -61,13 +61,13 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long themeId) {
-        String sql = "SELECT id, name, description, thumbnail_url FROM THEME WHERE id = ?";
+        String sql = "SELECT id, reservationName, description, thumbnail_url FROM THEME WHERE id = ?";
         List<Theme> result = jdbcTemplate.query(sql, THEME_ROW_MAPPER, themeId);
         return result.stream().findFirst();
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail_url FROM THEME";
+        String sql = "SELECT id, reservationName, description, thumbnail_url FROM THEME";
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
@@ -77,7 +77,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         LocalDate endDate = date.minusDays(1);
 
         String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail_url
+                SELECT t.id, t.reservationName, t.description, t.thumbnail_url
                 FROM THEME AS t
                 INNER JOIN (
                     SELECT theme_id, count(theme_id) AS cnt
