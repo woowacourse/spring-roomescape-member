@@ -46,6 +46,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<ReservationEntity> findAll() {
         String sql = """
                 SELECT
@@ -66,6 +67,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    @Override
     public ReservationEntity save(Reservation reservation, Long timeId, Long themeId) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -83,6 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return new ReservationEntity(id, timeId, themeId, reservation);
     }
 
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
