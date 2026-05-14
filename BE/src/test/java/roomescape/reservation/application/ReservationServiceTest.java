@@ -71,7 +71,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간으로 예약하면 예외가 전파된다")
+    @DisplayName("존재하지 않는 예약 시간으로 예약하면 잘못된 요청 예외가 전파된다")
     void saveReservation_fail_with_not_found_time() {
         // given
         Long notExistTimeId = 999L;
@@ -87,12 +87,14 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(command)
-        ).isInstanceOf(EntityNotFoundException.class);
+        )
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("존재하지 않는 예약 시간입니다.");
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마 ID로 예약하면 예외가 전파된다")
+    @DisplayName("존재하지 않는 테마 ID로 예약하면 잘못된 요청 예외가 전파된다")
     //메서드명-성공 혹은 실패 - (이유)
     void saveReservation_fail_with_not_found_theme() {
         // given
@@ -109,7 +111,9 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(command)
-        ).isInstanceOf(EntityNotFoundException.class);
+        )
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("존재하지 않는 예약 테마입니다.");
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
@@ -172,6 +176,15 @@ class ReservationServiceTest {
 
         // then
         assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 ID로 삭제하면 예외가 발생한다")
+    void deleteReservation_fail_with_not_found_reservation() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("예약을 찾을 수 없습니다.");
     }
 
     @Test

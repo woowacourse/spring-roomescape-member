@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ReservationTimeErrorCode;
+import roomescape.global.exception.customException.EntityNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
@@ -55,6 +57,8 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteTime(Long id) {
+        reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND, id));
         reservationTimeValidator.validateNotReferencedByReservation(id);
         reservationTimeRepository.deleteById(id);
     }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.customException.BusinessException;
+import roomescape.global.exception.customException.EntityNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
@@ -101,6 +102,15 @@ class ThemeServiceTest {
 
         // then
         assertThat(themeRepository.findById(deleteTagetId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 ID로 삭제하면 예외가 발생한다")
+    void deleteById_fail_with_not_found_theme() {
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteById(999L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("테마를 찾을 수 없습니다.");
     }
 
     @Test

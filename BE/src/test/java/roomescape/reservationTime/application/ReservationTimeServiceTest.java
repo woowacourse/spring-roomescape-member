@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.customException.BusinessException;
+import roomescape.global.exception.customException.EntityNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
@@ -114,13 +115,12 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간을 삭제해도 예외가 발생하지 않는다")
+    @DisplayName("존재하지 않는 예약 시간을 삭제하면 예외가 발생한다")
     void deleteNotFoundTime() {
-        // when
-        reservationTimeService.deleteTime(999L);
-
-        // then
-        assertThat(reservationTimeRepository.findAll()).isEmpty();
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("예약 시간을 찾을 수 없습니다.");
     }
 
     @Test
