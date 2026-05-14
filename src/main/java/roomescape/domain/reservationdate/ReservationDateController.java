@@ -1,6 +1,7 @@
 package roomescape.domain.reservationdate;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.support.auth.AdminRequestValidator;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateResponse;
+import roomescape.support.auth.AdminRequestValidator;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class ReservationDateController {
     @PostMapping("/admin/reservation-dates")
     public ResponseEntity<CreateReservationDateResponse> createReservationDate(
         HttpServletRequest httpServletRequest,
-        @RequestBody CreateReservationDateRequest createReservationDateRequest
+        @Valid @RequestBody CreateReservationDateRequest createReservationDateRequest
     ) {
         if (validator.isUnauthorized(httpServletRequest)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

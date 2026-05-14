@@ -37,7 +37,7 @@ class GlobalExceptionHandlerTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getStatusCode().value()).isEqualTo(500);
             softly.assertThat(response.getBody().code()).isEqualTo("INTERNAL_SERVER_ERROR");
-            softly.assertThat(response.getBody().message()).isEqualTo("서버 내부 오류가 발생했습니다");
+            softly.assertThat(response.getBody().message()).isEqualTo("서버 내부 오류가 발생했습니다.");
         });
     }
 }

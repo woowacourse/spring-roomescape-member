@@ -1,19 +1,13 @@
 package roomescape.domain.reservationtime.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.support.exception.BadRequestException;
-import roomescape.support.exception.ReservationTimeErrorCode;
 
 public record CreateTimeRequest(
+    @NotNull(message = "시간은 필수 사항 입니다. 시간을 선택해주세요.")
     LocalTime startAt
 ) {
-
-    public void validate() {
-        if (startAt == null) {
-            throw new BadRequestException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
-        }
-    }
 
     public ReservationTime toEntity() {
         return ReservationTime.createWithoutId(startAt);

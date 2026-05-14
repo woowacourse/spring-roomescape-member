@@ -1,35 +1,27 @@
 package roomescape.domain.reservation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.support.exception.BadRequestException;
-import roomescape.support.exception.ReservationErrorCode;
-import roomescape.support.exception.ReservationTimeErrorCode;
-import roomescape.support.exception.ThemeErrorCode;
 
 public record CreateReservationRequest(
+    @Size(max = 10, message = "이름은 10자 이하여야 합니다.")
+    @NotBlank(message = "이름은 비어있을 수 없습니다. 10자 이내의 이름을 입력해주세요.")
     String name,
+
+    @NotNull(message = "날짜는 필수 선택 사항 입니다. 날짜를 선택해주세요.")
     Long dateId,
+
+    @NotNull(message = "시간은 필수 선택 사항 입니다. 시간을 선택해주세요.")
     Long timeId,
+
+    @NotNull(message = "테마는 필수 선택 사항 입니다. 테마를 선택해주세요.")
     Long themeId
 ) {
-
-    public void validate() {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_NAME);
-        }
-        if (dateId == null) {
-            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_DATE);
-        }
-        if (timeId == null) {
-            throw new BadRequestException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
-        }
-        if (themeId == null) {
-            throw new BadRequestException(ThemeErrorCode.INVALID_THEME);
-        }
-    }
 
     public Reservation toEntity(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
         return Reservation.createWithoutId(

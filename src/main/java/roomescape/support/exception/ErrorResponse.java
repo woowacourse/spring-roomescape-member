@@ -17,4 +17,9 @@ public record ErrorResponse(
         return ResponseEntity.status(httpStatus)
             .body(new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
     }
+
+    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, ErrorCode errorCode, String message) {
+        return ResponseEntity.status(httpStatus)
+            .body(new ErrorResponse(errorCode.getCode(), message));
+    }
 }

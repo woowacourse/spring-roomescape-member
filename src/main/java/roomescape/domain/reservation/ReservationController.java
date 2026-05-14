@@ -1,5 +1,6 @@
 package roomescape.domain.reservation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/reservations")
-    public ResponseEntity<CreateReservationResponse> createReservation(@RequestBody CreateReservationRequest request) {
-        request.validate();
+    public ResponseEntity<CreateReservationResponse> createReservation(
+        @Valid @RequestBody CreateReservationRequest request
+    ) {
         CreateReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
