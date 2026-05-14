@@ -5,14 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.DatabaseCleaner;
+import roomescape.ServiceTest;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -24,8 +23,7 @@ import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.code.ThemeErrorCode;
 import roomescape.exception.domain.ThemeException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class ThemeServiceTest {
+class ThemeServiceTest extends ServiceTest {
 
     @Autowired
     private ThemeService themeService;
@@ -40,12 +38,7 @@ class ThemeServiceTest {
     private ThemeDao themeDao;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clean();
-    }
+    private Clock clock;
 
     @Test
     void 테마를_생성할_수_있다() {
@@ -129,7 +122,7 @@ class ThemeServiceTest {
     @Test
     void 인기_테마를_조회한다() {
         // given
-        LocalDate baseDate = LocalDate.of(2026, 5, 8);
+        LocalDate fixedToday = LocalDate.now(clock);
 
         Theme popularTheme = saveTheme("인기 테마");
         Theme normalTheme = saveTheme("보통 테마");
@@ -140,23 +133,23 @@ class ThemeServiceTest {
         ReservationTime time12 = saveReservationTime(LocalTime.of(12, 0));
 
         // 인기 테마: 조회 기간 내 예약 3개
-        saveReservation("예약자1", baseDate.minusDays(1), time10, popularTheme);
-        saveReservation("예약자2", baseDate.minusDays(2), time11, popularTheme);
-        saveReservation("예약자3", baseDate.minusDays(3), time12, popularTheme);
+        saveReservation("예약자일", fixedToday.minusDays(1), time10, popularTheme);
+        saveReservation("예약자이", fixedToday.minusDays(2), time11, popularTheme);
+        saveReservation("예약자삼", fixedToday.minusDays(3), time12, popularTheme);
 
         // 보통 테마: 조회 기간 내 예약 2개
-        saveReservation("예약자4", baseDate.minusDays(1), time10, normalTheme);
-        saveReservation("예약자5", baseDate.minusDays(2), time11, normalTheme);
+        saveReservation("예약자사", fixedToday.minusDays(1), time10, normalTheme);
+        saveReservation("예약자오", fixedToday.minusDays(2), time11, normalTheme);
 
         // 비인기 테마: 조회 기간 내 예약 1개
-        saveReservation("예약자6", baseDate.minusDays(1), time10, unpopularTheme);
+        saveReservation("예약자육", fixedToday.minusDays(1), time10, unpopularTheme);
 
         // 조회 기간 밖 예약: 순위에 반영되면 안 됨
-        saveReservation("예약자7", baseDate, time10, unpopularTheme);
-        saveReservation("예약자8", baseDate.minusDays(8), time11, unpopularTheme);
+        saveReservation("예약자칠", fixedToday, time10, unpopularTheme);
+        saveReservation("예약자팔", fixedToday.minusDays(8), time11, unpopularTheme);
 
         // when
-        List<ThemeResponse> rankings = themeService.getThemeRankings(baseDate);
+        List<ThemeResponse> rankings = themeService.getThemeRankings();
 
         // then
         assertThat(rankings)
@@ -208,7 +201,7 @@ class ThemeServiceTest {
         Theme theme = saveTheme("테마1");
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(10, 0));
 
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation reservation = new Reservation(
                 "예약1",
                 LocalDate.of(2026, 5, 8),
                 reservationTime,
@@ -242,7 +235,7 @@ class ThemeServiceTest {
             ReservationTime reservationTime,
             Theme theme
     ) {
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation reservation = new Reservation(
                 name,
                 date,
                 reservationTime,

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -27,7 +29,7 @@ public record ReservationRequest(
         @NotNull(message = "테마를 선택해 주세요.")
         Long themeId
 ) {
-    public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        return Reservation.createWithoutId(name, date, reservationTime, theme);
+    public Reservation toReservation(ReservationTime reservationTime, Theme theme, Clock clock) {
+        return Reservation.createFutureReservation(name, date, reservationTime, theme, LocalDateTime.now(clock));
     }
 }

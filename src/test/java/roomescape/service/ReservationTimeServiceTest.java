@@ -8,11 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.DatabaseCleaner;
+import roomescape.ServiceTest;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -29,8 +27,7 @@ import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class ReservationTimeServiceTest {
+class ReservationTimeServiceTest extends ServiceTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -44,16 +41,8 @@ class ReservationTimeServiceTest {
     @Autowired
     private ThemeDao themeDao;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clean();
-    }
-
     @Test
-    void 예약시간을_생성할_수_있다() {
+    void 예약_시간을_생성할_수_있다() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
@@ -87,7 +76,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservedTime = saveReservationTime(LocalTime.of(10, 0));
         ReservationTime notReservedTime = saveReservationTime(LocalTime.of(11, 0));
 
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation reservation = new Reservation(
                 "예약1",
                 date,
                 reservedTime,
@@ -165,7 +154,7 @@ class ReservationTimeServiceTest {
     void 예약시간_삭제시_관련_예약이_존재하면_예외를_반환한다() {
         // given
         ReservationTime reservationTime = saveReservationTime(LocalTime.of(10, 0));
-        Reservation reservation = Reservation.createWithoutId(
+        Reservation reservation = new Reservation(
                 "예약1",
                 LocalDate.of(2026, 5, 8),
                 reservationTime,

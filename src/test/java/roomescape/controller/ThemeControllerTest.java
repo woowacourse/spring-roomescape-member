@@ -6,40 +6,27 @@ import static org.hamcrest.Matchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AcceptanceTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ThemeControllerTest {
+class ThemeControllerTest extends AcceptanceTest {
 
-    @Test
-    void 전체_테마를_조회한다() {
-        // given
-        createTheme("방탈출1", "설명설명설명설명설명1", "https://example.com/theme1.jpg");
-        createTheme("방탈출2", "설명설명설명설명설명2", "https://example.com/theme2.jpg");
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("name", contains(
-                        "방탈출1",
-                        "방탈출2"
-                ));
-    }
+    @Autowired
+    private Clock clock;
 
     @Test
     void 최근_7일간_인기_테마_상위_10개를_조회한다() {
         // given
-        createData();
+        createRankingData();
 
         // when & then
         RestAssured.given().log().all()
@@ -62,8 +49,8 @@ public class ThemeControllerTest {
                 .body("name", not(hasItem("지하 벙커")));
     }
 
-    private void createData() {
-        LocalDate baseDate = LocalDate.now();
+    private void createRankingData() {
+        LocalDate baseDate = LocalDate.now(clock);
 
         long time10 = createTime("10:00");
         long time11 = createTime("11:00");
@@ -88,104 +75,106 @@ public class ThemeControllerTest {
         long bunker = createTheme("지하 벙커", "폐쇄된 지하 벙커에서 탈출하세요", "https://example.com/theme12.jpg");
 
         // 공포의 저택: 최근 7일 안에 12건
-        createReservation("예약자일", baseDate.minusDays(1), time10, horror);
-        createReservation("예약자이", baseDate.minusDays(1), time11, horror);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, horror);
-        createReservation("예약자사", baseDate.minusDays(1), time13, horror);
-        createReservation("예약자오", baseDate.minusDays(1), time14, horror);
-        createReservation("예약자육", baseDate.minusDays(1), time15, horror);
-        createReservation("예약자칠", baseDate.minusDays(1), time16, horror);
-        createReservation("예약자팔", baseDate.minusDays(1), time17, horror);
-        createReservation("예약자구", baseDate.minusDays(1), time18, horror);
-        createReservation("예약자십", baseDate.minusDays(2), time10, horror);
-        createReservation("예약자십일", baseDate.minusDays(2), time11, horror);
-        createReservation("예약자십이", baseDate.minusDays(2), time12, horror);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, horror);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, horror);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, horror);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, horror);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, horror);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, horror);
+        saveReservationFixture("예약자칠", baseDate.minusDays(1), time16, horror);
+        saveReservationFixture("예약자팔", baseDate.minusDays(1), time17, horror);
+        saveReservationFixture("예약자구", baseDate.minusDays(1), time18, horror);
+        saveReservationFixture("예약자십", baseDate.minusDays(2), time10, horror);
+        saveReservationFixture("예약자십일", baseDate.minusDays(2), time11, horror);
+        saveReservationFixture("예약자십이", baseDate.minusDays(2), time12, horror);
 
         // 사라진 연구소: 최근 7일 안에 10건
-        createReservation("예약자일", baseDate.minusDays(1), time10, lab);
-        createReservation("예약자이", baseDate.minusDays(1), time11, lab);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, lab);
-        createReservation("예약자사", baseDate.minusDays(1), time13, lab);
-        createReservation("예약자오", baseDate.minusDays(1), time14, lab);
-        createReservation("예약자육", baseDate.minusDays(1), time15, lab);
-        createReservation("예약자칠", baseDate.minusDays(1), time16, lab);
-        createReservation("예약자팔", baseDate.minusDays(1), time17, lab);
-        createReservation("예약자구", baseDate.minusDays(1), time18, lab);
-        createReservation("예약자십", baseDate.minusDays(2), time10, lab);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, lab);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, lab);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, lab);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, lab);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, lab);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, lab);
+        saveReservationFixture("예약자칠", baseDate.minusDays(1), time16, lab);
+        saveReservationFixture("예약자팔", baseDate.minusDays(1), time17, lab);
+        saveReservationFixture("예약자구", baseDate.minusDays(1), time18, lab);
+        saveReservationFixture("예약자십", baseDate.minusDays(2), time10, lab);
 
         // 시간 여행자: 최근 7일 안에 9건
-        createReservation("예약자일", baseDate.minusDays(1), time10, timeTravel);
-        createReservation("예약자이", baseDate.minusDays(1), time11, timeTravel);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, timeTravel);
-        createReservation("예약자사", baseDate.minusDays(1), time13, timeTravel);
-        createReservation("예약자오", baseDate.minusDays(1), time14, timeTravel);
-        createReservation("예약자육", baseDate.minusDays(1), time15, timeTravel);
-        createReservation("예약자칠", baseDate.minusDays(1), time16, timeTravel);
-        createReservation("예약자팔", baseDate.minusDays(1), time17, timeTravel);
-        createReservation("예약자구", baseDate.minusDays(1), time18, timeTravel);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, timeTravel);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, timeTravel);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, timeTravel);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, timeTravel);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, timeTravel);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, timeTravel);
+        saveReservationFixture("예약자칠", baseDate.minusDays(1), time16, timeTravel);
+        saveReservationFixture("예약자팔", baseDate.minusDays(1), time17, timeTravel);
+        saveReservationFixture("예약자구", baseDate.minusDays(1), time18, timeTravel);
 
         // 감옥 탈출: 최근 7일 안에 8건
-        createReservation("예약자일", baseDate.minusDays(1), time10, prison);
-        createReservation("예약자이", baseDate.minusDays(1), time11, prison);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, prison);
-        createReservation("예약자사", baseDate.minusDays(1), time13, prison);
-        createReservation("예약자오", baseDate.minusDays(1), time14, prison);
-        createReservation("예약자육", baseDate.minusDays(1), time15, prison);
-        createReservation("예약자칠", baseDate.minusDays(1), time16, prison);
-        createReservation("예약자팔", baseDate.minusDays(1), time17, prison);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, prison);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, prison);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, prison);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, prison);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, prison);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, prison);
+        saveReservationFixture("예약자칠", baseDate.minusDays(1), time16, prison);
+        saveReservationFixture("예약자팔", baseDate.minusDays(1), time17, prison);
 
         // 마법사의 방: 최근 7일 안에 7건
-        createReservation("예약자일", baseDate.minusDays(1), time10, wizard);
-        createReservation("예약자이", baseDate.minusDays(1), time11, wizard);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, wizard);
-        createReservation("예약자사", baseDate.minusDays(1), time13, wizard);
-        createReservation("예약자오", baseDate.minusDays(1), time14, wizard);
-        createReservation("예약자육", baseDate.minusDays(1), time15, wizard);
-        createReservation("예약자칠", baseDate.minusDays(1), time16, wizard);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, wizard);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, wizard);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, wizard);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, wizard);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, wizard);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, wizard);
+        saveReservationFixture("예약자칠", baseDate.minusDays(1), time16, wizard);
 
         // 좀비 바이러스: 최근 7일 안에 6건
-        createReservation("예약자일", baseDate.minusDays(1), time10, zombie);
-        createReservation("예약자이", baseDate.minusDays(1), time11, zombie);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, zombie);
-        createReservation("예약자사", baseDate.minusDays(1), time13, zombie);
-        createReservation("예약자오", baseDate.minusDays(1), time14, zombie);
-        createReservation("예약자육", baseDate.minusDays(1), time15, zombie);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, zombie);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, zombie);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, zombie);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, zombie);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, zombie);
+        saveReservationFixture("예약자육", baseDate.minusDays(1), time15, zombie);
 
         // 해적의 보물: 최근 7일 안에 5건
-        createReservation("예약자일", baseDate.minusDays(1), time10, pirate);
-        createReservation("예약자이", baseDate.minusDays(1), time11, pirate);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, pirate);
-        createReservation("예약자사", baseDate.minusDays(1), time13, pirate);
-        createReservation("예약자오", baseDate.minusDays(1), time14, pirate);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, pirate);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, pirate);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, pirate);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, pirate);
+        saveReservationFixture("예약자오", baseDate.minusDays(1), time14, pirate);
 
         // 스파이 미션: 최근 7일 안에 4건
-        createReservation("예약자일", baseDate.minusDays(1), time10, spy);
-        createReservation("예약자이", baseDate.minusDays(1), time11, spy);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, spy);
-        createReservation("예약자사", baseDate.minusDays(1), time13, spy);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, spy);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, spy);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, spy);
+        saveReservationFixture("예약자사", baseDate.minusDays(1), time13, spy);
 
         // 우주 정거장: 최근 7일 안에 3건
-        createReservation("예약자일", baseDate.minusDays(1), time10, space);
-        createReservation("예약자이", baseDate.minusDays(1), time11, space);
-        createReservation("예약자삼", baseDate.minusDays(1), time12, space);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, space);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, space);
+        saveReservationFixture("예약자삼", baseDate.minusDays(1), time12, space);
 
         // 고대 유적: 최근 7일 안에 2건
-        createReservation("예약자일", baseDate.minusDays(1), time10, ancient);
-        createReservation("예약자이", baseDate.minusDays(1), time11, ancient);
+        saveReservationFixture("예약자일", baseDate.minusDays(1), time10, ancient);
+        saveReservationFixture("예약자이", baseDate.minusDays(1), time11, ancient);
 
-        // 지하 벙커: 예약은 12건이지만 최근 7일 밖 데이터
-        createReservation("오래된예약자일", baseDate.minusDays(8), time10, bunker);
-        createReservation("오래된예약자이", baseDate.minusDays(8), time11, bunker);
-        createReservation("오래된예약자삼", baseDate.minusDays(8), time12, bunker);
-        createReservation("오래된예약자사", baseDate.minusDays(8), time13, bunker);
-        createReservation("오래된예약자오", baseDate.minusDays(8), time14, bunker);
-        createReservation("오래된예약자육", baseDate.minusDays(8), time15, bunker);
-        createReservation("오래된예약자칠", baseDate.minusDays(8), time16, bunker);
-        createReservation("오래된예약자팔", baseDate.minusDays(8), time17, bunker);
-        createReservation("오래된예약자구", baseDate.minusDays(8), time18, bunker);
-        createReservation("오래된예약자십", baseDate.plusDays(1), time10, bunker);
-        createReservation("오래된예약자십일", baseDate.plusDays(2), time11, bunker);
-        createReservation("오래된예약자십이", baseDate.plusDays(2), time12, bunker);
+        // 지하 벙커: 예약은 많지만 최근 7일 밖 데이터라 랭킹에 반영되면 안 됨
+        saveReservationFixture("오래된예약자일", baseDate.minusDays(8), time10, bunker);
+        saveReservationFixture("오래된예약자이", baseDate.minusDays(8), time11, bunker);
+        saveReservationFixture("오래된예약자삼", baseDate.minusDays(8), time12, bunker);
+        saveReservationFixture("오래된예약자사", baseDate.minusDays(8), time13, bunker);
+        saveReservationFixture("오래된예약자오", baseDate.minusDays(8), time14, bunker);
+        saveReservationFixture("오래된예약자육", baseDate.minusDays(8), time15, bunker);
+        saveReservationFixture("오래된예약자칠", baseDate.minusDays(8), time16, bunker);
+        saveReservationFixture("오래된예약자팔", baseDate.minusDays(8), time17, bunker);
+        saveReservationFixture("오래된예약자구", baseDate.minusDays(8), time18, bunker);
+
+        // 기준일 이후 예약도 최근 7일 랭킹에 반영되면 안 됨
+        saveReservationFixture("미래예약자일", baseDate.plusDays(1), time10, bunker);
+        saveReservationFixture("미래예약자이", baseDate.plusDays(2), time11, bunker);
+        saveReservationFixture("미래예약자삼", baseDate.plusDays(2), time12, bunker);
     }
 
     private long createTime(String startAt) {
@@ -220,18 +209,12 @@ public class ThemeControllerTest {
                 .getLong("id");
     }
 
-    private void createReservation(String name, LocalDate date, long timeId, long themeId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("date", date.toString());
-        params.put("timeId", timeId);
-        params.put("themeId", themeId);
+    private void saveReservationFixture(String name, LocalDate date, long timeId, long themeId) {
+        String sql = """
+                INSERT INTO reservation (name, date, time_id, theme_id)
+                VALUES (?, ?, ?, ?)
+                """;
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        jdbcTemplate.update(sql, name, date, timeId, themeId);
     }
 }

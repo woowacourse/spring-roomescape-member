@@ -3,14 +3,13 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.ServiceTest;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
@@ -24,8 +23,7 @@ import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class ReservationServiceTest {
+class ReservationServiceTest extends ServiceTest {
 
     @Autowired
     private ReservationService reservationService;
@@ -130,7 +128,7 @@ class ReservationServiceTest {
     private ReservationRequest createReservationRequest(long timeId, long themeId) {
         return new ReservationRequest(
                 "예약1",
-                LocalDate.of(2025, 5, 8),
+                LocalDate.of(2026, 5, 8),
                 timeId,
                 themeId
         );

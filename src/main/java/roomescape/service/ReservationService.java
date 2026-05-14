@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -23,18 +24,22 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final Clock clock;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, Clock clock) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.clock = clock;
     }
 
+    //todo: 한 유저가 동시간대 중복 예약 불가 추가
+    //todo: 같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.
     public ReservationResponse create(ReservationRequest request) {
         ReservationTime reservationTime = getTime(request.timeId());
         Theme theme = getTheme(request.themeId());
 
-        Reservation reservation = request.toReservation(reservationTime, theme);
+        Reservation reservation = request.toReservation(reservationTime, theme, clock);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
@@ -56,6 +61,8 @@ public class ReservationService {
                 .toList();
     }
 
+    //todo: 본인만 삭제 가능
+    //todo: 날짜 지난 예약 삭제 불가
     public void delete(long reservationId) {
         int affectedRows = reservationDao.delete(reservationId);
 

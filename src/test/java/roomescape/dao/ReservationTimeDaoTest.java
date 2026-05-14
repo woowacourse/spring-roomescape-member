@@ -146,7 +146,7 @@ class ReservationTimeDaoTest {
     }
 
     private Reservation saveReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        Reservation reservation = Reservation.createWithoutId(name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,13 +55,7 @@ public class ReservationDao {
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
 
-        return new Reservation(
-                generatedId.longValue(),
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
-        );
+        return reservation.createWithId(generatedId.longValue());
     }
 
     public List<Reservation> findAll() {

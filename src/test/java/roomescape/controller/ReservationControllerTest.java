@@ -9,21 +9,18 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.AcceptanceTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class ReservationControllerTest extends AcceptanceTest {
 
     @Test
-    void 예약_추가() {
+    void 예약을_생성한다() {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2026-05-05");
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 
@@ -77,7 +74,7 @@ public class ReservationControllerTest {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        createReservation("브라운", "2023-08-05", timeId, themeId);
+        createReservation("브라운", "2026-05-05", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -91,7 +88,7 @@ public class ReservationControllerTest {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        long reservationId = createReservation("브라운", "2023-08-05", timeId, themeId);
+        long reservationId = createReservation("브라운", "2026-05-05", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)

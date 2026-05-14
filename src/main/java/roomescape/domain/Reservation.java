@@ -1,7 +1,10 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.domain.ReservationException;
 
 public class Reservation {
 
@@ -11,8 +14,21 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createFutureReservation(String name, LocalDate date,
+                                                      ReservationTime time, Theme theme, LocalDateTime now) {
+        validateNotPastDateTime(date, time, now);
         return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateNotPastDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new ReservationException(ReservationErrorCode.PAST_DATE_NOT_ALLOWED);
+        }
+    }
+
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -21,6 +37,10 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation createWithId(long id) {
+        return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
     public Long getId() {

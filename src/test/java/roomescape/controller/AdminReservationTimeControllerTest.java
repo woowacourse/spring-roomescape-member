@@ -7,15 +7,12 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.AcceptanceTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class AdminReservationTimeControllerTest {
+public class AdminReservationTimeControllerTest extends AcceptanceTest {
 
     @Test
-    void 시간_추가() {
+    void 예약_시간을_조회할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -29,7 +26,7 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 시간_삭제() {
+    void 예약_시간을_삭제할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 

@@ -13,6 +13,7 @@ public class Theme {
         return new Theme(null, name, description, thumbnail);
     }
 
+    //todo: private 처리? 정팩메 제거?
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;

@@ -32,7 +32,7 @@ class ReservationDaoTest {
         Theme savedTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
 
         LocalDate date = LocalDate.of(2026, 5, 5);
-        Reservation reservation = Reservation.createWithoutId("브라운", date, savedReservationTime, savedTheme);
+        Reservation reservation = new Reservation("브라운", date, savedReservationTime, savedTheme);
 
         // when
         Reservation savedReservation = reservationDao.save(reservation);
@@ -108,7 +108,7 @@ class ReservationDaoTest {
     }
 
     private Reservation saveReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        Reservation reservation = Reservation.createWithoutId(name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
     }
 }

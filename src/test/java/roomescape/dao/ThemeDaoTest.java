@@ -249,7 +249,7 @@ class ThemeDaoTest {
     }
 
     private void saveReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        Reservation reservation = Reservation.createWithoutId(name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme);
         reservationDao.save(reservation);
     }
 }
