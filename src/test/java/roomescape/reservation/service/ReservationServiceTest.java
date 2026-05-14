@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
+import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +24,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.fixture.FakeThemeRepository;
 import roomescape.theme.fixture.ThemeFixture;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.fixture.FakeReservationTimeRepository;
 import roomescape.time.fixture.ReservationTimeFixture;
 
@@ -120,8 +122,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage(TIME_NOT_FOUND.getMessage());
     }
 
 

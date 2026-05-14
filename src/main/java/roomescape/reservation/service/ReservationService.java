@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
+import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -95,7 +97,7 @@ public class ReservationService {
 
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeException(TIME_NOT_FOUND));
     }
 
     private ReservationDate getReservationDate(Long dateId) {

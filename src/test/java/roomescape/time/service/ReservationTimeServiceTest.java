@@ -2,6 +2,7 @@ package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_ALREADY_EXISTS;
 import static roomescape.time.fixture.ReservationTimeFixture.saveDto;
 
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.fixture.FakeReservationTimeRepository;
 import roomescape.time.fixture.ReservationTimeFixture;
 
@@ -68,8 +70,8 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.register(duplicatedCommand))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다.");
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage(TIME_ALREADY_EXISTS.getMessage());
     }
 
     @Test

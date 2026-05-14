@@ -3,8 +3,12 @@ package roomescape.time.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import roomescape.time.exception.ReservationTimeException;
 
 import java.time.LocalTime;
+
+import static roomescape.time.exception.ReservationTimeExceptionInformation.ID_IS_NULL;
+import static roomescape.time.exception.ReservationTimeExceptionInformation.START_AT_IS_NULL;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,13 +31,13 @@ public class ReservationTime {
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
+            throw new ReservationTimeException(START_AT_IS_NULL);
         }
     }
 
     private static void validateId(Long timeId) {
         if (timeId == null) {
-            throw new IllegalArgumentException("예약 시간 ID는 필수입니다.");
+            throw new ReservationTimeException(ID_IS_NULL);
         }
     }
 
