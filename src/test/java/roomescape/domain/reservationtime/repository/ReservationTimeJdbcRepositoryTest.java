@@ -122,6 +122,18 @@ class ReservationTimeJdbcRepositoryTest {
         assertThat(times).isEmpty();
     }
 
+    @Test
+    @DisplayName("자기 자신을 제외하고 시작 시간으로 예약 시간 존재 여부를 확인한다.")
+    void existsByStartAtAndIdNotTest() {
+        // when
+        boolean existsOtherTime = reservationTimeRepository.existsByStartAtAndIdNot(LocalTime.of(10, 0), 999L);
+        boolean existsSelfTime = reservationTimeRepository.existsByStartAtAndIdNot(LocalTime.of(10, 0), 1L);
+
+        // then
+        assertThat(existsOtherTime).isTrue();
+        assertThat(existsSelfTime).isFalse();
+    }
+
     private long insertReservationTime(LocalTime startAt) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", startAt);

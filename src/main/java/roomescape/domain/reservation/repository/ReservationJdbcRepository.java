@@ -92,14 +92,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private static final String EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY = """
             SELECT EXISTS (
                 SELECT 1
-                FROM reservation AS r
-                INNER JOIN reservation_time AS rt
-                    ON r.time_id = rt.id
-                INNER JOIN theme AS t
-                    ON r.theme_id = t.id
-                WHERE t.id = :themeId
-                    AND r.date = :date
-                    AND rt.id = :timeId
+                FROM reservation
+                WHERE theme_id = :themeId
+                    AND date = :date
+                    AND time_id = :timeId
+            );
+            """;
+
+    private static final String EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_AND_ID_NOT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE theme_id = :themeId
+                    AND date = :date
+                    AND time_id = :timeId
+                    AND id <> :id
             );
             """;
 
@@ -221,6 +228,23 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         Boolean exists = jdbcTemplate.queryForObject(
                 EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY,
+                parameters,
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
+    public boolean existsByThemeIdAndDateAndTimeIdAndIdNot(Long themeId, LocalDate date, Long timeId, Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("id", id);
+
+        Boolean exists = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_AND_ID_NOT_QUERY,
                 parameters,
                 Boolean.class
         );

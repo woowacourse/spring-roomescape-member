@@ -22,4 +22,6 @@ public interface ThemeRepository {
     int deleteById(Long id);
 
     boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

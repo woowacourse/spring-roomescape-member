@@ -281,8 +281,8 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("중복된 시간으로 예약을 수정하면 에러가 발생한다.")
-    void updateReservationWithDuplicateThrowException() {
+    @DisplayName("동일한 예약 정보로 수정하면 성공한다.")
+    void updateReservationWithSameValues() {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "포비");
         params.put("themeId", 1L);
@@ -292,6 +292,51 @@ class ReservationControllerTest {
         long id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("themeId", 1L);
+        updateParams.put("date", futureDate);
+        updateParams.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is((int) id))
+                .body("theme.id", is(1))
+                .body("date", is(futureDate.toString()))
+                .body("time.id", is(1));
+    }
+
+    @Test
+    @DisplayName("다른 예약과 중복되는 정보로 수정하면 에러가 발생한다.")
+    void updateReservationWithDuplicateThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "포비");
+        params.put("themeId", 1L);
+        params.put("date", futureDate);
+        params.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201);
+
+        Map<String, Object> otherParams = new HashMap<>();
+        otherParams.put("username", "브리");
+        otherParams.put("themeId", 1L);
+        otherParams.put("date", futureDate);
+        otherParams.put("timeId", 2L);
+
+        long id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(otherParams)
                 .when().post("/reservations")
                 .then().statusCode(201)
                 .extract().jsonPath().getLong("id");

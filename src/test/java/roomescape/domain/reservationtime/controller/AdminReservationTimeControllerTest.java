@@ -30,7 +30,7 @@ class AdminReservationTimeControllerTest {
     @DisplayName("관리자는 예약 시간을 생성한다.")
     void createReservationTime() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "20:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -40,14 +40,28 @@ class AdminReservationTimeControllerTest {
                 .statusCode(201)
                 .header("Location", notNullValue())
                 .body("id", notNullValue())
-                .body("startAt", is("10:00"));
+                .body("startAt", is("20:00"));
+    }
+
+    @Test
+    @DisplayName("관리자라도 이미 존재하는 예약 시간은 생성할 수 없다.")
+    void createReservationTimeWithDuplicateThrowException() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409);
     }
 
     @Test
     @DisplayName("관리자는 예약 시간을 삭제한다.")
     void deleteReservationTime() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "21:00");
 
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

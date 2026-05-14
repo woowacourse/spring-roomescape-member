@@ -112,7 +112,7 @@ public class ReservationService {
 
         Theme newTheme = findThemeByIdOrThrow(request.themeId());
 
-        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
+        validateDuplicateReservationForUpdate(request.themeId(), request.date(), request.timeId(), id);
 
         reservation.update(newTheme, request.date(), newTime);
         reservationRepository.update(id, reservation);
@@ -126,7 +126,7 @@ public class ReservationService {
         Theme newTheme = findThemeByIdOrThrow(request.themeId());
         ReservationTime newTime = findTimeByIdOrThrow(request.timeId());
 
-        validateDuplicateReservation(request.themeId(), request.date(), request.timeId());
+        validateDuplicateReservationForUpdate(request.themeId(), request.date(), request.timeId(), id);
 
         reservation.update(newTheme, request.date(), newTime);
         reservationRepository.update(id, reservation);
@@ -179,6 +179,12 @@ public class ReservationService {
 
     private void validateDuplicateReservation(Long themeId, LocalDate date, Long timeId) {
         if (reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, date, timeId)) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
+    }
+
+    private void validateDuplicateReservationForUpdate(Long themeId, LocalDate date, Long timeId, Long id) {
+        if (reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(themeId, date, timeId, id)) {
             throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
     }

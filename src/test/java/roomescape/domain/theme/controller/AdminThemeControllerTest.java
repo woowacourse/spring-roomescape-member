@@ -48,6 +48,22 @@ class AdminThemeControllerTest {
     }
 
     @Test
+    @DisplayName("관리자라도 이미 존재하는 테마 이름으로 생성하면 에러가 발생한다.")
+    void createThemeWithDuplicateNameThrowException() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "워너비");
+        params.put("description", "중복 테마 설명입니다.");
+        params.put("thumbnailUrl", "https://example.com/duplicate-theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     @DisplayName("관리자라도 예약이 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeFailWhenReservationExists() {
         RestAssured.given().log().all()

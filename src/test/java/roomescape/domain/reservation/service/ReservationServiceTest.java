@@ -327,7 +327,12 @@ class ReservationServiceTest {
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
         when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
         when(reservationTimeRepository.findById(newTime.getId())).thenReturn(Optional.of(newTime));
-        when(reservationRepository.existsByThemeIdAndDateAndTimeId(theme.getId(), newDate, newTime.getId()))
+        when(reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                theme.getId(),
+                newDate,
+                newTime.getId(),
+                reservationId
+        ))
                 .thenReturn(false);
 
         // when
@@ -339,6 +344,38 @@ class ReservationServiceTest {
         assertThat(response.time().id()).isEqualTo(newTime.getId());
         assertThat(response.username()).isEqualTo("브라운");
 
+        verify(reservationRepository).update(eq(reservationId), any(Reservation.class));
+    }
+
+    @Test
+    @DisplayName("사용자가 동일한 예약 정보로 수정하면 성공한다.")
+    void updateReservationByUserWithSameValues() {
+        // given
+        Long reservationId = 1L;
+        Theme theme = Theme.of(1L, "theme1", "desc1", "url1");
+        ReservationTime time = ReservationTime.of(1L, futureTime);
+        Reservation existingReservation = Reservation.of(reservationId, "브라운", theme, futureDate, time);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(theme.getId(), futureDate, time.getId());
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(existingReservation));
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(time.getId())).thenReturn(Optional.of(time));
+        when(reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                theme.getId(),
+                futureDate,
+                time.getId(),
+                reservationId
+        ))
+                .thenReturn(false);
+
+        // when
+        ReservationResponse response = reservationService.updateReservationByUser(reservationId, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(reservationId);
+        assertThat(response.theme().id()).isEqualTo(theme.getId());
+        assertThat(response.date()).isEqualTo(futureDate);
+        assertThat(response.time().id()).isEqualTo(time.getId());
         verify(reservationRepository).update(eq(reservationId), any(Reservation.class));
     }
 

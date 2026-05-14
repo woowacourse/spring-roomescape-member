@@ -56,6 +56,20 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("이미 존재하는 예약 시간을 생성하면 예외가 발생한다.")
+    void saveReservationTime_throwsException_whenTimeDuplicate() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(startAt);
+        when(reservationTimeRepository.existsByStartAt(startAt)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(TimeErrorCode.RESERVATION_TIME_DUPLICATE.getMessage());
+    }
+
+    @Test
     @DisplayName("모든 예약 시간을 조회한다.")
     void findAllReservationTimes() {
         // given
@@ -101,6 +115,29 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("동일한 예약 시간으로 수정하면 성공한다.")
+    void updateReservationTimeWithSameStartAt() {
+        // given
+        Long timeId = 1L;
+        LocalTime startAt = LocalTime.of(10, 0);
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(startAt);
+
+        ReservationTime time = ReservationTime.of(timeId, startAt);
+        when(reservationTimeRepository.findById(timeId)).thenReturn(java.util.Optional.of(time));
+        when(reservationTimeRepository.existsByStartAtAndIdNot(startAt, timeId)).thenReturn(false);
+        when(reservationTimeRepository.update(org.mockito.ArgumentMatchers.eq(timeId),
+                any(ReservationTime.class))).thenReturn(1);
+
+        // when
+        ReservationTimeResponse response = reservationTimeService.updateReservationTime(timeId, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(timeId);
+        assertThat(response.startAt()).isEqualTo(startAt);
+        verify(reservationTimeRepository).update(org.mockito.ArgumentMatchers.eq(timeId), any(ReservationTime.class));
+    }
+
+    @Test
     @DisplayName("존재하지 않는 예약 시간을 수정하려고 하면 예외가 발생한다.")
     void updateReservationTime_throwsException_whenTimeNotFound() {
         // given
@@ -124,7 +161,7 @@ class ReservationTimeServiceTest {
 
         ReservationTime time = ReservationTime.of(timeId, LocalTime.of(10, 0));
         when(reservationTimeRepository.findById(timeId)).thenReturn(java.util.Optional.of(time));
-        when(reservationTimeRepository.existsByStartAt(duplicateTime)).thenReturn(true);
+        when(reservationTimeRepository.existsByStartAtAndIdNot(duplicateTime, timeId)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.updateReservationTime(timeId, request))

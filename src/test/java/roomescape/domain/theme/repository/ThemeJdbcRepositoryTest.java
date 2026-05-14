@@ -206,6 +206,18 @@ class ThemeJdbcRepositoryTest {
         assertThat(nonExisting).isFalse();
     }
 
+    @Test
+    @DisplayName("자기 자신을 제외하고 이름으로 테마 존재 여부를 확인한다.")
+    void existsByNameAndIdNotTest() {
+        // when
+        boolean existsOtherTheme = themeRepository.existsByNameAndIdNot("워너비", 999L);
+        boolean existsSelfTheme = themeRepository.existsByNameAndIdNot("워너비", 1L);
+
+        // then
+        assertThat(existsOtherTheme).isTrue();
+        assertThat(existsSelfTheme).isFalse();
+    }
+
     private long insertTheme(String name, String description, String thumbnailUrl) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)

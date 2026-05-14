@@ -75,6 +75,10 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
+        if (themeRepository.existsByName(request.name())) {
+            throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
+        }
+
         Theme theme = Theme.create(
                 request.name(),
                 request.description(),
@@ -91,7 +95,7 @@ public class ThemeService {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
 
-        if (!theme.getName().equals(request.name()) && themeRepository.existsByName(request.name())) {
+        if (themeRepository.existsByNameAndIdNot(request.name(), id)) {
             throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
         }
 

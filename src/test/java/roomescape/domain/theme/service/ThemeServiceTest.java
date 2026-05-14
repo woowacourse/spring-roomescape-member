@@ -62,6 +62,19 @@ class ThemeServiceTest {
     }
 
     @Test
+    @DisplayName("이미 존재하는 이름으로 테마를 생성하면 예외가 발생한다.")
+    void saveTheme_throwsException_whenThemeDuplicate() {
+        // given
+        ThemeCreateRequest request = new ThemeCreateRequest("테마", "요약", "www.url.com");
+        when(themeRepository.existsByName("테마")).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.saveTheme(request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ThemeErrorCode.THEME_DUPLICATE.getMessage());
+    }
+
+    @Test
     @DisplayName("모든 테마를 조회한다.")
     void findAllThemes() {
         // given
@@ -196,6 +209,27 @@ class ThemeServiceTest {
     }
 
     @Test
+    @DisplayName("동일한 이름으로 테마를 수정하면 성공한다.")
+    void updateThemeWithSameName() {
+        // given
+        Long themeId = 1L;
+        ThemeUpdateRequest request = new ThemeUpdateRequest("기존 테마", "새 설명", "www.new.com");
+
+        Theme theme = Theme.of(themeId, "기존 테마", "기존 설명", "www.old.com");
+        when(themeRepository.findById(themeId)).thenReturn(java.util.Optional.of(theme));
+        when(themeRepository.existsByNameAndIdNot("기존 테마", themeId)).thenReturn(false);
+        when(themeRepository.update(org.mockito.ArgumentMatchers.eq(themeId), any(Theme.class))).thenReturn(1);
+
+        // when
+        ThemeResponse response = themeService.updateTheme(themeId, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(themeId);
+        assertThat(response.name()).isEqualTo("기존 테마");
+        verify(themeRepository).update(org.mockito.ArgumentMatchers.eq(themeId), any(Theme.class));
+    }
+
+    @Test
     @DisplayName("존재하지 않는 테마를 수정하려고 하면 예외가 발생한다.")
     void updateTheme_throwsException_whenThemeNotFound() {
         // given
@@ -219,7 +253,7 @@ class ThemeServiceTest {
 
         Theme theme = Theme.of(themeId, "기존 테마", "기존 설명", "www.old.com");
         when(themeRepository.findById(themeId)).thenReturn(java.util.Optional.of(theme));
-        when(themeRepository.existsByName(duplicateName)).thenReturn(true);
+        when(themeRepository.existsByNameAndIdNot(duplicateName, themeId)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> themeService.updateTheme(themeId, request))

@@ -78,6 +78,15 @@ public class ThemeJdbcRepository implements ThemeRepository {
             );
             """;
 
+    private static final String EXISTS_BY_NAME_AND_ID_NOT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+                    AND id <> :id
+            );
+            """;
+
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) -> Theme.of(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -210,5 +219,16 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 .addValue("name", name);
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY, parameters, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByNameAndIdNot(String name, Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("id", id);
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_NAME_AND_ID_NOT_QUERY, parameters, Boolean.class)
+        );
     }
 }

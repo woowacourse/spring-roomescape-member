@@ -45,6 +45,15 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             )
             """;
 
+    private static final String EXISTS_BY_START_AT_AND_ID_NOT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE start_at = :start_at
+                    AND id <> :id
+            )
+            """;
+
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) -> ReservationTime.of(
             resultSet.getLong("id"),
             resultSet.getObject("start_at", LocalTime.class)
@@ -129,5 +138,16 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .addValue("start_at", startAt);
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXISTS_BY_START_AT_QUERY, parameters, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByStartAtAndIdNot(LocalTime startAt, Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("start_at", startAt)
+                .addValue("id", id);
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_START_AT_AND_ID_NOT_QUERY, parameters, Boolean.class)
+        );
     }
 }

@@ -185,6 +185,34 @@ class ReservationJdbcRepositoryTest {
         assertThat(notExists).isFalse();
     }
 
+    @Test
+    @DisplayName("자기 자신을 제외하고 테마 ID, 날짜, 시간 ID로 예약 존재 여부를 확인한다.")
+    void existsByThemeIdAndDateAndTimeIdAndIdNot() {
+        // given
+        long themeId = 1L;
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        long timeId = 1L;
+        long generatedId = insertReservation("유저", themeId, date, timeId);
+
+        // when
+        boolean existsOtherReservation = reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                themeId,
+                date,
+                timeId,
+                generatedId + 1
+        );
+        boolean existsSelfReservation = reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                themeId,
+                date,
+                timeId,
+                generatedId
+        );
+
+        // then
+        assertThat(existsOtherReservation).isTrue();
+        assertThat(existsSelfReservation).isFalse();
+    }
+
     private long insertReservation(String username, long themeId, LocalDate date, long timeId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("username", username)

@@ -32,6 +32,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveReservationTime(ReservationTimeCreateRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DUPLICATE);
+        }
+
         ReservationTime reservationTime = ReservationTime.create(request.startAt());
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
@@ -44,7 +48,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
 
-        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+        if (reservationTimeRepository.existsByStartAtAndIdNot(request.startAt(), id)) {
             throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DUPLICATE);
         }
 

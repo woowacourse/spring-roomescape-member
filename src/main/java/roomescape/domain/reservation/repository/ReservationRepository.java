@@ -20,4 +20,6 @@ public interface ReservationRepository {
     int deleteById(Long id);
 
     boolean existsByThemeIdAndDateAndTimeId(Long themeId, LocalDate date, Long timeId);
+
+    boolean existsByThemeIdAndDateAndTimeIdAndIdNot(Long themeId, LocalDate date, Long timeId, Long id);
 }
