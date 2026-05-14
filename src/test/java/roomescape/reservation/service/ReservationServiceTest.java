@@ -31,6 +31,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 class ReservationServiceTest {
 
+    private static final String NAME = "브라운";
+    private static final String OTHER_NAME = "레아";
+    private static final LocalDate FUTURE_DATE = LocalDate.of(2026, 5, 14);
+    private static final LocalDate NEXT_FUTURE_DATE = LocalDate.of(2026, 5, 15);
+    private static final LocalDate PAST_DATE = LocalDate.of(2026, 5, 13);
+    private static final long NOT_FOUND_ID = 37L;
+
     @Autowired
     private ReservationService reservationService;
 
@@ -63,11 +70,11 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성한다.")
     public void create_success() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = saveReservationTime(10);
+        Theme theme = saveTheme();
 
         // when
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createReservation(NAME, FUTURE_DATE, time, theme);
 
         // then
         assertThat(reservationService.findAll()).containsExactly(reservation);
@@ -77,15 +84,13 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 날짜, 시간, 테마로 예약하면 예외가 발생한다.")
     public void create_fail_whenDuplicatedReservation() {
         // given
-        String name = "브라운";
-        LocalDate date = LocalDate.of(2026, 5, 14);
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = saveReservationTime(10);
+        Theme theme = saveTheme();
 
-        reservationService.create(name, date, time.getId(), theme.getId());
+        createReservation(NAME, FUTURE_DATE, time, theme);
 
         // when, then
-        assertThatThrownBy(() -> reservationService.create(name, date, time.getId(), theme.getId()))
+        assertThatThrownBy(() -> createReservation(NAME, FUTURE_DATE, time, theme))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
     }
@@ -94,16 +99,11 @@ class ReservationServiceTest {
     @DisplayName("현재 시각보다 이전 날짜와 시간으로 예약하면 예외가 발생한다.")
     public void create_fail_whenPastDateTime() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = saveReservationTime(14);
+        Theme theme = saveTheme();
 
         // when, then
-        assertThatThrownBy(() -> reservationService.create(
-                "브라운",
-                LocalDate.of(2026, 5, 13),
-                time.getId(),
-                theme.getId()
-        ))
+        assertThatThrownBy(() -> createReservation(NAME, PAST_DATE, time, theme))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("현재 시각 이후의 날짜와 시간을 선택해주세요.");
 
@@ -114,15 +114,10 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약하면 예외가 발생한다.")
     public void create_fail_whenReservationTimeNotFound() {
         // given
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Theme theme = saveTheme();
 
         // when, then
-        assertThatThrownBy(() -> reservationService.create(
-                "브라운",
-                LocalDate.of(2026, 5, 14),
-                37L,
-                theme.getId()
-        ))
+        assertThatThrownBy(() -> reservationService.create(NAME, FUTURE_DATE, NOT_FOUND_ID, theme.getId()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요.");
     }
@@ -131,15 +126,10 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마로 예약하면 예외가 발생한다.")
     public void create_fail_whenThemeNotFound() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time = saveReservationTime(10);
 
         // when, then
-        assertThatThrownBy(() -> reservationService.create(
-                "브라운",
-                LocalDate.of(2026, 5, 14),
-                time.getId(),
-                37L
-        ))
+        assertThatThrownBy(() -> reservationService.create(NAME, FUTURE_DATE, time.getId(), NOT_FOUND_ID))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
     }
@@ -148,9 +138,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     public void delete_success() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createDefaultReservation();
 
         // when
         reservationService.delete(reservation.getId());
@@ -163,7 +151,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약을 삭제하면 예외가 발생한다.")
     public void delete_fail_whenReservationNotFound() {
         // when, then
-        assertThatThrownBy(() -> reservationService.delete(37L))
+        assertThatThrownBy(() -> reservationService.delete(NOT_FOUND_ID))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
     }
@@ -172,12 +160,10 @@ class ReservationServiceTest {
     @DisplayName("사용자가 본인의 예약을 취소한다.")
     public void cancel_success() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createDefaultReservation();
 
         // when
-        reservationService.cancel(reservation.getId(), "브라운");
+        reservationService.cancel(reservation.getId(), NAME);
 
         // then
         assertThat(reservationService.findAll()).isEmpty();
@@ -187,12 +173,10 @@ class ReservationServiceTest {
     @DisplayName("해당 이름으로 예약을 찾을 수 없으면 예약 취소 시 예외가 발생한다.")
     public void cancel_fail_whenReservationNotFoundByName() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createDefaultReservation();
 
         // when, then
-        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), "레아"))
+        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), OTHER_NAME))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
     }
@@ -201,13 +185,10 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
     public void cancel_fail_whenPastReservation() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(
-                new Reservation("브라운", LocalDate.of(2026, 5, 13), time, theme));
+        Reservation reservation = savePastReservation();
 
         // when, then
-        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), "브라운"))
+        assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), NAME))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
     }
@@ -216,25 +197,23 @@ class ReservationServiceTest {
     @DisplayName("사용자가 본인 예약의 날짜와 시간을 변경한다.")
     public void updateDateTime_success() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime newTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createDefaultReservation();
+        ReservationTime newTime = saveReservationTime(11);
 
         // when
         Reservation updatedReservation = reservationService.updateDateTime(
                 reservation.getId(),
-                "브라운",
-                LocalDate.of(2026, 5, 15),
+                NAME,
+                NEXT_FUTURE_DATE,
                 newTime.getId()
         );
 
         // then
-        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+        assertThat(updatedReservation.getDate()).isEqualTo(NEXT_FUTURE_DATE);
         assertThat(updatedReservation.getTime()).isEqualTo(newTime);
 
         Reservation savedReservation = reservationService.findAll().get(0);
-        assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+        assertThat(savedReservation.getDate()).isEqualTo(NEXT_FUTURE_DATE);
         assertThat(savedReservation.getTime()).isEqualTo(newTime);
     }
 
@@ -242,18 +221,18 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 날짜, 시간, 테마로 예약을 변경하면 예외가 발생한다.")
     public void updateDateTime_fail_whenDuplicatedReservation() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime occupiedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = saveReservationTime(10);
+        ReservationTime occupiedTime = saveReservationTime(11);
+        Theme theme = saveTheme();
 
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
-        reservationService.create("레아", LocalDate.of(2026, 5, 15), occupiedTime.getId(), theme.getId());
+        Reservation reservation = createReservation(NAME, FUTURE_DATE, time, theme);
+        createReservation(OTHER_NAME, NEXT_FUTURE_DATE, occupiedTime, theme);
 
         // when, then
         assertThatThrownBy(() -> reservationService.updateDateTime(
                 reservation.getId(),
-                "브라운",
-                LocalDate.of(2026, 5, 15),
+                NAME,
+                NEXT_FUTURE_DATE,
                 occupiedTime.getId()
         ))
                 .isInstanceOf(ConflictException.class)
@@ -264,15 +243,15 @@ class ReservationServiceTest {
     @DisplayName("현재 예약과 같은 날짜와 시간으로 변경하면 예외가 발생한다.")
     public void updateDateTime_fail_whenSameSchedule() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        ReservationTime time = saveReservationTime(10);
+        Theme theme = saveTheme();
+        Reservation reservation = createReservation(NAME, FUTURE_DATE, time, theme);
 
         // when, then
         assertThatThrownBy(() -> reservationService.updateDateTime(
                 reservation.getId(),
-                "브라운",
-                LocalDate.of(2026, 5, 14),
+                NAME,
+                FUTURE_DATE,
                 time.getId()
         ))
                 .isInstanceOf(InvalidRequestException.class)
@@ -283,16 +262,14 @@ class ReservationServiceTest {
     @DisplayName("현재 시각보다 이전 날짜와 시간으로 예약을 변경하면 예외가 발생한다.")
     public void updateDateTime_fail_whenPastDateTime() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime pastTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        Reservation reservation = createDefaultReservation();
+        ReservationTime pastTime = saveReservationTime(14);
 
         // when, then
         assertThatThrownBy(() -> reservationService.updateDateTime(
                 reservation.getId(),
-                "브라운",
-                LocalDate.of(2026, 5, 13),
+                NAME,
+                PAST_DATE,
                 pastTime.getId()
         ))
                 .isInstanceOf(InvalidRequestException.class)
@@ -303,20 +280,41 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 예약을 변경하면 예외가 발생한다.")
     public void updateDateTime_fail_whenPastReservation() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
-        ReservationTime newTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(
-                new Reservation("브라운", LocalDate.of(2026, 5, 13), time, theme));
+        Reservation reservation = savePastReservation();
+        ReservationTime newTime = saveReservationTime(11);
 
         // when, then
         assertThatThrownBy(() -> reservationService.updateDateTime(
                 reservation.getId(),
-                "브라운",
-                LocalDate.of(2026, 5, 14),
+                NAME,
+                FUTURE_DATE,
                 newTime.getId()
         ))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+    }
+
+    private Reservation createDefaultReservation() {
+        return createReservation(NAME, FUTURE_DATE, saveReservationTime(10), saveTheme());
+    }
+
+    private Reservation createReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return reservationService.create(name, date, time.getId(), theme.getId());
+    }
+
+    private Reservation savePastReservation() {
+        return reservationRepository.save(new Reservation(NAME, PAST_DATE, saveReservationTime(14), saveTheme()));
+    }
+
+    private ReservationTime saveReservationTime(int hour) {
+        return reservationTimeRepository.save(new ReservationTime(LocalTime.of(hour, 0)));
+    }
+
+    private Theme saveTheme() {
+        return themeRepository.save(new Theme(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        ));
     }
 }
