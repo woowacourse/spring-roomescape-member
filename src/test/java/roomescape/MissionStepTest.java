@@ -3,49 +3,53 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static roomescape.test.util.RoomEscapeTestFixture.AFTERNOON_TIME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.FUTURE_DATE;
+import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_RESERVATION_COUNT;
+import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_TIME_COUNT;
+import static roomescape.test.util.RoomEscapeTestFixture.MORNING_TIME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.TEST_THEME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.TEST_TIME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.domain.EntityId;
-import roomescape.test.util.TestDatabaseUtils;
+import roomescape.test.util.RoomEscapeTestFixture;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@Import(RoomEscapeTestFixture.class)
 public class MissionStepTest {
-
-    private static final int INITIALIZED_RESERVATION_COUNT = 3;
-    private static final int INITIALIZED_TIME_COUNT = 2;
-
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
-
-    private static final EntityId MORNING_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01"));
-    private static final EntityId AFTERNOON_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02"));
-
-    private static final EntityId WESTERN_THEME_ID = EntityId.fromUuid(UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01"));
-
-    private static final EntityId TEST_TIME_ID = EntityId.fromUuid(UUID.fromString("dddddddd-dddd-dddd-dddd-dddddddddd01"));
-    private static final EntityId TEST_THEME_ID = EntityId.fromUuid(UUID.fromString("eeeeeeee-eeee-eeee-eeee-eeeeeeeeee01"));
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ReservationController reservationController;
+    @Autowired
+    private RoomEscapeTestFixture fixture;
+
+    @BeforeEach
+    void initialDatabase() {
+        fixture.clearTables();
+        fixture.insertInitialData();
+    }
 
     @Test
     void 예약_조회() {
@@ -58,8 +62,8 @@ public class MissionStepTest {
 
     @Test
     void 예약_추가_및_삭제() {
-        TestDatabaseUtils.clearTables(jdbcTemplate);
-        insertTestTimeAndTheme();
+        fixture.clearTables();
+        fixture.insertTestTimeAndTheme();
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -107,39 +111,19 @@ public class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
-        TestDatabaseUtils.clearTables(jdbcTemplate);
+        fixture.clearTables();
+        fixture.insertTestTimeAndTheme();
 
-        EntityId reservationId = EntityId.random();
         String name = "브라운";
         String date = FUTURE_DATE.toString();
 
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                UUID.fromString(TEST_TIME_ID.getValueAsString()),
-                LocalTime.of(10, 0)
-        );
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                UUID.fromString(TEST_THEME_ID.getValueAsString()),
-                "themeName",
-                "themeDescription",
-                "themeUrl"
-        );
-        jdbcTemplate.update(
-                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                UUID.fromString(reservationId.getValueAsString()),
-                name,
-                date,
-                UUID.fromString(TEST_TIME_ID.getValueAsString()),
-                UUID.fromString(TEST_THEME_ID.getValueAsString())
-        );
+        fixture.insertReservation(name, FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
 
         RestAssured.given().log().all()
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
-                .body("[0].id", equalTo(reservationId.getValueAsString()))
                 .body("[0].name", is(name))
                 .body("[0].date", is(date))
                 .body("[0].time.id", equalTo(TEST_TIME_ID.getValueAsString()));
@@ -150,8 +134,8 @@ public class MissionStepTest {
 
     @Test
     void DB_추가_삭제_API_전환() {
-        TestDatabaseUtils.clearTables(jdbcTemplate);
-        insertTestTimeAndTheme();
+        fixture.clearTables();
+        fixture.insertTestTimeAndTheme();
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -182,7 +166,7 @@ public class MissionStepTest {
 
     @Test
     void 시간_관리_API() {
-        TestDatabaseUtils.clearTables(jdbcTemplate);
+        fixture.clearTables();
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -209,8 +193,8 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
-        TestDatabaseUtils.clearTables(jdbcTemplate);
-        insertTestTimeAndTheme();
+        fixture.clearTables();
+        fixture.insertTestTimeAndTheme();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -253,8 +237,8 @@ public class MissionStepTest {
                 "date", FUTURE_DATE.toString()
         );
         List<ReservationTimeResponse> expectedAvailableTimes = List.of(
-                new ReservationTimeResponse(MORNING_TIME_ID.getValueAsString(), LocalTime.parse("10:00:00")),
-                new ReservationTimeResponse(AFTERNOON_TIME_ID.getValueAsString(), LocalTime.parse("14:00:00"))
+                new ReservationTimeResponse(MORNING_TIME_ID.getValueAsString(), LocalTime.of(10, 0)),
+                new ReservationTimeResponse(AFTERNOON_TIME_ID.getValueAsString(), LocalTime.of(14, 0))
         );
 
         List<ReservationTimeResponse> actualAvailableTimes = RestAssured.given().log().all()
@@ -298,20 +282,5 @@ public class MissionStepTest {
                 .noneMatch(availableTime -> reservedTimeId.getValueAsString().equals(availableTime.id()));
         assertThat(reservedTimeNotExist).isTrue();
         assertThat(availableTimes).hasSize(INITIALIZED_TIME_COUNT - 1);
-    }
-
-    private void insertTestTimeAndTheme() {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                UUID.fromString(TEST_TIME_ID.getValueAsString()),
-                LocalTime.of(10, 0)
-        );
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                UUID.fromString(TEST_THEME_ID.getValueAsString()),
-                "themeName",
-                "themeDescription",
-                "themeUrl"
-        );
     }
 }

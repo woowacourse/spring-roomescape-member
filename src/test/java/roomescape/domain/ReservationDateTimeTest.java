@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.NotAcceptableReservationException;
 
 class ReservationDateTimeTest {
 
@@ -80,7 +81,7 @@ class ReservationDateTimeTest {
 
             // when and then
             assertThatThrownBy(() -> currentSchedule.validateAvailable(current))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(NotAcceptableReservationException.class)
                     .hasMessageContaining("미래 시간의 예약만 생성/취소/수정할 수 있습니다.");
         }
 
@@ -94,7 +95,7 @@ class ReservationDateTimeTest {
 
             // when
             assertThatThrownBy(() -> pastSchedule.validateAvailable(current))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(NotAcceptableReservationException.class)
                     .hasMessageContaining("미래 시간의 예약만 생성/취소/수정할 수 있습니다.");
         }
     }
