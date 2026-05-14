@@ -13,6 +13,7 @@ import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.validator.ThemeCreateRequestValidator;
+import roomescape.domain.theme.validator.ThemePopularGetRequestValidator;
 
 @Service
 public class ThemeService {
@@ -31,19 +32,13 @@ public class ThemeService {
 
     public List<ThemeResponseDto> getPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
         validateDate(startDate, endDate);
-        validateLimit(limit);
+        ThemePopularGetRequestValidator.validate(limit);
         return convertThemesToDto(themeRepository.findPopularThemesDateBetween(startDate, endDate, limit));
     }
 
     private void validateDate(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new UnprocessableEntityException(ErrorCode.THEME_INVALID_DATE);
-        }
-    }
-
-    private void validateLimit(Integer limit) {
-        if (limit < 0) {
-            throw new UnprocessableEntityException(ErrorCode.COMMON_INVALID_LIMIT);
         }
     }
 

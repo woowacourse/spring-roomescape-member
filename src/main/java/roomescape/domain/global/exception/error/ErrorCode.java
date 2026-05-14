@@ -5,7 +5,6 @@ public enum ErrorCode {
     COMMON_INVALID_REQUEST("요청 형식이 잘못되었습니다."),
     COMMON_INVALID_PARAMETER_TYPE("요청 파라미터의 형식이 잘못되었습니다."),
     COMMON_INVALID_REQUEST_BODY("요청 본문의 형식이 잘못되었습니다."),
-    COMMON_INVALID_LIMIT("limit은 0 또는 양수여야 합니다."),
 
     RESERVATION_FORBIDDEN("요청한 예약에 접근할 권한이 없습니다."),
     RESERVATION_NOT_FOUND("요청한 예약을 찾을 수 없습니다."),
