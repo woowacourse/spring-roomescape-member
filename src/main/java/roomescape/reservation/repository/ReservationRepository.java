@@ -19,5 +19,7 @@ public interface ReservationRepository {
 
     boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time);
 
+    boolean existsByTimeId(Long timeId);
+
     boolean updateStatus(Reservation reservation);
 }

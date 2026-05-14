@@ -139,6 +139,26 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약이 존재하는 시간의 existsByTimeId는 true를 반환한다.")
+    void existsByTimeId_true() {
+        // given
+        jdbcReservationRepository.save(Reservation.create("한다", date1, reservationTime1.startAt(), theme));
+
+        // when & then
+        assertThat(jdbcReservationRepository.existsByTimeId(reservationTime1.id())).isTrue();
+    }
+
+    @Test
+    @DisplayName("예약이 없는 시간의 existsByTimeId는 false를 반환한다.")
+    void existsByTimeId_false() {
+        // given
+        jdbcReservationRepository.save(Reservation.create("한다", date1, reservationTime1.startAt(), theme));
+
+        // when & then
+        assertThat(jdbcReservationRepository.existsByTimeId(reservationTime2.id())).isFalse();
+    }
+
+    @Test
     @DisplayName("예약을 취소하면 상태가 CANCELED가 된다.")
     void updateState_canceled() {
         // given

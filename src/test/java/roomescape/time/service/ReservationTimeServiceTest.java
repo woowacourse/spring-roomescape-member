@@ -3,6 +3,7 @@ package roomescape.time.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.reservation.service.ReservationService;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
 @SpringBootTest
@@ -20,6 +24,12 @@ import roomescape.time.domain.ReservationTime;
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ThemeService themeService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     @BeforeEach
     void setup() {
@@ -67,6 +77,20 @@ class ReservationTimeServiceTest {
 
         //then
         assertThat(reservationTimeService.findAll().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간 삭제 시 예외가 발생한다.")
+    void delete_time_with_reservation(){
+        // given
+        ReservationTime time = reservationTimeService.create(LocalTime.of(12, 0));
+        Theme theme = themeService.register("테마", "설명", "썸네일");
+        reservationService.create("한다", LocalDate.of(2099, 1, 1), time.id(), theme.id());
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(time.id()))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("예약이 있는 예약 시간은 삭제할 수 없습니다.");
     }
 
     @Test
