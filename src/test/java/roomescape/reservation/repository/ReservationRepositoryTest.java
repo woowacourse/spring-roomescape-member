@@ -99,7 +99,7 @@ class ReservationRepositoryTest {
                 null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
 
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isTrue();
@@ -107,7 +107,7 @@ class ReservationRepositoryTest {
     @Test
     void 동일한테마_동일한시간대에_예약이_존재하지_않으면_false를_반환한다() {
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isFalse();
@@ -218,5 +218,30 @@ class ReservationRepositoryTest {
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void 예약id에_해당하는_예약의_date와_time_id를_변경한다() {
+        // given
+        Reservation saved = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 20), time, theme));
+
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:00");
+
+        ReservationTime newTime = jdbcTemplate.queryForObject(
+                "SELECT * FROM reservation_time WHERE start_at = '15:00'",
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))));
+
+        // when
+        int updated = reservationRepository.update(
+                saved.getId(), LocalDate.of(2026, 5, 25), newTime.getId());
+
+        // then
+        assertThat(updated).isEqualTo(1);
+        Reservation updatedReservation = reservationRepository.findById(saved.getId()).orElseThrow();
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 25));
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(newTime.getId());
     }
 }

@@ -222,4 +222,133 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/1"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void 본인_예약_변경_요청을_받으면_service에게_요청하고_200과_변경된_예약을_반환한다() throws Exception {
+        Reservation updated = new Reservation(
+                1L, "어셔", LocalDate.of(2026, 5, 25),
+                new ReservationTime(2L, LocalTime.of(14, 0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
+        when(reservationService.updateUserReservation(any(), any(), any(), any()))
+                .thenReturn(updated);
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "어셔")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("어셔"))
+                .andExpect(jsonPath("$.date").value("2026-05-25"))
+                .andExpect(jsonPath("$.time.id").value(2))
+                .andExpect(jsonPath("$.time.startAt").value("14:00"));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하면_404와_RESERVATION_NOT_FOUND를_반환한다() throws Exception {
+        when(reservationService.updateUserReservation(any(), any(), any(), any()))
+                .thenThrow(new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        mockMvc.perform(patch("/reservations/999")
+                        .param("name", "어셔")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_NOT_FOUND.errorCode()));
+    }
+
+    @Test
+    void 본인이_아닌_예약을_변경하면_403과_RESERVATION_FORBIDDEN을_반환한다() throws Exception {
+        when(reservationService.updateUserReservation(any(), any(), any(), any()))
+                .thenThrow(new BusinessException(ErrorCode.RESERVATION_FORBIDDEN));
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "레서")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_FORBIDDEN.errorCode()));
+    }
+
+    @Test
+    void 이미_날짜와_시간_지난_예약을_변경하면_400과_RESERVATION_EXPIRED를_반환한다() throws Exception {
+        when(reservationService.updateUserReservation(any(), any(), any(), any()))
+                .thenThrow(new BusinessException(ErrorCode.RESERVATION_EXPIRED));
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "어셔")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_EXPIRED.errorCode()));
+    }
+
+    @Test
+    void 변경하려는_일시에_다른_예약이_있으면_409와_RESERVATION_DUPLICATE를_반환한다() throws Exception {
+        when(reservationService.updateUserReservation(any(), any(), any(), any()))
+                .thenThrow(new BusinessException(ErrorCode.RESERVATION_DUPLICATE));
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "어셔")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_DUPLICATE.errorCode()));
+    }
+
+    @Test
+    void 변경_요청_시_name_파라미터가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(patch("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": "2026-05-25",
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.MISSING_PARAMETER.errorCode()));
+    }
+
+    @Test
+    void 변경_요청의_body에_date가_없으면_400과_INVALID_INPUT을_반환한다() throws Exception {
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "어셔")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "date": null,
+                                "timeId": 2
+                              }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_INPUT.errorCode()))
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'date')].message")
+                        .value(hasItem("예약 날짜는 필수입니다.")));
+    }
 }
