@@ -27,14 +27,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<ReservationsResponse> readAll() {
-        List<ReservationResponse> reservations = reservationService.findAll().stream()
-                .map(ReservationResponse::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(new ReservationsResponse(reservations, reservations.size()));
-    }
-
     @PostMapping("/reservations")
     public ResponseEntity<?> createReservation(@RequestBody ReservationRequest request) {
         try {
