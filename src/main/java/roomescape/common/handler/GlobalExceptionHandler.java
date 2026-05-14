@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.dto.ErrorInformation;
+import roomescape.common.exception.RoomEscapeException;
 import roomescape.common.validation.exception.RequestValidationException;
 
 @RestControllerAdvice
@@ -23,6 +24,14 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
         return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
+    }
+
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorInformation> handleRoomEscapeException(RoomEscapeException e) {
+        log.info(e.getMessage());
+        ErrorInformation errorInformation = ErrorInformation.of(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(e.getStatus())
                 .body(errorInformation);
     }
 
