@@ -1,13 +1,13 @@
-package roomescape.reservationTime.presentation.dto;
+package roomescape.reservationTime.presentation.dto.request;
 
 import java.time.LocalTime;
 import roomescape.global.exception.ReservationTimeErrorCode;
 import roomescape.global.exception.customException.BadRequestException;
 
-public record ReservationTimeRequest(
+public record ReservationTimeCreateRequest(
         LocalTime startAt
 ) {
-    public ReservationTimeRequest {
+    public ReservationTimeCreateRequest {
         validateStartAtNotEmpty(startAt);
     }
 
