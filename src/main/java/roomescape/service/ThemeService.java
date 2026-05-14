@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.AlreadyExistException;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
@@ -32,7 +33,7 @@ public class ThemeService {
     private void validateUniqueTheme(String name) {
         boolean exists = themeDao.existsByName(name);
         if (exists) {
-            throw new IllegalArgumentException("이미 존재하는 테마입니다.");
+            throw new AlreadyExistException("이미 존재하는 테마입니다.");
         }
     }
 
