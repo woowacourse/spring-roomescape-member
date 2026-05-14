@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -60,7 +61,7 @@ class ReservationTest {
         Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
 
         LocalDate newDate = LocalDate.now().plusDays(2);
-        ReservationTime newTime = new ReservationTime(2L, java.time.LocalTime.of(15, 0), TimeStatus.ACTIVE);
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(15, 0), TimeStatus.ACTIVE);
 
         // when
         reservation.update(newDate, newTime);
@@ -69,6 +70,18 @@ class ReservationTest {
         assertThat(reservation)
                 .extracting(Reservation::getDate, Reservation::getTime)
                 .containsExactly(newDate, newTime);
+    }
+
+    @Test
+    void 이미_지나버린_예약을_변경하려고_하면_예외가_발생한다() {
+        // given
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation pastReservation = new Reservation(1L, "이프", pastDate, theme, reservationTime);
+
+        // when & then
+        assertThatThrownBy(pastReservation::validateNotPast)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약입니다.");
     }
 
     @Test

@@ -29,8 +29,8 @@ public class ReservationTime {
         this(null, startAt, TimeStatus.ACTIVE);
     }
 
-    public LocalDateTime toReservationDateTime(LocalDate date) {
-        return LocalDateTime.of(date, this.startAt);
+    public boolean isPast(LocalDate date) {
+        return LocalDateTime.of(date, this.startAt).isBefore(LocalDateTime.now());
     }
 
     public void deactivate() {

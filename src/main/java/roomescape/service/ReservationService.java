@@ -49,7 +49,11 @@ public class ReservationService {
 
     @Transactional
     public void cancelReservation(long id) {
-        reservationRepository.delete(id);
+        reservationRepository.findById(id)
+                .ifPresent(reservation -> {
+                    reservation.validateNotPast();
+                    reservationRepository.delete(id);
+                });
     }
 
     public List<ReservationResult> getAllReservations() {
