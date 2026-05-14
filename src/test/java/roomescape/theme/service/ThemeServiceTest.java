@@ -76,7 +76,7 @@ class ThemeServiceTest {
         when(reservationTimeRepository.findAll()).thenReturn(reservationTimes);
         when(themeRepository.findNotAvailableTimes(any(), any())).thenReturn(availableTimes);
 
-        List<AvailableTime> result = themeService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6));
+        List<AvailableTime> result = themeService.getAvailableTimes(1L, LocalDate.now().plusDays(1));
 
         verify(reservationTimeRepository, times(1)).findAll();
         verify(themeRepository, times(1)).findNotAvailableTimes(any(), any());

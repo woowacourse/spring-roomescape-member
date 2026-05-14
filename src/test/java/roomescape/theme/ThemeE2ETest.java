@@ -96,15 +96,16 @@ class ThemeE2ETest {
     @Test
     @DisplayName("GET /themes/{id}/available-times - 예약된 시간은 isAvailable=false, 예약 안 된 시간은 true")
     void getAvailableTimes() {
+        LocalDate dayAfter = LocalDate.now().plusDays(1);
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "공포", "무서움", "thumb.png");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2026-05-07", 1L, 1L);
+                "브라운", dayAfter.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
-                .when().get("/themes/1/available-times?date=2026-05-07")
+                .when().get("/themes/1/available-times?date=" + dayAfter)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
