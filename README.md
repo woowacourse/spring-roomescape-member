@@ -84,6 +84,7 @@
 | 1 | 지나간 날짜 및 시간에 대한 예약 생성 불가             | `400 Bad Request` |
 | 2 | 같은 날짜 + 시간 + 테마에 이미 예약이 있으면 중복 예약 거부 | `409 Conflict` |
 | 3 | 예약이 존재하는 시간은 삭제 불가                   | `409 Conflict` |
+| 3-1 | 존재하지 않는 예약 취소 불가                      | `404 Not Found` |
 | 4 | 이미 지난 예약은 취소·변경 불가                   | `400 Bad Request` |
 | 5 | 변경하려는 날짜·시간 슬롯이 이미 예약된 경우 변경 거부      | `409 Conflict` |
 
@@ -588,6 +589,7 @@ Content-Type: application/json
 - [x] `잘못된_날짜_형식_예약_생성_400_반환_테스트`
 - [x] `날짜_누락_예약_생성_400_반환_테스트`
 - [x] `예약_취소_테스트`
+- [x] `존재하지_않는_예약_취소_404_반환_테스트`
 
 ### UserReservationControllerTest
 
@@ -613,7 +615,8 @@ Content-Type: application/json
 - [x] `create_과거_날짜_예약이면_예외`
 - [x] `create_오늘_지난_시간_예약이면_예외`
 - [x] `getAll`
-- [x] `cancel`
+- [x] `cancel_정상_취소`
+- [x] `cancel_존재하지_않는_예약이면_예외`
 - [x] `getByName_예약_목록_반환`
 - [x] `cancelForUser_존재하지_않는_예약이면_예외`
 - [x] `cancelForUser_지난_날짜_예약이면_예외`
