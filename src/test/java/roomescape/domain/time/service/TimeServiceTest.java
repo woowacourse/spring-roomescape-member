@@ -127,18 +127,34 @@ class TimeServiceTest {
     @Nested
     class DeleteTimeByIdTest {
 
-        @Test
-        void 성공() {
-            // given
-            Time savedTime = timeRepository.save(Time.create(LocalTime.of(12, 0)));
-            timeRepository.save(Time.create(LocalTime.of(13, 0)));
+        @Nested
+        class Success {
 
-            // when
-            timeService.deleteTimeById(savedTime.getId());
+            @Test
+            void 성공() {
+                // given
+                Time savedTime = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+                timeRepository.save(Time.create(LocalTime.of(13, 0)));
 
-            // then
-            List<TimeResponseDto> actual = timeService.getTimes();
-            assertThat(actual).containsExactly(new TimeResponseDto(2L, LocalTime.of(13, 0)));
+                // when
+                timeService.deleteTimeById(savedTime.getId());
+
+                // then
+                List<TimeResponseDto> actual = timeService.getTimes();
+                assertThat(actual).containsExactly(new TimeResponseDto(2L, LocalTime.of(13, 0)));
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void 예약_시간_ID가_존재하지_않으면_예외가_발생한다() {
+                // when & then
+                assertThatThrownBy(() -> timeService.deleteTimeById(999L))
+                    .isInstanceOf(GeneralException.class)
+                    .hasMessage("예약 시간을 찾을 수 없습니다.");
+            }
         }
     }
 

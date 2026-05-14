@@ -128,6 +128,31 @@ class JdbcTimeRepositoryTest {
     }
 
     @Nested
+    class ExistsTimeByIdTest {
+
+        @Test
+        void 존재하면_true를_반환한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+
+            // when
+            boolean actual = timeRepository.existsTimeById(time.getId());
+
+            // then
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void 존재하지_않으면_false를_반환한다() {
+            // when
+            boolean actual = timeRepository.existsTimeById(1L);
+
+            // then
+            assertThat(actual).isFalse();
+        }
+    }
+
+    @Nested
     class DeleteTimeByIdTest {
 
         @Test
