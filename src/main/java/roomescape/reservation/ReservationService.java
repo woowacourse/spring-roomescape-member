@@ -49,7 +49,7 @@ public class ReservationService {
         validateDeleteSuccessful(reservationId, name);
     }
 
-    public List<ReservationDetailFindResponse> findDetailByName(String name) {
+    public List<ReservationDetailFindResponse> findDetailsByName(String name) {
         List<ReservationDetailProjection> reservationDetailProjection = reservationRepository.findDetailsByName(name);
 
         return ReservationDetailFindResponse.from(reservationDetailProjection);
