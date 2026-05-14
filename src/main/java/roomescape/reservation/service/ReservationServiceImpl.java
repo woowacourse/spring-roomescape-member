@@ -98,7 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation update(ReservationUpdateServiceDto dto) {
         Reservation existing = reservationRepository.findById(dto.id())
-                .orElseThrow(() -> new ReservationException(dto.id()));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
         validateOwner(existing, dto.requesterName());
 
         ReservationTime newTime = timeService.findById(dto.timeId());
@@ -109,10 +109,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
         return reservationRepository.findById(dto.id())
-                .orElseThrow(() -> new ReservationException(dto.id()));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
-    private void validateDuplicatedReservation(Long reservationId, Long themeId, ReservationTime time, LocalDate date) {
+    private void validateDuplicatedReservation(Long reservationId, Long themeId,
+            ReservationTime time, LocalDate date) {
         if (reservationRepository.isDuplicatedExcludingId(reservationId, themeId, time, date)) {
             throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION);
         }
@@ -121,14 +122,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
-            throw new ReservationException(id);
+            throw new ReservationException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 
     @Override
     public void cancel(Long id, String requesterName) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationException(id));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
         validateOwner(reservation, requesterName);
         validatePastCancel(reservation.getDate(), reservation.getTime());
         reservationRepository.deleteById(id);

@@ -36,7 +36,7 @@ public class TimeServiceImpl implements TimeService {
   @Override
   public ReservationTime findById(Long id) {
     return timeRepository.findById(id)
-        .orElseThrow(() -> new TimeException(id));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND));
   }
 
   @Override
@@ -52,7 +52,7 @@ public class TimeServiceImpl implements TimeService {
   @Override
   public void deleteById(Long id) {
     if (!timeRepository.existsById(id)) {
-      throw new TimeException(id);
+      throw new TimeException(ErrorCode.TIME_NOT_FOUND);
     }
     if (reservationRepository.existsByTimeId(id)) {
       throw new TimeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
