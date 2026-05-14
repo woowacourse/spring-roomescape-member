@@ -2,220 +2,358 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>예약 관리 - 관리자</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 현황 관리 - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: -apple-system, sans-serif;
-            padding: 2rem;
-            background: #f8fafc;
-            margin: 0;
-            color: #1e293b;
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-dark: #09090b;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .nav-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(9,9,11,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-header a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .nav-header a:hover { color: white; }
+
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a.active { color: var(--primary); }
+
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 2rem;
         }
 
         h1 {
-            color: #1e293b;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-weight: 800;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .nav {
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2rem;
             margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: white;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .nav a {
-            color: #4f46e5;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.95rem;
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.3rem;
+            background: var(--primary);
+            border-radius: 2px;
         }
 
-        .nav a:hover {
-            text-decoration: underline;
-        }
-
-        .form-section {
-            background: #f1f5f9;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2.5rem;
-        }
-
-        form {
+        .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            gap: 1.5rem;
+            align-items: flex-end;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.5rem;
         }
 
         label {
-            font-weight: bold;
-            color: #475569;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         input, select {
-            padding: 0.7rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            background: white;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: white;
             outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(350deg);
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1e293b;
+            color: white;
         }
 
         input:focus, select:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
-        button {
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
+        button.btn-primary {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: var(--bg-dark);
             border: none;
-            font-size: 0.95rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+            font-family: inherit;
+            text-transform: uppercase;
+            height: 52px;
+            width: 100%;
         }
 
-        .btn-primary {
-            background: #4f46e5;
-            color: white;
-            grid-column: 1 / -1;
-            margin-top: 0.5rem;
+        button.btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(245, 158, 11, 0.5);
         }
 
-        .btn-primary:hover {
-            background: #4338ca;
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-        }
-
-        .btn-danger:hover {
-            background: #fecaca;
+        .table-container {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 1rem;
-        }
-
-        th, td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
         }
 
         th {
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 700;
+            font-size: 0.85rem;
             letter-spacing: 0.05em;
         }
 
-        .user-name {
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid var(--border-glass);
+            color: white;
+            vertical-align: middle;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            box-shadow: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
             font-weight: bold;
-            color: #1e293b;
+            cursor: pointer;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: #e2e8f0;
-            color: #475569;
-        }
-
-        .theme-badge {
-            background: #dcfce7;
-            color: #166534;
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         }
 
         .empty-state {
             text-align: center;
             padding: 3rem;
-            color: #94a3b8;
+            color: var(--text-muted);
             font-style: italic;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-main);
+            border: 1px solid var(--border-glass);
+        }
+
+        .theme-badge {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .pagination button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            font-weight: 600;
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="nav">
-        <a href="/">&larr; 홈으로</a>
-        <a href="/admin-time.html">시간 관리 &rarr;</a>
-    </div>
-    <h1>전화/현장 예약 관리</h1>
-
-    <div class="form-section">
-        <form id="resForm">
-            <div class="form-group">
-                <label for="nameInput">예약자 성함</label>
-                <input type="text" id="nameInput" placeholder="이름 입력" required>
-            </div>
-            <div class="form-group">
-                <label for="dateInput">날짜</label>
-                <input type="date" id="dateInput" required>
-            </div>
-            <div class="form-group">
-                <label for="themeSelect">테마</label>
-                <select id="themeSelect" required>
-                    <option value="">테마를 선택하세요</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="timeSelect">시간</label>
-                <select id="timeSelect" required>
-                    <option value="">시간을 선택하세요</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-primary">수동 예약 추가</button>
-        </form>
+    <div class="nav-header">
+        <a href="/">&larr; 메인</a>
+        <div class="nav-links">
+            <a href="/admin-reservation.html" class="active">예약 현황</a>
+            <a href="/admin-time.html">시간 관리</a>
+            <a href="/admin-theme.html">테마 관리</a>
+        </div>
     </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th style="width: 60px;">ID</th>
-            <th>예약자</th>
-            <th>날짜</th>
-            <th>테마</th>
-            <th>시간</th>
-            <th style="width: 80px; text-align: center;">관리</th>
-        </tr>
-        </thead>
-        <tbody id="resList"></tbody>
-    </table>
-</div>
+    <div class="container">
+        <h1>RESERVATION STATUS</h1>
+        <p class="subtitle">전화 및 현장 방문 예약을 수동으로 추가하고 관리하세요.</p>
+
+        <div class="card">
+            <h2>수동 예약 추가</h2>
+            <form id="resForm" class="form-grid">
+                <div class="form-group">
+                    <label>예약자 성함</label>
+                    <input type="text" id="nameInput" placeholder="이름 입력" required>
+                </div>
+                <div class="form-group">
+                    <label>예약 날짜</label>
+                    <input type="date" id="dateInput" required>
+                </div>
+                <div class="form-group">
+                    <label>테마 선택</label>
+                    <select id="themeSelect" required>
+                        <option value="">테마를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>시간 선택</label>
+                    <select id="timeSelect" required>
+                        <option value="">시간을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-primary">예약 추가</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>전체 예약 목록</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th>예약자</th>
+                            <th>날짜</th>
+                            <th>테마</th>
+                            <th>시간</th>
+                            <th style="width: 80px; text-align: center;">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resList">
+                        <!-- Reservations will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button id="prevBtn" onclick="prevPage()">이전</button>
+                <span id="pageInfo">1 페이지</span>
+                <button id="nextBtn" onclick="nextPage()">다음</button>
+            </div>
+        </div>
+    </div>
 
 <script>
     const resForm = document.getElementById('resForm');
@@ -230,7 +368,8 @@
     async function loadThemes() {
         try {
             const res = await fetch('/themes');
-            const themes = await res.json();
+            const data = await res.json();
+            const themes = data.themes || data;
             themes.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.id;
@@ -244,8 +383,9 @@
 
     async function loadTimes() {
         try {
-            const res = await fetch('/times');
-            const times = await res.json();
+            const res = await fetch('/reservation-times');
+            const data = await res.json();
+            const times = data.reservationTimes || data;
             times.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.id;
@@ -257,31 +397,87 @@
         }
     }
 
+    let currentPage = 0;
+    const pageSize = 10;
+    let allReservations = [];
+
     async function loadReservations() {
         try {
-            const res = await fetch('/reservations');
-            const reservations = await res.json();
-            resList.innerHTML = '';
-
-            if (reservations.length === 0) {
-                resList.innerHTML = '<tr><td colspan="6" class="empty-state">현재 등록된 예약이 없습니다.</td></tr>';
-                return;
+            let page = 0;
+            let rawReservations = [];
+            while (true) {
+                const res = await fetch(`/reservations?page=${page}&size=100`);
+                if (!res.ok) break;
+                const data = await res.json();
+                const items = data.reservations || data;
+                if (!Array.isArray(items)) break;
+                rawReservations = rawReservations.concat(items);
+                if (items.length < 100) break;
+                page++;
             }
-
-            reservations.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                        <td>${r.id}</td>
-                        <td class="user-name">${r.name}</td>
-                        <td>${r.date}</td>
-                        <td><span class="badge theme-badge">${r.theme ? r.theme.name : '알수없음'}</span></td>
-                        <td><span class="badge">${r.time ? r.time.startAt : '알수없음'}</span></td>
-                        <td style="text-align: center;"><button class="btn-danger" onclick="deleteRes(${r.id})">삭제</button></td>
-                    `;
-                resList.appendChild(tr);
+            
+            // 프론트엔드 정렬 (최신 날짜, 늦은 시간, 높은 ID 순)
+            allReservations = rawReservations.sort((a, b) => {
+                if (a.date !== b.date) {
+                    return new Date(b.date) - new Date(a.date);
+                }
+                const timeA = a.time ? a.time.startAt : '';
+                const timeB = b.time ? b.time.startAt : '';
+                if (timeA !== timeB) {
+                    return timeB.localeCompare(timeA);
+                }
+                return b.id - a.id;
             });
+            
+            renderReservations();
         } catch (e) {
             console.error('예약 로드 실패', e);
+        }
+    }
+
+    function renderReservations() {
+        resList.innerHTML = '';
+        
+        if (allReservations.length === 0) {
+            resList.innerHTML = '<tr><td colspan="6" class="empty-state">현재 등록된 예약이 없습니다.</td></tr>';
+            document.getElementById('prevBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('pageInfo').textContent = '1 페이지';
+            return;
+        }
+
+        const startIndex = currentPage * pageSize;
+        const pageData = allReservations.slice(startIndex, startIndex + pageSize);
+
+        pageData.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                    <td style="color: var(--text-muted);">${r.id}</td>
+                    <td style="font-weight: bold; font-size: 1.1rem;">${r.name}</td>
+                    <td>${r.date}</td>
+                    <td><span class="badge theme-badge">${r.theme ? r.theme.name : '알수없음'}</span></td>
+                    <td><span class="badge">${r.time ? r.time.startAt : '알수없음'}</span></td>
+                    <td style="text-align: center;"><button class="btn-danger" onclick="deleteRes(${r.id})">취소</button></td>
+                `;
+            resList.appendChild(tr);
+        });
+
+        document.getElementById('prevBtn').disabled = currentPage === 0;
+        document.getElementById('nextBtn').disabled = (startIndex + pageSize) >= allReservations.length;
+        document.getElementById('pageInfo').textContent = `${currentPage + 1} 페이지`;
+    }
+
+    function prevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            renderReservations();
+        }
+    }
+
+    function nextPage() {
+        if ((currentPage + 1) * pageSize < allReservations.length) {
+            currentPage++;
+            renderReservations();
         }
     }
 
@@ -301,6 +497,7 @@
             });
             if (res.ok) {
                 resForm.reset();
+                currentPage = 0;
                 loadReservations();
             } else {
                 const error = await res.json();

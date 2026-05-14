@@ -2,60 +2,110 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>시간 관리 - 관리자</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 시간 관리 - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: -apple-system, sans-serif;
-            padding: 2rem;
-            background: #f8fafc;
-            margin: 0;
-            color: #1e293b;
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-dark: #09090b;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .nav-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(9,9,11,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-header a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .nav-header a:hover { color: white; }
+
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a.active { color: var(--primary); }
 
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin: 3rem auto;
+            padding: 0 2rem;
         }
 
         h1 {
-            color: #1e293b;
-            text-align: center;
-            margin-bottom: 2rem;
-            font-weight: 800;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .nav {
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2rem;
             margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: white;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .nav a {
-            color: #4f46e5;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.95rem;
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.3rem;
+            background: var(--primary);
+            border-radius: 2px;
         }
 
-        .nav a:hover {
-            text-decoration: underline;
-        }
-
-        .form-section {
-            background: #f1f5f9;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2.5rem;
-        }
-
-        form {
+        .form-grid {
             display: flex;
             align-items: flex-end;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .form-group {
@@ -66,114 +116,159 @@
         }
 
         label {
-            font-weight: bold;
-            color: #475569;
             font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         input[type="time"] {
-            padding: 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 1rem;
             width: 100%;
-            box-sizing: border-box;
-        }
-
-        button {
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: #4f46e5;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 1.1rem;
             color: white;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(350deg);
+            opacity: 0.8;
+            cursor: pointer;
         }
 
-        .btn-primary:hover {
-            background: #4338ca;
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
-        .btn-danger {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 0.5rem 1rem;
+        button.btn-primary {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+            font-family: inherit;
+            text-transform: uppercase;
+            height: 52px;
         }
 
-        .btn-danger:hover {
-            background: #fecaca;
+        button.btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        .table-container {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 1rem;
-        }
-
-        th, td {
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
         }
 
         th {
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 700;
+            font-size: 0.85rem;
             letter-spacing: 0.05em;
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid var(--border-glass);
+            color: white;
+            vertical-align: middle;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            box-shadow: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         }
 
         .empty-state {
             text-align: center;
             padding: 3rem;
-            color: #94a3b8;
+            color: var(--text-muted);
             font-style: italic;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="nav">
-        <a href="/">&larr; 홈으로</a>
-        <a href="/admin-reservation.html">예약 관리 &rarr;</a>
+    <div class="nav-header">
+        <a href="/">&larr; 메인</a>
+        <div class="nav-links">
+            <a href="/admin-reservation.html">예약 현황</a>
+            <a href="/admin-time.html" class="active">시간 관리</a>
+            <a href="/admin-theme.html">테마 관리</a>
+        </div>
     </div>
-    <h1>예약 시간 관리</h1>
 
-    <div class="form-section">
-        <form id="timeForm">
-            <div class="form-group">
-                <label for="timeInput">새로운 시간 추가 (HH:mm)</label>
-                <input type="time" id="timeInput" required>
+    <div class="container">
+        <h1>TIME MANAGEMENT</h1>
+        <p class="subtitle">예약 가능한 시간을 추가하고 관리하세요.</p>
+
+        <div class="card">
+            <h2>새로운 예약 시간 추가</h2>
+            <form id="timeForm" class="form-grid">
+                <div class="form-group">
+                    <label>시간 (HH:MM)</label>
+                    <input type="time" id="timeInput" required>
+                </div>
+                <button type="submit" class="btn-primary">시간 저장하기</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>등록된 시간 목록</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>예약 시작 시간</th>
+                            <th style="width: 100px; text-align: center;">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeList">
+                        <!-- Times will be loaded here -->
+                    </tbody>
+                </table>
             </div>
-            <button type="submit" class="btn-primary">시간 추가</button>
-        </form>
+        </div>
     </div>
-
-    <table>
-        <thead>
-        <tr>
-            <th style="width: 80px;">ID</th>
-            <th>시간 (시작 시간)</th>
-            <th style="width: 100px; text-align: center;">관리</th>
-        </tr>
-        </thead>
-        <tbody id="timeList"></tbody>
-    </table>
-</div>
 
 <script>
     const timeForm = document.getElementById('timeForm');
@@ -181,8 +276,9 @@
 
     async function loadTimes() {
         try {
-            const res = await fetch('/times');
-            const times = await res.json();
+            const res = await fetch('/reservation-times');
+            const data = await res.json();
+            const times = data.reservationTimes || data;
             timeList.innerHTML = '';
 
             if (times.length === 0) {
@@ -193,8 +289,8 @@
             times.forEach(t => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                        <td>${t.id}</td>
-                        <td style="font-weight: 600; font-size: 1.1rem;">${t.startAt}</td>
+                        <td style="color: var(--text-muted);">${t.id}</td>
+                        <td style="font-weight: bold; font-size: 1.2rem;">${t.startAt}</td>
                         <td style="text-align: center;"><button class="btn-danger" onclick="deleteTime(${t.id})">삭제</button></td>
                     `;
                 timeList.appendChild(tr);
@@ -208,7 +304,7 @@
         e.preventDefault();
         const timeVal = document.getElementById('timeInput').value;
         try {
-            const res = await fetch('/times', {
+            const res = await fetch('/reservation-times', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({startAt: timeVal})
@@ -228,7 +324,7 @@
     async function deleteTime(id) {
         if (!confirm('해당 예약 시간을 정말로 삭제하시겠습니까?\n이미 이 시간을 사용하는 예약이 있다면 삭제가 불가능할 수 있습니다.')) return;
         try {
-            const res = await fetch(`/times/${id}`, {method: 'DELETE'});
+            const res = await fetch(`/reservation-times/${id}`, {method: 'DELETE'});
             if (res.ok) loadTimes();
             else alert('삭제에 실패했습니다. 사용 중인 시간일 수 있습니다.');
         } catch (e) {
