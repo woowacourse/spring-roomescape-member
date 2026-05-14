@@ -10,6 +10,7 @@ import roomescape.reservation.ReservationRepository;
 import java.time.LocalTime;
 
 @Service
+@Transactional(readOnly = true)
 public class AdminReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 
 @Service
+@Transactional(readOnly = true)
 public class AdminThemeService {
 
     private final ThemeRepository themeRepository;
