@@ -69,16 +69,22 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = """
                 SELECT rt.id, rt.start_at
                 FROM reservation_time rt
-                WHERE rt.id NOT IN (
-                    SELECT r.time_id
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM theme t
+                    WHERE t.id = ?
+                )
+                AND NOT EXISTS (
+                    SELECT 1
                     FROM reservation r
                     WHERE r.date = ?
                       AND r.theme_id = ?
+                      AND r.time_id = rt.id
                 )
                 ORDER BY rt.id
                 """;
 
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date, themeId);
     }
 
     @Override
