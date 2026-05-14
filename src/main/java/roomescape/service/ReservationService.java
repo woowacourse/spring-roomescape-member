@@ -18,6 +18,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+@Transactional(readOnly = true)
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;

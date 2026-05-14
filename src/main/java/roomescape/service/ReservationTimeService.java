@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeAvailabilityResponseDto;
@@ -14,6 +15,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+@Transactional(readOnly = true)
 @Service
 public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
@@ -28,6 +30,7 @@ public class ReservationTimeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ReservationTimeResponseDto create(ReservationTimeRequestDto requestDto) {
         ReservationTime reservationTime = reservationTimeRepository.create(requestDto.toEntity());
         return ReservationTimeResponseDto.from(reservationTime);
@@ -61,6 +64,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
+    @Transactional
     public void delete(Long id) {
         validateTimeNotInUse(id);
 
