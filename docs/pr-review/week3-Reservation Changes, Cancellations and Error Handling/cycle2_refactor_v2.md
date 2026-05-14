@@ -17,7 +17,7 @@
   - 도메인 전용 커스텀 예외(`InvalidInputException` 등) 생성
   - 비즈니스 로직에서 `IllegalArgumentException` 대신 커스텀 예외 사용
   - `IllegalArgumentException` 핸들러는 예상치 못한 경우로 분리 — `e.getMessage()` 노출 제거, 경고 로그 + 제네릭 메시지 반환
-- [ ] **5. 페이징 적용**
+- [x] **5. 페이징 적용**
   - `GET /admin/reservations` — 전체 예약 조회, 운영 기간이 길어질수록 무한 증가 (최우선)
 - [x] **6. Reservation 생성자 통합 — restore() 제거**
   - 과거 날짜 체크를 `create()`에서 private 생성자의 `validate()`로 이동

@@ -34,7 +34,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
@@ -42,8 +42,15 @@ public class ReservationDao {
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                ORDER BY r.date DESC, r.id DESC
+                LIMIT ? OFFSET ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(sql, reservationRowMapper, size, (long) page * size);
+    }
+
+    public long count() {
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        return count;
     }
 
     public Optional<Reservation> findById(long id) {

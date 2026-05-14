@@ -71,7 +71,12 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAll() {
-        return reservationDao.findAll();
+    public List<Reservation> findAll(int page, int size) {
+        return reservationDao.findAll(page, size);
+    }
+
+    @Transactional(readOnly = true)
+    public long countAll() {
+        return reservationDao.count();
     }
 }

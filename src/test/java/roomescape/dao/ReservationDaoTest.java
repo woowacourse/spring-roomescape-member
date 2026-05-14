@@ -38,7 +38,7 @@ class ReservationDaoTest {
 
     @Test
     void findAll_전체_예약_조회() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationDao.findAll(0, 100);
 
         assertThat(reservations).isNotEmpty();
         assertThat(reservations).allMatch(r -> r.getName() != null && r.getDate() != null);
@@ -73,10 +73,10 @@ class ReservationDaoTest {
 
     @Test
     void delete_예약_삭제() {
-        int beforeSize = reservationDao.findAll().size();
+        int beforeSize = reservationDao.findAll(0, 100).size();
         reservationDao.delete(1L);
 
-        assertThat(reservationDao.findAll()).hasSize(beforeSize - 1);
+        assertThat(reservationDao.findAll(0, 100)).hasSize(beforeSize - 1);
     }
 
     @Test
