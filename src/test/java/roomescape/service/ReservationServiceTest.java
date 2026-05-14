@@ -87,8 +87,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
-                savedTheme.getId());
+        reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(), savedTheme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.save(
@@ -98,5 +97,23 @@ class ReservationServiceTest {
                 savedTheme.getId()))
                 .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약");
+    }
+
+    @Test
+    void 이름으로_예약찾기() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime reservationTimeEleven = reservationTimeService.save(
+                new ReservationTime(LocalTime.parse("11:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen.getId(), theme.getId());
+        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven.getId(), theme.getId());
+
+        //when
+        List<Reservation> reservations = reservationService.findByName(pobi);
+
+        //then
+        assertThat(reservations).hasSize(2);
     }
 }

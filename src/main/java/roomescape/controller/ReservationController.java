@@ -31,6 +31,13 @@ public class ReservationController {
                 .toList();
     }
 
+    @GetMapping("/reservations?name={name}")
+    public List<ReservationResponse> findReservationByName(@PathVariable String name) {
+        return reservationService.findByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createReservation(@RequestBody ReservationRequest reservationRequest) {

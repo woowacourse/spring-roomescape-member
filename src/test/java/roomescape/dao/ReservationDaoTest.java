@@ -73,4 +73,21 @@ class ReservationDaoTest {
         //then
         assertThat(hasAlreadyReservation).isTrue();
     }
+
+    @Test
+    void 예약자_이름으로_예약_찾기() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime reservationTimeEleven = reservationTimeDao.save(new ReservationTime(LocalTime.parse("11:00")));
+        Theme theme = themeDao.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        reservationDao.save(new Reservation(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen, theme));
+        reservationDao.save(new Reservation(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven, theme));
+
+        //when
+        List<Reservation> reservations = reservationDao.findByName(pobi);
+
+        //then
+        assertThat(reservations).hasSize(2);
+    }
 }

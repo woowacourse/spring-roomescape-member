@@ -52,6 +52,10 @@ public class ReservationService {
         return date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationDao.findByName(name);
+    }
+
     public void deleteById(Long id) {
         validateHasReservation(id);
         reservationDao.deleteById(id);

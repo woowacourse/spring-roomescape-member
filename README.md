@@ -309,11 +309,11 @@ erDiagram
 <summary>3단계 - 내 예약 조회/변경/취소</summary>
 
 - **사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다**
-- [ ] 사용자가 이름으로 예약을 조회하는 API명세 `Get /reservations?name={이름}`
-- [ ] ReservationDao 에서 이름과 같은 List<Reservation>반환 구현
-- [ ] ReservationService 예약 목록을 반환 구현
-- [ ] ReservationController 에서 예약 목록 조회 구현
-- [ ] 만약 해당 이름이 없으면 빈 리스트 반환(200)
+- [x] 사용자가 이름으로 예약을 조회하는 API명세 `Get /reservations?name={이름}`
+- [x] ReservationDao 에서 이름과 같은 List<Reservation>반환 구현
+- [x] ReservationService 예약 목록을 반환 구현
+- [x] ReservationController 에서 예약 목록 조회 구현
+- [x] 만약 해당 이름이 없으면 빈 리스트 반환(200)
 
 - **사용자가 본인의 예약을 취소 가능**
 - [ ] 본인의 예약을 취소하는 API명세 `Delete /reservations/{id}`
