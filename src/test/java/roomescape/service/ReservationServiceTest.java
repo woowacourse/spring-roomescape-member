@@ -12,9 +12,7 @@ import roomescape.domain.reservation.ReservationRequest;
 import roomescape.domain.reservation.ReservationResponse;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.ReservationNotFoundException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.CustomException;
 import roomescape.repository.*;
 
 import java.time.LocalDate;
@@ -100,7 +98,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThrows(ReservationTimeNotFoundException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
         verify(themeQueryingDao, never()).findThemeById(themeId);
     }
@@ -118,7 +116,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThrows(ThemeNotFoundException.class,
+        Assertions.assertThrows(CustomException.class,
                 () -> reservationService.create(request));
         verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId));
     }
@@ -254,7 +252,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(ReservationNotFoundException.class, () -> reservationService.read(reservationId));
+        Assertions.assertThrows(CustomException.class, () -> reservationService.read(reservationId));
     }
 
     @Test

@@ -8,9 +8,8 @@ import roomescape.domain.reservation.ReservationRequest;
 import roomescape.domain.reservation.ReservationResponse;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.ReservationNotFoundException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationUpdatingDao;
@@ -40,9 +39,9 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest reservationReq) {
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
         Theme findTheme = themeQueryingDao.findThemeById(reservationReq.getThemeId())
-                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.THEME_NOT_FOUND));
 
         if (reservationReq.getDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
@@ -61,7 +60,7 @@ public class ReservationService {
         }
 
         Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
-                .orElseThrow(() -> new ReservationNotFoundException(generatedId));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
 
         LocalDateTime standard = LocalDateTime.of(
                 findReservation.getDate(),
@@ -77,7 +76,7 @@ public class ReservationService {
 
     public ReservationResponse read(Long id) {
         Reservation reservationById = reservationQueryingDao.findReservationById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
         return ReservationResponse.from(reservationById);
     }
 
@@ -98,7 +97,7 @@ public class ReservationService {
         int count = reservationUpdatingDao.delete(id);
 
         if (count == 0) {
-            throw new ReservationNotFoundException(id);
+            throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
         }
     }
 }

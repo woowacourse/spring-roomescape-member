@@ -5,7 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
@@ -53,7 +54,7 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(id)
-                .orElseThrow(() -> new ReservationTimeNotFoundException(id));
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
 
         if (reservationQueryingDao.existsReservationByTimeId(findReservationTime.getId())) {
             throw new IllegalArgumentException("예약이 있는 시간은 삭제할 수 없습니다.");

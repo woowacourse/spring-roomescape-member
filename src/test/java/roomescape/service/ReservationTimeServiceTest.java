@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.CustomException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
@@ -91,7 +91,7 @@ class ReservationTimeServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(ReservationTimeNotFoundException.class, () -> reservationTimeService.delete(reservationTimeId));
+        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.delete(reservationTimeId));
     }
 
     @Test
