@@ -158,9 +158,14 @@ class ReservationServiceTest {
     @Test
     void 같은_날짜_시간_테마에_이미_예약이_있으면_중복_예외가_발생한다() {
         LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", date, TIME_ID, THEME_ID);
 
-        given(reservationRepository.countReservationsOf(date, TIME_ID, THEME_ID)).willReturn(1);
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.addReservation(any(Reservation.class)))
+                .willThrow(new ConflictException(ConflictCode.RESERVATION_DUPLICATED));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(ConflictException.class)
