@@ -66,9 +66,15 @@ public class ReservationService {
         return reservationRepository.createReservation(reservation);
     }
 
-    public void deleteReservation(final long id) {
+    public void deleteReservation(final long id, String requestName) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        MemberName name = new MemberName(requestName);
+        if (!reservation.isBooker(name)) {
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
+        }
+
         if (reservation.isBeforeNow()) {
             throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_CANCEL);
         }

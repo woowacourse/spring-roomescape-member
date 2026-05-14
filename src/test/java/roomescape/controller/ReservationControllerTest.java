@@ -258,9 +258,11 @@ class ReservationControllerTest {
     void 예약을_삭제한다() {
         // given & when
         long id = 1L;
+        String name = "korogoo";
         Response response = RestAssured
             .given().log().all()
             .pathParam("id", id)
+            .queryParam("name", name)
             .when().delete("/reservations/{id}");
 
         // then
@@ -268,7 +270,7 @@ class ReservationControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
 
-        verify(reservationService, times(1)).deleteReservation(id);
+        verify(reservationService, times(1)).deleteReservation(id, name);
         verifyNoMoreInteractions(reservationService);
     }
 
@@ -277,14 +279,15 @@ class ReservationControllerTest {
         // given
         RoomEscapeException exception = new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
         doThrow(exception)
-            .when(reservationService).deleteReservation(anyLong());
+            .when(reservationService).deleteReservation(anyLong(), any());
 
         // when
         long id = 1L;
+        String name = "korogoo";
         Response response = RestAssured
             .given().log().all()
             .pathParam("id", id)
-            .queryParam("role", "admin")
+            .queryParam("name", name)
             .when().delete("/reservations/{id}");
 
         // then
@@ -292,7 +295,32 @@ class ReservationControllerTest {
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
 
-        verify(reservationService, times(1)).deleteReservation(id);
+        verify(reservationService, times(1)).deleteReservation(id, name);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 다른_사람의_예약을_삭제하는_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.FORBIDDEN);
+        doThrow(exception)
+            .when(reservationService).deleteReservation(anyLong(), any());
+
+        // when
+        long id = 1L;
+        String name = "korogoo";
+        Response response = RestAssured
+            .given().log().all()
+            .pathParam("id", id)
+            .queryParam("name", name)
+            .when().delete("/reservations/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN.value());
+
+        verify(reservationService, times(1)).deleteReservation(id, name);
         verifyNoMoreInteractions(reservationService);
     }
 
@@ -301,14 +329,15 @@ class ReservationControllerTest {
         // given
         RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_RESERVATION_CANCEL);
         doThrow(exception)
-            .when(reservationService).deleteReservation(anyLong());
+            .when(reservationService).deleteReservation(anyLong(), any());
 
         // when
         long id = 1L;
+        String name = "korogoo";
         Response response = RestAssured
             .given().log().all()
             .pathParam("id", id)
-            .queryParam("role", "admin")
+            .queryParam("name", name)
             .when().delete("/reservations/{id}");
 
         // then
@@ -316,7 +345,7 @@ class ReservationControllerTest {
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
 
-        verify(reservationService, times(1)).deleteReservation(id);
+        verify(reservationService, times(1)).deleteReservation(id, name);
         verifyNoMoreInteractions(reservationService);
     }
 

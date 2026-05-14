@@ -56,8 +56,11 @@ public class ReservationController {
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+    public void deleteReservation(
+        @RequestParam @NotBlank String name,
+        @PathVariable Long id
+    ) {
+        reservationService.deleteReservation(id, name);
     }
 
     @PatchMapping("{id}")

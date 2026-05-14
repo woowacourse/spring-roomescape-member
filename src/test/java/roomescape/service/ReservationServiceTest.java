@@ -168,20 +168,21 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약을_삭제한다() {
+    void 본인의_예약을_삭제한다() {
         // given
-        Reservation futureReservation = new Reservation(
+        Reservation reservation = new Reservation(
             1L, new MemberName("n"),
             new ReservationLocalDate(LocalDate.now().plusDays(1)),
             new ReservationTime(1L, "12:00"),
             SAVED_THEME
         );
         when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(futureReservation));
+            .thenReturn(Optional.of(reservation));
 
         // when & then
-        Long id = reservation().getId();
-        assertThatCode(() -> reservationService.deleteReservation(id))
+        Long id = reservation.getId();
+        String name = reservation.getName().value();
+        assertThatCode(() -> reservationService.deleteReservation(id, name))
             .doesNotThrowAnyException();
 
         verify(reservationRepository, times(1)).findById(id);
@@ -195,11 +196,40 @@ class ReservationServiceTest {
         when(reservationRepository.findById(anyLong()))
             .thenReturn(Optional.empty());
 
+        Reservation reservation = reservation();
+
         // when & then
-        Long id = reservation().getId();
-        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+        Long id = reservation.getId();
+        String name = reservation.getName().value();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id, name))
             .isInstanceOf(RoomEscapeException.class)
             .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+
+        verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 다른_사람의_예약을_삭제하는_경우_예외가_발생한다() {
+        // given
+        Reservation reservation = new Reservation(
+            1L,
+            new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().plusDays(1)),
+            new ReservationTime(1L, "12:00"),
+            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
+        );
+
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(reservation));
+
+        Long id = reservation.getId();
+        String otherName = "otherName";
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservation(id, otherName))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.FORBIDDEN.getMessage());
 
         verify(reservationRepository, times(1)).findById(id);
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
@@ -220,8 +250,9 @@ class ReservationServiceTest {
             .thenReturn(Optional.of(reservation));
 
         // when & then
-        Long id = reservation().getId();
-        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+        Long id = reservation.getId();
+        String name = reservation.getName().value();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id, name))
             .isInstanceOf(RoomEscapeException.class)
             .hasMessageContaining(ErrorCode.PAST_RESERVATION_CANCEL.getMessage());
 
