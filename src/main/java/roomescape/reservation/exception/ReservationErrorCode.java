@@ -1,4 +1,4 @@
-package roomescape.reservation.exeption;
+package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
 import roomescape.common.exception.ErrorPolicy;

@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.*;
-import static roomescape.reservation.exeption.ReservationErrorCode.*;
+import static roomescape.reservation.exception.ReservationErrorCode.*;
 import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
 
 @JdbcTest

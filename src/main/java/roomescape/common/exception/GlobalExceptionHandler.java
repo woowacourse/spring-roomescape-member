@@ -52,7 +52,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(statusCode)
                 .headers(headers)
-                .body(ErrorResponse.of(path, GlobalErrorCode.INVALID_REQUEST, messages));
+                .body(ErrorResponse.of(path, GlobalErrorCode.VALIDATION_ERROR, messages));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
     }
 
     @ExceptionHandler(Exception.class)

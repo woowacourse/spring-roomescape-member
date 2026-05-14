@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.auth.CurrentUser;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
@@ -12,8 +13,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -52,24 +51,20 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> editDateTime(
             @PathVariable("id") Long id,
             @RequestBody @Valid ReservationEditRequest request,
-            @RequestHeader("Authorization") String guestName
+            @CurrentUser String guestName
     ) {
         return ResponseEntity.ok(
                 ReservationResponse.from(
-                        reservationService.editDateTime(id, request.date(), request.timeId(), decode(guestName))));
+                        reservationService.editDateTime(id, request.date(), request.timeId(), guestName)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable("id") Long id,
-            @RequestHeader("Authorization") String guestName
+            @CurrentUser String guestName
     ) {
-        reservationService.deleteMine(id, decode(guestName));
+        reservationService.deleteMine(id, guestName);
         return ResponseEntity.noContent().build();
-    }
-
-    private String decode(String value) {
-        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
 }

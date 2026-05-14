@@ -7,10 +7,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import roomescape.common.auth.UserArgumentResolver;
+import roomescape.common.config.WebConfig;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
@@ -40,6 +43,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER;
+import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER_PREFIX;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {
@@ -226,7 +231,7 @@ class ReservationControllerTest {
                         patch("/reservations/{id}", reservationId)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", guestNameHeader)
+                                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + guestNameHeader)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -263,7 +268,7 @@ class ReservationControllerTest {
                         patch("/reservations/{id}", reservationId)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "브라운"))
+                                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -285,7 +290,7 @@ class ReservationControllerTest {
                         patch("/reservations/{id}", reservationId)
                                 .content(request)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "브라운"))
+                                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -295,12 +300,12 @@ class ReservationControllerTest {
     public void delete_success() throws Exception {
         // given
         Long reservationId = 1L;
-        String guestNameHeader = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
+        String guestNameHeader = "브라운";
 
         // when then
         mockMvc.perform(
                         delete("/reservations/{id}", reservationId)
-                                .header("Authorization", guestNameHeader))
+                                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + guestNameHeader))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 

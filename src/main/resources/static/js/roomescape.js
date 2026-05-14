@@ -1,5 +1,8 @@
 const API_BASE = "";
+    const CUSTOM_AUTH_HEADER = "CustomAuth";
+    const CUSTOM_AUTH_PREFIX = "Temp";
     const DEMO_DATE = "2026-05-06";
+    const DEFAULT_DATE = todayDate();
     const PAGE = document.body.dataset.page || "user";
 
     const state = {
@@ -59,6 +62,14 @@ const API_BASE = "";
     ];
 
     const $ = (selector) => document.querySelector(selector);
+
+    function todayDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const date = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${date}`;
+    }
 
     function isAdminPage() {
       return PAGE === "admin";
@@ -211,6 +222,12 @@ const API_BASE = "";
       if (!response.ok) {
         throw new Error(await errorMessageFrom(response));
       }
+    }
+
+    function customAuthHeaders(guestName) {
+      return {
+        [CUSTOM_AUTH_HEADER]: `${CUSTOM_AUTH_PREFIX} ${encodeURIComponent(guestName)}`
+      };
     }
 
     async function errorMessageFrom(response) {
@@ -798,9 +815,8 @@ const API_BASE = "";
       clearEditReservation();
 
       try {
-        const authorizationHeader = encodeURIComponent(authorizationName);
         if (state.mode === "live") {
-          await deleteJson(`/reservations/${id}`, { Authorization: authorizationHeader });
+          await deleteJson(`/reservations/${id}`, customAuthHeaders(authorizationName));
         } else {
           cancelDemoReservation(id, authorizationName);
           state.demoReservations = removeReservation(state.demoReservations, id);
@@ -838,9 +854,8 @@ const API_BASE = "";
       setEditReservationMessage("예약을 수정하는 중입니다.");
 
       try {
-        const authorizationHeader = encodeURIComponent(authorizationName);
         const editedReservation = state.mode === "live"
-          ? await patchJson(`/reservations/${reservationId}`, payload, { Authorization: authorizationHeader })
+          ? await patchJson(`/reservations/${reservationId}`, payload, customAuthHeaders(authorizationName))
           : editDemoReservation(reservationId, payload, authorizationName);
 
         if (state.mode === "demo") {
@@ -1185,7 +1200,7 @@ const API_BASE = "";
       if (isAdminPage()) {
         state.adminSelectedThemeId = state.themes[0]?.id || null;
         state.adminSelectedTimeId = null;
-        elements.adminReserveDate.value = DEMO_DATE;
+        elements.adminReserveDate.value = DEFAULT_DATE;
         state.adminAvailableTimes = getDemoAvailabilityFor(elements.adminReserveDate.value, state.adminSelectedThemeId);
         renderAdmin();
         return;
@@ -1193,7 +1208,7 @@ const API_BASE = "";
 
       state.selectedThemeId = state.themes[0]?.id || null;
       state.selectedTimeId = null;
-      elements.dateInput.value = DEMO_DATE;
+      elements.dateInput.value = DEFAULT_DATE;
       renderPopularThemes();
       renderThemes();
       state.availableTimes = getDemoAvailability();
@@ -1209,9 +1224,9 @@ const API_BASE = "";
         return;
       } else {
         if (isAdminPage()) {
-          elements.adminReserveDate.value = DEMO_DATE;
+          elements.adminReserveDate.value = DEFAULT_DATE;
         } else {
-          elements.dateInput.value = DEMO_DATE;
+          elements.dateInput.value = DEFAULT_DATE;
         }
         state.mode = "loading";
         setSourceStatus();
