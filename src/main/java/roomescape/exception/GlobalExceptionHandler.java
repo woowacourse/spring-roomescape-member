@@ -15,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import roomescape.service.exception.PastReservationException;
 import roomescape.service.exception.ResourceConflictException;
 import roomescape.service.exception.ResourceNotFoundException;
+import roomescape.service.exception.UnauthorizedReservationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(ResourceNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedReservationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleUnauthorized(UnauthorizedReservationException e) {
         return new ErrorResponse(e.getMessage());
     }
 
