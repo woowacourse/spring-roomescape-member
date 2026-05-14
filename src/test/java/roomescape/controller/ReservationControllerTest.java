@@ -14,6 +14,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
@@ -76,6 +79,40 @@ class ReservationControllerTest {
 
         ReservationResponse responseDto = response.as(ReservationResponse.class);
         assertThat(responseDto.id()).isEqualTo(1L);
+
+        verify(reservationService, times(1)).addReservation(any());
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 지난_날짜와_시간으로_예약을_추가하는_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+        Reservation reservation = new Reservation(
+            1L,
+            new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().minusDays(1)),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
+            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl()));
+
+        ReservationRequest request = requestDtoFrom(reservation);
+        doThrow(exception)
+            .when(reservationService).addReservation(any());
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+        ErrorResponse actualResponse = response.as(ErrorResponse.class);
+        assertThat(actualResponse).isEqualTo(ErrorResponse.of(ErrorCode.PAST_DATE_RESERVATION));
 
         verify(reservationService, times(1)).addReservation(any());
         verifyNoMoreInteractions(reservationService);

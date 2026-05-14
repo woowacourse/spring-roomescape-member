@@ -39,14 +39,18 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationRequest requestDto) {
+        if (!requestDto.date().isAfter(LocalDate.now())) {
+            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+        }
+
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(requestDto.themeId())
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
-        List<ReservationTime> availableTimes = reservationTimeRepository
-            .findByDateAndThemeId(requestDto.date(), requestDto.themeId());
-        if (!availableTimes.contains(time)) {
+        boolean alreadyExists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+            requestDto.date(), requestDto.timeId(), requestDto.themeId());
+        if (alreadyExists) {
             throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
@@ -88,6 +92,6 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
-        return reservationTimeRepository.findByDateAndThemeId(date, theme.getId());
+        return reservationTimeRepository.findAvailableTimeByDateAndThemeId(date, theme.getId());
     }
 }

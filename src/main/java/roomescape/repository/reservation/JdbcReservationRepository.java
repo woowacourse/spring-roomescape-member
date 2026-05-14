@@ -156,4 +156,20 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return count != null && count != 0;
     }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE res_date = ? AND time_id = ? AND theme_id = ?
+                """,
+            Integer.class,
+            Date.valueOf(date),
+            timeId,
+            themeId
+        );
+
+        return count != null && count != 0;
+    }
 }

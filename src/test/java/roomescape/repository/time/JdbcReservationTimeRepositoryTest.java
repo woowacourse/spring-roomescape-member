@@ -100,7 +100,8 @@ class JdbcReservationTimeRepositoryTest {
         reservationRepository.createReservation(new Reservation("name", tomorrow, bookedTime, theme));
 
         // when
-        List<ReservationTime> availableTimes = timeRepository.findByDateAndThemeId(tomorrow, theme.getId());
+        List<ReservationTime> availableTimes = timeRepository.findAvailableTimeByDateAndThemeId(tomorrow,
+            theme.getId());
 
         // then
         assertThat(availableTimes).containsExactly(availableTime);

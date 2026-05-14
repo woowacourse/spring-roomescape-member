@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,8 +53,114 @@ class ReservationServiceTest {
         return new Reservation(
             1L,
             new MemberName("name"),
-            new ReservationLocalDate(LocalDate.now().minusDays(1L)),
-            SAVED_TIME, SAVED_THEME);
+            new ReservationLocalDate(LocalDate.now().plusDays(1L)),
+            SAVED_TIME,
+            SAVED_THEME);
+    }
+
+    @Test
+    void 예약을_추가한다() {
+        // given
+        Reservation expectedReservation = reservation();
+
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_THEME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(false);
+        when(reservationRepository.createReservation(any()))
+            .thenReturn(expectedReservation);
+
+        // when
+        Reservation reservation = reservationService.addReservation(requestDtoFrom(expectedReservation));
+
+        // then
+        assertThat(reservation.getId()).isEqualTo(1L);
+        assertThat(reservation.getName()).isEqualTo(expectedReservation.getName());
+        assertThat(reservation.getDateValue()).isEqualTo(expectedReservation.getDateValue());
+        assertThat(reservation.getTime().getStartAt()).isEqualTo(expectedReservation.getTime().getStartAt());
+        assertThat(reservation.getTheme().getDescription()).isEqualTo(expectedReservation.getTheme().getDescription());
+        assertThat(reservation.getTheme().getNameValue()).isEqualTo(expectedReservation.getTheme().getNameValue());
+        assertThat(reservation.getTheme().getImageUrlValue()).isEqualTo(
+            expectedReservation.getTheme().getImageUrlValue());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
+        verify(reservationRepository, times(1)).createReservation(any());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 이미_지난_날짜로_추가하면_예외가_발생한다() {
+        // given
+        ReservationRequest request = new ReservationRequest(
+            "n",
+            LocalDate.now().minusDays(1),
+            1L,
+            1L);
+
+        // when & them
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
+        
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_시간으로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_테마로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.THEME_NOT_FOUND.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 동일한_테마에서_이미_예약된_날짜와_시간으로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_THEME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     @Test
@@ -128,7 +233,7 @@ class ReservationServiceTest {
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimeByDateAndThemeId(any(), anyLong()))
             .thenReturn(List.of(SAVED_TIME, availableTime2));
 
         // when
@@ -139,28 +244,7 @@ class ReservationServiceTest {
         assertThat(availableTimes).containsExactlyInAnyOrder(SAVED_TIME, availableTime2);
 
         verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
-
-    @Test
-    void 동일한_테마에서_이미_예약된_날짜와_시간으로_추가하면_예외가_발생한다() {
-        // given
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(SAVED_TIME));
-        when(themeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
-            .thenReturn(List.of());
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
-
-        verify(timeRepository, times(1)).findById(anyLong());
-        verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verify(timeRepository, times(1)).findAvailableTimeByDateAndThemeId(any(), anyLong());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
@@ -171,12 +255,12 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         Reservation reservation = new Reservation("name", tomorrow, SAVED_TIME, otherTheme);
 
-        when(timeRepository.findById(SAVED_TIME.getId()))
+        when(timeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_TIME));
-        when(themeRepository.findById(otherTheme.getId()))
+        when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(otherTheme));
-        when(timeRepository.findByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
-            .thenReturn(List.of(SAVED_TIME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(false);
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
@@ -184,7 +268,7 @@ class ReservationServiceTest {
 
         verify(timeRepository, times(1)).findById(anyLong());
         verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
         verify(reservationRepository, times(1)).createReservation(any());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }

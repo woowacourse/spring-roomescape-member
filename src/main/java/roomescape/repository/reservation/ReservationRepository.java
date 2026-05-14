@@ -18,4 +18,6 @@ public interface ReservationRepository {
     boolean existsByTimeIdAndDateOnOrAfter(long timeId, LocalDate date);
 
     boolean existsById(long id);
+
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 }

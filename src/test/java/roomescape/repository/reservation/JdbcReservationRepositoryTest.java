@@ -206,4 +206,78 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(exists).isFalse();
     }
+
+    @Test
+    void 동일한_날짜_시간_테마를_가지는_예약이_있다면_TURE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
+
+        // when
+        boolean exists = reservationRepository
+            .existsByDateAndTimeIdAndThemeId(date, savedTime.getId(), savedTheme.getId());
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void 동일한_날짜_시간_이어도_같은_테마를_가지는_예약이_없다면_FALSE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
+
+        long otherThemeId = savedTheme.getId() + 1;
+
+        // when
+        boolean exists = reservationRepository
+            .existsByDateAndTimeIdAndThemeId(date, savedTime.getId(), otherThemeId);
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 동일한_날짜_테마_이어도_같은_시간을_가지는_예약이_없다면_FALSE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
+
+        long otherTimeId = savedTheme.getId() + 1;
+
+        // when
+        boolean exists = reservationRepository
+            .existsByDateAndTimeIdAndThemeId(date, otherTimeId, savedTheme.getId());
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 동일한_시간_테마_이어도_같은_날짜를_가지는_예약이_없다면_FALSE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
+
+        LocalDate otherDate = date.plusDays(1);
+
+        // when
+        boolean exists = reservationRepository
+            .existsByDateAndTimeIdAndThemeId(otherDate, savedTime.getId(), savedTheme.getId());
+
+        // then
+        assertThat(exists).isFalse();
+    }
 }
