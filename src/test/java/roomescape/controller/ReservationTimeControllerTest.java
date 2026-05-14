@@ -3,16 +3,17 @@ package roomescape.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static roomescape.test.util.RoomEscapeTestFixture.AFTERNOON_TIME_ID;
 import static roomescape.test.util.RoomEscapeTestFixture.FUTURE_DATE;
 import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_TIME_COUNT;
-import static roomescape.test.util.RoomEscapeTestFixture.MORNING_TIME_ID;
 import static roomescape.test.util.RoomEscapeTestFixture.PAST_DATE;
-import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.THEME_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.THEME_NOT_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.TIME_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.TIME_NOT_IN_USE;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import roomescape.exception.ErrorCode;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.EntityId;
+import roomescape.exception.ErrorCode;
 import roomescape.test.util.RoomEscapeTestFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -104,23 +106,29 @@ class ReservationTimeControllerTest {
 
         @Test
         void 이미_예약된_시간은_제외한다() {
-            // 미래 날짜에 MORNING_TIME으로 예약 추가
-            fixture.insertReservation("test", FUTURE_DATE, MORNING_TIME_ID, WESTERN_THEME_ID);
+            LocalDate reservedDate = FUTURE_DATE;
+            EntityId reservedTimeId = TIME_NOT_IN_USE.id();
+            EntityId reservedThemeId = THEME_NOT_IN_USE.id();
+            fixture.insertReservation(
+                    "time name",
+                    reservedDate,
+                    reservedTimeId,
+                    reservedThemeId
+            );
 
             RestAssured.given().log().all()
-                    .queryParam("themeId", WESTERN_THEME_ID.getValueAsString())
-                    .queryParam("date", FUTURE_DATE.toString())
+                    .queryParam("themeId", reservedThemeId.getValueAsString())
+                    .queryParam("date", reservedDate.toString())
                     .when().get("/times/available-times")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(1))
-                    .body("[0].id", is(AFTERNOON_TIME_ID.getValueAsString()));
+                    .body("size()", is(INITIALIZED_TIME_COUNT - 1));
         }
 
         @Test
         void 현재보다_과거에_해당하는_시간은_제외한다() {
             RestAssured.given().log().all()
-                    .queryParam("themeId", WESTERN_THEME_ID.getValueAsString())
+                    .queryParam("themeId", THEME_IN_USE.id().getValueAsString())
                     .queryParam("date", PAST_DATE.toString())
                     .when().get("/times/available-times")
                     .then().log().all()
@@ -131,11 +139,11 @@ class ReservationTimeControllerTest {
         @Test
         void 응답할_정보가_없다면_빈_리스트를_반환한다() {
             // 미래 날짜에 모든 시간을 예약
-            fixture.insertReservation("test1", FUTURE_DATE, MORNING_TIME_ID, WESTERN_THEME_ID);
-            fixture.insertReservation("test2", FUTURE_DATE, AFTERNOON_TIME_ID, WESTERN_THEME_ID);
+            fixture.insertReservation("test1", FUTURE_DATE, TIME_IN_USE.id(), THEME_IN_USE.id());
+            fixture.insertReservation("test2", FUTURE_DATE, TIME_NOT_IN_USE.id(), THEME_IN_USE.id());
 
             RestAssured.given().log().all()
-                    .queryParam("themeId", WESTERN_THEME_ID.getValueAsString())
+                    .queryParam("themeId", THEME_IN_USE.id().getValueAsString())
                     .queryParam("date", FUTURE_DATE.toString())
                     .when().get("/times/available-times")
                     .then().log().all()
@@ -149,11 +157,8 @@ class ReservationTimeControllerTest {
 
         @Test
         void 제거에_성공하면_200을_응답한다() {
-            EntityId unreservedTimeId = EntityId.random();
-            fixture.insertTime(unreservedTimeId, LocalTime.of(12, 0));
-
             RestAssured.given().log().all()
-                    .when().delete("/times/" + unreservedTimeId.getValueAsString())
+                    .when().delete("/times/" + TIME_NOT_IN_USE.id().getValueAsString())
                     .then().log().all()
                     .statusCode(200);
 
@@ -161,13 +166,13 @@ class ReservationTimeControllerTest {
                     .when().get("/times")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(INITIALIZED_TIME_COUNT));
+                    .body("size()", is(INITIALIZED_TIME_COUNT - 1));
         }
 
         @Test
         void 예약에서_사용_중인_시간이라면_409을_응답한다() {
             RestAssured.given().log().all()
-                    .when().delete("/times/" + MORNING_TIME_ID.getValueAsString())
+                    .when().delete("/times/" + TIME_IN_USE.id().getValueAsString())
                     .then().log().all()
                     .statusCode(409)
                     .body("errorCode", is(ErrorCode.TIME_IN_USE.name()));

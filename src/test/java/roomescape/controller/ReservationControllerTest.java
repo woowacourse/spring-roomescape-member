@@ -3,21 +3,21 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static roomescape.test.util.RoomEscapeTestFixture.AFTERNOON_TIME_ID;
 import static roomescape.test.util.RoomEscapeTestFixture.FUTURE_DATE;
-import static roomescape.test.util.RoomEscapeTestFixture.MORNING_TIME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.INSERTABLE_THEME;
+import static roomescape.test.util.RoomEscapeTestFixture.INSERTABLE_TIME;
 import static roomescape.test.util.RoomEscapeTestFixture.PAST_DATE;
-import static roomescape.test.util.RoomEscapeTestFixture.TEST_THEME_ID;
-import static roomescape.test.util.RoomEscapeTestFixture.TEST_TIME_ID;
-import static roomescape.test.util.RoomEscapeTestFixture.WESTERN_THEME_ID;
+import static roomescape.test.util.RoomEscapeTestFixture.FASTER_RESERVATION;
+import static roomescape.test.util.RoomEscapeTestFixture.THEME_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.THEME_NOT_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.TIME_IN_USE;
+import static roomescape.test.util.RoomEscapeTestFixture.TIME_NOT_IN_USE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,11 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.EntityId;
+import roomescape.exception.ErrorCode;
 import roomescape.test.util.RoomEscapeTestFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Import(RoomEscapeTestFixture.class)
 class ReservationControllerTest {
+
+    private static final String NOT_EXIST_ID = EntityId.random().getValueAsString();
 
     @Autowired
     private RoomEscapeTestFixture fixture;
@@ -48,8 +52,8 @@ class ReservationControllerTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
             params.put("date", FUTURE_DATE.toString());
-            params.put("timeId", MORNING_TIME_ID.getValueAsString());
-            params.put("themeId", WESTERN_THEME_ID.getValueAsString());
+            params.put("timeId", TIME_IN_USE.id().getValueAsString());
+            params.put("themeId", THEME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -60,8 +64,8 @@ class ReservationControllerTest {
                     .body("id", notNullValue())
                     .body("name", equalTo("브라운"))
                     .body("date", equalTo(FUTURE_DATE.toString()))
-                    .body("timeId", equalTo(MORNING_TIME_ID.getValueAsString()))
-                    .body("themeId", equalTo(WESTERN_THEME_ID.getValueAsString()));
+                    .body("timeId", equalTo(TIME_IN_USE.id().getValueAsString()))
+                    .body("themeId", equalTo(THEME_IN_USE.id().getValueAsString()));
         }
 
         @Test
@@ -69,8 +73,8 @@ class ReservationControllerTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
             params.put("date", PAST_DATE.toString());
-            params.put("timeId", MORNING_TIME_ID.getValueAsString());
-            params.put("themeId", WESTERN_THEME_ID.getValueAsString());
+            params.put("timeId", TIME_IN_USE.id().getValueAsString());
+            params.put("themeId", THEME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -86,8 +90,8 @@ class ReservationControllerTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
             params.put("date", FUTURE_DATE.toString());
-            params.put("timeId", UUID.randomUUID().toString());
-            params.put("themeId", WESTERN_THEME_ID.getValueAsString());
+            params.put("timeId", NOT_EXIST_ID);
+            params.put("themeId", THEME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -103,8 +107,8 @@ class ReservationControllerTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
             params.put("date", FUTURE_DATE.toString());
-            params.put("timeId", MORNING_TIME_ID.getValueAsString());
-            params.put("themeId", UUID.randomUUID().toString());
+            params.put("timeId", TIME_IN_USE.id().getValueAsString());
+            params.put("themeId", NOT_EXIST_ID);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -118,27 +122,21 @@ class ReservationControllerTest {
         @Test
         void 중복_예약이_존재한다면_409를_응답한다() {
             fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            Map<String, Object> firstRequest = new HashMap<>();
-            firstRequest.put("name", "브라운");
-            firstRequest.put("date", FUTURE_DATE.toString());
-            firstRequest.put("timeId", TEST_TIME_ID.getValueAsString());
-            firstRequest.put("themeId", TEST_THEME_ID.getValueAsString());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(firstRequest)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(200);
+            fixture.insertTime(INSERTABLE_TIME);
+            fixture.insertTheme(INSERTABLE_THEME);
+            fixture.insertReservation(
+                    "name",
+                    FUTURE_DATE,
+                    INSERTABLE_TIME.id(),
+                    INSERTABLE_THEME.id()
+            );
 
             // 같은 날짜, 시간, 테마로 예약 시도
             Map<String, Object> secondRequest = new HashMap<>();
             secondRequest.put("name", "검프");
             secondRequest.put("date", FUTURE_DATE.toString());
-            secondRequest.put("timeId", TEST_TIME_ID.getValueAsString());
-            secondRequest.put("themeId", TEST_THEME_ID.getValueAsString());
+            secondRequest.put("timeId", INSERTABLE_TIME.id().getValueAsString());
+            secondRequest.put("themeId", INSERTABLE_THEME.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -159,12 +157,12 @@ class ReservationControllerTest {
         @Test
         void 이름이_일치하는_예약_정보를_모두_응답한다() {
             RestAssured.given().log().all()
-                    .param("name", "브라운")
+                    .param("name", FASTER_RESERVATION.name())
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(1))
-                    .body("[0].name", equalTo("브라운"))
+                    .body("[0].name", equalTo(FASTER_RESERVATION.name()))
                     .body("[0].id", notNullValue());
         }
 
@@ -189,44 +187,50 @@ class ReservationControllerTest {
 
         @Test
         void 정보를_수정하고_수정된_예약_정보를_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-            fixture.insertAnotherTime();
+            String reservationName = "브라운";
+            LocalDate dateBeforeUpdate = FUTURE_DATE;
+            LocalDate dateAfterUpdate = dateBeforeUpdate.plusDays(1);
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    dateBeforeUpdate,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
-            // 먼저 예약 생성
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
-
-            // 다른 시간으로 수정
+            // 다른 날짜로 수정
             Map<String, Object> updateRequest = new HashMap<>();
-            updateRequest.put("date", FUTURE_DATE.toString());
-            updateRequest.put("timeId", AFTERNOON_TIME_ID.getValueAsString());
+            updateRequest.put("date", dateAfterUpdate.toString());
+            updateRequest.put("timeId", TIME_NOT_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
                     .statusCode(200)
                     .body("id", equalTo(reservationId))
-                    .body("name", equalTo("브라운"))
-                    .body("date", equalTo(FUTURE_DATE.toString()));
+                    .body("name", equalTo(reservationName))
+                    .body("date", equalTo(dateAfterUpdate.toString()));
         }
 
         @Test
         void 이미_지난_예약을_수정하려_하면_403을_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", PAST_DATE, TEST_TIME_ID, TEST_THEME_ID);
+            String reservationName = "브라운";
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    PAST_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FUTURE_DATE.toString());
-            updateRequest.put("timeId", TEST_TIME_ID.getValueAsString());
+            updateRequest.put("timeId", TIME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
@@ -236,18 +240,21 @@ class ReservationControllerTest {
 
         @Test
         void 이미_지난_시간으로_수정하려_하면_403을_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
+            String reservationName = "브라운";
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    FUTURE_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", PAST_DATE.toString());
-            updateRequest.put("timeId", TEST_TIME_ID.getValueAsString());
+            updateRequest.put("timeId", TIME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .body(updateRequest)
                     .when().patch("/reservations/" + reservationId)
                     .then().log().all()
@@ -257,20 +264,15 @@ class ReservationControllerTest {
 
         @Test
         void 이름이_다르다면_403을_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
-
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FUTURE_DATE.toString());
-            updateRequest.put("timeId", TEST_TIME_ID.getValueAsString());
+            updateRequest.put("timeId", TIME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .param("name", "다른이름")
                     .body(updateRequest)
-                    .when().patch("/reservations/" + reservationId)
+                    .when().patch("/reservations/" + FASTER_RESERVATION.id().getValueAsString())
                     .then().log().all()
                     .statusCode(403)
                     .body("errorCode", is(ErrorCode.NOT_RESERVATION_OWNER.name()));
@@ -278,17 +280,15 @@ class ReservationControllerTest {
 
         @Test
         void 예약을_찾을_수_없다면_404를_응답한다() {
-            fixture.clearTables();
-
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FUTURE_DATE.toString());
-            updateRequest.put("timeId", MORNING_TIME_ID.getValueAsString());
+            updateRequest.put("timeId", TIME_IN_USE.id().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", FASTER_RESERVATION.name())
                     .body(updateRequest)
-                    .when().patch("/reservations/" + UUID.randomUUID())
+                    .when().patch("/reservations/" + NOT_EXIST_ID)
                     .then().log().all()
                     .statusCode(404)
                     .body("errorCode", is(ErrorCode.RESERVATION_NOT_FOUND.name()));
@@ -296,20 +296,15 @@ class ReservationControllerTest {
 
         @Test
         void 시간을_찾을_수_없다면_404를_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
-
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FUTURE_DATE.toString());
-            updateRequest.put("timeId", UUID.randomUUID().toString());
+            updateRequest.put("timeId", NOT_EXIST_ID);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", FASTER_RESERVATION.name())
                     .body(updateRequest)
-                    .when().patch("/reservations/" + reservationId)
+                    .when().patch("/reservations/" + FASTER_RESERVATION.id().getValueAsString())
                     .then().log().all()
                     .statusCode(404)
                     .body("errorCode", is(ErrorCode.RESERVATION_TIME_NOT_FOUND.name()));
@@ -317,24 +312,23 @@ class ReservationControllerTest {
 
         @Test
         void 이미_예약된_시간으로_수정하려_하면_409를_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            LocalDate firstReservationDate = FUTURE_DATE;
-            LocalDate secondReservationDate = firstReservationDate.plusDays(1);
-
-            String firstReservationId = fixture.insertReservation("브라운", firstReservationDate, TEST_TIME_ID, TEST_THEME_ID);
-            fixture.insertReservation("검프", secondReservationDate, TEST_TIME_ID.getValueAsString(), TEST_THEME_ID.getValueAsString());
+            String reservationName = "name";
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    FUTURE_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    FASTER_RESERVATION.themeId()
+            );
 
             Map<String, Object> updateRequest = new HashMap<>();
-            updateRequest.put("date", secondReservationDate.toString());
-            updateRequest.put("timeId", TEST_TIME_ID.getValueAsString());
+            updateRequest.put("date", FASTER_RESERVATION.date().toString());
+            updateRequest.put("timeId", FASTER_RESERVATION.timeId().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .body(updateRequest)
-                    .when().patch("/reservations/" + firstReservationId)
+                    .when().patch("/reservations/" + reservationId)
                     .then().log().all()
                     .statusCode(409)
                     .body("errorCode", is(ErrorCode.DUPLICATE_RESERVATION.name()));
@@ -349,19 +343,22 @@ class ReservationControllerTest {
 
         @Test
         void 예약_정보를_삭제한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
+            String reservationName = "name";
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    FUTURE_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
             RestAssured.given().log().all()
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .when().delete("/reservations/" + reservationId)
                     .then().log().all()
                     .statusCode(204);
 
             RestAssured.given().log().all()
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
@@ -370,10 +367,12 @@ class ReservationControllerTest {
 
         @Test
         void 이름이_다르다면_403을_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", FUTURE_DATE, TEST_TIME_ID, TEST_THEME_ID);
+            String reservationId = fixture.insertReservation(
+                    "name",
+                    FUTURE_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
             RestAssured.given().log().all()
                     .param("name", "다른이름")
@@ -385,13 +384,16 @@ class ReservationControllerTest {
 
         @Test
         void 지난_시간의_예약이라면_403을_응답한다() {
-            fixture.clearTables();
-            fixture.insertTestTimeAndTheme();
-
-            String reservationId = fixture.insertReservation("브라운", PAST_DATE, TEST_TIME_ID, TEST_THEME_ID);
+            String reservationName = "name";
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    PAST_DATE,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
 
             RestAssured.given().log().all()
-                    .param("name", "브라운")
+                    .param("name", reservationName)
                     .when().delete("/reservations/" + reservationId)
                     .then().log().all()
                     .statusCode(403)
@@ -402,7 +404,7 @@ class ReservationControllerTest {
         void 예약을_찾을_수_없다면_404를_응답한다() {
             RestAssured.given().log().all()
                     .param("name", "브라운")
-                    .when().delete("/reservations/" + UUID.randomUUID())
+                    .when().delete("/reservations/" + NOT_EXIST_ID)
                     .then().log().all()
                     .statusCode(404)
                     .body("errorCode", is(ErrorCode.RESERVATION_NOT_FOUND.name()));

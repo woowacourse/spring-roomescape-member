@@ -3,8 +3,8 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static roomescape.test.util.RoomEscapeTestFixture.BROWN_RESERVATION_ID;
 import static roomescape.test.util.RoomEscapeTestFixture.INITIALIZED_RESERVATION_COUNT;
+import static roomescape.test.util.RoomEscapeTestFixture.FASTER_RESERVATION;
 
 import io.restassured.RestAssured;
 import roomescape.exception.ErrorCode;
@@ -68,7 +68,7 @@ class AdminReservationControllerTest {
         @Test
         void 식별자를_기반으로_예약을_취소한다() {
             RestAssured.given().log().all()
-                    .when().delete("/admin/reservations/" + BROWN_RESERVATION_ID)
+                    .when().delete("/admin/reservations/" + FASTER_RESERVATION.id())
                     .then().log().all()
                     .statusCode(200);
 
