@@ -2,6 +2,7 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.common.exception.InternalServerException;
 
 public class ReservationTime {
     private final Long id;
@@ -18,19 +19,12 @@ public class ReservationTime {
     }
 
     public static ReservationTime load(Long timeId, LocalTime startAt) {
-        validateId(timeId);
         return new ReservationTime(timeId, startAt);
     }
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
-        }
-    }
-
-    private static void validateId(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException("예약 시간 ID는 필수입니다.");
+            throw new InternalServerException("예약 시작 시간은 필수입니다.");
         }
     }
 

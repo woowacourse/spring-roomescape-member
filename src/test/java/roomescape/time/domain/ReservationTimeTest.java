@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.InternalServerException;
 
 class ReservationTimeTest {
     private ReservationTime reservationTime;
@@ -70,7 +71,7 @@ class ReservationTimeTest {
     @DisplayName("예약 시작 시간이 유효하지 않은 경우 예외가 발생한다.")
     void validate_startAt() {
         assertThatThrownBy(() -> ReservationTime.load(1L, null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InternalServerException.class)
                 .hasMessage("예약 시작 시간은 필수입니다.");
     }
 }
