@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -101,6 +102,46 @@ public class JdbcReservationDao implements ReservationDao {
                 WHERE r.name =(?)""";
 
         return jdbcTemplate.query(sql, this::mapToReservation, name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT r.id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail_url as theme_thumbnail_url
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = ?""";
+
+        return jdbcTemplate
+                .query(sql, this::mapToReservation, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public boolean existsByExceptId(LocalDate date, Long timeId, Long themeId, Long excludeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM `reservation`
+                    WHERE `date` = (?) AND `time_id` = (?) AND `theme_id` = (?) AND `id` <> (?)
+                )""";
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, excludeId));
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        String sql = """
+                UPDATE `reservation`
+                SET `date` = (?), `time_id` = (?)
+                WHERE `id` = (?)""";
+
+        jdbcTemplate.update(sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId());
     }
 
     @Override

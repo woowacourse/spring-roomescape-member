@@ -13,6 +13,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.ReservationUpdateRequestDto;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 
@@ -90,4 +91,27 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
+    public void update(Long reservationId, ReservationUpdateRequestDto request) {
+        Reservation reservation = findReservation(reservationId);
+        ReservationTime time = findReservationTime(request.timeId());
+
+        validateNotPast(request.date(), time);
+        validateNotDuplicated(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
+
+        Reservation updated = reservation.changeSchedule(request.date(), time);
+        reservationDao.update(updated);
+    }
+
+    private Reservation findReservation(Long id) {
+        return reservationDao.findById(id)
+                .orElseThrow(() ->
+                        new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId, Long excludeId) {
+        if (reservationDao.existsByExceptId(date, timeId, themeId, excludeId)) {
+            throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
 }

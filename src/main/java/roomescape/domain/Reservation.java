@@ -47,6 +47,10 @@ public class Reservation {
         }
     }
 
+    public Reservation changeSchedule(LocalDate newDate, ReservationTime newTime) {
+        return new Reservation(this.id, this.name, newDate, newTime, this.theme);
+    }
+
     public Long getId() {
         return id;
     }
