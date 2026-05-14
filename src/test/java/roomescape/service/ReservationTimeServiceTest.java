@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
 import roomescape.exception.CustomException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
@@ -61,6 +62,41 @@ class ReservationTimeServiceTest {
 
         // then
         Assertions.assertEquals(time, reservationTimeResponses.getFirst().getStartAt());
+    }
+
+    @Test
+    void 시간_수정_성공() {
+        // given
+        Long reservationTimeId = 1L;
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(LocalTime.now());
+        ReservationTime reservationTime = new ReservationTime(reservationTimeId, request.getStartAt());
+
+        when(reservationTimeQueryingDao.existsById(reservationTimeId))
+                .thenReturn(true);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        // when
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.update(reservationTimeId, request);
+
+        // then
+        Assertions.assertEquals(request.getStartAt(), reservationTimeResponse.getStartAt());
+        verify(reservationTimeUpdatingDao, times(1)).update(reservationTimeId, request);
+    }
+
+    @Test
+    void 시간_수정_에러_시간_없음() {
+        // given
+        Long reservationTimeId = 1L;
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(LocalTime.now());
+
+        when(reservationTimeQueryingDao.existsById(reservationTimeId))
+                .thenReturn(false);
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.update(reservationTimeId, request));
+        verify(reservationTimeQueryingDao, never()).findReservationTimeById(reservationTimeId);
     }
 
     @Test
