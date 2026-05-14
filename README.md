@@ -223,11 +223,21 @@ Content-Type: application/json
 | 이름으로 예약 조회   | `GET /reservations?name={}`                  |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
 | 예약 삭제        | `DELETE /reservations/{id}`                  |                                     |                                                                                                     |
 | 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |
-| 예약 가능한 시간 조회 | `GET /times/available/date={}&themeId={}`    |                                     | `[{id, startAt}, ...]`                                                                              |
+| 예약 가능한 시간 조회 | `GET /times/available?date={}&themeId={}`    |                                     | `[{id, startAt}, ...]`                                                                              |
 | 테마 조회        | `GET /themes`                                |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
 | 인기 있는 테마 조회  | `GET /themes/popular?recentDays={}&limit={}` |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
 
-# 응답 코드
+# 📝 에러
+
+## 에러 응답 본문
+
+```json
+{
+  "message": "이미 예약이 있습니다. date=2026-05-16, reservationTimeId=2, themeId=1"
+}
+```
+
+## 응답 코드
 
 | 응답 코드                       | 상황                          |
 |-----------------------------|-----------------------------|
