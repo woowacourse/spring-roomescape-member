@@ -1,5 +1,6 @@
 package roomescape.acceptance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import io.restassured.RestAssured;
@@ -49,5 +50,20 @@ class AdminReservationTimeAcceptanceTest {
                 .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void DELETE_admin_times_참조하는_예약이_존재하면_409과_메시지를_반환한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (1, '10:00')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (1, '테마', '설명', 'https://thumbnail.url')");
+        jdbcTemplate.update(
+                "INSERT INTO reservation(name, theme_id, date, time_id) VALUES ('브라운', 1, '2026-05-08', 1)");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", equalTo("예약이 존재하는 시간은 삭제할 수 없습니다."));
     }
 }

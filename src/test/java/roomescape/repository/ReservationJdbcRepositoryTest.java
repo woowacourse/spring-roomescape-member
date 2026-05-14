@@ -126,6 +126,32 @@ class ReservationJdbcRepositoryTest {
         assertThat(exists).isFalse();
     }
 
+    @Test
+    void existsByReservationTimeId_해당_시간을_참조하는_예약이_있으면_true() {
+        Long themeId = insertTheme("공포");
+        Long timeId = insertTime("10:00");
+        insertReservation("브라운", themeId, "2026-05-06", timeId);
+
+        assertThat(repository.existsByReservationTimeId(timeId)).isTrue();
+    }
+
+    @Test
+    void existsByReservationTimeId_해당_시간을_참조하는_예약이_없으면_false() {
+        Long timeId = insertTime("10:00");
+
+        assertThat(repository.existsByReservationTimeId(timeId)).isFalse();
+    }
+
+    @Test
+    void existsByReservationTimeId_다른_시간을_참조하는_예약만_있으면_false() {
+        Long themeId = insertTheme("공포");
+        Long usedTimeId = insertTime("10:00");
+        Long targetTimeId = insertTime("11:00");
+        insertReservation("브라운", themeId, "2026-05-06", usedTimeId);
+
+        assertThat(repository.existsByReservationTimeId(targetTimeId)).isFalse();
+    }
+
     private Long insertTheme(String name) {
         jdbcTemplate.update(
                 "INSERT INTO theme(name, description, thumbnail_image_url) VALUES (?, '설명', 'https://thumbnail.url')",

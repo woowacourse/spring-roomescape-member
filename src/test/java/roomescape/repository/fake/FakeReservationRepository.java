@@ -58,6 +58,12 @@ public class FakeReservationRepository implements ReservationRepository {
                         && r.getTheme().getId().equals(themeId));
     }
 
+    @Override
+    public boolean existsByReservationTimeId(Long timeId) {
+        return store.values().stream()
+                .anyMatch(r -> r.getTime().getId().equals(timeId));
+    }
+
     Collection<Reservation> all() {
         return Collections.unmodifiableCollection(store.values());
     }

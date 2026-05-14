@@ -6,15 +6,20 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.CreateReservationTimeRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponses;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponses getReservationTimes(int page, int size) {
@@ -38,6 +43,13 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
+        validateNotReferencedByReservation(id);
         reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateNotReferencedByReservation(Long id) {
+        if (reservationRepository.existsByReservationTimeId(id)) {
+            throw new ReservationTimeInUseException();
+        }
     }
 }

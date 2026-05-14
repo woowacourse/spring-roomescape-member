@@ -2,10 +2,12 @@ package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.CreateReservationTimeRequest;
+import roomescape.exception.ReservationTimeInUseException;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(AdminReservationTimeController.class)
@@ -53,5 +56,15 @@ class AdminReservationTimeControllerTest {
                 .andExpect(status().isOk());
 
         verify(reservationTimeService).deleteReservationTime(3L);
+    }
+
+    @Test
+    void DELETE_admin_times_서비스가_ReservationTimeInUseException을_던지면_409과_메시지를_반환한다() throws Exception {
+        willThrow(new ReservationTimeInUseException())
+                .given(reservationTimeService).deleteReservationTime(3L);
+
+        mockMvc.perform(delete("/admin/times/3"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("예약이 존재하는 시간은 삭제할 수 없습니다."));
     }
 }
