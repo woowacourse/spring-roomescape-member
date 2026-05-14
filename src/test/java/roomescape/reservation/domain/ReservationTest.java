@@ -84,33 +84,42 @@ class ReservationTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "2025-05-11, true",
-            "2027-05-11, false",
+            "2025-05-11T09:59:59,false",
+            "2025-05-11T10:00:00,false",
+            "2025-05-11T10:00:01,true",
     })
     @DisplayName("예약의 날짜 및 시간이 이미 지났는지 여부를 반환한다.")
-    public void isPast(LocalDate date, boolean expected) {
+    public void isPassed(LocalDateTime now, boolean expected) {
         // given
+        // 2025-05-11T10:00:00
+        LocalDate date = LocalDate.of(2025, 5, 11);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Reservation reservation = new Reservation(1L, "브라운", date, time, theme);
-        LocalDateTime now = LocalDateTime.of(
-                LocalDate.of(2026, 5, 11), time.getStartAt());
 
         // when
-        boolean result = reservation.isPast(now);
+        boolean result = reservation.isPassed(now);
 
         // then
         assertThat(result).isEqualTo(expected);
     }
 
 
-    @Test
+    @ParameterizedTest
+    @CsvSource(value = {
+            "브라운,true",
+            "포비,false"
+    })
     @DisplayName("같은 사람의 예약인지 확인한다.")
-    public void isSameGuest() {
+    public void isSameGuest(String targetName, boolean expected) {
         // given
-        // TODO:
+        Reservation reservation = new Reservation(
+                1L, "브라운", LocalDate.of(2025, 5, 11), time, theme);
 
         // when
+        boolean result = reservation.isSameGuest(targetName);
 
         // then
+        assertThat(result).isEqualTo(expected);
     }
     private void assertDomainException(Runnable runnable, ErrorPolicy errorCode) {
         assertThatThrownBy(runnable::run)

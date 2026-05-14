@@ -88,7 +88,7 @@ public class Reservation {
         return Objects.hashCode(getId());
     }
 
-    public boolean isPast(LocalDateTime now) {
+    public boolean isPassed(LocalDateTime now) {
         return LocalDateTime.of(date, time.getStartAt())
                 .isBefore(now);
     }

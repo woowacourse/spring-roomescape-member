@@ -99,7 +99,7 @@ public class ReservationService {
     }
 
     private void validateAlreadyStarted(Reservation reservation) {
-        if (reservation.isPast(LocalDateTime.now(clock))) {
+        if (reservation.isPassed(LocalDateTime.now(clock))) {
             throw new DomainException(CANNOT_EDIT_ALREADY_STARTED_RESERVATION);
         }
     }
@@ -111,7 +111,7 @@ public class ReservationService {
     }
 
     private void validateNotPast(Reservation reservation) {
-        if (reservation.isPast(LocalDateTime.now(clock))) {
+        if (reservation.isPassed(LocalDateTime.now(clock))) {
             throw new DomainException(PAST_RESERVATION_NOT_ALLOWED);
         }
     }
