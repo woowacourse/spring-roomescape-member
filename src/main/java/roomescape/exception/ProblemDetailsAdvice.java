@@ -3,48 +3,31 @@ package roomescape.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.NoSuchElementException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class ProblemDetailsAdvice {
+public class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({
-            IllegalArgumentException.class
-    })
-    public ResponseEntity<String> handleIllegalArgumentsException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ProblemDetail> handleDomainException(RoomescapeException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(exception.getStatus(), exception.getMessage());
+        return ResponseEntity.status(exception.getStatus()).body(problemDetail);
     }
 
-    @ExceptionHandler({
-            NoSuchElementException.class
-    })
-    public ResponseEntity<String> handleNoSuchElementException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ProblemDetail> handleDuplicateKeyException(DuplicateKeyException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
-    @ExceptionHandler({
-            DuplicateKeyException.class
-    })
-    public ResponseEntity<String> handleDuplicateKeyException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler({
-            MethodArgumentNotValidException.class
-    })
-    public ResponseEntity<String> handleMethodArgumentNotValidException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({
-            DataIntegrityViolationException.class
-    })
-    public ResponseEntity<String> handleDataIntegrityViolationException(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handleDataIntegrityViolationException(
+            DataIntegrityViolationException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 }
