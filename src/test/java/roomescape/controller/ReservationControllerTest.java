@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ReservationControllerTest {
 
     @Test
-    void 예약_추가() {
+    void 예약을_추가한다() {
         // given
         int timeId = createTime("10:00");
         int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");
@@ -97,7 +97,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_조회() {
+    void 예약을_조회한다() {
         // given
         int timeId = createTime("10:00");
         int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");
@@ -112,7 +112,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약자_이름으로_예약_조회() {
+    void 예약자_이름으로_예약을_조회한다() {
         // given
         int timeId = createTime("10:00");
         int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");
@@ -195,7 +195,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_삭제() {
+    void 예약을_삭제한다() {
         // given
         int timeId = createTime("10:00");
         int themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");

@@ -21,7 +21,7 @@ import roomescape.dto.response.ReservationTimeResponse;
 public class ReservationTimeControllerTest {
 
     @Test
-    void 시간_조회() {
+    void 예약_시간을_조회한다() {
         // given
         int timeId = createTime("09:00");
         int themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs");

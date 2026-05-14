@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class AdminReservationTimeControllerTest {
 
     @Test
-    void 시간_추가() {
+    void 예약_시간을_추가한다() {
         // when & then
         createTime("10:00")
                 .statusCode(201)
@@ -37,7 +37,7 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 시간_삭제() {
+    void 예약_시간을_삭제한다() {
         // given
         int timeId = createTime("10:00")
                 .statusCode(201)
