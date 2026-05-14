@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
-import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.application.dto.ThemeCreateCommand;
@@ -29,7 +28,7 @@ public class ThemeCommandService {
 
     public void delete(long id) {
         if (reservationRepository.existsByTheme(id)) {
-            throw new RoomEscapeException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new ConflictException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
         }
 
         if (themeRepository.delete(id) == 0) {
