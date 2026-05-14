@@ -61,6 +61,11 @@ public class ReservationDao {
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
+    public int updateCancelledById(Long id, boolean status) {
+        String sql = "UPDATE reservation SET is_cancelled = ? WHERE id = ?;";
+        return jdbcTemplate.update(sql, status, id);
+    }
+
     public int deleteById(Long id) {
         String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
