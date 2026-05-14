@@ -33,6 +33,14 @@ VALUES ('테마0', '테마0', 'https://example.com/img.jpg'),
        ('테마8', '테마8', 'https://example.com/img.jpg'),
        ('테마9', '테마9', 'https://example.com/img.jpg');
 
+-- 집계 범위 경계 검증용: 결과에 영향을 주지 않아야 함
+-- 8일 이전 예약 (집계 기간 밖)
+INSERT INTO reservation (name, res_date, time_id, theme_id)
+VALUES ('name', DATEADD('DAY', -8, CURRENT_DATE), 1, 1);
+-- 오늘 예약 (당일 제외)
+INSERT INTO reservation (name, res_date, time_id, theme_id)
+VALUES ('name', CURRENT_DATE, 2, 1);
+
 -- 테마i에 i+1개씩 예약 (테마9가 가장 많음)
 INSERT INTO reservation (name, res_date, time_id, theme_id)
 VALUES ('name', DATEADD('DAY', -1, CURRENT_DATE), 1, 1);
