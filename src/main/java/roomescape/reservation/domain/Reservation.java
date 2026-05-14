@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.reservation.exception.ReservationPastDateException;
 import roomescape.reservation.exception.ReservationErrorCode;
+import roomescape.reservation.exception.ReservationNotOwnerException;
 import roomescape.reservation.exception.ReservationInvalidException;
 
 @Getter
@@ -82,8 +84,22 @@ public class Reservation {
         return new Reservation(id, name, newDate, newTimeId);
     }
 
-    public boolean isPastTime(LocalTime time, LocalDateTime now) {
-        return LocalDateTime.of(date, time).isBefore(now);
+    public void validateNotPast(LocalTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new ReservationPastDateException(
+                    ReservationErrorCode.RESERVATION_PAST_DATE.getMessage()
+            );
+        }
+    }
+
+    public void validateOwner(String requesterName) {
+        if (!this.name.equals(requesterName)) {
+            throw new ReservationNotOwnerException(
+                    ReservationErrorCode.RESERVATION_NOT_OWNER.getMessage()
+            );
+        }
     }
 
 }

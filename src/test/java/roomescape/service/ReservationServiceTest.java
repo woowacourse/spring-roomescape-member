@@ -9,13 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationBadRequestException;
+import roomescape.reservation.exception.ReservationPastDateException;
 import roomescape.reservation.exception.ReservationDuplicateException;
-import roomescape.reservation.exception.ReservationForbiddenException;
+import roomescape.reservation.exception.ReservationNotOwnerException;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
@@ -66,7 +64,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.save("쿠다", LocalDate.now().minusDays(1), time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class)
+                .isInstanceOf(ReservationPastDateException.class)
                 .hasMessageContaining("예약 날짜는 과거일 수 없습니다.");
     }
 
@@ -139,7 +137,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
-                .isInstanceOf(ReservationForbiddenException.class)
+                .isInstanceOf(ReservationNotOwnerException.class)
                 .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
@@ -182,7 +180,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
-                .isInstanceOf(ReservationForbiddenException.class)
+                .isInstanceOf(ReservationNotOwnerException.class)
                 .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
@@ -201,7 +199,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.update(reservation.getId(), "쿠다", LocalDate.now().minusDays(10),
                 time.getId()))
-                .isInstanceOf(ReservationBadRequestException.class)
+                .isInstanceOf(ReservationPastDateException.class)
                 .hasMessageContaining("예약 날짜는 과거일 수 없습니다.");
     }
 

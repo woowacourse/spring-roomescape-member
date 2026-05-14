@@ -1,17 +1,12 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
-import roomescape.reservation.exception.ReservationErrorCode;
-import roomescape.reservation.exception.ReservationForbiddenException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationResult;
@@ -42,11 +37,9 @@ public class ReservationService {
         validateDuplicate(date, timeId);
 
         Reservation reservation = Reservation.createNew(name, date, reservationTime.getId());
+        reservation.validateNotPast(reservationTime.getStartAt());
 
-        validateDateTime(reservation, reservationTime.getStartAt());
-
-        Reservation savedReservation =
-                reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResult.from(savedReservation, reservationTime);
     }
@@ -59,22 +52,20 @@ public class ReservationService {
     @Transactional
     public void deleteById(final long id, final String name) {
         Reservation reservation = findReservation(id);
-
-        validateOwner(name, reservation);
-
+        reservation.validateOwner(name);
         reservationRepository.deleteById(id);
     }
 
     @Transactional
     public void update(final long id, final String name, final LocalDate date, final Long timeId) {
         Reservation reservation = findReservation(id);
-        validateOwner(name, reservation);
+        reservation.validateOwner(name);
 
         ReservationTime reservationTime = findReservationTime(timeId);
         validateDuplicate(date, timeId);
 
         reservation = reservation.modify(date, reservationTime.getId());
-        validateDateTime(reservation, reservationTime.getStartAt());
+        reservation.validateNotPast(reservationTime.getStartAt());
 
         reservationRepository.update(reservation);
     }
@@ -92,18 +83,6 @@ public class ReservationService {
     private void validateDuplicate(final LocalDate date, final Long timeId) {
         if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
             throw new ReservationDuplicateException();
-        }
-    }
-
-    private void validateDateTime(final Reservation reservation, final LocalTime time) {
-        if (reservation.isPastTime(time, LocalDateTime.now())) {
-            throw new ReservationBadRequestException(ReservationErrorCode.RESERVATION_PAST_DATE.getMessage());
-        }
-    }
-
-    private void validateOwner(final String name, final Reservation reservation) {
-        if (!reservation.getName().equals(name)) {
-            throw new ReservationForbiddenException(ReservationErrorCode.RESERVATION_NOT_OWNER.getMessage());
         }
     }
 
