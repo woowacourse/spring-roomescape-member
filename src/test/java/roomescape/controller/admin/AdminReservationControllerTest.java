@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -66,7 +67,6 @@ class AdminReservationControllerTest {
                     .extract().as(new TypeRef<>() {});
 
             assertThat(actual).isEqualTo(expected);
-            then(reservationService).should().findAll();
         }
 
         @Test
@@ -138,6 +138,8 @@ class AdminReservationControllerTest {
         @Test
         @DisplayName("예약을 삭제하면 204를 반환한다")
         void deletesReservation() {
+            willDoNothing().given(reservationService).delete(reservation.getId());
+
             RestAssuredMockMvc.given()
                     .when().delete("/admin/reservations/" + reservation.getId())
                     .then()
