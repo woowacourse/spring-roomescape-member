@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.reservationTime.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -28,9 +28,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.application.ReservationTimeService;
-import roomescape.domain.ReservationTime;
 import roomescape.global.auth.AdminInterceptor;
+import roomescape.reservationTime.application.ReservationTimeService;
+import roomescape.reservationTime.domain.ReservationTime;
 
 @WebMvcTest(ReservationTimeController.class)
 @Import({AdminInterceptor.class, ReservationTimeControllerTest.TestWebConfig.class})

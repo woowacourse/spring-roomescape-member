@@ -1,8 +1,7 @@
-package roomescape.infrastructure;
+package roomescape.theme.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -12,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeSortType;
+import roomescape.theme.domain.Theme;
 
 @JdbcTest
 @Import(ThemeJdbcTemplateRepository.class)

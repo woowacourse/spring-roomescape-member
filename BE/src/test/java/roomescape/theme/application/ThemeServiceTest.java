@@ -1,4 +1,4 @@
-package roomescape.application;
+package roomescape.theme.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,16 +10,16 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.PopularThemeRepository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.fake.FakePopularThemeRepository;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.customException.BusinessException;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.fake.FakeReservationRepository;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.PopularThemeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.fake.FakePopularThemeRepository;
+import roomescape.theme.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 

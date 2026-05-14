@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.theme.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -26,9 +26,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.application.ThemeService;
-import roomescape.domain.Theme;
 import roomescape.global.auth.AdminInterceptor;
+import roomescape.theme.application.ThemeService;
+import roomescape.theme.domain.Theme;
 
 @WebMvcTest(ThemeController.class)
 @Import({AdminInterceptor.class, ThemeControllerTest.TestWebConfig.class})

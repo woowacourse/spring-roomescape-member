@@ -1,14 +1,14 @@
-package roomescape.fake;
+package roomescape.theme.fake;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import roomescape.domain.PopularThemeRepository;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeSortType;
+import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.PopularThemeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeSortType;
 
 public class FakePopularThemeRepository implements PopularThemeRepository {
 

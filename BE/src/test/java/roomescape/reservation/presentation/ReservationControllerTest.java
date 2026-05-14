@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.reservation.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -29,14 +29,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.application.ReservationService;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.global.auth.AdminInterceptor;
 import roomescape.global.exception.ReservationErrorCode;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.ReservationService;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @WebMvcTest(ReservationController.class)
 @Import({AdminInterceptor.class, ReservationControllerTest.TestWebConfig.class})
@@ -134,7 +134,8 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.message")
+                        .value("date 값의 형식이 올바르지 않습니다. yyyy-MM-dd 형식으로 입력해 주세요."));
     }
 
     @Test

@@ -1,13 +1,13 @@
-package roomescape.fake;
+package roomescape.theme.fake;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.global.exception.ThemeErrorCode;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 

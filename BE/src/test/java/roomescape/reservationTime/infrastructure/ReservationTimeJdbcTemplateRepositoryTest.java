@@ -1,5 +1,4 @@
-package roomescape.infrastructure;
-
+package roomescape.reservationTime.infrastructure;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.domain.ReservationTime;
+import roomescape.reservationTime.domain.ReservationTime;
 
 @JdbcTest
 @Import(ReservationTimeJdbcTemplateRepository.class)
