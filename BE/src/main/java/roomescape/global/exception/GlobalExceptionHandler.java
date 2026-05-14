@@ -1,4 +1,5 @@
 package roomescape.global.exception;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -44,10 +45,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponseBody> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<ErrorResponseBody> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e) {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(new ErrorResponseBody(ErrorType.BUSINESS, ErrorCode.METHOD_NOT_ALLOWED.getMessage()));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponseBody> handleException(RuntimeException e) {
+        ErrorResponseBody errorResponseBody = new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE);
+        return ResponseEntity
+                .status(500)
+                .body(errorResponseBody);
     }
 
     @ExceptionHandler(Exception.class)
