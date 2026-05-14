@@ -17,18 +17,28 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final ReservationStatus status;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(
+            Long id,
+            String name,
+            LocalDate date,
+            ReservationTime time,
+            Theme theme,
+            ReservationStatus status
+    ) {
         validateName(name);
         validateNotNull(date, "예약 날짜는 필수입니다.");
         validateNotNull(time, "예약 시간은 필수입니다.");
         validateNotNull(theme, "예약 테마는 필수입니다.");
+        validateNotNull(status, "예약 상태는 필수입니다.");
 
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.status = status;
     }
 
     public static Reservation create(
@@ -38,9 +48,35 @@ public class Reservation {
             Theme theme,
             LocalDateTime now
     ) {
-        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Reservation reservation = new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
         reservation.validateNotPast(now);
         return reservation;
+    }
+
+    public Reservation update(
+            String name,
+            LocalDate date,
+            ReservationTime time,
+            Theme theme,
+            LocalDateTime now
+    ) {
+        if (this.status != ReservationStatus.RESERVED) {
+            throw new BusinessRuleViolationException("이미 취소되었거나 완료된 예약은 수정할 수 없습니다.");
+        }
+
+        Reservation updated = new Reservation(this.id, name, date, time, theme, this.status);
+        updated.validateNotPast(now);
+        return updated;
+    }
+
+    public void validateCanCancel() {
+        if (this.status == ReservationStatus.CANCELED) {
+            throw new BusinessRuleViolationException("이미 취소된 예약입니다.");
+        }
+
+        if (this.status == ReservationStatus.COMPLETED) {
+            throw new BusinessRuleViolationException("이미 이용 완료된 예약은 취소할 수 없습니다.");
+        }
     }
 
     private void validateNotPast(LocalDateTime now) {
@@ -92,5 +128,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 }
