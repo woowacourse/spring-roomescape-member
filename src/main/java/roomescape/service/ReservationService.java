@@ -11,6 +11,7 @@ import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.PastReservationLockedException;
+import roomescape.exception.UnchangedReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -71,14 +72,11 @@ public class ReservationService {
     @Transactional
     public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
         Reservation reservation = findReservation(id);
-        validateOwner(reservation, name);
-        validateReservationNotLocked(reservation);
+        validateUpdatableReservation(reservation, name);
+
         Reservation updatedReservation = createUpdatedReservation(reservation, date, timeId);
-        validateNotPast(updatedReservation.getDate(), updatedReservation.getTime());
-        validateAlreadyReserved(
-                updatedReservation.getDate(),
-                updatedReservation.getTime().getId(),
-                updatedReservation.getTheme().getId());
+        validateUpdatePolicy(reservation, updatedReservation);
+
         reservationRepository.update(updatedReservation);
         return findUpdatedReservation(id);
     }
@@ -145,6 +143,27 @@ public class ReservationService {
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsWith(date, timeId, themeId)) {
             throw new DuplicateReservationException("이미 예약된 시간입니다.");
+        }
+    }
+
+    private void validateUpdatableReservation(Reservation reservation, String name) {
+        validateOwner(reservation, name);
+        validateReservationNotLocked(reservation);
+    }
+
+    private void validateUpdatePolicy(Reservation reservation, Reservation updatedReservation) {
+        validateScheduleChanged(reservation, updatedReservation);
+        validateNotPast(updatedReservation.getDate(), updatedReservation.getTime());
+        validateAlreadyReserved(
+                updatedReservation.getDate(),
+                updatedReservation.getTime().getId(),
+                updatedReservation.getTheme().getId());
+    }
+
+    private void validateScheduleChanged(Reservation reservation, Reservation updatedReservation) {
+        if (reservation.getDate().equals(updatedReservation.getDate())
+                && reservation.getTime().equals(updatedReservation.getTime())) {
+            throw new UnchangedReservationException("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다.");
         }
     }
 

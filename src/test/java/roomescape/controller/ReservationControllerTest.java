@@ -12,6 +12,7 @@ import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.PastReservationLockedException;
+import roomescape.exception.UnchangedReservationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -341,6 +342,26 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("DUPLICATE_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("이미 예약된 시간입니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_기존_날짜와_시간이면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 2)),
+                eq(2L)))
+                .willThrow(new UnchangedReservationException("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("UNCHANGED_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다."));
     }
 
     @Test

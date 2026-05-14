@@ -73,7 +73,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             DuplicateReservationException.class,
             PastReservationLockedException.class,
-            ResourceInUseException.class})
+            ResourceInUseException.class,
+            UnchangedReservationException.class})
     public ResponseEntity<ErrorResponse> handleConflict(RoomescapeException e) {
         return ResponseEntity.status(409).body(ErrorResponse.from(e));
     }

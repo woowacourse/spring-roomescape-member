@@ -14,6 +14,7 @@ import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.PastReservationLockedException;
+import roomescape.exception.UnchangedReservationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -503,6 +504,31 @@ class ReservationServiceTest {
 
         verify(reservationRepository).findById(id);
         verifyNoInteractions(reservationTimeRepository);
+        verify(reservationRepository, never()).update(any(Reservation.class));
+    }
+
+    @Test
+    void 기존_날짜와_시간으로_예약_변경시_예외_발생() {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        Long timeId = 1L;
+        ReservationTime time = new ReservationTime(timeId, LocalTime.parse("08:00"));
+        Theme theme = new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소");
+        Reservation reservation = new Reservation(id, name, date, time, theme);
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findBy(timeId))
+                .thenReturn(Optional.of(time));
+
+        // when & then
+        assertThatThrownBy(() -> service.updateUserReservation(id, name, date, timeId))
+                .isInstanceOf(UnchangedReservationException.class)
+                .hasMessage("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다.");
+
+        verify(reservationRepository).findById(id);
+        verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository, never()).existsWith(any(LocalDate.class), anyLong(), anyLong());
         verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
