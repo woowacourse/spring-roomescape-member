@@ -6,9 +6,9 @@ import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 
-public final class ReservationValidator {
+public final class ReservationRequestValidator {
 
-    private ReservationValidator() {}
+    private ReservationRequestValidator() {}
 
     public static void validate(String name) {
         List<ErrorDetail> errors = new ArrayList<>();

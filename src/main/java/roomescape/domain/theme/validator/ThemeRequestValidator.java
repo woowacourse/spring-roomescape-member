@@ -6,9 +6,9 @@ import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 
-public final class ThemeValidator {
+public final class ThemeRequestValidator {
 
-    private ThemeValidator() {}
+    private ThemeRequestValidator() {}
 
     public static void validate(String name, String description, String imageUrl) {
         List<ErrorDetail> errors = new ArrayList<>();
