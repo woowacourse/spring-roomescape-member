@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponseDto> create(
-            @RequestBody ReservationSaveRequestDto reservationRequest) {
+            @RequestBody @Valid ReservationSaveRequestDto reservationRequest) {
         ReservationResponseDto body = ReservationResponseDto.from(
                 reservationService.create(reservationRequest.toServiceDto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
