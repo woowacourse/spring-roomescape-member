@@ -50,7 +50,7 @@ public class ReservationService {
                 reservationTime.getId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
-        return getReservationResponse(reservation);
+        return saveAndRespond(reservation);
     }
 
     public List<ReservationResponse> read() {
@@ -73,7 +73,7 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 
-        return getReservationResponse(reservationUpdateRequest, reservation, theme, reservationTime);
+        return changeAndRespond(reservationUpdateRequest, reservation, theme, reservationTime);
     }
 
     public void delete(Long id) {
@@ -88,7 +88,7 @@ public class ReservationService {
                 .toList();
     }
 
-    private ReservationResponse getReservationResponse(Reservation reservation) {
+    private ReservationResponse saveAndRespond(Reservation reservation) {
         try {
             Reservation saved = reservationRepository.save(reservation);
             return ReservationResponse.from(saved);
@@ -97,9 +97,9 @@ public class ReservationService {
         }
     }
 
-    private ReservationResponse getReservationResponse(ReservationUpdateRequest reservationUpdateRequest,
-                                                       Reservation reservation, Theme theme,
-                                                       ReservationTime reservationTime) {
+    private ReservationResponse changeAndRespond(ReservationUpdateRequest reservationUpdateRequest,
+                                                 Reservation reservation, Theme theme,
+                                                 ReservationTime reservationTime) {
         try {
             Reservation updated = reservation.change(theme, reservationUpdateRequest.date(), reservationTime,
                     LocalDateTime.now(clock));
@@ -115,13 +115,13 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
-    private Theme getTheme(Long reservationRequest) {
-        return themeRepository.findById(reservationRequest).stream().findFirst()
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId).stream().findFirst()
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
-    private ReservationTime getReservationTime(Long reservationRequest) {
-        return reservationTimeRepository.findById(reservationRequest)
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 }
