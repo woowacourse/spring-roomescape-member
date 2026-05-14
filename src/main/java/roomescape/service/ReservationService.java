@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.ForbiddenReservationException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -66,6 +67,17 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
+    @Transactional
+    public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        validateOwner(reservation, name);
+        Reservation updatedReservation = createUpdatedReservation(reservation, date, timeId);
+        reservationRepository.update(updatedReservation);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정된 예약을 찾을 수 없습니다."));
+    }
+
     public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
@@ -114,6 +126,37 @@ public class ReservationService {
     private void validateOwner(Reservation reservation, String name) {
         if (!reservation.getName().equals(name)) {
             throw new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다.");
+        }
+    }
+
+    private Reservation createUpdatedReservation(Reservation reservation, LocalDate date, Long timeId) {
+        validateUpdateValueExists(date, timeId);
+
+        return new Reservation(
+                reservation.getId(),
+                reservation.getName(),
+                resolveUpdateDate(reservation, date),
+                resolveUpdateTime(reservation, timeId),
+                reservation.getTheme());
+    }
+
+    private LocalDate resolveUpdateDate(Reservation reservation, LocalDate date) {
+        if (date != null) {
+            return date;
+        }
+        return reservation.getDate();
+    }
+
+    private ReservationTime resolveUpdateTime(Reservation reservation, Long timeId) {
+        if (timeId != null) {
+            return findReservationTime(timeId);
+        }
+        return reservation.getTime();
+    }
+
+    private void validateUpdateValueExists(LocalDate date, Long timeId) {
+        if (date == null && timeId == null) {
+            throw new InvalidInputException("변경할 날짜 또는 시간이 필요합니다.");
         }
     }
 

@@ -17,7 +17,9 @@ import roomescape.exception.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PastReservationException.class)
+    @ExceptionHandler({
+            InvalidInputException.class,
+            PastReservationException.class})
     public ResponseEntity<ErrorResponse> handleBadRequest(RoomescapeException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }

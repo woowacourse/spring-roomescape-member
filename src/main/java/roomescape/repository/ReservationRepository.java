@@ -113,6 +113,17 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    public int update(Reservation reservation) {
+        String sql = "UPDATE reservation SET name = ?, date = ?, time_id = ?, theme_id = ? WHERE id = ?;";
+        return jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId());
+    }
+
     public List<Reservation> findReservationsByThemeAndDate(Long themeId, LocalDate date) {
         String sql = """
                 SELECT

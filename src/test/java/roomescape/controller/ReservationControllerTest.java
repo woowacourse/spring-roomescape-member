@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.ForbiddenReservationException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.domain.Reservation;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -172,6 +174,118 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_본인_예약을_변경한다() throws Exception {
+        // given
+        Long id = 1L;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 2)),
+                eq(2L)))
+                .willReturn(updatedReservation());
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("브라운"))
+                .andExpect(jsonPath("$.date").value("2099-01-02"))
+                .andExpect(jsonPath("$.time.id").value(2))
+                .andExpect(jsonPath("$.time.startAt").value("12:00:00"))
+                .andExpect(jsonPath("$.theme.id").value(1))
+                .andExpect(jsonPath("$.theme.name").value("테마"));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_유효하지_않은_입력값이면_에러_응답() throws Exception {
+        // given
+        String request = """
+                {
+                  "name": "",
+                  "date": "2099-01-02",
+                  "timeId": 2
+                }
+                """;
+
+        // when & then
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_id가_양수가_아니면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(put("/reservations/0")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_id_형식이_올바르지_않으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(put("/reservations/abc")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("id 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_본인의_예약이_아니면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        willThrow(new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다."))
+                .given(reservationService).updateUserReservation(
+                        id,
+                        "브라운",
+                        LocalDate.of(2099, 1, 2),
+                        2L);
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("FORBIDDEN_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("본인의 예약만 변경하거나 취소할 수 있습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_변경할_값이_없으면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        String request = """
+                {
+                  "name": "브라운"
+                }
+                """;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(null),
+                eq(null)))
+                .willThrow(new InvalidInputException("변경할 날짜 또는 시간이 필요합니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("변경할 날짜 또는 시간이 필요합니다."));
+    }
+
+    @Test
     void 유효하지_않은_입력값이면_에러_응답() throws Exception {
         // given
         String request = """
@@ -300,9 +414,25 @@ class ReservationControllerTest {
                 """;
     }
 
+    private String updateRequest() {
+        return """
+                {
+                  "name": "브라운",
+                  "date": "2099-01-02",
+                  "timeId": 2
+                }
+                """;
+    }
+
     private Reservation reservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "테마", "설명", "썸네일");
         return new Reservation(1L, "브라운", LocalDate.of(2099, 1, 1), time, theme);
+    }
+
+    private Reservation updatedReservation() {
+        ReservationTime time = new ReservationTime(2L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "썸네일");
+        return new Reservation(1L, "브라운", LocalDate.of(2099, 1, 2), time, theme);
     }
 }

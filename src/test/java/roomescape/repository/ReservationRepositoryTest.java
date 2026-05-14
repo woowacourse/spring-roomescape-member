@@ -100,6 +100,29 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void 예약의_날짜와_시간을_변경한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("15:00");
+        ReservationTime updateTime = findTimeByStartAt("12:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        Long id = reservationRepository.insert(new Reservation(null, "브라운", date, time, theme));
+        LocalDate updateDate = date.plusDays(1);
+
+        Reservation updatedReservation = new Reservation(id, "브라운", updateDate, updateTime, theme);
+
+        // when
+        int updatedCount = reservationRepository.update(updatedReservation);
+
+        // then
+        Reservation result = reservationRepository.findById(id).get();
+        assertAll(
+                () -> assertThat(updatedCount).isEqualTo(1),
+                () -> assertThat(result.getDate()).isEqualTo(updateDate),
+                () -> assertThat(result.getTime().getId()).isEqualTo(updateTime.getId()),
+                () -> assertThat(result.getTheme().getId()).isEqualTo(theme.getId()));
+    }
+
+    @Test
     void 테마_id에_해당하는_예약이_존재하는지_확인한다() {
         // given
         ReservationTime time = findTimeByStartAt("15:00");

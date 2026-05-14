@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
@@ -58,5 +60,17 @@ public class ReservationController {
             @RequestParam("name") @NotBlank(message = "name은 비어 있을 수 없습니다.") String name) {
         service.deleteUserReservation(id, name);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id,
+            @Valid @RequestBody ReservationUpdateRequest request) {
+        Reservation reservation = service.updateUserReservation(
+                id,
+                request.name(),
+                request.date(),
+                request.timeId());
+        return ResponseEntity.ok(ReservationResponse.from(reservation));
     }
 }
