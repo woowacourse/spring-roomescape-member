@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.assertj.core.api.Assertions;
@@ -77,5 +78,70 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> new Reservation(null, "userA", LocalDate.now(), reservationTime, theme))
                 .isInstanceOf(InvalidIdException.class);
+    }
+
+    @Test
+    void 날짜와_시간을_변경한다() {
+        //given
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        ReservationTime now = new ReservationTime(1L, LocalTime.now());
+        ReservationTime afterOneHour = new ReservationTime(2L, LocalTime.now().plusHours(1L));
+
+        Reservation reservation = new Reservation(1L, "userA", today,
+                now,
+                new Theme(1L, "themeA", "hello", "/image/..."));
+
+        LocalDateTime expectedDateTime = LocalDateTime.of(tomorrow, afterOneHour.getStartAt());
+
+        //when
+        Reservation rescheduled = reservation.reschedule(tomorrow, afterOneHour);
+
+        //then
+        Assertions.assertThat(rescheduled.getReservationDateTime())
+                .isEqualTo(expectedDateTime);
+    }
+
+    @Test
+    void 시간을_변경한다() {
+        //given
+        LocalDate today = LocalDate.now();
+        ReservationTime now = new ReservationTime(1L, LocalTime.now());
+        ReservationTime afterOneHour = new ReservationTime(2L, LocalTime.now().plusHours(1L));
+
+        Reservation reservation = new Reservation(1L, "userA", today,
+                now,
+                new Theme(1L, "themeA", "hello", "/image/..."));
+
+        LocalDateTime expectedDateTime = LocalDateTime.of(today, afterOneHour.getStartAt());
+
+        //when
+        Reservation rescheduled = reservation.reschedule(today, afterOneHour);
+
+        //then
+        Assertions.assertThat(rescheduled.getReservationDateTime())
+                .isEqualTo(expectedDateTime);
+    }
+
+    @Test
+    void 날짜를_변경한다() {
+        //given
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        ReservationTime now = new ReservationTime(1L, LocalTime.now());
+
+        Reservation reservation = new Reservation(1L, "userA", today,
+                now,
+                new Theme(1L, "themeA", "hello", "/image/..."));
+
+        LocalDateTime expectedDateTime = LocalDateTime.of(tomorrow, now.getStartAt());
+
+        //when
+        Reservation rescheduled = reservation.reschedule(tomorrow, now);
+
+        //then
+        Assertions.assertThat(rescheduled.getReservationDateTime())
+                .isEqualTo(expectedDateTime);
     }
 }
