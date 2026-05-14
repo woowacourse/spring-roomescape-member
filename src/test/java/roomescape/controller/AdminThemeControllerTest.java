@@ -27,6 +27,24 @@ public class AdminThemeControllerTest {
     }
 
     @Test
+    void 테마_이름이_공백이면_400을_반환한다() {
+        createTheme("", "설명", "https://asdfsdf.sdfs")
+                .statusCode(400);
+    }
+
+    @Test
+    void 테마_설명이_공백이면_400을_반환한다() {
+        createTheme("방탈출1", "", "https://asdfsdf.sdfs")
+                .statusCode(400);
+    }
+
+    @Test
+    void 썸네일이_URL_형식이_아니면_400을_반환한다() {
+        createTheme("방탈출1", "설명", "올바르지않은URL")
+                .statusCode(400);
+    }
+    
+    @Test
     void 테마를_삭제한다() {
         // given
         int themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs")

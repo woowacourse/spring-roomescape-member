@@ -27,6 +27,16 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
+    void startAt이_null이면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of())
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 시간_삭제() {
         // given
         int timeId = createTime("10:00")
