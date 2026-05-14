@@ -76,6 +76,70 @@
     </div>
 </main>
 
+<!-- 예약 변경 모달 -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">예약 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="update-reservation-id">
+                <input type="hidden" id="update-theme-id">
+                <input type="hidden" id="update-name">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">새 날짜</label>
+                    <input type="date" id="update-date" class="form-control" onchange="loadUpdateTimes()">
+                </div>
+                <div class="mb-3 d-none" id="update-time-section">
+                    <label class="form-label fw-semibold">새 시간</label>
+                    <div id="update-time-buttons" class="d-flex flex-wrap gap-2 mt-1"></div>
+                    <input type="hidden" id="update-time-id">
+                </div>
+                <div id="update-error" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="submitUpdate()">변경 완료</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 내 예약 섹션 -->
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header fw-semibold">내 예약 조회 / 취소 / 변경</div>
+        <div class="card-body">
+            <div class="row g-3 align-items-end mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">이름으로 조회</label>
+                    <input type="text" id="search-name" class="form-control" placeholder="이름을 입력하세요">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-primary w-100" onclick="loadMyReservations()">조회</button>
+                </div>
+            </div>
+            <div id="my-error" class="alert alert-danger d-none"></div>
+            <div id="my-reservations-container" class="d-none">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>날짜</th>
+                            <th>시간</th>
+                            <th>테마</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="my-reservation-list"></tbody>
+                </table>
+            </div>
+            <div id="my-empty" class="text-center text-muted py-3 d-none">예약이 없습니다.</div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     async function loadThemes() {
@@ -204,6 +268,141 @@
     }
 
     loadThemes();
+
+    async function loadMyReservations() {
+        const name = document.getElementById('search-name').value.trim();
+        if (!name) { showMyError('이름을 입력해주세요.'); return; }
+        document.getElementById('my-error').classList.add('d-none');
+
+        const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+        const reservations = await res.json();
+
+        const tbody = document.getElementById('my-reservation-list');
+        tbody.innerHTML = '';
+
+        if (reservations.length === 0) {
+            document.getElementById('my-reservations-container').classList.add('d-none');
+            document.getElementById('my-empty').classList.remove('d-none');
+            return;
+        }
+
+        document.getElementById('my-empty').classList.add('d-none');
+        document.getElementById('my-reservations-container').classList.remove('d-none');
+
+        reservations.forEach(r => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="align-middle">${r.date}</td>
+                    <td class="align-middle">${r.time.startAt}</td>
+                    <td class="align-middle">${r.theme.name}</td>
+                    <td class="align-middle text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1"
+                            onclick="openUpdateModal(${r.id}, ${r.theme.id}, '${r.name}')">변경</button>
+                        <button class="btn btn-sm btn-outline-danger"
+                            onclick="cancelReservation(${r.id}, '${r.name}')">취소</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    async function cancelReservation(id, name) {
+        if (!confirm('예약을 취소하시겠습니까?')) return;
+        document.getElementById('my-error').classList.add('d-none');
+
+        const res = await fetch(`/reservations/${id}?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+        if (res.ok) {
+            loadMyReservations();
+        } else {
+            const err = await res.json();
+            showMyError(Array.isArray(err.message) ? err.message.join(', ') : err.message);
+        }
+    }
+
+    function openUpdateModal(reservationId, themeId, name) {
+        document.getElementById('update-reservation-id').value = reservationId;
+        document.getElementById('update-theme-id').value = themeId;
+        document.getElementById('update-name').value = name;
+        document.getElementById('update-date').value = '';
+        document.getElementById('update-time-buttons').innerHTML = '';
+        document.getElementById('update-time-id').value = '';
+        document.getElementById('update-time-section').classList.add('d-none');
+        document.getElementById('update-error').classList.add('d-none');
+        new bootstrap.Modal(document.getElementById('updateModal')).show();
+    }
+
+    async function loadUpdateTimes() {
+        const date = document.getElementById('update-date').value;
+        const themeId = document.getElementById('update-theme-id').value;
+        if (!date || !themeId) return;
+
+        const res = await fetch(`/times/available?date=${date}&themeId=${themeId}`);
+        const data = await res.json();
+        const container = document.getElementById('update-time-buttons');
+        container.innerHTML = '';
+        document.getElementById('update-time-id').value = '';
+
+        data.times.forEach(t => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = t.StartAt;
+            if (t.available) {
+                btn.className = 'btn btn-outline-primary';
+                btn.onclick = () => {
+                    container.querySelectorAll('button').forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary', 'active');
+                    document.getElementById('update-time-id').value = t.id;
+                };
+            } else {
+                btn.className = 'btn btn-outline-secondary';
+                btn.disabled = true;
+            }
+            container.appendChild(btn);
+        });
+
+        document.getElementById('update-time-section').classList.remove('d-none');
+    }
+
+    async function submitUpdate() {
+        const reservationId = document.getElementById('update-reservation-id').value;
+        const name = document.getElementById('update-name').value;
+        const date = document.getElementById('update-date').value;
+        const timeId = Number(document.getElementById('update-time-id').value);
+
+        if (!date) { showUpdateError('날짜를 선택해주세요.'); return; }
+        if (!timeId) { showUpdateError('시간을 선택해주세요.'); return; }
+
+        document.getElementById('update-error').classList.add('d-none');
+
+        const res = await fetch(`/reservations/${reservationId}?name=${encodeURIComponent(name)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, timeId })
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('updateModal')).hide();
+            loadMyReservations();
+        } else {
+            const err = await res.json();
+            showUpdateError(Array.isArray(err.message) ? err.message.join(', ') : err.message);
+        }
+    }
+
+    function showMyError(msg) {
+        const el = document.getElementById('my-error');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    function showUpdateError(msg) {
+        const el = document.getElementById('update-error');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
 </script>
 </body>
 </html>
