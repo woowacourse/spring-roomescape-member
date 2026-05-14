@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
@@ -55,14 +56,19 @@ public class ReservationService {
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(ThemeNotFoundException::new);
 
-        return reservationRepository.save(
-                Reservation.of(
-                        command.name(),
-                        command.date(),
-                        time,
-                        theme
-                )
-        );
+
+        try {
+            return reservationRepository.save(
+                    Reservation.of(
+                            command.name(),
+                            command.date(),
+                            time,
+                            theme
+                    )
+            );
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateReservationException();
+        }
     }
 
     private ReservationTime getReservationTime(Long timeId) {
@@ -126,7 +132,11 @@ public class ReservationService {
             throw new DuplicateReservationException();
         }
 
-        reservationRepository.update(updated);
+        try {
+            reservationRepository.update(updated);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateReservationException();
+        }
     }
 
     private Reservation getReservation(Long id) {

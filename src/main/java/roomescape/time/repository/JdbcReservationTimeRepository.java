@@ -6,14 +6,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.TimeInUseException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -57,11 +55,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                WHERE id = ?
                """;
 
-        try {
-            jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new TimeInUseException();
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package roomescape.time.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.exception.InvalidReservationDateValueException;
@@ -11,6 +12,7 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.AvailableTimesResult;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.exception.DuplicateTimeException;
+import roomescape.time.exception.TimeInUseException;
 import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -34,7 +36,12 @@ public class ReservationTimeService {
         }
 
         ReservationTime reservationTime = ReservationTime.of(command.startAt());
-        return reservationTimeRepository.save(reservationTime);
+
+        try {
+            return reservationTimeRepository.save(reservationTime);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateTimeException();
+        }
     }
 
     public List<ReservationTime> findAllReservationTimes() {
@@ -59,6 +66,11 @@ public class ReservationTimeService {
             throw new TimeNotFoundException();
         }
 
-        reservationTimeRepository.deleteById(id);
+        try {
+            reservationTimeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new TimeInUseException();
+        }
+
     }
 }

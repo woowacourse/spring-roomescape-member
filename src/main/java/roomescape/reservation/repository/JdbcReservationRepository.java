@@ -5,14 +5,12 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -95,21 +93,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE id = ?
                 """;
 
-        try {
-            int affectedRow = jdbcTemplate.update(
-                    sql,
-                    reservation.getName(),
-                    reservation.getDate(),
-                    reservation.getTime().getId(),
-                    reservation.getTheme().getId(),
-                    reservation.getId()
-            );
+        int affectedRow = jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
 
-            if (affectedRow == 0) {
-                throw new ReservationNotFoundException();
-            }
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateReservationException();
+        if (affectedRow == 0) {
+            throw new ReservationNotFoundException();
         }
     }
 

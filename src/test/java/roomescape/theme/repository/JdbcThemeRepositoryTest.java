@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeInUseException;
 
 @JdbcTest
 class JdbcThemeRepositoryTest {
@@ -61,7 +61,7 @@ class JdbcThemeRepositoryTest {
         //when & then
         assertThatThrownBy(
                 () -> themeRepository.deleteById(themeId)
-        ).isInstanceOf(ThemeInUseException.class);
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @DisplayName("테마 이름을 기준으로 조회한다.")

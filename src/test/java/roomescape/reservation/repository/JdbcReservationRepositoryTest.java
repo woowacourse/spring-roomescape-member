@@ -14,9 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -187,7 +187,7 @@ class JdbcReservationRepositoryTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationRepository.update(updated)
-        ).isInstanceOf(DuplicateReservationException.class);
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

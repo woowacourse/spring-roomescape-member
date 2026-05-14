@@ -1,10 +1,12 @@
 package roomescape.theme.service;
 
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.DuplicateThemeException;
+import roomescape.theme.exception.ThemeInUseException;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeCommand;
@@ -24,13 +26,19 @@ public class ThemeService {
             throw new DuplicateThemeException();
         }
 
-        return themeRepository.save(
-                Theme.of(
-                        command.name(),
-                        command.description(),
-                        command.thumbnailUrl()
-                )
-        );
+
+        try {
+            return themeRepository.save(
+                    Theme.of(
+                            command.name(),
+                            command.description(),
+                            command.thumbnailUrl()
+                    )
+            );
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateThemeException();
+        }
+
     }
 
     public List<Theme> findAllThemes() {
@@ -43,6 +51,10 @@ public class ThemeService {
             throw new ThemeNotFoundException();
         }
 
-        themeRepository.deleteById(id);
+        try {
+            themeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ThemeInUseException();
+        }
     }
 }

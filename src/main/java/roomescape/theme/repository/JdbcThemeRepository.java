@@ -3,14 +3,12 @@ package roomescape.theme.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeInUseException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -63,11 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                WHERE id = ?
                """;
 
-        try {
-            jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new ThemeInUseException();
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.TimeInUseException;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -68,7 +68,7 @@ class JdbcReservationTimeRepositoryTest {
         //when & then
         assertThatThrownBy(
                 () -> reservationTimeRepository.deleteById(time.getId())
-        ).isInstanceOf(TimeInUseException.class);
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
