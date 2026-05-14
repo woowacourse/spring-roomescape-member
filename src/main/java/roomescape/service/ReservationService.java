@@ -80,6 +80,24 @@ public class ReservationService {
                 .toList();
     }
 
+    public void deleteByOwner(Long id, String name) {
+        ReservationEntity entity = findByIdAndName(id, name);
+
+        LocalDateTime reservedAt = entity.getReservation().getDate()
+                .atTime(entity.getReservation().getTime().getStartAt());
+        if (!reservedAt.isAfter(LocalDateTime.now(clock))) {
+            throw new BusinessRuleViolationException("이미 지난 예약은 취소할 수 없습니다.");
+        }//TODO 에러메시지 리팩톨이 고려해보기
+        reservationRepository.deleteById(id);
+    }
+
+    private ReservationEntity findByIdAndName(Long id, String name) {
+        return reservationRepository.findById(id)
+                .filter(e -> e.getReservation().getName().equals(name))
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다."));
+    }
+
+
     private void validateNotPast(LocalDateTime requestedAt) {
         if (!requestedAt.isAfter(LocalDateTime.now(clock))) {
             throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 예약할 수 없습니다.");

@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.repository.projection.ReservationEntity;
 
@@ -18,4 +19,5 @@ public interface ReservationRepository {
 
     List<ReservationEntity> findByName(String name);
 
+    Optional<ReservationEntity> findById(Long id);
 }

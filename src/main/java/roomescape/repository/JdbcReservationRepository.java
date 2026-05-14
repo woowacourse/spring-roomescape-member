@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -138,5 +139,27 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, name);
     }
 
+
+    @Override
+    public Optional<ReservationEntity> findById(Long id) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail_url AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream().findFirst();
+    }
 
 }
