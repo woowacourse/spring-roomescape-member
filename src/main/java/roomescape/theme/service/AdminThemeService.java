@@ -1,9 +1,11 @@
 package roomescape.theme.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -24,8 +26,10 @@ public class AdminThemeService {
     public Theme save(String name, String description, String thumbnail) {
         try {
             return themeRepository.save(name, description, thumbnail);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DuplicateKeyException e) {
             throw new DuplicateException("같은 이름의 테마가 존재합니다.");
+        } catch (DataIntegrityViolationException e) {
+            throw new InvalidRequestException("요청이 데이터 무결성 조건을 위반했습니다.");
         }
 
     }
