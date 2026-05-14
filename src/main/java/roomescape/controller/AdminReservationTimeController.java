@@ -26,7 +26,8 @@ public class AdminReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeCreateRequest request) {
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
+            @Valid @RequestBody ReservationTimeCreateRequest request) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.createReservationTime(request);
         return ResponseEntity.created(URI.create("/api/v1/admin/times/" + reservationTimeResponse.id()))
                 .body(reservationTimeResponse);
