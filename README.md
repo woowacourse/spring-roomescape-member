@@ -66,9 +66,9 @@
 
 ### 1단계 - 서비스 정책 적용
 
-- [x] 지나간 날짜·시간에 대한 예약 생성은 불가능하다.
-- [x] 같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.
-- [x] 예약이 존재하는 시간을 삭제할 수 없다.
+- [x] 지나간 date·time에 대한 reservation 생성은 불가능하다.
+- [x] 같은 date+time+theme에 이미 reservation이 있으면 중복 예약을 거부한다.
+- [x] reservation이 존재하는 reservation time을 삭제할 수 없다.
 - [x] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
 
 ### 2단계 - 에러 응답 설계
@@ -80,10 +80,10 @@
 
 ### 3단계 - 내 예약 조회/변경/취소
 
-- [x] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
-- [x] 사용자가 본인의 예약을 취소할 수 있다.
-- [x] 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
-- [x] 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
+- [x] 사용자가 자신의 name으로 본인의 reservation 목록을 조회할 수 있다.
+- [x] 사용자가 본인의 reservation을 취소할 수 있다.
+- [x] 사용자가 본인의 reservation의 date·time을 변경할 수 있다.
+- [x] 변경·취소 시 발생하는 에러 케이스(이미 지난 reservation을 취소, 변경하려는 time이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
 
 # 💻 기능 요구 사항 (admin)
 
@@ -219,6 +219,7 @@ Content-Type: application/json
 | 테마 삭제        | `DELETE /admin/themes/{id}`                  |                                     |                                                                                                     |
 | (유저)         |                                              |                                     |
 | 예약 추가        | `POST /reservations`                         | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
+| 예약 수정        | `PATCH /reservations/{id}`                   | `{date, timeId}`                    | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
 | 이름으로 예약 조회   | `GET /reservations?name={}`                  |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
 | 예약 삭제        | `DELETE /reservations/{id}`                  |                                     |                                                                                                     |
 | 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |
@@ -228,12 +229,13 @@ Content-Type: application/json
 
 # 응답 코드
 
-| 응답 코드                       | 상황                 |
-|-----------------------------|--------------------|
-| `200 Ok`                    | 정상적으로 조회됨          |
-| `201 Created`               | 정상적으로 생성됨          |
-| `204 No Content`            | 반환값이 없음            |
-| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
-| `404 Not Found`             | 없는 자원에 대한 접근       |
-| `409 Conflict`              | 서버의 현재 상태와 충돌      |
-| `500 Internal Server Error` | 서버 내부 오류           |
+| 응답 코드                       | 상황                          |
+|-----------------------------|-----------------------------|
+| `200 Ok`                    | 정상적으로 조회됨                   |
+| `201 Created`               | 정상적으로 생성됨                   |
+| `204 No Content`            | 반환값이 없음                     |
+| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음          |
+| `404 Not Found`             | 없는 자원에 대한 접근                |
+| `409 Conflict`              | 서버의 현재 상태와 충돌               |
+| `422 Unprocessable Entity`  | 요청 형식은 맞으나, 내부 검증에서 통과하지 못함 |
+| `500 Internal Server Error` | 서버 내부 오류                    |
