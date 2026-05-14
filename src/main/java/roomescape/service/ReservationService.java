@@ -109,7 +109,7 @@ public class ReservationService {
 
         Theme theme = reservation.theme();
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationPatchRequest.date(),
-                reservationPatchRequest.timeId(), theme.getId())) {
+                reservationPatchRequest.timeId(), theme.id())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 

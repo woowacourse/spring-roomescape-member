@@ -77,7 +77,7 @@ public class ReservationRepository {
             ps.setString(1, reservation.name());
             ps.setObject(2, reservation.date());
             ps.setLong(3, reservation.time().id());
-            ps.setLong(4, reservation.theme().getId());
+            ps.setLong(4, reservation.theme().id());
             return ps;
         }, keyHolder);
 

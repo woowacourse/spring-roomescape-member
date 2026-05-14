@@ -29,19 +29,19 @@ public class Theme {
         }
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 
-    public String getUrl() {
+    public String url() {
         return url;
     }
 }
