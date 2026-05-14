@@ -30,4 +30,9 @@ public class ThemeService {
     public List<ThemeTimeAvailability> getThemeTimeAvailability(long themId, LocalDate date) {
         return themeTimeQueryRepository.findThemeAvailableTime(themId, date);
     }
+
+    public Theme getTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+    }
 }

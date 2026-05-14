@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.theme.doamin.Theme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.ThemeService;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+
+    private final ThemeService themeService;
+    private final ReservationTimeService reservationTimeService;
 
 
     public Reservation createReservation(String name,
@@ -26,19 +26,14 @@ public class ReservationService {
                                   long themeId) {
         validateReservationDateNotPast(date);
 
-        Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
-        if (findTime.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
-        }
+        final ReservationTime findTime = reservationTimeService.getTime(timeId);
+        validateReservationTimeNotPast(findTime);
 
-        Optional<Theme> findTheme = themeRepository.findById(themeId);
-        if (findTheme.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
-        }
+        final Theme findTheme = themeService.getTheme(themeId);
 
         validateDuplicateReservation(date, timeId, themeId);
 
-        return reservationRepository.save(Reservation.of(name, date, findTime.get(), findTheme.get()));
+        return reservationRepository.save(Reservation.of(name, date, findTime, findTheme));
     }
 
     public void deleteReservation(long id) {
@@ -69,5 +64,11 @@ public class ReservationService {
                 .ifPresent(r -> {
                     throw new IllegalArgumentException("이미 예약이 존재하는 시간입니다.");
                 });
+    }
+
+    private void validateReservationTimeNotPast(ReservationTime reservationTime) {
+        if (reservationTime.getStartAt().isBefore(LocalDate.now().atStartOfDay().toLocalTime())) {
+            throw new IllegalArgumentException("예약 시간은 현재 시간 이후여야 합니다.");
+        }
     }
 }
