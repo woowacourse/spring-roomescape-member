@@ -14,6 +14,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -132,6 +134,54 @@ class ThemeControllerTest {
                 .body("name", is("새로운 테마"))
                 .body("description", is("새로운 테마 설명입니다."))
                 .body("thumbnailUrl", is("https://example.com/new-theme.png"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "name, 테마 이름은 필수입니다.",
+            "description, 테마 설명은 필수입니다.",
+            "thumbnailUrl, 썸네일 URL은 필수입니다."
+    })
+    @DisplayName("테마 생성 시 필수 값이 null이면 요청을 거부한다.")
+    void createTheme_throwsException_whenRequiredValueIsNull(String fieldName, String message) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "새로운 테마");
+        params.put("description", "새로운 테마 설명입니다.");
+        params.put("thumbnailUrl", "https://example.com/new-theme.png");
+        params.put(fieldName, null);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST"))
+                .body("message", is(message));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "name, 테마 이름은 필수입니다.",
+            "description, 테마 설명은 필수입니다.",
+            "thumbnailUrl, 썸네일 URL은 필수입니다."
+    })
+    @DisplayName("테마 생성 시 필수 값이 공백이면 요청을 거부한다.")
+    void createTheme_throwsException_whenRequiredValueIsBlank(String fieldName, String message) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "새로운 테마");
+        params.put("description", "새로운 테마 설명입니다.");
+        params.put("thumbnailUrl", "https://example.com/new-theme.png");
+        params.put(fieldName, " ");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST"))
+                .body("message", is(message));
     }
 
     @Test
