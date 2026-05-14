@@ -1,43 +1,39 @@
 package roomescape.global.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import roomescape.global.exception.customException.RoomEscapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException e) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomEscape(RoomEscapeException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
                 .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidRequestBody(HttpMessageNotReadableException e) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("요청 값의 형식이 올바르지 않습니다."));
+        return createErrorResponse(CommonErrorCode.INVALID_REQUEST_BODY);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("요청 파라미터 형식이 올바르지 않습니다."));
+        return createErrorResponse(CommonErrorCode.INVALID_REQUEST_PARAMETER);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity
-                .status(500)
-                .body("서버 내부 오류");
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return createErrorResponse(CommonErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private ResponseEntity<ErrorResponse> createErrorResponse(ErrorCode errorCode) {
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(new ErrorResponse(errorCode.getMessage()));
     }
 }
