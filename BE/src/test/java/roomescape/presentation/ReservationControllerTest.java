@@ -189,7 +189,8 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("예약 시간이 비어있습니다. 시간을 선택해주세요."));
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."));
     }
 
     @Test
@@ -227,6 +228,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("요청 이름이 비어있습니다. 이름을 입력해주세요"));
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."));
     }
 }
