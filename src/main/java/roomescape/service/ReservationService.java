@@ -10,6 +10,7 @@ import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.PastReservationLockedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -61,21 +62,21 @@ public class ReservationService {
 
     @Transactional
     public void deleteUserReservation(Long id, String name) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = findReservation(id);
         validateOwner(reservation, name);
+        validateReservationNotLocked(reservation);
         reservationRepository.delete(id);
     }
 
     @Transactional
     public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = findReservation(id);
         validateOwner(reservation, name);
+        validateReservationNotLocked(reservation);
         Reservation updatedReservation = createUpdatedReservation(reservation, date, timeId);
+        validateNotPast(updatedReservation.getDate(), updatedReservation.getTime());
         reservationRepository.update(updatedReservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("수정된 예약을 찾을 수 없습니다."));
+        return findUpdatedReservation(id);
     }
 
     public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
@@ -96,11 +97,31 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
     }
 
+    private Reservation findReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+    }
+
+    private Reservation findUpdatedReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정된 예약을 찾을 수 없습니다."));
+    }
+
     private void validateNotPast(LocalDate date, ReservationTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+        if (isPast(date, time)) {
             throw new PastReservationException("이미 지난 시간으로는 예약할 수 없습니다.");
         }
+    }
+
+    private void validateReservationNotLocked(Reservation reservation) {
+        if (isPast(reservation.getDate(), reservation.getTime())) {
+            throw new PastReservationLockedException("이미 지난 예약은 변경하거나 취소할 수 없습니다.");
+        }
+    }
+
+    private boolean isPast(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        return reservationDateTime.isBefore(LocalDateTime.now());
     }
 
     private Reservation create(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {

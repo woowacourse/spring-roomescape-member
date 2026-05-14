@@ -11,6 +11,7 @@ import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.PastReservationLockedException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -174,6 +175,22 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_본인_예약_취소시_이미_지난_예약이면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        willThrow(new PastReservationLockedException("이미 지난 예약은 변경하거나 취소할 수 없습니다."))
+                .given(reservationService).deleteUserReservation(id, name);
+
+        // when & then
+        mockMvc.perform(delete("/reservations/{id}", id)
+                        .param("name", name))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("PAST_RESERVATION_LOCKED"))
+                .andExpect(jsonPath("$.detail").value("이미 지난 예약은 변경하거나 취소할 수 없습니다."));
+    }
+
+    @Test
     void 사용자_본인_예약을_변경한다() throws Exception {
         // given
         Long id = 1L;
@@ -258,6 +275,52 @@ class ReservationControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("FORBIDDEN_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("본인의 예약만 변경하거나 취소할 수 있습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_이미_지난_예약이면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 2)),
+                eq(2L)))
+                .willThrow(new PastReservationLockedException("이미 지난 예약은 변경하거나 취소할 수 없습니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("PAST_RESERVATION_LOCKED"))
+                .andExpect(jsonPath("$.detail").value("이미 지난 예약은 변경하거나 취소할 수 없습니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_변경시_지난_날짜_시간이면_에러_응답() throws Exception {
+        // given
+        Long id = 1L;
+        String request = """
+                {
+                  "name": "브라운",
+                  "date": "2000-01-01"
+                }
+                """;
+        given(reservationService.updateUserReservation(
+                eq(id),
+                eq("브라운"),
+                eq(LocalDate.of(2000, 1, 1)),
+                eq(null)))
+                .willThrow(new PastReservationException("이미 지난 시간으로는 예약할 수 없습니다."));
+
+        // when & then
+        mockMvc.perform(put("/reservations/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("PAST_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("이미 지난 시간으로는 예약할 수 없습니다."));
     }
 
     @Test
