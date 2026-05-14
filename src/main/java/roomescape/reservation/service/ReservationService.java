@@ -62,9 +62,10 @@ public class ReservationService {
     public Reservation update(Long id, ReservationUpdateRequest request) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+        validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
+
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
-
         validatePastReservation(request.date(), reservationTime.getStartAt());
 
         return reservationRepository.update(
@@ -86,6 +87,10 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
+
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
             throw new ReservationNotFoundException(id);
@@ -93,10 +98,19 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteByName(String name) {
-        int affected = reservationRepository.deleteByName(name);
+    public void deleteByIdAndName(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationNotFoundException(id);
+        }
+
+        validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
+
+        int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
-            throw new ReservationNotFoundException(name);
+            throw new ReservationNotFoundException(id);
         }
     }
 

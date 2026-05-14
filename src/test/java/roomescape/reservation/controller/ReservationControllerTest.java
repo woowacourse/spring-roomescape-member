@@ -135,7 +135,7 @@ class ReservationControllerTest {
         );
         int id = postReservation(request);
 
-        mockMvc.perform(delete("/reservations/{id}", id))
+        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "밀란"))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/admin/reservations"))
@@ -144,23 +144,30 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약을_이름으로_삭제한다() throws Exception {
+    void 예약을_id와_이름으로_삭제한다() throws Exception {
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
         Theme theme = themeService.save(themeRequest("테마"));
-        Map<String, Object> request = reservationRequestBody(
+        Map<String, Object> request1 = reservationRequestBody(
                 "밀란",
                 LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
-        int id = postReservation(request);
+        Map<String, Object> request2 = reservationRequestBody(
+                "밀란",
+                LocalDate.of(2026, 5, 11),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        int id = postReservation(request1);
+        postReservation(request2);
 
-        mockMvc.perform(delete("/reservations?name={name}", "밀란"))
+        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "밀란"))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/admin/reservations"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(0));
+                .andExpect(jsonPath("$.size()").value(1));
     }
 
     @Test
@@ -184,7 +191,7 @@ class ReservationControllerTest {
 
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() throws Exception {
-        mockMvc.perform(delete("/reservations/{id}", 999))
+        mockMvc.perform(delete("/reservations/{id}?name={name}", 999, "밀란"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString(ReservationNotFoundException.MESSAGE)));
     }

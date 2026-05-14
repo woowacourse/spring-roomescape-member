@@ -100,21 +100,6 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    void 예약을_이름으로_취소하는_테스트() {
-        String name = "밀란";
-        LocalDate date = LocalDate.of(2026, 5, 10);
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(theme("테마"));
-        Reservation reservation = reservation(name, date, reservationTime, theme);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        reservationRepository.deleteByName(savedReservation.getName());
-
-        List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).doesNotContain(savedReservation);
-    }
-
-    @Test
     void 이름으로_예약들을_조회하는_테스트() {
         String name = "밀란";
         LocalDate date = LocalDate.of(2026, 5, 10);

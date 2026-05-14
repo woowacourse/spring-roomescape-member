@@ -214,7 +214,7 @@ async function createTime() {
 
 async function deleteReservation(id) {
   await safely("#admin-reservation-message", async () => {
-    await request(`/reservations/${id}`, { method: "DELETE" });
+    await request(`/admin/reservations/${id}`, { method: "DELETE" });
     await loadReservations();
     if (state.myReservationName) {
       await loadMyReservations({ quiet: true });
@@ -368,7 +368,7 @@ async function handleMyReservationClick(event) {
       return;
     }
 
-    await request(`/reservations/${reservation.id}`, { method: "DELETE" });
+    await request(`/reservations/${reservation.id}?name=${encodeURIComponent(reservation.name)}`, { method: "DELETE" });
     await Promise.all([loadReservations(), loadMyReservations({ quiet: true })]);
     showToast("예약이 취소되었습니다.");
   });

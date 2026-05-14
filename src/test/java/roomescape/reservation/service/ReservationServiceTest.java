@@ -185,7 +185,33 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약을_이름으로_올바르게_삭제하는지_확인하는_테스트() {
+    void 예약을_id와_이름으로_올바르게_삭제하는지_확인하는_테스트() {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        ReservationRequest reservationRequest1 = reservationRequest(
+                "밀란",
+                LocalDate.of(2026, 5, 10),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        ReservationRequest reservationRequest2 = reservationRequest(
+                "밀란",
+                LocalDate.of(2026, 5, 11),
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.save(reservationRequest1);
+        Reservation sameNameReservation = reservationService.save(reservationRequest2);
+
+        reservationService.deleteByIdAndName(reservation.getId(), reservation.getName());
+
+        List<Reservation> reservations = reservationService.findAll();
+        assertThat(reservations).doesNotContain(reservation);
+        assertThat(reservations).contains(sameNameReservation);
+    }
+
+    @Test
+    void 예약_id와_이름이_일치하지_않으면_삭제하지_않는다() {
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
         Theme theme = themeService.save(themeRequest("테마"));
         ReservationRequest reservationRequest = reservationRequest(
@@ -196,10 +222,10 @@ class ReservationServiceTest {
         );
         Reservation reservation = reservationService.save(reservationRequest);
 
-        reservationService.deleteByName(reservation.getName());
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), "봉구스"))
+                .isInstanceOf(ReservationNotFoundException.class);
 
-        List<Reservation> reservations = reservationService.findAll();
-        assertThat(reservations).doesNotContain(reservation);
+        assertThat(reservationService.findAll()).contains(reservation);
     }
 
     @Test
