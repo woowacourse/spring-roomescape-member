@@ -83,7 +83,7 @@ public class ReservationService {
     public void delete(Long reservationId) {
         int deleted = reservationDao.delete(reservationId);
         if (deleted == 0) {
-            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
+            throw new NotFoundException("존재하지 않는 예약입니다.");
         }
     }
 }
