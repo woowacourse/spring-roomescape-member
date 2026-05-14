@@ -80,6 +80,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(errorCode));
     }
 
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            Exception exception,
+            Object body,
+            HttpHeaders headers,
+            HttpStatusCode statusCode,
+            WebRequest request
+    ) {
+        if (!isAlreadyLogged(exception)) {
+            log.warn("스프링 기본 예외 처리: path={}, status={}, exception={}, message={}",
+                    getPath(request), statusCode.value(), exception.getClass().getSimpleName(), exception.getMessage());
+        }
+        return super.handleExceptionInternal(exception, body, headers, statusCode, request);
+    }
+
+    private String getPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
+    }
+
+    private boolean isAlreadyLogged(Exception exception) {
+        return exception instanceof MethodArgumentNotValidException
+                || exception instanceof HttpMessageNotReadableException
+                || exception instanceof TypeMismatchException;
+    }
+
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(RoomescapeException roomescapeException) {
         ErrorCode errorCode = roomescapeException.getExceptionCode();
@@ -98,9 +123,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(CommonErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
                 .body(new ErrorResponse(CommonErrorCode.INTERNAL_SERVER_ERROR));
-    }
-
-    private String getPath(WebRequest request) {
-        return request.getDescription(false).replace("uri=", "");
     }
 }
