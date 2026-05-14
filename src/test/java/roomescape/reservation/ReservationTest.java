@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomException;
 
 class ReservationTest {
 
@@ -35,7 +36,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 40));
 
         assertThatThrownBy(() -> new Reservation(1L, null, LocalDate.of(2023, 8, 5), time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @Test
@@ -43,7 +44,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 40));
 
         assertThatThrownBy(() -> new Reservation(1L, "   ", LocalDate.of(2023, 8, 5), time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @Test
@@ -51,12 +52,12 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 40));
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", null, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @Test
     void 시간이_null이면_예외() {
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 }

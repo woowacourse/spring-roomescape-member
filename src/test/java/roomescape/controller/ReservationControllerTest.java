@@ -61,9 +61,26 @@ class ReservationControllerTest {
     @DisplayName("사용자 예약 삭제 API")
     @Test
     void 사용자_예약_삭제_API() {
+        LocalDate date = LocalDate.now();
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", date.plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        final long id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .pathParam("id", 1)
+                .pathParam("id", id)
                 .when().delete("/reservations/{id}")
                 .then().log().all()
                 .statusCode(204);
