@@ -12,6 +12,7 @@ import roomescape.domain.time.error.type.TimeErrorType;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.TimeRepository;
 import roomescape.global.error.dto.ParameterErrorResponseDto;
+import roomescape.global.error.exception.GeneralException;
 import roomescape.global.error.exception.GeneralNotFoundException;
 
 @Service
@@ -51,6 +52,10 @@ public class TimeService {
     }
 
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
+        if (timeRepository.existsTimeByStartAt(requestDto.startAt())) {
+            throw new GeneralException(TimeErrorType.ALREADY_EXIST_TIME);
+        }
+
         Time time = Time.create(requestDto.startAt());
         return TimeMapper.toResponseDto(timeRepository.save(time));
     }

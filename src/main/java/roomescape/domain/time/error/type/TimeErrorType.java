@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 import roomescape.global.error.type.ErrorType;
 
 public enum TimeErrorType implements ErrorType {
-    FIELD_RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "조회할 자원이 존재하지 않습니다.");
+    FIELD_RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "조회할 자원이 존재하지 않습니다."),
+    ALREADY_EXIST_TIME(HttpStatus.CONFLICT, "이미 등록된 예약 시간입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

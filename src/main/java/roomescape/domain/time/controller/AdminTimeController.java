@@ -1,5 +1,6 @@
 package roomescape.domain.time.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AdminTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponseDto> saveTime(@RequestBody TimeCreateRequestDto requestDto) {
+    public ResponseEntity<TimeResponseDto> saveTime(@Valid @RequestBody TimeCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(timeService.saveTime(requestDto));
     }
 

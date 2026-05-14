@@ -1,5 +1,6 @@
 package roomescape.domain.time.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +65,21 @@ public class JdbcTimeRepository implements TimeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsTimeByStartAt(LocalTime startAt) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE start_at = :startAt
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("startAt", startAt);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override
