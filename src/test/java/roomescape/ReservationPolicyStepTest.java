@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationCreateCommand;
 
 /*
@@ -51,6 +52,9 @@ public class ReservationPolicyStepTest extends IntegrationTest {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private ReservationTimeService reservationTimeService;
 
     private Long timeId10;
     private Long themeId;
@@ -151,6 +155,46 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         }
 
     }
+
+    @Nested
+    @DisplayName("시간 삭제 거부 정책")
+    class TimeInUsePolicy {
+
+        @Test
+        @DisplayName("예약이 존재하는 시간은 삭제할 수 없다")
+        void 예약이_있는_시간은_삭제_거부() {
+            reservationService.create(new ReservationCreateCommand(
+                    "브라운", TODAY.plusDays(1), timeId10, themeId
+            ));
+
+            assertThatThrownBy(() -> reservationTimeService.delete(timeId10))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("예약이 없는 시간은 삭제할 수 있다")
+        void 예약이_없는_시간은_삭제_허용() {
+            Long unusedTimeId = insertTime(LocalTime.of(15, 0));
+
+            assertThatCode(() -> reservationTimeService.delete(unusedTimeId))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("예약을 삭제한 후에는 그 시간을 삭제할 수 있다")
+        void 예약을_삭제한_뒤에는_시간_삭제_허용() {
+            Long reservationId = reservationService.create(new ReservationCreateCommand(
+                    "브라운", TODAY.plusDays(1), timeId10, themeId
+            )).getId();
+
+            reservationService.delete(reservationId);
+
+            assertThatCode(() -> reservationTimeService.delete(timeId10))
+                    .doesNotThrowAnyException();
+        }
+    }
+
 
     private Long insertTime(LocalTime startAt) {
         jdbcTemplate.update(

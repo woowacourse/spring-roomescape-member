@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.projection.ReservationTimeEntity;
 import roomescape.service.dto.ReservationTimeCreateCommand;
@@ -13,9 +15,12 @@ import roomescape.service.dto.ReservationTimeResult;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ReservationTimeResult> findAll() {
@@ -33,6 +38,7 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
+        validateNotInUse(id);
         reservationTimeRepository.deleteById(id);
     }
 
@@ -40,6 +46,14 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAvailable(date, themeId).stream()
                 .map(ReservationTimeResult::from)
                 .toList();
+    }
+
+    private void validateNotInUse(Long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new BusinessRuleViolationException(
+                    "예약이 존재하는 시간은 삭제할 수 없습니다."
+            );
+        }
     }
 
 }
