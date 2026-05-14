@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
@@ -61,7 +62,9 @@ public class ReservationTimeService {
         if (!themeRepository.existsById(themeId)) {
             throw new ThemeNotFoundException("존재하지 않는 테마입니다: themeId=" + themeId);
         }
+        LocalDateTime now = LocalDateTime.now();
         return reservationTimeRepository.findAvailable(date, themeId).stream()
+                .filter(time -> !LocalDateTime.of(date, time.getStartAt()).isBefore(now))
                 .map(ReservationTimeResult::from)
                 .toList();
     }
