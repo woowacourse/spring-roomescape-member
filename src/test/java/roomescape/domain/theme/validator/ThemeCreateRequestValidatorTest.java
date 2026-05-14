@@ -10,7 +10,7 @@ import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 import roomescape.global.ExceptionAssertions;
 
-class ThemeRequestValidatorTest {
+class ThemeCreateRequestValidatorTest {
 
     @Nested
     @DisplayName("validate 테스트")
@@ -23,7 +23,7 @@ class ThemeRequestValidatorTest {
             String description = "description";
             String imageUrl = "imageUrl";
 
-            assertThatCode(() -> ThemeRequestValidator.validate(name, description, imageUrl))
+            assertThatCode(() -> ThemeCreateRequestValidator.validate(name, description, imageUrl))
                 .doesNotThrowAnyException();
         }
 
@@ -37,7 +37,7 @@ class ThemeRequestValidatorTest {
                 ErrorDetail.of("name", "", "테마명은 비어있지 않은 문자열이어야 합니다."));
 
             ExceptionAssertions.assertErrorCodeWithErrors(
-                () -> ThemeRequestValidator.validate(name, description, imageUrl),
+                () -> ThemeCreateRequestValidator.validate(name, description, imageUrl),
                 ErrorCode.COMMON_INVALID_REQUEST,
                 expectedErrors
             );
@@ -53,7 +53,7 @@ class ThemeRequestValidatorTest {
                 ErrorDetail.of("description", "", "테마 설명은 비어있지 않은 문자열이어야 합니다."));
 
             ExceptionAssertions.assertErrorCodeWithErrors(
-                () -> ThemeRequestValidator.validate(name, description, imageUrl),
+                () -> ThemeCreateRequestValidator.validate(name, description, imageUrl),
                 ErrorCode.COMMON_INVALID_REQUEST,
                 expectedErrors
             );
@@ -69,7 +69,7 @@ class ThemeRequestValidatorTest {
                 ErrorDetail.of("imageUrl", "", "썸네일 url은 비어있지 않은 문자열이어야 합니다."));
 
             ExceptionAssertions.assertErrorCodeWithErrors(
-                () -> ThemeRequestValidator.validate(name, description, imageUrl),
+                () -> ThemeCreateRequestValidator.validate(name, description, imageUrl),
                 ErrorCode.COMMON_INVALID_REQUEST,
                 expectedErrors
             );
@@ -84,7 +84,7 @@ class ThemeRequestValidatorTest {
                 ErrorDetail.of("imageUrl", "", "썸네일 url은 비어있지 않은 문자열이어야 합니다."));
 
             ExceptionAssertions.assertErrorCodeWithErrors(
-                () -> ThemeRequestValidator.validate("", "", ""),
+                () -> ThemeCreateRequestValidator.validate("", "", ""),
                 ErrorCode.COMMON_INVALID_REQUEST,
                 expectedErrors
             );

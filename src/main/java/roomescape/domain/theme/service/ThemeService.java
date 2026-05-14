@@ -12,7 +12,7 @@ import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
-import roomescape.domain.theme.validator.ThemeRequestValidator;
+import roomescape.domain.theme.validator.ThemeCreateRequestValidator;
 
 @Service
 public class ThemeService {
@@ -54,7 +54,7 @@ public class ThemeService {
     }
 
     public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
-        ThemeRequestValidator.validate(requestDto.name(), requestDto.description(), requestDto.imageUrl());
+        ThemeCreateRequestValidator.validate(requestDto.name(), requestDto.description(), requestDto.imageUrl());
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
 
         return ThemeResponseDto.from(themeRepository.save(theme));
