@@ -46,9 +46,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
         String sql = """
-                        SELECT time_id
-                        FROM reservation 
-                        WHERE theme_id = ? and date = ?
+                SELECT time_id
+                FROM reservation 
+                WHERE theme_id = ? and date = ?
                 """;
         return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
     }

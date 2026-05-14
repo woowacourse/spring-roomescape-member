@@ -11,12 +11,7 @@ public record Theme(Long id, String name, String description, String thumbnailUr
     }
 
     public static Theme transientOf(String name, String description, String thumbnailUrl) {
-        return new Theme(
-                null,
-                name,
-                description,
-                thumbnailUrl
-        );
+        return new Theme(null, name, description, thumbnailUrl);
     }
 
     public Theme patch(String name, String description, String thumbnailUrl) {

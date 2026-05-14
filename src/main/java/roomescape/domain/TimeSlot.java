@@ -14,10 +14,7 @@ public record TimeSlot(Long id, LocalTime startAt) {
     }
 
     public TimeSlot patch(LocalTime startAt) {
-        return new TimeSlot(
-                this.id,
-                Optional.ofNullable(startAt).orElse(this.startAt)
-        );
+        return new TimeSlot(this.id, Optional.ofNullable(startAt).orElse(this.startAt));
     }
 
     private void validate(LocalTime startAt) {

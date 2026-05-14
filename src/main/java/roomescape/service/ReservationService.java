@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,8 +29,11 @@ public class ReservationService {
     private final TimeSlotRepository timeSlotRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeSlotRepository timeSlotRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            TimeSlotRepository timeSlotRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeSlotRepository = timeSlotRepository;
         this.themeRepository = themeRepository;
@@ -64,12 +65,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public void putReservation(long id, String userName, @NotBlank String name, @NotNull LocalDate date,
-                               @NotNull Long timeId, @NotNull Long themeId) {
+    public void putReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         existsAndModifiableReservation(id, userName);
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
-        Reservation reservation = new Reservation(id, transientReservation.name(), transientReservation.date(),
-                transientReservation.timeSlot(), transientReservation.theme());
+        Reservation reservation = new Reservation(
+                id, transientReservation.name(),
+                transientReservation.date(),
+                transientReservation.timeSlot(),
+                transientReservation.theme()
+        );
         validDuplicatedReservation(reservation);
         reservationRepository.update(reservation);
     }
@@ -124,8 +128,11 @@ public class ReservationService {
     }
 
     private void validDuplicatedReservation(Reservation reservation) {
-        reservationRepository.findByDateAndTimeIdAndThemeId(reservation.date(), reservation.timeSlot().id(),
-                        reservation.theme().id())
+        reservationRepository.findByDateAndTimeIdAndThemeId(
+                        reservation.date(),
+                        reservation.timeSlot().id(),
+                        reservation.theme().id()
+                )
                 .filter(existing -> reservation.id() == null || !reservation.id().equals(existing.id()))
                 .ifPresent(existing -> {
                     throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
