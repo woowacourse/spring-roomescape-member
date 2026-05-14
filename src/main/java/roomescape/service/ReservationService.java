@@ -90,10 +90,10 @@ public class ReservationService {
             throw new InvalidRequestException(UNAUTHORIZED_RESERVATION_ACCESS);
         }
 
+        validateDate(updateReservationRequest.date());
+
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(updateReservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
-
-        validateDate(updateReservationRequest.date());
 
         if (updateReservationRequest.date().isEqual(LocalDate.now())) {
             validateTime(reservationTime.startAt());

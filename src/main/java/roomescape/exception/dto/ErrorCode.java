@@ -7,8 +7,8 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
     // reservation
     DUPLICATED_RESERVATION(CONFLICT, "DUPLICATED_RESERVATION", "해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다."),
-    INVALID_RESERVATION_DATE(CONFLICT, "INVALID_RESERVATION_DATE", "지난 날짜에는 예약할 수 없습니다."),
-    INVALID_RESERVATION_TIME(CONFLICT, "INVALID_RESERVATION_TIME", "지난 시간에는 예약할 수 없습니다."),
+    INVALID_RESERVATION_DATE(BAD_REQUEST, "INVALID_RESERVATION_DATE", "지난 날짜에는 예약할 수 없습니다."),
+    INVALID_RESERVATION_TIME(BAD_REQUEST, "INVALID_RESERVATION_TIME", "지난 시간에는 예약할 수 없습니다."),
     NOT_FOUND_RESERVATION(NOT_FOUND, "NOT_FOUND_RESERVATION", "존재하지 않는 예약입니다."),
     UNAUTHORIZED_RESERVATION_ACCESS(BAD_REQUEST, "UNAUTHORIZED_RESERVATION_ACCESS", "본인의 예약만 접근 가능합니다."),
 
