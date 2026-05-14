@@ -31,6 +31,23 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
+    public Reservation reserve(ReservationCreateRequest request, LocalDateTime now) {
+        ReservationTime reservationTime = findReservationTimeByTimeId(request.getTimeId());
+        Theme theme = findThemeByThemeId(request.getThemeId());
+
+        Reservation reservation = Reservation.reserve(new ReservationName(request.getName()),
+                new ReservationDate(request.getDate()), reservationTime, theme, now);
+
+        validateIsDuplicateReservation(request.getTimeId(), request.getThemeId(), request.getDate());
+
+        return reservationRepository.save(reservation);
+    }
+
+    public Reservation find(long reservationId) {
+        return findReservationById(reservationId);
+    }
+
     public List<Reservation> findList(String name) {
         if (name != null) {
             return reservationRepository.findAllByName(name);
@@ -38,25 +55,37 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation find(long reservationId) {
-        return reservationRepository.findById(reservationId).orElseThrow(
-                () -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
-    }
-
     @Transactional
-    public Reservation reserve(ReservationCreateRequest request, LocalDateTime now) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId())
-                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(
-                () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
+    public Reservation update(ReservationUpdateRequest request, long id, LocalDateTime now) {
+        Reservation reservation = findReservationById(id);
 
-        Reservation reservation = Reservation.reserve(new ReservationName(request.getName()),
-                new ReservationDate(request.getDate()),
-                reservationTime, theme, now);
+        ReservationDate reservationDate = new ReservationDate(request.getDate());
+        ReservationTime reservationTime = findReservationTimeByTimeId(request.getTimeId());
 
         validateIsDuplicateReservation(request.getTimeId(), request.getThemeId(), request.getDate());
 
-        return reservationRepository.save(reservation);
+        Reservation target = Reservation.reserve(reservation.getName(), reservationDate, reservationTime,
+                reservation.getTheme(), now);
+
+        return reservationRepository.update(id, target);
+    }
+
+    @Transactional
+    public void cancel(long reservationId, LocalDateTime now) {
+        Reservation reservation = findReservationById(reservationId);
+        reservation.ensureNotPast(now);
+
+        reservationRepository.deleteById(reservationId);
+    }
+
+    private ReservationTime findReservationTimeByTimeId(long reservationTimeId) {
+        return reservationTimeRepository.findById(reservationTimeId)
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+    }
+
+    private Theme findThemeByThemeId(long themeId) {
+        return themeRepository.findById(themeId).orElseThrow(
+                () -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
     private void validateIsDuplicateReservation(long timeId, long themeId, LocalDate date) {
@@ -65,29 +94,8 @@ public class ReservationService {
         }
     }
 
-    @Transactional
-    public void cancel(long reservationId, LocalDateTime now) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
-        reservation.ensureNotPast(now);
-
-        reservationRepository.deleteById(reservationId);
-    }
-
-    @Transactional
-    public Reservation update(ReservationUpdateRequest request, long id, LocalDateTime now) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+    private Reservation findReservationById(long reservationId) {
+        return reservationRepository.findById(reservationId).orElseThrow(
                 () -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        ReservationDate reservationDate = new ReservationDate(request.getDate());
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId()).orElseThrow(
-                () -> new RoomEscapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        validateIsDuplicateReservation(request.getTimeId(), request.getThemeId(), request.getDate());
-
-        Reservation target = Reservation.reserve(reservation.getName(), reservationDate, reservationTime,
-                reservation.getTheme(), now);
-
-        return reservationRepository.update(id, target);
     }
 }

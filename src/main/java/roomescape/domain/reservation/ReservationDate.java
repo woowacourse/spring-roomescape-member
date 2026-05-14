@@ -10,14 +10,6 @@ public class ReservationDate {
         this.date = Objects.requireNonNull(date);
     }
 
-    public boolean isBefore(LocalDate target) {
-        return date.isBefore(target);
-    }
-
-    public boolean isEqual(LocalDate target) {
-        return date.isEqual(target);
-    }
-
     public LocalDate getDate() {
         return date;
     }
