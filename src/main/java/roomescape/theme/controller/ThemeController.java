@@ -1,11 +1,12 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.theme.controller.dto.PopularityRequest;
 import roomescape.theme.controller.dto.ThemeListResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -27,10 +28,11 @@ public class ThemeController {
     }
 
     @GetMapping("/popularity")
-    public ResponseEntity<ThemeListResponse> popularThemes(@RequestParam(value = "days", defaultValue = "7") int days,
-                                                           @RequestParam(value = "size", defaultValue = "10") int size) {
+    public ResponseEntity<ThemeListResponse> popularThemes(
+            @ModelAttribute @Valid PopularityRequest request
+            ) {
         return ResponseEntity.ok(
-                ThemeListResponse.from(themeService.findPopularThemes(days ,size)
+                ThemeListResponse.from(themeService.findPopularThemes(request.days(), request.size())
                         .stream()
                         .map(ThemeResponse::from)
                         .toList())

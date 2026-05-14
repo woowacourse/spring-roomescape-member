@@ -3,6 +3,8 @@ package roomescape.theme.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,6 +22,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ThemeController.class)
@@ -117,6 +120,61 @@ class ThemeControllerTest {
         then(themeService).should()
                 .findPopularThemes(eq(7), eq(10));
 
+    }
+
+    @Test
+    @DisplayName("인기 테마 목록을 조회할 때 요청 파라미터가 없으면 기본값으로 조회한다.")
+    public void popularThemes_default() throws Exception {
+        // given
+        given(themeService.findPopularThemes(anyInt(), anyInt()))
+                .willReturn(List.of());
+
+        // when then
+        mockMvc.perform(get("/themes/popularity"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        then(themeService).should()
+                .findPopularThemes(eq(7), eq(10));
+    }
+
+    @Test
+    @DisplayName("인기 테마 목록을 조회할 때 요청 파라미터가 비어있으면 기본값으로 조회한다.")
+    public void popularThemes_default_when_blank() throws Exception {
+        // given
+        given(themeService.findPopularThemes(anyInt(), anyInt()))
+                .willReturn(List.of());
+
+        // when then
+        mockMvc.perform(get("/themes/popularity")
+                        .param("days", "")
+                        .param("size", ""))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        then(themeService).should()
+                .findPopularThemes(eq(7), eq(10));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0, 10, 최소 하루 단위로 인기테마를 조회할 수 있습니다.",
+            "7, 0, 최소 1개 이상 조회해야 합니다.",
+            "7, 11, 최대 10개까지 인기테마를 조회할 수 있습니다."
+    })
+    @DisplayName("인기 테마 목록을 조회할 때 요청 파라미터 검증에 실패하면 에러가 발생한다.")
+    public void popularThemes_fail_when_invalid_request(String days, String size, String message) throws Exception {
+        // when then
+        mockMvc.perform(get("/themes/popularity")
+                        .param("days", days)
+                        .param("size", size))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.messages[0]").value(message));
+
+        then(themeService).should(never())
+                .findPopularThemes(anyInt(), anyInt());
     }
 
 }

@@ -31,6 +31,14 @@ public class CustomSpringMvcExceptionHandler {
             MethodArgumentNotValidException exception,
             HttpServletRequest request
     ) {
+        List<String> messages = getErrorMessages(exception);
+
+        return ResponseEntity
+                .status(VALIDATION_ERROR.status())
+                .body(ErrorResponse.of(pathFrom(request), VALIDATION_ERROR, messages));
+    }
+
+    private static List<String> getErrorMessages(MethodArgumentNotValidException exception) {
         List<String> messages = exception.getBindingResult()
                 .getAllErrors()
                 .stream()
@@ -40,10 +48,7 @@ public class CustomSpringMvcExceptionHandler {
         if (messages.isEmpty()) {
             messages = List.of("잘못된 요청입니다.");
         }
-
-        return ResponseEntity
-                .status(VALIDATION_ERROR.status())
-                .body(ErrorResponse.of(pathFrom(request), VALIDATION_ERROR, messages));
+        return messages;
     }
 
     /**
