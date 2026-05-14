@@ -55,22 +55,11 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            overflow: hidden;
-            display: flex;
-            gap: 1.25rem;
+            padding: 1.25rem 1.5rem;
             margin-bottom: 2.5rem;
         }
 
-        .theme-panel img {
-            width: 140px;
-            height: 140px;
-            object-fit: cover;
-            flex-shrink: 0;
-            background: #334155;
-        }
-
         .theme-panel-body {
-            padding: 1.25rem 1.25rem 1.25rem 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -189,7 +178,7 @@
             position: relative;
         }
         .time-slot.booked::after {
-            content: '예약됨';
+            content: '예약 불가';
             display: block;
             font-size: 0.7rem;
             color: #64748b;
@@ -326,11 +315,9 @@
         if (!raw) { location.href = '/'; return; }
 
         state.theme = JSON.parse(raw);
-        const { name, description, thumbnail } = state.theme;
+        const { name, description } = state.theme;
 
         document.getElementById('theme-panel').innerHTML = `
-            <img src="${thumbnail}" alt="${name}"
-                 onerror="this.style.background='#334155';this.removeAttribute('src')">
             <div class="theme-panel-body">
                 <div class="theme-label">선택한 테마</div>
                 <div class="theme-name">${name}</div>
