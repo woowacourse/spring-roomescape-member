@@ -18,6 +18,7 @@
             <div class="navbar-nav">
                 <a class="nav-link active" href="/">홈</a>
                 <a class="nav-link" href="/reservation.html">예약하기</a>
+                <a class="nav-link" href="/my-reservation.html">내 예약 조회</a>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">관리자</a>
                     <ul class="dropdown-menu">
@@ -55,6 +56,10 @@
                 })
                 .then(themes => {
                     const popularThemesContainer = document.getElementById('popular-themes');
+                    if (themes.length === 0) {
+                        popularThemesContainer.innerHTML = '<p class="text-muted text-center">아직 예약 데이터가 부족하여 인기 테마를 선정 중입니다. 😊</p>';
+                        return;
+                    }
                     themes.forEach(theme => {
                         const themeCard = `
                             <div class="col-md-4">
