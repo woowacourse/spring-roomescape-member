@@ -1,5 +1,6 @@
 package roomescape.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 
@@ -14,5 +15,6 @@ public record ErrorResponse(
         String message,
 
         @Nullable
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         String action) {
 }

@@ -1,7 +1,6 @@
 package roomescape.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +17,13 @@ import roomescape.exception.RoomescapeException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ErrorResponse>> handleIllegalArgumentException(MethodArgumentNotValidException e,
-                                                                              HttpServletRequest request) {
-        List<ErrorResponse> errors = new ArrayList<>();
-        e.getBindingResult().getFieldErrors().forEach((fieldError) -> {
-            ErrorCode error = ErrorCode.valueOf(fieldError.getDefaultMessage());
-            ErrorResponse errorResponse = new ErrorResponse(
-                    error.getCode(), request.getRequestURI(), error.getMessage(), error.getAction()
-            );
-            errors.add(errorResponse);
-        });
-        return ResponseEntity.status(e.getStatusCode()).body(errors);
+    public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
+                                                                                     HttpServletRequest request) {
+        List<ErrorResponse> errors = e.getBindingResult().getFieldErrors().stream()
+                .map(fe -> new ErrorResponse("INVALID_CONSTRAINT", request.getRequestURI(), fe.getDefaultMessage(),
+                        null))
+                .toList();
+        return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

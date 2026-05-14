@@ -4,14 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record ThemeRequest(
-        @NotBlank(message = "THEME_NAME_BLANK")
-        @Size(min = 1, max = 20, message = "THEME_NAME_LENGTH_INVALID")
+        @NotBlank(message = "테마 이름은 빈값일 수 없습니다.")
+        @Size(min = 1, max = 20, message = "테마 이름은 1자 이상 20자 이하여야 합니다.")
         String name,
 
-        @NotBlank(message = "THEME_DESCRIPTION_BLANK")
-        @Size(min = 1, max = 1000, message = "THEME_DESCRIPTION_LENGTH_INVALID")
+        @NotBlank(message = "테마 설명은 빈값일 수 없습니다.")
+        @Size(min = 1, max = 1000, message = "테마 설명은 1자 이상 1000자 이하여야 합니다.")
         String description,
 
-        @NotBlank(message = "THEME_URL_BLANK")
+        @NotBlank(message = "테마 URL은 빈값일 수 없습니다.")
         String url) {
 }

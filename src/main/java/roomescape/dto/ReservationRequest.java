@@ -7,17 +7,17 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record ReservationRequest(
-        @NotBlank(message = "RESERVATION_NAME_BLANK")
-        @Size(min = 2, max = 20, message = "RESERVATION_NAME_LENGTH_INVALID")
+        @NotBlank(message = "예약자 이름은 빈값일 수 없습니다.")
+        @Size(min = 2, max = 20, message = "예약자 이름은 2자 이상 20자 이하여야 합니다.")
         String name,
 
-        @NotNull(message = "RESERVATION_DATE_NULL")
+        @NotNull(message = "예약 날짜는 필수입니다.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate date,
 
-        @NotNull(message = "RESERVATION_TIME_NULL")
+        @NotNull(message = "예약 시간은 필수입니다.")
         Long timeId,
 
-        @NotNull(message = "RESERVATION_THEME_NULL")
+        @NotNull(message = "예약 테마는 필수입니다.")
         Long themeId) {
 }
