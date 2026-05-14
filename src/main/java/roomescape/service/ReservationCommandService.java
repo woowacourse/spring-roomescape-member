@@ -4,13 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationHistory;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.custom.BadRequestException;
 import roomescape.exception.custom.ConflictException;
 import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationHistoryDao;
 import roomescape.repository.ReservationTimeDao;
 
 @Service
@@ -19,6 +22,7 @@ public class ReservationCommandService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ReservationHistoryDao reservationHistoryDao;
 
     public ReservationResponse create(String name, LocalDate date, long timeId, long themeId, LocalDateTime requestDateTime) {
         ReservationTime time = getReservationTime(timeId);
@@ -27,6 +31,13 @@ public class ReservationCommandService {
         validateNoDuplicateReservation(date, timeId, themeId);
         Reservation savedReservation = reservationDao.save(Reservation.pending(name, date), timeId, themeId);
         return ReservationResponse.from(savedReservation);
+    }
+
+    @Transactional
+    public void delete(long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId);
+        reservationHistoryDao.save(ReservationHistory.from(reservation));
+        reservationDao.delete(reservationId);
     }
 
     private ReservationTime getReservationTime(long timeId) {
@@ -44,9 +55,5 @@ public class ReservationCommandService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ConflictException(ErrorMessage.DUPLICATE_RESERVATION);
         }
-    }
-
-    public void delete(long reservationId) {
-        reservationDao.delete(reservationId);
     }
 }

@@ -21,6 +21,7 @@ public class ReservationTimeTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation_history");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -68,7 +69,7 @@ public class ReservationTimeTest {
             """);
         jdbcTemplate.update("""
             INSERT INTO reservation
-            VALUES (1, 'user_a', '2026-05-03', 'AVAILABLE', 1, 7)
+            VALUES (1, 'user_a', '2026-05-03', 1, 7)
             """);
 
         RestAssured.given().log().all()
@@ -98,7 +99,7 @@ public class ReservationTimeTest {
 
         jdbcTemplate.update("""
             INSERT INTO reservation
-            VALUES (1, 'user_a', '2026-05-03', 'AVAILABLE', 1, 7)
+            VALUES (1, 'user_a', '2026-05-03', 1, 7)
             """);
 
         RestAssured.given().log().all()

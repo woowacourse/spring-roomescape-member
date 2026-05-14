@@ -23,6 +23,7 @@ public class ReservationTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation_history");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -85,7 +86,7 @@ public class ReservationTest {
             """);
         jdbcTemplate.update("""
             INSERT INTO reservation
-            VALUES (1, 'user_a', '2026-04-28', 'AVAILABLE', 1, 1)
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
             """);
 
         RestAssured.given().log().all()
@@ -115,7 +116,7 @@ public class ReservationTest {
             """);
         jdbcTemplate.update("""
             INSERT INTO reservation
-            VALUES (1, 'user_a', '2026-04-28', 'AVAILABLE', 1, 1)
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
             """);
 
         LocalDate pastDate = LocalDate.now().minusDays(1);
