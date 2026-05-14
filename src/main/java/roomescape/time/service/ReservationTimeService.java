@@ -10,7 +10,7 @@ import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.repository.ReservationTimeRepository;
 
-import static roomescape.time.exception.ReservationTimeExceptionInformation.*;
+import static roomescape.time.exception.ReservationTimeErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)

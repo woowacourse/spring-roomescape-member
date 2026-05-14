@@ -2,7 +2,7 @@ package roomescape.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-public interface ExceptionInformation {
+public interface ErrorCode {
     HttpStatus getHttpStatus();
     String getMessage();
 }

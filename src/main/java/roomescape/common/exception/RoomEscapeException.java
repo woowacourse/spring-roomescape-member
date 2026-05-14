@@ -8,7 +8,7 @@ public class RoomEscapeException extends RuntimeException{
 
     private final HttpStatus status;
 
-    protected RoomEscapeException(ExceptionInformation info) {
+    protected RoomEscapeException(ErrorCode info) {
         super(info.getMessage());
         this.status = info.getHttpStatus();
     }

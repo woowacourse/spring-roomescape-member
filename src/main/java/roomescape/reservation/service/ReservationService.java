@@ -1,11 +1,11 @@
 package roomescape.reservation.service;
 
-import static roomescape.date.exception.ReservationDateExceptionInformation.DATE_NOT_FOUND;
+import static roomescape.date.exception.ReservationDateErrorCode.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
-import static roomescape.reservation.exception.ReservaitonExceptionInformation.RESERVATION_ALREADY_BOOKED;
-import static roomescape.reservation.exception.ReservaitonExceptionInformation.RESERVATION_NOT_FOUND;
-import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
-import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_NOT_FOUND;
+import static roomescape.reservation.exception.ReservaitonErrorCode.RESERVATION_ALREADY_BOOKED;
+import static roomescape.reservation.exception.ReservaitonErrorCode.RESERVATION_NOT_FOUND;
+import static roomescape.theme.exception.ThemeErrorCode.THEME_NOT_FOUND;
+import static roomescape.time.exception.ReservationTimeErrorCode.TIME_NOT_FOUND;
 
 import java.util.List;
 

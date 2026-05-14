@@ -7,7 +7,7 @@ import roomescape.date.exception.ReservationDateException;
 
 import java.time.LocalDate;
 
-import static roomescape.date.exception.ReservationDateExceptionInformation.*;
+import static roomescape.date.exception.ReservationDateErrorCode.*;
 
 class ReservationDateTest {
 

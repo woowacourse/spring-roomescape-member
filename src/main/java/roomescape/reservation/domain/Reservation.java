@@ -12,7 +12,7 @@ import roomescape.reservation.exception.ReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
-import static roomescape.reservation.exception.ReservaitonExceptionInformation.*;
+import static roomescape.reservation.exception.ReservaitonErrorCode.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

@@ -2,7 +2,7 @@ package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.time.exception.ReservationTimeExceptionInformation.TIME_ALREADY_EXISTS;
+import static roomescape.time.exception.ReservationTimeErrorCode.TIME_ALREADY_EXISTS;
 import static roomescape.time.fixture.ReservationTimeFixture.saveDto;
 
 import java.time.LocalTime;

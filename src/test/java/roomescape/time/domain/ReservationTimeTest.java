@@ -2,8 +2,8 @@ package roomescape.time.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static roomescape.time.exception.ReservationTimeExceptionInformation.ID_IS_NULL;
-import static roomescape.time.exception.ReservationTimeExceptionInformation.START_AT_IS_NULL;
+import static roomescape.time.exception.ReservationTimeErrorCode.ID_IS_NULL;
+import static roomescape.time.exception.ReservationTimeErrorCode.START_AT_IS_NULL;
 
 import java.time.LocalTime;
 

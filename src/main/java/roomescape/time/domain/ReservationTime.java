@@ -7,8 +7,8 @@ import roomescape.time.exception.ReservationTimeException;
 
 import java.time.LocalTime;
 
-import static roomescape.time.exception.ReservationTimeExceptionInformation.ID_IS_NULL;
-import static roomescape.time.exception.ReservationTimeExceptionInformation.START_AT_IS_NULL;
+import static roomescape.time.exception.ReservationTimeErrorCode.ID_IS_NULL;
+import static roomescape.time.exception.ReservationTimeErrorCode.START_AT_IS_NULL;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

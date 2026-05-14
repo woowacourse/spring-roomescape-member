@@ -3,11 +3,11 @@ package roomescape.theme.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import roomescape.common.exception.ExceptionInformation;
+import roomescape.common.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
-public enum ThemeExceptionInformation implements ExceptionInformation {
+public enum ThemeErrorCode implements ErrorCode {
 
     ID_IS_NULL(HttpStatus.BAD_REQUEST, "테마 ID는 필수입니다."),
     NAME_IS_NULL(HttpStatus.BAD_REQUEST, "테마 이름은 필수입니다."),

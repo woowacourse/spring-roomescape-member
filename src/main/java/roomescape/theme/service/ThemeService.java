@@ -10,8 +10,8 @@ import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.projection.PopularThemeResult;
 
-import static roomescape.theme.exception.ThemeExceptionInformation.THEME_NOT_FOUND;
-import static roomescape.theme.exception.ThemeExceptionInformation.THEME_STATUS_UPDATE_FAILED;
+import static roomescape.theme.exception.ThemeErrorCode.THEME_NOT_FOUND;
+import static roomescape.theme.exception.ThemeErrorCode.THEME_STATUS_UPDATE_FAILED;
 
 @Service
 @Transactional(readOnly = true)

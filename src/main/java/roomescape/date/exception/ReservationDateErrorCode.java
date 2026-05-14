@@ -3,11 +3,11 @@ package roomescape.date.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import roomescape.common.exception.ExceptionInformation;
+import roomescape.common.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
-public enum ReservationDateExceptionInformation implements ExceptionInformation {
+public enum ReservationDateErrorCode implements ErrorCode {
 
     ID_IS_NULL(HttpStatus.BAD_REQUEST, "예약날짜 ID는 필수입니다."),
     DATE_IS_NULL(HttpStatus.BAD_REQUEST, "예약 날짜는 필수입니다."),

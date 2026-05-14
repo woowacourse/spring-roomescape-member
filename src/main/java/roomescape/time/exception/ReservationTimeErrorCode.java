@@ -3,11 +3,11 @@ package roomescape.time.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import roomescape.common.exception.ExceptionInformation;
+import roomescape.common.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
-public enum ReservationTimeExceptionInformation implements ExceptionInformation {
+public enum ReservationTimeErrorCode implements ErrorCode {
 
     ID_IS_NULL(HttpStatus.BAD_REQUEST, "예약 시간 ID는 필수입니다."),
     START_AT_IS_NULL(HttpStatus.BAD_REQUEST, "예약 시작 시간은 필수입니다."),
