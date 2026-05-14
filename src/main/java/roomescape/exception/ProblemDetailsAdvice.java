@@ -23,6 +23,7 @@ public class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
         exceptionHttpStatusMap.put(InvalidOwnershipException.class, HttpStatus.FORBIDDEN);
         exceptionHttpStatusMap.put(PastReservationControlException.class, HttpStatus.BAD_REQUEST);
         exceptionHttpStatusMap.put(PastTimeException.class, HttpStatus.BAD_REQUEST);
+        exceptionHttpStatusMap.put(ResourceInUseException.class, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RoomescapeException.class)

@@ -2,8 +2,10 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.exception.ResourceInUseException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ThemeRepository;
 
@@ -32,7 +34,11 @@ public class ThemeService {
     }
 
     public void removeTheme(long themeId) {
-        themeRepository.deleteById(themeId);
+        try {
+            themeRepository.deleteById(themeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("테마");
+        }
     }
 
     public void putTheme(long id, String name, String description, String thumbnailUrl) {

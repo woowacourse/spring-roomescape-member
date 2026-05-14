@@ -3,8 +3,10 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.ResourceInUseException;
 import roomescape.exception.TimeSlotNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
@@ -36,7 +38,11 @@ public class TimeSlotService {
     }
 
     public void removeTime(long timeId) {
-        timeSlotRepository.deleteById(timeId);
+        try {
+            timeSlotRepository.deleteById(timeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("예약 시간");
+        }
     }
 
     public void putTime(long id, LocalTime startAt) {
