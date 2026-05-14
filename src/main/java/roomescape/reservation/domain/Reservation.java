@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.reservation.exception.ReservationInvalidException;
 import roomescape.reservation.exception.ReservationErrorCode;
-import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservation.exception.ReservationInvalidException;
 
 @Getter
 @EqualsAndHashCode(of = "id")

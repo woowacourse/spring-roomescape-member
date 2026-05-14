@@ -1,9 +1,11 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,15 +39,17 @@ public class ReservationController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse create(@Valid @RequestBody ReservationCreateRequest request) {
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest request) {
         ReservationResult reservationResult = reservationService.save(
                 request.name(),
                 request.date(),
                 request.timeId()
         );
 
-        return ReservationResponse.from(reservationResult);
+        URI location = URI.create("/reservations/" + reservationResult.id());
+
+        return ResponseEntity.created(location)
+                .body(ReservationResponse.from(reservationResult));
     }
 
     @DeleteMapping("/{id}")

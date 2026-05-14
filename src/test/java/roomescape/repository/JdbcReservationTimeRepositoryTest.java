@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -119,7 +118,8 @@ class JdbcReservationTimeRepositoryTest {
         );
 
         // when
-        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableTimes(LocalDate.now().plusDays(1), theme.getId());
+        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableTimes(
+                LocalDate.now().plusDays(1), theme.getId());
 
         // then
         assertThat(availableTimes).hasSize(1);

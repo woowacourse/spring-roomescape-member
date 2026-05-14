@@ -97,7 +97,7 @@ public class ReservationService {
 
     private void validateDateTime(final Reservation reservation, final LocalTime time) {
         if (reservation.isPastTime(time, LocalDateTime.now())) {
-             throw new ReservationBadRequestException(
+            throw new ReservationBadRequestException(
                     ReservationErrorCode.RESERVATION_PAST_DATE.getMessage()
             );
         }

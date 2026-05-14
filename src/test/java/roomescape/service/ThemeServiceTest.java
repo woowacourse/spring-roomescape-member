@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -8,7 +7,6 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.acceptancetest.RoomecapeAcceptanceTest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -48,7 +46,8 @@ class ThemeServiceTest {
         // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
         themeRepository.save(Theme.createNew("미술관의 밤2", "설명", "thumb"));
-        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
+        ReservationTime reservationTime = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme));
         reservationRepository.save(
                 Reservation.createNew(
                         "쿠다",

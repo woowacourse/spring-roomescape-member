@@ -54,7 +54,7 @@
         <a class="admin-link" th:href="@{/pages/admin/themes}">관리자 페이지</a>
     </nav>
 
-    <p class="message" id="message" hidden></p>
+    <p class="message" hidden id="message"></p>
 
     <section class="top-grid">
         <article class="card stack">
@@ -62,7 +62,9 @@
                 <h2>1. 날짜와 테마 선택</h2>
                 <form id="search-form">
                     <label>예약 날짜 <input id="date" required type="date"></label>
-                    <label>테마 <select id="themeId" required><option value="">테마를 선택하세요</option></select></label>
+                    <label>테마 <select id="themeId" required>
+                        <option value="">테마를 선택하세요</option>
+                    </select></label>
                     <button type="submit">예약 가능 시간 조회</button>
                 </form>
                 <p class="hint">날짜와 테마를 선택하면 이미 예약된 시간을 제외한 슬롯만 표시됩니다.</p>
@@ -95,7 +97,7 @@
         <article class="card">
             <h2>내 예약 현황</h2>
             <div class="list" id="reservation-list"></div>
-            <p class="hint" id="reservation-empty" hidden>등록된 예약이 없습니다.</p>
+            <p class="hint" hidden id="reservation-empty">등록된 예약이 없습니다.</p>
         </article>
 
         <article class="card">

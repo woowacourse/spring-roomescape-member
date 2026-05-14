@@ -81,7 +81,8 @@ class ReservationServiceTest {
         );
 
         //when
-        Reservation saved = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
+        Reservation saved = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time.getId()));
 
         //then
         assertThat(saved.getId()).isNotNull();

@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import roomescape.testexecutionlistener.TestDatabaseInitializer;
-import roomescape.testexecutionlistener.TestPortInitializer;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

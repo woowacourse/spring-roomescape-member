@@ -75,7 +75,8 @@ class JdbcThemeRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () ->
                 jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png"))
         );
-        assertThatThrownBy(()-> jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png")))
+        assertThatThrownBy(
+                () -> jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png")))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -117,11 +118,14 @@ class JdbcThemeRepositoryTest {
         jdbcReservationRepository.save(Reservation.createNew("아루", referenceDate.minusDays(2), firstThemeTime.getId()));
         jdbcReservationRepository.save(Reservation.createNew("도기", referenceDate.minusDays(3), firstThemeTime.getId()));
 
-        jdbcReservationRepository.save(Reservation.createNew("포비", referenceDate.minusDays(1), secondThemeTime.getId()));
-        jdbcReservationRepository.save(Reservation.createNew("솔라", referenceDate.minusDays(2), secondThemeTime.getId()));
+        jdbcReservationRepository.save(
+                Reservation.createNew("포비", referenceDate.minusDays(1), secondThemeTime.getId()));
+        jdbcReservationRepository.save(
+                Reservation.createNew("솔라", referenceDate.minusDays(2), secondThemeTime.getId()));
 
         jdbcReservationRepository.save(Reservation.createNew("레오", referenceDate.minusDays(1), thirdThemeTime.getId()));
-        jdbcReservationRepository.save(Reservation.createNew("오래된예약", referenceDate.minusDays(10), thirdThemeTime.getId()));
+        jdbcReservationRepository.save(
+                Reservation.createNew("오래된예약", referenceDate.minusDays(10), thirdThemeTime.getId()));
 
         // when
         List<Theme> popularThemes = jdbcThemeRepository.findPopularThemes(7, 2, referenceDate);
@@ -171,7 +175,7 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(popularThemes).hasSize(1);
-        assertThat(popularThemes.get(0).getId()).isEqualTo(firstTheme.getId());
+        assertThat(popularThemes.getFirst().getId()).isEqualTo(firstTheme.getId());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package roomescape.reservationtime.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.reservationtime.service.dto.ReservationTimeResult;
 
@@ -34,15 +34,17 @@ public class ReservationTimeAdminController {
     }
 
     @PostMapping("/{themeId}/times")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse create(
+    public ResponseEntity<ReservationTimeResponse> create(
             @PathVariable Long themeId,
             @Valid @RequestBody ReservationTimeCreateRequest request
     ) {
         ReservationTimeResult reservationTimeResult =
                 reservationTimeService.save(request.startAt(), themeId);
 
-        return ReservationTimeResponse.from(reservationTimeResult);
+        URI location = URI.create("/admin/themes/" + themeId + "/times/" + reservationTimeResult.id());
+
+        return ResponseEntity.created(location)
+                .body(ReservationTimeResponse.from(reservationTimeResult));
     }
 
     @DeleteMapping("/times/{timeId}")

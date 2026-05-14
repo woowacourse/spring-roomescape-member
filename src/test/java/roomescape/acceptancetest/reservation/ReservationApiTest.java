@@ -34,7 +34,6 @@ public class ReservationApiTest {
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate(), 2L);
         acceptanceTestFixture.createReservation("코니", acceptanceTestFixture.reservationDate(), 3L);
 
-
         // when & then
         RestAssured.given().log().all()
                 .header("Authorization", authorizationHeader("브라운"))
@@ -80,7 +79,6 @@ public class ReservationApiTest {
         acceptanceTestFixture.createTheme();
         acceptanceTestFixture.createReservationTime("15:40", 1L);
         acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.reservationDate().minusDays(1), 1L);
-
 
         // when & then
         RestAssured.given().log().all()
