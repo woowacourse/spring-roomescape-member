@@ -6,11 +6,14 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.global.error.dto.ErrorResponseDto;
 import roomescape.global.error.dto.ParameterErrorResponseDto;
 import roomescape.global.error.dto.ParameterErrorResponsesDto;
@@ -20,7 +23,21 @@ import roomescape.global.error.exception.GeneralNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 400 Errors
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDto> handleHttpRequestMethodNotSupportedException(Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponseDto("지원하지 않는 HTTP 메서드입니다."));
+    }
+
+    @ExceptionHandler({
+        NoHandlerFoundException.class,
+        NoResourceFoundException.class
+    })
+    public ResponseEntity<ErrorResponseDto> handleNotFoundException(Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponseDto("존재하지 않는 API입니다."));
+    }
+    
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(
         HttpMessageNotReadableException e
