@@ -76,6 +76,44 @@ class ReservationTimeMergeConcurrencyTest {
         }
     }
 
+    @DisplayName("같은 행에 대한 동시 MERGE는 데드락 없이 처리된다.")
+    @Test
+    void concurrentMergeDoesNotCauseDeadlockWhenUpdatingSameRow() throws Exception {
+        int threadCount = 20;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch startGate = new CountDownLatch(1);
+
+        try {
+            List<Future<Throwable>> futures = IntStream.range(0, threadCount)
+                    .mapToObj(index -> executorService.submit(() -> mergeSameRow(
+                            1L,
+                            LocalTime.of(23, index),
+                            startGate
+                    )))
+                    .toList();
+
+            startGate.countDown();
+
+            List<Throwable> failures = futures.stream()
+                    .map(future -> getFailure(future, 5, TimeUnit.SECONDS))
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            if (!failures.isEmpty()) {
+                List<String> failureMessages = failures.stream()
+                        .map(this::rootCauseMessage)
+                        .toList();
+                System.out.println("Same row MERGE failure messages = " + failureMessages);
+            }
+
+            assertThat(failures)
+                    .as("같은 id 하나를 동시에 MERGE로 갱신할 때는 하나의 행 락을 기다리며 직렬화되어야 한다.")
+                    .isEmpty();
+        } finally {
+            executorService.shutdownNow();
+        }
+    }
+
     @DisplayName("같은 행에 대한 동시 upsert는 UPDATE 먼저 전략으로 락 실패 없이 처리할 수 있다.")
     @Test
     void updateFirstUpsertDoesNotCauseLockFailureForSameRow() throws Exception {
@@ -145,6 +183,28 @@ class ReservationTimeMergeConcurrencyTest {
         }
     }
 
+    private Throwable mergeSameRow(Long id, LocalTime startAt, CountDownLatch startGate) {
+        Connection connection = null;
+        try {
+            if (!startGate.await(2, TimeUnit.SECONDS)) {
+                throw new AssertionError("동시 시작 신호를 받지 못했습니다.");
+            }
+
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            setLockTimeout(connection);
+
+            mergeReservationTime(connection, id, startAt);
+            connection.commit();
+            return null;
+        } catch (Throwable throwable) {
+            rollback(connection);
+            return throwable;
+        } finally {
+            close(connection);
+        }
+    }
+
     private Throwable updateFirstSameRow(Long id, LocalTime startAt, CountDownLatch startGate) {
         Connection connection = null;
         try {
@@ -176,18 +236,18 @@ class ReservationTimeMergeConcurrencyTest {
     private void mergeReservationTime(Connection connection, Long id, LocalTime startAt) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
                 """
-                MERGE INTO reservation_time r
-                USING (
-                    VALUES (?, ?)
-                ) t(id, start_at)
-                ON r.id = t.id
-                WHEN MATCHED THEN
-                    UPDATE SET
-                        start_at = t.start_at
-                WHEN NOT MATCHED THEN
-                    INSERT (start_at)
-                    VALUES (t.start_at)
-                """
+                        MERGE INTO reservation_time r
+                        USING (
+                            VALUES (?, ?)
+                        ) t(id, start_at)
+                        ON r.id = t.id
+                        WHEN MATCHED THEN
+                            UPDATE SET
+                                start_at = t.start_at
+                        WHEN NOT MATCHED THEN
+                            INSERT (start_at)
+                            VALUES (t.start_at)
+                        """
         )) {
             statement.setObject(1, id);
             statement.setObject(2, startAt);

@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.doamin.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -47,8 +46,8 @@ class AdminThemeServiceTest {
     @Test
     void deleteTheme() {
         // test-data.sql 기준 theme_id=4 존재
-        adminThemeService.deleteTheme(4L);
+        adminThemeService.deleteTheme(5L);
 
-        assertThat(themeRepository.findById(4L)).isEmpty();
+        assertThat(themeRepository.findById(5L)).isEmpty();
     }
 }
