@@ -179,6 +179,28 @@
             background: #1a1f3a;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit:hover {
+            background: #5568d3;
+        }
+
         .btn-delete {
             background: #f5576c;
             color: white;
@@ -201,6 +223,151 @@
             color: #5c6686;
             padding: 40px;
             font-size: 0.95rem;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 14, 39, 0.9);
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #151932;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1f2547;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8b93b0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .modal .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c5cae9;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .modal .form-group input,
+        .modal .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0a0e27;
+            border: 1px solid #1f2547;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .modal .form-group input:focus,
+        .modal .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #0d1129;
+        }
+
+        .modal .form-group select option {
+            background: #151932;
+            color: #ffffff;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #1a1f3a;
+            color: #c5cae9;
+            padding: 12px 24px;
+            border: 1px solid #1f2547;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #1f2547;
+            color: #ffffff;
+        }
+
+        .btn-save {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -256,6 +423,43 @@
             <div id="reservationsList">
                 <div class="empty-state">이름을 입력하고 조회 버튼을 눌러주세요.</div>
             </div>
+        </div>
+    </div>
+
+    <!-- 예약 수정 모달 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>예약 수정</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editReservationId">
+                <div class="form-group">
+                    <label for="editName">이름</label>
+                    <input type="text" id="editName" name="name" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editDate">날짜</label>
+                    <input type="date" id="editDate" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTimeId">시간</label>
+                    <select id="editTimeId" name="timeId" required>
+                        <option value="">시간을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editThemeId">테마</label>
+                    <select id="editThemeId" name="themeId" required>
+                        <option value="">테마를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">취소</button>
+                    <button type="submit" class="btn-save">저장</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -315,7 +519,10 @@
                                         <td>${reservation.time.startAt}</td>
                                         <td>${reservation.theme.name}</td>
                                         <td>
-                                            <button class="btn-delete" onclick="deleteReservation(${reservation.id})">취소</button>
+                                            <div class="action-buttons">
+                                                <button class="btn-edit" onclick='openEditModal(${JSON.stringify(reservation)})'>수정</button>
+                                                <button class="btn-delete" onclick="deleteReservation(${reservation.id})">취소</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -352,6 +559,110 @@
                 alert('예약 취소 중 오류가 발생했습니다.');
             });
         }
+
+        // 수정 모달 열기
+        function openEditModal(reservation) {
+            document.getElementById('editReservationId').value = reservation.id;
+            document.getElementById('editName').value = reservation.name;
+            document.getElementById('editDate').value = reservation.date;
+
+            // 시간과 테마 데이터 로드
+            loadTimesForEdit(reservation.time.id);
+            loadThemesForEdit(reservation.theme.id);
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        // 수정 모달 닫기
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            document.getElementById('editForm').reset();
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // 시간 목록 로드 (수정용)
+        function loadTimesForEdit(selectedTimeId) {
+            fetch('/times')
+                .then(response => response.json())
+                .then(times => {
+                    const select = document.getElementById('editTimeId');
+                    select.innerHTML = '<option value="">시간을 선택하세요</option>';
+                    times.forEach(time => {
+                        const option = document.createElement('option');
+                        option.value = time.id;
+                        option.textContent = time.startAt;
+                        if (time.id === selectedTimeId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('시간 목록 불러오기 실패:', error));
+        }
+
+        // 테마 목록 로드 (수정용)
+        function loadThemesForEdit(selectedThemeId) {
+            fetch('/themes')
+                .then(response => response.json())
+                .then(themes => {
+                    const select = document.getElementById('editThemeId');
+                    select.innerHTML = '<option value="">테마를 선택하세요</option>';
+                    themes.forEach(theme => {
+                        const option = document.createElement('option');
+                        option.value = theme.id;
+                        option.textContent = theme.name;
+                        if (theme.id === selectedThemeId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('테마 목록 불러오기 실패:', error));
+        }
+
+        // 예약 수정 폼 제출
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const reservationId = document.getElementById('editReservationId').value;
+            const updateData = {
+                name: document.getElementById('editName').value,
+                date: document.getElementById('editDate').value,
+                timeId: parseInt(document.getElementById('editTimeId').value),
+                themeId: parseInt(document.getElementById('editThemeId').value)
+            };
+
+            fetch(`/reservations/${reservationId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('예약이 수정되었습니다!');
+                    closeEditModal();
+                    // 현재 입력된 이름으로 다시 조회
+                    const userName = document.getElementById('name').value;
+                    loadReservations(userName);
+                } else {
+                    return response.json().then(error => {
+                        alert('예약 수정 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('예약 수정 실패:', error);
+                alert('예약 수정 중 오류가 발생했습니다.');
+            });
+        });
     </script>
 </body>
 </html>

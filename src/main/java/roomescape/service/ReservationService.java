@@ -117,7 +117,7 @@ public class ReservationService {
                 findReservationTime.getStartAt()
         );
 
-        if (!standard.isAfter(findReservation.getCreatedAt())) {
+        if (!standard.isAfter(findReservation.getUpdatedAt())) {
             throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
         }
         return ReservationResponse.from(findReservation);
