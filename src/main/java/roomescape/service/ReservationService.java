@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
+import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -36,24 +36,24 @@ public class ReservationService {
     public ServiceReservationResponse create(ServiceReservationCreateRequest request) {
         Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
         if (reservationTime.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
         Optional<Theme> theme = themeRepository.read(request.themeId());
         if (theme.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_THEME);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_THEME);
         }
 
         boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(request.date(),
                 request.timeId(),
                 request.themeId());
         if (existReservation) {
-            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         Reservation reservationWithoutId = request.toEntity(reservationTime.get(), theme.get());
         if (reservationWithoutId.isPast(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.PAST_TIME_RESERVATION);
         }
 
         Reservation reservation = reservationRepository.create(reservationWithoutId);
@@ -80,22 +80,22 @@ public class ReservationService {
     public ServiceReservationResponse update(Long id, ServiceReservationUpdateRequest request) {
         Optional<Reservation> beforeReservation = reservationRepository.readById(id);
         if (beforeReservation.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION);
         }
 
         Optional<ReservationTime> reservationTime = reservationTimeRepository.read(request.timeId());
         if (reservationTime.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
         Reservation newReservation = request.toEntity(beforeReservation.get(), reservationTime.get());
         if (newReservation.isPast(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.PAST_TIME_RESERVATION);
         }
 
         if (reservationRepository.existByDateAndTimeIdAndThemeId(newReservation.getDate(),
                 newReservation.getTime().getId(), newReservation.getTheme().getId())) {
-            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         reservationRepository.update(id, request.date(), request.timeId());
@@ -107,10 +107,10 @@ public class ReservationService {
     public void delete(Long id) {
         Optional<Reservation> reservation = reservationRepository.readById(id);
         if (reservation.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_RESERVATION);
         }
         if (reservation.get().isPast(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.PAST_TIME_RESERVATION_DELETE);
+            throw new CustomUnprocessableEntityException(ErrorCode.PAST_TIME_RESERVATION_DELETE);
         }
 
         reservationRepository.delete(id);

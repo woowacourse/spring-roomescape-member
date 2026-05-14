@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
+import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -34,7 +34,7 @@ public class ReservationTimeService {
     @Transactional
     public ServiceReservationTimeResponse create(ServiceReservationTimeCreateRequest request) {
         if (reservationTimeRepository.existByStartAt(request.startAt())) {
-            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION_TIME);
+            throw new CustomUnprocessableEntityException(ErrorCode.DUPLICATED_RESERVATION_TIME);
         }
 
         ReservationTime reservationTime = reservationTimeRepository.create(request.toEntity());
@@ -52,10 +52,10 @@ public class ReservationTimeService {
             LocalDate date, Long themeId) {
         Optional<Theme> theme = themeRepository.read(themeId);
         if (theme.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_THEME);
+            throw new CustomUnprocessableEntityException(ErrorCode.NOT_FOUND_THEME);
         }
         if (date.isBefore(LocalDate.now())) {
-            throw new CustomException(ErrorCode.PAST_RESERVATION_TIME_READ);
+            throw new CustomUnprocessableEntityException(ErrorCode.PAST_RESERVATION_TIME_READ);
         }
 
         List<ReservationTime> allReservationTimes = reservationTimeRepository.readAll();
@@ -73,7 +73,7 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existByTimeId(id)) {
-            throw new CustomException(ErrorCode.REFERENCED_TIME);
+            throw new CustomUnprocessableEntityException(ErrorCode.REFERENCED_TIME);
         }
         reservationTimeRepository.delete(id);
     }

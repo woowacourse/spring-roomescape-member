@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
+import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -53,14 +53,14 @@ public class ReservationTimeServiceTest {
         reservationTimeService.create(request);
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(DUPLICATED_RESERVATION_TIME.getMessage());
     }
 
     @Test
     void readAvailabilityNotFoundThemeExceptionTest() {
         assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(LocalDate.now().plusDays(1), 1L))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(NOT_FOUND_THEME.getMessage());
     }
 
@@ -72,7 +72,7 @@ public class ReservationTimeServiceTest {
         LocalDate date = LocalDate.now().minusDays(1);
 
         assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(date, theme.getId()))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(PAST_RESERVATION_TIME_READ.getMessage());
     }
 
@@ -84,7 +84,7 @@ public class ReservationTimeServiceTest {
         reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(REFERENCED_TIME.getMessage());
     }
 

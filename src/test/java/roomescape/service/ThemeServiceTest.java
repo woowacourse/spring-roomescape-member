@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomException;
+import roomescape.exception.CustomUnprocessableEntityException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -53,7 +53,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now().plusDays(2);
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(FUTURE_RANKING_PERIOD.getMessage());
     }
 
@@ -63,7 +63,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now().minusDays(1);
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(INVALID_RANKING_PERIOD.getMessage());
     }
 
@@ -74,7 +74,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now();
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(LONG_RANKING_PERIOD.getMessage());
     }
 
@@ -86,7 +86,7 @@ public class ThemeServiceTest {
         reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
 
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(CustomException.class)
+                .isInstanceOf(CustomUnprocessableEntityException.class)
                 .hasMessage(REFERENCED_THEME.getMessage());
     }
 
