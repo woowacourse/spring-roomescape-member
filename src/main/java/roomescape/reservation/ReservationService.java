@@ -1,8 +1,10 @@
 package roomescape.reservation;
 
+import java.time.LocalTime;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
@@ -42,6 +44,9 @@ public class ReservationService {
     public Reservation save(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
+
+        validateReservationDateTme(date, time.startAt());
+
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
 
@@ -49,6 +54,17 @@ public class ReservationService {
             return reservationRepository.save(new Reservation(name, date, time, theme));
         } catch (DuplicateKeyException e) {
             throw new DuplicateException("해당 날짜와 시간은 이미 예약되어 있습니다.");
+        }
+    }
+
+    private void validateReservationDateTme(LocalDate date, LocalTime time) {
+        LocalDate today = LocalDate.now();
+
+        if (date.isBefore(today)) {
+            throw new BadRequestException("예약 날짜는 오늘 이후여야 합니다.");
+        }
+        if (date.equals(today) && time.isBefore(LocalTime.now())) {
+            throw new BadRequestException("예약 시간은 현재 시간 이후여야 합니다.");
         }
     }
 
