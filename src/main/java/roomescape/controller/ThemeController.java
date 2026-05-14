@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.AvailableReservationTimeResponse;
-import roomescape.controller.dto.AvailableReservationTimesResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.ThemesResponse;
+import roomescape.controller.dto.time.AvailableReservationTimeResponse;
+import roomescape.controller.dto.time.AvailableReservationTimesResponse;
+import roomescape.controller.dto.theme.ThemeResponse;
+import roomescape.controller.dto.theme.ThemesResponse;
 import roomescape.service.ThemeService;
 
 @RequestMapping("/themes")

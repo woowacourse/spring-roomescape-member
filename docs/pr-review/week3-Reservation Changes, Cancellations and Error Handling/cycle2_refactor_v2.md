@@ -5,7 +5,7 @@
 ## ✅ 리팩토링 할 것 목록
 
 - [ ] **1. EOF 확인하기**
-- [ ] **2. DTO 패키지 도메인별 분리**
+- [x] **2. DTO 패키지 도메인별 분리**
   - `controller/dto/reservation/` — ReservationRequest, ReservationUpdateRequest, ReservationResponse, ReservationsResponse, AdminReservationResponse, AdminReservationsResponse
   - `controller/dto/time/` — ReservationTimeRequest, ReservationTimeResponse, ReservationTimesResponse, AvailableReservationTimeResponse, AvailableReservationTimesResponse
   - `controller/dto/theme/` — ThemeRequest, ThemeResponse, ThemesResponse
