@@ -23,6 +23,10 @@ public class ReservationService {
         return reservationDao.selectAll();
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationDao.selectByName(name);
+    }
+
     public Reservation addReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);

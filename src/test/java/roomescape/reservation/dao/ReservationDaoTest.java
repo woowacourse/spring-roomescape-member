@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -34,6 +35,34 @@ public class ReservationDaoTest {
 
     @Autowired
     private ReservationDao reservationDao;
+
+    @Test
+    void 이름으로_예약_조회_테스트() {
+        String name = "도우너";
+        List<Reservation> expected = reservationDao.selectByName(name);
+
+        String sql =
+                """
+                        select r.id as reservation_id,
+                            r.name,
+                            r.date,
+                            t.id as time_id,
+                            t.start_at as start_at,
+                            r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        WHERE r.name =  ?
+                    """;
+
+        List<Reservation> actual = jdbcTemplate.query(sql, rowMapper, name);
+
+        assertAll(
+                () -> assertThat(actual.getFirst().getName()).isEqualTo(expected.getFirst().getName()),
+                () -> assertThat(actual.getFirst().getDate()).isEqualTo(expected.getFirst().getDate()),
+                () -> assertThat(actual.getFirst().getThemeId()).isEqualTo(expected.getFirst().getThemeId())
+        );
+    }
 
     @Test
     void 예약_생성_테스트() {

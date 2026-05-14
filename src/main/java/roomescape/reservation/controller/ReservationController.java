@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -25,6 +26,15 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<ReservationsResponse> findReservationsByName(@RequestParam String name) {
+        List<ReservationResponse> reservations = reservationService.findByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
+
+        return ResponseEntity.status(200).body(new ReservationsResponse(reservations, reservations.size()));
     }
 
     @PostMapping("/reservations")

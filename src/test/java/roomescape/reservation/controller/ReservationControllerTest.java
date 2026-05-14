@@ -13,6 +13,14 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ReservationControllerTest {
 
     @Test
+    void 이름으로_예약_조회_성공() {
+        RestAssured.given().log().all()
+                .when().get("/api/reservations?name=도우너")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     void 예약추가_예약존재_성공() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
