@@ -216,7 +216,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.change(saved.id(), date2, reservationTime1.id()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("휴무일은 예약할 수 없습니다.");
+                .hasMessage("예약 불가능한 날짜입니다.");
     }
 
     @Test

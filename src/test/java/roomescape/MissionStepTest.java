@@ -26,7 +26,7 @@ import roomescape.reservation.domain.Reservation;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
                 "spring.sql.init.data-locations=",
-                "spring.datasource.url=jdbc:h2:mem:testdb"
+                "spring.datasource.url=jdbc:h2:mem:missiondb"
         })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class MissionStepTest {
@@ -57,7 +57,7 @@ class MissionStepTest {
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("TESTDB");
+            assertThat(connection.getCatalog()).isEqualTo("MISSIONDB");
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
