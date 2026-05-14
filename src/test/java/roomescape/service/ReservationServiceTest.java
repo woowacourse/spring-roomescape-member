@@ -251,6 +251,19 @@ class ReservationServiceTest {
         )).isExactlyInstanceOf(ReservationByPastDateTimeException.class);
     }
 
+    @DisplayName("과거 시점의 예약을 변경할 수 없다")
+    @Sql("/data.sql")
+    @Test
+    void 과거_시점의_예약을_변경하면_ReservationByPastDateTimeException을_던진다() {
+        assertThatThrownBy(() -> reservationService.update(
+                1L,
+                new ReservationUpdateDtoDateAndTimeIdOnly(
+                        LocalDate.now().plusDays(1),
+                        1L
+                )
+        )).isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+    }
+
     @DisplayName("존재하지 않는 예약 시간으로 변경할 수는 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test

@@ -88,6 +88,7 @@ public class ReservationService {
         ReservationTime reservationTimeForUpdate = reservationTimeRepository.findById(updateDto.timeId())
                 .orElseThrow(ReservationTimeDoesNotExistsException::new);
 
+        validateNotPast(LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()));
         validateNotPast(LocalDateTime.of(updateDto.date(), reservationTimeForUpdate.getStartAt()));
         validateNotDuplicated(updateDto.date(), reservationTimeForUpdate, theme);
 

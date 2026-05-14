@@ -153,7 +153,7 @@ class ReservationControllerE2ETest {
                 .when().get(requestParamFormat.formatted("루드비코"))
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(4));
     }
 
     @Nested
@@ -210,6 +210,111 @@ class ReservationControllerE2ETest {
                     )
                     .then().log().all()
                     .statusCode(404);
+        }
+    }
+
+    @Nested
+    class 예약_변경_케이스 {
+
+        @DisplayName("예약 변경에 성공하면 204 No Content를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 예약을_성공적으로_변경하면_204를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(7L),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 24L)
+                    .then().log().all()
+                    .statusCode(204);
+        }
+
+        @DisplayName("존재하지 않는 예약의 변경을 요청하면 404 Not Found를 응답한다")
+        @Test
+        void 존재하지_않는_예약의_변경을_요청하면_404를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(1),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + Long.MAX_VALUE)
+                    .then().log().all()
+                    .statusCode(404);
+        }
+
+        @DisplayName("존재하지 않는 예약 시간으로 변경을 요청하면 404 Not Found를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 존재하지_않는_예약_시간으로_변경을_요청하면_404를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(1),
+                    "timeId", Long.MAX_VALUE
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 1L)
+                    .then().log().all()
+                    .statusCode(404);
+        }
+
+        @DisplayName("과거 시점으로 변경을 요청하면 422 Unprocessable Entity를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 과거_시점으로_변경을_요청하면_422를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().minusDays(1),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 23L)
+                    .then().log().all()
+                    .statusCode(422);
+        }
+
+        @DisplayName("과거 시점의 예약을 변경 요청하면 422 Unprocessable Entity를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 과거_시점의_예약에_변경을_요청하면_422를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(1),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 1L)
+                    .then().log().all()
+                    .statusCode(422);
+        }
+
+        @DisplayName("이미 다른 예약이 존재하는 시점으로 변경을 요청하면 409 Conflict를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 이미_다른_예약이_존재하는_시점으로_변경을_요청하면_409를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(2),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 24L)
+                    .then().log().all()
+                    .statusCode(409);
         }
     }
 }

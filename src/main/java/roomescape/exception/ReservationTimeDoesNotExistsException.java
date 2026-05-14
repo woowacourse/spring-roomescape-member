@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class ReservationTimeDoesNotExistsException extends CannotDeleteReservationTimeException {
+public class ReservationTimeDoesNotExistsException extends IllegalArgumentException {
 
     private static final String ERROR_MESSAGE = "존재하지 않는 예약 시간입니다.";
 
