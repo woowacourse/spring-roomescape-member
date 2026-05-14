@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpRequestMethodNotSupportedException(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
             .body(new ErrorResponseDto("지원하지 않는 HTTP 메서드입니다."));
     }
 
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponseDto("존재하지 않는 API입니다."));
     }
-    
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(
         HttpMessageNotReadableException e
