@@ -70,6 +70,25 @@ public class ReservationControllerTest {
                 .body("size()", is(1));
     }
 
+    @Test
+    public void 예약_이름으로_조회_시_해당하는_예약이_없으면_빈_리스트를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations?username=없는이름")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    public void 예약_이름_파라미터_없이_조회하면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
 
     @ParameterizedTest
     @MethodSource("emptyReservationRequest")

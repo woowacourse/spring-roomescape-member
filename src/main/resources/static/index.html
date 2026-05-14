@@ -160,6 +160,7 @@
 <header>
     <div class="topbar">
         <a href="/" class="active">사용자</a>
+        <a href="/my-reservations.html">내 예약</a>
         <a href="/admin.html">관리자</a>
     </div>
     <h1>방탈출 예약</h1>
@@ -444,6 +445,13 @@
         document.getElementById('btn-reserve').disabled = false;
     }
 
+    const RESERVATION_ERROR_MESSAGES = {
+        'RESERVATION_PAST_DATE': '오늘 이전 날짜는 예약할 수 없습니다.',
+        'RESERVATION_TIME_ALREADY_BOOKED': '이미 예약된 시간입니다. 다른 시간을 선택해주세요.',
+        'TIME_NOT_FOUND': '선택한 시간 정보를 찾을 수 없습니다.',
+        'THEME_NOT_FOUND': '선택한 테마 정보를 찾을 수 없습니다.',
+    };
+
     async function makeReservation() {
         const name = document.getElementById('res-name').value.trim();
         const date = document.getElementById('res-date').value;
@@ -475,8 +483,9 @@
                 document.getElementById('btn-reserve').disabled = true;
                 loadAvailableTimes();
             } else {
-                const text = await res.text();
-                showMessage(msgEl, 'error', text || '예약에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                const msg = RESERVATION_ERROR_MESSAGES[err.code] || '예약에 실패했습니다.';
+                showMessage(msgEl, 'error', msg);
             }
         } catch (e) {
             showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
