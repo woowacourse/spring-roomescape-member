@@ -28,10 +28,18 @@ public class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 관리자_예약_삭제_테스트() {
+    void 관리자_예약_시간_삭제_성공_테스트() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/7")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    void 관리자_예약_시간_삭제_실패_테스트() {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(409);
     }
 }

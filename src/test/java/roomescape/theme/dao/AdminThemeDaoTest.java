@@ -60,7 +60,7 @@ public class AdminThemeDaoTest {
 
     @Test
     void 테마_삭제_테스트() {
-        long id = 1L;
+        long id = 11L;
         themeDao.deleteById(id);
 
         List<Theme> themes = themeDao.selectAll();

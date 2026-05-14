@@ -110,4 +110,16 @@ public class ReservationDaoTest {
         int deleteCount = reservationDao.delete(1L, name);
         assertThat(deleteCount).isEqualTo(0);
     }
+
+    @Test
+    void 해당_예약_시간에_대한_예약이_존재하는지_테스트() {
+        Boolean result = reservationDao.existsByTimeId(1L);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 해당_예약_시간에_대한_예약이_존재하는지_않는지_테스트() {
+        Boolean result = reservationDao.existsByTimeId(6L);
+        assertThat(result).isFalse();
+    }
 }

@@ -17,6 +17,6 @@ class AdminReservationControllerTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(15));
+                .body("reservations.size()", is(14));
     }
 }

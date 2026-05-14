@@ -50,7 +50,7 @@ public class AdminThemeControllerTest {
     @Test
     void 관리자_테마_삭제() {
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1")
+                .when().delete("/admin/themes/11")
                 .then().log().all()
                 .statusCode(204);
     }
