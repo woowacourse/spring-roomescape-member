@@ -139,6 +139,67 @@ class ReservationControllerTest {
         verify(reservationService).deleteReservation(3L);
     }
 
+    @Test
+    void POST_reservations_본문의_date가_형식_오류면_400과_메시지를_반환한다() throws Exception {
+        String body = """
+                {"name":"브라운","date":"abc","themeId":1,"timeId":1}
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'date' 값 'abc'은(는) yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
+    void GET_reservations_id가_숫자가_아니면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/reservations/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'id' 값 'abc'은(는) 숫자 형식이어야 합니다."));
+    }
+
+    @Test
+    void POST_reservations_본문의_date가_존재하지_않는_날짜면_400과_메시지를_반환한다() throws Exception {
+        String body = """
+                {"name":"브라운","date":"2026-13-40","themeId":1,"timeId":1}
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'date' 값 '2026-13-40'은(는) yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
+    void POST_reservations_본문의_timeId가_숫자가_아니면_400과_메시지를_반환한다() throws Exception {
+        String body = """
+                {"name":"브라운","date":"2026-05-08","themeId":1,"timeId":"abc"}
+                """;
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'timeId' 값 'abc'은(는) 숫자 형식이어야 합니다."));
+    }
+
+    @Test
+    void POST_reservations_본문_JSON_문법_오류면_400과_메시지를_반환한다() throws Exception {
+        String brokenBody = "{\"name\":\"홍길동";
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(brokenBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("요청 본문 형식이 올바르지 않습니다."));
+    }
+
     private Reservation sampleReservation(Long id) {
         Theme theme = new Theme(1L, "공포", "무서움", "https://thumbnail.url");
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));

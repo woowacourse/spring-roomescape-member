@@ -78,4 +78,20 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$.themes[0].id").value(1))
                 .andExpect(jsonPath("$.themes[0].reservedCount").value(5));
     }
+
+    @Test
+    void GET_themes_id_times_date_쿼리_파라미터가_날짜가_아니면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/themes/1/times?date=abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'date' 값 'abc'은(는) yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
+    void GET_themes_popular_limit이_숫자가_아니면_400과_메시지를_반환한다() throws Exception {
+        mockMvc.perform(get("/themes/popular?limit=abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("'limit' 값 'abc'은(는) 숫자 형식이어야 합니다."));
+    }
 }

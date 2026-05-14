@@ -118,6 +118,37 @@ class ReservationAcceptanceTest {
     }
 
     @Test
+    void POST_reservations_본문의_date가_형식_오류면_400과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+
+        String body = """
+                {"name":"브라운","date":"abc","themeId":1,"timeId":1}
+                """;
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("'date' 값 'abc'은(는) yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
+    void POST_reservations_본문_JSON_문법_오류면_400과_메시지를_반환한다() {
+        String brokenBody = "{\"name\":\"브라";
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(brokenBody)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("요청 본문 형식이 올바르지 않습니다."));
+    }
+
+    @Test
     void DELETE_reservations_id_예약을_삭제한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
