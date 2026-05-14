@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -64,6 +65,14 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        ErrorCode errorCode = ErrorCode.INVALID_PATH_VARIABLE;
+        String message = String.format("'%s' 파라미터의 값이 적절하지 않습니다.", e.getName());
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode, message));
     }
 
     @ExceptionHandler(Exception.class)

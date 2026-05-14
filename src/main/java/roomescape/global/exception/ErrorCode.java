@@ -10,6 +10,7 @@ public enum ErrorCode {
     MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "쿼리 파라미터를 누락했습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "허용되지 않는 HTTP 메서드입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
+    INVALID_PATH_VARIABLE(HttpStatus.BAD_REQUEST, "URL 경로 변수가 올바르지 않습니다."),
 
     RESERVATION_DUPLICATE(HttpStatus.CONFLICT, "이미 예약된 일정입니다."),
     RESERVATION_PAST_DATETIME(HttpStatus.BAD_REQUEST, "과거 날짜, 시간으로 예약할 수 없습니다."),
