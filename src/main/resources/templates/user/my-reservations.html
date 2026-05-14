@@ -25,7 +25,7 @@
       <div class="card-body">
         <label for="name" class="form-label">예약자 이름</label>
         <div class="input-group">
-          <input type="text" id="name" class="form-control" placeholder="예약자 이름을 입력하세요">
+          <input type="text" id="name" class="form-control" placeholder="예약자 이름을 입력하세요" readonly>
           <button type="button" class="btn btn-primary" onclick="loadMyReservations()">조회</button>
         </div>
       </div>
@@ -128,7 +128,8 @@
                  id="date-${reservation.id}"
                  class="form-control form-control-sm"
                  value="${reservation.date}"
-                 onchange="loadTimesForReservation(${reservation.id}, ${reservation.theme.id})">
+                 data-previous-date="${reservation.date}"
+                 onchange="handleReservationDateChange(${reservation.id}, ${reservation.theme.id})">
         </td>
         <td>
           <select id="time-${reservation.id}" class="form-select form-select-sm">
@@ -138,11 +139,29 @@
         <td>
           <div class="d-flex gap-2">
             <button type="button" class="btn btn-sm btn-outline-primary" onclick="updateReservation(${reservation.id})">수정</button>
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteReservation(${reservation.id})">삭제</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteReservation(${reservation.id})">취소</button>
           </div>
         </td>
       </tr>
     `).join('');
+  }
+
+  async function handleReservationDateChange(reservationId, themeId) {
+    const dateInput = document.getElementById(`date-${reservationId}`);
+    if (!dateInput) return;
+
+    const selectedDate = dateInput.value;
+    const previousDate = dateInput.dataset.previousDate;
+    const today = new Date().toISOString().split('T')[0];
+
+    if (selectedDate < today) {
+      alert('지난 시점으로는 변경할 수 없습니다.');
+      dateInput.value = previousDate;
+      return;
+    }
+
+    dateInput.dataset.previousDate = selectedDate;
+    await loadTimesForReservation(reservationId, themeId);
   }
 
   async function loadTimesForReservation(reservationId, themeId) {
@@ -202,7 +221,7 @@
   }
 
   async function deleteReservation(id) {
-    if (!confirm('예약을 삭제하시겠습니까?')) return;
+    if (!confirm('예약을 취소하시겠습니까?')) return;
 
     try {
       const response = await fetch(`/api/reservations/${id}`, {
@@ -211,24 +230,27 @@
       });
 
       if (response.ok) {
-        alert('예약이 삭제되었습니다.');
+        alert('예약이 취소되었습니다.');
         await loadMyReservations();
         return;
       }
 
-      alert('예약 삭제 실패: ' + await parseErrorMessage(response));
+      alert('예약 취소 실패: ' + await parseErrorMessage(response));
     } catch (error) {
-      console.error('예약 삭제 중 오류:', error);
+      console.error('예약 취소 중 오류:', error);
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
+    const name = urlParams.get('name') || localStorage.getItem('roomescapeVisitorName');
     if (name) {
       document.getElementById('name').value = name;
       loadMyReservations();
+      return;
     }
+    alert('사용자 이름을 입력해주세요.');
+    location.href = '/';
   });
 </script>
 </body>
