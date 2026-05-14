@@ -50,20 +50,18 @@
     </footer>
 
     <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
-        <form method="dialog" style="margin: 0;">
-            <div class="dialog-head">
-                <span class="dialog-tag">CONFIRMATION</span>
-                <button type="button" class="dialog-close" data-action="cancel" aria-label="닫기">×</button>
-            </div>
-            <div class="dialog-body">
-                <h3 id="confirm-title" data-role="title">확인이 필요합니다</h3>
-                <p data-role="message">계속하시겠습니까?</p>
-            </div>
-            <div class="dialog-foot">
-                <button type="button" class="btn btn-ghost btn-sm" data-action="cancel">취소</button>
-                <button type="button" class="btn btn-primary btn-sm" data-action="confirm">확정</button>
-            </div>
-        </form>
+        <div class="dialog-head">
+            <span class="dialog-tag">CONFIRMATION</span>
+            <button type="button" class="dialog-close" aria-label="닫기">×</button>
+        </div>
+        <div class="dialog-body">
+            <h3 id="confirm-title" data-role="title">확인이 필요합니다</h3>
+            <p data-role="message">계속하시겠습니까?</p>
+        </div>
+        <div class="dialog-foot">
+            <button type="button" class="btn btn-ghost btn-sm" data-action="cancel">취소</button>
+            <button type="button" class="btn btn-primary btn-sm" data-action="confirm">확정</button>
+        </div>
     </dialog>
 
     <script th:src="@{/js/api.js}"></script>
