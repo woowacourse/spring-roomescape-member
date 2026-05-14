@@ -127,3 +127,37 @@
     - 백엔드는 프론트가 그러한 메시지를 작성할 수 있도록, 정확한 원인을 파악할 수 있는 예외 정보를 전달
     - 프론트 단에서는 백엔드로부터 명확한 정보를 받아서, 사용자에게 전달할 메시지를 구성하여 화면에 내보낸다.
 - 공통 에러에 대한 처리는 어떻게 해야할까? 컨트롤러 단에서 터지는 에러를 글로벌에서 처리중이긴 한데 ProblemDetail 도입이 필요할까
+
+---
+### 이번 사이클에서 가장 효과를 많이 본 규칙
+
+`message`는 사용자/클라이언트가 이해할 수 있는 설명으로, `code`와 `http status`는 프론트가 분기할 수 있는 식별 정보로 분리한다는 규칙의 효과를 가장 크게 느꼈다.
+
+처음에는 여러 예외를 `500`이나 `INVALID_INPUT`으로 뭉뚱그리면서, 실제 원인이 중복 예약인지, 지난 예약 취소 시도인지, 존재하지 않는 내 예약인지가 화면에서 구분되지 않았다.  
+이후 `code`, `status`, `message`를 나누고, 페이지에서는 `code`를 기준으로 사용자 메시지를 매핑하도록 바꾸면서 백엔드는 원인을 명확하게 전달하고 프론트는 사용자 친화적인 문구를 따로 구성할 수 있게 되었다.
+
+특히 아래 코드처럼 서비스 정책 위반을 `ConflictException`으로 구분하고, 전역 예외 처리기에서 동일한 응답 형식으로 바꿔주도록 한 구조가 이후 변경/취소 정책을 추가할 때도 그대로 재사용되어 이점이 컸다.
+
+```java
+if (isPastReservation(reservation)) {
+    throw new ConflictException(
+            "PAST_RESERVATION_CANNOT_BE_CANCELLED",
+            "이미 지난 예약은 취소할 수 없습니다."
+    );
+}
+```
+
+```java
+@ExceptionHandler(ApiException.class)
+public ResponseEntity<ErrorResponse> handleApiException(final ApiException exception) {
+    return errorResponse(exception.getStatus(), exception.getCode(), exception.getMessage());
+}
+```
+
+```java
+PAST_RESERVATION_CANNOT_BE_CANCELLED: {
+    title: "지난 예약은 취소 대신 기록으로 남겨둘게요",
+    message: "이미 시작된 예약은 취소 처리할 수 없어서, 앞으로의 예약만 변경하거나 취소할 수 있어요.",
+    hint: "다음 일정이 있다면 같은 목록에서 다른 예약을 선택해 계속 진행할 수 있어요."
+}
+```

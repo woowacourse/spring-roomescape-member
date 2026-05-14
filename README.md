@@ -28,9 +28,9 @@
 
 | 기능          | Http/url                                                         | 요청본문                   | 응답                              |
 |-------------|------------------------------------------------------------------|------------------------|---------------------------------|
-| 예약 생성       | `POST` `/reservations`                                           | `{name, date, timeId}` | `{id, name, date, time}`        |
+| 예약 생성       | `POST` `/reservations`                                           | `{name, date, themeId, timeId}` | `{id, name, date, theme, time}`        |
 | 예약 삭제       | `DELETE` `/reservations/{reservationId}`                         | -                      | -                               |
-| 예약 조회       | `GET` `/reservations`                                            | -                      | `[{id, name, date, time}, ...]` |
+| 예약 조회       | `GET` `/reservations`                                            | -                      | `[{id, name, date, theme, time}, ...]` |
 | 예약 가능 시간 조회 | `GET` `/themes/{themeId}/times/available?date={yyyy-MM-dd}`      | -                      | `[{id, startAt}, ...]`          |
 | 인기 테마 조회    | `GET` `/themes/popular?period={period}&limit={limit}`            | -                      | `[{id, name, description, thumbnailUrl}, ...]` |
 
@@ -93,6 +93,74 @@ CREATE TABLE theme
     UNIQUE (name)
 );
 ```
+
+## Cycle2 기능 목록
+
+- [x] 지난 날짜·시간에 대한 예약 생성 거부
+- [x] 같은 날짜 + 시간 + 테마 중복 예약 거부
+- [x] 예약이 존재하는 시간 삭제 거부
+- [x] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식, 필수값 누락 등) 거부
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스에 대해 의도된 에러 응답 반환
+- [x] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지 표시
+- [x] 사용자가 자신의 이름으로 본인 예약 목록 조회
+- [x] 사용자가 자신의 예약 취소
+- [x] 사용자가 자신의 예약 날짜·시간 변경
+- [x] 변경/취소 시 발생하는 에러 케이스도 2단계 규칙에 맞춰 처리
+
+## Cycle2 에러 응답 명세
+
+응답 본문은 다음 형식을 사용한다.
+
+```json
+{
+  "code": "RESERVATION_DUPLICATED",
+  "status": 409,
+  "message": "동일한 시기에 예약을 할 수 없습니다."
+}
+```
+
+상태 코드 규칙:
+
+- `400 Bad Request`
+  - 유효하지 않은 입력값, 잘못된 날짜/시간 형식, 필수값 누락
+- `404 Not Found`
+  - 존재하지 않는 테마, 예약 시간, 내 예약
+- `409 Conflict`
+  - 중복 예약, 예약 중인 시간/테마 삭제, 이미 지난 예약 변경/취소
+
+대표 코드 예시:
+
+- `RESERVATION_NAME_REQUIRED`
+- `RESERVATION_NAME_TOO_LONG`
+- `THEME_ID_REQUIRED`
+- `RESERVATION_TIME_ID_REQUIRED`
+- `INVALID_DATE_FORMAT`
+- `INVALID_TIME_FORMAT`
+- `THEME_NOT_FOUND`
+- `RESERVATION_TIME_NOT_FOUND`
+- `MY_RESERVATION_NOT_FOUND`
+- `RESERVATION_DUPLICATED`
+- `RESERVATION_TIME_IN_USE`
+- `THEME_IN_USE`
+- `PAST_RESERVATION_CANNOT_BE_CANCELLED`
+- `PAST_RESERVATION_CANNOT_BE_UPDATED`
+
+## Cycle2 변경/취소 명세
+
+사용자 예약 화면은 이름 기준 조회 후에만 본인 예약에 대한 변경/취소가 가능하다.
+
+| 기능 | Http/url | 요청 파라미터 | 성공 응답 | 실패 응답 |
+|--------|------------------------------------|-----------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
+| 내 예약 조회 | `GET` `/pages/user/reservations?reservationName={name}` | `reservationName` | `200 OK` HTML | 페이지 내 에러 메시지 |
+| 내 예약 취소 | `POST` `/pages/user/reservations/{reservationId}/delete` | `reservationName` | `302 Redirect` | `302 Redirect` + `errorCode` |
+| 내 예약 변경 | `POST` `/pages/user/reservations/{reservationId}/update` | `reservationName`, `date`, `timeId` | `302 Redirect` | `302 Redirect` + `errorCode` |
+
+변경/취소 정책:
+
+- 이미 지난 예약은 취소할 수 없다.
+- 이미 지난 예약은 변경할 수 없다.
+- 변경하려는 시간이 이미 차 있으면 변경할 수 없다.
+- 조회한 이름의 예약이 아니면 변경/취소할 수 없다.
 
 
 
