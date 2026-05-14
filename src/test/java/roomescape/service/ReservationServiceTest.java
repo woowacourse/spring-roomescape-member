@@ -395,4 +395,29 @@ class ReservationServiceTest {
         Assertions.assertThrows(CustomException.class,
                 () -> reservationService.update(reservationId2, updateRequest));
     }
+
+    @Test
+    @DisplayName("예약을 삭제할 수 있다.")
+    void 예약_삭제_성공() {
+        // given
+        when(reservationQueryingDao.existsById(reservationTimeId))
+                .thenReturn(true);
+
+        // when
+        reservationService.delete(reservationTimeId);
+
+        // then
+        verify(reservationUpdatingDao, times(1)).delete(reservationTimeId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제할 경우 에러를 발생한다.")
+    void 예약_삭제_에러() {
+        // given
+        when(reservationQueryingDao.existsById(reservationTimeId))
+                .thenReturn(false);
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.delete(reservationTimeId));
+    }
 }
