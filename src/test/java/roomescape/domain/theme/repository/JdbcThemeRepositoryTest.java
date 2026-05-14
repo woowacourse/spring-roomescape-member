@@ -134,6 +134,31 @@ class JdbcThemeRepositoryTest {
     }
 
     @Nested
+    class ExistsThemeByIdTest {
+
+        @Test
+        void 존재하면_true를_반환한다() {
+            // given
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+
+            // when
+            boolean actual = themeRepository.existsThemeById(theme.getId());
+
+            // then
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void 존재하지_않으면_false를_반환한다() {
+            // when
+            boolean actual = themeRepository.existsThemeById(1L);
+
+            // then
+            assertThat(actual).isFalse();
+        }
+    }
+
+    @Nested
     class FindPopularThemesDateBetweenTest {
 
         @Test

@@ -17,8 +17,6 @@ import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.error.exception.ReservationException;
-import roomescape.domain.reservation.error.exception.ReservationNotFoundException;
 import roomescape.domain.reservation.repository.JdbcReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
@@ -29,7 +27,9 @@ import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.error.exception.dto.FieldErrorResponseDto;
+import roomescape.global.error.dto.ParameterErrorResponseDto;
+import roomescape.global.error.exception.GeneralException;
+import roomescape.global.error.exception.GeneralNotFoundException;
 
 class ReservationServiceTest {
 
@@ -222,7 +222,7 @@ class ReservationServiceTest {
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.saveReservation(request))
-                    .isInstanceOf(ReservationException.class)
+                    .isInstanceOf(GeneralException.class)
                     .hasMessage("이미 예약된 날짜, 시간, 테마입니다.");
             }
 
@@ -241,7 +241,7 @@ class ReservationServiceTest {
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.saveReservation(request))
-                    .isInstanceOf(ReservationNotFoundException.class)
+                    .isInstanceOf(GeneralNotFoundException.class)
                     .hasMessage("조회할 자원이 존재하지 않습니다.");
             }
 
@@ -258,12 +258,12 @@ class ReservationServiceTest {
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.saveReservation(request))
-                    .isInstanceOf(ReservationNotFoundException.class)
+                    .isInstanceOf(GeneralNotFoundException.class)
                     .hasMessage("조회할 자원이 존재하지 않습니다.");
             }
 
             @Test
-            void timeId와_themeId가_모두_존재하지_않으면_필드_에러를_모두_포함한다() {
+            void timeId와_themeId가_모두_존재하지_않으면_파라미터_에러를_모두_포함한다() {
                 // given
                 ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                     "보예",
@@ -274,12 +274,12 @@ class ReservationServiceTest {
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.saveReservation(request))
-                    .isInstanceOfSatisfying(ReservationNotFoundException.class, exception -> {
-                        assertThat(exception.getFieldErrors())
-                            .extracting(FieldErrorResponseDto::field)
+                    .isInstanceOfSatisfying(GeneralNotFoundException.class, exception -> {
+                        assertThat(exception.getParameterErrors())
+                            .extracting(ParameterErrorResponseDto::parameter)
                             .containsExactly("timeId", "themeId");
-                        assertThat(exception.getFieldErrors())
-                            .extracting(FieldErrorResponseDto::message)
+                        assertThat(exception.getParameterErrors())
+                            .extracting(ParameterErrorResponseDto::message)
                             .containsExactly("존재 하지 않는 시간대입니다.", "존재 하지 않는 테마입니다.");
                     });
             }
@@ -322,7 +322,7 @@ class ReservationServiceTest {
             void 예약_ID가_존재하지_않으면_예외가_발생한다() {
                 // when & then
                 assertThatThrownBy(() -> reservationService.deleteReservationById(999L))
-                    .isInstanceOf(ReservationException.class)
+                    .isInstanceOf(GeneralException.class)
                     .hasMessage("예약을 찾을 수 없습니다.");
             }
         }

@@ -1,6 +1,7 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +25,8 @@ import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.error.dto.ParameterErrorResponseDto;
+import roomescape.global.error.exception.GeneralNotFoundException;
 
 class TimeServiceTest {
 
@@ -46,7 +49,7 @@ class TimeServiceTest {
         themeRepository = new JdbcThemeRepository(dataSource);
         timeRepository = new JdbcTimeRepository(dataSource);
         reservationRepository = new JdbcReservationRepository(dataSource);
-        timeService = new TimeService(reservationRepository, timeRepository);
+        timeService = new TimeService(reservationRepository, timeRepository, themeRepository);
     }
 
     @Nested
@@ -111,50 +114,78 @@ class TimeServiceTest {
     @Nested
     class GetAvailableTimesTest {
 
-        @Test
-        void 성공() {
-            // given
-            Time time1 = timeRepository.save(Time.create(LocalTime.of(18, 0)));
-            Time time2 = timeRepository.save(Time.create(LocalTime.of(19, 0)));
-            Time time3 = timeRepository.save(Time.create(LocalTime.of(20, 0)));
-            Time time4 = timeRepository.save(Time.create(LocalTime.of(21, 0)));
+        @Nested
+        class Success {
 
-            Theme theme1 = themeRepository.save(Theme.create(
-                "셜록: 런던의 그림자",
-                "안개 낀 런던, 의문의 살인 사건 현장에 남겨진 마지막 단서를 찾아 범인을 검거하세요.",
-                "https://images.unsplash.com/photo-1585076641399-5c0f74268a2d?auto=format&fit=crop&q=80&w=800"
-            ));
-            Theme theme2 = themeRepository.save(Theme.create(
-                "폐쇄병동의 비밀",
-                "버려진 정신병원, 자정마다 들려오는 비명소리... 당신은 이곳에서 제정신으로 나갈 수 있을까요?",
-                "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=800"
-            ));
-            Theme theme3 = themeRepository.save(Theme.create(
-                "파라오의 저주",
-                "모래 폭풍 속에 발견된 고대 피라미드. 함정을 피하고 숨겨진 황금 마스크를 찾아 탈출해야 합니다.",
-                "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800"
-            ));
-            themeRepository.save(Theme.create(
-                "이상한 나라의 초대장",
-                "토끼굴로 떨어진 당신, 모든 것이 거꾸로 된 세상에서 원래 세계로 돌아가는 길을 찾으세요.",
-                "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&q=80&w=800"
-            ));
+            @Test
+            void 성공() {
+                // given
+                Time time1 = timeRepository.save(Time.create(LocalTime.of(18, 0)));
+                Time time2 = timeRepository.save(Time.create(LocalTime.of(19, 0)));
+                Time time3 = timeRepository.save(Time.create(LocalTime.of(20, 0)));
+                Time time4 = timeRepository.save(Time.create(LocalTime.of(21, 0)));
 
-            reservationRepository.save(Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
-            reservationRepository.save(Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
-            reservationRepository.save(Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
-            reservationRepository.save(Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
+                Theme theme1 = themeRepository.save(Theme.create(
+                    "셜록: 런던의 그림자",
+                    "안개 낀 런던, 의문의 살인 사건 현장에 남겨진 마지막 단서를 찾아 범인을 검거하세요.",
+                    "https://images.unsplash.com/photo-1585076641399-5c0f74268a2d?auto=format&fit=crop&q=80&w=800"
+                ));
+                Theme theme2 = themeRepository.save(Theme.create(
+                    "폐쇄병동의 비밀",
+                    "버려진 정신병원, 자정마다 들려오는 비명소리... 당신은 이곳에서 제정신으로 나갈 수 있을까요?",
+                    "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=800"
+                ));
+                Theme theme3 = themeRepository.save(Theme.create(
+                    "파라오의 저주",
+                    "모래 폭풍 속에 발견된 고대 피라미드. 함정을 피하고 숨겨진 황금 마스크를 찾아 탈출해야 합니다.",
+                    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800"
+                ));
+                themeRepository.save(Theme.create(
+                    "이상한 나라의 초대장",
+                    "토끼굴로 떨어진 당신, 모든 것이 거꾸로 된 세상에서 원래 세계로 돌아가는 길을 찾으세요.",
+                    "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&q=80&w=800"
+                ));
 
-            LocalDate date = LocalDate.of(2026, 5, 10);
-            Long themeId = 1L;
-            List<TimeResponseDto> expected = List.of(TimeMapper.toResponseDto(time2), TimeMapper.toResponseDto(time3),
-                TimeMapper.toResponseDto(time4));
+                reservationRepository.save(Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
+                reservationRepository.save(Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
+                reservationRepository.save(Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
+                reservationRepository.save(Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
 
-            // when
-            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
+                LocalDate date = LocalDate.of(2026, 5, 10);
+                Long themeId = 1L;
+                List<TimeResponseDto> expected = List.of(TimeMapper.toResponseDto(time2),
+                    TimeMapper.toResponseDto(time3),
+                    TimeMapper.toResponseDto(time4));
 
-            // then
-            assertThat(actual).isEqualTo(expected);
+                // when
+                List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
+
+                // then
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        class Failed {
+
+            @Test
+            void themeId가_존재하지_않으면_예외가_발생한다() {
+                // given
+                LocalDate date = LocalDate.of(2026, 5, 10);
+                Long themeId = 999L;
+
+                // when & then
+                assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId))
+                    .isInstanceOfSatisfying(GeneralNotFoundException.class, exception -> {
+                        assertThat(exception).hasMessage("조회할 자원이 존재하지 않습니다.");
+                        assertThat(exception.getParameterErrors())
+                            .extracting(ParameterErrorResponseDto::parameter)
+                            .containsExactly("themeId");
+                        assertThat(exception.getParameterErrors())
+                            .extracting(ParameterErrorResponseDto::message)
+                            .containsExactly("존재 하지 않는 테마입니다.");
+                    });
+            }
         }
     }
 }
