@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.reservation.UserName;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.time.ReservationTime;
+import roomescape.domain.reservation.UserName;
 import roomescape.domain.reservation.theme.Theme;
+import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
@@ -35,6 +35,14 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationDao.findAll();
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllByUserName(String userName) {
+        List<Reservation> reservations = reservationDao.findAllByUserName(userName);
 
         return reservations.stream()
                 .map(ReservationResponse::from)

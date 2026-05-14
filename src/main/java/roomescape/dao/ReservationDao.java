@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.time.ReservationTime;
 import roomescape.domain.reservation.theme.Theme;
+import roomescape.domain.reservation.time.ReservationTime;
 
 @Repository
 public class ReservationDao {
@@ -28,26 +28,42 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 """
-                        SELECT r.id,r.name,r.date,rt.id AS time_id, rt.start_at,
-                        t.id AS theme_id, t.name AS theme_name, t.description, t.url
-                        FROM reservation r
-                        INNER JOIN reservation_time rt ON r.time_id = rt.id
-                        INNER JOIN theme t ON r.theme_id = t.id;
-                    """,
+                            SELECT r.id,r.name,r.date,rt.id AS time_id, rt.start_at,
+                            t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                            FROM reservation r
+                            INNER JOIN reservation_time rt ON r.time_id = rt.id
+                            INNER JOIN theme t ON r.theme_id = t.id;
+                        """,
                 RESERVATION_ROW_MAPPER
+        );
+    }
+
+    public List<Reservation> findAllByUserName(String userName) {
+        String sql = """
+                SELECT r.id, r.name,r.date,rt.id AS time_id, rt.start_at,
+                    t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE r.name = ?;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                RESERVATION_ROW_MAPPER,
+                userName
         );
     }
 
     public boolean existsBy(LocalDate date, Theme theme, ReservationTime time) {
         Boolean result = jdbcTemplate.queryForObject("""
-        SELECT EXISTS(
-            SELECT *
-            FROM reservation
-            WHERE date = ?
-                AND time_id = ?
-                AND theme_id = ?
-        ) 
-        """,
+                        SELECT EXISTS(
+                            SELECT *
+                            FROM reservation
+                            WHERE date = ?
+                                AND time_id = ?
+                                AND theme_id = ?
+                        ) 
+                        """,
                 Boolean.class,
                 date,
                 time.getId(),
@@ -78,12 +94,12 @@ public class ReservationDao {
 
     public boolean existsByTimeId(Long timeId) {
         Boolean result = jdbcTemplate.queryForObject("""
-        SELECT EXISTS(
-            SELECT 1
-            FROM reservation
-            WHERE time_id = ?
-        )
-        """,
+                        SELECT EXISTS(
+                            SELECT 1
+                            FROM reservation
+                            WHERE time_id = ?
+                        )
+                        """,
                 Boolean.class,
                 timeId
         );

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationRequest;
@@ -30,6 +31,13 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> read() {
         List<ReservationResponse> response = reservationService.findAll();
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping(params = "userName")
+    public ResponseEntity<List<ReservationResponse>> readAllByUserName(@RequestParam("userName") String userName) {
+        List<ReservationResponse> response = reservationService.findAllByUserName(userName);
 
         return ResponseEntity.ok().body(response);
     }
