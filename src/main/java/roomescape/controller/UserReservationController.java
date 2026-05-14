@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationResult;
 
@@ -44,6 +46,15 @@ public class UserReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancel(@PathVariable Long id, @RequestParam String name) {
         reservationService.deleteByOwner(id, name);
+    }
+
+    @PatchMapping("/{id}")
+    public ReservationResponse update(
+            @PathVariable Long id,
+            @RequestBody ReservationUpdateRequest request
+    ) {
+        ReservationResult updated = reservationService.updateByOwner(request.toCommand(id));
+        return ReservationResponse.from(updated);
     }
 
 

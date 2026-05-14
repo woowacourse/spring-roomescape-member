@@ -162,4 +162,26 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, id).stream().findFirst();
     }
 
+    @Override
+    public boolean existsByDateAndTimeAndThemeExcludingId(
+            LocalDate date, Long timeId, Long themeId, Long excludeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation
+                    WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+                )
+                """;
+        Boolean result = jdbcTemplate.queryForObject(
+                sql, Boolean.class, Date.valueOf(date), timeId, themeId, excludeId
+        );
+        return Boolean.TRUE.equals(result);
+    }
+
+    @Override
+    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, Date.valueOf(date), timeId, id);
+    }
+
+
 }

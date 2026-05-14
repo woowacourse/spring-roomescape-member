@@ -3,6 +3,7 @@ package roomescape;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.sql.Date;
@@ -11,7 +12,9 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -190,6 +193,167 @@ public class MyReservationStepTest extends IntegrationTest {
                     .body("message", is("필수 요청 파라미터가 누락되었습니다."));
         }
     }
+
+    @Nested
+    @DisplayName("내 예약 변경")
+    class MyReservationUpdate {
+
+        @Test
+        @DisplayName("본인의 미래 예약을 변경하면 200 + 변경된 예약을 반환한다")
+        void 본인_미래_예약_변경() {
+            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_2.toString());
+            body.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("id", is(reservationId.intValue()))
+                    .body("date", is(FUTURE_DATE_2.toString()))
+                    .body("time.startAt", is("11:00"));
+        }
+
+        @Test
+        @DisplayName("같은 시간으로의 변경도 허용된다 (자기 자신과는 충돌하지 않음)")
+        void 같은_시간으로_변경_허용() {
+            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_1.toString());
+            body.put("timeId", timeId10);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(200);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 예약 ID → 404")
+        void 존재하지_않는_예약() {
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_1.toString());
+            body.put("timeId", timeId10);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/9999")
+                    .then().log().all()
+                    .statusCode(404)
+                    .body("message", is("존재하지 않는 예약입니다."));
+        }
+
+        @Test
+        @DisplayName("다른 사람의 예약 변경 시도 → 404")
+        void 다른_사람의_예약() {
+            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "콘");
+            body.put("date", FUTURE_DATE_2.toString());
+            body.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(404)
+                    .body("message", is("존재하지 않는 예약입니다."));
+        }
+
+        @Test
+        @DisplayName("이미 지난 예약 변경 시도 → 400")
+        void 이미_지난_예약() {
+            LocalDate yesterday = TODAY.minusDays(1);
+            Long reservationId = insertReservationAndReturnId("브라운", yesterday, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_1.toString());
+            body.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(400)
+                    .body("message", is("이미 지난 예약은 변경할 수 없습니다."));
+        }
+
+        @Test
+        @DisplayName("새 시간이 과거인 변경 시도 → 400")
+        void 새_시간이_과거() {
+            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", TODAY.minusDays(1).toString());
+            body.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(400)
+                    .body("message", is("지나간 날짜, 시간으로는 변경할 수 없습니다."));
+        }
+
+        @Test
+        @DisplayName("변경하려는 시간이 다른 사람에 의해 예약됨 → 400")
+        void 시간_충돌() {
+            // 같은 테마에 두 예약 (다른 시간)
+            Long myReservation = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            insertReservationAndReturnId("콘", FUTURE_DATE_1, timeId11, themeId);
+
+            // 브라운이 자기 예약을 콘의 시간으로 변경 시도
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_1.toString());
+            body.put("timeId", timeId11);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + myReservation)
+                    .then().log().all()
+                    .statusCode(400)
+                    .body("message", is("해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."));
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 timeId로 변경 시도 → 404")
+        void 존재하지_않는_시간() {
+            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("name", "브라운");
+            body.put("date", FUTURE_DATE_2.toString());
+            body.put("timeId", 9999L);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().patch("/user/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(404)
+                    .body("message", is("존재하지 않는 시간입니다."));
+        }
+    }
+
 
     private Long insertReservationAndReturnId(String name, LocalDate date, Long timeId, Long themeId) {
         jdbcTemplate.update(

@@ -20,4 +20,9 @@ public interface ReservationRepository {
     List<ReservationEntity> findByName(String name);
 
     Optional<ReservationEntity> findById(Long id);
+
+    boolean existsByDateAndTimeAndThemeExcludingId(LocalDate date, Long timeId, Long themeId, Long excludeId);
+
+    void updateDateAndTime(Long id, LocalDate date, Long timeId);
+
 }

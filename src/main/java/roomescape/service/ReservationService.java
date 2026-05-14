@@ -16,6 +16,7 @@ import roomescape.repository.projection.ReservationTimeEntity;
 import roomescape.repository.projection.ThemeEntity;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.service.dto.ReservationResult;
+import roomescape.service.dto.ReservationUpdateCommand;
 
 @Service
 public class ReservationService {
@@ -90,6 +91,56 @@ public class ReservationService {
         }//TODO 에러메시지 리팩톨이 고려해보기
         reservationRepository.deleteById(id);
     }
+
+    //TODO 생성과 비슷한 검증이 많지만, 컨텍스트가 달라 메시지가 달라지느 부분 고려.
+    // 우선은 검증을 위한 추상화 보다 직관적으로... 이후 리팩토링 고려
+    public ReservationResult updateByOwner(ReservationUpdateCommand command) {
+        validateUpdateCommand(command);
+
+        ReservationEntity entity = findByIdAndName(command.getId(), command.getName());
+
+        LocalDateTime originalReservedAt = entity.getReservation().getDate()
+                .atTime(entity.getReservation().getTime().getStartAt());
+        if (!originalReservedAt.isAfter(LocalDateTime.now(clock))) {
+            throw new BusinessRuleViolationException("이미 지난 예약은 변경할 수 없습니다.");
+        }
+
+        ReservationTimeEntity newTimeEntity = reservationTimeRepository.findById(command.getTimeId())
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
+
+        LocalDateTime newReservedAt = command.getDate().atTime(newTimeEntity.getTime().getStartAt());
+        if (!newReservedAt.isAfter(LocalDateTime.now(clock))) {
+            throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 변경할 수 없습니다.");
+        }
+
+        Long themeId = entity.getThemeId();
+        if (reservationRepository.existsByDateAndTimeAndThemeExcludingId(
+                command.getDate(), command.getTimeId(), themeId, command.getId())) {
+            throw new BusinessRuleViolationException(
+                    "해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."
+            );
+        }
+
+        reservationRepository.updateDateAndTime(command.getId(), command.getDate(), command.getTimeId());
+
+        return ReservationResult.from(
+                reservationRepository.findById(command.getId())
+                        .orElseThrow(() -> new IllegalStateException("Update 직후 조회 실패"))
+        );
+    }
+
+    private void validateUpdateCommand(ReservationUpdateCommand command) {
+        if (command.getName() == null || command.getName().isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+        }
+        if (command.getDate() == null) {
+            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
+        }
+        if (command.getTimeId() == null) {
+            throw new IllegalArgumentException("예약 시간을 선택해 주세요.");
+        }
+    }
+
 
     private ReservationEntity findByIdAndName(Long id, String name) {
         return reservationRepository.findById(id)
