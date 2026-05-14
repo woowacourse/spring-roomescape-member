@@ -4,8 +4,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -39,6 +39,12 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("잘못된 요청입니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("잘못된 요청입니다."));
     }
 
     @ExceptionHandler
