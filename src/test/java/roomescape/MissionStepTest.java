@@ -51,7 +51,7 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-12-31");
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 

@@ -62,7 +62,7 @@ public class TimeTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-12-31");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

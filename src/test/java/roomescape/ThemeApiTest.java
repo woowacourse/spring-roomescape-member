@@ -5,15 +5,21 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeApiTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 테마_조회_빈목록() {
@@ -187,17 +193,9 @@ class ThemeApiTest {
     }
 
     private void createReservation(String name, String date, Integer timeId, Integer themeId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("date", date);
-        params.put("timeId", timeId);
-        params.put("themeId", themeId);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name, LocalDate.parse(date), timeId, themeId
+        );
     }
 }

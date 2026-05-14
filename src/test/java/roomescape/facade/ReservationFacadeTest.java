@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationRequest;
 import roomescape.domain.ReservationTime;
-import roomescape.service.ReservationTimeService;
 import roomescape.domain.Theme;
+import roomescape.dto.ReservationRequest;
+import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
@@ -61,6 +61,18 @@ class ReservationFacadeTest {
         ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 8, 5), time.getId(), theme.getId());
 
         reservationFacade.addReservation(request);
+
+        assertThatThrownBy(() -> reservationFacade.addReservation(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 지난_날짜로_예약시_예외가_발생한다() {
+        ReservationTime time = reservationTimeService.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
+        Theme theme = themeService.addTheme(new Theme(null, "공포", "무서운 테마", "https://example.com/horror.jpg"));
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        ReservationRequest request = new ReservationRequest("브라운", yesterday, time.getId(), theme.getId());
 
         assertThatThrownBy(() -> reservationFacade.addReservation(request))
                 .isInstanceOf(IllegalArgumentException.class);
