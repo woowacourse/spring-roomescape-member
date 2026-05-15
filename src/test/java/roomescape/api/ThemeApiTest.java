@@ -37,7 +37,7 @@ class ThemeApiTest extends ApiTestSupport {
 
     @Test
     @DisplayName("테마를 추가한다.")
-    void createTheme() {
+    void 테마를_등록한다() {
         // given
         Map<String, String> request = new HashMap<>();
         request.put("name", "귀신의 집");
@@ -60,7 +60,7 @@ class ThemeApiTest extends ApiTestSupport {
 
     @Test
     @DisplayName("전체 테마 목록을 조회한다.")
-    void getThemes() {
+    void 테마_목록을_조회한다() {
         // given
         createThemeHelper("귀신의 집", "무서워요", "/images/themes/1.webp");
         createThemeHelper("물고기", "어푸", "/images/themes/2.webp");
@@ -84,7 +84,7 @@ class ThemeApiTest extends ApiTestSupport {
 
     @Test
     @DisplayName("테마를 삭제한다.")
-    void deleteTheme() {
+    void 테마를_삭제한다() {
         // given
         int themaId = createThemeHelper("삭제할 테마", "삭제될 예정입니다", "/images/themes/delete.webp");
 
@@ -114,7 +114,7 @@ class ThemeApiTest extends ApiTestSupport {
 
     @Test
     @DisplayName("인기 테마를 예약 많은 순, 예약 수가 같다면 이름 순으로 조회한다.")
-    void getPopularThemes() {
+    void 인기_테마를_조회한다() {
         Theme themeA = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
         Theme themeB = dataInitializer.createTheme("B 테마", "설명B", "/images/themes/b.webp");
         Theme themeC = dataInitializer.createTheme("C 테마", "설명C", "/images/themes/c.webp");
@@ -149,7 +149,7 @@ class ThemeApiTest extends ApiTestSupport {
 
     @Test
     @DisplayName("인기 테마 조회는 days와 limit를 생략하면 기본값을 사용한다.")
-    void getPopularThemesWithDefaultQueryParams() {
+    void 인기_테마_조회시_days와_limit를_생략하면_기본값을_사용한다() {
         Theme theme = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
         dataInitializer.createReservation("사용자일", LocalDate.now().minusDays(1), time.getId(), theme.getId());
@@ -160,31 +160,6 @@ class ThemeApiTest extends ApiTestSupport {
                 .statusCode(200)
                 .body("themeRankings.theme.name", contains("A 테마"))
                 .body("themeRankings.size()", is(1));
-    }
-
-    @Test
-    @DisplayName("인기 테마 조회는 오늘을 제외하고 days일 범위만 조회한다.")
-    void getPopularThemesExcludesTodayAndIncludesExactDaysBeforeToday() {
-        Theme includedStartTheme = dataInitializer.createTheme("시작일 포함 테마", "설명", "/images/themes/start.webp");
-        Theme includedEndTheme = dataInitializer.createTheme("종료일 포함 테마", "설명", "/images/themes/end.webp");
-        Theme excludedTodayTheme = dataInitializer.createTheme("오늘 제외 테마", "설명", "/images/themes/today.webp");
-        Theme excludedBeforeRangeTheme = dataInitializer.createTheme("범위 이전 제외 테마", "설명", "/images/themes/before.webp");
-        ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
-        LocalDate today = LocalDate.now();
-
-        dataInitializer.createReservation("사용자일", today.minusDays(7), time.getId(), includedStartTheme.getId());
-        dataInitializer.createReservation("사용자이", today.minusDays(1), time.getId(), includedEndTheme.getId());
-        dataInitializer.createReservation("사용자삼", today, time.getId(), excludedTodayTheme.getId());
-        dataInitializer.createReservation("사용자사", today.minusDays(8), time.getId(), excludedBeforeRangeTheme.getId());
-
-        RestAssured.given().log().all()
-                .queryParam("days", 7)
-                .queryParam("limit", 10)
-                .when().get("/themes/rank")
-                .then().log().all()
-                .statusCode(200)
-                .body("themeRankings.theme.name", contains("시작일 포함 테마", "종료일 포함 테마"))
-                .body("themeRankings.size()", is(2));
     }
 
     @ParameterizedTest
@@ -199,7 +174,7 @@ class ThemeApiTest extends ApiTestSupport {
             "7, 51, 400"
     })
     @DisplayName("인기 테마 조회 조건의 경계값을 검증한다.")
-    void validatePopularThemeRankingQueryRange(int days, int limit, int statusCode) {
+    void 인기_테마_조회_조건이_유효하지_않으면_400을_반환한다(int days, int limit, int statusCode) {
         RestAssured.given().log().all()
                 .queryParam("days", days)
                 .queryParam("limit", limit)

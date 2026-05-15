@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -65,20 +65,52 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {
-            "NULL, 2026-05-16",
-            "'', 2026-05-16",
-            "'   ', 2026-05-16",
-            "123456789012345678901234567890123456789012345678901, 2026-05-16",
-            "고래, NULL"
-    }, nullValues = "NULL")
-    void 예약_생성_요청값이_유효하지_않으면_400을_반환한다(String name, String date) {
+    @NullAndEmptySource
+    void 예약_이름이_null이거나_비어있으면_400을_반환한다(String name) {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        params.put("date", date);
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_이름이_빈_공백이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        createReservationRequest("   ", TODAY.plusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_이름이_20자를_초과하면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        createReservationRequest("가".repeat(21), TODAY.plusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_날짜가_null이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", null);
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -191,7 +223,7 @@ class ReservationApiTest extends ApiTestSupport {
     void 지나간_날짜와_시간으로_예약하면_400을_반환한다() {
         createReservationPrerequisites(LocalTime.of(15, 0));
 
-        createReservationRequest(TODAY.minusDays(1), 1L, 1L)
+        createReservationRequest("고래", TODAY.minusDays(1), 1L, 1L)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -201,7 +233,7 @@ class ReservationApiTest extends ApiTestSupport {
     void 예약_날짜가_오늘이고_현재_서버_시간_이전의_예약_시간이면_400을_반환한다() {
         createReservationPrerequisites(LocalTime.MIN);
 
-        createReservationRequest(TODAY, 1L, 1L)
+        createReservationRequest("고래", TODAY, 1L, 1L)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -211,7 +243,7 @@ class ReservationApiTest extends ApiTestSupport {
     void 오늘_기준_30일을_초과한_날짜로_예약하면_400을_반환한다() {
         createReservationPrerequisites(LocalTime.of(15, 0));
 
-        createReservationRequest(TODAY.plusDays(31), 1L, 1L)
+        createReservationRequest("고래", TODAY.plusDays(31), 1L, 1L)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -223,12 +255,13 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     private io.restassured.specification.RequestSpecification createReservationRequest(
+            String name,
             LocalDate date,
             Long timeId,
             Long themeId
     ) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "고래");
+        params.put("name", name);
         params.put("date", date.toString());
         params.put("timeId", timeId);
         params.put("themeId", themeId);

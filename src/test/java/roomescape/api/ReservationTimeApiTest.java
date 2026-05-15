@@ -29,7 +29,7 @@ class ReservationTimeApiTest extends ApiTestSupport {
     private TestDataInitializer dataInitializer;
 
     @Test
-    void 시간_관리_API() {
+    void 예약_시간을_등록한다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -39,12 +39,22 @@ class ReservationTimeApiTest extends ApiTestSupport {
                 .when().post("/reservation-times")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @Test
+    void 예약_시간_목록을_조회한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
                 .when().get("/reservation-times")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservationTimes.size()", is(1));
+    }
+
+    @Test
+    void 예약_시간을_삭제한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
                 .when().delete("/reservation-times/1")
@@ -53,7 +63,7 @@ class ReservationTimeApiTest extends ApiTestSupport {
     }
 
     @Test
-    void 같은_예약_시간은_등록할_수_없다() {
+    void 동일한_시작_시간을_중복_등록하면_409를_반환한다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -74,8 +84,22 @@ class ReservationTimeApiTest extends ApiTestSupport {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ", "1000", "10:0", "10-00", "25:00"})
-    void 예약_시간_요청값이_유효하지_않으면_400을_반환한다(String startAt) {
+    @ValueSource(strings = {" ", "   "})
+    void 예약_시작_시간이_null이거나_비어있으면_400을_반환한다(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservation-times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1000", "10:0", "10-00", "25:00"})
+    void 예약_시작_시간_형식이_잘못되면_400을_반환한다(String startAt) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);
 
@@ -88,32 +112,7 @@ class ReservationTimeApiTest extends ApiTestSupport {
     }
 
     @Test
-    void 예약과_시간_연결() {
-        dataInitializer.createReservationTime(LocalTime.now());
-        dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1).toString());
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("reservations.size()", is(1));
-    }
-
-    @Test
-    void 예약_가능_시간_조회() {
+    void 특정_날짜와_테마에_대한_예약_가능_시간을_조회한다() {
         // given
         ReservationTime ten = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         ReservationTime eleven = dataInitializer.createReservationTime(LocalTime.of(11, 0));
