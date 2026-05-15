@@ -8,6 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.business.BusinessException;
+import roomescape.exception.business.DuplicateReservationException;
 import roomescape.exception.business.PastTimeCancelException;
 import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservation.domain.Reservation;
@@ -44,7 +45,7 @@ public class ReservationService {
         Theme theme = themeService.getById(request.themeId());
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new BusinessException(HttpStatus.CONFLICT, "이미 예약된 시간입니다.");
+            throw new DuplicateReservationException("이미 예약된 시간입니다.");
         }
 
         Reservation saved = reservationRepository.save(Reservation.of(request.name(), request.date(), time, theme));
@@ -81,7 +82,7 @@ public class ReservationService {
             throw new PastTimeReservationException("이미 지난 시간으로 변경할 수 없습니다.");
         }
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(newDate, request.timeId(), reservation.getTheme().getId())) {
-            throw new BusinessException(HttpStatus.CONFLICT, "이미 예약된 시간입니다.");
+            throw new DuplicateReservationException("이미 예약된 시간입니다.");
         }
 
         reservationRepository.update(id, newDate, request.timeId());
