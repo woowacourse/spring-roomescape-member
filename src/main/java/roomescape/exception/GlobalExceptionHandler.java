@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String VALIDATION_MESSAGE_SEPARATOR = "::";
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(final ApiException exception) {
@@ -146,7 +147,8 @@ public class GlobalExceptionHandler {
             return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
         }
 
-        return badRequest(resolveValidationCode(fieldError), fieldError.getDefaultMessage());
+        ValidationErrorDetail validationErrorDetail = resolveValidationErrorDetail(fieldError);
+        return badRequest(validationErrorDetail.code(), validationErrorDetail.message());
     }
 
     private ResponseEntity<ErrorResponse> buildBindingErrorResponse(final FieldError fieldError) {
@@ -154,7 +156,12 @@ public class GlobalExceptionHandler {
             return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
         }
 
-        return badRequest(resolveBindingCode(fieldError), fieldError.getDefaultMessage());
+        if ("typeMismatch".equals(fieldError.getCode())) {
+            return badRequest(resolveBindingCode(fieldError), fieldError.getDefaultMessage());
+        }
+
+        ValidationErrorDetail validationErrorDetail = resolveValidationErrorDetail(fieldError);
+        return badRequest(validationErrorDetail.code(), validationErrorDetail.message());
     }
 
     private FieldError findFirstFieldError(final MethodArgumentNotValidException exception) {
@@ -182,57 +189,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(code, status.value(), message));
     }
 
-    private String resolveValidationCode(final FieldError fieldError) {
-        if ("typeMismatch".equals(fieldError.getCode())) {
-            return resolveBindingCode(fieldError);
-        }
-
-        String objectName = fieldError.getObjectName();
-        String field = fieldError.getField();
-
-        if ("reservationCreateRequest".equals(objectName)) {
-            if ("name".equals(field)) {
-                if ("NotBlank".equals(fieldError.getCode())) {
-                    return "RESERVATION_NAME_REQUIRED";
-                }
-
-                if ("Size".equals(fieldError.getCode())) {
-                    return "RESERVATION_NAME_TOO_LONG";
-                }
-
-                return "INVALID_RESERVATION_NAME";
-            }
-
-            if ("date".equals(field)) {
-                return "RESERVATION_DATE_REQUIRED";
-            }
-
-            if ("themeId".equals(field)) {
-                return "THEME_ID_REQUIRED";
-            }
-
-            if ("timeId".equals(field)) {
-                return "RESERVATION_TIME_ID_REQUIRED";
-            }
-
-            return "INVALID_INPUT";
-        }
-
-        if ("themeCreateRequest".equals(objectName) && "name".equals(field)) {
-            return "INVALID_THEME_NAME";
-        }
-
-        if ("reservationTimeCreateRequest".equals(objectName) && "startAt".equals(field)) {
-            return "RESERVATION_TIME_REQUIRED";
-        }
-
-        if ("availableReservationTimeRequest".equals(objectName) && "date".equals(field)) {
-            return "RESERVATION_DATE_REQUIRED";
-        }
-
-        return "INVALID_INPUT";
-    }
-
     private String resolveBindingCode(final FieldError fieldError) {
         if ("date".equals(fieldError.getField())) {
             return "INVALID_DATE_FORMAT";
@@ -243,6 +199,21 @@ public class GlobalExceptionHandler {
         }
 
         return "INVALID_TYPE_VALUE";
+    }
+
+    private ValidationErrorDetail resolveValidationErrorDetail(final FieldError fieldError) {
+        String defaultMessage = fieldError.getDefaultMessage();
+
+        if (Objects.isNull(defaultMessage) || !defaultMessage.contains(VALIDATION_MESSAGE_SEPARATOR)) {
+            if (Objects.isNull(defaultMessage)) {
+                return new ValidationErrorDetail("INVALID_INPUT", "유효하지 않은 입력입니다.");
+            }
+
+            return new ValidationErrorDetail("INVALID_INPUT", defaultMessage);
+        }
+
+        String[] parts = defaultMessage.split(VALIDATION_MESSAGE_SEPARATOR, 2);
+        return new ValidationErrorDetail(parts[0], parts[1]);
     }
 
     private String resolveMissingParameterCode(final String parameterName) {

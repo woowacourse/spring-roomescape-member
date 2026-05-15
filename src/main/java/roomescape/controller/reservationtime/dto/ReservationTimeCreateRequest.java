@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import jakarta.validation.constraints.NotNull;
 
 public record ReservationTimeCreateRequest(
-        @NotNull(message = "예약 시간은 필수입니다.")
+        @NotNull(message = "RESERVATION_TIME_REQUIRED::예약 시간은 필수입니다.")
         @JsonFormat(pattern = "HH:mm")
         LocalTime startAt
 ) {
