@@ -106,15 +106,19 @@ label {
     gap: 6px;
 }
 
+
 .btn-change,
 .btn-cancel {
-    min-width: 52px;
-    height: 30px;
+    height: 36px;
+    padding: 0 16px;
     border: none;
-    border-radius: 10px;
-    font-size: 11px;
+    border-radius: 12px;
+    background: #f2f4f6;
+    color: #4e5968;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-change {
@@ -133,4 +137,18 @@ label {
 
 .btn-cancel:hover {
     background: #eef1f4;
+}
+
+.btn-change:hover:not(:disabled),
+.btn-cancel:hover:not(:disabled) {
+    background: #e8edf2;
+}
+
+.btn-change:disabled,
+.btn-cancel:disabled {
+    background: #f9fafb;
+    color: #b0b8c1;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 1;
 }
