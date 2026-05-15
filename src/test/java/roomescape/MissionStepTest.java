@@ -371,6 +371,6 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(409)
                 .body("code", is("RESOURCE_IN_USE"))
-                .body("message", is("예약이 존재해 삭제할 수 없습니다."));
+                .body("message", is("예약이 존재해 삭제할 수 없습니다"));
     }
 }

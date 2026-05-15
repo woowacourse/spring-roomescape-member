@@ -17,6 +17,8 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.ResourceInUseException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -44,7 +46,7 @@ class ReservationTimeServiceTest {
 
         //then
         assertThatThrownBy(() -> reservationTimeService.save(newTime))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약시간입니다.");
     }
 
@@ -61,7 +63,7 @@ class ReservationTimeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceInUseException.class)
                 .hasMessageContaining("삭제할 수 없습니다");
     }
 
@@ -78,5 +80,4 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteById(savedTime.getId());
         assertThat(reservationTimeService.findAll()).hasSize(0);
     }
-
 }
