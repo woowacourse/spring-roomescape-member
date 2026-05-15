@@ -24,7 +24,7 @@ public class AdminReservationTimeService {
         try {
             return reservationTimeRepository.save(startAt);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("이미 존재하는 예약 시간입니다.");
+            throw new DuplicateException("DUPLICATE_TIME", "이미 존재하는 예약 시간입니다.");
         }
     }
 
@@ -33,7 +33,7 @@ public class AdminReservationTimeService {
         try {
             reservationTimeRepository.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new EntityInUseException("예약이 있어 삭제할 수 없습니다.");
+            throw new EntityInUseException("TIME_IN_USE", "예약이 있어 삭제할 수 없습니다.");
         }
     }
 }

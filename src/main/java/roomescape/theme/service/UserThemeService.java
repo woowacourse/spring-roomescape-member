@@ -23,7 +23,7 @@ public class UserThemeService {
     public List<Theme> getThemes(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate,
                                  Long limit) {
         if (startDate.isAfter(endDate)) {
-            throw new InvalidInputException("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+            throw new InvalidInputException("INVALID_DATE_RANGE", "시작 날짜는 종료 날짜보다 이전이어야 합니다.");
         }
         return themeRepository.findRanked(sortColumn, sortOrder, startDate, endDate, limit);
     }

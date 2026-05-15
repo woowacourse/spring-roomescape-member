@@ -44,13 +44,13 @@ public class Reservation {
 
     public void validateOwner(String name) {
         if (!this.name.equals(name)) {
-            throw new OwnershipViolationException("예약자 이름이 일치하지 않습니다.");
+            throw new OwnershipViolationException("OWNERSHIP_VIOLATION", "예약자 이름이 일치하지 않습니다.");
         }
     }
 
     public void validateIsActive() {
         if (LocalDateTime.of(date, time.startAt()).isBefore(LocalDateTime.now())) {
-            throw new BusinessRuleException("이미 지난 예약은 취소하거나 변경할 수 없습니다.");
+            throw new BusinessRuleException("EXPIRED_RESERVATION", "이미 지난 예약은 취소하거나 변경할 수 없습니다.");
         }
     }
 

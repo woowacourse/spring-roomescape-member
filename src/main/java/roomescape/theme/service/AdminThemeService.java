@@ -23,7 +23,7 @@ public class AdminThemeService {
         try {
             return themeRepository.save(name, description, thumbnail);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("같은 이름의 테마가 존재합니다.");
+            throw new DuplicateException("DUPLICATE_THEME", "같은 이름의 테마가 존재합니다.");
         }
     }
 
@@ -32,7 +32,7 @@ public class AdminThemeService {
         try {
             themeRepository.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new EntityInUseException("예약이 있어 삭제할 수 없습니다.");
+            throw new EntityInUseException("THEME_IN_USE", "예약이 있어 삭제할 수 없습니다.");
         }
     }
 }

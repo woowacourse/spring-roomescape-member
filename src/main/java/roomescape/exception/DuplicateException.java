@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public class DuplicateException extends ApiException {
-    public DuplicateException(String message) {
-        super(message);
+    public DuplicateException(String code, String message) {
+        super(code, message);
     }
 }
