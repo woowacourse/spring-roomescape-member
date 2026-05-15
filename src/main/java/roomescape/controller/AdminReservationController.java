@@ -1,9 +1,11 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.request.ReservationUpdateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
 import java.util.List;
@@ -19,6 +21,15 @@ public class AdminReservationController {
     public ResponseEntity<List<ReservationResponse>> getAllReservations() {
         final List<ReservationResponse> results = reservationService.getAllReservations();
         return ResponseEntity.ok(results);
+    }
+
+    @PutMapping("/{reservation-id}")
+    public ResponseEntity<ReservationResponse> update(
+            @PathVariable("reservation-id") Long reservationId,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        final ReservationResponse result = reservationService.updateByAdmin(reservationId, request);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{reservation-id}")

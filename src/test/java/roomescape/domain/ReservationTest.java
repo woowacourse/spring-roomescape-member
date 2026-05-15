@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
 import roomescape.domain.exception.ReservationCancellationException;
+import roomescape.domain.exception.ReservationModificationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,11 +98,11 @@ class ReservationTest {
     }
 
     @Test
-    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
         Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 9),
+                LocalDate.of(2026, 5, 8),
                 FUTURE_TIME,
                 THEME
         );
@@ -111,16 +112,44 @@ class ReservationTest {
     }
 
     @Test
-    void 예약일_이틀_전에는_사용자가_예약을_취소할_수_있다() {
+    void 예약일_하루_전에는_사용자가_예약을_취소할_수_있다() {
         Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 10),
+                LocalDate.of(2026, 5, 9),
                 FUTURE_TIME,
                 THEME
         );
 
         assertThatCode(() -> reservation.validateCancelableByCustomer(LocalDate.of(2026, 5, 8)))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 예약일_당일에는_사용자가_예약을_변경할_수_없다() {
+        Reservation reservation = Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                FUTURE_TIME,
+                THEME
+        );
+
+        assertThatThrownBy(() -> reservation.validateModifiableByCustomer(LocalDate.of(2026, 5, 8)))
+                .isInstanceOf(ReservationModificationException.class);
+    }
+
+    @Test
+    void 예약일_하루_전에는_사용자가_예약을_변경할_수_있다() {
+        Reservation reservation = Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 9),
+                FUTURE_TIME,
+                THEME
+        );
+
+        assertThatCode(() -> reservation.validateModifiableByCustomer(LocalDate.of(2026, 5, 8)))
                 .doesNotThrowAnyException();
     }
 }

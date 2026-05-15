@@ -70,18 +70,17 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    public ReservationResponse update(final Long reservationId, final ReservationUpdateRequest data) {
+    public ReservationResponse updateByCustomer(final Long reservationId, final ReservationUpdateRequest data) {
         final Reservation originReservation = getReservation(reservationId);
-        final ReservationTime newReservationTime = getReservationTime(data.timeId());
+        originReservation.validateModifiableByCustomer(LocalDate.now(clock));
 
-        final Reservation updatedReservation = originReservation.changeSchedule(
-                data.date(),
-                newReservationTime,
-                LocalDateTime.now(clock)
-        );
-        final Reservation reservation = reservationRepository.update(updatedReservation);
+        return updateSchedule(data, originReservation);
+    }
 
-        return ReservationResponse.from(reservation);
+    public ReservationResponse updateByAdmin(final Long reservationId, final ReservationUpdateRequest data) {
+        final Reservation originReservation = getReservation(reservationId);
+
+        return updateSchedule(data, originReservation);
     }
 
     public void cancel(final Long reservationId) {
@@ -108,6 +107,19 @@ public class ReservationService {
                 .toList();
 
         return new ReservationOptionResponse(dates, themes);
+    }
+
+    private ReservationResponse updateSchedule(final ReservationUpdateRequest data, final Reservation originReservation) {
+        final ReservationTime newReservationTime = getReservationTime(data.timeId());
+
+        final Reservation updatedReservation = originReservation.changeSchedule(
+                data.date(),
+                newReservationTime,
+                LocalDateTime.now(clock)
+        );
+        final Reservation reservation = reservationRepository.update(updatedReservation);
+
+        return ReservationResponse.from(reservation);
     }
 
     private Reservation getReservation(final Long reservationId) {

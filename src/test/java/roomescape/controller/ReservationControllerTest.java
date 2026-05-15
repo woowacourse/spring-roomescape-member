@@ -306,15 +306,36 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
-    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_사용자가_예약을_수정할_수_없다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-01", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-05-02",
+                        "timeId", 2
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", org.hamcrest.Matchers.is("당일 예약은 변경할 수 없습니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-02", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-01", "1", "1");
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("message", org.hamcrest.Matchers.is("당일 예약은 취소할 수 없습니다."));
     }
 
     @Test

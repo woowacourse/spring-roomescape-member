@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.exception.ReservationCancellationException;
+import roomescape.domain.exception.ReservationModificationException;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.request.ReservationUpdateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
@@ -142,7 +143,7 @@ class ReservationServiceTest {
         reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
 
         // when
-        ReservationResponse response = reservationService.update(
+        ReservationResponse response = reservationService.updateByCustomer(
                 1L,
                 new ReservationUpdateRequest(LocalDate.of(2026, 8, 6), 2L)
         );
@@ -162,7 +163,7 @@ class ReservationServiceTest {
         reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
                 1L,
                 new ReservationUpdateRequest(LocalDate.of(2026, 8, 5), 1L)
         ))
@@ -181,7 +182,7 @@ class ReservationServiceTest {
         ));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
                 1L,
                 new ReservationUpdateRequest(LocalDate.of(2026, 8, 5), 999L)
         ))
@@ -201,11 +202,54 @@ class ReservationServiceTest {
         reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
                 1L,
                 new ReservationUpdateRequest(LocalDate.of(2026, 5, 8), 1L)
         ))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 예약일_당일에는_사용자가_예약_일정을_수정할_수_없다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0), LocalTime.of(12, 30)));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
+                1L,
+                new ReservationUpdateRequest(LocalDate.of(2026, 5, 9), 2L)
+        ))
+                .isInstanceOf(ReservationModificationException.class);
+    }
+
+    @Test
+    void 관리자는_예약일_당일에도_예약_일정을_수정할_수_있다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0), LocalTime.of(12, 30)));
+
+        // when
+        ReservationResponse response = reservationService.updateByAdmin(
+                1L,
+                new ReservationUpdateRequest(LocalDate.of(2026, 5, 9), 2L)
+        );
+
+        // then
+        assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 9));
+        assertThat(response.time().id()).isEqualTo(2L);
     }
 
     @Test
@@ -233,12 +277,12 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
         // given
         reservationRepository.add(Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 9),
+                LocalDate.of(2026, 5, 8),
                 ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
@@ -249,12 +293,12 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 관리자는_예약일_하루_전에도_예약을_삭제할_수_있다() {
+    void 관리자는_예약일_당일에도_예약을_삭제할_수_있다() {
         // given
         reservationRepository.add(Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 9),
+                LocalDate.of(2026, 5, 8),
                 ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));

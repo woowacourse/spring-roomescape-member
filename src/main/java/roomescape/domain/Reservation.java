@@ -2,14 +2,13 @@ package roomescape.domain;
 
 import lombok.Getter;
 import roomescape.domain.exception.ReservationCancellationException;
+import roomescape.domain.exception.ReservationModificationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 public class Reservation {
-
-    private static final int CUSTOMER_CANCEL_DEADLINE_DAYS_BEFORE = 2;
 
     private final Long id;
     private final Name customerName;
@@ -83,13 +82,19 @@ public class Reservation {
     }
 
     public void validateCancelableByCustomer(final LocalDate today) {
-        if (!canCancelByCustomer(today)) {
+        if (!canChangeByCustomer(today)) {
             throw new ReservationCancellationException();
         }
     }
 
-    private boolean canCancelByCustomer(final LocalDate today) {
-        return date.isAfter(today.plusDays(CUSTOMER_CANCEL_DEADLINE_DAYS_BEFORE - 1));
+    public void validateModifiableByCustomer(final LocalDate today) {
+        if (!canChangeByCustomer(today)) {
+            throw new ReservationModificationException();
+        }
+    }
+
+    private boolean canChangeByCustomer(final LocalDate today) {
+        return date.isAfter(today);
     }
 
     private void validateRequiredValues(final LocalDate date, final ReservationTime time) {

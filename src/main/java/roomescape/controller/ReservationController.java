@@ -59,7 +59,7 @@ public class ReservationController {
             @PathVariable("reservation-id") Long reservationId,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
-        final ReservationResponse result = reservationService.update(reservationId, request);
+        final ReservationResponse result = reservationService.updateByCustomer(reservationId, request);
         return ResponseEntity.ok(result);
     }
 
