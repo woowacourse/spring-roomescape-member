@@ -38,7 +38,8 @@ public class ScheduleController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ScheduleSaveResponse>> save(
-            @RequestBody @Valid ScheduleSaveRequest body) {
+            @RequestBody @Valid ScheduleSaveRequest body
+    ) {
         ScheduleSaveResponse response = scheduleService.save(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }

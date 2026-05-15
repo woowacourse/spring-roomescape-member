@@ -138,4 +138,16 @@ public class JdbcScheduleRepository implements ScheduleRepository {
                 .stream()
                 .findFirst();
     }
+
+    @Override
+    public boolean existsAlreadySchedule(LocalDate date, long themeId, long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM schedule WHERE date = :date AND time_id = :timeId AND theme_id = :themeId)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
+    }
 }

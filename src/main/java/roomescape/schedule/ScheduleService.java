@@ -1,10 +1,12 @@
 package roomescape.schedule;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.schedule.PastScheduleException;
+import roomescape.exception.schedule.ScheduleAlreadyExistsException;
 import roomescape.exception.schedule.ScheduleDeleteFailedException;
 import roomescape.exception.schedule.ScheduleNotFoundException;
 import roomescape.exception.schedule.ScheduleThemeInUseException;
@@ -46,8 +48,14 @@ public class ScheduleService {
     }
 
     public ScheduleSaveResponse save(ScheduleSaveRequest body) {
-        Schedule newSchedule = scheduleRepository.save(body.toDomain());
-        return ScheduleSaveResponse.from(newSchedule);
+        validateAlreadyExistsNot(body.date(), body.themeId(), body.timeId());
+        return ScheduleSaveResponse.from(scheduleRepository.save(body.toDomain()));
+    }
+
+    private void validateAlreadyExistsNot(LocalDate date, long themeId, long timeId) {
+        if (scheduleRepository.existsAlreadySchedule(date, themeId, timeId)){
+            throw new ScheduleAlreadyExistsException(ErrorCode.SCHEDULE_ALREADY_EXIST);
+        }
     }
 
     public void deleteById(long scheduleId) {
