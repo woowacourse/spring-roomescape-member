@@ -1,3 +1,63 @@
+const ERROR_MESSAGES = {
+    // Common
+    "COMMON_001": "입력 데이터 형식이 올바르지 않습니다. 다시 확인해주세요.",
+    "COMMON_002": "지원하지 않는 요청 방식입니다.",
+    "COMMON_003": "요청을 처리할 수 없습니다.",
+    "COMMON_004": "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+    "COMMON_005": "입력값이 올바르지 않습니다.",
+    "COMMON_006": "입력값이 유효하지 않습니다. 내용을 다시 확인해주세요.",
+    "COMMON_007": "데이터 처리 중 오류가 발생하여 요청을 완료할 수 없습니다.",
+
+    // Reservation
+    "RES_001": "예약 ID가 누락되어 요청을 처리할 수 없습니다.",
+    "RES_002": "예약자 이름을 입력해주세요.",
+    "RES_003": "예약 날짜를 선택해주세요.",
+    "RES_004": "예약 시간을 선택해주세요.",
+    "RES_005": "테마를 선택해주세요.",
+    "RES_006": "해당 예약 정보를 찾을 수 없습니다.",
+    "RES_007": "선택하신 일정은 이미 예약이 완료되었습니다. 다른 시간을 선택해주세요.",
+    "RES_008": "이미 취소된 예약은 변경하거나 다시 취소할 수 없습니다.",
+    "RES_009": "본인의 예약만 취소하거나 변경할 수 있습니다.",
+    "RES_010": "이미 지난 예약은 변경하거나 취소할 수 없습니다.",
+    "RES_011": "과거 날짜나 시간으로는 예약할 수 없습니다.",
+    "RES_012": "과거 날짜나 시간으로 일정을 변경할 수 없습니다.",
+
+    // Reservation Date
+    "RES_DATE_001": "날짜 ID가 누락되었습니다.",
+    "RES_DATE_002": "날짜를 입력해주세요.",
+    "RES_DATE_003": "오늘 이전의 날짜는 예약 가능 날짜로 등록할 수 없습니다.",
+    "RES_DATE_004": "등록된 날짜 정보를 찾을 수 없습니다.",
+    "RES_DATE_005": "이미 등록되어 있는 날짜입니다. 목록에서 확인해주세요.",
+    "RES_DATE_006": "날짜 상태 변경 중 오류가 발생했습니다.",
+
+    // Reservation Time
+    "RES_TIME_001": "시간 ID가 누락되었습니다.",
+    "RES_TIME_002": "시작 시간을 입력해주세요.",
+    "RES_TIME_003": "등록된 시간 정보를 찾을 수 없습니다.",
+    "RES_TIME_004": "이미 등록되어 있는 시간입니다. 목록에서 확인해주세요.",
+    "RES_TIME_005": "시간 상태 변경 중 오류가 발생했습니다.",
+
+    // Theme
+    "THEME_001": "테마 ID가 누락되었습니다.",
+    "THEME_002": "테마 이름을 입력해주세요.",
+    "THEME_003": "테마 설명을 입력해주세요.",
+    "THEME_004": "테마 썸네일 URL을 입력해주세요.",
+    "THEME_005": "테마 정보를 찾을 수 없습니다.",
+    "THEME_006": "동일한 이름의 테마가 이미 등록되어 있습니다. 다른 이름을 사용해주세요.",
+    "THEME_007": "테마 상태 변경 중 오류가 발생했습니다."
+};
+
+async function handleResponseError(response, defaultMessage) {
+    try {
+        const errorData = await response.json();
+        const errorCode = errorData.errorCode;
+        const message = ERROR_MESSAGES[errorCode] || errorData.message || defaultMessage;
+        alert(message);
+    } catch (e) {
+        alert(defaultMessage);
+    }
+}
+
 let searchedName = null;
 let reschedulingReservation = null;
 let selectedDate = null;
@@ -25,7 +85,7 @@ async function searchReservations() {
     const response = await fetch(`/member/reservations/${encodeURIComponent(name)}`);
 
     if (!response.ok) {
-        alert("예약 내역을 불러오지 못했습니다.");
+        await handleResponseError(response, "예약 내역을 불러오지 못했습니다.");
         return;
     }
 
@@ -133,7 +193,7 @@ async function loadRescheduleDates() {
     const response = await fetch("/member/dates");
 
     if (!response.ok) {
-        alert("날짜 목록을 불러오지 못했습니다.");
+        await handleResponseError(response, "날짜 목록을 불러오지 못했습니다.");
         return;
     }
 
@@ -172,7 +232,7 @@ async function loadRescheduleTimes() {
     const response = await fetch(`/member/times?dateId=${selectedDate.id}&themeId=${themeId}`);
 
     if (!response.ok) {
-        alert("예약 가능 시간을 불러오지 못했습니다.");
+        await handleResponseError(response, "예약 가능 시간을 불러오지 못했습니다.");
         return;
     }
 
@@ -222,7 +282,7 @@ async function submitReschedule() {
     });
 
     if (!response.ok) {
-        alert("예약 변경에 실패했습니다.");
+        await handleResponseError(response, "예약 변경에 실패했습니다.");
         return;
     }
 
@@ -270,7 +330,7 @@ async function cancelReservation(reservationId) {
     });
 
     if (!response.ok) {
-        alert("예약 취소에 실패했습니다.");
+        await handleResponseError(response, "예약 취소에 실패했습니다.");
         return;
     }
 
@@ -287,7 +347,7 @@ async function reloadReservationsBySearchedName() {
     const response = await fetch(`/member/reservations/${encodeURIComponent(searchedName)}`);
 
     if (!response.ok) {
-        alert("예약 내역을 다시 불러오지 못했습니다.");
+        await handleResponseError(response, "예약 내역을 다시 불러오지 못했습니다.");
         return;
     }
 
