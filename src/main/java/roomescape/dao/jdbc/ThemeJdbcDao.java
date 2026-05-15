@@ -89,7 +89,6 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-<<<<<<< cycle2
     public int update(Theme theme) {
         String sql = """
                 UPDATE themes
@@ -105,8 +104,6 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-=======
->>>>>>> bee9827
     public int delete(Long id) {
         String sql = """
                 DELETE FROM themes

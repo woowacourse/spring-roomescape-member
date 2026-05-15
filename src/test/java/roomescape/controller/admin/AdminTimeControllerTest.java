@@ -3,10 +3,7 @@ package roomescape.controller.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-<<<<<<< cycle2
 import static org.mockito.BDDMockito.then;
-=======
->>>>>>> bee9827
 import static org.mockito.BDDMockito.willDoNothing;
 
 import io.restassured.common.mapper.TypeRef;
@@ -112,11 +109,8 @@ class AdminTimeControllerTest {
                     .when().delete("/admin/times/" + time.getId())
                     .then()
                     .status(HttpStatus.NO_CONTENT);
-<<<<<<< cycle2
 
             then(timeService).should().delete(time.getId());
-=======
->>>>>>> bee9827
         }
     }
 }

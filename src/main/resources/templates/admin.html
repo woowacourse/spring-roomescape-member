@@ -236,10 +236,7 @@ tr:hover td{background:var(--sur2)}
           <th>날짜</th>
           <th>테마</th>
           <th>시간</th>
-<<<<<<< cycle2
           <th>상태</th>
-=======
->>>>>>> bee9827
           <th></th>
         </tr>
       </thead>
@@ -409,10 +406,7 @@ async function loadReservations() {
         <td>${rv.date || ''}</td>
         <td>${rv.theme?.name || ''}</td>
         <td>${fmt(rv.time?.startAt)}</td>
-<<<<<<< cycle2
         <td>${rv.status === 'CANCELED' ? '취소됨' : '예약됨'}</td>
-=======
->>>>>>> bee9827
         <td><button class="td-del" onclick="delReservation(${rv.id},'${(rv.name||'').replace(/'/g,"\\'")}')">×</button></td>
       `;
       tbody.appendChild(tr);
