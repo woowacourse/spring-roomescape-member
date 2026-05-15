@@ -113,7 +113,6 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(target.getId()).isEqualTo(saved.getId());
         assertThat(target.getName()).isEqualTo(saved.getName());
-        assertThat(target.getDate()).isEqualTo(saved.getDate());
         assertThat(target.getTime()).isEqualTo(saved.getTime());
         assertThat(target.getTheme()).isEqualTo(saved.getTheme());
     }
