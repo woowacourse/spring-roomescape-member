@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
+import roomescape.exception.ReservationTimeErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -44,9 +46,13 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.existByTimeId(id)) {
-            throw new IllegalArgumentException("이미 예약된 시간은 삭제할 수 없습니다.");
-        }
+        validateRemovableReservationTime(id);
         reservationTimeRepository.delete(id);
+    }
+
+    private void validateRemovableReservationTime(Long id) {
+        if (reservationRepository.existByTimeId(id)) {
+            throw new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_EXIST_ON_TIME);
+        }
     }
 }
