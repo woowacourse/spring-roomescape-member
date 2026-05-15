@@ -91,6 +91,18 @@ public class ReservationService {
     }
 
     @Transactional
+    public void deleteByName(Long id, String name) {
+        Reservation reservation = reservationDao.findById(id)
+                .map(ReservationRow::toDomain)
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+
+        if (!reservation.equalsName(name)) {
+            throw new NotFoundException(ReservationErrorCode.NOT_FOUND);
+        }
+        reservationDao.delete(id);
+    }
+
+    @Transactional
     public void delete(Long id) {
         if (!reservationDao.existsById(id)) {
             throw new NotFoundException(ReservationErrorCode.NOT_FOUND);

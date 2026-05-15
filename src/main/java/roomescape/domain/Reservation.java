@@ -77,4 +77,8 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public boolean equalsName(String name) {
+        return this.name.equals(name);
+    }
 }
