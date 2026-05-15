@@ -3,6 +3,7 @@ package roomescape.controller.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -29,6 +30,7 @@ import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.AdminReservationResponseDto;
+import roomescape.dto.response.PageResponse;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(AdminReservationController.class)
@@ -52,21 +54,25 @@ class AdminReservationControllerTest {
     class Get {
 
         @Test
-        @DisplayName("전체 예약 목록을 조회한다")
+        @DisplayName("전체 예약 목록을 페이지로 조회한다")
         void returnsAllReservations() {
             List<Reservation> reservations = List.of(reservation);
-            given(reservationService.findAll()).willReturn(reservations);
-            List<AdminReservationResponseDto> expected = reservations.stream()
+            List<AdminReservationResponseDto> content = reservations.stream()
                     .map(AdminReservationResponseDto::from)
                     .toList();
+            PageResponse<Reservation> pageResponse = new PageResponse<>(reservations, 1L, 1, 0, 10);
+            given(reservationService.findAll(anyInt(), anyInt())).willReturn(pageResponse);
 
-            List<AdminReservationResponseDto> actual = RestAssuredMockMvc.given()
+            PageResponse<AdminReservationResponseDto> actual = RestAssuredMockMvc.given()
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
                     .extract().as(new TypeRef<>() {});
 
-            assertThat(actual).isEqualTo(expected);
+            assertThat(actual.content()).isEqualTo(content);
+            assertThat(actual.totalElements()).isEqualTo(1L);
         }
 
         @Test

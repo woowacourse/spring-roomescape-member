@@ -14,6 +14,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.PageResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +31,14 @@ public class ReservationService {
 
     public List<Reservation> findAll() {
         return reservationDao.findAll();
+    }
+
+    public PageResponse<Reservation> findAll(int page, int size) {
+        int offset = page * size;
+        List<Reservation> content = reservationDao.findAll(size, offset);
+        long totalElements = reservationDao.count();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        return new PageResponse<>(content, totalElements, totalPages, page, size);
     }
 
     public Reservation findById(Long id) {
