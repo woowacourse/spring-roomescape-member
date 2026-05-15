@@ -98,25 +98,23 @@ public class ReservationService {
         reservationRepository.deleteById(reservation.id());
     }
 
-    public void cancelReservation(Long id, String name) {
+    public void cancelReservation(Long id) {
         Reservation reservation = findReservation(id);
 
-        validateReservationOwner(reservation, name);
+        validateCancelableReservation(reservation);
         reservationRepository.deleteById(reservation.id());
-    }
-
-    private void validateReservationOwner(Reservation reservation, String name) {
-        if (Objects.isNull(name) || name.isBlank()) {
-            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
-        }
-
-        if (!reservation.name().equals(name)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_OWNER_MISMATCH);
-        }
     }
 
     private Reservation findReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateCancelableReservation(Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
     }
 }

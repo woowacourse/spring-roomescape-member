@@ -39,11 +39,11 @@ public enum ErrorCode {
             "지난 날짜와 시간은 예약할 수 없습니다.",
             "오늘 이후의 예약 가능 시간을 선택해주세요."
     ),
-    RESERVATION_OWNER_MISMATCH(
-            HttpStatus.FORBIDDEN,
-            "RESERVATION_OWNER_MISMATCH",
-            "본인의 예약만 취소할 수 있습니다.",
-            "예약자 이름을 확인해주세요."
+    RESERVATION_ALREADY_PAST(
+            HttpStatus.BAD_REQUEST,
+            "RESERVATION_ALREADY_PAST",
+            "이미 지난 예약입니다.",
+            "지난 예약은 취소할 수 없습니다."
     ),
     RESERVATION_DUPLICATED(
             HttpStatus.CONFLICT,

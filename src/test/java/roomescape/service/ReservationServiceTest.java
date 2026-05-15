@@ -166,27 +166,40 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("사용자는 본인 예약을 취소할 수 있다")
+    @DisplayName("사용자는 예약 목록에서 선택한 예약을 취소할 수 있다")
     void cancelReservation() {
         long reservationId = 1L;
         Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        reservationService.cancelReservation(reservationId, "브라운");
+        reservationService.cancelReservation(reservationId);
 
         verify(reservationRepository).deleteById(eq(reservationId));
     }
 
     @Test
-    @DisplayName("사용자는 다른 사람의 예약을 취소할 수 없다")
-    void throwException_WhenCancelOtherUserReservation() {
+    @DisplayName("존재하지 않는 예약은 취소할 수 없다")
+    void throwException_WhenCancelReservationNotFound() {
         long reservationId = 1L;
-        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.cancelReservation(reservationId))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
+
+        verify(reservationRepository, never()).deleteById(reservationId);
+    }
+
+    @Test
+    @DisplayName("지난 예약은 취소할 수 없다")
+    void throwException_WhenCancelPastReservation() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().minusDays(1));
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        assertThatThrownBy(() -> reservationService.cancelReservation(reservationId, "조이"))
+        assertThatThrownBy(() -> reservationService.cancelReservation(reservationId))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_OWNER_MISMATCH));
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_ALREADY_PAST));
 
         verify(reservationRepository, never()).deleteById(reservationId);
     }
