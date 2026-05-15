@@ -25,12 +25,10 @@ public class ReservationDao {
                     rs.getBoolean("is_cancelled")
             );
 
-    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -39,18 +37,20 @@ public class ReservationDao {
 
     public List<ReservationEntity> findAll() {
         String sql = "SELECT * FROM reservation WHERE is_deleted = FALSE";
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return namedParameterJdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Optional<ReservationEntity> findById(Long id) {
-        String sql = "SELECT * FROM reservation WHERE id = ? AND is_deleted = FALSE";
-        return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
+        String sql = "SELECT * FROM reservation WHERE id = :id AND is_deleted = FALSE";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameters, reservationRowMapper).stream()
                 .findAny();
     }
 
     public List<ReservationEntity> findByName(String name) {
-        String sql = "SELECT * FROM reservation WHERE name = ? AND is_deleted = FALSE";
-        return jdbcTemplate.query(sql, reservationRowMapper, name);
+        String sql = "SELECT * FROM reservation WHERE name = :name AND is_deleted = FALSE";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        return namedParameterJdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 
     public Long save(String name, LocalDate date, Long timeId, Long themeId) {
@@ -85,33 +85,36 @@ public class ReservationDao {
     }
 
     public int updateCancelledById(Long id, boolean status) {
-        String sql = "UPDATE reservation SET is_cancelled = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, status, id);
+        String sql = "UPDATE reservation SET is_cancelled = :status WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("status", status)
+                .addValue("id", id);
+        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     public int deleteById(Long id) {
-        String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     public boolean existsValidReservationAt(Long themeId, LocalDate date, Long timeId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE theme_id = ?
-                  AND date = ?
-                  AND time_id = ?
+                WHERE theme_id = :themeId
+                  AND date = :date
+                  AND time_id = :timeId
                   AND is_cancelled = FALSE
                   AND is_deleted = FALSE
                 """;
 
-        Integer count = jdbcTemplate.queryForObject(
-                sql,
-                Integer.class,
-                themeId,
-                date,
-                timeId
-        );
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
 
         return count != null && count > 0;
     }
@@ -120,10 +123,11 @@ public class ReservationDao {
         String sql = """
                 SELECT * 
                 FROM reservation
-                WHERE date >= ?
+                WHERE date >= :date
                   AND is_deleted = FALSE
                 """;
 
-        return jdbcTemplate.query(sql, reservationRowMapper, localDate);
+        MapSqlParameterSource parameters = new MapSqlParameterSource("date", localDate);
+        return namedParameterJdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 }
