@@ -122,6 +122,18 @@ public class ReservationDao {
        return selectById(id);
     }
 
+    public boolean existsByThemeIdAndAfterDate(Long themeId, LocalDate now) {
+        String sql = """
+                select count(*)
+                from reservation
+                where theme_id = ?
+                and date >= ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId, now);
+        return count != null && count > 0;
+    }
+
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
