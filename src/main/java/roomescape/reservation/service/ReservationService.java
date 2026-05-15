@@ -42,28 +42,9 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    @Transactional
-    public void delete(Long id) {
-        deleteReservation(id);
-    }
-
-    @Transactional
-    public void deleteMine(Long id, String guestName) {
-
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new DomainException(RESERVATION_NOT_FOUND));
-
-        validateAlreadyStarted(reservation);
-        validateIsMyReservation(guestName, reservation);
-
-        deleteReservation(id);
-
-    }
-
-    private void deleteReservation(Long id) {
-        if(!reservationRepository.deleteById(id)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 삭제 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
-            throw new DomainException(RESERVATION_NOT_FOUND);
-        }
+    @Transactional(readOnly = true)
+    public List<Reservation> findAllReservations(int page, int size) {
+        return reservationRepository.findAll(page, size);
     }
 
     @Transactional(readOnly = true)
@@ -74,8 +55,8 @@ public class ReservationService {
     @Transactional
     public Reservation editDateTime(Long reservationId, LocalDate date, Long timeId, String guestName) {
         Reservation reservation = getReservation(reservationId);
-        validateAlreadyStarted(reservation);
         validateIsMyReservation(guestName, reservation);
+        validateAlreadyStarted(reservation);
 
         ReservationTime editedTime = getReservationTime(timeId);
         Reservation editedReservation = createEditedReservation(reservation, date, editedTime);
@@ -85,6 +66,29 @@ public class ReservationService {
         updateReservation(editedReservation);
 
         return editedReservation;
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        deleteReservation(id);
+    }
+
+    @Transactional
+    public void deleteMine(Long id, String guestName) {
+
+        Reservation reservation = getReservation(id);
+
+        validateIsMyReservation(guestName, reservation);
+        validateAlreadyStarted(reservation);
+
+        deleteReservation(id);
+
+    }
+
+    private void deleteReservation(Long id) {
+        if(!reservationRepository.deleteById(id)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 삭제 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
+            throw new DomainException(RESERVATION_NOT_FOUND);
+        }
     }
 
     private Theme getTheme(Long themeId) {
@@ -163,10 +167,5 @@ public class ReservationService {
         )) {
             throw new DomainException(RESERVATION_ALREADY_EXISTS);
         }
-    }
-
-    @Transactional(readOnly = true)
-    public List<Reservation> findAllReservations(int page, int size) {
-        return reservationRepository.findAll(page, size);
     }
 }
