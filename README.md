@@ -10,9 +10,9 @@
 - [x] 사용자는 예약 가능한 시간을 선택해 본인 이름으로 예약할 수 있다.
   - [x]  같은 날짜 + 시간 + 테마 조합이 이미 존재하면 예약할 수 없다.
   - [x]  날짜와 시간이 같더라도 테마가 다르면 예약할 수 있다.
-- [ ] 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
-- [ ] 본인의 예약을 취소할 수 있다
-- [ ] 본인 예약의 날짜/시간을 변경할 수 있다
+- [x] 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
+- [x] 본인의 예약을 취소할 수 있다
+- [x] 본인 예약의 날짜/시간을 변경할 수 있다
 
 ### 테마
 - [x]  테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
@@ -261,32 +261,26 @@
 ### RESERVATION
 **RESERVATION_NOT_FOUND**
 - HttpStatus : 404
-- CustomCode : "RESERVATION_001"
 - Message : "존재하지 않는 예약입니다."
 
 **DUPLICATE_RESERVATION**
 - HttpStatus : 422
-- CustomCode : "RESERVATION_002"
 - Message : "이미 예약된 시간대입니다."
 
 **PAST_DATE_RESERVATION**
 - HttpStatus : 422
-- CustomCode : "RESERVATION_003"
 - Message : "과거 날짜로는 예약할 수 없습니다."
 
 ### TIME
 **TIME_NOT_FOUND**
 - HttpStatus : 404
-- CustomCode : "TIME_001"
 - Message : "존재하지 않는 시간입니다."
 
 **TIME_IN_USE**
 - HttpStatus : 422
-- CustomCode : "TIME_002"
 - Message : "예약이 존재하는 시간은 삭제할 수 없습니다."
 
 ### THEME
 **THEME_NOT_FOUND**
 - HttpStatus : 404
-- CustomCode : "THEME_001"
 - Message : "존재하지 않는 테마입니다."
