@@ -234,4 +234,67 @@ public class MissionStepTest {
                 .statusCode(200)
                 .body("[0].available", is(false));
     }
+
+    @Test
+    void 빈_이름으로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", "2030-05-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("예약자 이름은 필수입니다."));
+    }
+
+    @Test
+    void 잘못된_형식으로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030.05.05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("입력 형식이 올바르지 않습니다. 날짜(yyyy-MM-dd)와 시간(HH:mm) 형식을 확인해주세요."));
+    }
+
+    @Test
+    void 예약_시간_없이_시간을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("예약 시간은 필수입니다."));
+    }
+
+    @Test
+    void 테마_이름_없이_테마를_생성하면_실패한다(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("name","");
+        params.put("description", "무서움");
+        params.put("thumbnail", "https://roomescape.com");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("테마 이름은 필수입니다."));
+    }
 }
