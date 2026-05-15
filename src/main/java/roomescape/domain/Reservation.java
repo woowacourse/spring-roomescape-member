@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
+import roomescape.exception.PastReservationException;
 
 @Getter
 public class Reservation {
@@ -47,7 +48,7 @@ public class Reservation {
 
     private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
         if (time.isPast(date, now)) {
-            throw new IllegalArgumentException("지난 날짜 또는 시간은 예약할 수 없습니다.");
+            throw new PastReservationException("지난 날짜 또는 시간은 예약할 수 없습니다.");
         }
     }
 
