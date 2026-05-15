@@ -60,11 +60,11 @@ class ReservationTest {
         ReservationStatus beforeCanceledStatus = reservation.getStatus();
 
         // when
-        reservation.cancel();
+        Reservation canceledReservation = reservation.cancel();
 
         // then
         assertThat(beforeCanceledStatus).isEqualTo(ReservationStatus.RESERVED);
-        assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
+        assertThat(canceledReservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
     }
 
     @Test

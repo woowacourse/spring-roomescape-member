@@ -49,8 +49,8 @@ public class ReservationService {
         Reservation reservation = findReservationOrThrow(id);
 
         reservation.validateOwner(request.name());
-        reservation.cancel();
-        reservationRepository.update(reservation);
+        Reservation canceledReservation = reservation.cancel();
+        reservationRepository.update(canceledReservation);
     }
 
     public List<ReservationResponse> getAllReservationsByPaging(int page, int size) {
@@ -74,9 +74,7 @@ public class ReservationService {
         reservation.validateOwner(request.name());
         validateDuplicateReservation(date, time, theme);
 
-        reservation.update(date, time);
-
-        reservationRepository.update(reservation);
+        reservationRepository.update(reservation.update(date, time));
     }
 
     public List<ReservationTimeStatusResponse> getReservationStatusByTheme(Long themeId, LocalDate date) {

@@ -1,22 +1,19 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.global.exception.ForbiddenException;
 
 @Getter
-@EqualsAndHashCode(of = "id")
 public class Reservation {
 
     private final Long id;
     private final String name;
     private final Theme theme;
-    private LocalDate date;
-    private ReservationTime time;
-    private ReservationStatus status;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final ReservationStatus status;
 
     private Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
                         ReservationStatus status) {
@@ -29,7 +26,7 @@ public class Reservation {
     }
 
     public static Reservation create(String name, LocalDate date, Theme theme, ReservationTime time) {
-        validate(name, date, theme, time);
+        validateRequiredFields(name, date, theme, time);
         validateReservableDateTime(date, time);
 
         return new Reservation(null, name, date, theme, time, ReservationStatus.RESERVED);
@@ -37,7 +34,6 @@ public class Reservation {
 
     public static Reservation restore(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
                                       ReservationStatus status) {
-        validate(name, date, theme, time);
         return new Reservation(id, name, date, theme, time, status);
     }
 
@@ -47,7 +43,7 @@ public class Reservation {
         }
     }
 
-    private static void validate(String name, LocalDate date, Theme theme, ReservationTime time) {
+    private static void validateRequiredFields(String name, LocalDate date, Theme theme, ReservationTime time) {
         validateName(name);
         validateTheme(theme);
         validateDateTime(date, time);
@@ -71,25 +67,24 @@ public class Reservation {
         }
     }
 
+    public Reservation update(LocalDate date, ReservationTime time) {
+        validateDateTime(date, time);
+        validateReservableDateTime(date, time);
+
+        return restore(this.id, this.name, date, this.theme, time, this.status);
+    }
+
+    public Reservation cancel() {
+        if (!time.isAvailableAt(date)) {
+            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+
+        return restore(this.id, this.name, this.date, this.theme, this.time, ReservationStatus.CANCELED);
+    }
+
     public void validateOwner(String name) {
         if (!Objects.equals(this.name, name)) {
             throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
         }
-    }
-
-    public void cancel() {
-        LocalDateTime now = LocalDateTime.now();
-
-        if (now.isAfter(time.toReservationDateTime(date))) {
-            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
-        }
-        this.status = ReservationStatus.CANCELED;
-    }
-
-    public void update(LocalDate date, ReservationTime time) {
-        validateDateTime(date, time);
-
-        this.date = date;
-        this.time = time;
     }
 }

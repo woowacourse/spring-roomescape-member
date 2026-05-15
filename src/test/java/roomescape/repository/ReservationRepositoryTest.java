@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -63,8 +64,8 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         reservationRepository.save(first);
 
         // when & then
-        assertThatThrownBy(() -> reservationRepository.save(second))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> reservationRepository.save(second)).isInstanceOf(
+                DataIntegrityViolationException.class);
     }
 
     @Test
@@ -78,10 +79,8 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // when & then
         Long otherTimeId = 99L;
         LocalDate otherDate = date.plusDays(1);
-        boolean exists = reservationRepository.existsReservedReservation(date, reservationTime.getId(),
-                theme.getId());
-        boolean existsWithOtherTime = reservationRepository.existsReservedReservation(date, otherTimeId,
-                theme.getId());
+        boolean exists = reservationRepository.existsReservedReservation(date, reservationTime.getId(), theme.getId());
+        boolean existsWithOtherTime = reservationRepository.existsReservedReservation(date, otherTimeId, theme.getId());
         boolean existsWithOtherDate = reservationRepository.existsReservedReservation(otherDate,
                 reservationTime.getId(), theme.getId());
 
@@ -94,15 +93,14 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     void 예약_정보를_수정한다() {
         // given
         Reservation reservation = reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithName("바니", theme, reservationTime)
-        );
+                ReservationFixture.createDefaultReservationWithName("바니", theme, reservationTime));
 
         // when
-        reservation.cancel();
-        reservationRepository.update(reservation);
+        Reservation canceledReservation = reservation.cancel();
+        reservationRepository.update(canceledReservation);
 
         // then
-        Optional<Reservation> found = reservationRepository.findById(reservation.getId());
+        Optional<Reservation> found = reservationRepository.findById(canceledReservation.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getStatus()).isEqualTo(ReservationStatus.CANCELED);
     }
@@ -113,11 +111,11 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         Reservation reservation = ReservationFixture.createDefaultReservationWithName("바니", theme, reservationTime);
 
         // when
-        reservation.cancel();
+        Reservation canceledReservation = reservation.cancel();
 
         // then
-        assertThatThrownBy(() -> reservationRepository.update(reservation))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationRepository.update(canceledReservation)).isInstanceOf(
+                EntityNotFoundException.class);
     }
 
     @Test
@@ -145,25 +143,25 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         List<Reservation> reservations = reservationRepository.findAllByPaging(1, 1);
 
         // then
-        assertThat(reservations)
-                .hasSize(1)
-                .extracting(Reservation::getName)
-                .containsExactly("두번째");
+        assertThat(reservations).hasSize(1).extracting(Reservation::getName).containsExactly("두번째");
     }
 
     @Test
     void 특정_테마와_날짜에_활성화된_예약이_존재하는_시간_식별자를_조회한다() {
         // given
+        ReservationTime canceledTime = new ReservationTime(2L, LocalTime.of(11, 0), true);
+        dataSource.insertReservationTime(canceledTime.getStartAt());
+
         LocalDate date = LocalDate.now().plusDays(1);
+
         Reservation reservation = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
                 reservationTime);
         reservationRepository.save(reservation);
 
-        Reservation canceledReservation = reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("바니",
-                        date.plusDays(2), theme, reservationTime));
+        Reservation secondReservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme, canceledTime));
 
-        canceledReservation.cancel();
+        Reservation canceledReservation = secondReservation.cancel();
         reservationRepository.update(canceledReservation);
 
         // when
@@ -189,18 +187,15 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         List<Reservation> reservations = reservationRepository.findAllByUserName("바니");
 
         // then
-        assertThat(reservations)
-                .hasSize(1)
-                .extracting(Reservation::getName)
-                .containsExactly("바니");
+        assertThat(reservations).hasSize(1).extracting(Reservation::getName).containsExactly("바니");
     }
 
     @Test
     void 특정_시간대에_예약이_존재하는지_반환한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme,
-                reservationTime));
+        reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme, reservationTime));
 
         // when & then
         assertThat(reservationRepository.existsByTimeId(reservationTime.getId())).isTrue();
