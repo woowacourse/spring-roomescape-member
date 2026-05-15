@@ -25,7 +25,7 @@ public final class ReservationMapper {
         ReservationStatus status = getStatus(reservation);
         return new ReservationByNameResponseDto(reservation.getId(), reservation.getName(), reservation.getDate(),
             TimeMapper.toReservationResponseDto(reservation.getTime()),
-            ThemeMapper.toReservationResponseDto(reservation.getTheme()), status, getMessage(status));
+            ThemeMapper.toReservationResponseDto(reservation.getTheme()), status, status.getMessage());
     }
 
     private static ReservationStatus getStatus(Reservation reservation) {
@@ -42,22 +42,6 @@ public final class ReservationMapper {
         }
 
         return ReservationStatus.EDITABLE;
-    }
-
-    private static String getMessage(ReservationStatus status) {
-        if (status == ReservationStatus.EDITABLE) {
-            return "";
-        }
-
-        if (status == ReservationStatus.CANCELED) {
-            return "취소된 예약입니다.";
-        }
-
-        if (status == ReservationStatus.EDIT_RECOMMENDED) {
-            return "현재 예약의 시간 또는 테마가 더 이상 제공되지 않습니다. 다른 예약 정보로 수정해주세요.";
-        }
-
-        return "지난 예약은 수정하거나 삭제할 수 없습니다.";
     }
 
     public static ReservationCreateResponseDto toCreateResponseDto(Reservation reservation) {
