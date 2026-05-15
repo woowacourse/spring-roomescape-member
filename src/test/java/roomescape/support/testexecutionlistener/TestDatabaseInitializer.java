@@ -1,4 +1,4 @@
-package roomescape.testexecutionlistener;
+package roomescape.support.testexecutionlistener;
 
 import java.util.List;
 import org.springframework.context.ApplicationContext;

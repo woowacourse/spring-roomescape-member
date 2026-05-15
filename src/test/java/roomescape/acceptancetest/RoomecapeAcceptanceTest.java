@@ -6,9 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
-import roomescape.testexecutionlistener.TestDatabaseInitializer;
-import roomescape.testexecutionlistener.TestPortInitializer;
+import roomescape.support.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.support.testexecutionlistener.TestPortInitializer;
+import roomescape.support.time.FixedTimeConfig;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -20,5 +22,6 @@ import roomescape.testexecutionlistener.TestPortInitializer;
         },
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
+@Import(FixedTimeConfig.class)
 public @interface RoomecapeAcceptanceTest {
 }

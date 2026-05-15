@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
-import roomescape.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.support.testexecutionlistener.TestDatabaseInitializer;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.time.TimeProvider;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationResourceNotFoundException;
@@ -21,6 +22,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final TimeProvider timeProvider;
 
     public List<ReservationResult> getAll() {
         return reservationRepository.findAll();
@@ -37,7 +39,7 @@ public class ReservationService {
         validateDuplicate(date, timeId);
 
         Reservation reservation = Reservation.createNew(name, date, reservationTime.getId());
-        reservation.validateNotPast(reservationTime.getStartAt());
+        reservation.validateNotPast(reservationTime.getStartAt(), timeProvider.nowDateTime());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -65,7 +67,7 @@ public class ReservationService {
         validateDuplicate(date, timeId);
 
         reservation = reservation.modify(date, reservationTime.getId());
-        reservation.validateNotPast(reservationTime.getStartAt());
+        reservation.validateNotPast(reservationTime.getStartAt(), timeProvider.nowDateTime());
 
         reservationRepository.update(reservation);
     }

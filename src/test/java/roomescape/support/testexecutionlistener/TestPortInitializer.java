@@ -1,4 +1,4 @@
-package roomescape.testexecutionlistener;
+package roomescape.support.testexecutionlistener;
 
 import io.restassured.RestAssured;
 import org.springframework.boot.web.context.WebServerApplicationContext;

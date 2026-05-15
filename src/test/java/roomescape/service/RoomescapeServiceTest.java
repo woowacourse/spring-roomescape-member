@@ -5,8 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
-import roomescape.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.support.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.support.time.FixedTimeConfig;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,5 +17,6 @@ import roomescape.testexecutionlistener.TestDatabaseInitializer;
         listeners = TestDatabaseInitializer.class,
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
+@Import(FixedTimeConfig.class)
 public @interface RoomescapeServiceTest {
 }

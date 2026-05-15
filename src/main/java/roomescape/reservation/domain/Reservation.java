@@ -84,10 +84,10 @@ public class Reservation {
         return new Reservation(id, name, newDate, newTimeId);
     }
 
-    public void validateNotPast(LocalTime time) {
+    public void validateNotPast(LocalTime time, LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
 
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+        if (reservationDateTime.isBefore(now)) {
             throw new ReservationPastDateException(
                     ReservationErrorCode.RESERVATION_PAST_DATE.getMessage()
             );

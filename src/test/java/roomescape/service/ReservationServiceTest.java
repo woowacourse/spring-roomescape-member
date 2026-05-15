@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.global.time.TimeProvider;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationPastDateException;
@@ -32,6 +33,9 @@ class ReservationServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private TimeProvider timeProvider;
+
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
@@ -43,7 +47,7 @@ class ReservationServiceTest {
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, timeProvider);
     }
 
     @Test
