@@ -2,6 +2,7 @@ package roomescape.reservation.infra;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -48,6 +49,32 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(
+                "SELECT id, name, date, theme_id, time_id FROM reservation WHERE name = ? ORDER BY date ASC",
+                (rs, rowNum) -> mapReservation(rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getDate("date").toLocalDate(),
+                        rs.getLong("theme_id"),
+                        rs.getLong("time_id")),
+                name
+        );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return jdbcTemplate.query(
+                "SELECT id, name, date, theme_id, time_id FROM reservation WHERE id = ?",
+                (rs, rowNum) -> mapReservation(rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getDate("date").toLocalDate(),
+                        rs.getLong("theme_id"),
+                        rs.getLong("time_id")),
+                id
+        ).stream().findFirst();
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -57,6 +84,17 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.withId(id);
+    }
+
+    @Override
+    public Reservation update(Reservation reservation) {
+        jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                reservation.getDate(),
+                reservation.getTimeId(),
+                reservation.getId()
+        );
+        return reservation;
     }
 
     @Override
@@ -72,5 +110,33 @@ public class JdbcReservationRepository implements ReservationRepository {
                 date,
                 themeId,
                 timeId);
+    }
+
+    @Override
+    public Boolean existsByDateAndThemeAndTimeExcludingId(LocalDate date, Long themeId, Long timeId, Long id) {
+        return jdbcTemplate.queryForObject(
+                """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND theme_id = ? AND time_id = ? AND id <> ?
+                )
+                """,
+                Boolean.class,
+                date,
+                themeId,
+                timeId,
+                id
+        );
+    }
+
+    private Reservation mapReservation(Long id, String name, LocalDate date, Long themeId, Long timeId) {
+        return Reservation.builder()
+                .id(id)
+                .name(name)
+                .date(date)
+                .themeId(themeId)
+                .timeId(timeId)
+                .build();
     }
 }
