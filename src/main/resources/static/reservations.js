@@ -1,4 +1,4 @@
-// ===== reservations.js — 예약 페이지 전용 =====
+// ===== reservations.js — 신규 예약 페이지 전용 =====
 
 const state = {
   selectedDate: null,
@@ -24,10 +24,29 @@ function showToast(msg, type = 'default') {
 }
 
 // ===== API =====
+async function extractErrorMessage(res) {
+  try {
+    const text = await res.text();
+    if (!text) return `요청이 실패했습니다. (${res.status})`;
+    try {
+      const json = JSON.parse(text);
+      return json.message || json.detail || json.error || json.title
+        || text || `요청이 실패했습니다. (${res.status})`;
+    } catch {
+      return text || `요청이 실패했습니다. (${res.status})`;
+    }
+  } catch {
+    return `요청이 실패했습니다. (${res.status})`;
+  }
+}
+
 const api = {
   async get(url) {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+    if (!res.ok) {
+      const msg = await extractErrorMessage(res);
+      throw new Error(msg);
+    }
     return res.json();
   },
   async post(url, body) {
@@ -37,8 +56,8 @@ const api = {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `POST ${url} failed: ${res.status}`);
+      const msg = await extractErrorMessage(res);
+      throw new Error(msg);
     }
     return res.json();
   },
@@ -99,11 +118,15 @@ function toISODate(date) {
 
 // ===== Themes =====
 async function loadThemes() {
-  const opts = await api.get('/reservations/date-and-theme');
-  state.availableDates = opts.dates || [];
-  state.themes = opts.themes || [];
-  renderCalendar();
-  renderThemes();
+  try {
+    const opts = await api.get('/reservations/date-and-theme');
+    state.availableDates = opts.dates || [];
+    state.themes = opts.themes || [];
+    renderCalendar();
+    renderThemes();
+  } catch (e) {
+    showToast('테마 정보를 불러오지 못했습니다. ' + e.message, 'error');
+  }
 }
 
 function renderThemes() {
@@ -150,29 +173,34 @@ async function loadTimeSlots() {
   container.innerHTML = `<div class="time-grid">${[1,2,3,4].map(() =>
     `<div class="skeleton" style="height:60px"></div>`).join('')}</div>`;
 
-  const times = await api.get(`/reservations/available-times?date=${selectedDate}&themeId=${selectedThemeId}`);
-  state.selectedTimeId = null;
-  state.selectedTimeLabel = null;
+  try {
+    const times = await api.get(`/reservations/available-times?date=${selectedDate}&themeId=${selectedThemeId}`);
+    state.selectedTimeId = null;
+    state.selectedTimeLabel = null;
 
-  if (!times || times.length === 0) {
-    container.innerHTML = `<div class="empty-state"><p>⏰</p><p>예약 가능한<br>시간대가 없습니다.</p></div>`;
-    return;
+    if (!times || times.length === 0) {
+      container.innerHTML = `<div class="empty-state"><p>⏰</p><p>예약 가능한<br>시간대가 없습니다.</p></div>`;
+      return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'time-grid';
+    times.forEach(t => {
+      const slot = document.createElement('div');
+      slot.className = 'time-slot' + (t.reserved ? ' reserved' : '');
+      const label = formatTime(t.startAt);
+      slot.innerHTML = `<div>${label}</div><div class="time-slot-badge">${t.reserved ? 'RESERVED' : 'AVAILABLE'}</div>`;
+      if (!t.reserved) slot.addEventListener('click', () => selectTime(t.id, label, slot));
+      grid.appendChild(slot);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(grid);
+    updateCTAInfo();
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state"><p>⚠️</p><p>시간대를 불러오지<br>못했습니다.</p></div>`;
+    showToast('시간대 조회 실패: ' + e.message, 'error');
   }
-
-  const grid = document.createElement('div');
-  grid.className = 'time-grid';
-  times.forEach(t => {
-    const slot = document.createElement('div');
-    slot.className = 'time-slot' + (t.reserved ? ' reserved' : '');
-    const label = formatTime(t.startAt);
-    slot.innerHTML = `<div>${label}</div><div class="time-slot-badge">${t.reserved ? 'RESERVED' : 'AVAILABLE'}</div>`;
-    if (!t.reserved) slot.addEventListener('click', () => selectTime(t.id, label, slot));
-    grid.appendChild(slot);
-  });
-
-  container.innerHTML = '';
-  container.appendChild(grid);
-  updateCTAInfo();
 }
 
 function selectTime(id, label, el) {
@@ -236,7 +264,6 @@ async function submitBooking() {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
-  // Calendar nav
   $('cal-prev').addEventListener('click', () => {
     state.currentCalendarMonth--;
     if (state.currentCalendarMonth < 0) { state.currentCalendarMonth = 11; state.currentCalendarYear--; }
@@ -248,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
   });
 
-  // Modal
   $('book-btn').addEventListener('click', openModal);
   $('modal-close-btn').addEventListener('click', closeModal);
   $('modal-cancel-btn').addEventListener('click', closeModal);

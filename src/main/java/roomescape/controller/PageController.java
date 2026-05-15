@@ -15,4 +15,9 @@ public class PageController {
     public String reservationPage() {
         return "forward:/reservations.html";
     }
+
+    @GetMapping("/my-reservations")
+    public String myReservationsPage() {
+        return "forward:/my-reservations.html";
+    }
 }
