@@ -115,4 +115,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = SELECT_BASE + " WHERE r.date = ? AND r.theme_id = ?";
         return new Reservations(jdbcTemplate.query(sql, reservationRowMapper, date, themeId));
     }
+
+    public List<Reservation> findByName(String name) {
+        String sql = SELECT_BASE + " WHERE r.name = ? ORDER BY r.date DESC, time_value ASC";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
 }

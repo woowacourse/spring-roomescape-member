@@ -356,6 +356,55 @@ class ReservationApiTest {
                 .statusCode(404);
     }
 
+    @Test
+    void 본인_예약_조회는_이름이_일치하는_예약만_반환한다() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        createReservation("민욱", "2026-08-05", timeId, themeId);
+        Integer time2 = createTime("15:00");
+        createReservation("티뉴", "2026-08-05", time2, themeId);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations/me?name=민욱")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("민욱"));
+    }
+
+    @Test
+    void 본인_예약이_없으면_빈_목록이_반환된다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/me?name=민욱")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(0));
+    }
+
+    @Test
+    void 이름_파라미터가_없으면_400() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/me")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    private Integer createReservation(String name, String date, Integer timeId, Integer themeId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", date);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        return RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().get("id");
+    }
+
     private Integer createTime(String startAt) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);

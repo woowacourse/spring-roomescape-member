@@ -26,6 +26,11 @@ public class ReservationService {
         return ReservationResponses.from(reservations, totalCount, page, size);
     }
 
+    public ReservationResponses getMyReservations(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        return ReservationResponses.from(reservations, reservations.size(), 0, reservations.size());
+    }
+
     public boolean hasReservationsByTimeId(Long timeId) {
         return reservationRepository.existsByTimeId(timeId);
     }

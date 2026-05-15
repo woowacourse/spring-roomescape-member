@@ -38,6 +38,11 @@ public class ReservationController {
         return ResponseEntity.ok().body(reservationService.getReservationPage(page, size));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ReservationResponses> searchMine(@RequestParam String name) {
+        return ResponseEntity.ok().body(reservationService.getMyReservations(name));
+    }
+
     @PostMapping
     public ResponseEntity<ReservationResponse> add(@RequestBody @Valid ReservationRequest request) {
         Reservation reservation = reservationFacade.addReservation(request);
