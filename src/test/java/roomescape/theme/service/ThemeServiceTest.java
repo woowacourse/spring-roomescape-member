@@ -4,6 +4,8 @@ package roomescape.theme.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,11 @@ import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
+import roomescape.time.controller.dto.request.GetAvailableTimesRequest;
+import roomescape.time.controller.dto.response.AvailableReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.util.fixture.ReservationTimeFixture;
 import roomescape.util.fixture.ThemeFixture;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +33,9 @@ class ThemeServiceTest {
 
     @Mock
     ThemeRepository themeRepository;
+
+    @Mock
+    ReservationTimeRepository reservationTimeRepository;
 
     @Test
     void 인기_테마_순위를_조회한다() {
@@ -47,5 +57,30 @@ class ThemeServiceTest {
         //then
         Assertions.assertThat(themeRankingsInRecentDays)
                 .containsExactly(responseA, responseB);
+    }
+
+    @Test
+    void 예약_가능_시간_목록을_조회한다() {
+        //given
+        LocalDate today = LocalDate.now();
+        GetAvailableTimesRequest request = new GetAvailableTimesRequest(1L, today, true);
+
+        ReservationTime timeA = ReservationTimeFixture.create(LocalTime.of(10, 0));
+        ReservationTime timeB = ReservationTimeFixture.create(LocalTime.of(11, 0));
+        ReservationTime timeC = ReservationTimeFixture.create(LocalTime.of(12, 0));
+        when(reservationTimeRepository.findAll())
+                .thenReturn(List.of(timeA, timeB, timeC));
+
+        when(reservationTimeRepository.findIdByCondition(any()))
+                .thenReturn(List.of(timeA.getId(), timeB.getId()));
+
+        //when
+        List<LocalTime> allAvailableTimes = themeService.findAllAvailableTimes(request)
+                .stream().map(AvailableReservationTimeResponse::startAt)
+                .toList();
+
+        //then
+        Assertions.assertThat(allAvailableTimes)
+                .containsExactly(timeC.getStartAt());
     }
 }
