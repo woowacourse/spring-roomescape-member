@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -64,7 +65,7 @@ public class ReservationController {
     @PatchMapping()
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
