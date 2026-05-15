@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.theme.exception.ThemeErrorCode;
-import roomescape.theme.exception.ThemeInvalidException;
+import roomescape.theme.exception.ThemeValidationException;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -40,7 +40,7 @@ public class Theme {
         }
 
         if (!errors.isEmpty()) {
-            throw new ThemeInvalidException(errors);
+            throw new ThemeValidationException(errors);
         }
     }
 

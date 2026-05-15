@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationDuplicateException;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationAlreadyExistsException;
+import roomescape.reservation.exception.ReservationResourceNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.exception.ReservationTimeResourceNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
@@ -72,17 +72,17 @@ public class ReservationService {
 
     private Reservation findReservation(final long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
+                .orElseThrow(ReservationResourceNotFoundException::new);
     }
 
     private ReservationTime findReservationTime(final Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
+                .orElseThrow(ReservationTimeResourceNotFoundException::new);
     }
 
     private void validateDuplicate(final LocalDate date, final Long timeId) {
         if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
-            throw new ReservationDuplicateException();
+            throw new ReservationAlreadyExistsException();
         }
     }
 

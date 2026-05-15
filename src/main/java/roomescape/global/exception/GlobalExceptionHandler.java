@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.global.exception.exception.AuthenticationException;
-import roomescape.global.exception.exception.BadRequestException;
-import roomescape.global.exception.exception.DuplicateException;
-import roomescape.global.exception.exception.ForbiddenException;
-import roomescape.global.exception.exception.ForeignKeyConstraintException;
-import roomescape.global.exception.exception.InvalidException;
-import roomescape.global.exception.exception.NotFoundException;
+import roomescape.global.exception.exception.AlreadyExistsException;
+import roomescape.global.exception.exception.AuthenticationFailedException;
+import roomescape.global.exception.exception.InvalidUserInputException;
+import roomescape.global.exception.exception.PermissionDeniedException;
+import roomescape.global.exception.exception.ResourceInUseException;
+import roomescape.global.exception.exception.ResourceNotFoundException;
+import roomescape.global.exception.exception.ValidationException;
 import roomescape.global.exception.response.ErrorResponse;
 
 @Slf4j
@@ -36,48 +36,48 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler(InvalidUserInputException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequestException(
-            BadRequestException e
+    public ErrorResponse handleInvalidUserInputException(
+            InvalidUserInputException e
     ) {
-        log.info("BadRequestException 발생: {}", e.getMessage());
+        log.info("InvalidUserInputException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
-    @ExceptionHandler(DuplicateException.class)
+    @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicateException(
-            DuplicateException e
+    public ErrorResponse handleAlreadyExistsException(
+            AlreadyExistsException e
     ) {
-        log.info("DuplicateException 발생: {}", e.getMessage());
+        log.info("AlreadyExistsException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
-    @ExceptionHandler(ForbiddenException.class)
+    @ExceptionHandler(PermissionDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handlerForbiddenException(
-            ForbiddenException e
+    public ErrorResponse handlePermissionDeniedException(
+            PermissionDeniedException e
     ) {
-        log.info("ForbiddenException 발생: {}", e.getMessage());
+        log.info("PermissionDeniedException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(
-            NotFoundException e
+    public ErrorResponse handleResourceNotFoundException(
+            ResourceNotFoundException e
     ) {
-        log.info("NotFoundException 발생: {}", e.getMessage());
+        log.info("ResourceNotFoundException 발생: {}", e.getMessage());
         return ErrorResponse.of(e.getMessage());
     }
 
-    @ExceptionHandler(InvalidException.class)
+    @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(
-            InvalidException e
+            ValidationException e
     ) {
-        log.info("InvalidException 발생: {}", e.getMessage());
+        log.info("ValidationException 발생: {}", e.getMessage());
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 e.getErrors()
@@ -137,22 +137,22 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(ForeignKeyConstraintException.class)
+    @ExceptionHandler(ResourceInUseException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConstraintException(
-            ForeignKeyConstraintException e
+    public ErrorResponse handleResourceInUseException(
+            ResourceInUseException e
     ) {
-        log.warn("ForeignKeyConstraintException 발생: {}", e.getMessage(), e);
+        log.warn("ResourceInUseException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }
 
 
-    @ExceptionHandler(AuthenticationException.class)
+    @ExceptionHandler(AuthenticationFailedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAuthenticationException(
-            AuthenticationException e
+    public ErrorResponse handleAuthenticationFailedException(
+            AuthenticationFailedException e
     ) {
-        log.warn("AuthenticationException 발생: {}", e.getMessage(), e);
+        log.warn("AuthenticationFailedException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(
                 GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()
         );

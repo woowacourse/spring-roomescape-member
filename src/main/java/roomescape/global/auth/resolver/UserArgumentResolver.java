@@ -11,7 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.global.auth.UserInfo;
 import roomescape.global.auth.annotation.CurrentUser;
 import roomescape.global.exception.GlobalErrorCode;
-import roomescape.global.exception.exception.AuthenticationException;
+import roomescape.global.exception.exception.AuthenticationFailedException;
 
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -41,20 +41,20 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
             return new UserInfo(name);
         } catch (IllegalArgumentException e) {
-            throw new AuthenticationException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
+            throw new AuthenticationFailedException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
         }
     }
 
     private void validateAuthorizationHeader(final String authorization) {
         if (authorization == null || authorization.isBlank()
                 || !authorization.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
-            throw new AuthenticationException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
+            throw new AuthenticationFailedException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
         }
     }
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new AuthenticationException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
+            throw new AuthenticationFailedException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
         }
     }
 }

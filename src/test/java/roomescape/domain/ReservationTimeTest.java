@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeInvalidException;
+import roomescape.reservationtime.exception.ReservationTimeValidationException;
 import roomescape.theme.domain.Theme;
 
 class ReservationTimeTest {
@@ -37,7 +37,7 @@ class ReservationTimeTest {
 
         // when & then
         assertThatThrownBy(() -> ReservationTime.createNew(nullTime, theme))
-                .isInstanceOf(ReservationTimeInvalidException.class);
+                .isInstanceOf(ReservationTimeValidationException.class);
     }
 
 }

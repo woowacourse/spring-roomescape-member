@@ -15,14 +15,14 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeConstraintException;
-import roomescape.reservationtime.exception.ReservationTimeDuplicateException;
+import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.reservationtime.service.dto.ReservationTimeResult;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeResourceNotFoundException;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -51,7 +51,7 @@ class ReservationTimeServiceTest {
     @DisplayName("없는 테마 예약 시간 예외")
     void save_whenThemeNotExists_throws() {
         assertThatThrownBy(() -> reservationTimeService.save(LocalTime.of(10, 0), 999L))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(ThemeResourceNotFoundException.class);
     }
 
     @Test
@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.save(LocalTime.of(10, 0), theme.getId()))
-                .isInstanceOf(ReservationTimeDuplicateException.class)
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class)
                 .hasMessageContaining("같은 테마 내 같은 시작 시간은 중복될 수 없습니다.");
     }
 
@@ -81,7 +81,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(time.getId()))
-                .isInstanceOf(ReservationTimeConstraintException.class)
+                .isInstanceOf(ReservationTimeInUseException.class)
                 .hasMessageContaining("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 

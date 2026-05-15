@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeConstraintException;
-import roomescape.theme.exception.ThemeDuplicateException;
+import roomescape.theme.exception.ThemeAlreadyExistsException;
+import roomescape.theme.exception.ThemeInUseException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeResult;
 
@@ -55,13 +55,13 @@ public class ThemeService {
 
     private void validateDuplicate(final String name) {
         if (themeRepository.existsByName(name)) {
-            throw new ThemeDuplicateException();
+            throw new ThemeAlreadyExistsException();
         }
     }
 
     private void validateReservationExists(final long themeId) {
         if (reservationRepository.existsByThemeId(themeId)) {
-            throw new ThemeConstraintException();
+            throw new ThemeInUseException();
         }
     }
 }

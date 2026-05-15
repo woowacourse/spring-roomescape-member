@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationDuplicateException;
-import roomescape.reservation.exception.ReservationNotOwnerException;
+import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationPastDateException;
+import roomescape.reservation.exception.ReservationPermissionDeniedException;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.exception.ReservationTimeResourceNotFoundException;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -50,7 +50,7 @@ class ReservationServiceTest {
     @DisplayName("없는 예약 시간 ID 예약 예외")
     void save_whenTimeNotExists_throws() {
         assertThatThrownBy(() -> reservationService.save("쿠다", LocalDate.now().plusDays(1), 999L))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(ReservationTimeResourceNotFoundException.class);
     }
 
     @Test
@@ -82,7 +82,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.save("신규예약", date, time.getId()))
-                .isInstanceOf(ReservationDuplicateException.class)
+                .isInstanceOf(ReservationAlreadyExistsException.class)
                 .hasMessageContaining("이미 같은 날짜와 시간에 예약이 존재합니다.");
     }
 
@@ -137,7 +137,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
-                .isInstanceOf(ReservationNotOwnerException.class)
+                .isInstanceOf(ReservationPermissionDeniedException.class)
                 .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
@@ -180,7 +180,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
-                .isInstanceOf(ReservationNotOwnerException.class)
+                .isInstanceOf(ReservationPermissionDeniedException.class)
                 .hasMessageContaining("예약자만 예약을 수정하거나 취소할 수 있습니다.");
     }
 
@@ -222,7 +222,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.update(reservation1.getId(), "쿠다", reservation2.getDate(),
-                time2.getId())).isInstanceOf(ReservationDuplicateException.class)
+                time2.getId())).isInstanceOf(ReservationAlreadyExistsException.class)
                 .hasMessageContaining("이미 같은 날짜와 시간에 예약이 존재합니다.");
     }
 

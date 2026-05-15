@@ -16,8 +16,8 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeConstraintException;
-import roomescape.theme.exception.ThemeDuplicateException;
+import roomescape.theme.exception.ThemeAlreadyExistsException;
+import roomescape.theme.exception.ThemeInUseException;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
@@ -50,7 +50,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.save("미술관의 밤", "다른 설명", "thumb2"))
-                .isInstanceOf(ThemeDuplicateException.class);
+                .isInstanceOf(ThemeAlreadyExistsException.class);
     }
 
     @Test
@@ -71,7 +71,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
-                .isInstanceOf(ThemeConstraintException.class)
+                .isInstanceOf(ThemeInUseException.class)
                 .hasMessageContaining("예약이 존재하는 테마는 삭제할 수 없습니다.");
     }
 }

@@ -8,9 +8,9 @@ import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.reservation.exception.ReservationErrorCode;
-import roomescape.reservation.exception.ReservationInvalidException;
-import roomescape.reservation.exception.ReservationNotOwnerException;
 import roomescape.reservation.exception.ReservationPastDateException;
+import roomescape.reservation.exception.ReservationPermissionDeniedException;
+import roomescape.reservation.exception.ReservationValidationException;
 
 @Getter
 @EqualsAndHashCode(of = "id")
@@ -48,7 +48,7 @@ public class Reservation {
         validateTimeId(timeId, errors);
 
         if (!errors.isEmpty()) {
-            throw new ReservationInvalidException(errors);
+            throw new ReservationValidationException(errors);
         }
     }
 
@@ -96,7 +96,7 @@ public class Reservation {
 
     public void validateOwner(String requesterName) {
         if (!this.name.equals(requesterName)) {
-            throw new ReservationNotOwnerException(
+            throw new ReservationPermissionDeniedException(
                     ReservationErrorCode.RESERVATION_NOT_OWNER.getMessage()
             );
         }

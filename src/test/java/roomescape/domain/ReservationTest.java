@@ -11,9 +11,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.ReservationInvalidException;
-import roomescape.reservation.exception.ReservationNotOwnerException;
 import roomescape.reservation.exception.ReservationPastDateException;
+import roomescape.reservation.exception.ReservationPermissionDeniedException;
+import roomescape.reservation.exception.ReservationValidationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -42,7 +42,7 @@ class ReservationTest {
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, 1L))
-                .isInstanceOf(ReservationInvalidException.class);
+                .isInstanceOf(ReservationValidationException.class);
     }
 
 
@@ -56,7 +56,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, null, 1L))
-                .isInstanceOf(ReservationInvalidException.class);
+                .isInstanceOf(ReservationValidationException.class);
     }
 
 
@@ -69,7 +69,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, null))
-                .isInstanceOf(ReservationInvalidException.class);
+                .isInstanceOf(ReservationValidationException.class);
     }
 
 
@@ -84,7 +84,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, 1L))
-                .isInstanceOf(ReservationInvalidException.class);
+                .isInstanceOf(ReservationValidationException.class);
 
     }
 
@@ -116,7 +116,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> reservation.validateOwner(name2))
-                .isInstanceOf(ReservationNotOwnerException.class);
+                .isInstanceOf(ReservationPermissionDeniedException.class);
 
     }
 

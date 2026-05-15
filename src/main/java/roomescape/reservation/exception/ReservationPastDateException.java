@@ -1,8 +1,8 @@
 package roomescape.reservation.exception;
 
-import roomescape.global.exception.exception.BadRequestException;
+import roomescape.global.exception.exception.InvalidUserInputException;
 
-public class ReservationPastDateException extends BadRequestException {
+public class ReservationPastDateException extends InvalidUserInputException {
     public ReservationPastDateException(String message) {
         super(message);
     }

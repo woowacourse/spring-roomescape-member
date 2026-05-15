@@ -5,11 +5,11 @@ import lombok.Getter;
 import roomescape.global.exception.GlobalErrorCode;
 
 @Getter
-public class InvalidException extends RuntimeException {
+public class ValidationException extends RuntimeException {
 
     private final List<String> errors;
 
-    public InvalidException(List<String> errors) {
+    public ValidationException(List<String> errors) {
         super(GlobalErrorCode.INVALID_INPUT.getMessage());
         this.errors = errors;
     }
