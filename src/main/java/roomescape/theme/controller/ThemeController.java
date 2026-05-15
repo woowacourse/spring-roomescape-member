@@ -62,7 +62,8 @@ public class ThemeController {
             @RequestParam(required = false) Boolean available
     ) {
         List<AvailableReservationTimeResponse> allAvailableTimes = themeService.findAllAvailableTimes(
-                GetAvailableTimesRequest.of(id, date, available));
+                GetAvailableTimesRequest.of(id, date, available)
+        );
         ThemeResponse theme = themeService.findTheme(id);
         return ResponseEntity.ok(ThemeReservationTimesResponse.from(theme, allAvailableTimes));
     }
