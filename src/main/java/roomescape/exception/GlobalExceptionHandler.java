@@ -1,8 +1,10 @@
 package roomescape.exception;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.FieldError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String message = e.getBindingResult().getFieldErrors().stream()
+                .sorted(Comparator.comparing(FieldError::getField))
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         log.warn("유효하지 않은 입력값: {}", message);
