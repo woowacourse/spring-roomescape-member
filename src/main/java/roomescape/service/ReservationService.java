@@ -104,13 +104,25 @@ public class ReservationService {
         if (!reservationQueryingDao.existsById(id)) {
             throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
         }
-        reservationUpdatingDao.update(id, newReservationReq);
-
-        Reservation findReservation = reservationQueryingDao.findReservationById(id)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
 
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(newReservationReq.getTimeId())
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+        Theme findTheme = themeQueryingDao.findThemeById(newReservationReq.getThemeId())
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.THEME_NOT_FOUND));
+
+        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), newReservationReq.getDate(), findReservationTime.getId());
+        if (savedReservation.isPresent()) {
+            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+        }
+
+        try {
+            reservationUpdatingDao.update(id, newReservationReq);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+        }
+
+        Reservation findReservation = reservationQueryingDao.findReservationById(id)
+                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
 
         LocalDateTime standard = LocalDateTime.of(
                 findReservation.getDate(),
