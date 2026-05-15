@@ -22,10 +22,6 @@ public class Theme {
         return new Theme(null, name, description, imageUrl, null);
     }
 
-    public static Theme reconstruct(Long id, String name, String description, String imageUrl) {
-        return reconstruct(id, name, description, imageUrl, null);
-    }
-
     public static Theme reconstruct(Long id, String name, String description, String imageUrl,
         LocalDateTime deletedAt) {
         return new Theme(id, name, description, imageUrl, deletedAt);

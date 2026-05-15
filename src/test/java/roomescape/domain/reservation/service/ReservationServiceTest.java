@@ -746,7 +746,8 @@ class ReservationServiceTest {
             reservation.getDate(),
             reservation.getTime(),
             reservation.getTheme(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            null
         ));
     }
 }

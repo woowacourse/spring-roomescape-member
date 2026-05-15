@@ -35,7 +35,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findReservationsByDeletedAtIsNull() {
         return jdbcTemplate.query(
             """
-                SELECT r.id, r.name, r.date, r.canceled_at,
+                SELECT r.id, r.name, r.date, r.canceled_at, r.deleted_at,
                        rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                        t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                        t.deleted_at AS theme_deleted_at
@@ -51,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findReservationsByNameAndDeletedAtIsNull(String name) {
         String sql = """
-            SELECT r.id, r.name, r.date, r.canceled_at,
+            SELECT r.id, r.name, r.date, r.canceled_at, r.deleted_at,
                    rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                    t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                    t.deleted_at AS theme_deleted_at
@@ -74,7 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findReservationByIdAndDeletedAtIsNull(Long id) {
         String sql = """
-            SELECT r.id, r.name, r.date, r.canceled_at,
+            SELECT r.id, r.name, r.date, r.canceled_at, r.deleted_at,
                    rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                    t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                    t.deleted_at AS theme_deleted_at
@@ -131,7 +131,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return Reservation.reconstruct(generatedKey, reservation.getName(), reservation.getDate(),
             reservation.getTime(),
-            reservation.getTheme());
+            reservation.getTheme(), null, null);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, parameters);
 
         return Reservation.reconstruct(reservation.getId(), reservation.getName(), reservation.getDate(),
-            reservation.getTime(), reservation.getTheme(), reservation.getCanceledAt());
+            reservation.getTime(), reservation.getTheme(), reservation.getCanceledAt(), reservation.getDeletedAt());
     }
 
     private Reservation mapReservation(ResultSet rs) throws SQLException {
@@ -176,7 +176,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("image_url"),
                 getNullableLocalDateTime(rs, "theme_deleted_at")
             ),
-            getNullableLocalDateTime(rs, "canceled_at")
+            getNullableLocalDateTime(rs, "canceled_at"),
+            getNullableLocalDateTime(rs, "deleted_at")
         );
     }
 

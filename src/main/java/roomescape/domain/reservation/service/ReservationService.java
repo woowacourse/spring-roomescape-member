@@ -144,7 +144,8 @@ public class ReservationService {
 
         validateUpdateResources(time, theme);
 
-        return Reservation.reconstruct(existingReservation.getId(), existingReservation.getName(), date, time, theme);
+        return Reservation.reconstruct(existingReservation.getId(), existingReservation.getName(), date, time, theme,
+            existingReservation.getCanceledAt(), existingReservation.getDeletedAt());
     }
 
     private LocalDate getUpdateDate(Reservation existingReservation, ReservationUpdateRequestDto requestDto) {

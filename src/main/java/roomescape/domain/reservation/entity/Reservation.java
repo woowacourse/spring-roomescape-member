@@ -30,15 +30,6 @@ public class Reservation {
         return new Reservation(null, name, date, time, theme, null, null);
     }
 
-    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
-        return reconstruct(id, name, date, time, theme, null, null);
-    }
-
-    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme,
-        LocalDateTime canceledAt) {
-        return reconstruct(id, name, date, time, theme, canceledAt, null);
-    }
-
     public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme,
         LocalDateTime canceledAt, LocalDateTime deletedAt) {
         return new Reservation(id, name, date, time, theme, canceledAt, deletedAt);

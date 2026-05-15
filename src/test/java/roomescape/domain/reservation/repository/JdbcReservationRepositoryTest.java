@@ -340,7 +340,7 @@ class JdbcReservationRepositoryTest {
             Reservation reservation = reservationRepository.save(
                 Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
             Reservation updateReservation = Reservation.reconstruct(reservation.getId(), "예약자2",
-                LocalDate.of(2026, 5, 2), updateTime, updateTheme);
+                LocalDate.of(2026, 5, 2), updateTime, updateTheme, null, null);
 
             // when
             Reservation actual = reservationRepository.update(updateReservation);
@@ -367,7 +367,7 @@ class JdbcReservationRepositoryTest {
                 Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
             LocalDateTime canceledAt = LocalDateTime.now();
             Reservation canceledReservation = Reservation.reconstruct(reservation.getId(), reservation.getName(),
-                reservation.getDate(), reservation.getTime(), reservation.getTheme(), canceledAt);
+                reservation.getDate(), reservation.getTime(), reservation.getTheme(), canceledAt, null);
 
             // when
             Reservation actual = reservationRepository.update(canceledReservation);
@@ -478,7 +478,8 @@ class JdbcReservationRepositoryTest {
             reservation.getDate(),
             reservation.getTime(),
             reservation.getTheme(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            null
         ));
     }
 }

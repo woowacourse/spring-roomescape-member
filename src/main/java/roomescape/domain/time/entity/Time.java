@@ -19,10 +19,6 @@ public class Time {
         return new Time(null, startAt, null);
     }
 
-    public static Time reconstruct(Long id, LocalTime startAt) {
-        return reconstruct(id, startAt, null);
-    }
-
     public static Time reconstruct(Long id, LocalTime startAt, LocalDateTime deletedAt) {
         return new Time(id, startAt, deletedAt);
     }
