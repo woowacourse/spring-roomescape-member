@@ -5,8 +5,14 @@
 ### 예약
 
 * 고객은 테마, 날짜, 시간, 예약자 이름을 선택해 예약한다.
-* 예약은 현재 날짜 이후만 가능하다.
-* 예약은 특정 테마와 예약 시간 조합을 기준으로 생성된다.
+  * 예약은 과거 날짜는 불가능하다.
+  * 예약은 특정 테마와 예약 시간 조합을 기준으로 생성된다.
+* 이미 예약된 날짜 및 시간 정보를 변경 할 수 있다.
+  * 이미 지난 예약에 대해서는 변경 할 수 없다.
+  * 예약 변경은 과거 날짜는 불가능하다.
+* 예약 정보를 취소 할 수 있다.
+  * 이미 지난 예약에 대해서는 취소 할 수 없다.
+* 사용자 별 예약 목록을 검색할 수 있다.
 
 ### 테마
 
@@ -89,7 +95,7 @@ GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06 HTTP/1.1
 **Request**
 
 ```http
-GET /api/themes/1?date=2026-05-10 HTTP/1.1
+GET /api/themes/1/times?date=2026-05-10 HTTP/1.1
 ```
 
 **Response**
@@ -146,6 +152,96 @@ Location: /api/reservations/1
 }
 ```
 
+### 예약 변경
+
+```http
+PATCH /api/reservations/{id} HTTP/1.1
+Content-Type: application/json
+
+{
+  "date": "2026-05-11",
+  "timeId": 1
+}
+```
+
+**Response**
+
+```json
+200 OK
+
+{
+  "id": 1,
+  "name": "lim",
+  "date": "2026-05-11",
+  "time": {
+    "id": 1,
+    "startAt": "11:00:00"
+  }
+}
+```
+
+### 예약 취소
+
+```http
+DELETE /api/reservations/{id} HTTP/1.1
+```
+
+**Response**
+
+```json
+204 NoContent
+```
+
+### 예약 상세 조회
+
+```http
+GET /api/reservations/{id} HTTP/1.1
+```
+
+**Response**
+
+```json
+200 OK
+
+{
+  "id": 1,
+  "name": "lim",
+  "date": "2026-05-11",
+  "themeId": 1,
+  "time": {
+    "id": 1,
+    "startAt": "11:00:00"
+  }
+}
+```
+
+### 사용자 별 예약 목록 조회
+
+```http
+GET /api/reservations?name={name}&page=<optional>&size=<optional> HTTP/1.1
+```
+
+**Response**
+
+```json
+200 OK
+
+{
+  "totalPages": 10,
+  "totalElements": 100,
+  "content": [
+    {
+      "id": 1,
+      "name": "lim",
+      "date": "2026-05-11",
+      "startAt": "11:00:00",
+      "theme": "공포의 테마",
+    },
+    ...
+  ],
+}
+```
+
 ### 3. 관리자 테마 관리
 
 #### 테마 추가
@@ -168,7 +264,6 @@ role: ADMIN
 
 ```json
 201 Created
-Location: /api/admin/themes/1
 
 {
   "id": 1,
@@ -243,7 +338,6 @@ role: ADMIN
 
 ```json
 201 Created
-Location: /api/admin/reservations/1
 
 {
   "id": 1,
@@ -317,7 +411,6 @@ role: ADMIN
 
 ```json
 201 Created
-Location: /api/admin/times/1
 
 {
   "id": 1,
@@ -344,4 +437,5 @@ role: ADMIN
 
 * 메인 페이지: `/`
 * 예약 페이지: `/reserve`
+* 검색 페이지: `/search`
 * 관리자 페이지: `/admin`
