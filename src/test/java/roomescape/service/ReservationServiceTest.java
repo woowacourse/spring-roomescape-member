@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,7 +44,6 @@ class ReservationServiceTest {
         ThemeImageUrl.defaultImageUrl());
     private static final MemberName NAME = new MemberName("name");
     private static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
-
 
     @Mock
     private ThemeRepository themeRepository;
@@ -81,14 +82,7 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.addReservation(requestDtoFrom(expectedReservation));
 
         // then
-        assertThat(reservation.getId()).isEqualTo(expectedReservation.getId());
-        assertThat(reservation.getName()).isEqualTo(expectedReservation.getName());
-        assertThat(reservation.getDateValue()).isEqualTo(expectedReservation.getDateValue());
-        assertThat(reservation.getTime().getStartAt()).isEqualTo(expectedReservation.getTime().getStartAt());
-        assertThat(reservation.getTheme().getDescription()).isEqualTo(expectedReservation.getTheme().getDescription());
-        assertThat(reservation.getTheme().getNameValue()).isEqualTo(expectedReservation.getTheme().getNameValue());
-        assertThat(reservation.getTheme().getImageUrlValue()).isEqualTo(
-            expectedReservation.getTheme().getImageUrlValue());
+        assertThat(reservation).isSameAs(expectedReservation);
 
         verify(timeRepository, times(1)).findById(anyLong());
         verify(themeRepository, times(1)).findById(anyLong());
@@ -106,7 +100,7 @@ class ReservationServiceTest {
             1L,
             1L);
 
-        // when & them
+        // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
             .isInstanceOf(RoomEscapeException.class)
             .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
@@ -286,7 +280,7 @@ class ReservationServiceTest {
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1L);
-        ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
+        ReservationTime availableTime2 = new ReservationTime(2L, "14:00");
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
@@ -309,8 +303,7 @@ class ReservationServiceTest {
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("name", tomorrow, SAVED_TIME, otherTheme);
+        Reservation reservation = new Reservation("name", TOMORROW, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_TIME));
@@ -345,275 +338,173 @@ class ReservationServiceTest {
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
-    @Test
-    void 사용자는_본인_예약의_날짜_및_시간을_변경할_수_있다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+    @Nested
+    @DisplayName("예약 날짜 및 시간 변경")
+    class UpdateDateTime {
 
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
+        private Reservation previousReservation() {
+            return new Reservation(1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME, SAVED_THEME);
+        }
 
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous));
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(updated.getTime()));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
-            .thenReturn(false);
-        when(reservationRepository.findVersionById(anyLong()))
-            .thenReturn(0);
-        when(reservationRepository.updateById(any(), anyInt()))
-            .thenReturn(1);
+        @Test
+        void 사용자는_본인_예약의_날짜_및_시간을_변경할_수_있다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationTime newTime = new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1));
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), newTime.getId());
 
-        //when
-        assertThatCode(() -> reservationService.updateDateTime(updated.getId(), name, request))
-            .doesNotThrowAnyException();
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(newTime));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
+            when(reservationRepository.findVersionById(anyLong()))
+                .thenReturn(0);
+            when(reservationRepository.updateById(any(), anyInt()))
+                .thenReturn(1);
 
-        //then
-        verify(reservationRepository, times(1)).findById(previous.getId());
-        verify(timeRepository, times(1)).findById(updated.getTimeId());
-        verify(reservationRepository, times(1))
-            .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
-        verify(reservationRepository, times(1)).updateById(any(), anyInt());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
+            // when & then
+            assertThatCode(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .doesNotThrowAnyException();
 
-    @Test
-    void 예약의_날짜를_오늘_포함_과거_날짜로_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.minusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verify(reservationRepository, times(1)).findVersionById(previous.getId());
+            verify(reservationRepository, times(1)).updateById(any(), anyInt());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
+        @Test
+        void 예약의_날짜를_오늘_포함_과거_날짜로_변경하는_경우_예외가_발생한다() {
+            // given
+            ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.now(), SAVED_TIME.getId());
 
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(1L, NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
 
-        //then
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-    @Test
-    void 존재하지_않는_예약을_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+        @Test
+        void 존재하지_않는_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+            long notFoundReservationId = 2L;
 
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.empty());
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(notFoundReservationId, NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
 
-        long notFoundReservationId = 2L;
+            verify(reservationRepository, times(1)).findById(notFoundReservationId);
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(notFoundReservationId, name, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+        @Test
+        void 예약을_존재하지_않는_시간으로_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
 
-        //then
-        verify(reservationRepository, times(1)).findById(notFoundReservationId);
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
-    @Test
-    void 예약을_존재하지_않는_시간으로_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
 
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous));
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.empty());
+        @Test
+        void 중복되는_예약으로_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
 
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(true);
 
-        //then
-        verify(reservationRepository, times(1)).findById(previous.getId());
-        verify(timeRepository, times(1)).findById(updated.getTimeId());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
 
-    @Test
-    void 중복되는_예약으로_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
+        @Test
+        void 다른_사용자의_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+            String otherName = "otherName";
 
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous));
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous.getTime()));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
-            .thenReturn(true);
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
 
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), otherName, request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.FORBIDDEN.getMessage());
 
-        //then
-        verify(reservationRepository, times(1)).findById(previous.getId());
-        verify(timeRepository, times(1)).findById(updated.getTimeId());
-        verify(reservationRepository, times(1))
-            .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
 
-    @Test
-    void 다른_사용자의_예약을_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
+        @Test
+        void 지난_날짜의_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = new Reservation(
+                1L, NAME, new ReservationLocalDate(TOMORROW.minusDays(1)), SAVED_TIME, SAVED_THEME);
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
 
-        String otherName = "otherName";
-        ReservationUpdateRequest request = updateRequestOf(updated);
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
 
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous));
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous.getTime()));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
-            .thenReturn(false);
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
 
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), otherName, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.FORBIDDEN.getMessage());
-
-        //then
-        verify(reservationRepository, times(1)).findById(previous.getId());
-        verify(timeRepository, times(1)).findById(updated.getTimeId());
-        verify(reservationRepository, times(1))
-            .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
-
-    @Test
-    void 지난_날짜의_예약을_변경하는_경우_예외가_발생한다() {
-        //given
-        Reservation previous = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.minusDays(1)),
-            SAVED_TIME,
-            SAVED_THEME
-        );
-        Reservation updated = new Reservation(
-            1L,
-            NAME,
-            new ReservationLocalDate(TOMORROW.plusDays(1)),
-            new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1)),
-            SAVED_THEME
-        );
-
-        String name = previous.getName().value();
-        ReservationUpdateRequest request = updateRequestOf(updated);
-
-        when(reservationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous));
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(previous.getTime()));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
-            .thenReturn(false);
-
-        //when
-        assertThatThrownBy(() -> reservationService.updateDateTime(updated.getId(), name, request))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
-
-        //then
-        verify(reservationRepository, times(1)).findById(previous.getId());
-        verify(timeRepository, times(1)).findById(updated.getTimeId());
-        verify(reservationRepository, times(1))
-            .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {
@@ -622,9 +513,5 @@ class ReservationServiceTest {
             reservation.getDateValue(),
             reservation.getTime().getId(),
             reservation.getThemeId());
-    }
-
-    private ReservationUpdateRequest updateRequestOf(Reservation expectedReservation) {
-        return new ReservationUpdateRequest(expectedReservation.getDateValue(), expectedReservation.getTimeId());
     }
 }
