@@ -60,4 +60,10 @@ public class ReservationController {
         List<AvailableTimeResponse> availableTimeResponses = reservationService.getAvailableTimes(date, id);
         return ResponseEntity.ok().body(availableTimeResponses);
     }
+
+    @GetMapping(params = {"name"})
+    public ResponseEntity<List<ReservationResponse>> getUserReservations(@RequestParam String name) {
+        List<ReservationResponse> reservationResponses = reservationService.getUserReservations(name);
+        return ResponseEntity.ok().body(reservationResponses);
+    }
 }

@@ -45,7 +45,7 @@ public class ReservationService {
                     Theme theme = themeDao.findById(reservation.getThemeId());
                     return ReservationResponse.from(reservation, time, theme);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -80,6 +80,17 @@ public class ReservationService {
                         LinkedHashMap::new
                 ));
         return AvailableTimeResponse.from(reservationTimeMap);
+    }
+
+    public List<ReservationResponse> getUserReservations(String name) {
+        List<Reservation> reservations = reservationDao.findUserReservations(name);
+        return reservations.stream()
+                .map(reservation -> {
+                    ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
+                    Theme theme = themeDao.findById(reservation.getThemeId());
+                    return ReservationResponse.from(reservation, time, theme);
+                })
+                .toList();
     }
 
     private void validateNotPastDate(LocalDateTime dateTime) {

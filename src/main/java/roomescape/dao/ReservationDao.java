@@ -75,4 +75,9 @@ public class ReservationDao {
         String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
+
+    public List<Reservation> findUserReservations(String name) {
+        String sql = "SELECT * FROM reservation WHERE name = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
 }
