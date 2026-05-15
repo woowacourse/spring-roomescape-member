@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -62,6 +63,37 @@ class ReservationCommandServiceTest {
         reservationCommandService.create("user_a", date, timeId, themeId, requestDateTime);
 
         assertThatThrownBy(() -> reservationCommandService.create("user_b", date, timeId, themeId, requestDateTime))
+                .isExactlyInstanceOf(ConflictException.class)
+                .hasMessage(ErrorMessage.DUPLICATE_RESERVATION.getMessage());
+    }
+
+    @Test
+    @DisplayName("예약 취소 시 reservation_history에 이력이 저장된다.")
+    void saveHistoryWhenDeleteReservation() {
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, status) VALUES (1, '10:00', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO theme (id, name, thumbnail_url, description, status) VALUES (1, '공포의 저택', 'url', '설명', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, 'user_a', '2026-06-01', 1, 1)");
+
+        reservationCommandService.delete(1L);
+
+        Integer historyCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_history", Integer.class);
+        assertThat(historyCount).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("수정 시 이미 예약된 날짜, 시간, 테마로 변경하면 예외가 발생한다.")
+    void throwExceptionWhenUpdateToDuplicateSlot() {
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, status) VALUES (1, '10:00', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, status) VALUES (2, '14:00', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO theme (id, name, thumbnail_url, description, status) VALUES (1, '공포의 저택', 'url', '설명', 'AVAILABLE')");
+
+        LocalDate date = LocalDate.of(2026, 6, 1);
+        LocalDateTime requestDateTime = LocalDateTime.of(date, LocalTime.MIN);
+
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, 'user_a', '2026-06-01', 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (2, 'user_b', '2026-06-01', 2, 1)");
+
+        assertThatThrownBy(() -> reservationCommandService.update(2L, date, 1L, requestDateTime))
                 .isExactlyInstanceOf(ConflictException.class)
                 .hasMessage(ErrorMessage.DUPLICATE_RESERVATION.getMessage());
     }
