@@ -263,7 +263,7 @@ class ReservationAcceptanceTest {
                 .when().put("/reservations/1")
                 .then().log().all()
                 .statusCode(422)
-                .body("message", equalTo("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
+                .body("message", equalTo("이미 지난 예약은 수정할 수 없습니다."));
     }
 
     @Test
