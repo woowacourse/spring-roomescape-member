@@ -31,7 +31,7 @@ public class ReservationAdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationDetailDto> createReservation(@Validated @RequestBody ReservationSaveDto dto) {
-        Reservation reservation = reservationService.reserve(dto);
+        Reservation reservation = reservationService.reserve(dto.toCommand());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }
@@ -48,7 +48,7 @@ public class ReservationAdminController {
             @PathVariable Long id,
             @Validated @RequestBody ReservationChangeScheduleDto dto
     ) {
-        Reservation reservation = reservationService.changeScheduleByManager(id, dto.dateId(), dto.timeId());
+        Reservation reservation = reservationService.changeScheduleByManager(dto.toCommand(id));
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }

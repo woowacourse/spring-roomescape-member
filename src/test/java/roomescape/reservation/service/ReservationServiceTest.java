@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
-import static roomescape.reservation.fixture.ReservationFixture.saveDto;
+import static roomescape.reservation.fixture.ReservationFixture.toCommand;
 import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 
@@ -20,9 +20,11 @@ import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.fixture.FakeReservationRepository;
+import roomescape.reservation.fixture.ReservationFixture;
+import roomescape.reservation.service.dto.ReservationChangeCommand;
+import roomescape.reservation.service.dto.ReservationSaveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeException;
 import roomescape.theme.fixture.FakeThemeRepository;
@@ -110,7 +112,7 @@ class ReservationServiceTest {
     void reserve() {
         //given & when
         List<Reservation> reservations = List.of();
-        reservationService.reserve(saveDto(name, reservationDate1, reservationTime1, theme1));
+        reservationService.reserve(ReservationFixture.toCommand(name, reservationDate1, reservationTime1, theme1));
 
         //then
         assertThat(reservationService.readAll())
@@ -122,7 +124,7 @@ class ReservationServiceTest {
     void reserve_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
-        ReservationSaveDto command = saveDto(name, reservationDate1, wrongTimeId, theme1);
+        ReservationSaveCommand command = ReservationFixture.toCommand(name, reservationDate1, wrongTimeId, theme1);
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
@@ -136,7 +138,7 @@ class ReservationServiceTest {
     void reserve_does_not_exist_theme() {
         // given
         Long wrongThemeId = Long.MIN_VALUE;
-        ReservationSaveDto command = saveDto(name, reservationDate1, reservationTime1, wrongThemeId);
+        ReservationSaveCommand command = toCommand(name, reservationDate1, reservationTime1, wrongThemeId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
@@ -149,7 +151,7 @@ class ReservationServiceTest {
     void reserved_duplicated() {
         // given
         Reservation reservation = reservation(name, reservationDate1, reservationTime1, theme1);
-        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
+        ReservationSaveCommand duplicated = ReservationFixture.toCommand(name, reservationDate1, reservationTime1, theme1);
         save(reservation);
 
         //  when & then
@@ -163,7 +165,7 @@ class ReservationServiceTest {
     void reserved_when_cancel_same_name() {
         // given
         Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
-        ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
+        ReservationSaveCommand duplicated = ReservationFixture.toCommand(name, reservationDate1, reservationTime1, theme1);
         cancelByManager(reservation);
 
         // when
@@ -180,7 +182,7 @@ class ReservationServiceTest {
         // given
         String anotherName = "다른사람";
         Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
-        ReservationSaveDto duplicated = saveDto(anotherName, reservationDate1, reservationTime1, theme1);
+        ReservationSaveCommand duplicated = ReservationFixture.toCommand(anotherName, reservationDate1, reservationTime1, theme1);
         cancelByManager(reservation);
 
         // when
@@ -268,9 +270,10 @@ class ReservationServiceTest {
     void changeSchedule() {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
 
         // when
-        reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
+        reservationService.changeSchedule(changeCommand);
 
         // then
         Assertions.assertThat(reservationRepository.findById(saved.getId()))
@@ -283,10 +286,11 @@ class ReservationServiceTest {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         String notOwerName = "다른사람";
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), notOwerName, reservationDate2.getId(), reservationTime2.getId());
 
         // when & then
         assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.getId(), notOwerName, reservationDate2.getId(), reservationTime2.getId());
+                    reservationService.changeSchedule(changeCommand);
                 }).isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_NOT_OWNER.getMessage());
     }
@@ -298,9 +302,10 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         saved.updateStatus(ReservationStatus.CANCELED);
         reservationRepository.updateStatus(saved);
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
 
         // when
-        assertThatThrownBy(() -> reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId()))
+        assertThatThrownBy(() -> reservationService.changeSchedule(changeCommand))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_ALREADY_CANCELED.getMessage());
     }
@@ -312,10 +317,11 @@ class ReservationServiceTest {
         ReservationDate pastDate = ReservationDate.load(1L, LocalDate.now().minusDays(1), true);
         Reservation saved =
                 save(Reservation.load(1L, name, pastDate, reservationTime1, theme1, ReservationStatus.RESERVED));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
 
         // when
         assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
+                    reservationService.changeSchedule(changeCommand);
                 }).isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_ALREADY_PAST.getMessage());
     }
@@ -326,10 +332,11 @@ class ReservationServiceTest {
         // given
         ReservationDate pastDate = reservationDateRepository.save(ReservationDate.load(20L, LocalDate.now().minusDays(1), true));
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), name, pastDate.getId(), reservationTime2.getId());
 
         // when
         assertThatThrownBy(() -> {
-                    reservationService.changeSchedule(saved.getId(), name, pastDate.getId(), reservationTime2.getId());
+                    reservationService.changeSchedule(changeCommand);
                 }).isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage());
     }
@@ -340,10 +347,11 @@ class ReservationServiceTest {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         save(reservation(name, reservationDate2, reservationTime2, theme1));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId());
 
         // when & then
         assertThatThrownBy(() ->
-                reservationService.changeSchedule(saved.getId(), name, reservationDate2.getId(), reservationTime2.getId()))
+                reservationService.changeSchedule(changeCommand))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_ALREADY_BOOKED.getMessage());
     }
@@ -353,9 +361,10 @@ class ReservationServiceTest {
     void changeScheduleByManager() {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), null, reservationDate2.getId(), reservationTime2.getId());
 
         // when
-        reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId());
+        reservationService.changeScheduleByManager(changeCommand);
 
         // then
         Assertions.assertThat(reservationRepository.findById(saved.getId()))
@@ -369,9 +378,10 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         saved.updateStatus(ReservationStatus.CANCELED);
         reservationRepository.updateStatus(saved);
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), null, reservationDate2.getId(), reservationTime2.getId());
 
         // when
-        assertThatThrownBy(() -> reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId()))
+        assertThatThrownBy(() -> reservationService.changeScheduleByManager(changeCommand))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_ALREADY_CANCELED.getMessage());
     }
@@ -383,10 +393,11 @@ class ReservationServiceTest {
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         ReservationDate pastDate = reservationDateRepository.save(ReservationDate.load(1L, LocalDate.now().minusDays(1), true));
         ReservationTime pastTime = reservationTimeRepository.save(ReservationTimeFixture.time16());
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), null, pastDate.getId(), pastTime.getId());
 
         // when & then
         assertThatThrownBy(() ->
-                        reservationService.changeScheduleByManager(saved.getId(), pastDate.getId(), pastTime.getId()))
+                        reservationService.changeScheduleByManager(changeCommand))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage());
     }
@@ -397,10 +408,11 @@ class ReservationServiceTest {
         // given
         Reservation saved = save(reservation(name, reservationDate1, reservationTime1, theme1));
         save(reservation(name, reservationDate2, reservationTime2, theme1));
+        ReservationChangeCommand changeCommand = new ReservationChangeCommand(saved.getId(), null, reservationDate2.getId(), reservationTime2.getId());
 
         // when & then
         assertThatThrownBy(() ->
-                reservationService.changeScheduleByManager(saved.getId(), reservationDate2.getId(), reservationTime2.getId()))
+                reservationService.changeScheduleByManager(changeCommand))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage(RESERVATION_ALREADY_BOOKED.getMessage());
     }

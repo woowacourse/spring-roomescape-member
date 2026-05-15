@@ -15,9 +15,10 @@ import roomescape.date.domain.ReservationDate;
 import roomescape.date.exception.ReservationDateException;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.service.dto.ReservationChangeCommand;
+import roomescape.reservation.service.dto.ReservationSaveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
@@ -50,14 +51,14 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation reserve(ReservationSaveDto dto) {
-        ReservationTime reservationTime = getReservationTime(dto.timeId());
-        ReservationDate reservationDate = getReservationDate(dto.dateId());
-        Theme theme = getTheme(dto.themeId());
+    public Reservation reserve(ReservationSaveCommand command) {
+        ReservationTime reservationTime = getReservationTime(command.timeId());
+        ReservationDate reservationDate = getReservationDate(command.dateId());
+        Theme theme = getTheme(command.themeId());
 
         validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme.getId());
         return reservationRepository.save(
-                Reservation.create(dto.name(), reservationDate, reservationTime, theme)
+                Reservation.create(command.name(), reservationDate, reservationTime, theme)
         );
     }
 
@@ -77,25 +78,24 @@ public class ReservationService {
         return reservation;
     }
 
-    // 파라미터 Dto 고려
     @Transactional
-    public Reservation changeSchedule(Long id, String requesterName, Long dateId, Long timeId) {
-        Reservation reservation = getReservation(id);
-        ReservationDate newDate = getReservationDate(dateId);
-        ReservationTime newTime = getReservationTime(timeId);
-        validateNotAlreadyBookedByOthers(dateId, timeId, reservation.getTheme().getId());
+    public Reservation changeSchedule(ReservationChangeCommand command) {
+        Reservation reservation = getReservation(command.id());
+        ReservationDate newDate = getReservationDate(command.dateId());
+        ReservationTime newTime = getReservationTime(command.timeId());
+        validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
 
-        reservation.changeSchedule(requesterName, newDate, newTime);
+        reservation.changeSchedule(command.requesterName(), newDate, newTime);
         reservationRepository.updateSchedule(reservation);
         return reservation;
     }
 
     @Transactional
-    public Reservation changeScheduleByManager(Long id, Long dateId, Long timeId) {
-        Reservation reservation = getReservation(id);
-        ReservationDate newDate = getReservationDate(dateId);
-        ReservationTime newTime = getReservationTime(timeId);
-        validateNotAlreadyBookedByOthers(dateId, timeId, reservation.getTheme().getId());
+    public Reservation changeScheduleByManager(ReservationChangeCommand command) {
+        Reservation reservation = getReservation(command.id());
+        ReservationDate newDate = getReservationDate(command.dateId());
+        ReservationTime newTime = getReservationTime(command.timeId());
+        validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
 
         reservation.changeScheduleByManager(newDate, newTime);
         reservationRepository.updateSchedule(reservation);
