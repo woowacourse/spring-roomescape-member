@@ -72,6 +72,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(SameNameException.class)
+    public ResponseEntity<ErrorResponse> handleSameNameExceptions(SameNameException ex) {
+        log.warn("이미 존재하는 이름: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+    }
+
     @ExceptionHandler(ReservationDeadlineException.class)
     public ResponseEntity<ErrorResponse> handleReservationDeadlineExceptions(ReservationDeadlineException ex) {
         log.warn("취소 및 변경 마감 기한 초과: {}", ex.getMessage());

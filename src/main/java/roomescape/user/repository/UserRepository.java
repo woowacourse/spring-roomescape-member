@@ -21,7 +21,7 @@ public class UserRepository {
     }
 
     public User create(User user) {
-        String sql = "INSERT INTO  `user` (name, role) VALUES (?, ?)";
+        String sql = "INSERT INTO  \"USER\" (name, role) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
