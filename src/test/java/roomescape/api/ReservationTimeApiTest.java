@@ -174,7 +174,15 @@ class ReservationTimeApiTest {
     }
 
     @Test
-    void 예약이_존재하는_시간은_삭제할_수_없다() {
+    void 존재하지_않는_예약_시간을_삭제하면_404를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/reservation-times/{id}", 999L)
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 예약이_존재하는_시간을_삭제하면_409를_반환한다() {
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         Theme theme = dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
         LocalDate date = LocalDate.now().plusDays(1);
@@ -184,6 +192,19 @@ class ReservationTimeApiTest {
                 .when().delete("/reservation-times/{id}", time.getId())
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2026/05/20", "invalid-date"})
+    void 예약_가능_시간_조회_시_날짜_형식이_잘못되면_400을_반환한다(String date) {
+        Theme theme = dataInitializer.createTheme("hello", "world", "/images/themes/hello.webp");
+
+        RestAssured.given().log().all()
+                .queryParam("date", date)
+                .queryParam("themeId", theme.getId())
+                .when().get("/reservation-times/available")
+                .then().log().all()
+                .statusCode(400);
     }
 
 }

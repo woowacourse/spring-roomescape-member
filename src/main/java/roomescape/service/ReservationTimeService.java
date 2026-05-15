@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservedTimes;
 import roomescape.global.exception.reservationtime.DuplicateReservationTimeException;
+import roomescape.global.exception.reservationtime.ReservationTimeInUseException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -44,6 +45,9 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(Long id) {
+        if (reservationTimeRepository.existsReservationByTimeId(id)) {
+            throw new ReservationTimeInUseException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 
