@@ -23,4 +23,9 @@ public enum ThemeErrorCode implements ErrorCode {
     public String getErrorMessage() {
         return message;
     }
+
+    @Override
+    public String getErrorName() {
+        return this.name();
+    }
 }

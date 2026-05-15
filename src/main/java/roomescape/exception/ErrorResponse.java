@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 
 public record ErrorResponse(
+        String code,
         String message,
         @JsonInclude(Include.NON_NULL)
         List<FieldErrorDetail> errors

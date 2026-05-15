@@ -26,4 +26,9 @@ public enum ReservationErrorCode implements ErrorCode {
     public String getErrorMessage() {
         return message;
     }
+
+    @Override
+    public String getErrorName() {
+        return this.name();
+    }
 }
