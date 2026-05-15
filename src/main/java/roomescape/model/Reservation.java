@@ -35,7 +35,7 @@ public class Reservation {
             throw new RoomescapeException(ErrorCode.RESERVATION_NAME_BLANK);
         }
         if (name.length() > MAX_RESERVATION_NAME_LENGTH) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_TOO_LONG);
+            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_LENGTH_INVALID);
         }
     }
 

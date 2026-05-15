@@ -365,7 +365,7 @@
         hideMessage(msgEl);
 
         try {
-            const res = await fetch(`/reservations/${id}`, {
+            const res = await fetch(`/reservations/${id}?username=${encodeURIComponent(currentUsername)}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, timeId: editSelectedTimeId })

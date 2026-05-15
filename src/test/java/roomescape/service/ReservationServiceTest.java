@@ -113,7 +113,7 @@ public class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
 
         // when
-        Assertions.assertThatCode(() -> reservationService.update(id, updateRequest))
+        Assertions.assertThatCode(() -> reservationService.update(id, "토리", updateRequest))
                 .doesNotThrowAnyException();
     }
 
@@ -123,7 +123,7 @@ public class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.update(-1L, updateRequest))
+        Assertions.assertThatThrownBy(() -> reservationService.update(-1L, "토리", updateRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 
@@ -133,7 +133,7 @@ public class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.update(1L, updateRequest))
+        Assertions.assertThatThrownBy(() -> reservationService.update(1L, "토리", updateRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 
@@ -147,7 +147,7 @@ public class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.update(id, updateRequest))
+        Assertions.assertThatThrownBy(() -> reservationService.update(id, "토리", updateRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 

@@ -46,69 +46,66 @@ public class ReservationService {
     }
 
     public void removeById(Long id) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_CANCEL);
-        }
+        Reservation reservation = getReservation(id);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
         reservationRepository.deleteById(id);
     }
 
     public void removeByIdAndName(Long id, String username) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND)
-        );
-        if (!reservation.getName().equals(username)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_USER_CANCEL);
-        }
-        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_CANCEL);
-        }
+        Reservation reservation = getReservation(id);
+        validateOwner(username, reservation);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
         reservationRepository.deleteById(id);
     }
 
-    public ReservationResponse register(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
-
-        if (isOverDateAndTime(reservationRequest.date(), reservationTime)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_DATE);
+    private void validateOwner(String username, Reservation reservation) {
+        if (!reservation.getName().equals(username)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
         }
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
-        }
-
-        Reservation reservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId(), reservationTime, theme);
-        return ReservationResponse.from(reservation);
     }
 
-    public ReservationResponse update(Long id, ReservationUpdateRequest reservationUpdateRequest) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+    public ReservationResponse register(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = getReservationTime(reservationRequest.timeId());
+        Theme theme = getTheme(reservationRequest.themeId());
+
+        validatePastRegister(reservationRequest.date(), reservationTime);
+        validateDuplicate(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+
+        Reservation savedReservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId(), reservationTime, theme);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse update(Long id, String username, ReservationUpdateRequest reservationUpdateRequest) {
+        Reservation reservation = getReservation(id);
+        validateOwner(username, reservation);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
+
+        ReservationTime reservationTime = getReservationTime(reservationUpdateRequest.timeId());
+        validatePastUpdate(reservationUpdateRequest.date(), reservationTime);
+        validateDuplicate(reservationUpdateRequest.date(), reservationUpdateRequest.timeId(),
+                reservation.getTheme().getId());
+
+        Reservation updated = reservationRepository.update(id, reservationUpdateRequest.date(),
+                reservationUpdateRequest.timeId());
+        return ReservationResponse.from(updated);
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id).orElseThrow(
                 () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND)
         );
-        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
-        }
-        ReservationTime reservationTime = timeRepository.findById(reservationUpdateRequest.timeId()).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND));
-        LocalDate updateDate = reservationUpdateRequest.date();
-        if (isOverDateAndTime(updateDate, reservationTime)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
-        }
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(updateDate, reservationUpdateRequest.timeId(),
-                reservation.getTheme().getId())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
-        }
-        Reservation updated = reservationRepository.update(id, updateDate, reservationUpdateRequest.timeId());
-        return ReservationResponse.from(updated);
+    }
+
+    private ReservationTime getReservationTime(Long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND));
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
     private boolean isOverDateAndTime(LocalDate date, ReservationTime time) {
@@ -117,4 +114,25 @@ public class ReservationService {
 
         return now.isAfter(reservation);
     }
+
+    private void validatePastUpdate(LocalDate date, ReservationTime time) {
+        if (isOverDateAndTime(date, time)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
+        }
+    }
+
+    private void validatePastRegister(LocalDate date, ReservationTime time) {
+        if (isOverDateAndTime(date, time)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_DATE);
+        }
+    }
+
+    private void validateDuplicate(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date,
+                timeId,
+                themeId)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
+        }
+    }
+
 }

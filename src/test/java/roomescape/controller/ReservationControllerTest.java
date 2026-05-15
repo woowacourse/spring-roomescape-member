@@ -155,7 +155,7 @@ public class ReservationControllerTest {
                 .delete("/reservations/1?username=페이커")
                 .then().log().all()
                 .statusCode(422)
-                .body("message", is(ErrorCode.RESERVATION_NOT_USER_CANCEL.getMessage()));
+                .body("message", is(ErrorCode.RESERVATION_NOT_OWNER.getMessage()));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class ReservationControllerTest {
                 .delete("admin/reservations/4")
                 .then().log().all()
                 .statusCode(422)
-                .body("message", is(ErrorCode.RESERVATION_PAST_CANCEL.getMessage()));
+                .body("message", is(ErrorCode.RESERVATION_PAST_UPDATE.getMessage()));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(updateRequest)
-                .when().patch("/reservations/" + id)
+                .when().patch("/reservations/" + id + "?username=포비")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -195,7 +195,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(updateRequest)
-                .when().patch("/reservations/-1")
+                .when().patch("/reservations/-1?username=토리")
                 .then().log().all()
                 .statusCode(404)
                 .body("message", is(ErrorCode.RESERVATION_NOT_FOUND.getMessage()));
@@ -208,7 +208,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(updateRequest)
-                .when().patch("/reservations/1")
+                .when().patch("/reservations/1?username=윤기")
                 .then().log().all()
                 .statusCode(422)
                 .body("message", is(ErrorCode.RESERVATION_PAST_UPDATE.getMessage()));
@@ -236,7 +236,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(updateRequest)
-                .when().patch("/reservations/" + id)
+                .when().patch("/reservations/" + id + "?username=포비")
                 .then().log().all()
                 .statusCode(409)
                 .body("message", is(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED.getMessage()));

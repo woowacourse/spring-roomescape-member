@@ -116,20 +116,19 @@
 
 **예약**
 
-| 상황 | HTTP 상태 코드 | code | message                    |
-| ---- |-----------| ---- |----------------------------|
-| 중복 예약 | 409       | `RESERVATION_DUPLICATED` | 이미 존재하는 예약입니다.             |
-| 지난 날짜·시간으로 예약 | 422       | `RESERVATION_PAST_DATE` | 이미 지난 날짜·시간으로는 예약할 수 없습니다. |
+| 상황               | HTTP 상태 코드 | code | message                    |
+|------------------|-----------| ---- |----------------------------|
+| 중복 예약            | 409       | `RESERVATION_DUPLICATED` | 이미 존재하는 예약입니다.             |
+| 지난 날짜·시간으로 예약    | 422       | `RESERVATION_PAST_DATE` | 이미 지난 날짜·시간으로는 예약할 수 없습니다. |
 | 존재하지 않는 예약 변경/취소 | 404       | `RESERVATION_NOT_FOUND` | 존재하지 않는 예약입니다.             |
-| 다른 사람 예약 취소 시도 | 422       | `RESERVATION_NOT_USER_CANCEL` | 다른 사용자의 예약을 취소할 수 없습니다. |
-| 지난 예약 변경 | 422       | `RESERVATION_PAST_UPDATE` | 이미 지난 예약은 변경할 수 없습니다.      |
-| 지난 예약 취소 | 422       | `RESERVATION_PAST_CANCEL` | 이미 지난 예약은 취소할 수 없습니다.      |
-| 변경 시간 이미 예약됨 | 409       | `RESERVATION_TIME_ALREADY_BOOKED` | 변경하려는 날짜·시간에 이미 예약이 존재합니다. |
-| 예약자 이름 빈값 | 422       | `RESERVATION_NAME_BLANK` | 예약자 이름은 빈값일 수 없습니다. |
-| 예약자 이름 길이 초과 | 422       | `RESERVATION_NAME_TOO_LONG` | 예약자 이름은 20자 이하여야 합니다. |
-| 예약 날짜 누락 | 422       | `RESERVATION_DATE_REQUIRED` | 예약 날짜는 필수입니다. |
-| 예약 시간 누락 | 422       | `RESERVATION_TIME_REQUIRED` | 예약 시간은 필수입니다. |
-| 예약 테마 누락 | 422       | `RESERVATION_THEME_REQUIRED` | 예약 테마는 필수입니다. |
+| 다른 사람 예약 취소 시도   | 422       | `RESERVATION_NOT_USER_CANCEL` | 다른 사용자의 예약을 취소할 수 없습니다.    |
+| 지난 예약 변경/취소      | 422       | `RESERVATION_PAST_UPDATE` | 이미 지난 예약은 변경/취소할 수 없습니다.   |
+| 변경 시간 이미 예약됨     | 409       | `RESERVATION_TIME_ALREADY_BOOKED` | 변경하려는 날짜·시간에 이미 예약이 존재합니다. |
+| 예약자 이름 빈값        | 422       | `RESERVATION_NAME_BLANK` | 예약자 이름은 빈값일 수 없습니다.        |
+| 예약자 이름 길이 초과     | 422       | `RESERVATION_NAME_TOO_LONG` | 예약자 이름은 20자 이하여야 합니다.      |
+| 예약 날짜 누락         | 422       | `RESERVATION_DATE_REQUIRED` | 예약 날짜는 필수입니다.              |
+| 예약 시간 누락         | 422       | `RESERVATION_TIME_REQUIRED` | 예약 시간은 필수입니다.              |
+| 예약 테마 누락         | 422       | `RESERVATION_THEME_REQUIRED` | 예약 테마는 필수입니다.              |
 
 ---
 
