@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.global.exception.validation.InvalidIdException;
+import roomescape.util.fixture.ReservationTimeFixture;
 
 class ReservationTimeTest {
     @Test
@@ -15,8 +16,8 @@ class ReservationTimeTest {
         LocalTime afterOneHour = current.plusHours(1);
 
         // when
-        ReservationTime reservationTimeA = new ReservationTime(1L, current);
-        ReservationTime reservationTimeB = new ReservationTime(1L, afterOneHour);
+        ReservationTime reservationTimeA = ReservationTimeFixture.createWithId(1L, current);
+        ReservationTime reservationTimeB = ReservationTimeFixture.createWithId(1L, afterOneHour);
 
         // then
         Assertions.assertThat(reservationTimeA).isEqualTo(reservationTimeB);

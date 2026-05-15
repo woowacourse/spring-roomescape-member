@@ -15,11 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.global.exception.policy.ReservationTimeDeletionNotAllowedException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.util.fixture.ReservationFixture;
+import roomescape.util.fixture.ReservationTimeFixture;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -38,41 +38,36 @@ class ReservationTimeServiceTest {
     class delete {
 
         @Test
-        void 시간을_삭제한다() {
+        void 남아있는_예약이_존재하지_않는_시간을_삭제한다() {
             // given
-            Long timeIdA = 1L;
-            Long timeIdB = 2L;
+            ReservationTime targetTime = ReservationTimeFixture.create(LocalTime.now());
+            ReservationTime otherTime = ReservationTimeFixture.create(LocalTime.now().plusHours(1));
 
-            when(reservationTimeRepository.findById(timeIdA))
-                    .thenReturn(new ReservationTime(timeIdA, LocalTime.now()));
+            when(reservationTimeRepository.findById(targetTime.getId()))
+                    .thenReturn(targetTime);
 
             when(reservationRepository.findReservationsFrom(any(LocalDate.class)))
-                    .thenReturn(List.of(new Reservation(1L, "userA", LocalDate.now(),
-                            new ReservationTime(timeIdB, LocalTime.now()),
-                            new Theme(1L, "themeA", "hello", "/image/..."))));
+                    .thenReturn(List.of(ReservationFixture.createByTime(otherTime)));
 
             // when & then
-            Assertions.assertThatCode(() -> reservationTimeService.removeRegisteredReservationTime(timeIdA))
+            Assertions.assertThatCode(() -> reservationTimeService.removeRegisteredReservationTime(targetTime.getId()))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 예약이_존재하는_시간은_삭제할_수_없다() {
             // given
-            Long timeId = 1L;
-            LocalDate today = LocalDate.now();
-            LocalTime futureTime = LocalTime.now().plusHours(1);
+            ReservationTime targetTime = ReservationTimeFixture.create(LocalTime.now());
 
-            when(reservationTimeRepository.findById(timeId))
-                    .thenReturn(new ReservationTime(timeId, LocalTime.now()));
+            when(reservationTimeRepository.findById(targetTime.getId()))
+                    .thenReturn(targetTime);
 
             when(reservationRepository.findReservationsFrom(any(LocalDate.class)))
-                    .thenReturn(List.of(new Reservation(1L, "userA", today,
-                            new ReservationTime(timeId, futureTime),
-                            new Theme(1L, "themeA", "hello", "/image/..."))));
+                    .thenReturn(List.of(ReservationFixture.createByTime(targetTime)));
 
             // when & then
-            Assertions.assertThatThrownBy(() -> reservationTimeService.removeRegisteredReservationTime(timeId))
+            Assertions.assertThatThrownBy(
+                            () -> reservationTimeService.removeRegisteredReservationTime(targetTime.getId()))
                     .isInstanceOf(ReservationTimeDeletionNotAllowedException.class);
         }
     }

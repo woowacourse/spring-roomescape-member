@@ -13,4 +13,8 @@ public class ThemeFixture {
     public static Theme createByIdAndName(Long id, String name) {
         return new Theme(id, name, "default", "/image/...");
     }
+
+    public static Theme createDefaultWithId(Long id) {
+        return new Theme(id, "default", "default", "/image/...");
+    }
 }
