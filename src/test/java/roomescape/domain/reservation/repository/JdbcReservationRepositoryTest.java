@@ -307,6 +307,76 @@ class JdbcReservationRepositoryTest {
     }
 
     @Nested
+    class UpdateTest {
+
+        @Test
+        void 성공() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Time updateTime = timeRepository.save(Time.create(LocalTime.of(11, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Theme updateTheme = themeRepository.save(Theme.create("테마2", "설명2", "image2.png"));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
+            Reservation updateReservation = Reservation.reconstruct(reservation.getId(), "예약자2",
+                LocalDate.of(2026, 5, 2), updateTime, updateTheme);
+
+            // when
+            Reservation actual = reservationRepository.update(updateReservation);
+
+            // then
+            assertThat(actual.getId()).isEqualTo(reservation.getId());
+            assertThat(reservationRepository.findReservationByIdAndDeletedAtIsNull(reservation.getId()))
+                .get()
+                .extracting(
+                    Reservation::getName,
+                    Reservation::getDate,
+                    result -> result.getTime().getId(),
+                    result -> result.getTheme().getId()
+                )
+                .containsExactly("예약자2", LocalDate.of(2026, 5, 2), updateTime.getId(), updateTheme.getId());
+        }
+    }
+
+    @Nested
+    class ExistsReservationByDateAndTimeAndThemeAndIdNotTest {
+
+        @Test
+        void 자기_자신_예약은_false를_반환한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation = reservationRepository.save(Reservation.create("예약자", date, time, theme));
+
+            // when
+            boolean actual = reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNullAndIdNot(
+                date, time, theme, reservation.getId());
+
+            // then
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 다른_예약이_있으면_true를_반환한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            reservationRepository.save(Reservation.create("예약자1", date, time, theme));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자2", date.plusDays(1), time, theme));
+
+            // when
+            boolean actual = reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNullAndIdNot(
+                date, time, theme, reservation.getId());
+
+            // then
+            assertThat(actual).isTrue();
+        }
+    }
+
+    @Nested
     class DeleteReservationByIdTest {
 
         @Test
