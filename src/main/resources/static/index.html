@@ -192,6 +192,15 @@
             justify-content: space-between;
             margin-bottom: 16px;
         }
+
+        /* My reservation inline edit */
+        .my-res-edit-row {
+            background: var(--bg-input);
+        }
+
+        .my-res-edit-row td {
+            padding: 14px 16px !important;
+        }
     </style>
 </head>
 <body>
@@ -258,12 +267,17 @@
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">🎭 테마를 선택하세요</span>
-                    <button class="btn btn-ghost btn-sm" onclick="loadThemes()">🔄</button>
+                    <button class="btn btn-ghost btn-sm" onclick="loadThemes(true)">🔄</button>
                 </div>
                 <div class="theme-grid" id="theme-grid">
                     <div class="empty-state">
                         <div class="spinner"></div>
                     </div>
+                </div>
+                <div style="text-align: center; margin-top: 16px;">
+                    <button class="btn btn-ghost" id="theme-load-more-btn" onclick="loadThemeMore()" style="display:none;">
+                        더 보기
+                    </button>
                 </div>
             </div>
 
@@ -327,6 +341,57 @@
             </div>
         </div>
 
+        <!-- ── 내 예약 관리 ── -->
+        <div class="card" style="margin-top: 32px;">
+            <div class="card-header">
+                <span class="card-title">📋 내 예약 조회 · 수정 · 취소</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 16px;">
+                <div class="form-group" style="flex: 1; max-width: 280px; margin: 0;">
+                    <label for="my-name">예약자 이름</label>
+                    <input id="my-name" placeholder="홍길동" type="text">
+                </div>
+                <button class="btn btn-primary" onclick="searchMyReservations()">조회</button>
+            </div>
+            <div id="my-res-section">
+                <div class="empty-state"><p>이름을 입력하고 조회 버튼을 누르세요.</p></div>
+            </div>
+        </div>
+
+        <!-- 수정 모달 (숨김) -->
+        <div id="edit-modal-backdrop"
+             style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;">
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:480px;margin:0 16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <span style="font-size:16px;font-weight:700;">✏️ 예약 수정</span>
+                    <button class="btn btn-ghost btn-sm" onclick="closeEditModal()">✕</button>
+                </div>
+                <input id="edit-res-id" type="hidden">
+                <input id="edit-res-name" type="hidden">
+                <div class="form-grid form-grid-2" style="margin-bottom:14px;">
+                    <div class="form-group">
+                        <label for="edit-date">날짜</label>
+                        <input id="edit-date" onchange="loadEditTimes()" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-theme">테마</label>
+                        <select id="edit-theme" onchange="loadEditTimes()">
+                            <option value="">테마 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="edit-time">시간</label>
+                        <select id="edit-time">
+                            <option value="">시간 선택</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn btn-primary" onclick="submitEdit()" style="flex:1;">저장</button>
+                    <button class="btn btn-ghost" onclick="closeEditModal()">취소</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 </div>
@@ -340,6 +405,8 @@
         selectedDate: null,
         selectedTime: null,
     };
+
+    const themePageState = {page: 0, hasNext: false};
 
     // ── Utils ─────────────────────────────────────────
     function toast(msg, type = 'info') {
@@ -358,7 +425,14 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let message = `오류가 발생했습니다. (HTTP ${res.status})`;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) message = json.message;
+            } catch (_) {
+                if (text) message = text;
+            }
+            throw new Error(message);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;
@@ -393,31 +467,56 @@
     }
 
     // ── Theme ─────────────────────────────────────────
-    async function loadThemes() {
-        const grid = document.getElementById('theme-grid');
-        grid.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+    async function loadThemes(reset = true) {
+        if (reset) {
+            themePageState.page = 0;
+            const grid = document.getElementById('theme-grid');
+            grid.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        }
+
         try {
-            const themes = (await api('GET', '/themes')).themes;
-            if (!themes.length) {
+            const data = await api('GET', `/themes?page=${themePageState.page}&size=20`);
+            const themes = data.themes;
+            themePageState.hasNext = data.hasNext;
+
+            const grid = document.getElementById('theme-grid');
+
+            if (reset && !themes.length) {
                 grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🎭</div><p>등록된 테마가 없습니다.</p></div>`;
+                document.getElementById('theme-load-more-btn').style.display = 'none';
                 return;
             }
-            grid.innerHTML = themes.map(t => `
-        <div class="theme-card" id="theme-card-${t.id}" onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})">
-          <div class="theme-thumbnail">
-            ${t.thumbnailImageUrl
+
+            const cards = themes.map(t => `
+                <div class="theme-card" id="theme-card-${t.id}" onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})">
+                    <div class="theme-thumbnail">
+                        ${t.thumbnailImageUrl
                 ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" onerror="this.parentNode.innerHTML='🎭'">`
                 : '🎭'}
-          </div>
-          <div class="theme-card-body">
-            <div class="theme-card-name">${t.name}</div>
-            <div class="theme-card-desc">${t.description || '설명 없음'}</div>
-          </div>
-        </div>
-      `).join('');
+                    </div>
+                    <div class="theme-card-body">
+                        <div class="theme-card-name">${t.name}</div>
+                        <div class="theme-card-desc">${t.description || '설명 없음'}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (reset) {
+                grid.innerHTML = cards;
+            } else {
+                grid.insertAdjacentHTML('beforeend', cards);
+            }
+
+            document.getElementById('theme-load-more-btn').style.display = themePageState.hasNext ? '' : 'none';
         } catch (e) {
-            grid.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">로드 실패: ${e.message}</p></div>`;
+            document.getElementById('theme-grid').innerHTML =
+                `<div class="empty-state"><p style="color:var(--danger)">로드 실패: ${e.message}</p></div>`;
         }
+    }
+
+    async function loadThemeMore() {
+        themePageState.page++;
+        await loadThemes(false);
     }
 
     function selectTheme(theme) {
@@ -426,7 +525,6 @@
         const card = document.getElementById(`theme-card-${theme.id}`);
         if (card) card.classList.add('selected');
         updateSummary();
-        // Small delay for visual feedback
         setTimeout(() => goToStep(2), 300);
         const dateInput = document.getElementById('book-date');
         if (dateInput.value) loadAvailableTimes();
@@ -445,24 +543,24 @@
             }
             const medals = ['🥇', '🥈', '🥉'];
             container.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">
-        ${data.map((t, i) => `
-          <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--radius-sm);background:var(--bg-input);cursor:pointer;transition:background 0.15s;"
-               onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})"
-               onmouseenter="this.style.background='var(--bg-card-hover)'"
-               onmouseleave="this.style.background='var(--bg-input)'"
-          >
-            <span style="font-size:20px;width:28px;text-align:center;">${medals[i] || `${i + 1}`}</span>
-            ${t.thumbnailImageUrl
+                ${data.map((t, i) => `
+                    <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--radius-sm);background:var(--bg-input);cursor:pointer;transition:background 0.15s;"
+                         onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})"
+                         onmouseenter="this.style.background='var(--bg-card-hover)'"
+                         onmouseleave="this.style.background='var(--bg-input)'"
+                    >
+                        <span style="font-size:20px;width:28px;text-align:center;">${medals[i] || `${i + 1}`}</span>
+                        ${t.thumbnailImageUrl
                 ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:44px;height:36px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">`
                 : `<div style="width:44px;height:36px;background:var(--bg-card);border-radius:6px;display:flex;align-items:center;justify-content:center;">🎭</div>`}
-            <div style="flex:1;">
-              <div style="font-weight:600;font-size:14px;">${t.name}</div>
-              <div style="font-size:12px;color:var(--text-secondary);">${t.description || ''}</div>
-            </div>
-            <span class="badge badge-yellow">🔖 ${t.reservedCount}건</span>
-          </div>
-        `).join('')}
-      </div>`;
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:14px;">${t.name}</div>
+                            <div style="font-size:12px;color:var(--text-secondary);">${t.description || ''}</div>
+                        </div>
+                        <span class="badge badge-yellow">🔖 ${t.reservedCount}건</span>
+                    </div>
+                `).join('')}
+            </div>`;
         } catch (e) {
             container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
         }
@@ -489,15 +587,15 @@
                 return;
             }
             container.innerHTML = `<div class="time-grid">
-        ${data.map(t => `
-          <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}"
-               ${!t.isReserved ? `onclick="selectTime({id:${t.id},startAt:'${t.startAt}'})"` : ''}
-               id="ts-${t.id}">
-            <div>${t.startAt}</div>
-            <div class="time-slot-label">${t.isReserved ? '예약됨' : '선택 가능'}</div>
-          </div>
-        `).join('')}
-      </div>`;
+                ${data.map(t => `
+                    <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}"
+                         ${!t.isReserved ? `onclick="selectTime({id:${t.id},startAt:'${t.startAt}'})"` : ''}
+                         id="ts-${t.id}">
+                        <div>${t.startAt}</div>
+                        <div class="time-slot-label">${t.isReserved ? '예약됨' : '선택 가능'}</div>
+                    </div>
+                `).join('')}
+            </div>`;
         } catch (e) {
             container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
         }
@@ -517,20 +615,20 @@
         const t = state.selectedTheme;
         const container = document.getElementById('confirm-summary');
         container.innerHTML = `
-      <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">테마</div>
-        <div style="font-size:16px;font-weight:700;">${t?.name ?? '–'}</div>
-        <div style="font-size:12px;color:var(--text-secondary);">${t?.description ?? ''}</div>
-      </div>
-      <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">일정</div>
-        <div style="font-size:16px;font-weight:700;">${state.selectedDate ?? '–'}</div>
-        <div style="font-size:12px;color:var(--text-secondary);">⏰ ${state.selectedTime?.startAt ?? '–'}</div>
-      </div>
-    `;
+            <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">테마</div>
+                <div style="font-size:16px;font-weight:700;">${t?.name ?? '–'}</div>
+                <div style="font-size:12px;color:var(--text-secondary);">${t?.description ?? ''}</div>
+            </div>
+            <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">일정</div>
+                <div style="font-size:16px;font-weight:700;">${state.selectedDate ?? '–'}</div>
+                <div style="font-size:12px;color:var(--text-secondary);">⏰ ${state.selectedTime?.startAt ?? '–'}</div>
+            </div>
+        `;
     }
 
-    // ── Reservation CRUD ──────────────────────────────
+    // ── Reservation submit ────────────────────────────
     async function submitReservation() {
         const name = document.getElementById('book-name').value.trim();
         if (!name) {
@@ -550,24 +648,167 @@
                 timeId: state.selectedTime.id,
             });
             toast(`🎉 "${state.selectedTheme.name}" 예약이 완료되었습니다!`, 'success');
-            // Reset
             state.selectedTheme = null;
             state.selectedDate = null;
             state.selectedTime = null;
             document.getElementById('book-name').value = '';
             updateSummary();
             goToStep(1);
-            await loadThemes();
+            await loadThemes(true);
         } catch (e) {
             toast(`예약 실패: ${e.message}`, 'error');
         }
     }
 
+    // ── My Reservations ───────────────────────────────
+    async function searchMyReservations() {
+        const name = document.getElementById('my-name').value.trim();
+        if (!name) {
+            toast('이름을 입력해주세요.', 'error');
+            return;
+        }
+        const section = document.getElementById('my-res-section');
+        section.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const data = await api('GET', `/reservations?page=0&size=100&name=${encodeURIComponent(name)}`);
+            const reservations = data.reservations;
+            if (!reservations.length) {
+                section.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>"${name}" 이름의 예약이 없습니다.</p></div>`;
+                return;
+            }
+            section.innerHTML = `
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>날짜</th>
+                                <th>시간</th>
+                                <th>액션</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-res-tbody">
+                            ${reservations.map(r => renderMyResRow(r, name)).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } catch (e) {
+            section.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    function renderMyResRow(r, name) {
+        return `
+            <tr id="my-res-row-${r.id}">
+                <td><span class="badge badge-gray">#${r.id}</span></td>
+                <td>${r.date}</td>
+                <td>${r.time ?? '–'}</td>
+                <td style="display:flex;gap:6px;">
+                    <button class="btn btn-ghost btn-sm" onclick="openEditModal(${r.id}, '${name.replace(/'/g, "\\'")}', '${r.date}')">✏️ 수정</button>
+                    <button class="btn btn-danger btn-sm" onclick="cancelReservation(${r.id}, '${name.replace(/'/g, "\\'")}')">✕ 취소</button>
+                </td>
+            </tr>
+        `;
+    }
+
+    async function cancelReservation(id, name) {
+        if (!confirm(`예약 #${id}를 취소할까요?`)) return;
+        try {
+            await api('DELETE', `/reservations/${id}`, {name});
+            toast('예약이 취소되었습니다.', 'success');
+            await searchMyReservations();
+        } catch (e) {
+            toast(`취소 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // ── Edit Modal ────────────────────────────────────
+    async function openEditModal(id, name, currentDate) {
+        document.getElementById('edit-res-id').value = id;
+        document.getElementById('edit-res-name').value = name;
+        document.getElementById('edit-date').value = currentDate;
+
+        // 테마 목록 로드
+        try {
+            const themes = (await api('GET', '/themes?page=0&size=100')).themes;
+            document.getElementById('edit-theme').innerHTML =
+                '<option value="">테마 선택</option>' +
+                themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        } catch (e) {
+            toast('테마 목록 로드 실패', 'error');
+        }
+
+        document.getElementById('edit-modal-backdrop').style.display = 'flex';
+        await loadEditTimes();
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-modal-backdrop').style.display = 'none';
+    }
+
+    async function loadEditTimes() {
+        const themeId = document.getElementById('edit-theme').value;
+        const date = document.getElementById('edit-date').value;
+        const sel = document.getElementById('edit-time');
+
+        if (themeId && date) {
+            try {
+                const times = (await api('GET', `/themes/${themeId}/times?date=${date}`)).times;
+                sel.innerHTML = '<option value="">시간 선택</option>' +
+                    times.map(t => `<option value="${t.id}" ${t.isReserved ? 'disabled' : ''}>${t.startAt}${t.isReserved ? ' (예약됨)' : ''}</option>`).join('');
+                return;
+            } catch (e) { /* fallback */ }
+        }
+
+        try {
+            const times = (await api('GET', '/times?page=0&size=100')).times;
+            sel.innerHTML = '<option value="">시간 선택</option>' +
+                times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
+        } catch (e) {
+            sel.innerHTML = '<option value="">시간 선택</option>';
+        }
+    }
+
+    async function submitEdit() {
+        const id = document.getElementById('edit-res-id').value;
+        const name = document.getElementById('edit-res-name').value;
+        const date = document.getElementById('edit-date').value;
+        const themeId = document.getElementById('edit-theme').value;
+        const timeId = document.getElementById('edit-time').value;
+
+        if (!date || !themeId || !timeId) {
+            toast('날짜, 테마, 시간을 모두 선택해주세요.', 'error');
+            return;
+        }
+
+        try {
+            await api('PUT', `/reservations/${id}`, {
+                name,
+                date,
+                themeId: Number(themeId),
+                timeId: Number(timeId),
+            });
+            toast('예약이 수정되었습니다.', 'success');
+            closeEditModal();
+            await searchMyReservations();
+        } catch (e) {
+            toast(`수정 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // 모달 배경 클릭 시 닫기
+    document.getElementById('edit-modal-backdrop').addEventListener('click', function (e) {
+        if (e.target === this) closeEditModal();
+    });
 
     // ── Init ─────────────────────────────────────────
     document.getElementById('book-name').addEventListener('input', updateSummary);
+    document.getElementById('my-name').addEventListener('keydown', e => {
+        if (e.key === 'Enter') searchMyReservations();
+    });
     document.addEventListener('DOMContentLoaded', () => {
-        loadThemes();
+        loadThemes(true);
         document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
     });
 </script>

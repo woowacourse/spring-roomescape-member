@@ -47,7 +47,7 @@
         <div class="stats-row">
             <div class="stat-card green">
                 <div class="stat-value" id="time-count">–</div>
-                <div class="stat-label">등록된 시간</div>
+                <div class="stat-label">조회된 시간</div>
             </div>
         </div>
 
@@ -71,7 +71,7 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">시간 목록</span>
-                <button class="btn btn-ghost btn-sm" onclick="loadTimes()">🔄 새로고침</button>
+                <button class="btn btn-ghost btn-sm" onclick="loadTimes(true)">🔄 새로고침</button>
             </div>
             <div class="table-wrap">
                 <table>
@@ -93,6 +93,11 @@
                     </tbody>
                 </table>
             </div>
+            <div style="text-align: center; margin-top: 12px;">
+                <button class="btn btn-ghost" id="load-more-btn" onclick="loadMore()" style="display:none;">
+                    더 보기
+                </button>
+            </div>
         </div>
     </main>
 </div>
@@ -100,6 +105,8 @@
 <div id="toast-container"></div>
 
 <script>
+    const pageState = {page: 0, hasNext: false, totalLoaded: 0};
+
     function toast(msg, type = 'info') {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -116,41 +123,71 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let message = `오류가 발생했습니다. (HTTP ${res.status})`;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) message = json.message;
+            } catch (_) {
+                if (text) message = text;
+            }
+            throw new Error(message);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;
     }
 
-    async function loadTimes() {
+    async function loadTimes(reset = true) {
+        if (reset) {
+            pageState.page = 0;
+            pageState.totalLoaded = 0;
+            document.getElementById('time-table-body').innerHTML =
+                `<tr><td colspan="3"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
+        }
+
         try {
-            const data = (await api('GET', '/times')).times;
-            document.getElementById('time-count').textContent = data.length;
+            const data = await api('GET', `/times?page=${pageState.page}&size=20`);
+            const times = data.times;
+            pageState.hasNext = data.hasNext;
+            pageState.totalLoaded += times.length;
+
             const tbody = document.getElementById('time-table-body');
 
-            if (!data.length) {
+            if (reset && !times.length) {
                 tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><div class="empty-icon">⏰</div><p>등록된 시간이 없습니다.</p></div></td></tr>`;
+                document.getElementById('time-count').textContent = '0';
+                document.getElementById('load-more-btn').style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = data.map(t => `
-        <tr>
-          <td><span class="badge badge-gray">#${t.id}</span></td>
-          <td>
-            <span style="font-size:18px; font-weight:700; color: var(--accent);">
-              ${t.startAt}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteTime(${t.id})">
-              🗑 삭제
-            </button>
-          </td>
-        </tr>
-      `).join('');
+            if (reset) tbody.innerHTML = '';
+
+            tbody.insertAdjacentHTML('beforeend', times.map(t => `
+                <tr>
+                    <td><span class="badge badge-gray">#${t.id}</span></td>
+                    <td>
+                        <span style="font-size:18px; font-weight:700; color: var(--accent);">
+                            ${t.startAt}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTime(${t.id})">
+                            🗑 삭제
+                        </button>
+                    </td>
+                </tr>
+            `).join(''));
+
+            document.getElementById('time-count').textContent =
+                pageState.hasNext ? `${pageState.totalLoaded}+` : `${pageState.totalLoaded}`;
+            document.getElementById('load-more-btn').style.display = pageState.hasNext ? '' : 'none';
         } catch (e) {
             toast(`시간 조회 실패: ${e.message}`, 'error');
         }
+    }
+
+    async function loadMore() {
+        pageState.page++;
+        await loadTimes(false);
     }
 
     async function createTime() {
@@ -163,7 +200,7 @@
             await api('POST', '/admin/times', {startAt});
             toast(`${startAt} 시간이 추가되었습니다.`, 'success');
             document.getElementById('new-time').value = '';
-            await loadTimes();
+            await loadTimes(true);
         } catch (e) {
             toast(`추가 실패: ${e.message}`, 'error');
         }
@@ -174,13 +211,13 @@
         try {
             await api('DELETE', `/admin/times/${id}`);
             toast('시간이 삭제되었습니다.', 'success');
-            await loadTimes();
+            await loadTimes(true);
         } catch (e) {
             toast(`삭제 실패: ${e.message}`, 'error');
         }
     }
 
-    document.addEventListener('DOMContentLoaded', loadTimes);
+    document.addEventListener('DOMContentLoaded', () => loadTimes(true));
 </script>
 </body>
 </html>
