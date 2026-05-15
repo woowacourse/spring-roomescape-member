@@ -23,6 +23,4 @@ CREATE TABLE reservation
     time_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT uq_reservation_date_theme_time UNIQUE (date, theme_id, time_id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE CASCADE,
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE CASCADE
 );
