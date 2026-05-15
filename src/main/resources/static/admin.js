@@ -10,29 +10,50 @@ function showToast(msg, type = 'default') {
   setTimeout(() => el.remove(), 3100);
 }
 
+// ===== API =====
 const api = {
-  async get(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+  async request(url, options) {
+    const res = await fetch(url, options);
+
+    // HTTP 상태 코드가 200~299가 아닐 경우 (에러 발생 시)
+    if (!res.ok) {
+      let errorMsg = `요청 실패 (${res.status})`;
+      try {
+        // 백엔드의 GlobalExceptionHandler가 내려준 JSON 파싱
+        const errorData = await res.json();
+        // ErrorResponse record의 "message" 필드가 있다면 그걸 사용!
+        if (errorData.message) {
+          errorMsg = errorData.message;
+        }
+      } catch (e) {
+        // JSON 파싱에 실패하면 단순 텍스트로 대체
+        const text = await res.text();
+        if (text) errorMsg = text;
+      }
+      // UI 계층으로 에러 메시지를 던짐
+      throw new Error(errorMsg);
+    }
+
+    // 204 No Content 처리 (DELETE 요청 시 JSON 파싱 에러 방지)
+    if (res.status === 204) return null;
     return res.json();
   },
-  async post(url, body) {
-    const res = await fetch(url, {
+
+  get(url) {
+    return this.request(url);
+  },
+
+  post(url, body) {
+    return this.request(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `POST ${url} failed: ${res.status}`);
-    }
-    return res.json();
   },
-  async del(url) {
-    const res = await fetch(url, { method: 'DELETE' });
-    if (!res.ok) throw new Error(`DELETE ${url} failed: ${res.status}`);
-    return res;
-  },
+
+  del(url) {
+    return this.request(url, { method: 'DELETE' });
+  }
 };
 
 function formatTime(t) {
@@ -74,7 +95,7 @@ async function loadReservations() {
 
 async function deleteReservation(id) {
   if (!confirm('이 예약을 삭제하시겠습니까?')) return;
-  await api.del(`/reservations/${id}`);
+  await api.del(`/admin/reservations/${id}`);
   showToast('예약이 삭제되었습니다.', 'success');
   loadReservations();
 }
@@ -82,15 +103,15 @@ async function deleteReservation(id) {
 // ===== Times =====
 async function loadTimes() {
   const tbody = $('admin-times-tbody');
-  tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
   const data = await api.get('/times');
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted)">등록된 시간대가 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">등록된 시간대가 없습니다.</td></tr>`;
     return;
   }
   tbody.innerHTML = data.map(t => `
     <tr>
-      <td>${t.id}</td><td>${formatTime(t.startAt)}</td>
+      <td>${t.id}</td><td>${formatTime(t.startAt)}</td><td>${formatTime(t.endAt)}</td>
       <td><button class="btn-delete" onclick="deleteTime(${t.id})">삭제</button></td>
     </tr>
   `).join('');
@@ -98,18 +119,30 @@ async function loadTimes() {
 
 async function addTime() {
   const startAt = $('new-time-start').value;
-  if (!startAt) { showToast('시작 시간을 입력해주세요.', 'error'); return; }
-  await api.post('/times', { startAt });
+  const endAt = $('new-time-end').value;
+
+  if (!startAt || !endAt) {
+    showToast('시작 시간과 종료 시간을 모두 입력해주세요.', 'error');
+    return;
+  }
+
+  await api.post('/times', { startAt, endAt });
   showToast('시간대가 추가되었습니다.', 'success');
+
   $('new-time-start').value = '';
+  $('new-time-end').value = '';
   loadTimes();
 }
 
 async function deleteTime(id) {
   if (!confirm('이 시간대를 삭제하시겠습니까?')) return;
-  await api.del(`/times/${id}`);
-  showToast('시간대가 삭제되었습니다.', 'success');
-  loadTimes();
+  try {
+    await api.del(`/times/${id}`);
+    showToast('시간대가 삭제되었습니다.', 'success');
+    loadTimes();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
 }
 
 // ===== Themes =====

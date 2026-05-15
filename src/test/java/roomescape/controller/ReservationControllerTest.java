@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.dto.response.AvailableDateResponse;
+import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
 import java.time.Clock;
@@ -91,13 +92,69 @@ class ReservationControllerTest {
         assertThat(timeStatusesBeforeReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesBeforeReservation)).isEqualTo(5);
 
-        // 예약 추가 1
+        // 예약 추가
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
 
         // 예약 후
         List<ReservationTimeStatusResponse> timeStatusesAfterReservation = getReservationTimeStatusResponses();
         assertThat(timeStatusesAfterReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesAfterReservation)).isEqualTo(4);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_자신의_이름으로_본인의_예약목록_조회() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
+
+        assertThat(reservations).hasSize(1);
+        ReservationResponse response = reservations.getFirst();
+        assertThat(response.id()).isEqualTo(1);
+        assertThat(response.name()).isEqualTo("브라운");
+        assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 5));
+        assertThat(response.time().id()).isEqualTo(1);
+        assertThat(response.theme().id()).isEqualTo(1);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_본인의_예약을_취소() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?name=브라운")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_본인_예약의_날짜와_시간을_변경() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        ReservationResponse reservation = RestAssured.given().log().all()
+                .when().patch("/reservations/1?name=브라운&date=2026-05-10&timeId=2")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getObject(".", ReservationResponse.class);
+
+        assertThat(reservation.id()).isEqualTo(1);
+        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.date()).isEqualTo(LocalDate.of(2026, 5, 10));
+        assertThat(reservation.time().id()).isEqualTo(2);
+        assertThat(reservation.theme().id()).isEqualTo(1);
     }
 
     private static List<ReservationTimeStatusResponse> getReservationTimeStatusResponses() {

@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 
 @ClearDbTest
-public class MissionStep1Test {
+class MissionStep1Test {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -53,7 +53,7 @@ public class MissionStep1Test {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 

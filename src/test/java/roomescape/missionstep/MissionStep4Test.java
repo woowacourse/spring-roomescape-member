@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ClearDbTest
-public class MissionStep4Test {
+class MissionStep4Test {
 
     @Autowired
     private ReservationController reservationController;

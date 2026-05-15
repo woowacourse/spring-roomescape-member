@@ -4,7 +4,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record ReservationCreateRequest(
+public record ReservationModifyRequest(
+        @NotNull
+        Long reservationId,
+
         @NotNull
         String name,
 
@@ -13,9 +16,6 @@ public record ReservationCreateRequest(
         LocalDate date,
 
         @NotNull
-        Long timeId,
-
-        @NotNull
-        Long themeId
+        Long timeId
 ) {
 }

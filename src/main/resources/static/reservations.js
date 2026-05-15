@@ -25,23 +25,48 @@ function showToast(msg, type = 'default') {
 
 // ===== API =====
 const api = {
-  async get(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+  async request(url, options) {
+    const res = await fetch(url, options);
+
+    // HTTP 상태 코드가 200~299가 아닐 경우 (에러 발생 시)
+    if (!res.ok) {
+      let errorMsg = `요청 실패 (${res.status})`;
+      try {
+        // 백엔드의 GlobalExceptionHandler가 내려준 JSON 파싱
+        const errorData = await res.json();
+        // ErrorResponse record의 "message" 필드가 있다면 그걸 사용!
+        if (errorData.message) {
+          errorMsg = errorData.message;
+        }
+      } catch (e) {
+        // JSON 파싱에 실패하면 단순 텍스트로 대체
+        const text = await res.text();
+        if (text) errorMsg = text;
+      }
+      // UI 계층으로 에러 메시지를 던짐
+      throw new Error(errorMsg);
+    }
+
+    // 204 No Content 처리 (DELETE 요청 시 JSON 파싱 에러 방지)
+    if (res.status === 204) return null;
     return res.json();
   },
-  async post(url, body) {
-    const res = await fetch(url, {
+
+  get(url) {
+    return this.request(url);
+  },
+
+  post(url, body) {
+    return this.request(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `POST ${url} failed: ${res.status}`);
-    }
-    return res.json();
   },
+
+  del(url) {
+    return this.request(url, { method: 'DELETE' });
+  }
 };
 
 // ===== Calendar =====

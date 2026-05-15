@@ -5,15 +5,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * 관리자 화면 서빙 컨트롤러.
- * /admin GET 요청을 정적 HTML 파일로 포워딩합니다.
+ * 내 예약 화면 서빙 컨트롤러.
  */
 @Controller
 @RequestMapping("/page")
-public class AdminPageController {
+public class MyReservationPageController {
 
-    @GetMapping("/admin")
-    public String adminPage() {
-        return "forward:/admin.html";
+    @GetMapping("/my-reservations")
+    public String myReservationPage() {
+        return "forward:/my-reservations.html";
     }
 }

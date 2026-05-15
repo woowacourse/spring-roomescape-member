@@ -1,11 +1,14 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.format.DateTimeParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.request.ReservationModifyRequest;
 import roomescape.service.dto.response.AvailableDateResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
@@ -35,9 +38,16 @@ public class ReservationController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservationsByName(@RequestParam("name") String name) {
+        final List<ReservationResponse> results = reservationService.getReservationsByName(name);
+        return ResponseEntity.ok(results);
+    }
+
     @PostMapping
+    @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody ReservationCreateRequest request
+            @Valid @RequestBody ReservationCreateRequest request
     ) {
         final ReservationResponse result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
@@ -45,10 +55,24 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{reservation-id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable("reservation-id") Long reservationId
+    public ResponseEntity<Void> deleteByName(
+            @PathVariable("reservation-id") Long reservationId,
+            @RequestParam("name") String name
     ) {
-        reservationService.delete(reservationId);
+        reservationService.deleteWithValidation(reservationId, name);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{reservation-id}")
+    public ResponseEntity<ReservationResponse> modify(
+            @PathVariable("reservation-id") Long reservationId,
+            @RequestParam("name") String name,
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @RequestParam(value = "timeId", required = false) Long timeId
+    ) {
+        final ReservationModifyRequest reservationModifyRequest = new ReservationModifyRequest(
+                reservationId, name, date, timeId);
+        final ReservationResponse result = reservationService.modify(reservationModifyRequest);
+        return ResponseEntity.ok(result);
     }
 }

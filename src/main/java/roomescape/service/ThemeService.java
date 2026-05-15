@@ -3,7 +3,6 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.domain.dto.ThemeCreateData;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
@@ -23,21 +22,14 @@ public class ThemeService {
 
     public ThemeResponse create(final ThemeCreateRequest request) {
         final Theme themeWithoutId = Theme.create(
-                new ThemeCreateData(
-                        request.name(),
-                        request.description(),
-                        request.thumbnailUrl()
-                )
+                request.name(),
+                request.description(),
+                request.thumbnailUrl()
         );
 
         Theme theme = themeRepository.save(themeWithoutId);
 
-        return new ThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnailUrl()
-        );
+        return mapDomainToDto(theme);
     }
 
     public void delete(final Long themeId) {
@@ -54,24 +46,23 @@ public class ThemeService {
 
         return themeRepository.findPopularThemes(startDate, today)
                 .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription(),
-                        theme.getThumbnailUrl()
-                ))
+                .map(ThemeService::mapDomainToDto)
                 .toList();
     }
 
     public List<ThemeResponse> getThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription(),
-                        theme.getThumbnailUrl()
-                ))
+                .map(ThemeService::mapDomainToDto)
                 .toList();
+    }
+
+    private static ThemeResponse mapDomainToDto(Theme theme) {
+        return new ThemeResponse(
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
+        );
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 public record ReservationTimeResponse(
         Long id,
-        LocalTime startAt
+        LocalTime startAt,
+        LocalTime endAt
 ) {
 }
