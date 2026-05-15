@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
 import roomescape.exception.ReservationOwnerMismatchException;
@@ -68,6 +69,36 @@ public class ReservationService {
         return newReservation.withId(newReservationId);
     }
 
+    @Transactional
+    public Reservation updateOwnReservation(Long id, UpdateReservationRequest request) {
+        Reservation existing = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약", id));
+        validateReservationOwner(request.name(), existing);
+        validateNotPastDateTime(existing);
+
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new ResourceNotFoundException("테마", request.themeId()));
+        ReservationTime time = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ResourceNotFoundException("예약 시간", request.timeId()));
+        Reservation updated = new Reservation(id, existing.getName(), theme, request.date(), time);
+
+        validateNotPastDateTime(updated);
+        validateNotDuplicatedForUpdate(existing, updated);
+
+        reservationRepository.update(updated);
+        return updated;
+    }
+
+    private void validateNotDuplicatedForUpdate(Reservation existing, Reservation updated) {
+        boolean sameSlot = existing.getDate().equals(updated.getDate())
+                && existing.getTime().getId().equals(updated.getTime().getId())
+                && existing.getTheme().getId().equals(updated.getTheme().getId());
+        if (sameSlot) {
+            return;
+        }
+        validateNotDuplicated(updated);
+    }
+
     public void deleteReservation(Long id) {
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
@@ -79,7 +110,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약", id));
         validateReservationOwner(name, reservation);
-        
+
         reservationRepository.deleteById(id);
     }
 

@@ -13,8 +13,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
@@ -179,6 +181,114 @@ class ReservationServiceTest {
 
         ReservationResponses responses = service.getReservations(0, 10, null);
         assertThat(responses.reservations()).extracting("id").doesNotContain(reservationId);
+    }
+
+    @Test
+    void cancelOwnReservation_이름_불일치면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 5, 8)));
+
+        assertThatThrownBy(() -> service.cancelOwnReservation(reservationId, "다른사람"))
+                .isInstanceOf(ReservationOwnerMismatchException.class);
+        assertThat(reservationRepository.findById(reservationId)).isPresent();
+    }
+
+    @Test
+    void cancelOwnReservation_없는_id이면_ResourceNotFoundException() {
+        assertThatThrownBy(() -> service.cancelOwnReservation(9999L, "브라운"))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    void updateOwnReservation_변경된_도메인을_반환한다() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long themeId2 = themeRepository.save(new Theme(null, "추리", "재밌음", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long timeId2 = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 6, 1)));
+
+        Reservation updated = service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("브라운", themeId2, LocalDate.of(2026, 6, 2), timeId2));
+
+        assertThat(updated.getDate()).isEqualTo(LocalDate.of(2026, 6, 2));
+        assertThat(updated.getTheme().getId()).isEqualTo(themeId2);
+        assertThat(updated.getTime().getId()).isEqualTo(timeId2);
+    }
+
+    @Test
+    void updateOwnReservation_이름_불일치면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 6, 1)));
+
+        assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("다른사람", themeId, LocalDate.of(2026, 6, 2), timeId)))
+                .isInstanceOf(ReservationOwnerMismatchException.class);
+    }
+
+    @Test
+    void updateOwnReservation_기존_예약이_과거이면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 5, 1)));
+
+        assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 6, 2), timeId)))
+                .isInstanceOf(InvalidReservationDateTimeException.class);
+    }
+
+    @Test
+    void updateOwnReservation_새_일정이_과거이면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 6, 1)));
+
+        assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 5, 1), timeId)))
+                .isInstanceOf(InvalidReservationDateTimeException.class);
+    }
+
+    @Test
+    void updateOwnReservation_새_일정이_다른_예약과_충돌하면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long timeId2 = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 6, 1)));
+        reservationRepository.save(buildReservation("다른사람", themeId, timeId2, LocalDate.of(2026, 6, 2)));
+
+        assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 6, 2), timeId2)))
+                .isInstanceOf(DuplicateReservationException.class);
+    }
+
+    @Test
+    void updateOwnReservation_기존_슬롯과_동일하면_예외없이_통과() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 6, 1)));
+
+        Reservation updated = service.updateOwnReservation(reservationId,
+                new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 6, 1), timeId));
+
+        assertThat(updated.getId()).isEqualTo(reservationId);
+    }
+
+    @Test
+    void updateOwnReservation_없는_id이면_ResourceNotFoundException() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+
+        assertThatThrownBy(() -> service.updateOwnReservation(9999L,
+                new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 6, 2), timeId)))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     private Reservation buildReservation(String name, Long themeId, Long timeId, LocalDate date) {

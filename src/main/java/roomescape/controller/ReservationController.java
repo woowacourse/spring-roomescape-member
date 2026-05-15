@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import roomescape.dto.reservation.CancelReservationRequest;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.service.ReservationService;
 
 @Validated
@@ -54,6 +56,14 @@ public class ReservationController {
 
         URI location = URI.create("/reservations/" + createdReservation.getId());
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateReservationRequest request) {
+        Reservation updated = reservationService.updateOwnReservation(id, request);
+        return ResponseEntity.ok(ReservationResponse.from(updated));
     }
 
     @DeleteMapping("/{id}")

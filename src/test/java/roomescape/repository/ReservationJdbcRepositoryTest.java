@@ -77,6 +77,29 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    void update_지정한_id의_필드를_갱신한다() {
+        Long themeA = insertTheme("A");
+        Long themeB = insertTheme("B");
+        Long time1 = insertTime("10:00");
+        Long time2 = insertTime("11:00");
+        insertReservation("브라운", themeA, "2026-06-01", time1);
+        Long reservationId = jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation ORDER BY id DESC LIMIT 1", Long.class);
+
+        int affected = repository.update(new Reservation(
+                reservationId, "브라운",
+                new Theme(themeB, null, null, null),
+                LocalDate.of(2026, 6, 2),
+                new ReservationTime(time2, null)));
+
+        assertThat(affected).isEqualTo(1);
+        Reservation found = repository.findById(reservationId).orElseThrow();
+        assertThat(found.getDate()).isEqualTo(LocalDate.of(2026, 6, 2));
+        assertThat(found.getTheme().getId()).isEqualTo(themeB);
+        assertThat(found.getTime().getId()).isEqualTo(time2);
+    }
+
+    @Test
     void deleteById_삭제된_예약은_조회되지_않는다() {
         Long themeId = insertTheme("공포");
         Long timeId = insertTime("10:00");

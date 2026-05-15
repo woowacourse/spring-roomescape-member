@@ -1,12 +1,14 @@
 package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,8 +30,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -173,6 +177,106 @@ class ReservationControllerTest {
                         .content("{\"name\":\"브라운\"}"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("예약을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
+    void DELETE_reservations_id_이름_불일치면_403과_메시지를_반환한다() throws Exception {
+        willThrow(new ReservationOwnerMismatchException())
+                .given(reservationService).cancelOwnReservation(1L, "다른사람");
+
+        mockMvc.perform(delete("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"다른사람\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("본인의 예약만 취소 혹은 변경 가능합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_200을_반환하고_서비스에_위임한다() throws Exception {
+        given(reservationService.updateOwnReservation(eq(1L), any(UpdateReservationRequest.class)))
+                .willReturn(sampleReservation(1L));
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 1);
+
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+
+        verify(reservationService).updateOwnReservation(eq(1L), any(UpdateReservationRequest.class));
+    }
+
+    @Test
+    void PUT_reservations_id_본문의_name이_누락되면_400과_메시지를_반환한다() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-06-02");
+        body.put("themeId", 1);
+        body.put("timeId", 1);
+
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("name은(는) 필수 입력값입니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_서비스가_ReservationOwnerMismatchException을_던지면_403과_메시지를_반환한다() throws Exception {
+        willThrow(new ReservationOwnerMismatchException())
+                .given(reservationService).updateOwnReservation(eq(1L), any(UpdateReservationRequest.class));
+
+        Map<String, Object> body = Map.of(
+                "name", "다른사람",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 1);
+
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("본인의 예약만 취소 혹은 변경 가능합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_서비스가_InvalidReservationDateTimeException을_던지면_422과_메시지를_반환한다() throws Exception {
+        willThrow(new InvalidReservationDateTimeException())
+                .given(reservationService).updateOwnReservation(eq(1L), any(UpdateReservationRequest.class));
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-05-01",
+                "themeId", 1,
+                "timeId", 1);
+
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_서비스가_DuplicateReservationException을_던지면_409과_메시지를_반환한다() throws Exception {
+        willThrow(new DuplicateReservationException())
+                .given(reservationService).updateOwnReservation(eq(1L), any(UpdateReservationRequest.class));
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 1);
+
+        mockMvc.perform(put("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("해당 날짜·시간·테마에 이미 예약이 존재합니다. 다른 날짜·시간·테마를 선택해주세요."));
     }
 
     @Test

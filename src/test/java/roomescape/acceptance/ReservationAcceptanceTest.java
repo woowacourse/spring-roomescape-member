@@ -202,6 +202,115 @@ class ReservationAcceptanceTest {
     }
 
     @Test
+    void PUT_reservations_id_본인의_예약을_변경한다() {
+        insertTheme(1L, "테마1");
+        insertTheme(2L, "테마2");
+        insertTime(1L, "10:00");
+        insertTime(2L, "11:00");
+        insertReservation("브라운", 1L, "2026-06-01", 1L);
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-06-02",
+                "themeId", 2,
+                "timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("date", equalTo("2026-06-02"));
+    }
+
+    @Test
+    void PUT_reservations_id_이름이_일치하지_않으면_403과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-06-01", 1L);
+
+        Map<String, Object> body = Map.of(
+                "name", "다른사람",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("message", equalTo("본인의 예약만 취소 혹은 변경 가능합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_과거_예약을_변경하려_하면_422과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-05-01", 1L);
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", equalTo("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_새_일정이_과거이면_422과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-06-01", 1L);
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-05-01",
+                "themeId", 1,
+                "timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", equalTo("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
+    }
+
+    @Test
+    void PUT_reservations_id_새_일정이_이미_예약된_슬롯이면_409과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
+        insertTime(2L, "11:00");
+        insertReservation("브라운", 1L, "2026-06-01", 1L);
+        insertReservation("다른사람", 1L, "2026-06-02", 2L);
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-06-02",
+                "themeId", 1,
+                "timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다. 다른 날짜·시간·테마를 선택해주세요."));
+    }
+
+    @Test
     void DELETE_reservations_id_본인의_예약을_취소한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
