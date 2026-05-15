@@ -87,12 +87,27 @@ public class ReservationService {
         int reservationCount = reservationRepository.countReservationsOf(command.date(), command.timeId(),
                 reservation.themeId());
         checkReservationDuplication(reservationCount);
+        validateEditedDateTime(command, now);
 
         try {
             reservationRepository.updateReservation(id, command);
-            return getValidReservation(id, now);
+            return reservationRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
         } catch (IllegalStateException e) {
             throw new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND);
+        }
+    }
+
+    private void validateEditedDateTime(ReservationEditCommand command, LocalDateTime now) {
+        ReservationTime time = reservationTimeRepository.findById(command.timeId())
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
+        LocalDateTime editedDateTime = command.date().atTime(time.startAt());
+
+        if (command.date().isBefore(now.toLocalDate())) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
+        }
+        if (editedDateTime.isBefore(now)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
         }
     }
 

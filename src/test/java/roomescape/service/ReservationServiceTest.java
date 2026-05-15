@@ -37,14 +37,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final LocalTime FIXED_TIME = LocalTime.of(12, 0);
     private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
-    private static final LocalDateTime NOW = LocalDateTime.of(FIXED_TODAY, LocalTime.of(12, 0));
+    private static final LocalDateTime NOW = LocalDateTime.of(FIXED_TODAY, FIXED_TIME);
     private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
     @Mock
     private ReservationRepository reservationRepository;
@@ -250,11 +252,34 @@ class ReservationServiceTest {
 
     @Test
     void 과거_날짜로_수정_불가() {
+        ReservationTime time = new ReservationTime(TIME_ID, FIXED_TIME);
+        Theme theme = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
 
+        Reservation reservation = new Reservation(1L, "브라운", FIXED_TODAY, time, theme);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY.minusDays(1), TIME_ID);
+
+        when((reservationRepository.findById(1L))).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(TIME_ID)).thenReturn(Optional.of(time));
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_DATE.getMessage());
     }
 
     @Test
     void 과거_시간으로_수정_불가() {
+        long currentReservationTimeId = 3L;
+        long editedReservationTimeId = 1L;
+        ReservationTime time = new ReservationTime(currentReservationTimeId, FIXED_TIME);
+        Theme theme = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
 
+        Reservation reservation = new Reservation(1L, "브라운", FIXED_TODAY, time, theme);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY, editedReservationTimeId);
+        ReservationTime pastTime = new ReservationTime(editedReservationTimeId, LocalTime.of(11, 0));
+
+        when((reservationRepository.findById(1L))).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(editedReservationTimeId)).thenReturn(Optional.of(pastTime));
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_TIME.getMessage());
     }
 }
