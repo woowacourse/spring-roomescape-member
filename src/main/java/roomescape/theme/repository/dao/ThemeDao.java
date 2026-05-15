@@ -32,7 +32,7 @@ public class ThemeDao {
     }
 
     public List<ThemeEntity> findAll() {
-        String sql = "SELECT * FROM theme WHERE is_deleted = FALSE;";
+        String sql = "SELECT * FROM theme WHERE is_deleted = FALSE";
         return jdbcTemplate.query(sql, themeEntityRowMapper);
     }
 
@@ -47,19 +47,19 @@ public class ThemeDao {
     }
 
     public int deleteById(Long id) {
-        String sql = "UPDATE theme SET is_deleted = TRUE WHERE id = ?;";
+        String sql = "UPDATE theme SET is_deleted = TRUE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     public Optional<ThemeEntity> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ? AND is_deleted = FALSE;";
+        String sql = "SELECT * FROM theme WHERE id = ? AND is_deleted = FALSE";
         return jdbcTemplate.query(sql, themeEntityRowMapper, id)
                 .stream()
                 .findFirst();
     }
 
     public ThemeEntity getByIdIncludingDeleted(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?;";
+        String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id);
     }
 
@@ -89,7 +89,7 @@ public class ThemeDao {
                 SELECT COUNT(*)
                 FROM theme
                 WHERE id = ?
-                AND is_deleted = FALSE;
+                  AND is_deleted = FALSE
                 """;
 
         Integer count = jdbcTemplate.queryForObject(

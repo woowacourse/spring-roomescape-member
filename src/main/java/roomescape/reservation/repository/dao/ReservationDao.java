@@ -38,7 +38,7 @@ public class ReservationDao {
     }
 
     public List<ReservationEntity> findAll() {
-        String sql = "SELECT * FROM reservation WHERE is_deleted = FALSE;";
+        String sql = "SELECT * FROM reservation WHERE is_deleted = FALSE";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
@@ -49,7 +49,7 @@ public class ReservationDao {
     }
 
     public List<ReservationEntity> findByName(String name) {
-        String sql = "SELECT * FROM reservation WHERE name = ? AND is_deleted = FALSE;";
+        String sql = "SELECT * FROM reservation WHERE name = ? AND is_deleted = FALSE";
         return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
@@ -85,12 +85,12 @@ public class ReservationDao {
     }
 
     public int updateCancelledById(Long id, boolean status) {
-        String sql = "UPDATE reservation SET is_cancelled = ? WHERE id = ?;";
+        String sql = "UPDATE reservation SET is_cancelled = ? WHERE id = ?";
         return jdbcTemplate.update(sql, status, id);
     }
 
     public int deleteById(Long id) {
-        String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = ?;";
+        String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
@@ -120,8 +120,8 @@ public class ReservationDao {
         String sql = """
                 SELECT * 
                 FROM reservation
-                WHERE date  >= ?
-                AND is_deleted = FALSE;
+                WHERE date >= ?
+                  AND is_deleted = FALSE
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, localDate);
