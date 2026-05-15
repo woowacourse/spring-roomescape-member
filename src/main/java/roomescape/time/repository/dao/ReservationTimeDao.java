@@ -40,24 +40,24 @@ public class ReservationTimeDao {
     }
 
     public Optional<ReservationTimeEntity> findById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ? AND is_deleted = FALSE;";
+        String sql = "SELECT * FROM reservation_time WHERE id = ? AND is_deleted = FALSE";
         return jdbcTemplate.query(sql, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
     }
 
     public ReservationTimeEntity getByIdIncludingDeleted(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?;";
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 
     public List<ReservationTimeEntity> findAll() {
-        String sql = "SELECT * FROM reservation_time WHERE is_deleted = FALSE;";
+        String sql = "SELECT * FROM reservation_time WHERE is_deleted = FALSE";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     public int deleteById(Long id) {
-        String sql = "UPDATE reservation_time SET is_deleted = TRUE WHERE id = ?;";
+        String sql = "UPDATE reservation_time SET is_deleted = TRUE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
@@ -65,7 +65,9 @@ public class ReservationTimeDao {
         String sql = """
                  SELECT time_id
                  FROM reservation 
-                 WHERE theme_id = ? AND date = ? AND is_deleted = FALSE;
+                 WHERE theme_id = ?
+                   AND date = ?
+                   AND is_deleted = FALSE
                 """;
 
         return jdbcTemplate.queryForList(sql, Long.class, themeId, date.toString());
@@ -75,7 +77,8 @@ public class ReservationTimeDao {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation_time
-                WHERE id = ? AND is_deleted = FALSE;
+                WHERE id = ?
+                  AND is_deleted = FALSE
                 """;
 
         Integer count = jdbcTemplate.queryForObject(

@@ -71,7 +71,7 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(date,
                 reservationTimeRepository.findById(timeId).getStartAt());
 
-        if(isBeforeNow(reservationDateTime)) {
+        if (isBeforeNow(reservationDateTime)) {
             throw new PastReservationNotAllowedException();
         }
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
@@ -90,7 +90,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id);
-        validatedFutureOrPresent(reservation);
+        validateFutureOrPresent(reservation);
 
         reservationRepository.deleteById(id);
     }
@@ -99,19 +99,19 @@ public class ReservationService {
     public void cancelReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id);
         validateAlreadyCancelled(reservation);
-        validatedFutureOrPresent(reservation);
+        validateFutureOrPresent(reservation);
 
         reservationRepository.cancelById(id);
     }
 
-    private void validatedFutureOrPresent(Reservation reservation) {
-        if(isBeforeNow(reservation.getReservationDateTime())) {
+    private void validateFutureOrPresent(Reservation reservation) {
+        if (isBeforeNow(reservation.getReservationDateTime())) {
             throw new ReservationUpdateNotAllowedException();
         }
     }
 
     private static void validateAlreadyCancelled(Reservation reservation) {
-        if(reservation.isCancel()) {
+        if (reservation.isCancel()) {
             throw new ReservationUpdateNotAllowedException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
         }
     }
