@@ -19,10 +19,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationIdResponse> create(@RequestBody @Valid ReservationRequest request) {
-        ReservationCreateInfo info = new ReservationCreateInfo(
-                request.userId(), request.startAt(), request.themeId());
-        ReservationIdResponse response = reservationService.create(info);
+    public ResponseEntity<ReservationIdResponse> create(
+            @RequestBody @Valid ReservationRequest request, @RequestHeader("X-User-Id") Long userId) {
+        ReservationIdResponse response = reservationService.create(userId, request.scheduleId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

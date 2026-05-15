@@ -8,14 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.exception.SameScheduleException;
-import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.support.DatabaseHelper;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -56,10 +53,9 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2026, 12, 10, 15, 0), 1L);
+        Long scheduleId = 2L;
 
-        ReservationIdResponse response = reservationService.create(info);
+        ReservationIdResponse response = reservationService.create(USER_1.getId(), scheduleId);
 
         assertThat(response.getId()).isNotNull();
         assertThat(reservationService.findAll().getReservationsResponse()).hasSize(2);
@@ -78,42 +74,32 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_테마로_예약을_시도하면_예외가_발생한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2026, 12, 10, 15, 0), 999L);
+    void 존재하지_않는_스케줄로_예약을_시도하면_예외가_발생한다() {
+        Long nonExistentScheduleId = 999L;
 
-        assertThatThrownBy(() -> reservationService.create(info))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
-    }
-
-    @Test
-    void 등록된_스케줄이_없는_시간에_예약을_시도하면_예외가_발생한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2026, 12, 10, 10, 0), 1L);
-
-        assertThatThrownBy(() -> reservationService.create(info))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> reservationService.create(USER_1.getId(), nonExistentScheduleId))
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("등록된 스케줄이 없습니다.");
     }
 
     @Test
     void 이미_예약이_완료된_스케줄에_중복_예약을_시도하면_예외가_발생한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2026, 12, 10, 12, 0), 1L);
+        Long scheduleId = SCHEDULE_12시.getId();
+        databaseHelper.insertUser(2L, "user2", "USER");
 
-        assertThatThrownBy(() -> reservationService.create(info))
+        assertThatThrownBy(() -> reservationService.create(2L, scheduleId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
     }
 
     @Test
     void 과거의_날짜_시간에_예약을_시도하면_예외가_발생한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2020, 1, 1, 1, 1), 1L);
+        Long pastScheduleId = 99L;
+        databaseHelper.insertSchedule(pastScheduleId, THEME_공포.getId(), "2020-01-01 10:00:00", "2020-01-01 12:00:00");
 
-        assertThatThrownBy(() -> reservationService.create(info))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.create(USER_1.getId(), pastScheduleId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
     }
 
     @Test

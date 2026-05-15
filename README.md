@@ -110,7 +110,8 @@
 | :--- |:------------------------------------------------|
 | **URL** | `/reservations`                                 |
 | **HTTP Method** | `POST`                                          |
-| **Request (Body)** | `{ "startAt":"날짜시간", "themeId":1, "userId":1 }` |
+| **Request (Header)** | `X-User-Id: {userId}` (로그인 시 발급받은 사용자 ID) |
+| **Request (Body)** | `{ "scheduleId": 1 }` |
 | **Response** | `{ "id": 101 }`                                 |
 | **StatusCode**  | `201 Created`                                   |
 
@@ -143,10 +144,10 @@
 | **StatusCode**  | `204 no content`     |
 
 ### 7. 본인 예약 날짜·시간 변경
-| 항목                 | 상세 내용                                       |
-|:-------------------|:--------------------------------------------|
-| **URL**            | `/reservations/{id}`                        |
-| **HTTP Method**    | `PATCH`                                     |
-| **Request (Body)** | `{ "scheduleId": 2 }`                       |
-| **Response**       | `{ "id":1L, "userId":1L, "scheduleId":2L }` |
-| **StatusCode**     | `200 ok`                                    |
+| 항목                 | 상세 내용                                     |
+|:-------------------|:------------------------------------------|
+| **URL**            | `/reservations/{id}`                      |
+| **HTTP Method**    | `PATCH`                                   |
+| **Request (Body)** | `{ "scheduleId": 2 }`                     |
+| **Response**       | `{ "id":1L, "userId":1, "scheduleId":2 }` |
+| **StatusCode**     | `200 ok`                                  |

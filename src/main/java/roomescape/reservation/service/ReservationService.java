@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.ResourceNotFoundException;
-import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
@@ -12,8 +11,6 @@ import roomescape.exception.SameScheduleException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
-import roomescape.theme.model.Theme;
-import roomescape.theme.repository.ThemeRepository;
 import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
@@ -26,27 +23,24 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ScheduleRepository scheduleRepository;
-    private final ThemeRepository themeRepository;
     private final UserService userService;
 
-    public ReservationService(ReservationRepository reservationRepository, ScheduleRepository scheduleRepository, ThemeRepository themeRepository, UserService userService) {
+    public ReservationService(ReservationRepository reservationRepository, ScheduleRepository scheduleRepository, UserService userService) {
         this.reservationRepository = reservationRepository;
         this.scheduleRepository = scheduleRepository;
-        this.themeRepository = themeRepository;
         this.userService = userService;
     }
 
     @Transactional
-    public ReservationIdResponse create(ReservationCreateInfo info) {
-        User user = userService.getUserById(info.userId());
-        Theme theme = themeRepository.findById(info.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), info.startAt())
-                .orElseThrow(() -> new IllegalArgumentException("등록된 스케줄이 없습니다."));
+    public ReservationIdResponse create(Long userId, Long scheduleId) {
+        User user = userService.getUserById(userId);
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("등록된 스케줄이 없습니다."));
 
         validateReservation(schedule);
 
-        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation reservation = new Reservation(user, schedule, schedule.getTheme());
         Reservation savedReservation = reservationRepository.create(reservation);
         return ReservationIdResponse.from(savedReservation);
     }
