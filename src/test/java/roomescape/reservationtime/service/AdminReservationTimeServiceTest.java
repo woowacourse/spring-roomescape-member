@@ -20,7 +20,6 @@ class AdminReservationTimeServiceTest extends ServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // time(id=1)=10:00 — 예약이 연결되어 있음
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");

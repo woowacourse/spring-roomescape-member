@@ -20,7 +20,6 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // 5개 테마 (id=1~5), time(id=1)
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
         jdbcTemplate.update(
@@ -33,7 +32,6 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme E', 'Desc', 'https://e.png')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
 
-        // 랭킹 윈도우(2026-05-06 ~ 2026-05-12) 기준 예약 수: A(4) > B(3) > C(2) > D(1), E(0)
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2026-05-06', 1, 1)");
         jdbcTemplate.update(
@@ -92,7 +90,6 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
 
     @Test
     void 날짜_범위_밖의_예약은_랭킹에서_제외된다() {
-        // 2026-05-08 ~ 2026-05-09 범위: A(2건), B(1건), C·D는 해당 날짜 예약 없음
         List<Theme> ranked = userThemeService.getThemes(
                 SortColumn.RESERVATION_COUNT, SortOrder.DESC,
                 LocalDate.of(2026, 5, 8), LocalDate.of(2026, 5, 9), 10L);

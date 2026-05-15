@@ -18,7 +18,7 @@ class UserReservationTimeServiceTest extends ServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // time(id=1~5), theme(id=1)
+
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
@@ -26,7 +26,6 @@ class UserReservationTimeServiceTest extends ServiceIntegrationTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00:00')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('13:00:00')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('14:00:00')");
-        // 2099-12-31에 time(id=1)만 예약 → isAvailable=false, time(id=2)는 예약 없음 → isAvailable=true
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2099-12-31', 1, 1)");
     }

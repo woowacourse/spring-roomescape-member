@@ -19,7 +19,6 @@ class AdminThemeServiceTest extends ServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Theme A(id=1) — 예약 있음, Theme E(id=5) — 예약 없음
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
         jdbcTemplate.update(
