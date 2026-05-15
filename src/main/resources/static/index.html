@@ -1356,7 +1356,7 @@
                 <td>${escapeHtml(res.name)}</td>
                 <td>${res.date}</td>
                 <td>${res.time ? escapeHtml(res.time.startAt) : ''}</td>
-                <td>${res.themeId}</td>
+                <td>${res.theme ? escapeHtml(res.theme.name) : res.themeId}</td>
                 <td><button onclick="deleteTimeOrReservation('${API_RESERVATIONS}', ${res.id}, loadAdminReservations)" class="button secondary">삭제</button></td>
             </tr>
         `);
