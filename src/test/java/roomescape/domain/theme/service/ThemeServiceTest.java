@@ -16,7 +16,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
 import roomescape.domain.global.exception.custom.NotFoundException;
 import roomescape.domain.global.exception.custom.UnprocessableEntityException;
@@ -137,20 +136,6 @@ class ThemeServiceTest {
                 ),
                 UnprocessableEntityException.class,
                 ErrorCode.THEME_INVALID_DATE
-            );
-        }
-
-        @Test
-        @DisplayName("limit이 음수이면 예외가 발생한다.")
-        void 실패2() {
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.getPopularThemes(
-                    LocalDate.of(2026, 5, 1),
-                    LocalDate.of(2026, 5, 31),
-                    -1
-                ),
-                BadRequestException.class,
-                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }

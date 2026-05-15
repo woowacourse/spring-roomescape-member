@@ -1,6 +1,8 @@
 package roomescape.domain.global.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+        HttpMessageNotReadableException e) {
         Throwable cause = e.getCause();
         List<ErrorDetail> errors = new ArrayList<>();
         if (cause instanceof InvalidFormatException invalidFormatException) {
@@ -90,6 +93,30 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+        ConstraintViolationException e) {
+        List<ErrorDetail> errors = e.getConstraintViolations()
+            .stream()
+            .map(violation -> ErrorDetail.of(
+                extractFieldName(violation),
+                violation.getInvalidValue(),
+                violation.getMessage()
+            )).toList();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
+    }
+
+    private String extractFieldName(ConstraintViolation<?> violation) {
+        String path = violation.getPropertyPath().toString();
+        int lastDotIndex = path.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return path;
+        }
+        return path.substring(lastDotIndex + 1);
     }
 
     @ExceptionHandler(BadRequestException.class)

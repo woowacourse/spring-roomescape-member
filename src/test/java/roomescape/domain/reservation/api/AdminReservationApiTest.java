@@ -31,7 +31,7 @@ class AdminReservationApiTest {
     }
 
     @Nested
-    @DisplayName("예약 조회 api")
+    @DisplayName("예약 조회 api는")
     class GetReservationsTest {
 
         @Test

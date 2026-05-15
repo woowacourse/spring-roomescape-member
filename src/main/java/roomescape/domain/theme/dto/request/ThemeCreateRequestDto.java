@@ -1,11 +1,8 @@
 package roomescape.domain.theme.dto.request;
 
-import roomescape.domain.theme.validator.ThemeCreateRequestValidator;
+import jakarta.validation.constraints.NotBlank;
 
-public record ThemeCreateRequestDto(String name, String description, String imageUrl) {
-
-    public ThemeCreateRequestDto {
-        ThemeCreateRequestValidator.validate(name, description, imageUrl);
-    }
+public record ThemeCreateRequestDto(@NotBlank String name, @NotBlank String description,
+                                    @NotBlank String imageUrl) {
 
 }
