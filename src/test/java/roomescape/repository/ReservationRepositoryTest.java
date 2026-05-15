@@ -72,7 +72,7 @@ class ReservationRepositoryTest {
     @Test
     void 새로운_예약_정보를_저장하고_저장한_정보를_반환한다() {
         // given
-        Reservation transientReservation = new Reservation(
+        Reservation transientReservation = Reservation.create(
                 DEFAULT_RESERVATION_ID,
                 DEFAULT_RESERVATION_NAME,
                 DEFAULT_RESERVATION_DATE,
@@ -84,7 +84,7 @@ class ReservationRepositoryTest {
         Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
         // then
-        String selectSql = "SELECT id, name, date, time_id, theme_id"
+        String selectSql = "SELECT id, name, date, canceled, time_id, theme_id"
                 + " FROM reservation r";
         List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
@@ -100,7 +100,7 @@ class ReservationRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.create(
                 DEFAULT_RESERVATION_ID,
                 DEFAULT_RESERVATION_NAME,
                 DEFAULT_RESERVATION_DATE,
@@ -134,7 +134,7 @@ class ReservationRepositoryTest {
             LocalDate startDate = LocalDate.of(2000, 1, 1);
             LocalDate endDate = LocalDate.of(3000, 1, 1);
 
-            Reservation outOfDurationReservation = new Reservation(
+            Reservation outOfDurationReservation = Reservation.create(
                     EntityId.random(),
                     "outReservationName",
                     LocalDate.of(1000, 1, 1),
@@ -143,7 +143,7 @@ class ReservationRepositoryTest {
             );
             reservationRepository.persist(outOfDurationReservation);
 
-            Reservation withinDurationReservation = new Reservation(
+            Reservation withinDurationReservation = Reservation.create(
                     EntityId.random(),
                     "withinReservationName",
                     LocalDate.of(2500, 1, 1),
@@ -169,7 +169,7 @@ class ReservationRepositoryTest {
                 // given
                 LocalDate targetDate = LocalDate.of(2000, 1, 1);
 
-                Reservation sameDateReservation = new Reservation(
+                Reservation sameDateReservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         targetDate,
@@ -179,7 +179,7 @@ class ReservationRepositoryTest {
                 Reservation persistedReservation = reservationRepository.persist(sameDateReservation);
 
                 // when
-                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                List<Reservation> foundReservations = reservationRepository.findNotCanceledByDateAndThemeId(
                         targetDate,
                         DEFAULT_THEME_ID
                 );
@@ -193,7 +193,7 @@ class ReservationRepositoryTest {
                 // given
                 LocalDate targetDate = LocalDate.of(2000, 1, 1);
 
-                Reservation differentDateReservation = new Reservation(
+                Reservation differentDateReservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         LocalDate.of(1000, 1, 1),
@@ -203,7 +203,7 @@ class ReservationRepositoryTest {
                 reservationRepository.persist(differentDateReservation);
 
                 // when
-                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                List<Reservation> foundReservations = reservationRepository.findNotCanceledByDateAndThemeId(
                         targetDate,
                         DEFAULT_THEME_ID
                 );
@@ -219,7 +219,7 @@ class ReservationRepositoryTest {
             @Test
             void ID_기반으로_예약을_제거한다() {
                 // given
-                Reservation reservation = new Reservation(
+                Reservation reservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         DEFAULT_RESERVATION_DATE,
@@ -230,7 +230,7 @@ class ReservationRepositoryTest {
                 Reservation persistedReservation = reservationRepository.persist(reservation);
 
                 // when
-                reservationRepository.delete(persistedReservation.id());
+                reservationRepository.delete(persistedReservation.getId());
 
                 // then
                 List<Reservation> reservations = reservationRepository.findAll();
@@ -241,7 +241,7 @@ class ReservationRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                Reservation reservation = new Reservation(
+                Reservation reservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         DEFAULT_RESERVATION_DATE,
@@ -252,7 +252,7 @@ class ReservationRepositoryTest {
                 Reservation persistedReservation = reservationRepository.persist(reservation);
 
                 // when
-                boolean deleted = reservationRepository.delete(persistedReservation.id());
+                boolean deleted = reservationRepository.delete(persistedReservation.getId());
 
                 // then
                 assertThat(deleted).isTrue();
@@ -295,10 +295,11 @@ class ReservationRepositoryTest {
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
+        return (resultSet, rowNum) -> Reservation.retrieve(
                 readEntityId(resultSet, "id"),
                 resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
+                resultSet.getBoolean("canceled"),
                 readEntityId(resultSet, "time_id"),
                 readEntityId(resultSet, "theme_id")
         );

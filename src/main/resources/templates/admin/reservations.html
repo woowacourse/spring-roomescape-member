@@ -22,6 +22,7 @@
                 <th>시간 ID</th>
                 <th>시작</th>
                 <th>테마</th>
+                <th>취소 여부</th>
                 <th>취소 가능</th>
                 <th></th>
             </tr>
@@ -98,8 +99,9 @@
                     <td>${r.time.id}</td>
                     <td>${r.time.startAt}</td>
                     <td>${escapeHtml(r.theme.name)}</td>
+                    <td style="color:${r.canceled ? 'var(--danger)' : 'var(--success)'}">${r.canceled ? '취소됨' : '취소되지 않음'}</td>
                     <td>${canCancel ? '가능' : '불가'}</td>
-                    <td><button type="button" class="btn btn-danger" data-id="${r.id}" ${canCancel ? '' : 'disabled'}>취소</button></td>`;
+                    <td><button type="button" class="btn btn-danger" data-id="${r.id}" ${canCancel ? '' : 'disabled'}>삭제</button></td>`;
                 tbody.appendChild(tr);
             }
             tbody.querySelectorAll('button[data-id]').forEach(btn => {

@@ -56,8 +56,8 @@ public class AdminReservationService {
     }
 
     private AssembledReservation assembleReservation(Reservation reservation) {
-        ReservationTime time = findTimeById(reservation.timeId());
-        Theme theme = findThemeById(reservation.themeId());
+        ReservationTime time = findTimeById(reservation.getTimeId());
+        Theme theme = findThemeById(reservation.getThemeId());
 
         return new AssembledReservation(reservation, time, theme);
     }
@@ -66,7 +66,7 @@ public class AdminReservationService {
         Reservation reservation = assembledReservation.reservation();
         ReservationTime time = assembledReservation.time();
 
-        boolean cancelable = new ReservationDateTime(reservation.date(), time.startAt())
+        boolean cancelable = new ReservationDateTime(reservation.getDate(), time.startAt())
                 .isAvailable(LocalDateTime.now());
 
         return reservationResponseMapper.mapToDetailResponse(

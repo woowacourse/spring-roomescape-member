@@ -100,7 +100,7 @@ public class ThemeService {
     private Map<EntityId, Long> collectCountByThemeId(List<Reservation> reservations) {
         return reservations.stream()
                 .collect(Collectors.groupingBy(
-                        Reservation::themeId,
+                        Reservation::getThemeId,
                         Collectors.counting()
                 ));
     }

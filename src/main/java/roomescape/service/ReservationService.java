@@ -48,7 +48,7 @@ public class ReservationService {
         validateReservationAvailable(command.date(), time.startAt());
 
         EntityId reservationId = EntityId.random();
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.create(
                 reservationId,
                 command.name(),
                 command.date(),
@@ -74,13 +74,11 @@ public class ReservationService {
     ) {
         Reservation reservation = findReservationById(command.reservationId());
         validateNameEquality(reservation, command.name());
-
-        ReservationTime existTime = findTimeById(reservation.timeId());
-        validateReservationAvailable(reservation.date(), existTime.startAt());
+        validateReservationUpdatable(reservation);
 
         ReservationTime timeToUpdate = findTimeById(command.timeId());
         validateReservationAvailable(command.date(), timeToUpdate.startAt());
-        validateReservationNotDuplicate(command.date(), reservation.themeId(), timeToUpdate.id());
+        validateReservationNotDuplicate(command.date(), reservation.getThemeId(), timeToUpdate.id());
 
         Reservation updatedReservation = reservationRepository.updateDateAndTimeId(
                 reservation,
@@ -92,21 +90,16 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(EntityId reservationId, String name) {
+    public ReservationSummaryResponse cancel(EntityId reservationId, String name) {
         Reservation reservation = findReservationById(reservationId);
         validateNameEquality(reservation, name);
 
-        ReservationTime time = findTimeById(reservation.timeId());
-        validateReservationAvailable(reservation.date(), time.startAt());
+        ReservationTime time = findTimeById(reservation.getTimeId());
+        validateReservationAvailable(reservation.getDate(), time.startAt());
 
-        boolean deleted = reservationRepository.delete(reservationId);
+        Reservation updatedReservation = reservationRepository.updateCanceled(reservation, true);
 
-        if (!deleted) {
-            throw new EntityNotFoundException(
-                    ErrorCode.RESERVATION_NOT_FOUND,
-                    "삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId
-            );
-        }
+        return reservationResponseMapper.mapToSummaryResponse(updatedReservation);
     }
 
     private List<ReservationDetailResponse> mapToDetailResponses(List<Reservation> reservations) {
@@ -117,8 +110,8 @@ public class ReservationService {
     }
 
     private AssembledReservation assembleReservation(Reservation reservation) {
-        ReservationTime time = findTimeById(reservation.timeId());
-        Theme theme = findThemeById(reservation.themeId());
+        ReservationTime time = findTimeById(reservation.getTimeId());
+        Theme theme = findThemeById(reservation.getThemeId());
 
         return new AssembledReservation(reservation, time, theme);
     }
@@ -127,7 +120,7 @@ public class ReservationService {
         Reservation reservation = assembledReservation.reservation();
         ReservationTime time = assembledReservation.time();
 
-        boolean cancelable = new ReservationDateTime(reservation.date(), time.startAt())
+        boolean cancelable = new ReservationDateTime(reservation.getDate(), time.startAt())
                 .isAvailable(LocalDateTime.now());
 
         return reservationResponseMapper.mapToDetailResponse(
@@ -141,12 +134,12 @@ public class ReservationService {
             EntityId themeId,
             EntityId timeId
     ) {
-        if (reservationRepository.existByDateAndThemeIdAndTimeId(date, themeId, timeId)) {
+        if (reservationRepository.existNotCanceledByDateAndThemeIdAndTimeId(date, themeId, timeId)) {
             throw new DuplicateReservationException(
                     "같은 테마의 같은 날짜/시간에는 하나의 예약만 가능합니다."
-                    + " 요청한 날짜: " + date
-                    + ", 요청한 테마 ID: " + themeId
-                    + ", 요청한 시간 ID: " + timeId
+                            + " 요청한 날짜: " + date
+                            + ", 요청한 테마 ID: " + themeId
+                            + ", 요청한 시간 ID: " + timeId
             );
         }
     }
@@ -158,6 +151,18 @@ public class ReservationService {
                     "본인의 예약만 삭제할 수 있습니다."
             );
         }
+    }
+
+    private void validateReservationUpdatable(Reservation reservation) {
+        ReservationTime time = findTimeById(reservation.getTimeId());
+
+        if (reservation.isCanceled()) {
+            throw new NotAcceptableReservationException(
+                    ErrorCode.CANCELED_RESERVATION,
+                    "취소된 예약의 날짜와 시간은 수정할 수 없습니다."
+            );
+        }
+        validateReservationAvailable(reservation.getDate(), time.startAt());
     }
 
     private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {

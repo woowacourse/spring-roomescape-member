@@ -67,12 +67,12 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(
+    public ResponseEntity<ReservationSummaryResponse> cancel(
             @RequestParam String name,
             @PathVariable UUID id
     ) {
-        service.cancel(EntityId.fromUuid(id), name);
+        ReservationSummaryResponse response = service.cancel(EntityId.fromUuid(id), name);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(response);
     }
 }

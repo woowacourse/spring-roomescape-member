@@ -129,8 +129,8 @@ class ThemeControllerTest {
 
         @Test
         void 예약_횟수를_같이_조회한다() {
-            LocalDate startDate = FASTER_RESERVATION.date();
-            LocalDate endDate = LATER_RESERVATION.date();
+            LocalDate startDate = FASTER_RESERVATION.getDate();
+            LocalDate endDate = LATER_RESERVATION.getDate();
 
             RestAssured.given().log().all()
                     .queryParam("limit", 10)
@@ -160,7 +160,7 @@ class ThemeControllerTest {
 
         @Test
         void 시작일이_없다면_400을_응답한다() {
-            LocalDate endDate = LATER_RESERVATION.date();
+            LocalDate endDate = LATER_RESERVATION.getDate();
 
             RestAssured.given().log().all()
                     .queryParam("limit", 10)
@@ -173,7 +173,7 @@ class ThemeControllerTest {
 
         @Test
         void 종료일이_없다면_400을_응답한다() {
-            LocalDate startDate = FASTER_RESERVATION.date();
+            LocalDate startDate = FASTER_RESERVATION.getDate();
 
             RestAssured.given().log().all()
                     .queryParam("limit", 10)
@@ -186,8 +186,8 @@ class ThemeControllerTest {
 
         @Test
         void 시작일이_종료일보다_미래라면_400을_응답한다() {
-            LocalDate startDate = LATER_RESERVATION.date();
-            LocalDate endDate = FASTER_RESERVATION.date();
+            LocalDate startDate = LATER_RESERVATION.getDate();
+            LocalDate endDate = FASTER_RESERVATION.getDate();
 
             RestAssured.given().log().all()
                     .queryParam("limit", 10)

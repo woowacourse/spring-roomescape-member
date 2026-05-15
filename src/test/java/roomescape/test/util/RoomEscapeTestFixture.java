@@ -43,14 +43,14 @@ public class RoomEscapeTestFixture {
             "B image url"
     );
 
-    public static final Reservation FASTER_RESERVATION = new Reservation(
+    public static final Reservation FASTER_RESERVATION = Reservation.create(
             EntityId.random(),
             "A reservation name",
             LocalDate.now().plusYears(1),
             TIME_IN_USE.id(),
             THEME_IN_USE.id()
     );
-    public static final Reservation LATER_RESERVATION = new Reservation(
+    public static final Reservation LATER_RESERVATION = Reservation.create(
             EntityId.random(),
             "B reservation name",
             LocalDate.now().plusYears(2),
@@ -85,34 +85,57 @@ public class RoomEscapeTestFixture {
         insertReservationWithFixedId(LATER_RESERVATION);
     }
 
-    public String insertReservation(String name, LocalDate date, EntityId timeId, EntityId themeId) {
-        return insertReservation(name, date, timeId.getValueAsString(), themeId.getValueAsString());
+    public String insertReservation(
+            String name,
+            LocalDate date,
+            EntityId timeId,
+            EntityId themeId
+    ) {
+        boolean defaultCanceled = false;
+
+        return insertReservation(name, date, defaultCanceled, timeId, themeId);
     }
 
-    public String insertReservation(String name, LocalDate date, String timeId, String themeId) {
-        String reservationId = UUID.randomUUID().toString();
-        return insertReservationWithFixedId(EntityId.fromUuid(UUID.fromString(reservationId)), name, date, timeId, themeId);
+    public String insertReservation(
+            String name,
+            LocalDate date,
+            boolean canceled,
+            EntityId timeId,
+            EntityId themeId
+    ) {
+        EntityId reservationId = EntityId.random();
+
+        return insertReservationWithFixedId(reservationId, name, date, canceled, timeId, themeId);
     }
 
-    public String insertReservationWithFixedId(Reservation reservation) {
+    private String insertReservationWithFixedId(Reservation reservation) {
         return insertReservationWithFixedId(
-                reservation.id(), reservation.name(), reservation.date(), reservation.timeId(), reservation.themeId()
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.isCanceled(),
+                reservation.getTimeId(),
+                reservation.getThemeId()
         );
     }
 
-    public String insertReservationWithFixedId(EntityId reservationId, String name, LocalDate date, EntityId timeId, EntityId themeId) {
-        return insertReservationWithFixedId(reservationId, name, date, timeId.getValueAsString(), themeId.getValueAsString());
-    }
-
-    public String insertReservationWithFixedId(EntityId reservationId, String name, LocalDate date, String timeId, String themeId) {
+    private String insertReservationWithFixedId(
+            EntityId reservationId,
+            String name,
+            LocalDate date,
+            boolean canceled,
+            EntityId timeId,
+            EntityId themeId
+    ) {
         String id = reservationId.getValueAsString();
         jdbcTemplate.update(
-                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO reservation (id, name, date, canceled, time_id, theme_id) VALUES (?, ?, ?, ?, ?, ?)",
                 UUID.fromString(id),
                 name,
                 date,
-                UUID.fromString(timeId),
-                UUID.fromString(themeId)
+                canceled,
+                timeId.getValueAsUuid(),
+                themeId.getValueAsUuid()
         );
         return id;
     }

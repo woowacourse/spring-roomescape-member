@@ -33,6 +33,7 @@
                 <th>시간 ID</th>
                 <th>시작</th>
                 <th>테마</th>
+                <th>취소 여부</th>
                 <th>취소 가능</th>
                 <th></th>
             </tr>
@@ -156,6 +157,7 @@
                 <td>${r.time.id}</td>
                 <td>${r.time.startAt}</td>
                 <td>${escapeHtml(r.theme.name)}</td>
+                <td style="color:${r.canceled ? 'var(--danger)' : 'var(--success)'}">${r.canceled ? '취소됨' : '취소되지 않음'}</td>
                 <td>${canAct ? '가능' : '불가'}</td>
                 <td style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">
                     <button type="button" class="btn" data-action="change" data-id="${r.id}" ${canAct ? '' : 'disabled'}>변경</button>

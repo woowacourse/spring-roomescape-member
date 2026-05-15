@@ -68,7 +68,7 @@ class AdminReservationControllerTest {
         @Test
         void 식별자를_기반으로_예약을_삭제한다() {
             RestAssured.given().log().all()
-                    .when().delete("/admin/reservations/" + FASTER_RESERVATION.id())
+                    .when().delete("/admin/reservations/" + FASTER_RESERVATION.getId())
                     .then().log().all()
                     .statusCode(200);
 

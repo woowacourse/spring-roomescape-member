@@ -2,24 +2,89 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import lombok.Getter;
 import org.springframework.util.StringUtils;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
 
-public record Reservation(
-        EntityId id,
-        String name,
-        LocalDate date,
-        EntityId timeId,
-        EntityId themeId
-) {
+@Getter
+public class Reservation {
 
-    public Reservation {
+    private final EntityId id;
+    private final String name;
+    private final LocalDate date;
+    private final boolean canceled;
+    private final EntityId timeId;
+    private final EntityId themeId;
+
+    private Reservation(
+            EntityId id,
+            String name,
+            LocalDate date,
+            boolean canceled,
+            EntityId timeId,
+            EntityId themeId
+    ) {
         validateId(id);
         validateName(name);
         validateDate(date);
         validateTime(timeId);
         validateTheme(themeId);
+
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.canceled = canceled;
+        this.timeId = timeId;
+        this.themeId = themeId;
+    }
+
+    public static Reservation create(
+            EntityId id,
+            String name,
+            LocalDate date,
+            EntityId timeId,
+            EntityId themeId
+    ) {
+        boolean defaultCanceled = false;
+
+        return new Reservation(
+                id,
+                name,
+                date,
+                defaultCanceled,
+                timeId,
+                themeId
+        );
+    }
+
+    public static Reservation retrieve(
+            EntityId id,
+            String name,
+            LocalDate date,
+            boolean canceled,
+            EntityId timeId,
+            EntityId themeId
+    ) {
+        return new Reservation(
+                id,
+                name,
+                date,
+                canceled,
+                timeId,
+                themeId
+        );
+    }
+
+    public Reservation updateCanceled(boolean canceled) {
+        return new Reservation(
+                this.id,
+                this.name,
+                this.date,
+                canceled,
+                this.timeId,
+                this.themeId
+        );
     }
 
     private void validateId(EntityId id) {

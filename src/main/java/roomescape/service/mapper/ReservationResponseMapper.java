@@ -1,6 +1,5 @@
 package roomescape.service.mapper;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import roomescape.controller.dto.ReservationDetailResponse;
@@ -8,7 +7,6 @@ import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDateTime;
 import roomescape.service.dto.AssembledReservation;
 
 @Component
@@ -22,11 +20,12 @@ public class ReservationResponseMapper {
             Reservation reservation
     ) {
         return new ReservationSummaryResponse(
-                reservation.id().getValueAsString(),
-                reservation.name(),
-                reservation.date(),
-                reservation.timeId().getValueAsString(),
-                reservation.themeId().getValueAsString()
+                reservation.getId().getValueAsString(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.isCanceled(),
+                reservation.getTimeId().getValueAsString(),
+                reservation.getThemeId().getValueAsString()
         );
     }
 
@@ -39,12 +38,13 @@ public class ReservationResponseMapper {
         ThemeResponse theme = themeResponseMapper.map(assembledReservation.theme());
 
         return new ReservationDetailResponse(
-                reservation.id().getValueAsString(),
-                reservation.name(),
-                reservation.date(),
+                reservation.getId().getValueAsString(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.isCanceled(),
+                cancelable,
                 time,
-                theme,
-                cancelable
+                theme
         );
     }
 }

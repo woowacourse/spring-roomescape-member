@@ -19,7 +19,7 @@ class ReservationTest {
 
     @Test
     void 식별자가_없다면_예외를_던진다() {
-        assertThatThrownBy(() -> new Reservation(
+        assertThatThrownBy(() -> Reservation.create(
                 null,
                 DEFAULT_NAME,
                 DEFAULT_DATE,
@@ -34,7 +34,7 @@ class ReservationTest {
         @ParameterizedTest
         @ValueSource(strings = {"", " ", "\t", "\n"})
         void 이름이_비어_있으면_예외를_던진다(String emptyName) {
-            assertThatThrownBy(() -> new Reservation(
+            assertThatThrownBy(() -> Reservation.create(
                     DEFAULT_ID,
                     emptyName,
                     DEFAULT_DATE,
@@ -46,7 +46,7 @@ class ReservationTest {
 
         @Test
         void 이름이_없다면_예외를_던진다() {
-            assertThatThrownBy(() -> new Reservation(
+            assertThatThrownBy(() -> Reservation.create(
                     DEFAULT_ID,
                     null,
                     DEFAULT_DATE,
@@ -59,7 +59,7 @@ class ReservationTest {
 
     @Test
     void 날짜가_없다면_예외를_던진다() {
-        assertThatThrownBy(() -> new Reservation(
+        assertThatThrownBy(() -> Reservation.create(
                 DEFAULT_ID,
                 DEFAULT_NAME,
                 null,
@@ -71,7 +71,7 @@ class ReservationTest {
 
     @Test
     void 시간이_없다면_예외를_던진다() {
-        assertThatThrownBy(() -> new Reservation(
+        assertThatThrownBy(() -> Reservation.create(
                 DEFAULT_ID,
                 DEFAULT_NAME,
                 DEFAULT_DATE,
@@ -83,7 +83,7 @@ class ReservationTest {
 
     @Test
     void 테마가_없다면_예외를_던진다() {
-        assertThatThrownBy(() -> new Reservation(
+        assertThatThrownBy(() -> Reservation.create(
                 DEFAULT_ID,
                 DEFAULT_NAME,
                 DEFAULT_DATE,

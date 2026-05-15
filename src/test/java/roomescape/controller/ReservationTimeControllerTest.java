@@ -126,6 +126,30 @@ class ReservationTimeControllerTest {
         }
 
         @Test
+        void 취소된_예약이_있는_시간은_포함한다() {
+            LocalDate reservedDate = FUTURE_DATE;
+            EntityId reservedTimeId = TIME_NOT_IN_USE.id();
+            EntityId reservedThemeId = THEME_NOT_IN_USE.id();
+
+            boolean canceled = true;
+            fixture.insertReservation(
+                    "time name",
+                    reservedDate,
+                    canceled,
+                    reservedTimeId,
+                    reservedThemeId
+            );
+
+            RestAssured.given().log().all()
+                    .queryParam("themeId", reservedThemeId.getValueAsString())
+                    .queryParam("date", reservedDate.toString())
+                    .when().get("/times/available-times")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(INITIALIZED_TIME_COUNT));
+        }
+
+        @Test
         void 현재보다_과거에_해당하는_시간은_제외한다() {
             RestAssured.given().log().all()
                     .queryParam("themeId", THEME_IN_USE.id().getValueAsString())

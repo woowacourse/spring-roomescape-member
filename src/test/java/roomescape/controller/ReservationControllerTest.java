@@ -3,11 +3,11 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static roomescape.test.util.RoomEscapeTestFixture.FASTER_RESERVATION;
 import static roomescape.test.util.RoomEscapeTestFixture.FUTURE_DATE;
 import static roomescape.test.util.RoomEscapeTestFixture.INSERTABLE_THEME;
 import static roomescape.test.util.RoomEscapeTestFixture.INSERTABLE_TIME;
 import static roomescape.test.util.RoomEscapeTestFixture.PAST_DATE;
-import static roomescape.test.util.RoomEscapeTestFixture.FASTER_RESERVATION;
 import static roomescape.test.util.RoomEscapeTestFixture.THEME_IN_USE;
 import static roomescape.test.util.RoomEscapeTestFixture.THEME_NOT_IN_USE;
 import static roomescape.test.util.RoomEscapeTestFixture.TIME_IN_USE;
@@ -157,12 +157,12 @@ class ReservationControllerTest {
         @Test
         void 이름이_일치하는_예약_정보를_모두_응답한다() {
             RestAssured.given().log().all()
-                    .param("name", FASTER_RESERVATION.name())
+                    .param("name", FASTER_RESERVATION.getName())
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(1))
-                    .body("[0].name", equalTo(FASTER_RESERVATION.name()))
+                    .body("[0].name", equalTo(FASTER_RESERVATION.getName()))
                     .body("[0].id", notNullValue());
         }
 
@@ -263,6 +263,32 @@ class ReservationControllerTest {
         }
 
         @Test
+        void 취소된_예약이라면_403을_응답한다() {
+            String reservationName = "브라운";
+            boolean canceled = true;
+            String reservationId = fixture.insertReservation(
+                    reservationName,
+                    FUTURE_DATE,
+                    canceled,
+                    TIME_NOT_IN_USE.id(),
+                    THEME_NOT_IN_USE.id()
+            );
+
+            Map<String, Object> updateRequest = new HashMap<>();
+            updateRequest.put("date", FUTURE_DATE.plusDays(1).toString());
+            updateRequest.put("timeId", TIME_NOT_IN_USE.id().getValueAsString());
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .param("name", reservationName)
+                    .body(updateRequest)
+                    .when().patch("/reservations/" + reservationId)
+                    .then().log().all()
+                    .statusCode(403)
+                    .body("errorCode", is(ErrorCode.CANCELED_RESERVATION.name()));
+        }
+
+        @Test
         void 이름이_다르다면_403을_응답한다() {
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FUTURE_DATE.toString());
@@ -272,7 +298,7 @@ class ReservationControllerTest {
                     .contentType(ContentType.JSON)
                     .param("name", "다른이름")
                     .body(updateRequest)
-                    .when().patch("/reservations/" + FASTER_RESERVATION.id().getValueAsString())
+                    .when().patch("/reservations/" + FASTER_RESERVATION.getId().getValueAsString())
                     .then().log().all()
                     .statusCode(403)
                     .body("errorCode", is(ErrorCode.NOT_RESERVATION_OWNER.name()));
@@ -286,7 +312,7 @@ class ReservationControllerTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", FASTER_RESERVATION.name())
+                    .param("name", FASTER_RESERVATION.getName())
                     .body(updateRequest)
                     .when().patch("/reservations/" + NOT_EXIST_ID)
                     .then().log().all()
@@ -302,9 +328,9 @@ class ReservationControllerTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .param("name", FASTER_RESERVATION.name())
+                    .param("name", FASTER_RESERVATION.getName())
                     .body(updateRequest)
-                    .when().patch("/reservations/" + FASTER_RESERVATION.id().getValueAsString())
+                    .when().patch("/reservations/" + FASTER_RESERVATION.getId().getValueAsString())
                     .then().log().all()
                     .statusCode(404)
                     .body("errorCode", is(ErrorCode.RESERVATION_TIME_NOT_FOUND.name()));
@@ -317,12 +343,12 @@ class ReservationControllerTest {
                     reservationName,
                     FUTURE_DATE,
                     TIME_NOT_IN_USE.id(),
-                    FASTER_RESERVATION.themeId()
+                    FASTER_RESERVATION.getThemeId()
             );
 
             Map<String, Object> updateRequest = new HashMap<>();
-            updateRequest.put("date", FASTER_RESERVATION.date().toString());
-            updateRequest.put("timeId", FASTER_RESERVATION.timeId().getValueAsString());
+            updateRequest.put("date", FASTER_RESERVATION.getDate().toString());
+            updateRequest.put("timeId", FASTER_RESERVATION.getTimeId().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -342,7 +368,7 @@ class ReservationControllerTest {
         private RoomEscapeTestFixture fixture;
 
         @Test
-        void 예약_정보를_삭제한다() {
+        void 예약의_취소_상태를_true로_수정한다() {
             String reservationName = "name";
             String reservationId = fixture.insertReservation(
                     reservationName,
@@ -355,14 +381,15 @@ class ReservationControllerTest {
                     .param("name", reservationName)
                     .when().delete("/reservations/" + reservationId)
                     .then().log().all()
-                    .statusCode(204);
+                    .statusCode(200);
 
             RestAssured.given().log().all()
                     .param("name", reservationName)
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(0));
+                    .body("size()", is(1))
+                    .body("[0].canceled", is(true));
         }
 
         @Test
