@@ -21,12 +21,13 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public Reservation changeDateTime(LocalDate date, ReservationTime time) {
-        if (Objects.equals(this.date, date) && Objects.equals(this.time, time)) {
+    public Reservation changeDateTime(LocalDate newDate, ReservationTime newTime) {
+        if (Objects.equals(this.date, newDate)
+                && Objects.equals(this.time.getStartAt(), newTime.getStartAt())) {
             throw new InvalidRequestException("변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요.");
         }
 
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, name, newDate, newTime, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
