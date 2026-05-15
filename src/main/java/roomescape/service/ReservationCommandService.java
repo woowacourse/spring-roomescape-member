@@ -24,6 +24,7 @@ public class ReservationCommandService {
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationHistoryDao reservationHistoryDao;
 
+    @Transactional
     public ReservationResponse create(String name, LocalDate date, long timeId, long themeId, LocalDateTime requestDateTime) {
         ReservationTime time = getReservationTime(timeId);
 
@@ -33,6 +34,7 @@ public class ReservationCommandService {
         return ReservationResponse.from(savedReservation);
     }
 
+    @Transactional
     public ReservationResponse update(long reservationId, LocalDate date, long timeId, LocalDateTime requestDateTime) {
         ReservationTime time = getReservationTime(timeId);
         Reservation existing = reservationDao.findById(reservationId);

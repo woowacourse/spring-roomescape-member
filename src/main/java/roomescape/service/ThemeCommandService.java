@@ -2,6 +2,7 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ErrorMessage;
@@ -14,6 +15,7 @@ public class ThemeCommandService {
 
     private final ThemeDao themeDao;
 
+    @Transactional
     public ThemeResponse create(String name, String thumbnailUrl, String description) {
         validateNoDuplicateTheme(name);
         Theme saved = themeDao.save(Theme.pending(name, thumbnailUrl, description));
