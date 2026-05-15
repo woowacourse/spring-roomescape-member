@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -220,6 +221,86 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 존재하지_않는_예약을_변경하면_404를_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(2).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/999/schedule")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하면_404를_반환한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/999/cancellation")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 예약자_이름이_일치하지_않으면_404를_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "라텔");
+        params.put("date", TODAY.plusDays(2).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 이미_취소된_예약을_변경하면_409를_반환한다() {
+        createCancelledReservation();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(2).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 이미_취소된_예약을_다시_취소하면_409를_반환한다() {
+        createCancelledReservation();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/cancellation")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     void 지나간_날짜와_시간으로_예약하면_400을_반환한다() {
         createReservationPrerequisites(LocalTime.of(15, 0));
 
@@ -254,7 +335,20 @@ class ReservationApiTest extends ApiTestSupport {
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
     }
 
-    private io.restassured.specification.RequestSpecification createReservationRequest(
+    private void createCancelledReservation() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/cancellation")
+                .then().statusCode(200);
+    }
+
+    private RequestSpecification createReservationRequest(
             String name,
             LocalDate date,
             Long timeId,
