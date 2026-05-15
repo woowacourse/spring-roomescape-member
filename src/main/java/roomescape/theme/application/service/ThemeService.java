@@ -5,11 +5,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.RoomEscapeException;
 import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeQueryResult;
-import roomescape.theme.application.exception.ThemeException;
+import roomescape.theme.application.exception.ThemeErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.ThemeRepository;
 
@@ -24,7 +25,7 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public ThemeQueryResult findById(Long id) {
         return ThemeQueryResult.from(themeRepository.findById(id)
-                .orElseThrow(() -> new ThemeException("존재하지 않는 테마 입니다.")));
+                .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
@@ -57,13 +58,13 @@ public class ThemeService {
 
     private void validateNoReReservationExists(long id) {
         if (queryService.existsByThemeId(id)) {
-            throw new ThemeException("예약이 존재하는 테마는 삭제할 수 없습니다");
+            throw new RoomEscapeException(ThemeErrorCode.THEME_DELETE_NOT_ALLOWED);
         }
     }
 
     private void validateDuplicateTheme(Theme theme) {
         if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new ThemeException("이름과 설명이 같은 테마가 이미 존재합니다.");
+            throw new RoomEscapeException(ThemeErrorCode.DUPLICATE_THEME);
         }
     }
 }
