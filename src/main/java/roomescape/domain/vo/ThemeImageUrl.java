@@ -1,15 +1,19 @@
 package roomescape.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record ThemeImageUrl(
-    String value
+    @JsonValue String value
 ) {
 
     private static final Pattern PATTERN = Pattern.compile(
         "^https?://[^\\s/$.?#][^\\s]*[^\\s/.]\\.(jpg|jpeg|png|gif|webp|bmp|svg)(\\?[^\\s]*)?$");
 
+    @JsonCreator
     public ThemeImageUrl {
         validateNotBlank(value);
         validatePattern(value);

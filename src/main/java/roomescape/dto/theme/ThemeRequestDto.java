@@ -1,14 +1,16 @@
 package roomescape.dto.theme;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import roomescape.domain.vo.ThemeImageUrl;
+import roomescape.domain.vo.ThemeName;
 
 public record ThemeRequestDto(
-    @NotBlank(message = "이름은 필수 입력값입니다.")
-    String name,
+        @NotNull(message = "이름은 필수 입력값입니다.")
+        ThemeName name,
 
-    String description,
+        String description,
 
-    @NotBlank(message = "url은 필수 입력값입니다.")
-    String imageUrl
+        @NotNull(message = "url은 필수 입력값입니다.")
+        ThemeImageUrl imageUrl
 ) {
 }

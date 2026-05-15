@@ -13,7 +13,6 @@ import roomescape.dto.reservationTime.ReservationTimesResponseDto;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ReservationService;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 @RestController

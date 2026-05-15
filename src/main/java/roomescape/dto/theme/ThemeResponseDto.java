@@ -1,20 +1,22 @@
 package roomescape.dto.theme;
 
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeImageUrl;
+import roomescape.domain.vo.ThemeName;
 
 public record ThemeResponseDto(
     Long id,
-    String name,
+    ThemeName name,
     String description,
-    String imageUrl
+    ThemeImageUrl imageUrl
 ) {
 
     public static ThemeResponseDto from(Theme theme) {
         return new ThemeResponseDto(
             theme.getId(),
-            theme.getNameValue(),
+            theme.getName(),
             theme.getDescription(),
-            theme.getImageUrlValue()
+            theme.getImageUrl()
         );
     }
 }

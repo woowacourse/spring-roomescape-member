@@ -7,7 +7,7 @@ public record MemberName(
         @JsonValue String value
 ) {
     @JsonCreator
-    public MemberName {
+    public MemberName{
         validateNotBlank(value);
     }
 
