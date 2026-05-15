@@ -13,6 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.NotFoundException;
 
 @Service
 public class ReservationService {
@@ -34,6 +35,14 @@ public class ReservationService {
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
+        if (!reservationTimeDao.existsById(timeId)) {
+            throw new NotFoundException("존재하지 않는 예약 시간입니다.");
+        }
+
+        if (!themeDao.existsById(themeId)) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
+
         if (reservationDao.existByDateAndTimeAndThemeId(date, timeId, themeId)) {
             throw new DuplicateResourceException(
                     "DUPLICATE_RESERVATION",

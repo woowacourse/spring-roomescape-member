@@ -94,4 +94,10 @@ public class ThemeDao {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return count != null && count > 0;
     }
+
+    public boolean existsById(Long id) {
+        String sql = "SELECT count(*) FROM theme WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

@@ -62,4 +62,10 @@ public class ReservationTimeDao {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
         return count != null && count > 0;
     }
+
+    public boolean existsById(Long id){
+        String sql = "SELECT count(*) FROM reservation_time where id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

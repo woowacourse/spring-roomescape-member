@@ -373,4 +373,39 @@ public class MissionStepTest {
                 .body("code", is("RESOURCE_IN_USE"))
                 .body("message", is("예약이 존재해 삭제할 수 없습니다"));
     }
+
+    @Test
+    void 존재하지_않는_예약시간으로_예약을_생성하면_실패한다(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 9999);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("message", is("존재하지 않는 예약 시간입니다."));    }
+
+    @Test
+    void 존재하지_않는_테마로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("message", is("존재하지 않는 테마입니다."));
+    }
 }

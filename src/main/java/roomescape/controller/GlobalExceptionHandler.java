@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.dto.ErrorResponse;
 import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ResourceInUseException;
 
@@ -89,5 +90,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicateResourceException(DuplicateResourceException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(e.getCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("NOT_FOUND", e.getMessage()));
     }
 }
