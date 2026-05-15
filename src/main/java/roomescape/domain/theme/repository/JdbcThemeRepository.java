@@ -36,7 +36,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("image_url")
+                resultSet.getString("image_url"),
+                null
             ));
     }
 
@@ -48,7 +49,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             "image_url", theme.getImageUrl()
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(args).longValue();
-        return Theme.reconstruct(generatedKey, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        return Theme.reconstruct(generatedKey, theme.getName(), theme.getDescription(), theme.getImageUrl(), null);
     }
 
     @Override
@@ -71,7 +72,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
-                    resultSet.getString("image_url")
+                    resultSet.getString("image_url"),
+                    null
                 )
             );
             return Optional.ofNullable(theme);
@@ -140,7 +142,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("image_url")
+                resultSet.getString("image_url"),
+                null
             ));
     }
 }
