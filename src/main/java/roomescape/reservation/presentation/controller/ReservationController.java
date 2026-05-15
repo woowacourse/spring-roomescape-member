@@ -44,6 +44,18 @@ public class ReservationController {
                 .body(ReservationResponse.from(reservationService.save(createCommand, LocalDateTime.now())));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        ReservationUpdateCommand command = request.toCommand(id);
+
+        return ResponseEntity.ok(
+                ReservationResponse.from(reservationService.update(command, LocalDateTime.now()))
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id

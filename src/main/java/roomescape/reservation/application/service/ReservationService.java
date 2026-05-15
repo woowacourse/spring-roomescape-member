@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.application.exception.ReservationErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationDetail;
@@ -54,7 +55,24 @@ public class ReservationService {
         return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeQueryResult);
     }
 
-    public int delete(Long id) {
+    public ReservationQueryResult update(ReservationUpdateCommand request, LocalDateTime currentDateTime) {
+        Reservation reservation = getReservation(request.id());
+        validateOwner(request.name(), reservation);
+        validateReservationNotPast(reservation, currentDateTime);
+
+        ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
+        validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
+        validateDuplicateReservation(request, reservation);
+
+        Reservation updatedReservation = reservation.update(request.date(), request.timeId());
+        Reservation savedReservation = reservationRepository.update(updatedReservation);
+        return toQueryResult(savedReservation);
+    }
+
+    public int delete(Long id, String name, LocalDateTime currentDateTime) {
+        Reservation reservation = getReservation(id);
+        validateOwner(name, reservation);
+        validateReservationNotPast(reservation, currentDateTime);
         return reservationRepository.delete(id);
     }
 
@@ -66,6 +84,11 @@ public class ReservationService {
         }
     }
 
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+    }
+
     private void validateDuplicateReservation(ReservationCreateCommand request) {
         Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(request.date(),
                 request.themeId(),
@@ -74,5 +97,38 @@ public class ReservationService {
         if (existsByDateAndTime) {
             throw new RoomEscapeException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
+    }
+
+    private void validateDuplicateReservation(ReservationUpdateCommand request, Reservation reservation) {
+        Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTimeExcludingId(
+                request.date(),
+                reservation.getThemeId(),
+                request.timeId(),
+                reservation.getId()
+        );
+        if (existsByDateAndTime) {
+            throw new RoomEscapeException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
+    }
+
+    private void validateOwner(String name, Reservation reservation) {
+        if (!reservation.getName().equals(name)) {
+            throw new RoomEscapeException(ReservationErrorCode.FORBIDDEN_RESERVATION_ACCESS);
+        }
+    }
+
+    private void validateReservationNotPast(Reservation reservation, LocalDateTime currentDateTime) {
+        ReservationTimeQueryResult timeQueryResult = timeService.findById(reservation.getTimeId());
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), timeQueryResult.startAt());
+
+        if (reservationDateTime.isBefore(currentDateTime)) {
+            throw new RoomEscapeException(ReservationErrorCode.PAST_RESERVATION_MODIFICATION);
+        }
+    }
+
+    private ReservationQueryResult toQueryResult(Reservation reservation) {
+        ThemeQueryResult themeQueryResult = themeService.findById(reservation.getThemeId());
+        ReservationTimeQueryResult timeQueryResult = timeService.findById(reservation.getTimeId());
+        return ReservationQueryResult.from(reservation, themeQueryResult, timeQueryResult);
     }
 }

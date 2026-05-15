@@ -25,4 +25,14 @@ public class Reservation {
                 .timeId(this.timeId)
                 .build();
     }
+
+    public Reservation update(LocalDate date, Long timeId) {
+        return Reservation.builder()
+                .id(this.id)
+                .name(this.name)
+                .date(date)
+                .themeId(this.themeId)
+                .timeId(timeId)
+                .build();
+    }
 }
