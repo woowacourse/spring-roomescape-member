@@ -1,17 +1,27 @@
 package roomescape.domain.theme;
 
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
+
 public class Theme {
 
-    private Long id;
-    private String name;
-    private String description;
-    private String url;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String url;
 
     public Theme(Long id, String name, String description, String url) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new CustomException(CustomExceptionCode.INVALID_THEME_NAME);
+        }
     }
 
     public Long getId() {

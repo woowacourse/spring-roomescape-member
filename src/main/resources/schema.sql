@@ -10,9 +10,9 @@ CREATE TABLE reservation_time
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    url         VARCHAR(512) NOT NULL,
+    name        VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    url         VARCHAR(512),
     created_at  TIMESTAMP    NOT NULL DEFAULT current_timestamp,
     updated_at  TIMESTAMP    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     PRIMARY KEY (id)

@@ -2,22 +2,25 @@ package roomescape.domain.reservation;
 
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Reservation {
 
-    private Long id;
-    private String name;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateName(name);
+        validateDate(date);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -29,7 +32,13 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 필수입니다.");
+            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_NAME);
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_DATE);
         }
     }
 

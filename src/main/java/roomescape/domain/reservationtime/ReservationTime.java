@@ -1,15 +1,25 @@
 package roomescape.domain.reservationtime;
 
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
+
 import java.time.LocalTime;
 
 public class ReservationTime {
 
-    private Long id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_TIME);
+        }
     }
 
     public Long getId() {
