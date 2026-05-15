@@ -30,13 +30,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(ReservationTime.of(startAt));
     }
 
-    public void deleteTime(long id) {
-        if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
-        }
-        reservationTimeRepository.delete(id);
-    }
-
     public ReservationTime getTime(long reservationId) {
         Optional<ReservationTime> findTime = reservationTimeRepository.findById(reservationId);
 
@@ -45,5 +38,13 @@ public class ReservationTimeService {
         }
 
         return findTime.get();
+    }
+
+    public void deleteReservationTime(long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new IllegalStateException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
+
+        reservationTimeRepository.delete(id);
     }
 }

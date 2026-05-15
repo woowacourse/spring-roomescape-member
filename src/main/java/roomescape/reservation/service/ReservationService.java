@@ -71,4 +71,13 @@ public class ReservationService {
             throw new IllegalArgumentException("예약 시간은 현재 시간 이후여야 합니다.");
         }
     }
+
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
+
+
+    public void cancelReservation(long reservationId, String username) {
+
+    }
 }
