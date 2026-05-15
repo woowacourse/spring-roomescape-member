@@ -22,7 +22,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
-
     private final JdbcTemplate jdbcTemplate;
     private final Clock clock;
 
@@ -125,7 +124,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 UPDATE reservation
                 SET date = ?, time_id = ?
-                WHERE id = ? 
+                WHERE id = ? AND deleted_at IS NULL
                 """;
 
         int count = jdbcTemplate.update(sql,
@@ -136,20 +135,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count == 1;
     }
 
-    @Override
-    public boolean deleteById(Long id) {
-        int rowCount = jdbcTemplate.update("""
-                DELETE FROM reservation
-                WHERE id = ?
-                """, id);
-        return rowCount == 1;
-    }
-
     public boolean cancelById(Long id) {
         int rowCount = jdbcTemplate.update("""
                 UPDATE reservation
                 SET deleted_at = ?, delete_token = ?
-                WHERE id = ?
+                WHERE id = ? AND deleted_at IS NULL
                 """, LocalDateTime.now(clock), id, id);
 
         return rowCount == 1;

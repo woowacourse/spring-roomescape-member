@@ -296,32 +296,6 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
-    void deleteById() {
-        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
-        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
-
-        boolean deleted = reservationRepository.deleteById(reservation.getId());
-
-        assertThat(deleted).isTrue();
-        assertThat(reservationRepository.findById(reservation.getId())).isEmpty();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약은 삭제되지 않는다.")
-    public void deleteById_fail() {
-        // given
-        Long id = 1L;
-
-        // when
-        boolean deleted = reservationRepository.deleteById(id);
-
-        // then
-        assertThat(deleted).isFalse();
-    }
-
-    @Test
     @DisplayName("예약을 취소하면 deleted_at이 현재시간, delete_token이 해당 데이터의 pk값으로 설정된다.")
     public void cancelById_success() {
         // given
