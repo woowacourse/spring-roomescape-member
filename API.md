@@ -243,7 +243,7 @@
 
 ### 2-1. 예약 시간 목록 조회
 
-- `GET /api/v1/reservation/times`
+- `GET /api/v1/reservations/times`
 
 #### 응답 예시
 
@@ -268,7 +268,7 @@
 
 ### 2-2. 예약 가능 시간 조회
 
-- `GET /api/v1/reservation/times/availability?date={date}&themeId={themeId}`
+- `GET /api/v1/reservations/times/availability?date={date}&themeId={themeId}`
 
 #### 쿼리 파라미터
 
@@ -541,8 +541,8 @@
 | `POST` | `/api/v1/reservations` | 예약 생성 |
 | `PATCH` | `/api/v1/reservations/{id}` | 예약 날짜·시간 변경 |
 | `DELETE` | `/api/v1/reservations/{id}` | 예약 삭제 |
-| `GET` | `/api/v1/reservation/times` | 예약 시간 목록 조회 |
-| `GET` | `/api/v1/reservation/times/availability?date={date}&themeId={themeId}` | 예약 가능 시간 조회 |
+| `GET` | `/api/v1/reservations/times` | 예약 시간 목록 조회 |
+| `GET` | `/api/v1/reservations/times/availability?date={date}&themeId={themeId}` | 예약 가능 시간 조회 |
 | `GET` | `/api/v1/themes` | 테마 목록 조회 |
 | `GET` | `/api/v1/themes/popular?from={from}&to={to}` | 인기 테마 조회 |
 | `POST` | `/api/v1/admin/times` | 예약 시간 생성 |

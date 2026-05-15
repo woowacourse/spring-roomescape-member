@@ -20,7 +20,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약시간_조회시_성공하면_200을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times")
+                .when().get("/api/v1/reservations/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -40,7 +40,7 @@ public class ReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times/availability?date=" + AVAILABLE_TIME_TEST_DATE + "&themeId=1")
+                .when().get("/api/v1/reservations/times/availability?date=" + AVAILABLE_TIME_TEST_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))
@@ -72,7 +72,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약가능시간_조회시_date가_누락되면_400을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times/availability?themeId=1")
+                .when().get("/api/v1/reservations/times/availability?themeId=1")
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("COMMON400_003"));
@@ -81,7 +81,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약가능시간_조회시_themeId가_누락되면_400을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times/availability?date=2026-05-15")
+                .when().get("/api/v1/reservations/times/availability?date=2026-05-15")
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("COMMON400_003"));
@@ -90,7 +90,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약가능시간_조회시_date_형식이_잘못되면_400을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times/availability?date=2026/05/15&themeId=1")
+                .when().get("/api/v1/reservations/times/availability?date=2026/05/15&themeId=1")
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("COMMON400_005"));
@@ -99,7 +99,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약가능시간_조회시_themeId_형식이_잘못되면_400을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times/availability?date=2026-05-15&themeId=abc")
+                .when().get("/api/v1/reservations/times/availability?date=2026-05-15&themeId=abc")
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("COMMON400_005"));

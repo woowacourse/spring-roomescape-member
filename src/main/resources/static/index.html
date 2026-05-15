@@ -1253,7 +1253,7 @@
                 date: dateInput.value,
                 themeId: reservation.themeId
             });
-            const response = await fetch(`/api/v1/reservation/times/availability?${searchParams.toString()}`);
+            const response = await fetch(`/api/v1/reservations/times/availability?${searchParams.toString()}`);
             await ensureOk(response, "변경 가능한 시간을 불러오지 못했습니다.");
 
             const times = await response.json();
@@ -1392,7 +1392,7 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/reservation/times/availability?${searchParams.toString()}`);
+            const response = await fetch(`/api/v1/reservations/times/availability?${searchParams.toString()}`);
             await ensureOk(response, "가능 시간을 불러오지 못했습니다.");
 
             const times = await response.json();

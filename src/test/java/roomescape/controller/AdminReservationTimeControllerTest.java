@@ -37,7 +37,7 @@ public class AdminReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times")
+                .when().get("/api/v1/reservations/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -48,7 +48,7 @@ public class AdminReservationTimeControllerTest {
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times")
+                .when().get("/api/v1/reservations/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
