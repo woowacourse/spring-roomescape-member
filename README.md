@@ -18,10 +18,25 @@
 
 ### 3. 예약 관리
 
-- [x] 사용지: 예약 등록 (이름, 테마, 날짜, 시간)
-- [x] 사용자: 예약 취소
+- [x] 사용자: 예약 등록 (이름, 테마, 날짜, 시간)
+- [x] 사용자: 자신의 이름으로 본인 예약 목록 조회
+- [x] 사용자: 본인 예약 취소
+- [x] 사용자: 본인 예약 날짜·시간 변경
 - [x] 관리자: 전체 예약 목록 조회
 - [x] 관리자: 예약 등록 및 삭제
+
+### 4. 검증 및 예외 처리
+
+- [x] 지나간 날짜·시간에 대한 예약 생성 및 변경 방지
+- [x] 같은 날짜, 시간, 테마에 대한 중복 예약 방지
+- [x] 예약이 존재하는 시간 삭제 방지
+- [x] 잘못된 요청 형식 및 요청값에 대한 에러 응답 처리
+- [x] 비즈니스 예외를 공통 에러 응답 형식으로 반환
+
+### 5. 화면
+
+- [x] 예약자 이름을 브라우저에 저장하여 본인 예약 조회·취소·변경에 사용
+- [x] API 탭에서 주요 API와 에러 상황 직접 호출 가능
 
 ---
 
@@ -31,9 +46,9 @@
 
 | 기능           | 메서드   | 경로                 | 요청 예시                                                        | 응답 예시 (성공)                                                                         |
 | :------------- | :------- | :------------------- | :--------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
-| 목록 조회      | `GET`    | `/themes`            | -                                                                | `{"themes": [{"id": 1, "name": "워너비", "description": "...", "thumbnailUrl": "..."}]}` |
-| 인기 테마      | `GET`    | `/themes/popular`    | `?period=7&limit=10`                                             | `{"popularThemes": [{"rank": 1, "id": 1, "name": "워너비", ...}]}`                       |
-| 예약 시간 조회 | `GET`    | `/themes/{id}/times` | `?date=2024-05-01`                                               | `{"times": [{"id": 1, "startAt": "10:00", "isAvailable": true}]}`                        |
+| 목록 조회      | `GET`    | `/themes`            | -                                                                | `{"themes": [{"id": 1, "name": "비밀 연구소", "description": "...", "thumbnailUrl": "..."}]}` |
+| 인기 테마      | `GET`    | `/themes/popular`    | `?period=7&limit=10`                                             | `{"popularThemes": [{"rank": 1, "id": 1, "name": "비밀 연구소", ...}]}`                       |
+| 예약 시간 조회 | `GET`    | `/themes/{id}/times` | `?date=2026-05-01`                                               | `{"times": [{"id": 1, "startAt": "10:00", "isAvailable": true}]}`                        |
 | 등록 (관리자)  | `POST`   | `/admin/themes`      | `{"name": "테마", "description": "설명", "thumbnailUrl": "url"}` | `{"id": 1, "name": "테마", ...}` (201 Created)                                           |
 | 삭제 (관리자)  | `DELETE` | `/admin/themes/{id}` | -                                                                | `204 No Content`                                                                         |
 
@@ -47,10 +62,37 @@
 
 ### 3. 예약 (Reservation)
 
-| 기능               | 메서드   | 경로                       | 요청 예시                                                               | 응답 예시 (성공)                                                                                   |
-| :----------------- | :------- | :------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
-| 예약 생성          | `POST`   | `/reservations`            | `{"username": "흑곰", "themeId": 1, "date": "2024-05-05", "timeId": 1}` | `{"id": 1, "username": "흑곰", "date": "2024-05-05", "time": {...}, "theme": {...}}` (201 Created) |
-| 예약 취소          | `DELETE` | `/reservations/{id}`       | -                                                                       | `204 No Content`                                                                                   |
-| 목록 조회 (관리자) | `GET`    | `/admin/reservations`      | -                                                                       | `{"reservations": [{"id": 1, "username": "흑곰", ...}]}`                                           |
-| 예약 등록 (관리자) | `POST`   | `/admin/reservations`      | `{"username": "흑곰", "themeId": 1, "date": "2024-05-05", "timeId": 1}` | `{"id": 1, "username": "흑곰", "date": "2024-05-05", "time": {...}, "theme": {...}}` (201 Created) |
-| 예약 삭제 (관리자) | `DELETE` | `/admin/reservations/{id}` | -                                                                       | `204 No Content`                                                                                   |
+| 기능                    | 메서드   | 경로                       | 요청 예시                                                               | 응답 예시 (성공)                                                                                   |
+| :---------------------- | :------- | :------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| 예약 생성               | `POST`   | `/reservations`            | `{"username": "민준", "themeId": 1, "date": "9999-05-05", "timeId": 1}` | `{"id": 1, "username": "민준", "date": "9999-05-05", "time": {...}, "theme": {...}}` (201 Created) |
+| 본인 예약 목록 조회     | `GET`    | `/reservations`            | `?username=도윤`                                                        | `{"reservations": [{"id": 3, "username": "도윤", ...}]}`                                           |
+| 본인 예약 취소          | `DELETE` | `/reservations/{id}`       | `/reservations/3?username=도윤`                                         | `204 No Content`                                                                                   |
+| 본인 예약 날짜·시간 변경 | `PATCH`  | `/reservations/{id}`       | `/reservations/3?username=도윤` + `{"date": "9999-05-06", "timeId": 2}` | `{"id": 3, "username": "도윤", "date": "9999-05-06", "time": {...}, "theme": {...}}`                |
+| 목록 조회 (관리자)      | `GET`    | `/admin/reservations`      | -                                                                       | `{"reservations": [{"id": 1, "username": "민준", ...}]}`                                           |
+| 예약 등록 (관리자)      | `POST`   | `/admin/reservations`      | `{"username": "민준", "themeId": 1, "date": "9999-05-05", "timeId": 1}` | `{"id": 1, "username": "민준", "date": "9999-05-05", "time": {...}, "theme": {...}}` (201 Created) |
+| 예약 삭제 (관리자)      | `DELETE` | `/admin/reservations/{id}` | -                                                                       | `204 No Content`                                                                                   |
+
+### 4. 에러 응답
+
+공통 에러 응답 형식:
+
+```json
+{
+  "timestamp": "2026-05-15T10:00:00",
+  "status": 400,
+  "code": "INVALID_REQUEST",
+  "message": "유효하지 않은 요청입니다."
+}
+```
+
+주요 에러 코드:
+
+| 코드                               | 상태 코드 | 메시지                                      |
+| :--------------------------------- | :-------- | :------------------------------------------ |
+| `INVALID_REQUEST`                  | 400       | 유효하지 않은 요청입니다. 또는 검증 실패 메시지 |
+| `INVALID_REQUEST_BODY`             | 400       | 요청 값이 올바르지 않습니다.                |
+| `PAST_DATE_RESERVATION`            | 400       | 과거 날짜로 예약할 수 없습니다.             |
+| `DATA_CONFLICT`                    | 409       | 요청한 데이터가 현재 상태와 충돌합니다.     |
+| `RESERVATION_TIME_DELETE_CONFLICT` | 409       | 예약이 존재하는 시간은 삭제할 수 없습니다.  |
+| `DUPLICATE_RESERVATION`            | 422       | 이미 예약된 시간입니다.                     |
+| `RESERVATION_OWNER_MISMATCH`       | 403       | 본인의 예약만 취소할 수 있습니다.           |
