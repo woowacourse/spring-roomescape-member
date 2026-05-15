@@ -47,6 +47,7 @@ public class ThemeService {
 
     @Transactional
     public void putTheme(long id, String name, String description, String thumbnailUrl) {
+        themeRepository.findById(id);
         themeRepository.update(new Theme(id, name, description, thumbnailUrl));
     }
 
