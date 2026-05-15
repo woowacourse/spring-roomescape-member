@@ -93,9 +93,20 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteUserReservation(Long id, String name) {
+        Reservation reservation = reservationDao.findReservationById(id);
+        ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
+        LocalDateTime dateTime = LocalDateTime.of(reservation.getDate(), time.getStartAt());
+        validateNotPastDate(dateTime);
+
+        int deleteCount = reservationDao.deleteUserReservation(id, name);
+        validateDelete(deleteCount);
+    }
+
     private void validateNotPastDate(LocalDateTime dateTime) {
         if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new PastReservationTimeException("이전 날짜는 예약할 수 없습니다.");
+            throw new PastReservationTimeException("이전 날짜는 선택하실 수 없습니다.");
         }
     }
 

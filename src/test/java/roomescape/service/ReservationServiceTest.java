@@ -141,7 +141,7 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
                 "이든", date, 1L, 1L)))
                 .isInstanceOf(PastReservationTimeException.class)
-                .hasMessage("이전 날짜는 예약할 수 없습니다.");
+                .hasMessage("이전 날짜는 선택하실 수 없습니다.");
     }
     
     @Test
@@ -164,5 +164,37 @@ public class ReservationServiceTest {
         verify(reservationDao).findUserReservations(name);
         verify(reservationTimeDao).findById(1L);
         verify(themeDao).findById(1L);
+    }
+
+    @Test
+    void 사용자_이름으로_예약_삭제_테스트() {
+        String name = "브리";
+        LocalDate date = LocalDate.of(2026, 12, 31);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(1L, name, date, 1L, 1L);
+
+        when(reservationDao.findReservationById(1L)).thenReturn(reservation);
+        when(reservationTimeDao.findById(1L)).thenReturn(time);
+        when(reservationDao.deleteUserReservation(1L, name)).thenReturn(1);
+
+        reservationService.deleteUserReservation(1L, name);
+
+        verify(reservationDao).deleteUserReservation(1L, name);
+    }
+
+    @Test
+    void 지나간_날짜와_시간에_대한_예약_삭제는_불가능하다() {
+        String name = "브리";
+        LocalDate date = LocalDate.of(2026, 1, 1);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(1L, name, date, 1L, 1L);
+
+        when(reservationDao.findReservationById(1L)).thenReturn(reservation);
+        when(reservationTimeDao.findById(1L)).thenReturn(time);
+
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(1L, name))
+                .isInstanceOf(PastReservationTimeException.class)
+                .hasMessage("이전 날짜는 선택하실 수 없습니다.");
+
     }
 }

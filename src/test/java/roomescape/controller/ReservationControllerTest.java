@@ -134,11 +134,11 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_삭제() {
+    void 사용자_이름으로_예약_삭제() {
         createReservation(reservationParams());
 
         RestAssured.given().log().all()
-                .when().delete("/api/v1/reservations/1")
+                .when().delete("/api/v1/reservations/1?name=브라운")
                 .then().log().all()
                 .statusCode(204);
         RestAssured.given().log().all()
@@ -149,18 +149,9 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제하면_404를_반환한다() {
-        RestAssured.given().log().all()
-                .when().delete("/api/v1/reservations/1")
-                .then().log().all()
-                .statusCode(404)
-                .body("errorCode", is("RESERVATION_NOT_FOUND"));
-    }
-
-    @Test
     void 예약_삭제_시_잘못된_타입의_ID를_전달하면_400을_반환한다() {
         RestAssured.given().log().all()
-                .when().delete("/api/v1/reservations/invalid-id")
+                .when().delete("/api/v1/reservations/invalid-id?name=브라운")
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
@@ -171,7 +162,7 @@ public class ReservationControllerTest {
     @Test
     void 예약_삭제_시_ID를_입력하지_않으면_404를_반환한다() {
         RestAssured.given().log().all()
-                .when().delete("/api/v1/reservations/")
+                .when().delete("/api/v1/reservations/?name=브라운")
                 .then().log().all()
                 .statusCode(404)
                 .body("status", is(404))
@@ -266,7 +257,6 @@ public class ReservationControllerTest {
         themeParams.put("name", name);
         themeParams.put("description", description);
         themeParams.put("imgUrl", "링크~");
-        themeParams.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(themeParams)

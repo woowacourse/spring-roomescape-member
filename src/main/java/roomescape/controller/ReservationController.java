@@ -48,9 +48,10 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(
-            @PathVariable @NotNull(message = "예약 ID는 필수로 입력해야 합니다.") Long id) {
-        reservationService.deleteReservation(id);
+    public ResponseEntity<Void> deleteUserReservation(
+            @PathVariable @NotNull(message = "예약 ID는 필수로 입력해야 합니다.") Long id,
+            @RequestParam @NotBlank(message = "예약자 이름은 필수로 입력해야 합니다.") String name) {
+        reservationService.deleteUserReservation(id, name);
         return ResponseEntity.noContent().build();
     }
 

@@ -747,6 +747,7 @@
                         <th>테마</th>
                         <th>날짜</th>
                         <th>시간</th>
+                        <th>삭제</th>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -842,6 +843,7 @@
     const API_TIMES = '/api/v1/times';
     const API_ADMIN_TIMES = '/api/v1/admin/times';
     const API_RESERVATIONS = '/api/v1/reservations';
+    const API_ADMIN_RESERVATIONS = '/api/v1/admin/reservations';
 
     document.addEventListener("DOMContentLoaded", () => {
         // 네비게이션 이벤트
@@ -911,7 +913,7 @@
     }
 
     async function searchMyReservations(e) {
-        e.preventDefault();
+        if (e) e.preventDefault(); // 이벤트 객체가 있을 때만 호출 (내 예약 삭제 후 재호출할 때 방지)
         const searchName = document.getElementById('searchName').value.trim();
         if (!searchName) {
             setStatus("예약자 이름을 입력해주세요.", "error");
@@ -941,6 +943,7 @@
                         <td>${res.theme ? escapeHtml(res.theme.name) : res.themeId}</td>
                         <td>${escapeHtml(res.date)}</td>
                         <td>${res.time ? escapeHtml(res.time.startAt) : ''}</td>
+                        <td><button onclick="deleteMyReservation(${res.id}, '${escapeHtml(searchName)}')" class="button secondary">삭제</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -952,6 +955,28 @@
             setStatus(error.message, "error");
         }
     }
+
+    async function deleteMyReservation(id, name) {
+        try {
+            const response = await fetch(`${API_RESERVATIONS}/${id}?name=${encodeURIComponent(name)}`, {
+                method: 'DELETE'
+            });
+            await checkResponse(response, "예약 취소에 실패했습니다.");
+            setStatus("예약이 성공적으로 취소되었습니다.", "success");
+
+            // 삭제 후 목록 다시 조회
+            searchMyReservations();
+            // 삭제 시 다른 예약 정보 갱신 처리
+            loadPopularThemes();
+            if (state.selectedThemeId && reservationDateInput.value) {
+                loadAvailableTimes();
+            }
+        } catch (error) {
+            console.error(error);
+            setStatus(error.message, "error");
+        }
+    }
+
 
     // --- 예약 페이지 스크립트 ---
     const state = {
@@ -1444,7 +1469,7 @@
                 <td>${res.date}</td>
                 <td>${res.time ? escapeHtml(res.time.startAt) : ''}</td>
                 <td>${res.theme ? escapeHtml(res.theme.name) : res.themeId}</td>
-                <td><button onclick="deleteTimeOrReservation('${API_RESERVATIONS}', ${res.id}, loadAdminReservations)" class="button secondary">삭제</button></td>
+                <td><button onclick="deleteTimeOrReservation('${API_ADMIN_RESERVATIONS}', ${res.id}, loadAdminReservations)" class="button secondary">삭제</button></td>
             </tr>
         `);
     }
