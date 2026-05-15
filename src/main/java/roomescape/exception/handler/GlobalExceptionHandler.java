@@ -15,7 +15,13 @@ import roomescape.exception.*;
 public class GlobalExceptionHandler {
     @ExceptionHandler({CustomException.class})
     public ResponseEntity<Response> handleCustomException(CustomException customException) {
-        return getResponse(STATUS_MAP.get(customException.getClass()), customException.getMessage());
+        HttpStatus httpStatus = STATUS_MAP.get(customException.getClass());
+
+        if(httpStatus == null) {
+            throw new RuntimeException(customException.getMessage(), customException);
+        }
+
+        return getResponse(httpStatus, customException.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
