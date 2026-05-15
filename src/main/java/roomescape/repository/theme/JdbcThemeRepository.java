@@ -1,15 +1,16 @@
 package roomescape.repository.theme;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.PopularConditionRequest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -45,6 +46,13 @@ public class JdbcThemeRepository implements ThemeRepository {
         )
         """;
 
+    private static final RowMapper<Theme> MAPPER = (rs, rowNumber) -> new Theme(
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
+            rs.getString(COLUMN_DESCRIPTION),
+            rs.getString(COLUMN_IMAGE_URL)
+    );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -65,11 +73,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> getAllTheme() {
-        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> Theme.from(rs));
+        return jdbcTemplate.query(SELECT_ALL_SQL, MAPPER);
     }
 
     public Optional<Theme> getTheme(long id) {
-        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> Theme.from(rs)), id)
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, MAPPER, id)
                 .stream()
                 .findFirst();
     }
