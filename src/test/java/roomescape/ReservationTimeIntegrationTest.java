@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,9 @@ public class ReservationTimeIntegrationTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     @BeforeEach
     void setUp() {
@@ -71,7 +76,7 @@ public class ReservationTimeIntegrationTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", FUTURE_DATE);
         reservation.put("timeId", time.getId());
         reservation.put("themeId", theme.getId());
 

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +26,9 @@ class ReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @Test
     void 시간을_생성한다() {
@@ -73,6 +77,7 @@ class ReservationTimeServiceTest {
     void 시간을_삭제한다() {
         ReservationTime time = ReservationTime.of(1L, "10:00");
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(time));
+        given(reservationRepository.existsByTimeId(1L)).willReturn(false);
 
         reservationTimeService.delete(1L);
 
@@ -86,5 +91,16 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.delete(999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("요청한 시간을 찾을 수 없습니다");
+    }
+
+    @Test
+    void 예약이_존재하는_시간_삭제시_예외가_발생한다() {
+        ReservationTime time = ReservationTime.of(1L, "10:00");
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(time));
+        given(reservationRepository.existsByTimeId(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

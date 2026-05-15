@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,9 @@ class ReservationIntegrationTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -44,7 +49,7 @@ class ReservationIntegrationTest {
     void 예약_목록을_조회한다() {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
-        reservationRepository.save(Reservation.of("아이큐", "2025-06-01", time, theme));
+        reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
 
         List<Map<String, Object>> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -63,7 +68,7 @@ class ReservationIntegrationTest {
 
         Map<String, Object> params = Map.of(
                 "name", "아이큐",
-                "date", "2025-06-01",
+                "date", FUTURE_DATE,
                 "timeId", time.getId(),
                 "themeId", theme.getId()
         );
@@ -83,14 +88,13 @@ class ReservationIntegrationTest {
     void 예약을_삭제한다() {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
-        Reservation saved = reservationRepository.save(Reservation.of("아이큐", "2025-06-01", time, theme));
+        Reservation saved = reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + saved.getId())
                 .then().log().all()
                 .statusCode(204);
 
-        List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).isEmpty();
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 }

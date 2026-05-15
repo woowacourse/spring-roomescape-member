@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ import roomescape.repository.ReservationRepository;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
+    private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -35,10 +40,10 @@ class ReservationServiceTest {
 
     @Test
     void 예약을_생성한다() {
-        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2025-06-01", 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 1L);
         ReservationTime time = ReservationTime.of(1L, "10:00");
         Theme theme = Theme.of(1L, "공포", "desc", "url");
-        Reservation saved = Reservation.of(1L, "아이큐", "2025-06-01", time, theme);
+        Reservation saved = Reservation.of(1L, "아이큐", FUTURE_DATE, time, theme);
 
         given(reservationTimeService.find(1L)).willReturn(time);
         given(themeService.find(1L)).willReturn(theme);
@@ -55,10 +60,10 @@ class ReservationServiceTest {
 
     @Test
     void 중복_예약시_예외가_발생한다() {
-        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2025-06-01", 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 1L);
         ReservationTime time = ReservationTime.of(1L, "10:00");
         Theme theme = Theme.of(1L, "공포", "desc", "url");
-        Reservation existing = Reservation.of(1L, "기존유저", "2025-06-01", time, theme);
+        Reservation existing = Reservation.of(1L, "기존유저", FUTURE_DATE, time, theme);
 
         given(reservationTimeService.find(1L)).willReturn(time);
         given(themeService.find(1L)).willReturn(theme);
@@ -80,7 +85,7 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_테마로_예약시_예외가_발생한다() {
-        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2025-06-01", 1L, 999L);
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 999L);
         ReservationTime time = ReservationTime.of(1L, "10:00");
 
         given(reservationTimeService.find(1L)).willReturn(time);
@@ -90,5 +95,19 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 테마입니다");
+    }
+
+    @Test
+    void 과거_날짜_예약시_예외가_발생한다() {
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2020-01-01", 1L, 1L);
+        ReservationTime time = ReservationTime.of(1L, "10:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+
+        given(reservationTimeService.find(1L)).willReturn(time);
+        given(themeService.find(1L)).willReturn(theme);
+
+        assertThatThrownBy(() -> reservationService.reserve(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 }
