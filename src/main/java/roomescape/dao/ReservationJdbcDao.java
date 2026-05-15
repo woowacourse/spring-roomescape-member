@@ -193,7 +193,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public Optional<ReservationRow> findByName(String name) {
+    public List<ReservationRow> findByName(String name) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -212,7 +212,6 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource("name", name);
-        return jdbcTemplate.query(sql, params, ROW_MAPPER).stream()
-                .findFirst();
+        return jdbcTemplate.query(sql, params, ROW_MAPPER);
     }
 }

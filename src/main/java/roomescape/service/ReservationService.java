@@ -58,10 +58,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
     }
 
-    public ReservationResponseDto findByName(String name) {
-        return reservationDao.findByName(name)
+    public List<ReservationResponseDto> findByName(String name) {
+        return reservationDao.findByName(name).stream()
                 .map(ReservationResponseDto::from)
-                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+                .toList();
     }
 
     @Transactional

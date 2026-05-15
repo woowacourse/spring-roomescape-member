@@ -18,6 +18,7 @@ import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -46,13 +47,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationResponseDto> findByName(@RequestParam String name) {
+    public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam String name) {
         return ResponseEntity.ok(reservationService.findByName(name));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteByName(@PathVariable Long id, @RequestParam String name) {
-        reservationService.deleteByName(id, name);
+    public ResponseEntity<Void> deleteByName(@PathVariable Long id) {
+        reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

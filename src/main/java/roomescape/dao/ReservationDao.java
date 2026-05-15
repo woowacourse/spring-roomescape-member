@@ -4,6 +4,7 @@ package roomescape.dao;
 import roomescape.dao.row.ReservationRow;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReservationDao extends CommonDao<ReservationRow> {
@@ -13,7 +14,7 @@ public interface ReservationDao extends CommonDao<ReservationRow> {
 
     boolean existsByTimeId(Long timeId);
 
-    Optional<ReservationRow> findByName(String name);
+    List<ReservationRow> findByName(String name);
 
     ReservationRow update(ReservationRow row);
 }
