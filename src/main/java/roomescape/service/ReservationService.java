@@ -79,6 +79,10 @@ public class ReservationService {
     public void deleteWithValidation(final Long reservationId, final String name) {
         Reservation reservation = getReservation(reservationId);
         validateReservationOwner(reservation, name);
+        final LocalDate date = reservation.getDate();
+        validateDate(date);
+        final ReservationTime reservationTime = reservation.getTime();
+        validateReservationTime(date, reservationTime);
         delete(reservationId);
     }
 
@@ -161,7 +165,7 @@ public class ReservationService {
     private void validateDate(final LocalDate date) {
         final LocalDate today = LocalDate.now(clock);
         if (date.isBefore(today)) {
-            throw new IllegalArgumentException("지난 날짜로 예약이 불가합니다.");
+            throw new IllegalArgumentException("이미 지난 날짜입니다.");
         }
     }
 
@@ -169,7 +173,7 @@ public class ReservationService {
         final LocalDate today = LocalDate.now(clock);
         final LocalTime now = LocalTime.now(clock);
         if (date.equals(today) && reservationTime.isBefore(now)) {
-            throw new IllegalArgumentException("지난 시간대로 예약이 불가합니다.");
+            throw new IllegalArgumentException("이미 지난 시간대입니다.");
         }
     }
 
