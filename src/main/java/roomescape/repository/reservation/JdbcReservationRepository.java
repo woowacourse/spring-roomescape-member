@@ -42,28 +42,31 @@ public class JdbcReservationRepository implements ReservationRepository {
             r.date AS date,
             rt.id AS timeId,
             rt.start_at AS startAt,
+            t.id AS themeId
         FROM reservation AS r
-        WHERE r.id = ?
         JOIN reservation_time AS rt ON r.time_id = rt.id
+        JOIN theme AS t ON r.theme_id = t.id
     """;
 
-    private static final String SELECT_ALL_SQL = """
-        SELECT\s
-            r.id AS id,\s
-            r.name AS name,\s
-            r.date AS date,\s
-            rt.id AS timeId,\s
-            rt.start_at AS startAt,\s
-            t.id AS themeId,\s
-            t.name AS themeName,\s
-            t.description AS themeDescription,\s
-            t.image_url AS themeImageUrl\s
-        FROM reservation AS r\s
+    private static final String SELECT_WITH_TIME_AND_THEME_SQL = """
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.date AS date,
+            rt.id AS timeId,
+            rt.start_at AS startAt,
+            t.id AS themeId,
+            t.name AS themeName,
+            t.description AS themeDescription,
+            t.image_url AS themeImageUrl
+        FROM reservation AS r
         JOIN reservation_time AS rt ON r.time_id = rt.id
         JOIN theme AS t ON r.theme_id = t.id
     """;
 
     private static final String CONDITION_NAME_SQL = "WHERE r.name = ?";
+
+    private static final String CONDITION_ID_SQL = "WHERE r.id = ?";
 
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
 
@@ -98,10 +101,10 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
             new ReservationTime(
-                    rs.getLong(COLUMN_TIME_ID),
+                    rs.getLong(ALIAS_TIME_ID),
                     rs.getTime(ALIAS_START_AT).toLocalTime()
             ),
-            rs.getLong(COLUMN_THEME_ID)
+            rs.getLong(ALIAS_THEME_ID)
     );
 
     private static final RowMapper<ReservationWithTimeAndTheme> MAPPER = (rs, rowNumber) -> new ReservationWithTimeAndTheme(
@@ -139,14 +142,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<ReservationWithTimeAndTheme> getReservationWithTimeAndTheme(long id) {
-        return jdbcTemplate.query(SELECT_WITH_TIME_BY_ID_SQL, MAPPER, id)
+        return jdbcTemplate.query(SELECT_WITH_TIME_AND_THEME_SQL + CONDITION_ID_SQL, MAPPER, id)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public Optional<ReservationWithTime> getReservationWithTime(long id) {
-        return jdbcTemplate.query(SELECT_WITH_TIME_BY_ID_SQL, RESERVATION_WITH_TIME_MAPPER, id)
+        return jdbcTemplate.query(SELECT_WITH_TIME_BY_ID_SQL + CONDITION_ID_SQL, RESERVATION_WITH_TIME_MAPPER, id)
                 .stream()
                 .findFirst();
     }
@@ -188,7 +191,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private QueryWithParams getReservationsQuery(String name) {
-        StringBuilder query = new StringBuilder(SELECT_ALL_SQL);
+        StringBuilder query = new StringBuilder(SELECT_WITH_TIME_AND_THEME_SQL);
         List<String> params = new ArrayList<>();
 
         if(name != null && !name.isBlank()) {
