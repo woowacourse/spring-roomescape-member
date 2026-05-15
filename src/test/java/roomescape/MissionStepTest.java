@@ -249,7 +249,8 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(is("예약자 이름은 필수입니다."));
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("예약자 이름은 필수입니다."));
     }
 
     @Test
@@ -266,7 +267,8 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(is("입력 형식이 올바르지 않습니다. 날짜(yyyy-MM-dd)와 시간(HH:mm) 형식을 확인해주세요."));
+                .body("code", is("INVALID_FORMAT"))
+                .body("message", is("입력 형식이 올바르지 않습니다. 날짜(yyyy-MM-dd)와 시간(HH:mm) 형식을 확인해주세요."));
     }
 
     @Test
@@ -279,7 +281,8 @@ public class MissionStepTest {
                 .when().post("admin/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(is("예약 시간은 필수입니다."));
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("예약 시간은 필수입니다."));
     }
 
     @Test
@@ -295,6 +298,7 @@ public class MissionStepTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(400)
-                .body(is("테마 이름은 필수입니다."));
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("테마 이름은 필수입니다."));
     }
 }
