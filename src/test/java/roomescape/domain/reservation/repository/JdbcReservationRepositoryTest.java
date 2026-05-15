@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
@@ -239,10 +240,13 @@ class JdbcReservationRepositoryTest {
             reservationRepository.save(Reservation.create("예약자1", date, time1, theme1));
             Reservation deletedReservation = reservationRepository.save(
                 Reservation.create("삭제된예약자", date, time2, theme1));
+            Reservation canceledReservation = reservationRepository.save(
+                Reservation.create("취소된예약자", date, time3, theme1));
             reservationRepository.save(Reservation.create("예약자2", date, time2, theme2));
-            reservationRepository.save(Reservation.create("예약자3", date.plusDays(1), time3, theme1));
+            reservationRepository.save(Reservation.create("예약자3", date.plusDays(1), time2, theme1));
             reservationRepository.save(Reservation.create("삭제된시간예약자", date, deletedTime, theme1));
             reservationRepository.deleteReservationById(deletedReservation.getId());
+            cancel(canceledReservation);
             timeRepository.deleteTimeById(deletedTime.getId());
 
             // when
@@ -281,6 +285,23 @@ class JdbcReservationRepositoryTest {
             Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
             Reservation reservation = reservationRepository.save(Reservation.create("예약자", date, time, theme));
             reservationRepository.deleteReservationById(reservation.getId());
+
+            // when
+            boolean actual = reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNull(date, time,
+                theme);
+
+            // then
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 취소된_예약은_false를_반환한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation = reservationRepository.save(Reservation.create("예약자", date, time, theme));
+            cancel(reservation);
 
             // when
             boolean actual = reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNull(date, time,
@@ -336,6 +357,28 @@ class JdbcReservationRepositoryTest {
                 )
                 .containsExactly("예약자2", LocalDate.of(2026, 5, 2), updateTime.getId(), updateTheme.getId());
         }
+
+        @Test
+        void canceledAt을_수정할_수_있다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
+            LocalDateTime canceledAt = LocalDateTime.now();
+            Reservation canceledReservation = Reservation.reconstruct(reservation.getId(), reservation.getName(),
+                reservation.getDate(), reservation.getTime(), reservation.getTheme(), canceledAt);
+
+            // when
+            Reservation actual = reservationRepository.update(canceledReservation);
+
+            // then
+            assertThat(actual.getCanceledAt()).isEqualTo(canceledAt);
+            assertThat(reservationRepository.findReservationByIdAndDeletedAtIsNull(reservation.getId()))
+                .get()
+                .extracting(Reservation::getCanceledAt)
+                .isEqualTo(canceledAt);
+        }
     }
 
     @Nested
@@ -374,6 +417,25 @@ class JdbcReservationRepositoryTest {
             // then
             assertThat(actual).isTrue();
         }
+
+        @Test
+        void 다른_예약이_취소된_예약이면_false를_반환한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation canceledReservation = reservationRepository.save(Reservation.create("예약자1", date, time, theme));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자2", date.plusDays(1), time, theme));
+            cancel(canceledReservation);
+
+            // when
+            boolean actual = reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNullAndIdNot(
+                date, time, theme, reservation.getId());
+
+            // then
+            assertThat(actual).isFalse();
+        }
     }
 
     @Nested
@@ -407,5 +469,16 @@ class JdbcReservationRepositoryTest {
             Integer.class,
             id
         );
+    }
+
+    private void cancel(Reservation reservation) {
+        reservationRepository.update(Reservation.reconstruct(
+            reservation.getId(),
+            reservation.getName(),
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme(),
+            LocalDateTime.now()
+        ));
     }
 }
