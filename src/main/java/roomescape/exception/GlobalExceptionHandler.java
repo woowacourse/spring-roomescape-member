@@ -12,7 +12,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(CustomNotFoundException.class)
     public ErrorResponse handleCustomNotFoundException(CustomNotFoundException exception) {
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleDomainValidException(IllegalArgumentException exception) {
-        log.warn("[Domain Valid Error]", exception);
+        log.error("[Domain Valid Error]", exception);
 
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 ErrorCode.INTERNAL_SERVER_VALID_ERROR.getMessage());
