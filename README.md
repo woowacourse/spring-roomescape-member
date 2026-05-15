@@ -37,8 +37,8 @@
 #### 성공 응답 포맷 예시
 ```json
 {
-   "success": true,
-   "data": {},
+   "success": "boolean",
+   "data": "object | array | null",
    "error": null
 }
 ```
@@ -46,14 +46,20 @@
 #### 실패 응답 포맷 예시
 ```json
 {
-  "success": false,
+  "success": "boolean",
   "data": null,
   "error": {
-    "code": "RESERVATION_NOT_FOUND",
-    "message": "예약을 찾을 수 없습니다."
+    "code": "string",
+    "message": "string"
   }
 }
 ```
 
 ## 2. API 명세서
-[기능 명세서 바로가기](https://www.notion.so/sangjunn/2-3-356976a7f22380b58672fccba4eddb3d?source=copy_link)
+[API 명세서](https://www.notion.so/API-4c86f304080b82a8b9d581262209fcbe?source=copy_link) 
+
+주요 HTTP 상태 코드:
+- `400 Bad Request`: 요청 값 검증 실패
+- `404 Not Found`: 리소스를 찾을 수 없음
+- `409 Conflict`: 중복 상황
+- `500 Internal Server Error`: 서버 내부 오류
