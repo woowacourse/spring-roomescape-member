@@ -20,8 +20,7 @@ import static roomescape.exception.dto.ErrorCode.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BaseCustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
