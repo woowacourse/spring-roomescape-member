@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,5 +79,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("themeId", themeId);
 
         return template.query(sql, params, reservationTimeRowMapper);
+    }
+
+    @Override
+    public boolean existsAlreadyTime(LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time rt WHERE start_at = :startAt)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startAt", startAt);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
     }
 }

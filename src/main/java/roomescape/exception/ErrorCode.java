@@ -24,9 +24,11 @@ public enum ErrorCode {
 
     // ReservationTime
     RESERVATIONTIME_NOT_FOUND("RESERVATIONTIME_404", "시간(%d번)이 존재하지 않습니다."),
+    RESERVATIONTIME_ALREADY_EXIST("RESERVATIONTIME_409", "이미 존재하는 시간대 입니다"),
 
     // Theme
     THEME_NOT_FOUND("THEME_404", "테마(%d번)이 존재하지 않습니다."),
+    THEME_ALREADY_EXIST("THEME_409", "이미 존재하는 테마 입니다"),
 
     // 요청 값
     INVALID_INPUT("INVALID_INPUT_400", "요청 값이 올바르지 않습니다."),

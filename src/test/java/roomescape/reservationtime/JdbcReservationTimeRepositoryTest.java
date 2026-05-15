@@ -76,4 +76,30 @@ public class JdbcReservationTimeRepositoryTest {
                 .extracting(ReservationTime::getStartAt)
                 .containsExactly(LocalTime.of(10, 0));
     }
+
+    @Test
+    @DisplayName("이미 존재하는 시간이면 성공을 반환한다.")
+    void existsAlreadyTime_테스트_1() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+
+        // when
+        boolean result = repository.existsAlreadyTime(time);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간이면 실패를 반환한다.")
+    void existsAlreadyTime_테스트_2() {
+        // given
+        LocalTime time = LocalTime.of(18, 23);
+
+        // when
+        boolean result = repository.existsAlreadyTime(time);
+
+        // then
+        assertThat(result).isFalse();
+    }
 }

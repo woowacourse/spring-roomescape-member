@@ -2,6 +2,9 @@ package roomescape.reservationtime;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservationtime.dto.response.AvailableTimeFindResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeFindResponse;
@@ -9,9 +12,9 @@ import roomescape.reservationtime.dto.response.ReservationTimeSaveResponse;
 import roomescape.reservationtime.dto.response.TimeInformation;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.ScheduleService;
-import roomescape.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +26,7 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeSaveResponse save(ReservationTimeSaveRequest body) {
+        validateAlreadyTimeNot(body.startAt());
         return ReservationTimeSaveResponse.from(reservationTimeRepository.save(body.toDomain()));
     }
 
@@ -48,5 +52,11 @@ public class ReservationTimeService {
                         !notAvailableTimeIds.contains(time.getId())
                 ))
                 .toList();
+    }
+
+    private void validateAlreadyTimeNot(LocalTime startAt) {
+        if (reservationTimeRepository.existsAlreadyTime(startAt)) {
+            throw new ReservationTimeAlreadyExistsException(ErrorCode.RESERVATIONTIME_ALREADY_EXIST, startAt);
+        }
     }
 }
