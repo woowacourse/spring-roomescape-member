@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
-    public static final AdminReservationSavePolicy POLICY = new AdminReservationSavePolicy();
+    private static final AdminReservationSavePolicy POLICY = new AdminReservationSavePolicy();
     private static final String DEFAULT_PATH = "/reservations/";
     private final ReservationService reservationService;
     private final Clock clock;

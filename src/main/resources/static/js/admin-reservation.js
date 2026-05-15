@@ -5,10 +5,6 @@
     const dateEl = document.getElementById('r-date');
     const timeEl = document.getElementById('r-time');
     const themeEl = document.getElementById('r-theme');
-    const themeNameById = {};
-    Array.from(themeEl.options).forEach(o => themeNameById[o.value] = o.textContent);
-    const timeStartById = {};
-    Array.from(timeEl.options).forEach(o => timeStartById[o.value] = o.textContent);
 
     rows.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteRow(btn.closest('tr')));

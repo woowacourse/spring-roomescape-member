@@ -49,7 +49,7 @@ public class ReservationService {
     @Transactional
     public void updateCancelled(Long id, LocalDateTime now) {
         try {
-            Reservation reservation = getValidReservation(id, now);
+            getValidReservation(id, now);
             reservationRepository.updateCancelled(id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND);
