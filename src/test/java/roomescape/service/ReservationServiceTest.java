@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import roomescape.dto.response.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
@@ -58,69 +57,8 @@ class ReservationServiceTest {
         savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
         savedTheme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
         savedTheme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        requestDto1 = new ReservationRequestDto("유저1", LocalDate.now().plusDays(1), savedTime1.getId(),
-                savedTheme1.getId());
-        requestDto2 = new ReservationRequestDto("유저2", LocalDate.now().plusDays(2), savedTime2.getId(),
-                savedTheme2.getId());
-    }
-
-    @Nested
-    class FindAll {
-
-        @Test
-        @DisplayName("예약이 없으면 빈 목록과 totalElements 0을 반환한다")
-        void returnsEmptyPage() {
-            PageResponse<Reservation> result = reservationService.findAll(0, 10);
-
-            assertThat(result.content()).isEmpty();
-            assertThat(result.totalElements()).isZero();
-            assertThat(result.totalPages()).isZero();
-        }
-
-        @Test
-        @DisplayName("페이지 크기만큼 예약 목록을 반환한다")
-        void returnsPagedReservations() {
-            reservationService.create(requestDto1);
-            reservationService.create(requestDto2);
-
-            PageResponse<Reservation> result = reservationService.findAll(0, 10);
-
-            assertThat(result.content()).hasSize(2);
-            assertThat(result.totalElements()).isEqualTo(2);
-            assertThat(result.totalPages()).isEqualTo(1);
-        }
-
-        @Test
-        @DisplayName("size보다 데이터가 많으면 size만큼만 반환한다")
-        void returnsOnlySizeItems() {
-            reservationService.create(requestDto1);
-            reservationService.create(requestDto2);
-
-            PageResponse<Reservation> result = reservationService.findAll(0, 1);
-
-            assertThat(result.content()).hasSize(1);
-            assertThat(result.totalElements()).isEqualTo(2);
-            assertThat(result.totalPages()).isEqualTo(2);
-        }
-    }
-
-    @Nested
-    class FindById {
-
-        @Test
-        @DisplayName("존재하는 id로 예약을 조회한다")
-        void returnsReservationById() {
-            Reservation saved = reservationService.create(requestDto1);
-
-            assertThat(reservationService.findById(saved.getId())).isEqualTo(saved);
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
-        void throwsWhenIdNotFound() {
-            assertThatThrownBy(() -> reservationService.findById(-1L))
-                    .isInstanceOf(NotFoundException.class);
-        }
+        requestDto1 = new ReservationRequestDto("유저1", LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId());
+        requestDto2 = new ReservationRequestDto("유저2", LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId());
     }
 
     @Nested
@@ -140,7 +78,7 @@ class ReservationServiceTest {
         @DisplayName("시간이 존재하지 않으면 예외를 반환한다")
         void throwsWhenTimeNotFound() {
             ReservationRequestDto dto = new ReservationRequestDto(
-                    "유저1", LocalDate.of(2026, 5, 3), -1L, savedTheme1.getId());
+                    "유저1", LocalDate.now().plusDays(1), -1L, savedTheme1.getId());
 
             assertThatThrownBy(() -> reservationService.create(dto))
                     .isInstanceOf(NotFoundException.class);
@@ -150,7 +88,7 @@ class ReservationServiceTest {
         @DisplayName("테마가 존재하지 않으면 예외를 반환한다")
         void throwsWhenThemeNotFound() {
             ReservationRequestDto dto = new ReservationRequestDto(
-                    "유저1", LocalDate.of(2026, 5, 3), savedTime1.getId(), -1L);
+                    "유저1", LocalDate.now().plusDays(1), savedTime1.getId(), -1L);
 
             assertThatThrownBy(() -> reservationService.create(dto))
                     .isInstanceOf(NotFoundException.class);
@@ -177,63 +115,37 @@ class ReservationServiceTest {
     }
 
     @Nested
-    class CreateByAdmin {
+    class UpdateByUser {
 
         @Test
-        @DisplayName("과거 날짜로도 예약을 생성한다")
-        void createsReservationWithPastDate() {
-            ReservationRequestDto pastDto = new ReservationRequestDto(
-                    "유저1", LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
-
-            Reservation saved = reservationService.createByAdmin(pastDto);
-
-            assertThat(saved.getId()).isNotNull();
-            assertThat(saved.getDate()).isEqualTo(LocalDate.now().minusDays(1));
-        }
-
-        @Test
-        @DisplayName("미래 날짜로도 예약을 생성한다")
-        void createsReservationWithFutureDate() {
-            Reservation saved = reservationService.createByAdmin(requestDto1);
-
-            assertThat(saved.getId()).isNotNull();
-            assertThat(saved.getDate()).isEqualTo(requestDto1.date());
-        }
-    }
-
-    @Nested
-    class Update {
-
-        @Test
-        @DisplayName("예약의 날짜와 시간을 수정한다")
+        @DisplayName("본인 이름으로 예약을 수정한다")
         void updatesReservation() {
             Reservation saved = reservationService.create(requestDto1);
-            LocalDate newDate = LocalDate.of(2026, 5, 4);
+            LocalDate newDate = LocalDate.now().plusDays(3);
             ReservationPatchDto updateDto = new ReservationPatchDto(newDate, savedTime2.getId());
 
-            Reservation updated = reservationService.update(saved.getId(), updateDto);
+            Reservation updated = reservationService.updateByUser(saved.getId(), requestDto1.name(), updateDto);
 
             assertThat(updated.getDate()).isEqualTo(newDate);
             assertThat(updated.getTime()).isEqualTo(savedTime2);
         }
 
         @Test
-        @DisplayName("존재하지 않는 id를 수정하면 예외를 반환한다")
-        void throwsWhenIdNotFound() {
-            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.of(2026, 5, 4),
-                    savedTime1.getId());
+        @DisplayName("다른 사람의 예약을 수정하면 예외를 반환한다")
+        void throwsWhenNameMismatch() {
+            Reservation saved = reservationService.create(requestDto1);
+            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
 
-            assertThatThrownBy(() -> reservationService.update(-1L, updateDto))
-                    .isInstanceOf(NotFoundException.class);
+            assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), "다른사람", updateDto))
+                    .isInstanceOf(BadRequestException.class);
         }
 
         @Test
-        @DisplayName("존재하지 않는 시간으로 수정하면 예외를 반환한다")
-        void throwsWhenTimeNotFound() {
-            Reservation saved = reservationService.create(requestDto1);
-            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.of(2026, 5, 4), -1L);
+        @DisplayName("존재하지 않는 id를 수정하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
+            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime1.getId());
 
-            assertThatThrownBy(() -> reservationService.update(saved.getId(), updateDto))
+            assertThatThrownBy(() -> reservationService.updateByUser(-1L, "유저1", updateDto))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -268,49 +180,6 @@ class ReservationServiceTest {
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
-        }
-    }
-
-    @Nested
-    class CancelByAdmin {
-
-        @Test
-        @DisplayName("과거 예약도 취소할 수 있다")
-        void cancelsPastReservation() {
-            Reservation saved = reservationDao.insert(
-                    new Reservation("유저", LocalDate.now().minusDays(1), savedTime1, savedTheme1));
-
-            reservationService.cancelByAdmin(saved.getId());
-
-            Reservation canceled = reservationDao.findById(saved.getId()).orElseThrow();
-            assertThat(canceled.getStatus()).isEqualTo(ReservationStatus.CANCELED);
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
-        void throwsWhenIdNotFound() {
-            assertThatThrownBy(() -> reservationService.cancelByAdmin(-1L))
-                    .isInstanceOf(NotFoundException.class);
-        }
-    }
-
-    @Nested
-    class Delete {
-
-        @Test
-        @DisplayName("예약을 삭제한다")
-        void deletesReservation() {
-            Reservation saved = reservationService.create(requestDto1);
-            reservationService.delete(saved.getId());
-
-            assertThat(reservationDao.existsById(saved.getId())).isFalse();
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
-        void throwsWhenDeletingNonExistentId() {
-            assertThatThrownBy(() -> reservationService.delete(-1L))
-                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

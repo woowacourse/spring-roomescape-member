@@ -31,7 +31,7 @@ import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.dto.response.PageResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 @WebMvcTest(AdminReservationController.class)
 class AdminReservationControllerTest {
@@ -43,7 +43,7 @@ class AdminReservationControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean
-    private ReservationService reservationService;
+    private AdminReservationService reservationService;
 
     @BeforeEach
     void setUp() {

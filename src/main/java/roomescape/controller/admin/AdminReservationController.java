@@ -18,14 +18,14 @@ import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.dto.response.PageResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
-    private final ReservationService reservationService;
+    private final AdminReservationService reservationService;
 
-    public AdminReservationController(ReservationService reservationService) {
+    public AdminReservationController(AdminReservationService reservationService) {
         this.reservationService = reservationService;
     }
 

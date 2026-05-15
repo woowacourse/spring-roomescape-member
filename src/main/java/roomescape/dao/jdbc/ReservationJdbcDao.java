@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.ConflictException;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationStatus;
@@ -41,7 +42,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 TIME_ROW_MAPPER.mapRow(rs, rowNum),
                 THEME_ROW_MAPPER.mapRow(rs, rowNum),
                 ReservationStatus.valueOf(rs.getString("status")),
-                deletedAt != null ? deletedAt.toLocalDateTime() : null
+                deletedAt != null ? deletedAt.toLocalDateTime() : null,
+                rs.getLong("version")
         );
     };
 
@@ -65,6 +67,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.date,
                     r.status,
                     r.deleted_at,
+                    r.version,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -87,6 +90,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.date,
                     r.status,
                     r.deleted_at,
+                    r.version,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -114,6 +118,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.date,
                     r.status,
                     r.deleted_at,
+                    r.version,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -146,6 +151,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.date,
                     r.status,
                     r.deleted_at,
+                    r.version,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
@@ -185,8 +191,8 @@ public class ReservationJdbcDao implements ReservationDao {
         String sql = """
                 UPDATE reservations
                 SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId,
-                    status = :status, deleted_at = :deletedAt
-                WHERE id = :id
+                    status = :status, deleted_at = :deletedAt, version = version + 1
+                WHERE id = :id AND version = :version
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -195,8 +201,13 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("themeId", reservation.getTheme().getId())
                 .addValue("status", reservation.getStatus().name())
                 .addValue("deletedAt", reservation.getDeletedAt())
-                .addValue("id", reservation.getId());
-        return jdbcTemplate.update(sql, params);
+                .addValue("id", reservation.getId())
+                .addValue("version", reservation.getVersion());
+        int updated = jdbcTemplate.update(sql, params);
+        if (updated == 0) {
+            throw new ConflictException("다른 사용자가 이미 수정했습니다. 다시 시도해주세요.");
+        }
+        return updated;
     }
 
     @Override

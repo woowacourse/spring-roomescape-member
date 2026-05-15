@@ -25,6 +25,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
+import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -80,6 +81,29 @@ class ReservationControllerTest {
                     .status(HttpStatus.NO_CONTENT);
 
             then(reservationService).should().cancel(reservation.getId());
+        }
+    }
+
+    @Nested
+    class Patch {
+
+        @Test
+        @DisplayName("본인 이름으로 예약을 수정하면 200을 반환한다")
+        void updatesReservation() {
+            ReservationPatchDto requestDto = new ReservationPatchDto(LocalDate.of(2026, 6, 1), 1L);
+            given(reservationService.updateByUser(any(), any(), any())).willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .queryParam("name", reservation.getName())
+                    .body(requestDto)
+                    .when().patch("/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(ReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
         }
     }
 
