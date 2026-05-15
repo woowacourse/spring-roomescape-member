@@ -14,6 +14,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(exception.getMessage());
     }
 
+    @ExceptionHandler(PastReservationException.class)
+    public ResponseEntity<String> handlePastReservation(PastReservationException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
     @ExceptionHandler(DuplicateReservationException.class)
     public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());

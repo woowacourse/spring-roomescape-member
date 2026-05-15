@@ -22,7 +22,7 @@ public class ReservationTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
-        params.put("date", "2025-05-05");
+        params.put("date", "2026-06-05");
         params.put("timeId", 1L);
         params.put("themeId", 2L);
 
@@ -42,7 +42,7 @@ public class ReservationTest {
                 .body("size()", is(2))
                 .body("[1].id", is(2))
                 .body("[1].name", is("녀녕"))
-                .body("[1].date", is("2025-05-05"))
+                .body("[1].date", is("2026-06-05"))
                 .body("[1].time.id", is(1))
                 .body("[1].time.startAt", is("10:00"))
                 .body("[1].theme.id", is(2))

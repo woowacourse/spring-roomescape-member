@@ -53,6 +53,14 @@ public class ReservationTimeDao {
         }
     }
 
+    public ReservationTime findById(long timeId) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        return jdbcTemplate.query(sql, rowMapper, timeId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 id의 예약 시간이 존재하지 않습니다."));
+    }
+
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, rowMapper);

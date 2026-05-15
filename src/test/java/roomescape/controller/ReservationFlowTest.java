@@ -29,7 +29,7 @@ class ReservationFlowTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "user_b");
-        params.put("date", "2026-04-28");
+        params.put("date", "2026-06-28");
         params.put("timeId", 1L);
         params.put("themeId", 2L);
 
@@ -41,7 +41,7 @@ class ReservationFlowTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .queryParam("date", "2026-04-28")
+                .queryParam("date", "2026-06-28")
                 .queryParam("themeId", 2L)
                 .when().get("/times")
                 .then().log().all()
