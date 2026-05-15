@@ -9,15 +9,15 @@ INSERT INTO theme (name, description, image_url) VALUES ('테마D', '설명D', '
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-10', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user2', '2026-05-09', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user3', '2026-05-08', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user4', '2026-05-07', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user5', '2026-05-06', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user3', '2026-05-14', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user4', '2026-05-13', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user5', '2026-05-12', 1, 1);
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-10', 2, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user2', '2026-05-09', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user3', '2026-05-08', 2, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user3', '2026-05-11', 2, 2);
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-07', 3, 3);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-10', 3, 3);
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-01', 1, 4);
 

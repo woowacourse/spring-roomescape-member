@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -32,7 +33,8 @@ class ReservationTimeControllerTest {
                 .body(Map.of("startAt", "20:00", "finishAt", "21:00"))
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("startAt", equalTo("20:00:00"));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -29,7 +30,8 @@ class ThemeControllerTest {
                 .when().get("/themes/top/10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(3))
+                .body("[0].name", equalTo("테마A"));
     }
 
     @Test

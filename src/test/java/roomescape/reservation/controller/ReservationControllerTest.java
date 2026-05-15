@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
@@ -30,7 +32,10 @@ class ReservationControllerTest {
                 .body(Map.of("name", "현미밥", "date", "2099-08-05", "timeId", 1, "themeId", 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("name", equalTo("현미밥"))
+                .body("date", equalTo("2099-08-05"))
+                .body("themeId", equalTo(1));
     }
 
     @Test
@@ -41,7 +46,8 @@ class ReservationControllerTest {
                 .body(Map.of("name", "현미밥", "date", "2020-01-01", "timeId", 1, "themeId", 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("errorCode", equalTo("BAD_REQUEST"));
     }
 
     @Test
@@ -52,7 +58,8 @@ class ReservationControllerTest {
                 .body(Map.of("name", "현미밥", "date", "2099-12-01", "timeId", 1, "themeId", 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", equalTo("CONFLICT"));
     }
 
     @Test
@@ -63,7 +70,8 @@ class ReservationControllerTest {
                 .body(Map.of("name", "현미밥", "date", "2099-08-05", "timeId", 999, "themeId", 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", equalTo("NOT_FOUND"));
     }
 
     @Test
@@ -74,7 +82,8 @@ class ReservationControllerTest {
                 .body(Map.of("name", "현미밥", "date", "2099-08-05", "timeId", 1, "themeId", 999))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", equalTo("NOT_FOUND"));
     }
 
     @Test
@@ -85,7 +94,9 @@ class ReservationControllerTest {
                 .body(Map.of("date", "2099-12-02", "timeId", 2))
                 .when().patch("/reservations/11")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("date", equalTo("2099-12-02"))
+                .body("time.id", equalTo(2));
     }
 
     @Test
@@ -96,7 +107,8 @@ class ReservationControllerTest {
                 .body(Map.of("date", "2099-12-02", "timeId", 2))
                 .when().patch("/reservations/1")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("errorCode", equalTo("BAD_REQUEST"));
     }
 
     @Test
@@ -114,6 +126,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("errorCode", equalTo("BAD_REQUEST"));
     }
 }
