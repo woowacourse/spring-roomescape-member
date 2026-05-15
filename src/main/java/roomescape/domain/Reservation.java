@@ -5,6 +5,7 @@ import roomescape.domain.vo.Name;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Reservation {
     private final Long id;
@@ -24,6 +25,13 @@ public class Reservation {
     public static Reservation create(Name name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
         validate(date, time, now);
         return new Reservation(null, name, date, time, theme);
+    }
+
+    public Reservation update(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+        Name updatedName = Optional.ofNullable(name).map(Name::new).orElse(this.name);
+        LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
+        validate(updatedDate, time, now);
+        return new Reservation(this.id, updatedName, updatedDate, time, theme);
     }
 
     private static void validate(LocalDate date, Time time, LocalDateTime now) {

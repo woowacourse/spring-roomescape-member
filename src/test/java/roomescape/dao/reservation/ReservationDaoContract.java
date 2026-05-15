@@ -219,8 +219,8 @@ public abstract class ReservationDaoContract {
             ThemeRow theme = givenTheme("방탈출");
             reservationDao().create(row("달수", DATE, time, theme));
 
-            assertThat(reservationDao().existsByThemeIdAndTimeIdAndDate(theme.id(), time.id(), DATE))
-                    .isTrue();
+            assertThat(reservationDao().existsByThemeIdAndTimeIdAndDate(
+                    theme.id(), time.id(), DATE)).isTrue();
         }
 
         @Test

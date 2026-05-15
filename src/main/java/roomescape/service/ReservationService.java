@@ -18,9 +18,11 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,6 +54,12 @@ public class ReservationService {
 
     public ReservationResponseDto findById(Long id) {
         return reservationDao.findById(id)
+                .map(ReservationResponseDto::from)
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+    }
+
+    public ReservationResponseDto findByName(String name) {
+        return reservationDao.findByName(name)
                 .map(ReservationResponseDto::from)
                 .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
     }
@@ -89,5 +97,25 @@ public class ReservationService {
         }
 
         reservationDao.delete(id);
+    }
+
+    @Transactional
+    public ReservationResponseDto update(Long id, ReservationUpdateDto reservationUpdate) {
+        Time time = timeDao.findById(reservationUpdate.timeId())
+                .map(TimeRow::toDomain)
+                .orElseThrow(() -> new NotFoundException(TimeErrorCode.NOT_FOUND));
+
+        Theme theme = themeDao.findById(reservationUpdate.themeId())
+                .map(ThemeRow::toDomain)
+                .orElseThrow(() -> new NotFoundException(ThemeErrorCode.NOT_FOUND));
+
+        ReservationRow existing = reservationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+
+        Reservation updated = existing.toDomain()
+                .update(reservationUpdate.name(), reservationUpdate.date(), time, theme, LocalDateTime.now(clock));
+
+        ReservationRow updatedRow = ReservationRow.from(updated);
+        return ReservationResponseDto.from(reservationDao.update(updatedRow));
     }
 }

@@ -86,4 +86,14 @@ public class FakeReservationDao implements ReservationDao {
                 .stream()
                 .anyMatch(reservation -> reservation.timeRow().id().equals(timeId));
     }
+
+    @Override
+    public Optional<ReservationRow> findByName(String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public ReservationRow update(ReservationRow row) {
+        return null;
+    }
 }
