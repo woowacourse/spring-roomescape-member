@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 예약 — ESCAPE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--sur:#0f0f0f;--sur2:#181818;
+  --border:#525252;--text:#d4d4d4;--muted:#aaa;
+  --white:#ebebeb;--acc:#c22235;--acc-h:#e5485a;
+  --glow:rgba(194,34,53,.3);
+}
+body{
+  background-color:#080808;
+  background-image:
+    radial-gradient(ellipse at 0% 0%,rgba(140,20,45,.32) 0%,transparent 52%),
+    radial-gradient(ellipse at 100% 100%,rgba(110,15,35,.22) 0%,transparent 52%);
+  background-attachment:fixed;
+  color:var(--text);font-family:'Inter',sans-serif;font-weight:300;line-height:1.7;
+}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 4rem;
+  background:rgba(7,7,7,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.42em;color:var(--white);text-decoration:none}
+.back{font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s}
+.back:hover{color:var(--white)}
+.content{max-width:680px;margin:0 auto;padding:7rem 2rem 5rem}
+.page-title{font-family:'Cinzel',serif;font-size:1.8rem;color:var(--white);letter-spacing:.06em;margin-bottom:2.5rem}
+.search-row{display:flex;gap:.75rem;margin-bottom:2.5rem}
+.search-input{
+  flex:1;background:var(--sur);border:1px solid var(--border);color:var(--white);
+  padding:.8rem 1.2rem;font-size:.88rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .3s;
+}
+.search-input:focus{border-color:var(--acc)}
+.search-btn{
+  padding:.8rem 1.6rem;border:1px solid var(--acc);color:var(--acc);
+  background:transparent;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;white-space:nowrap;
+}
+.search-btn:hover{background:var(--acc);color:var(--white);box-shadow:0 0 18px var(--glow)}
+.res-list{display:flex;flex-direction:column;gap:.75rem}
+.res-card{
+  background:var(--sur);border:1px solid var(--border);
+  padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  transition:border-color .3s;
+}
+.res-card:hover{border-color:var(--border)}
+.res-info{display:flex;flex-direction:column;gap:.25rem}
+.res-theme{font-size:.95rem;color:var(--white);letter-spacing:.04em}
+.res-detail{font-size:.8rem;color:var(--muted);letter-spacing:.06em}
+.res-status{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc)}
+.cancel-btn{
+  padding:.55rem 1.1rem;border:1px solid var(--border);color:var(--muted);
+  background:transparent;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;white-space:nowrap;
+}
+.cancel-btn:hover{border-color:var(--acc);color:var(--acc)}
+.msg{font-size:.9rem;color:var(--muted);letter-spacing:.08em;padding:2rem 0;text-align:center}
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
+  padding:.85rem 2rem;font-size:.72rem;letter-spacing:.1em;
+  border:1px solid;z-index:300;opacity:0;transition:opacity .3s;white-space:nowrap;
+}
+.toast.show{opacity:1}
+.toast.ok{background:rgba(5,20,12,.9);border-color:#2d6a4f;color:#74c69d}
+.toast.err{background:rgba(20,5,8,.9);border-color:var(--acc);color:var(--acc-h)}
+@media(max-width:600px){
+  nav{padding:1rem 1.5rem}
+  .content{padding:5rem 1.25rem 4rem}
+  .search-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">ESCAPE</a>
+  <a href="/" class="back">← 홈으로</a>
+</nav>
+
+<div class="content">
+  <h1 class="page-title">내 예약 조회</h1>
+
+  <div class="search-row">
+    <input class="search-input" id="name-input" type="text" placeholder="예약자 이름을 입력하세요"
+           maxlength="20" onkeydown="if(event.key==='Enter') search()">
+    <button class="search-btn" onclick="search()">조회</button>
+  </div>
+
+  <div class="res-list" id="res-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function fmt(t) {
+  if (!t) return '';
+  return t.slice(0, 5);
+}
+
+function toast(type, msg) {
+  const el = document.getElementById('toast');
+  el.className = `toast ${type} show`;
+  el.textContent = msg;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+async function search() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+  const list = document.getElementById('res-list');
+  list.innerHTML = '<p class="msg">불러오는 중...</p>';
+  try {
+    const r = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+    if (!r.ok) throw new Error();
+    const data = await r.json();
+    if (!data.length) {
+      list.innerHTML = '<p class="msg">해당 이름의 예약이 없습니다</p>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach(rv => {
+      const card = document.createElement('div');
+      card.className = 'res-card';
+      card.innerHTML = `
+        <div class="res-info">
+          <span class="res-theme">${rv.theme?.name || ''}</span>
+          <span class="res-detail">${rv.date || ''} · ${fmt(rv.time?.startAt)}</span>
+          <span class="res-status">예약됨</span>
+        </div>
+        <button class="cancel-btn" onclick="cancelReservation(${rv.id}, this)">취소</button>
+      `;
+      list.appendChild(card);
+    });
+  } catch {
+    list.innerHTML = '<p class="msg">조회 중 오류가 발생했습니다</p>';
+  }
+}
+
+async function cancelReservation(id, btn) {
+  if (!confirm('예약을 취소하시겠습니까?')) return;
+  try {
+    const r = await fetch(`/reservations/${id}`, { method: 'DELETE' });
+    if (!r.ok) {
+      const body = await r.json().catch(() => ({}));
+      toast('err', body.message || '취소할 수 없는 예약입니다');
+      return;
+    }
+    toast('ok', '예약이 취소되었습니다');
+    btn.closest('.res-card').remove();
+    if (!document.querySelectorAll('.res-card').length) {
+      document.getElementById('res-list').innerHTML = '<p class="msg">예약이 없습니다</p>';
+    }
+  } catch {
+    toast('err', '네트워크 오류가 발생했습니다');
+  }
+}
+</script>
+</body>
+</html>

@@ -237,11 +237,16 @@ tr:hover td{background:var(--sur2)}
           <th>테마</th>
           <th>시간</th>
           <th>상태</th>
-          <th></th>
+          <th>관리</th>
         </tr>
       </thead>
       <tbody id="r-tbody"></tbody>
     </table>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-top:1rem;font-size:.8rem;color:var(--muted)">
+    <button id="r-prev" class="btn-add" style="padding:.4rem .9rem;font-size:.75rem" disabled>◀ 이전</button>
+    <span id="r-page-info"></span>
+    <button id="r-next" class="btn-add" style="padding:.4rem .9rem;font-size:.75rem">다음 ▶</button>
   </div>
 </div>
 
@@ -361,13 +366,13 @@ document.getElementById('overlay').addEventListener('click', e => {
 async function loadStats() {
   try {
     const [rr, tr, pr] = await Promise.all([
-      fetch('/admin/reservations'),
+      fetch('/admin/reservations?page=0&size=1'),
       fetch('/admin/themes'),
       fetch('/themes/populars?limit=1&days=7')
     ]);
     if (rr.ok) {
       const data = await rr.json();
-      document.getElementById('stat-total').textContent = data.length + '건';
+      document.getElementById('stat-total').textContent = data.totalElements + '건';
     }
     if (tr.ok) {
       const data = await tr.json();
@@ -382,39 +387,50 @@ async function loadStats() {
 
 /* ── RESERVATIONS ── */
 async function loadReservations() {
+  let currentPage = 0;
+  const pageSize = 10;
   const tbody = document.getElementById('r-tbody');
-  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">불러오는 중...</td></tr>';
-  try {
-    const r = await fetch('/admin/reservations');
-    if (!r.ok) {
-      const text = await r.text();
-      console.error('[예약 목록] API 오류', r.status, text);
-      throw new Error(`HTTP ${r.status}`);
+
+  async function fetchPage(page) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">불러오는 중...</td></tr>';
+    try {
+      const r = await fetch(`/admin/reservations?page=${page}&size=${pageSize}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      tbody.innerHTML = '';
+      if (!data.content.length) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">예약이 없습니다</td></tr>';
+      } else {
+        data.content.forEach(rv => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="td-id">${rv.id}</td>
+            <td>${rv.name}</td>
+            <td>${rv.date || ''}</td>
+            <td>${rv.theme?.name || ''}</td>
+            <td>${fmt(rv.time?.startAt)}</td>
+            <td>${rv.status === 'CANCELED' ? '취소됨' : '예약됨'}</td>
+            <td>
+              <button class="td-del" onclick="cancelReservation(${rv.id})" title="취소">✕</button>
+              <button class="td-del" onclick="delReservation(${rv.id},'${(rv.name||'').replace(/'/g,"\\'")}')">×</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+      document.getElementById('r-page-info').textContent =
+        `${data.page + 1} / ${Math.max(data.totalPages, 1)} 페이지 (총 ${data.totalElements}건)`;
+      document.getElementById('r-prev').disabled = data.page === 0;
+      document.getElementById('r-next').disabled = data.page >= data.totalPages - 1;
+      currentPage = data.page;
+    } catch (e) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="7">오류: ${e.message}</td></tr>`;
     }
-    const data = await r.json();
-    console.log('[예약 목록] 응답 데이터:', data);
-    tbody.innerHTML = '';
-    if (!data.length) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">예약이 없습니다</td></tr>';
-      return;
-    }
-    data.forEach(rv => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="td-id">${rv.id}</td>
-        <td>${rv.name}</td>
-        <td>${rv.date || ''}</td>
-        <td>${rv.theme?.name || ''}</td>
-        <td>${fmt(rv.time?.startAt)}</td>
-        <td>${rv.status === 'CANCELED' ? '취소됨' : '예약됨'}</td>
-        <td><button class="td-del" onclick="delReservation(${rv.id},'${(rv.name||'').replace(/'/g,"\\'")}')">×</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } catch (e) {
-    console.error('[예약 목록] 렌더링 오류:', e);
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">오류: ${e.message}</td></tr>`;
   }
+
+  fetchPage(0);
+  document.getElementById('r-prev').onclick = () => fetchPage(currentPage - 1);
+  document.getElementById('r-next').onclick = () => fetchPage(currentPage + 1);
 }
 
 async function loadReservationSelects() {
@@ -465,6 +481,20 @@ async function addReservation() {
   } catch {
     errEl.textContent = '네트워크 오류가 발생했습니다';
   }
+}
+
+function cancelReservation(id) {
+  confirm('예약 취소', '해당 예약을 취소하시겠습니까?', async () => {
+    try {
+      const r = await fetch(`/admin/reservations/${id}/cancel`, { method: 'DELETE' });
+      if (!r.ok) throw new Error();
+      toast('ok', '예약이 취소되었습니다');
+      loadReservations();
+      loadStats();
+    } catch {
+      toast('err', '취소에 실패했습니다');
+    }
+  });
 }
 
 function delReservation(id, name) {
