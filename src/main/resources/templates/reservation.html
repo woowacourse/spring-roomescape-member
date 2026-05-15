@@ -61,6 +61,50 @@
       cursor: pointer;
       margin-top: 10px;
     }
+    /* 에러 모달 스타일 */
+    #error-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border: 2px solid #000;
+      z-index: 1100;
+      text-align: center;
+      min-width: 300px;
+      max-width: 500px;
+    }
+    #error-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1099;
+    }
+    #error-modal-title {
+      color: #d9534f;
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    #error-modal-detail {
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    #error-close-btn {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #333;
+      color: white;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -85,6 +129,14 @@
   <button id="reserve-btn">예약하기</button>
 </div>
 
+<!-- 에러 모달 -->
+<div id="error-modal-overlay"></div>
+<div id="error-modal">
+  <h3 id="error-modal-title"></h3>
+  <p id="error-modal-detail"></p>
+  <button id="error-close-btn">확인</button>
+</div>
+
 <script>
   let selectedTimeId = null;
   let allTimes = [];
@@ -94,10 +146,32 @@
     const themeId = params.get('themeId');
     const datePicker = document.getElementById('date-picker');
 
+    document.getElementById('error-close-btn').addEventListener('click', closeErrorModal);
+
     if (!themeId) return;
 
+    function showErrorModal(title, detail) {
+      document.getElementById('error-modal-title').textContent = title;
+      document.getElementById('error-modal-detail').textContent = detail;
+      document.getElementById('error-modal-overlay').style.display = 'block';
+      document.getElementById('error-modal').style.display = 'block';
+    }
+
+    function closeErrorModal() {
+      document.getElementById('error-modal-overlay').style.display = 'none';
+      document.getElementById('error-modal').style.display = 'none';
+    }
+
     fetch(`/themes/${themeId}`)
-    .then(res => res.json())
+    .then(async res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '오류', errorData?.detail || '테마 정보를 불러올 수 없습니다.');
+        throw new Error('테마 정보 조회 실패');
+      }
+    })
     .then(theme => {
       document.getElementById('theme-name').textContent = theme.name;
       document.getElementById('theme-desc').textContent = theme.description;
@@ -105,7 +179,8 @@
       const img = document.getElementById('theme-image');
       img.src = theme.imageUrl;
       img.style.display = 'block';
-    });
+    })
+    .catch(err => console.error(err));
 
     fetch('/times')
     .then(res => res.json())
@@ -117,11 +192,20 @@
     datePicker.addEventListener('change', () => {
       const selectedDate = datePicker.value;
       fetch(`/times/reserved?themeId=${themeId}&selectedDate=${selectedDate}`)
-      .then(res => res.json())
+      .then(async res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          const errorData = await res.json().catch(() => null);
+          showErrorModal(errorData?.title || '오류', errorData?.detail || '예약 가능 시간을 불러올 수 없습니다.');
+          throw new Error('예약 시간 조회 실패');
+        }
+      })
       .then(bookedTimes => {
         const bookedTimeIds = bookedTimes.map(t => t.id);
         renderTimeButtons(bookedTimeIds);
-      });
+      })
+      .catch(err => console.error(err));
     });
 
     function renderTimeButtons(bookedTimeIds) {
@@ -166,8 +250,8 @@
           alert('예약 성공!');
           location.href = '/';
         } else {
-          const errorMsg = await res.text();
-          alert('예약 실패: ' + (errorMsg || '알 수 없는 오류가 발생했습니다.'));
+          const errorData = await res.json().catch(() => null);
+          showErrorModal(errorData?.title || '예약 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
         }
       });
     });

@@ -72,6 +72,48 @@
     .modal-btn-group {
       margin-top: 20px;
     }
+    /* 에러 모달 스타일 */
+    #error-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border: 2px solid #000;
+      z-index: 1100;
+      text-align: center;
+      min-width: 300px;
+      max-width: 500px;
+    }
+    #error-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1099;
+    }
+    #error-modal-title {
+      color: #d9534f;
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    #error-modal-detail {
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    #error-close-btn {
+      background-color: #333;
+      color: white;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -115,6 +157,14 @@
   </div>
 </div>
 
+<!-- 에러 모달 -->
+<div id="error-modal-overlay"></div>
+<div id="error-modal">
+  <h3 id="error-modal-title"></h3>
+  <p id="error-modal-detail"></p>
+  <button id="error-close-btn">확인</button>
+</div>
+
 <script>
   let currentEditingId = null;
   let allTimes = [];
@@ -129,14 +179,35 @@
 
     document.getElementById('close-modal-btn').addEventListener('click', closeModal);
     document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
+    document.getElementById('error-close-btn').addEventListener('click', closeErrorModal);
   });
+
+  function showErrorModal(title, detail) {
+    document.getElementById('error-modal-title').textContent = title;
+    document.getElementById('error-modal-detail').textContent = detail;
+    document.getElementById('error-modal-overlay').style.display = 'block';
+    document.getElementById('error-modal').style.display = 'block';
+  }
+
+  function closeErrorModal() {
+    document.getElementById('error-modal-overlay').style.display = 'none';
+    document.getElementById('error-modal').style.display = 'none';
+  }
 
   function loadReservations() {
     const username = document.getElementById('username-input').value;
     if (!username) return alert('이름을 입력해주세요.');
 
     fetch(`/api/reservations?username=${username}`)
-    .then(res => res.json())
+    .then(async res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '조회 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
+        throw new Error('조회 실패');
+      }
+    })
     .then(reservations => {
       const list = document.getElementById('reservation-list');
       list.innerHTML = '';
@@ -154,7 +225,8 @@
         `;
         list.appendChild(tr);
       });
-    });
+    })
+    .catch(err => console.error(err));
   }
 
   function cancelReservation(name, date, timeId, themeId) {
@@ -173,8 +245,8 @@
         alert('취소되었습니다.');
         loadReservations();
       } else {
-        const errorMsg = await res.text();
-        alert('취소 실패: ' + (errorMsg || '알 수 없는 오류가 발생했습니다.'));
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '취소 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
       }
     });
   }
@@ -219,8 +291,8 @@
         closeModal();
         loadReservations();
       } else {
-        const errorMsg = await res.text();
-        alert('수정 실패: ' + (errorMsg || '알 수 없는 오류가 발생했습니다.'));
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '수정 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
       }
     });
   }
