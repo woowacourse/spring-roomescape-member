@@ -22,5 +22,5 @@ CREATE TABLE reservation
     theme_id BIGINT       NOT NULL,
     time_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT uq_reservation_date_theme_time UNIQUE (date, theme_id, time_id),
+    CONSTRAINT uq_reservation_date_theme_time UNIQUE (date, theme_id, time_id)
 );

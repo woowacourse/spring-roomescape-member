@@ -12,7 +12,7 @@ public class ReservationQueryService {
 
     private final ReservationQueryRepository queryRepository;
 
-    public boolean existsByTImeId(Long timeId) {
+    public boolean existsByTimeId(Long timeId) {
         return queryRepository.existsByTimeId(timeId);
     }
 
