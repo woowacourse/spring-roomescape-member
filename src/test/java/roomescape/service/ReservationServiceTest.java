@@ -42,7 +42,7 @@ public class ReservationServiceTest {
 
         when(reservationTimeDao.findById(1L)).thenReturn(reservationTime);
         when(reservationDao.insertReservation("이든", date, 1L, 1L))
-                .thenThrow(new ReservationAlreadyExistsException());
+                .thenThrow(new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다."));
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
                         "이든", date, 1L, 1L
@@ -117,11 +117,12 @@ public class ReservationServiceTest {
     void 존재하지_않는_시간에_대한_예약_생성은_불가능하다() {
         LocalDate date = LocalDate.of(2026, 12, 31);
 
-        when(reservationTimeDao.findById(1L)).thenThrow(new ReservationTimeNotFoundException());
+        when(reservationTimeDao.findById(1L)).thenThrow(new ReservationTimeNotFoundException("해당 시간을 찾을 수 없습니다."));
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
-                "이든", date, 1L, 1L
-        ))).isInstanceOf(ReservationTimeNotFoundException.class);
+                "이든", date, 1L, 1L)))
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessage("해당 시간을 찾을 수 없습니다.");
     }
 
     @Test
@@ -132,7 +133,8 @@ public class ReservationServiceTest {
         when(reservationTimeDao.findById(1L)).thenReturn(reservationTime);
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
-                "이든", date, 1L, 1L
-        ))).isInstanceOf(PastReservationTimeException.class);
+                "이든", date, 1L, 1L)))
+                .isInstanceOf(PastReservationTimeException.class)
+                .hasMessage("이전 날짜는 예약할 수 없습니다.");
     }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularTheme;
 import roomescape.exception.ThemeInUseException;
+import roomescape.exception.ThemeNotFoundException;
 
 @Repository
 public class ThemeDao {
@@ -40,8 +42,12 @@ public class ThemeDao {
     }
 
     public Theme findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        try {
+            String sql = "SELECT * FROM theme WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ThemeNotFoundException("해당 테마를 찾을 수 없습니다.");
+        }
     }
 
     public List<Theme> findAllThemes() {
@@ -69,7 +75,7 @@ public class ThemeDao {
         try {
             return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ThemeInUseException();
+            throw new ThemeInUseException("해당 테마에 예약이 존재합니다.");
         }
     }
 

@@ -53,7 +53,8 @@ public class ReservationControllerTest {
                 .body(reservationParams(Map.of("date", "2026-01-01")))
                 .when().post("/api/v1/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("errorCode", is("INVALID_RESERVATION_TIME"));
     }
 
     @Test
@@ -70,7 +71,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
-                .body("errorCode", is("BAD_REQUEST"));
+                .body("errorCode", is("INVALID_INPUT_VALUE"));
+    }
+
+    @Test
+    void 예약_추가_시_해당_날짜_시간_테마에_예약이_있다면_409를_반환한다() {
+        Map<String, Object> params = reservationParams();
+        createReservation(params);
+        params.put("name", "브리");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("status", is(409))
+                .body("errorCode", is("DUPLICATE_RESERVATION"));
     }
 
     @Test
@@ -118,7 +135,8 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/api/v1/reservations/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", is("RESERVATION_NOT_FOUND"));
     }
 
     @Test
@@ -166,7 +184,29 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
-                .body("errorCode", is("UNSATISFIED_PARAMETERS"));
+                .body("errorCode", is("INVALID_PARAMETER_CONDITION"));
+    }
+
+    @Test
+    void 형식이_잘못된_JSON을_전달하면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{ \"name\": \"브라운\", \"date\": \"2026-12-31\", \"timeId\": 1, \"themeId\": 1") // 닫는 괄호 누락
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("MALFORMED_JSON"));
+    }
+
+    @Test
+    void 지원하지_않는_미디어_타입으로_요청하면_415를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.TEXT)
+                .body("plain text body")
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(415)
+                .body("errorCode", is("UNSUPPORTED_MEDIA_TYPE"));
     }
 
     private Map<String, Object> reservationParams() {

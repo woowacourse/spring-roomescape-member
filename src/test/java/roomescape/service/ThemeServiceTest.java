@@ -23,15 +23,17 @@ public class ThemeServiceTest {
     @Test
     void 없는_테마는_삭제할_수_없다() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(ThemeNotFoundException.class)
+                .hasMessage("해당 테마를 찾을 수 없습니다.");
     }
 
     @Test
     void 예약이_있는_테마는_삭제할_수_없다() {
-        when(themeDao.delete(1L)).thenThrow(new ThemeInUseException());
+        when(themeDao.delete(1L)).thenThrow(new ThemeInUseException("해당 테마에 예약이 존재합니다."));
 
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(ThemeInUseException.class);
+                .isInstanceOf(ThemeInUseException.class)
+                .hasMessage("해당 테마에 예약이 존재합니다.");
 
         verify(themeDao).delete(1L);
     }

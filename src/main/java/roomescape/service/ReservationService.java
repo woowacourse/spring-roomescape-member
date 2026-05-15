@@ -69,13 +69,13 @@ public class ReservationService {
 
     private void validateNotPastDate(LocalDateTime dateTime) {
         if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new PastReservationTimeException();
+            throw new PastReservationTimeException("이전 날짜는 예약할 수 없습니다.");
         }
     }
 
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
-            throw new ReservationNotFoundException();
+            throw new ReservationNotFoundException("해당 예약을 찾을 수 없습니다.");
         }
     }
 }

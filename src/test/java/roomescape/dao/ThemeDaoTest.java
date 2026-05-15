@@ -69,7 +69,8 @@ public class ThemeDaoTest {
         reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, themeId);
 
         assertThatThrownBy(() -> themeDao.delete(themeId))
-                .isInstanceOf(ThemeInUseException.class);
+                .isInstanceOf(ThemeInUseException.class)
+                .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 
     @Test

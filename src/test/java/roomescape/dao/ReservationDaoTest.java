@@ -46,7 +46,8 @@ public class ReservationDaoTest {
         reservationDao.insertReservation("이든", date, timeId, themeId);
 
         assertThatThrownBy(() -> reservationDao.insertReservation("이든", date, timeId, themeId))
-                .isInstanceOf(ReservationAlreadyExistsException.class);
+                .isInstanceOf(ReservationAlreadyExistsException.class)
+                .hasMessage("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다.");
     }
 
     @Test
@@ -54,9 +55,10 @@ public class ReservationDaoTest {
         Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(10, 0));
         Long nonExistentThemeId = 999L;
 
-        assertThatThrownBy(() ->
-                reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, nonExistentThemeId)
-        ).isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> reservationDao.insertReservation(
+                "이든", LocalDate.of(2026, 5, 6), timeId, nonExistentThemeId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 시간, 테마를 찾을 수 없습니다.");
     }
 
     @Test
@@ -64,9 +66,10 @@ public class ReservationDaoTest {
         Long nonExistentTimeId = 999L;
         Long themeId = themeDao.insertTheme("테마", "설명", "url");
 
-        assertThatThrownBy(() ->
-                reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), nonExistentTimeId, themeId)
-        ).isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> reservationDao.insertReservation(
+                "이든", LocalDate.of(2026, 5, 6), nonExistentTimeId, themeId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 시간, 테마를 찾을 수 없습니다.");
     }
 
     @Test

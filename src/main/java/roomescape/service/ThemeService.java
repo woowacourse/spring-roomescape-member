@@ -42,7 +42,7 @@ public class ThemeService {
 
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
-            throw new ThemeNotFoundException();
+            throw new ThemeNotFoundException("해당 테마를 찾을 수 없습니다.");
         }
     }
 }

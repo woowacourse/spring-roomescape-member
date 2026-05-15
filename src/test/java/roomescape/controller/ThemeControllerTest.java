@@ -72,7 +72,7 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
-                .body("errorCode", is("UNSATISFIED_PARAMETERS"))
+                .body("errorCode", is("INVALID_PARAMETER_CONDITION"))
                 .body("message", containsString("요청 파라미터 조건이 맞지 않습니다"));
     }
 }

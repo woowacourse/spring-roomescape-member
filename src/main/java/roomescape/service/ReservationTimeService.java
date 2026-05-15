@@ -37,7 +37,7 @@ public class ReservationTimeService {
 
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
-            throw new ReservationTimeNotFoundException();
+            throw new ReservationTimeNotFoundException("해당 시간을 찾을 수 없습니다.");
         }
     }
 }

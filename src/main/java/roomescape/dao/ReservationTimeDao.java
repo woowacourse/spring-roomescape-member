@@ -29,7 +29,7 @@ public class ReservationTimeDao {
             String sql = "SELECT id, start_at from reservation_time WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ReservationTimeNotFoundException();
+            throw new ReservationTimeNotFoundException("해당 시간을 찾을 수 없습니다.");
         }
     }
 
@@ -58,7 +58,7 @@ public class ReservationTimeDao {
         try {
             return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ReservationTimeInUseException();
+            throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
         }
     }
 

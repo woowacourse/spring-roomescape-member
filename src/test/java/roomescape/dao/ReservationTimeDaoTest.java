@@ -45,7 +45,8 @@ public class ReservationTimeDaoTest {
         reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, themeId);
 
         assertThatThrownBy(() -> reservationTimeDao.delete(timeId))
-                .isInstanceOf(ReservationTimeInUseException.class);
+                .isInstanceOf(ReservationTimeInUseException.class)
+                .hasMessage("해당 시간에 예약이 존재합니다.");
     }
 
     @Test
@@ -62,6 +63,7 @@ public class ReservationTimeDaoTest {
     @Test
     void 존재하지_않은_시간을_조회하면_예외가_발생한다() {
         assertThatThrownBy(() -> reservationTimeDao.findById(1L))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessage("해당 시간을 찾을 수 없습니다.");
     }
 }

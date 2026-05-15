@@ -83,7 +83,8 @@ public class AdminReservationTimeControllerTest {
                 .body(reservationParams(Map.of("timeId", 1)))
                 .when().post("/api/v1/reservations")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", is("DUPLICATE_RESERVATION"));
     }
 
 
@@ -105,7 +106,8 @@ public class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/api/v1/admin/times/4")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", is("RESERVATION_TIME_NOT_FOUND"));
     }
 
     @Test
@@ -115,7 +117,8 @@ public class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/api/v1/admin/times/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", is("RESERVATION_TIME_IN_USE"));
 
     }
 
@@ -128,7 +131,7 @@ public class AdminReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
-                .body("errorCode", is("BAD_REQUEST"));
+                .body("errorCode", is("INVALID_INPUT_VALUE"));
     }
 
     @Test

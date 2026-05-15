@@ -19,24 +19,47 @@ import java.util.Arrays;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InUseException.class)
+    public ResponseEntity<ErrorResponse> handleInUse(InUseException e, HttpServletRequest request) {
+        String errorCode = convertToErrorCode(e.getClass().getSimpleName(), "InUseException", "IN_USE");
+        return createErrorResponse(
+                HttpStatus.CONFLICT,
+                e.getMessage(),
+                errorCode,
+                request.getRequestURI()
+        );
+    }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Void> handleNotFound() {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e, HttpServletRequest request) {
+        String errorCode = convertToErrorCode(e.getClass().getSimpleName(), "NotFoundException", "NOT_FOUND");
+        return createErrorResponse(
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                errorCode,
+                request.getRequestURI()
+        );
     }
 
     @ExceptionHandler(PastReservationTimeException.class)
-    public ResponseEntity<Void> handlePastReservationTime() {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(InUseException.class)
-    public ResponseEntity<Void> handleInUse() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public ResponseEntity<ErrorResponse> handlePastReservationTime(PastReservationTimeException e, HttpServletRequest request) {
+        return createErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                "INVALID_RESERVATION_TIME",
+                request.getRequestURI()
+        );
     }
 
     @ExceptionHandler(ReservationAlreadyExistsException.class)
-    public ResponseEntity<Void> handleReservationAlreadyExists() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public ResponseEntity<ErrorResponse> handleReservationAlreadyExists(ReservationAlreadyExistsException e,
+                                                                        HttpServletRequest request) {
+        return createErrorResponse(
+                HttpStatus.CONFLICT,
+                e.getMessage(),
+                "DUPLICATE_RESERVATION",
+                request.getRequestURI()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -65,7 +88,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e,
                                                                           HttpServletRequest request) {
         String message = String.format("파라미터 '%s'의 타입이 일치하지 않습니다. 입력값: '%s'", e.getName(), e.getValue());
-        return createErrorResponse(HttpStatus.BAD_REQUEST, message, "TYPE_MISMATCH", request.getRequestURI());
+        return createErrorResponse(HttpStatus.BAD_REQUEST,
+                message,
+                "TYPE_MISMATCH",
+                request.getRequestURI()
+        );
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -130,5 +157,14 @@ public class GlobalExceptionHandler {
                 path
         );
         return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    private String convertToErrorCode(String className, String suffix, String defaultError) {
+        String domain = className.replace(suffix, "");
+        if (domain.isEmpty()) {
+            return defaultError;
+        }
+        String snakeCaseDomain = domain.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+        return snakeCaseDomain + "_" + defaultError;
     }
 }

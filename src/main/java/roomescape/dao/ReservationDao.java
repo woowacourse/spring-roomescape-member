@@ -87,9 +87,9 @@ public class ReservationDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationAlreadyExistsException();
+            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다.");
         } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException();
+            throw new NotFoundException("해당 시간, 테마를 찾을 수 없습니다.");
         }
 
         return keyHolder.getKey().longValue();

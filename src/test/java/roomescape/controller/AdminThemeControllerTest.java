@@ -49,7 +49,8 @@ public class AdminThemeControllerTest {
                 .body(themeParams())
                 .when().delete("/api/v1/admin/themes/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("errorCode", is("THEME_NOT_FOUND"));
     }
 
     @Test
@@ -63,7 +64,8 @@ public class AdminThemeControllerTest {
                 .body(Map.of("userName", "ADMIN"))
                 .when().delete("/api/v1/admin/themes/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", is("THEME_IN_USE"));
     }
 
     @Test
@@ -79,7 +81,7 @@ public class AdminThemeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("status", is(400))
-                .body("errorCode", is("BAD_REQUEST"));
+                .body("errorCode", is("INVALID_INPUT_VALUE"));
     }
 
     @Test
