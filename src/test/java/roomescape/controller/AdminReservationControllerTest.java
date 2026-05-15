@@ -63,10 +63,10 @@ class AdminReservationControllerTest {
     }
 
     @Nested
-    class 예약을_취소한다 {
+    class 예약을_삭제한다 {
 
         @Test
-        void 식별자를_기반으로_예약을_취소한다() {
+        void 식별자를_기반으로_예약을_삭제한다() {
             RestAssured.given().log().all()
                     .when().delete("/admin/reservations/" + FASTER_RESERVATION.id())
                     .then().log().all()

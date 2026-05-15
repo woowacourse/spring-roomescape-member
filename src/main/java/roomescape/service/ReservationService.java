@@ -92,7 +92,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(EntityId reservationId, String name) {
+    public void cancel(EntityId reservationId, String name) {
         Reservation reservation = findReservationById(reservationId);
         validateNameEquality(reservation, name);
 

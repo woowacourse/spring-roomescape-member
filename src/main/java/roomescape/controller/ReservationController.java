@@ -71,7 +71,7 @@ public class ReservationController {
             @RequestParam String name,
             @PathVariable UUID id
     ) {
-        service.delete(EntityId.fromUuid(id), name);
+        service.cancel(EntityId.fromUuid(id), name);
 
         return ResponseEntity.noContent().build();
     }
