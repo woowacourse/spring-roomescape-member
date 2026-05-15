@@ -3,18 +3,20 @@ package roomescape.common.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.dto.ErrorDetail;
+import roomescape.common.dto.InvalidParam;
 import roomescape.common.exception.ErrorInformation;
 import roomescape.common.exception.GlobalExceptionInformation;
 import roomescape.common.exception.RoomEscapeException;
 import roomescape.common.validation.exception.RequestValidationException;
+
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,6 +25,33 @@ public class GlobalExceptionHandler {
     private static final String EXCEPTION_LOG_FORMAT = "[{}] {}";
     private static final String DATA_INTEGRITY_EXCEPTION_LOG_FORMAT = "[{}] 데이터 무결성 예외 발생";
     private static final String UNKNOWN_EXCEPTION_LOG_FORMAT = "[{}] 예상치 못한 예외 발생";
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDetail> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException e
+    ) {
+        ErrorInformation errorInformation = GlobalExceptionInformation.REQUEST_VALIDATION_FAILED;
+
+        List<InvalidParam> invalidParams = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> new InvalidParam(
+                        fieldError.getField(),
+                        fieldError.getDefaultMessage()
+                ))
+                .toList();
+
+        log.info(EXCEPTION_LOG_FORMAT, errorInformation.getErrorCode(), invalidParams);
+
+        ErrorDetail errorDetail = ErrorDetail.of(
+                errorInformation,
+                invalidParams
+        );
+
+        return ResponseEntity
+                .status(errorInformation.getHttpStatus())
+                .body(errorDetail);
+    }
 
     @ExceptionHandler(RoomEscapeException.class)
     public ResponseEntity<ErrorDetail> handleRoomEscapeException(RoomEscapeException e) {
