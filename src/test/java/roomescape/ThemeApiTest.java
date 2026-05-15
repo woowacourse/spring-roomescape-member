@@ -138,6 +138,21 @@ class ThemeApiTest {
     }
 
     @Test
+    void 빈_이름으로_테마_추가하면_400() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "");
+        params.put("description", "무서운 테마");
+        params.put("thumbnailImageUrl", "https://example.com/horror.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 테마_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "SF");

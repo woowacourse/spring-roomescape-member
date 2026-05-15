@@ -203,6 +203,60 @@ class ReservationApiTest {
     }
 
     @Test
+    void 빈_이름으로_예약하면_400() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", "2026-08-05");
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 이름이_누락된_요청으로_예약하면_400() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-08-05");
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void timeId가_누락된_요청으로_예약하면_400() {
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", "2026-08-05");
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 범위를_벗어난_월로_예약하면_400() {
         Integer timeId = createTime("11:00");
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");

@@ -100,6 +100,18 @@ class ReservationTimeApiTest {
     }
 
     @Test
+    void startAt이_누락된_요청으로_시간_추가하면_400() {
+        Map<String, String> params = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 가용_시간_조회_등록된_시간_없음() {
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
 
