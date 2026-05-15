@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> add(
-            @RequestBody ReservationRequestDTO request) {
+            @Valid @RequestBody ReservationRequestDTO request) {
         ReservationResponseDTO saved = reservationService.addReservation(request);
         return ResponseEntity.created(
                 URI.create("/reservations/" + saved.id())).build();
