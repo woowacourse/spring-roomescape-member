@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.exception.DuplicateReservationException;
 import roomescape.domain.reservation.exception.PastReservationDateException;
+import roomescape.domain.reservation.exception.ReservationOwnerMismatchException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
@@ -80,6 +81,18 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationBy(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+    public void cancelReservationBy(Long id, String username) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "해당 id의 Reservation이 존재하지 않습니다. reservationId=" + id));
+
+        if (!reservation.isOwnedBy(username)) {
+            throw new ReservationOwnerMismatchException();
+        }
+
         reservationRepository.deleteById(id);
     }
 

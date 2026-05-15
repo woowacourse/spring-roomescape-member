@@ -51,4 +51,8 @@ public class Reservation {
     public ReservationTime getTime() {
         return time;
     }
+
+    public boolean isOwnedBy(String username) {
+        return this.username.equals(username);
+    }
 }

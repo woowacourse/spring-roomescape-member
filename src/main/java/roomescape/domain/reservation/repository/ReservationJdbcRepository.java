@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.repository;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -38,6 +40,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     private static final String FIND_RESERVATIONS_BY_USERNAME_QUERY = FIND_ALL_RESERVATIONS_WITH_TIME_QUERY + """
             WHERE r.username = :username
+            """;
+
+    private static final String FIND_RESERVATION_BY_ID_QUERY = FIND_ALL_RESERVATIONS_WITH_TIME_QUERY + """
+            WHERE r.id = :id
             """;
 
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
@@ -84,6 +90,24 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 parameters,
                 reservationWithTimeRowMapper()
         );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue("id", id);
+
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    FIND_RESERVATION_BY_ID_QUERY,
+                    parameters,
+                    reservationWithTimeRowMapper()
+            );
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override

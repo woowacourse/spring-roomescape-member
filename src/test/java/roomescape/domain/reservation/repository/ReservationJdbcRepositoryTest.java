@@ -71,6 +71,20 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("ID로 예약을 조회한다.")
+    void findByIdTest() {
+        // when
+        Reservation reservation = reservationRepository.findById(1L).get();
+
+        // then
+        assertThat(reservation.getId()).isEqualTo(1L);
+        assertThat(reservation.getUsername()).isEqualTo("흑곰");
+        assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
+        assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reservation.getTheme().getName()).isEqualTo("워너비");
+    }
+
+    @Test
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given

@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.exception.DuplicateReservationException;
 import roomescape.domain.reservation.exception.PastReservationDateException;
+import roomescape.domain.reservation.exception.ReservationOwnerMismatchException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
@@ -270,5 +271,44 @@ class ReservationServiceTest {
 
         // then
         verify(reservationRepository).deleteById(reservationId);
+    }
+
+    @Test
+    @DisplayName("사용자는 본인의 예약을 취소한다.")
+    void cancelReservationBy() {
+        // given
+        Long reservationId = 1L;
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(13, 0));
+        Reservation reservation = new Reservation(1L, username, theme, LocalDate.of(9999, 1, 1), time);
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        // when
+        reservationService.cancelReservationBy(reservationId, username);
+
+        // then
+        verify(reservationRepository).findById(reservationId);
+        verify(reservationRepository).deleteById(reservationId);
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약을 취소할 수 없다.")
+    void cancelReservationBy_throwsException_whenUsernameDoesNotMatch() {
+        // given
+        Long reservationId = 1L;
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(1L, "브라운", theme, LocalDate.of(9999, 4, 30), time);
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelReservationBy(reservationId, "다른사용자"))
+                .isInstanceOf(ReservationOwnerMismatchException.class)
+                .hasMessageContaining("본인의 예약만 취소할 수 있습니다.");
+
+        verify(reservationRepository).findById(reservationId);
     }
 }

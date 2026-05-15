@@ -97,8 +97,21 @@ class ReservationControllerTest {
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약을 삭제할 수 없다.")
+    void deleteReservation_throwsException_whenUsernameDoesNotMatch() {
+        RestAssured.given().log().all()
+                .queryParam("username", "민준")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
     }
 }
