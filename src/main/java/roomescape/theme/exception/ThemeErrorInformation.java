@@ -17,6 +17,7 @@ public enum ThemeErrorInformation implements ErrorInformation {
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "THEME_005", "테마를 찾을 수 없습니다."),
     THEME_ALREADY_EXISTS(HttpStatus.CONFLICT, "THEME_006", "이미 등록된 테마입니다."),
     THEME_STATUS_UPDATE_FAILED(HttpStatus.BAD_REQUEST, "THEME_007", "테마 활성화/비활성화 상태 변경에 실패했습니다."),
+    INACTIVE_THEME_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "THEME_008", "해당 테마은 비활성화 되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -3,8 +3,10 @@ package roomescape.theme.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.theme.exception.ThemeException;
 
+import static roomescape.date.exception.ReservationDateErrorInformation.INACTIVE_DATE_NOT_ALLOWED;
 import static roomescape.theme.exception.ThemeErrorInformation.*;
 
 @Getter
@@ -69,6 +71,12 @@ public class Theme {
 
     public void updateStatus(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public void validateIsInactive() {
+        if (!isActive) {
+            throw new ThemeException(INACTIVE_THEME_NOT_ALLOWED);
+        }
     }
 
 }

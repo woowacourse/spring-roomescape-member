@@ -53,8 +53,13 @@ public class ReservationService {
     @Transactional
     public Reservation reserve(ReservationSaveCommand command) {
         ReservationTime reservationTime = getReservationTime(command.timeId());
+        reservationTime.validateIsInactive();
+
         ReservationDate reservationDate = getReservationDate(command.dateId());
+        reservationDate.validateIsInactive();
+
         Theme theme = getTheme(command.themeId());
+        theme.validateIsInactive();
 
         validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme.getId());
         return reservationRepository.save(
@@ -81,8 +86,12 @@ public class ReservationService {
     @Transactional
     public Reservation changeSchedule(ReservationChangeCommand command) {
         Reservation reservation = getReservation(command.id());
-        ReservationDate newDate = getReservationDate(command.dateId());
         ReservationTime newTime = getReservationTime(command.timeId());
+        newTime.validateIsInactive();
+
+        ReservationDate newDate = getReservationDate(command.dateId());
+        newDate.validateIsInactive();
+
         validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
 
         reservation.changeSchedule(command.requesterName(), newDate, newTime);
@@ -93,8 +102,12 @@ public class ReservationService {
     @Transactional
     public Reservation changeScheduleByManager(ReservationChangeCommand command) {
         Reservation reservation = getReservation(command.id());
-        ReservationDate newDate = getReservationDate(command.dateId());
         ReservationTime newTime = getReservationTime(command.timeId());
+        newTime.validateIsInactive();
+
+        ReservationDate newDate = getReservationDate(command.dateId());
+        newDate.validateIsInactive();
+
         validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
 
         reservation.changeScheduleByManager(newDate, newTime);

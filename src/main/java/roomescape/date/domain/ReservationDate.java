@@ -47,4 +47,10 @@ public class ReservationDate {
         }
     }
 
+    public void validateIsInactive() {
+        if (!isActive) {
+            throw new ReservationDateException(INACTIVE_DATE_NOT_ALLOWED);
+        }
+    }
+
 }

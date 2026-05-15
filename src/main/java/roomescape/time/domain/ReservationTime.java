@@ -3,12 +3,13 @@ package roomescape.time.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.time.exception.ReservationTimeException;
 
 import java.time.LocalTime;
 
-import static roomescape.time.exception.ReservationTimeErrorInformation.ID_IS_NULL;
-import static roomescape.time.exception.ReservationTimeErrorInformation.START_AT_IS_NULL;
+import static roomescape.date.exception.ReservationDateErrorInformation.INACTIVE_DATE_NOT_ALLOWED;
+import static roomescape.time.exception.ReservationTimeErrorInformation.*;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -43,6 +44,12 @@ public class ReservationTime {
 
     public void updateStatus(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public void validateIsInactive() {
+        if (!isActive) {
+            throw new ReservationTimeException(INACTIVE_TIME_NOT_ALLOWED);
+        }
     }
 
 }
