@@ -43,11 +43,8 @@
     <div class="mb-3">
       <label class="form-label">선택한 테마</label>
       <select id="themeSelect" class="form-select" disabled>
-        <!-- JS가 selectedTheme.name을 여기에 채울 것입니다 -->
         <option id="themeOption">테마 로딩 중...</option>
       </select>
-
-      <!-- 폼 전송 시 themeId가 담길 곳 (ID를 'themeId'로 통일) -->
       <input type="hidden" id="themeId">
       <div id="themeIdError" class="field-error"></div>
     </div>
@@ -68,7 +65,6 @@
 </div>
 
 <script>
-  // 공통 함수: 요소의 값을 안전하게 가져오기
   function getVal(id) {
     const el = document.getElementById(id);
     if (!el) {
@@ -151,13 +147,11 @@
       return;
     }
 
-    // 1. 전송용 hidden input에 URL의 themeId를 즉시 주입
     const hiddenInput = document.getElementById('themeId');
     if (hiddenInput) {
       hiddenInput.value = themeIdFromUrl;
     }
 
-    // 2. 테마 정보 fetch
     try {
       const themes = await requestJson(`/api/themes`);
       const selectedTheme = themes.find(t => t.id == themeIdFromUrl);
@@ -166,7 +160,7 @@
         const themeOption = document.getElementById('themeOption');
         if (themeOption) {
           themeOption.innerText = selectedTheme.name;
-          themeOption.value = selectedTheme.id; // option에도 id 부여
+          themeOption.value = selectedTheme.id;
         }
       } else {
         showReservationError({
@@ -180,10 +174,9 @@
     }
   });
 
-  // 날짜 변경 시 호출
   async function loadTimes() {
     const date = getVal('date');
-    const themeId = getVal('themeId'); // hidden input 값 읽기
+    const themeId = getVal('themeId');
 
     if (!date || !themeId) return;
 
@@ -206,7 +199,6 @@
     }
   }
 
-  // 예약 생성 요청
   async function submitReservation() {
     clearReservationErrors();
 
@@ -229,7 +221,7 @@
         body: JSON.stringify(body)
       });
 
-      location.href = '/'; // reload 대신 메인 이동 권장
+      location.href = '/';
     } catch (error) {
       console.error("전송 중 오류:", error);
       showReservationError(error.data || { message: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
