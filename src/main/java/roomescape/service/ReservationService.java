@@ -54,11 +54,8 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationCreateRequest data) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(data.timeId())
-                .orElseThrow(ReservationTimeNotFoundException::new);
-
-        final Theme theme = themeRepository.findById(data.themeId())
-                .orElseThrow(ThemeNotFoundException::new);
+        final ReservationTime reservationTime = getReservationTime(data.timeId());
+        final Theme theme = getTheme(data.themeId());
 
         final Reservation reservation = Reservation.create(
                 data.name(),
@@ -74,8 +71,7 @@ public class ReservationService {
     }
 
     public void cancel(final Long reservationId) {
-        final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ReservationNotFoundException::new);
+        final Reservation reservation = getReservation(reservationId);
 
         reservation.validateCancelableByCustomer(LocalDate.now(clock));
 
@@ -83,8 +79,7 @@ public class ReservationService {
     }
 
     public void delete(final Long reservationId) {
-        final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ReservationNotFoundException::new);
+        final Reservation reservation = getReservation(reservationId);
 
         reservationRepository.deleteById(reservation.getId());
     }
@@ -99,5 +94,20 @@ public class ReservationService {
                 .toList();
 
         return new ReservationOptionResponse(dates, themes);
+    }
+
+    private Reservation getReservation(final Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+    }
+
+    private ReservationTime getReservationTime(final Long reservationTimeId) {
+        return reservationTimeRepository.findById(reservationTimeId)
+                .orElseThrow(ReservationTimeNotFoundException::new);
+    }
+
+    private Theme getTheme(final Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
     }
 }
