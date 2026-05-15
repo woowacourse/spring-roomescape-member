@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
     THEME_CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 테마 이름입니다."),
+    THEME_IN_USE(HttpStatus.CONFLICT, "해당 테마에 예약이 존재하여 삭제할 수 없습니다."),
 
     RESERVATION_ALREADY_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "과거 예약은 취소 및 변경 불가 합니다."),
     RESERVATION_CREATE_TO_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "과거 날짜와 시간으로는 예약할 수 없습니다."),

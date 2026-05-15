@@ -133,4 +133,10 @@ public class ReservationDao {
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
+
+    public Boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
 }
