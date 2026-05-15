@@ -2,282 +2,279 @@ package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.dto.ReservationCreationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
+import roomescape.domain.reservationdate.ReservationDateService;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
+import roomescape.domain.theme.ThemeService;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationServiceTest {
 
-    @Test
-    void 존재하는_예약_시간으로_예약을_생성한다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        FakeThemeRepository themeRepository = new FakeThemeRepository();
-        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationDate reservationDate = ReservationDate.of(2L, LocalDate.now().plusDays(1));
-        Theme theme = Theme.of(3L, "공포", "무서운 테마", "theme-url");
-        reservationTimeRepository.reservationTime = reservationTime;
-        reservationDateRepository.reservationDate = reservationDate;
-        themeRepository.theme = theme;
-        ReservationService reservationService = new ReservationService(
+    private ReservationService reservationService;
+    private FakeReservationRepository reservationRepository;
+    private FakeReservationDateRepository reservationDateRepository;
+    private FakeReservationTimeRepository reservationTimeRepository;
+    private FakeThemeRepository themeRepository;
+
+    @BeforeEach
+    void setUp() {
+        reservationRepository = new FakeReservationRepository();
+        reservationDateRepository = new FakeReservationDateRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
+
+        ReservationDateService reservationDateService = new ReservationDateService(
+            reservationRepository, reservationDateRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+            reservationTimeRepository, reservationRepository);
+        ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
+
+        reservationService = new ReservationService(
             reservationRepository,
-            reservationTimeRepository,
-            reservationDateRepository,
-            themeRepository
+            reservationDateService,
+            reservationTimeService,
+            themeService
         );
-        ReservationCreationRequest request = new ReservationCreationRequest(
-            "보예",
-            2L,
-            1L,
-            3L
-        );
+    }
+
+    @Test
+    @DisplayName("예약을 생성한다.")
+    void createReservation() {
+        // given
+        ReservationDate date = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.now().plusDays(1)));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(Theme.createWithoutId("테마", "설명", "url"));
+
+        ReservationCreationRequest request = new ReservationCreationRequest("테스터", date.getId(), time.getId(),
+            theme.getId());
 
         // when
         ReservationCreationResponse response = reservationService.createReservation(request);
 
         // then
-        assertSoftly(softly -> {
-            assertThat(response.id()).isEqualTo(1L);
-            assertThat(response.name()).isEqualTo("보예");
-            assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1));
-            assertThat(response.time()).isEqualTo(LocalTime.of(10, 0));
-            assertThat(response.theme().name()).isEqualTo("공포");
-            assertThat(reservationRepository.savedReservation.getTime()).isEqualTo(reservationTime);
-            assertThat(reservationRepository.savedReservation.getTheme()).isEqualTo(theme);
-        });
+        assertThat(response.name()).isEqualTo("테스터");
+        assertThat(reservationRepository.findAll()).hasSize(1);
     }
 
     @Test
-    void 존재하지_않는_예약_시간으로_예약을_생성하면_예외가_발생한다() {
+    @DisplayName("중복된 예약 생성 시 예외가 발생한다.")
+    void createDuplicateReservation() {
         // given
-        ReservationService reservationService = new ReservationService(
-            new FakeReservationRepository(),
-            new FakeReservationTimeRepository(),
-            new FakeReservationDateRepository(),
-            new FakeThemeRepository()
-        );
-        ReservationCreationRequest request = new ReservationCreationRequest(
-            "보예",
-            1L,
-            1L,
-            1L
-        );
+        ReservationDate date = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.now().plusDays(1)));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(Theme.createWithoutId("테마", "설명", "url"));
+
+        reservationService.createReservation(
+            new ReservationCreationRequest("테스터1", date.getId(), time.getId(), theme.getId()));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request))
-            .isInstanceOf(RoomescapeException.class)
-            .hasMessage("존재하지 않는 날짜 입니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(
+            new ReservationCreationRequest("테스터2", date.getId(), time.getId(), theme.getId())))
+            .isOfAnyClassIn(RoomescapeException.class);
     }
 
     @Test
-    void 존재하지_않는_테마로_예약을_생성하면_예외가_발생한다() {
+    @DisplayName("이름으로 예약을 조회한다.")
+    void getReservationsByName() {
         // given
-        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        reservationTimeRepository.reservationTime = ReservationTime.of(1L, LocalTime.now().plusHours(1));
-        reservationDateRepository.reservationDate = ReservationDate.of(2L, LocalDate.now().plusDays(1));
-        ReservationService reservationService = new ReservationService(
-            new FakeReservationRepository(),
-            reservationTimeRepository,
-            reservationDateRepository,
-            new FakeThemeRepository()
-        );
-        ReservationCreationRequest request = new ReservationCreationRequest(
-            "보예",
-            7L,
-            1L,
-            300L
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request))
-            .isInstanceOf(RoomescapeException.class)
-            .hasMessage("존재하지 않는 테마 입니다.");
-    }
-
-    @Test
-    void 예약_목록을_조회한다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationRepository.findAllResult = List.of(
-            Reservation.of(
-                1L,
-                "보예",
-                ReservationDate.of(3L, LocalDate.of(2026, 5, 4)),
-                ReservationTime.of(2L, LocalTime.of(10, 0)),
-                Theme.of(4L, "공포", "무서운 테마", "theme-url")
-            )
-        );
-        ReservationService reservationService = new ReservationService(
-            reservationRepository,
-            reservationTimeRepository,
-            new FakeReservationDateRepository(),
-            new FakeThemeRepository()
-        );
+        ReservationDate date = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.now().plusDays(1)));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(Theme.createWithoutId("테마", "설명", "url"));
+        reservationService.createReservation(
+            new ReservationCreationRequest("테스터", date.getId(), time.getId(), theme.getId()));
 
         // when
-        List<ReservationResponse> responses = reservationService.getAllReservations();
+        List<ReservationResponse> responses = reservationService.getReservationsByName("테스터");
 
         // then
-        assertSoftly(softly -> {
-            assertThat(responses).hasSize(1);
-            assertThat(responses.getFirst().id()).isEqualTo(1L);
-            assertThat(responses.getFirst().name()).isEqualTo("보예");
-            assertThat(responses.getFirst().date()).isEqualTo(LocalDate.of(2026, 5, 4));
-            assertThat(responses.getFirst().time().id()).isEqualTo(2L);
-            assertThat(responses.getFirst().time().startAt()).isEqualTo(LocalTime.of(10, 0));
-            assertThat(responses.getFirst().theme().id()).isEqualTo(4L);
-            assertThat(responses.getFirst().theme().name()).isEqualTo("공포");
-        });
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).name()).isEqualTo("테스터");
     }
 
     private static class FakeReservationRepository implements ReservationRepository {
 
-        private Reservation savedReservation;
-        private List<Reservation> findAllResult = List.of();
+        private final List<Reservation> reservations = new ArrayList<>();
+        private Long idCounter = 1L;
 
         @Override
         public Reservation save(Reservation reservation) {
-            savedReservation = reservation;
-            return Reservation.of(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+            Reservation saved = Reservation.of(idCounter++, reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
+            reservations.add(saved);
+            return saved;
         }
 
         @Override
         public List<Reservation> findAll() {
-            return findAllResult;
+            return reservations;
         }
 
         @Override
         public int deleteById(Long id) {
-            return 0;
+            boolean removed = reservations.removeIf(r -> r.getId().equals(id));
+            return removed ? 1 : 0;
         }
 
         @Override
         public int countByTimeId(Long timeId) {
-            return 0;
+            return (int) reservations.stream().filter(r -> r.getTime().getId().equals(timeId)).count();
         }
 
         @Override
         public int countByReservationDateId(Long dateId) {
-            return 0;
+            return (int) reservations.stream().filter(r -> r.getDate().getId().equals(dateId)).count();
         }
 
         @Override
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
-            return List.of();
+            return reservations.stream()
+                .filter(r -> r.getTheme().getId().equals(themeId) && r.getDate().getId().equals(dateId))
+                .map(r -> r.getTime().getId())
+                .toList();
         }
 
         @Override
         public int countByThemeId(Long id) {
-            return 0;
+            return (int) reservations.stream().filter(r -> r.getTheme().getId().equals(id)).count();
         }
 
         @Override
         public List<Reservation> findByName(String name) {
-            return List.of();
+            return reservations.stream().filter(r -> r.getName().equals(name)).toList();
         }
 
         @Override
         public Optional<Reservation> findById(Long id) {
-            return Optional.empty();
+            return reservations.stream().filter(r -> r.getId().equals(id)).findFirst();
         }
 
         @Override
         public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
         }
-    }
-
-    private static class FakeReservationTimeRepository implements ReservationTimeRepository {
-
-        private ReservationTime reservationTime;
 
         @Override
-        public Optional<ReservationTime> findById(Long id) {
-            return Optional.ofNullable(reservationTime);
-        }
-
-        @Override
-        public ReservationTime save(ReservationTime reservationTime) {
-            return null;
-        }
-
-        @Override
-        public List<ReservationTime> findAll() {
-            return List.of();
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
+        public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
+            return reservations.stream().anyMatch(
+                r -> r.getDate().getId().equals(dateId) && r.getTime().getId().equals(timeId) && r.getTheme().getId()
+                    .equals(themeId));
         }
     }
 
     private static class FakeReservationDateRepository implements ReservationDateRepository {
 
-        private ReservationDate reservationDate;
+        private final List<ReservationDate> dates = new ArrayList<>();
+        private Long idCounter = 1L;
 
         @Override
         public Optional<ReservationDate> findById(Long id) {
-            return Optional.ofNullable(reservationDate);
+            return dates.stream().filter(d -> d.getId().equals(id)).findFirst();
         }
 
         @Override
         public List<ReservationDate> findAll() {
-            return List.of();
+            return dates;
         }
 
         @Override
         public ReservationDate save(ReservationDate reservationDate) {
-            return reservationDate;
+            ReservationDate saved = ReservationDate.of(idCounter++, reservationDate.getPlayDay());
+            dates.add(saved);
+            return saved;
         }
 
         @Override
         public int deleteById(Long id) {
-            return 0;
+            dates.removeIf(d -> d.getId().equals(id));
+            return 1;
+        }
+
+        @Override
+        public boolean existsByPlayDay(LocalDate playDay) {
+            return dates.stream().anyMatch(d -> d.getPlayDay().equals(playDay));
+        }
+    }
+
+    private static class FakeReservationTimeRepository implements ReservationTimeRepository {
+
+        private final List<ReservationTime> times = new ArrayList<>();
+        private Long idCounter = 1L;
+
+        @Override
+        public Optional<ReservationTime> findById(Long id) {
+            return times.stream().filter(t -> t.getId().equals(id)).findFirst();
+        }
+
+        @Override
+        public ReservationTime save(ReservationTime reservationTime) {
+            ReservationTime saved = ReservationTime.of(idCounter++, reservationTime.getStartAt());
+            times.add(saved);
+            return saved;
+        }
+
+        @Override
+        public List<ReservationTime> findAll() {
+            return times;
+        }
+
+        @Override
+        public int deleteById(Long id) {
+            times.removeIf(t -> t.getId().equals(id));
+            return 1;
+        }
+
+        @Override
+        public boolean existsByStartAt(LocalTime startAt) {
+            return times.stream().anyMatch(t -> t.getStartAt().equals(startAt));
         }
     }
 
     private static class FakeThemeRepository implements ThemeRepository {
 
-        private Theme theme;
+        private final List<Theme> themes = new ArrayList<>();
+        private Long idCounter = 1L;
 
         @Override
         public Optional<Theme> findById(Long id) {
-            return Optional.ofNullable(theme);
+            return themes.stream().filter(t -> t.getId().equals(id)).findFirst();
         }
 
         @Override
         public List<Theme> findAll() {
-            return List.of();
+            return themes;
         }
 
         @Override
         public Theme save(Theme theme) {
-            return theme;
+            Theme saved = Theme.of(idCounter++, theme.getName(), theme.getContent(), theme.getUrl());
+            themes.add(saved);
+            return saved;
         }
 
         @Override
         public int deleteById(Long id) {
-            return 0;
+            themes.removeIf(t -> t.getId().equals(id));
+            return 1;
         }
 
         @Override

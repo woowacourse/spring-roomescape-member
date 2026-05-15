@@ -154,6 +154,11 @@ class ReservationDateServiceTest {
         public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
         }
+
+        @Override
+        public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
+            return false;
+        }
     }
 
     private static class FakeReservationDateRepository implements ReservationDateRepository {
@@ -182,6 +187,11 @@ class ReservationDateServiceTest {
         public int deleteById(Long id) {
             deletedId = id;
             return 1;
+        }
+
+        @Override
+        public boolean existsByPlayDay(LocalDate playDay) {
+            return false;
         }
     }
 }

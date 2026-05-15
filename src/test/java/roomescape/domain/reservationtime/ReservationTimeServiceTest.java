@@ -124,6 +124,11 @@ class ReservationTimeServiceTest {
         public Optional<ReservationTime> findById(Long id) {
             return Optional.empty();
         }
+
+        @Override
+        public boolean existsByStartAt(LocalTime startAt) {
+            return false;
+        }
     }
 
     private static class FakeReservationRepository implements ReservationRepository {
@@ -178,6 +183,11 @@ class ReservationTimeServiceTest {
         @Override
         public int updateReservation(Long id, Long dateId, Long timeId) {
             return 0;
+        }
+
+        @Override
+        public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
+            return false;
         }
     }
 }
