@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.apache.coyote.Response;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +53,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        return ResponseEntity.badRequest().body(e.getName() + "요청 값의 형식이 올바르지 않습니다.");
+        return ResponseEntity.badRequest().body(e.getName() + " 값의 형식이 올바르지 않습니다.");
     }
 }
