@@ -33,4 +33,5 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    environment "token", System.getenv("token")
 }
