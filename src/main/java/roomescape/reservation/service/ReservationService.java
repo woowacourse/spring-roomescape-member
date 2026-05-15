@@ -171,6 +171,12 @@ public class ReservationService {
                 reservation.getDate(),
                 reservation.getTime().getStartAt()
         );
-        reservationRepository.deleteById(id);
+
+        int affectedRow = reservationRepository.deleteById(id);
+        int nonAffected = 0;
+
+        if (affectedRow == nonAffected) {
+            throw new ReservationNotFoundException();
+        }
     }
 }

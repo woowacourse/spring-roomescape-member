@@ -8,7 +8,7 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     Optional<Theme> findById(Long id);
 

@@ -67,7 +67,12 @@ public class ReservationTimeService {
         }
 
         try {
-            reservationTimeRepository.deleteById(id);
+            int affectedRow = reservationTimeRepository.deleteById(id);
+            int nonAffected = 0;
+
+            if (affectedRow == nonAffected) {
+                throw new TimeNotFoundException();
+            }
         } catch (DataIntegrityViolationException e) {
             throw new TimeInUseException();
         }

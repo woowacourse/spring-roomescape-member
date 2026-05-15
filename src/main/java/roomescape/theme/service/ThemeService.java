@@ -52,7 +52,12 @@ public class ThemeService {
         }
 
         try {
-            themeRepository.deleteById(id);
+            int affectedRow = themeRepository.deleteById(id);
+            int nonAffected = 0;
+
+            if (affectedRow == nonAffected) {
+                throw new ThemeNotFoundException();
+            }
         } catch (DataIntegrityViolationException e) {
             throw new ThemeInUseException();
         }

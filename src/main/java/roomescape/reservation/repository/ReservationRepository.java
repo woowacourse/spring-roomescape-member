@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     void update(Reservation reservation);
 
