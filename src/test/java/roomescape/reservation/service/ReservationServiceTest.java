@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthorizationException;
+import roomescape.exception.InvalidReservationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.exception.SameScheduleException;
 import roomescape.reservation.dto.ReservationIdResponse;
@@ -88,7 +89,7 @@ class ReservationServiceTest {
         databaseHelper.insertUser(2L, "user2", "USER");
 
         assertThatThrownBy(() -> reservationService.create(2L, scheduleId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
     }
 
@@ -98,7 +99,7 @@ class ReservationServiceTest {
         databaseHelper.insertSchedule(pastScheduleId, THEME_공포.getId(), "2020-01-01 10:00:00", "2020-01-01 12:00:00");
 
         assertThatThrownBy(() -> reservationService.create(USER_1.getId(), pastScheduleId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
     }
 
@@ -212,7 +213,7 @@ class ReservationServiceTest {
         databaseHelper.insertReservation(2L, 2L, 2L);
 
         assertThatThrownBy(() -> reservationService.changeSchedule(reservationId, 2L, currentUserId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
     }
 }

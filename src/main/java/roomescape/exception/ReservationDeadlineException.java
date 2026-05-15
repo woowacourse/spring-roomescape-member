@@ -1,8 +1,10 @@
 package roomescape.exception;
 
-public class ReservationDeadlineException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ReservationDeadlineException extends RoomEscapeException {
 
     public ReservationDeadlineException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

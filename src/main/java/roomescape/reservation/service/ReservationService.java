@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthorizationException;
+import roomescape.exception.InvalidReservationException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -105,11 +106,11 @@ public class ReservationService {
 
     private void validateReservation(Schedule schedule) {
         if (schedule.getStartAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
+            throw new InvalidReservationException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
         }
 
         if (reservationRepository.existsByScheduleId(schedule.getId())) {
-            throw new IllegalArgumentException("해당 시간은 이미 예약이 완료되었습니다.");
+            throw new InvalidReservationException("해당 시간은 이미 예약이 완료되었습니다.");
         }
     }
 }

@@ -3,7 +3,6 @@ package roomescape.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,13 +29,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessExceptions(IllegalArgumentException ex) {
-        log.warn("비즈니스 로직 에러: {}", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationExceptions(DataIntegrityViolationException ex) {
         log.warn("데이터베이스 제약 조건 위반 발생: {}", ex.getMessage());
@@ -51,41 +43,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse("필수 요청 헤더 '" + ex.getHeaderName() + "'가 누락되었습니다."));
     }
 
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthorizationExceptions(AuthorizationException ex) {
-        log.warn("유효하지 않은 접근: {}", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(ex.getMessage()));
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundExceptions(ResourceNotFoundException ex) {
-        log.warn("요청한 리소스를 찾을 수 없음: {}", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
-    }
-
-    @ExceptionHandler(SameScheduleException.class)
-    public ResponseEntity<ErrorResponse> handleSameScheduleExceptions(SameScheduleException ex) {
-        log.warn("동일한 스케줄로 변경 시도: {}", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
-
-    @ExceptionHandler(SameNameException.class)
-    public ResponseEntity<ErrorResponse> handleSameNameExceptions(SameNameException ex) {
-        log.warn("이미 존재하는 이름: {}", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
-
-    @ExceptionHandler(ReservationDeadlineException.class)
-    public ResponseEntity<ErrorResponse> handleReservationDeadlineExceptions(ReservationDeadlineException ex) {
-        log.warn("취소 및 변경 마감 기한 초과: {}", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-    }
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.warn("JSON 형식 오류: {}", ex.getMessage());
@@ -98,6 +55,15 @@ public class GlobalExceptionHandler {
         log.warn("타입 변환 오류: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse("요청 파라미터 또는 헤더의 타입이 올바르지 않습니다."));
+    }
+
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomEscapeException(RoomEscapeException ex) {
+        log.warn("비즈니스 예외 발생: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(ex.getHttpStatus())
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

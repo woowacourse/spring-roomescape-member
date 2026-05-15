@@ -1,8 +1,10 @@
 package roomescape.exception;
 
-public class SameScheduleException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class SameScheduleException extends RoomEscapeException {
 
     public SameScheduleException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,8 +1,10 @@
 package roomescape.exception;
 
-public class AuthorizationException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+
+public class AuthorizationException extends RoomEscapeException {
 
     public AuthorizationException(String message) {
-        super(message);
+        super(message, HttpStatus.FORBIDDEN);
     }
 }
