@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
@@ -23,18 +25,24 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void 존재하지_않는_예약_취소시_400을_반환한다() {
-        RestAssured.given().log().all()
+        Map<String, Object> response = RestAssured.given().log().all()
                 .when().delete("/reservations/999")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("요청한 예약을 찾을 수 없습니다.");
     }
 
     @Test
     void 존재하지_않는_시간_삭제시_400을_반환한다() {
-        RestAssured.given().log().all()
+        Map<String, Object> response = RestAssured.given().log().all()
                 .when().delete("/times/999")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("요청한 시간을 찾을 수 없습니다");
     }
 
     @Test
@@ -45,27 +53,33 @@ class GlobalExceptionHandlerTest {
                 "themeId", 1
         );
 
-        RestAssured.given().log().all()
+        Map<String, Object> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("날짜를 입력해야 합니다.");
     }
 
     @Test
     void 이름이_null인_예약_생성시_400을_반환한다() {
         Map<String, Object> params = Map.of(
-                "date", "2025-06-01",
+                "date", "2027-06-01",
                 "timeId", 1,
                 "themeId", 1
         );
 
-        RestAssured.given().log().all()
+        Map<String, Object> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isNotNull();
     }
 }
