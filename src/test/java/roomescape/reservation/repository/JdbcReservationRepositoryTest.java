@@ -105,7 +105,7 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 목록은 deletedAt이 null인 정보만 조회할 수 있다.")
+    @DisplayName("예약 목록은 삭제되지 않은 예약만 조회할 수 있다.")
     void findAllWithPaging_softDelete() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
@@ -141,12 +141,12 @@ class JdbcReservationRepositoryTest {
                         Reservation::getTime, Reservation::getTheme
                 ).containsExactly(
                         tuple(reservation.getId(), reservation.getGuestName(), reservation.getDate(),
-                        reservation.getTime(), reservation.getTheme())
+                                reservation.getTime(), reservation.getTheme())
                 );
     }
 
     @Test
-    @DisplayName("예약자 이름으로 예약 정보를 조회할 때, deletedAt이 null인 정보만 조회할 수 있다.")
+    @DisplayName("예약자 이름으로 예약 정보를 조회할 때, 삭제되지 않은 예약만 조회할 수 있다.")
     public void findByGuest_softdelete() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
@@ -474,6 +474,7 @@ class JdbcReservationRepositoryTest {
     private Reservation insertDeletedReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
+        LocalDateTime now = LocalDateTime.now();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement("""
                     INSERT INTO reservation (guest_name, date, time_id, theme_id, deleted_at)
@@ -483,7 +484,8 @@ class JdbcReservationRepositoryTest {
             preparedStatement.setDate(2, Date.valueOf(date));
             preparedStatement.setLong(3, time.getId());
             preparedStatement.setLong(4, theme.getId());
-            preparedStatement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(now));
             return preparedStatement;
         }, keyHolder);
 

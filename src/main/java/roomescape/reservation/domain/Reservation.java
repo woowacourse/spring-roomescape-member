@@ -20,28 +20,18 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
-    private final LocalDateTime deletedAt;
 
-    private Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme, LocalDateTime deletedAt) {
+    public Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme) {
         validateReservation(guestName, date, time, theme);
         this.id = id;
         this.guestName = guestName;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.deletedAt = deletedAt;
     }
 
     public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
-        this(guestName, date, time, theme, null);
-    }
-
-    public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme, LocalDateTime deletedAt) {
-        this(null, guestName, date, time, theme, deletedAt);
-    }
-
-    public Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme) {
-        this(id, guestName, date, time, theme, null);
+        this(null, guestName, date, time, theme);
     }
 
     public Reservation withId(Long id) {
@@ -50,7 +40,7 @@ public class Reservation {
             throw new DomainException(RESERVATION_ALREADY_HAS_ID);
         }
 
-        return new Reservation(id, guestName, date, time, theme, deletedAt);
+        return new Reservation(id, guestName, date, time, theme);
     }
 
     private void validateReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
