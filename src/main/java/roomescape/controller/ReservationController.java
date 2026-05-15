@@ -29,10 +29,10 @@ public class ReservationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ReservationsResponseDto getReservations(
-            @RequestParam(value = "name", required = false) String name
+            @RequestParam(value = "name", required = false) MemberName name
     ) {
         if (name != null) {
-            return new ReservationsResponseDto(reservationService.findReservationsByName(new MemberName(name)).stream()
+            return new ReservationsResponseDto(reservationService.findReservationsByName(name).stream()
                     .map(ReservationResponseDto::from)
                     .toList());
         }

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
@@ -63,10 +64,10 @@ public class ReservationTimeController {
     @GetMapping("available")
     @ResponseStatus(HttpStatus.OK)
     public AvailableReservationTimesResponseDto getAvailableTimes(
-            @RequestParam("date") String date,
+            @RequestParam("date") ReservationDate date,
             @RequestParam("themeId") Long themeId
     ) {
-        Map<ReservationTime, Boolean> timesWithAvailability = reservationService.getTimesWithAvailability(LocalDate.parse(date), themeId);
+        Map<ReservationTime, Boolean> timesWithAvailability = reservationService.getTimesWithAvailability(date, themeId);
         return AvailableReservationTimesResponseDto.of(timesWithAvailability);
     }
 }

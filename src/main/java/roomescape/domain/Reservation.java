@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,8 +35,8 @@ public class Reservation {
         return memberName;
     }
 
-    public LocalDate getDateValue() {
-        return date.value();
+    public ReservationDate getDate() {
+        return date;
     }
 
     public ReservationTime getTime() {
@@ -57,15 +59,15 @@ public class Reservation {
         return new Reservation(key, this.memberName, this.date, this.time, this.theme);
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNotPast(date, time.getStartAt());
+    public static Reservation create(MemberName name, ReservationDate date, ReservationTime time, Theme theme) {
+        validateNotPast(date, time);
 
-        return new Reservation(null, new MemberName(name), new ReservationDate(date), time, theme);
+        return new Reservation(null, name, date, time, theme);
     }
 
-    private static void validateNotPast(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거의 날짜와 시간은 예약할 수 없습니다.");
+    private static void validateNotPast(ReservationDate date, ReservationTime time) {
+        if (LocalDateTime.of(date.value(), time.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PAST_DATE_RESERVATION);
         }
     }
 

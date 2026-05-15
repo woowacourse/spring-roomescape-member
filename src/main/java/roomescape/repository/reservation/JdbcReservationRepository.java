@@ -58,7 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName().value());
-            ps.setDate(2, Date.valueOf(reservation.getDateValue()));
+            ps.setDate(2, Date.valueOf(reservation.getDate().value()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;
@@ -177,7 +177,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         int affectedRows = template.update(sql,
                 reservation.getName().value(),
-                Date.valueOf(reservation.getDateValue()),
+                Date.valueOf(reservation.getDate().value()),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId(),
                 reservation.getId()

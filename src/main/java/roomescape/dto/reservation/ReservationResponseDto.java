@@ -15,7 +15,7 @@ public record ReservationResponseDto(
 
     public static ReservationResponseDto from(Reservation reservation) {
         String name = reservation.getName().value();
-        String date = reservation.getDateValue().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String date = reservation.getDate().value().format(DateTimeFormatter.ISO_LOCAL_DATE);
         ReservationTimeResponseDto time = ReservationTimeResponseDto.from(reservation.getTime());
 
         return new ReservationResponseDto(

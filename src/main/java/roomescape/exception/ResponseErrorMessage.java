@@ -6,7 +6,7 @@ public class ResponseErrorMessage {
     private String message;
 
     public ResponseErrorMessage(ErrorCode code) {
-        this.code = code.getCode();
+        this.code = code.name();
         this.message = code.getMessage();
     }
 
