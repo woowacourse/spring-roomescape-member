@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -32,16 +33,35 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     public Reservation reserve(ReservationCreateRequest request) {
         ReservationDate reservationDate = ReservationDate.from(request.getDate());
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
 
         validateFutureDateTime(reservationDate, reservationTime);
-        validateNoDuplicate(request, reservationDate);
+        validateNoDuplicate(request.getTimeId(), request.getThemeId(), reservationDate);
 
         Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
         return reservationRepository.save(reservation);
+    }
+
+    public Reservation update(long reservationId, ReservationUpdateRequest request) {
+        Reservation existing = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+
+        ReservationDate newDate = ReservationDate.from(request.getDate());
+        ReservationTime newTime = reservationTimeService.find(request.getTimeId());
+
+        validateFutureDateTime(newDate, newTime);
+        validateNoDuplicateForUpdate(reservationId, request.getTimeId(), existing.getTheme().getId(), newDate);
+
+        reservationRepository.update(reservationId, newDate.getDate(), request.getTimeId());
+
+        return Reservation.of(reservationId, existing.getName(), newDate, newTime, existing.getTheme());
     }
 
     public void cancel(long reservationId) {
@@ -58,9 +78,19 @@ public class ReservationService {
         }
     }
 
-    private void validateNoDuplicate(ReservationCreateRequest request, ReservationDate reservationDate) {
-        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(), request.getThemeId())
+    private void validateNoDuplicate(Long timeId, Long themeId, ReservationDate reservationDate) {
+        boolean isExists = reservationRepository.findByTimeAndTheme(timeId, themeId)
                 .stream()
+                .anyMatch(r -> r.getDate().equals(reservationDate));
+        if (isExists) {
+            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+        }
+    }
+
+    private void validateNoDuplicateForUpdate(long excludeId, Long timeId, Long themeId, ReservationDate reservationDate) {
+        boolean isExists = reservationRepository.findByTimeAndTheme(timeId, themeId)
+                .stream()
+                .filter(r -> r.getId() != excludeId)
                 .anyMatch(r -> r.getDate().equals(reservationDate));
         if (isExists) {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);

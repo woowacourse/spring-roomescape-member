@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,7 @@ public class ReservationRepository {
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
     private static final String SELECT_BY_TIME_AND_THEME = SELECT_ALL + "WHERE r.time_id = ? AND r.theme_id = ?";
+    private static final String SELECT_BY_NAME = SELECT_ALL + "WHERE r.name = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -57,6 +59,10 @@ public class ReservationRepository {
         return jdbcTemplate.query(SELECT_ALL, RESERVATION_ROW_MAPPER);
     }
 
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(SELECT_BY_NAME, RESERVATION_ROW_MAPPER, name);
+    }
+
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
                 "name", reservation.getName(),
@@ -64,9 +70,7 @@ public class ReservationRepository {
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
         );
-
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
         return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
@@ -74,6 +78,11 @@ public class ReservationRepository {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void update(long id, LocalDate date, long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, id);
     }
 
     public List<Reservation> findByTimeAndTheme(Long timeId, Long themeId) {
