@@ -36,12 +36,29 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 사용자는_이름으로_본인의_예약_목록을_조회할_수_있다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+        dataInitializer.createReservation("라텔", TODAY.plusDays(1), 2L, 1L);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "고래")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("고래"));
+    }
+
+    @Test
     void 예약_추가_및_삭제() {
         dataInitializer.createReservationTime(LocalTime.now());
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("name", "고래");
         params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -78,7 +95,7 @@ class ReservationApiTest extends ApiTestSupport {
             "'', 2026-05-16",
             "'   ', 2026-05-16",
             "123456789012345678901234567890123456789012345678901, 2026-05-16",
-            "브라운, NULL"
+            "고래, NULL"
     }, nullValues = "NULL")
     void 예약_생성_요청값이_유효하지_않으면_400을_반환한다(String name, String date) {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
@@ -103,7 +120,7 @@ class ReservationApiTest extends ApiTestSupport {
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("name", "고래");
         params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 999);
         params.put("themeId", 1);
@@ -121,7 +138,7 @@ class ReservationApiTest extends ApiTestSupport {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("name", "고래");
         params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 999);
@@ -138,7 +155,7 @@ class ReservationApiTest extends ApiTestSupport {
     void 같은_날짜_시간_테마로_중복_예약하면_409를_반환한다() {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
-        dataInitializer.createReservation("브라운", TODAY.plusDays(1), 1L, 1L);
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "라텔");
@@ -152,6 +169,47 @@ class ReservationApiTest extends ApiTestSupport {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @Test
+    void 사용자는_본인_예약의_날짜와_시간을_변경할_수_있다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(2).toString());
+        params.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is(TODAY.plusDays(2).toString()))
+                .body("time.id", is(2))
+                .body("status", is("RESERVED"));
+    }
+
+    @Test
+    void 사용자는_본인_예약을_취소할_수_있다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/cancellation")
+                .then().log().all()
+                .statusCode(200)
+                .body("status", is("CANCELLED"));
     }
 
     @Test
@@ -212,7 +270,7 @@ class ReservationApiTest extends ApiTestSupport {
             Long themeId
     ) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("name", "고래");
         params.put("date", date.toString());
         params.put("timeId", timeId);
         params.put("themeId", themeId);
