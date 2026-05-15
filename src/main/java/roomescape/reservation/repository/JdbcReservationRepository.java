@@ -21,23 +21,6 @@ import java.util.Optional;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
     private static final Logger log = LoggerFactory.getLogger(JdbcReservationRepository.class);
-    private static final String SELECT_RESERVATION_WITH_TIME_AND_THEME = """
-            SELECT
-                r.id AS reservation_id,
-                r.name,
-                r.date,
-                t.id AS time_id,
-                t.start_at,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail
-            FROM reservation r
-            INNER JOIN reservation_time t
-                ON r.time_id = t.id
-            INNER JOIN theme th
-                ON r.theme_id = th.id
-            """;
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
@@ -69,19 +52,71 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return jdbcTemplate.query(SELECT_RESERVATION_WITH_TIME_AND_THEME, reservationRowMapper);
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public List<Reservation> findByName(String name) {
-        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = ?";
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.name = ?
+                """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     @Override
     public Optional<Reservation> findByIdAndName(Long id, String name) {
-        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = ? AND r.name = ?";
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.id = ? AND r.name = ?
+                """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, id, name)
                 .stream()
@@ -90,7 +125,24 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.date = ? AND r.theme_id = ?";
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
