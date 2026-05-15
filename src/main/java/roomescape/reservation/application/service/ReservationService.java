@@ -36,6 +36,13 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationQueryResult> findAllByName(String name) {
+        return reservationRepository.findByName(name).stream()
+                .map(this::toQueryResult)
+                .toList();
+    }
+
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
         ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
         validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
