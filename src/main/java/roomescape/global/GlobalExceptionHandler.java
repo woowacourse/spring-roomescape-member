@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         if (ex.getBindingResult().hasErrors()) {
             message = ex.getBindingResult().getFieldErrors().getFirst().getDefaultMessage();
         }
-        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_NAME_FORMAT.name(), message);
+        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REQUEST.name(), message);
 
         return ResponseEntity.badRequest().body(response);
     }
