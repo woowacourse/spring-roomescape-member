@@ -106,9 +106,14 @@ public class ReservationService {
         final String personName = reservationModifyRequest.name();
         validateReservationOwner(originalReservation, personName);
 
+        final LocalDate originalDate = originalReservation.getDate();
+        final ReservationTime originalTime = originalReservation.getTime();
+        validateDate(originalDate);
+        validateReservationTime(originalDate, originalTime);
+
         final Long timeId = Objects.requireNonNullElse(
                 reservationModifyRequest.timeId(),
-                originalReservation.getTime().getId()
+                originalTime.getId()
         );
         final ReservationTime reservationTime = getReservationTime(timeId);
         final Reservation modifiedReservation = originalReservation.modify(
