@@ -82,7 +82,7 @@ public class ReservationService {
     public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation existing = findReservationById(id);
         existing.validateModifiable(userName, LocalDateTime.now());
-        Reservation patched = existing.patch(
+        Reservation patched = existing.reschedule(
                 name,
                 date,
                 findOptionalTime(timeId),

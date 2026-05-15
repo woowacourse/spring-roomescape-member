@@ -1,6 +1,18 @@
 package roomescape.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +28,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.service.ReservationService;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -62,7 +64,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약의 전체 정보를 수정하고 200 상태 코드를 반환한다.")
-    void updateReservation() throws Exception {
+    void rescheduleAll() throws Exception {
         ReservationPutRequest request = new ReservationPutRequest("네오", LocalDate.now(), 1L, 1L);
         given(reservationService.findReservationById(anyLong()))
                 .willReturn(createMockReservation());
@@ -73,12 +75,12 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약의 부분 정보를 수정하고 200 상태 코드를 반환한다.")
-    void patchReservation() throws Exception {
+    void reschedulePart() throws Exception {
         ReservationPatchRequest request = new ReservationPatchRequest("네오", null, null, null);
         given(reservationService.findReservationById(anyLong()))
                 .willReturn(createMockReservation());
 
-        performPatch("/reservations/1", "브라운", request)
+        performReschedule("/reservations/1", "브라운", request)
                 .andExpect(status().isOk());
     }
 
@@ -102,7 +104,7 @@ class ReservationControllerTest {
                 .content(objectMapper.writeValueAsString(request)));
     }
 
-    private ResultActions performPatch(String url, String userName, Object request) throws Exception {
+    private ResultActions performReschedule(String url, String userName, Object request) throws Exception {
         return mockMvc.perform(patch(url)
                 .param("userName", userName)
                 .contentType(MediaType.APPLICATION_JSON)

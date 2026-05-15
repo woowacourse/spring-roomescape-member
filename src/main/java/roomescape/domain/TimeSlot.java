@@ -18,7 +18,7 @@ public class TimeSlot {
         return new TimeSlot(null, startAt);
     }
 
-    public void patch(LocalTime startAt) {
+    public void changeTime(LocalTime startAt) {
         this.startAt = Optional.ofNullable(startAt).orElse(this.startAt);
     }
 

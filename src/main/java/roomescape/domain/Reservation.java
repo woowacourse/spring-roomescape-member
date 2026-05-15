@@ -36,7 +36,7 @@ public class Reservation {
         validateNotPast(now);
     }
 
-    public Reservation patch(String name, LocalDate date, TimeSlot timeSlot, Theme theme, LocalDateTime now) {
+    public Reservation reschedule(String name, LocalDate date, TimeSlot timeSlot, Theme theme, LocalDateTime now) {
         String patchedName = Objects.requireNonNullElse(name, this.name);
         LocalDate patchedDate = Objects.requireNonNullElse(date, this.date);
         TimeSlot patchedTime = Objects.requireNonNullElse(timeSlot, this.timeSlot);

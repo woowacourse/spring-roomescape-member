@@ -57,7 +57,7 @@ public class TimeSlotService {
     @Transactional
     public void patchTime(long id, LocalTime startAt) {
         TimeSlot timeSlot = findTimeSlotById(id);
-        timeSlot.patch(startAt);
+        timeSlot.changeTime(startAt);
         timeSlotRepository.update(timeSlot);
     }
 

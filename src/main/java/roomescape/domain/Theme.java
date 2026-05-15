@@ -23,7 +23,7 @@ public class Theme {
         return new Theme(null, name, description, thumbnailUrl);
     }
 
-    public void patch(String name, String description, String thumbnailUrl) {
+    public void renewal(String name, String description, String thumbnailUrl) {
         this.name = Optional.ofNullable(name).orElse(this.name);
         this.description = Optional.ofNullable(description).orElse(this.description);
         this.thumbnailUrl = Optional.ofNullable(thumbnailUrl).orElse(this.thumbnailUrl);

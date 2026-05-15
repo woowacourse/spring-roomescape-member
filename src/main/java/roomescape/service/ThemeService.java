@@ -53,7 +53,7 @@ public class ThemeService {
     @Transactional
     public void patchTheme(long id, String name, String description, String thumbnailUrl) {
         Theme theme = findThemeById(id);
-        theme.patch(name, description, thumbnailUrl);
+        theme.renewal(name, description, thumbnailUrl);
         themeRepository.update(theme);
     }
 

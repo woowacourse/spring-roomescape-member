@@ -146,7 +146,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("이미 지난 예약을 부분 수정(PATCH)하려고 시도하면 예외가 발생한다.")
-    void patchReservation_Past() {
+    void reschedule_Past() {
         LocalDate pastDate = LocalDate.now().minusDays(1);
         Reservation pastReservation = reservationRepository.save(
                 Reservation.transientOf("브라운", pastDate, savedTimeSlot, savedTheme)
