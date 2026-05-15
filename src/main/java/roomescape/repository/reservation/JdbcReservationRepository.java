@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationInfo;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -91,7 +91,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getLong(COLUMN_THEME_ID)
     );
 
-    private static final RowMapper<ReservationInfo> MAPPER = (rs, rowNumber) -> new ReservationInfo(
+    private static final RowMapper<ReservationWithTimeAndTheme> MAPPER = (rs, rowNumber) -> new ReservationWithTimeAndTheme(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
@@ -119,7 +119,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationInfo> getAllReservation(String name) {
+    public List<ReservationWithTimeAndTheme> getAllReservation(String name) {
         QueryWithParams queryWithParams = getReservationsQuery(name);
         return Collections.unmodifiableList(jdbcTemplate.query(queryWithParams.query(), MAPPER, queryWithParams.params().toArray()));
     }
@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+    public ReservationWithTimeAndTheme addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationCommand.name(),
                 COLUMN_DATE, reservationCommand.date(),
@@ -140,7 +140,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 COLUMN_THEME_ID, reservationCommand.themeId()
         )).longValue();
 
-        return new ReservationInfo(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
+        return new ReservationWithTimeAndTheme(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
                 theme);
     }
 

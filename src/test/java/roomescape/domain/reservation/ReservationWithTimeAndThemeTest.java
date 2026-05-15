@@ -15,7 +15,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.InvalidRequestValueException;
 
-class ReservationInfoTest {
+class ReservationWithTimeAndThemeTest {
     private ReservationTime testTime;
     private Theme testTheme;
 
@@ -32,7 +32,7 @@ class ReservationInfoTest {
         String name = "브라운";
         LocalDate date = LocalDate.now();
 
-        ReservationInfo info = new ReservationInfo(id, name, date, testTime, testTheme);
+        ReservationWithTimeAndTheme info = new ReservationWithTimeAndTheme(id, name, date, testTime, testTheme);
 
         assertAll(
                 () -> assertThat(info.id()).isEqualTo(id),
@@ -47,7 +47,7 @@ class ReservationInfoTest {
     @DisplayName("String 형식의 날짜 정상 생성 테스트")
     void initByStringDateTest() {
         String dateStr = "2026-05-13";
-        ReservationInfo info = new ReservationInfo(1L, "브라운", dateStr, testTime, testTheme);
+        ReservationWithTimeAndTheme info = new ReservationWithTimeAndTheme(1L, "브라운", dateStr, testTime, testTheme);
 
         assertThat(info.date()).isEqualTo(LocalDate.parse(dateStr));
     }
@@ -56,7 +56,7 @@ class ReservationInfoTest {
     @ValueSource(strings = {"", " ", "   "})
     @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다")
     void invalidNameTest(String invalidName) {
-        assertThatThrownBy(() -> new ReservationInfo(1L, invalidName, LocalDate.now(), testTime, testTheme))
+        assertThatThrownBy(() -> new ReservationWithTimeAndTheme(1L, invalidName, LocalDate.now(), testTime, testTheme))
                 .isInstanceOf(InvalidRequestValueException.class)
                 .hasMessage("이름은 필수입니다.");
     }
@@ -64,7 +64,7 @@ class ReservationInfoTest {
     @Test
     @DisplayName("날짜가 null이면 예외가 발생한다")
     void nullDateTest() {
-        assertThatThrownBy(() -> new ReservationInfo(1L, "브라운", (LocalDate) null, testTime, testTheme))
+        assertThatThrownBy(() -> new ReservationWithTimeAndTheme(1L, "브라운", (LocalDate) null, testTime, testTheme))
                 .isInstanceOf(InvalidRequestValueException.class)
                 .hasMessage("날짜는 필수입니다.");
     }
@@ -72,7 +72,7 @@ class ReservationInfoTest {
     @Test
     @DisplayName("잘못된 형식의 날짜 문자열은 예외가 발생한다")
     void invalidStringDateTest() {
-        assertThatThrownBy(() -> new ReservationInfo(1L, "브라운", "2026/05/13", testTime, testTheme))
+        assertThatThrownBy(() -> new ReservationWithTimeAndTheme(1L, "브라운", "2026/05/13", testTime, testTheme))
                 .isInstanceOf(InvalidRequestValueException.class)
                 .hasMessage("유효하지 않은 날짜입니다.");
     }
@@ -80,7 +80,7 @@ class ReservationInfoTest {
     @Test
     @DisplayName("ReservationTime이 null이면 예외가 발생한다")
     void nullTimeTest() {
-        assertThatThrownBy(() -> new ReservationInfo(1L, "브라운", LocalDate.now(), null, testTheme))
+        assertThatThrownBy(() -> new ReservationWithTimeAndTheme(1L, "브라운", LocalDate.now(), null, testTheme))
                 .isInstanceOf(InvalidRequestValueException.class)
                 .hasMessage("시간 정보는 필수입니다.");
     }
@@ -88,7 +88,7 @@ class ReservationInfoTest {
     @Test
     @DisplayName("Theme이 null이면 예외가 발생한다")
     void nullThemeTest() {
-        assertThatThrownBy(() -> new ReservationInfo(1L, "브라운", LocalDate.now(), testTime, null))
+        assertThatThrownBy(() -> new ReservationWithTimeAndTheme(1L, "브라운", LocalDate.now(), testTime, null))
                 .isInstanceOf(InvalidRequestValueException.class)
                 .hasMessage("테마 정보는 필수입니다.");
     }

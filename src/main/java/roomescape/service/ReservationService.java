@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationInfo;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -42,12 +42,12 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationInfo> getAllReservation(String name) {
+    public List<ReservationWithTimeAndTheme> getAllReservation(String name) {
         return reservationRepository.getAllReservation(name);
     }
 
     @Transactional
-    public ReservationInfo addReservation(ReservationCommand reservationCommand) {
+    public ReservationWithTimeAndTheme addReservation(ReservationCommand reservationCommand) {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(INVALID_RESERVATION_TIME_ID));
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationCommand;
-import roomescape.domain.reservation.ReservationInfo;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
@@ -31,9 +31,9 @@ public class ReservationServiceTest {
     private ReservationRepository createReservationRepository(Reservation reservation, boolean isExist, int updatedRow) {
         return new ReservationRepository() {
             @Override public Optional<Reservation> getReservation(long id) { return Optional.ofNullable(reservation); }
-            @Override public List<ReservationInfo> getAllReservation(String name) { return List.of(); }
-            @Override public ReservationInfo addReservation(ReservationCommand cmd, ReservationTime rt, Theme t) {
-                return new ReservationInfo(1, cmd.name(), cmd.date(), rt, t);
+            @Override public List<ReservationWithTimeAndTheme> getAllReservation(String name) { return List.of(); }
+            @Override public ReservationWithTimeAndTheme addReservation(ReservationCommand cmd, ReservationTime rt, Theme t) {
+                return new ReservationWithTimeAndTheme(1, cmd.name(), cmd.date(), rt, t);
             }
             @Override public void deleteReservation(long id) {}
             @Override public int updateAll(long id, ReservationCommand cmd) { return updatedRow; }
