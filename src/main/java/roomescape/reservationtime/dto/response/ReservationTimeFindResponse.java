@@ -12,8 +12,8 @@ public record ReservationTimeFindResponse(
     public static List<ReservationTimeFindResponse> from(List<ReservationTime> reservationTimes) {
         return reservationTimes.stream()
                 .map(reservationTime -> new ReservationTimeFindResponse(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt()
+                        reservationTime.id(),
+                        reservationTime.startAt()
                 ))
                 .toList();
     }

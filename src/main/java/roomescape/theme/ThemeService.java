@@ -3,7 +3,6 @@ package roomescape.theme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.theme.ThemeAlreadyExistsException;
 import roomescape.schedule.ScheduleService;
 import roomescape.theme.dto.request.ThemeSaveRequest;

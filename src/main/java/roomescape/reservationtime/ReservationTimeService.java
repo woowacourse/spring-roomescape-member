@@ -48,8 +48,8 @@ public class ReservationTimeService {
 
         return totalTimes.stream()
                 .map(time -> new AvailableTimeFindResponse(
-                        new TimeInformation(time.getId(), time.getStartAt()),
-                        !notAvailableTimeIds.contains(time.getId())
+                        new TimeInformation(time.id(), time.startAt()),
+                        !notAvailableTimeIds.contains(time.id())
                 ))
                 .toList();
     }

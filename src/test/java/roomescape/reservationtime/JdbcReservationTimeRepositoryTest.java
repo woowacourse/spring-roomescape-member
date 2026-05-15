@@ -32,7 +32,7 @@ public class JdbcReservationTimeRepositoryTest {
         ReservationTime savedReservationTime = repository.save(reservationTime);
 
         // then
-        assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.of(15, 40));
+        assertThat(savedReservationTime.startAt()).isEqualTo(LocalTime.of(15, 40));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class JdbcReservationTimeRepositoryTest {
 
         assertThat(reservationTimes).hasSize(4);
         assertThat(reservationTimes)
-                .extracting(ReservationTime::getStartAt)
+                .extracting(ReservationTime::startAt)
                 .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00));
     }
 
@@ -56,13 +56,13 @@ public class JdbcReservationTimeRepositoryTest {
         ReservationTime savedTime = repository.save(reservationTime);
 
         // when
-        repository.deleteById(savedTime.getId());
+        repository.deleteById(savedTime.id());
 
         // then
         List<ReservationTime> reservationTimes = repository.findAll();
         assertThat(reservationTimes).hasSize(4);
-        assertThat(reservationTimes).extracting(ReservationTime::getId)
-                .doesNotContain(savedTime.getId());
+        assertThat(reservationTimes).extracting(ReservationTime::id)
+                .doesNotContain(savedTime.id());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(result)
-                .extracting(ReservationTime::getStartAt)
+                .extracting(ReservationTime::startAt)
                 .containsExactly(LocalTime.of(10, 0));
     }
 

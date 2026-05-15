@@ -1,6 +1,5 @@
 package roomescape.schedule;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
@@ -52,12 +51,6 @@ public class ScheduleService {
         return ScheduleSaveResponse.from(scheduleRepository.save(body.toDomain()));
     }
 
-    private void validateAlreadyExistsNot(LocalDate date, long themeId, long timeId) {
-        if (scheduleRepository.existsAlreadySchedule(date, themeId, timeId)){
-            throw new ScheduleAlreadyExistsException(ErrorCode.SCHEDULE_ALREADY_EXIST);
-        }
-    }
-
     public void deleteById(long scheduleId) {
         if (scheduleRepository.deleteById(scheduleId) <= 1) {
             return;
@@ -80,7 +73,7 @@ public class ScheduleService {
     public void validateSchedule(LocalDate date, Long timeId, Long themeId) {
         validateNotPastDate(date);
         ReservationTime reservationTime = getReservationTimeOrThrow(timeId);
-        validateNotPastTime(date, reservationTime.getStartAt());
+        validateNotPastTime(date, reservationTime.startAt());
         getThemeOrThrow(themeId);
     }
 
@@ -96,6 +89,12 @@ public class ScheduleService {
 
         if (date.isEqual(currentDate) && time.isBefore(currentTime)) {
             throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
+        }
+    }
+
+    private void validateAlreadyExistsNot(LocalDate date, long themeId, long timeId) {
+        if (scheduleRepository.existsAlreadySchedule(date, themeId, timeId)) {
+            throw new ScheduleAlreadyExistsException(ErrorCode.SCHEDULE_ALREADY_EXIST);
         }
     }
 

@@ -20,7 +20,7 @@ public enum ErrorCode {
     SCHEDULE_DELETE_FAILED("SCHEDULE_500", "서버 내부 오류가 발생하였습니다. 관리자에게 문의해주세요."),
     SCHEDULE_TIME_IN_USE("SCHEDULE_TIME_409", "해당 시간(%d번)을 사용하는 일정이 있어 삭제할 수 없습니다."),
     SCHEDULE_THEME_IN_USE("SCHEDULE_THEME_409", "해당 테마(%d번)를 사용하는 일정이 있어 삭제할 수 없습니다."),
-    PAST_SCHEDULE("PAST_SCHEDULE_400","이미 지난 예약이거나 날짜/시간은 처리할 수 없습니다."),
+    PAST_SCHEDULE("PAST_SCHEDULE_400", "이미 지난 예약이거나 날짜/시간은 처리할 수 없습니다."),
     SCHEDULE_ALREADY_EXIST("SCHEDULE_409", "이미 존재하는 스케줄 입니다"),
 
     // ReservationTime
@@ -35,8 +35,7 @@ public enum ErrorCode {
     INVALID_INPUT("INVALID_INPUT_400", "요청 값이 올바르지 않습니다."),
 
     // 서버 에러
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500", "서버 내부 오류가 발생하였습니다. 관리자에게 문의해주세요.")
-    ;
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500", "서버 내부 오류가 발생하였습니다. 관리자에게 문의해주세요.");
 
     private final String code;
     private final String message;
