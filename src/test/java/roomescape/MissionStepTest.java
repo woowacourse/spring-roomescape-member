@@ -408,4 +408,37 @@ public class MissionStepTest {
                 .body("code", is("NOT_FOUND"))
                 .body("message", is("존재하지 않는 테마입니다."));
     }
+
+    @Test
+    void 중복된_예약_시간을_생성하면_실패한다(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION_TIME"))
+                .body("message", is("이미 존재하는 예약시간입니다."));
+    }
+
+    @Test
+    void 중복된_테마_이름으로_테마를_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "공포");
+        params.put("description", "무서운 테마");
+        params.put("thumbnail", "https://roomescape.com/other");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_THEME"))
+                .body("message", is("이미 존재하는 테마 이름입니다."));
+    }
+
 }
