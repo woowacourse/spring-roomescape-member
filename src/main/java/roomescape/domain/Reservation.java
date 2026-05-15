@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import lombok.Getter;
+import roomescape.global.exception.reservation.CancelledReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 
 @Getter
@@ -40,10 +41,12 @@ public class Reservation {
     }
 
     public Reservation changeSchedule(LocalDate date, ReservationTime time) {
+        validateReserved();
         return new Reservation(id, name, date, time, theme, status);
     }
 
     public Reservation cancel() {
+        validateReserved();
         return new Reservation(id, name, date, time, theme, ReservationStatus.CANCELLED);
     }
 
@@ -65,6 +68,12 @@ public class Reservation {
     private void validateNotNull(LocalDate date, ReservationTime time, Theme theme) {
         if (date == null || time == null || theme == null) {
             throw new InvalidReservationException("예약 날짜, 시간, 테마는 필수입니다.");
+        }
+    }
+
+    private void validateReserved() {
+        if (status == ReservationStatus.CANCELLED) {
+            throw new CancelledReservationException("이미 취소된 예약입니다.");
         }
     }
 }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.global.exception.reservation.CancelledReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 
 class ReservationTest {
@@ -136,6 +137,45 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.createNew("Brown", date, time, null))
                     .isInstanceOf(InvalidReservationException.class)
                     .hasMessageContaining("예약 날짜");
+        }
+    }
+
+    @Nested
+    @DisplayName("취소 상태 검증")
+    class CancelledStatus {
+
+        @Test
+        @DisplayName("이미 취소된 예약은 변경할 수 없다.")
+        void cannotChangeCancelledReservation() {
+            Reservation reservation = Reservation.from(
+                    1L,
+                    "Brown",
+                    date,
+                    time,
+                    theme,
+                    ReservationStatus.CANCELLED
+            );
+
+            assertThatThrownBy(() -> reservation.changeSchedule(date.plusDays(1), time))
+                    .isInstanceOf(CancelledReservationException.class)
+                    .hasMessage("이미 취소된 예약입니다.");
+        }
+
+        @Test
+        @DisplayName("이미 취소된 예약은 다시 취소할 수 없다.")
+        void cannotCancelCancelledReservationAgain() {
+            Reservation reservation = Reservation.from(
+                    1L,
+                    "Brown",
+                    date,
+                    time,
+                    theme,
+                    ReservationStatus.CANCELLED
+            );
+
+            assertThatThrownBy(reservation::cancel)
+                    .isInstanceOf(CancelledReservationException.class)
+                    .hasMessage("이미 취소된 예약입니다.");
         }
     }
 }
