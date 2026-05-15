@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.util.Objects;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -59,6 +60,16 @@ public class Reservation {
                 name,
                 date,
                 time,
+                theme
+        );
+    }
+
+    public Reservation modify(final LocalDate newDate, final ReservationTime newReservationTime) {
+        return new Reservation(
+                id,
+                name,
+                Objects.requireNonNullElse(newDate, date),
+                Objects.requireNonNullElse(newReservationTime, time),
                 theme
         );
     }

@@ -136,6 +136,27 @@ class ReservationControllerTest {
                 .statusCode(204);
     }
 
+    @Test
+    @Sql("/clear.sql")
+    void 사용자가_본인_예약의_날짜와_시간을_변경() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-05", "1", "1");
+
+        ReservationResponse reservation = RestAssured.given().log().all()
+                .when().patch("/reservations/1?name=브라운&date=2026-05-10&timeId=2")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getObject(".", ReservationResponse.class);
+
+        assertThat(reservation.id()).isEqualTo(1);
+        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.date()).isEqualTo(LocalDate.of(2026, 5, 10));
+        assertThat(reservation.time().id()).isEqualTo(2);
+        assertThat(reservation.theme().id()).isEqualTo(1);
+    }
+
     private static List<ReservationTimeStatusResponse> getReservationTimeStatusResponses() {
         return RestAssured.given().log().all()
                 .when().get("/reservations/available-times?date=2026-05-05&themeId=1")

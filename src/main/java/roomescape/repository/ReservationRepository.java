@@ -1,6 +1,8 @@
 package roomescape.repository;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -69,6 +71,38 @@ public class ReservationRepository {
                 .toList();
     }
 
+    public Optional<Reservation> findById(final Long reservationId) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    r.theme_id AS theme_id,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    t.end_at AS time_end_at,
+                    h.name AS theme_name,
+                    h.description AS theme_description,
+                    h.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme h ON r.theme_id = h.id 
+                WHERE r.id = ?
+                """;
+
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    sql,
+                    ReservationRepository::mapToDomain,
+                    reservationId
+            );
+
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
                 SELECT COUNT(id)
@@ -89,18 +123,6 @@ public class ReservationRepository {
                 """;
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-
-        return count != null && count > 0;
-    }
-
-    public boolean existsByIdAndName(final Long reservationId, final String name) {
-        final String sql = """
-                SELECT COUNT(id)
-                FROM reservation
-                WHERE id = ? AND name = ?
-                """;
-
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, reservationId, name);
 
         return count != null && count > 0;
     }
@@ -170,6 +192,21 @@ public class ReservationRepository {
         }
 
         return generatedKey.longValue();
+    }
+
+    public void updateDateAndTime(final Reservation reservation) {
+        final String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(
+                sql,
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
     }
 
     public boolean deleteById(final Long reservationId) {

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.request.ReservationModifyRequest;
 import roomescape.service.dto.response.AvailableDateResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
@@ -60,5 +61,18 @@ public class ReservationController {
     ) {
         reservationService.deleteWithValidation(reservationId, name);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{reservation-id}")
+    public ResponseEntity<ReservationResponse> modify(
+            @PathVariable("reservation-id") Long reservationId,
+            @RequestParam("name") String name,
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @RequestParam(value = "timeId", required = false) Long timeId
+    ) {
+        final ReservationModifyRequest reservationModifyRequest = new ReservationModifyRequest(
+                reservationId, name, date, timeId);
+        final ReservationResponse result = reservationService.modify(reservationModifyRequest);
+        return ResponseEntity.ok(result);
     }
 }
