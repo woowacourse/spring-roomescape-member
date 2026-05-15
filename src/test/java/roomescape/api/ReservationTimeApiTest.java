@@ -106,7 +106,7 @@ class ReservationTimeApiTest extends ApiTestSupport {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.size()", is(1));
@@ -207,5 +207,4 @@ class ReservationTimeApiTest extends ApiTestSupport {
                 .then().log().all()
                 .statusCode(400);
     }
-
 }

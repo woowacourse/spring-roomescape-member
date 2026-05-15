@@ -70,7 +70,7 @@ class MissionStepTest extends ApiTestSupport {
                 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList("reservations", ReservationResponse.class);
@@ -101,7 +101,7 @@ class MissionStepTest extends ApiTestSupport {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 

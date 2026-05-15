@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +19,6 @@ import roomescape.controller.dto.reservation.ReservationResponse;
 import roomescape.controller.dto.reservation.ReservationResponses;
 import roomescape.controller.dto.reservation.ReservationScheduleRequest;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.reservation.ReservationPagingCondition;
 import roomescape.service.dto.reservation.ReservationResult;
 
 @RestController
@@ -32,15 +30,9 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<ReservationResponses> getReservations(
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam String name
     ) {
-        ReservationPagingCondition condition = new ReservationPagingCondition(page, size);
-        List<ReservationResult> reservationResults = name == null
-                ? reservationService.getReservations(condition)
-                : reservationService.getReservationsByName(name);
-        List<ReservationResponse> responses = reservationResults.stream()
+        List<ReservationResponse> responses = reservationService.getReservationsByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(new ReservationResponses(responses));
@@ -53,12 +45,6 @@ public class ReservationController {
         ReservationResponse response = ReservationResponse.from(reservationResult);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.cancelReservation(id);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/schedule")
