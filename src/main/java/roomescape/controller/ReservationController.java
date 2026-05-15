@@ -62,7 +62,7 @@ public class ReservationController {
         Reservation reservation = reservationService.saveReservation(
                 request.name(), request.date(), request.timeId(), request.themeId()
         );
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.id()))
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
                 .body(toResponse(reservation));
     }
 
@@ -119,11 +119,11 @@ public class ReservationController {
 
     private ReservationResponse toResponse(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.name(),
-                reservation.date(),
-                TimeResponse.from(reservation.timeSlot()),
-                ThemeResponse.from(reservation.theme())
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                TimeResponse.from(reservation.getTimeSlot()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 }

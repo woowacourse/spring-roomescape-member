@@ -34,16 +34,16 @@ class JdbcThemeRepositoryTest {
     void save() {
         Theme theme = Theme.transientOf("공포", "귀신의 집", "https://url");
         Theme savedTheme = jdbcThemeRepository.save(theme);
-        assertThat(savedTheme.id()).isPositive();
+        assertThat(savedTheme.getId()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 테마를 조회한다.")
     void findById() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
-        Optional<Theme> foundTheme = jdbcThemeRepository.findById(savedTheme.id());
+        Optional<Theme> foundTheme = jdbcThemeRepository.findById(savedTheme.getId());
         assertThat(foundTheme).isPresent();
-        assertThat(foundTheme.get().name()).isEqualTo("공포");
+        assertThat(foundTheme.get().getName()).isEqualTo("공포");
     }
 
     @Test
@@ -58,7 +58,7 @@ class JdbcThemeRepositoryTest {
     @DisplayName("기간 내 인기 테마를 예약 건수 기반으로 조회한다.")
     void findPopularThemes() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
-        insertReservation(savedTheme.id());
+        insertReservation(savedTheme.getId());
         List<Theme> themes = jdbcThemeRepository.findPopularThemes(10L, LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1));
         assertThat(themes).hasSize(1);
@@ -69,7 +69,7 @@ class JdbcThemeRepositoryTest {
     void deleteExisting() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
         int totalCount = jdbcThemeRepository.findAll().size();
-        jdbcThemeRepository.deleteById(savedTheme.id());
+        jdbcThemeRepository.deleteById(savedTheme.getId());
         assertThat(jdbcThemeRepository.findAll().size() != totalCount).isTrue();
     }
 
@@ -84,7 +84,7 @@ class JdbcThemeRepositoryTest {
     @DisplayName("존재하는 테마의 정보를 수정한다.")
     void updateExisting() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
-        Theme updateTheme = new Theme(savedTheme.id(), "코믹", "웃긴 집", "https://url2");
+        Theme updateTheme = new Theme(savedTheme.getId(), "코믹", "웃긴 집", "https://url2");
         assertThat(jdbcThemeRepository.update(updateTheme)).isEqualTo(1);
     }
 

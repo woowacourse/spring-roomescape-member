@@ -56,7 +56,7 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<TimeResponse> createTime(@RequestBody @Valid TimeRequest request) {
         TimeSlot timeSlot = reservationTimeSlotService.saveTime(request.startAt());
-        return ResponseEntity.created(URI.create("/times/" + timeSlot.id()))
+        return ResponseEntity.created(URI.create("/times/" + timeSlot.getId()))
                 .body(TimeResponse.from(timeSlot));
     }
 

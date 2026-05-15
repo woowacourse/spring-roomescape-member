@@ -7,13 +7,24 @@ import roomescape.exception.InvalidOwnershipException;
 import roomescape.exception.PastReservationControlException;
 import roomescape.exception.PastTimeException;
 
-public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
+public class Reservation {
 
-    public Reservation {
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final TimeSlot timeSlot;
+    private final Theme theme;
+
+    public Reservation(Long id, String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTimeSlot(timeSlot);
         validateTheme(theme);
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.timeSlot = timeSlot;
+        this.theme = theme;
     }
 
     public static Reservation transientOf(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
@@ -35,6 +46,26 @@ public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlo
         return new Reservation(this.id, patchedName, patchedDate, patchedTime, patchedTheme);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public TimeSlot getTimeSlot() {
+        return timeSlot;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
     private void validateOwnership(String requesterName) {
         if (!this.name.equals(requesterName)) {
             throw new InvalidOwnershipException();
@@ -42,14 +73,14 @@ public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlo
     }
 
     private void validateNotPast(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.timeSlot.startAt());
+        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.timeSlot.getStartAt());
         if (reservationDateTime.isBefore(now)) {
             throw new PastReservationControlException();
         }
     }
 
     private void validateTargetDateTime(LocalDate targetDate, TimeSlot targetTimeSlot, LocalDateTime now) {
-        LocalDateTime targetDateTime = LocalDateTime.of(targetDate, targetTimeSlot.startAt());
+        LocalDateTime targetDateTime = LocalDateTime.of(targetDate, targetTimeSlot.getStartAt());
         if (targetDateTime.isBefore(now)) {
             throw new PastTimeException("지난 날짜/시간으로 예약하실 수 없습니다.");
         }

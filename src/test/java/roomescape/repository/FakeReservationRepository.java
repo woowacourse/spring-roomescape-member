@@ -25,24 +25,25 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByName(String name) {
         return storage.values().stream()
-                .filter(reservation -> reservation.name().equals(name))
+                .filter(reservation -> reservation.getName().equals(name))
                 .toList();
     }
 
     @Override
     public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
         return storage.values().stream()
-                .filter(reservation -> reservation.theme().id().equals(themeId) && reservation.date().equals(date))
-                .map(reservation -> reservation.timeSlot().id())
+                .filter(reservation -> reservation.getTheme().getId().equals(themeId) && reservation.getDate()
+                        .equals(date))
+                .map(reservation -> reservation.getTimeSlot().getId())
                 .toList();
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         long id = sequence++;
-        Reservation savedReservation = new Reservation(id, reservation.name(), reservation.date(),
-                reservation.timeSlot(),
-                reservation.theme());
+        Reservation savedReservation = new Reservation(id, reservation.getName(), reservation.getDate(),
+                reservation.getTimeSlot(),
+                reservation.getTheme());
         storage.put(id, savedReservation);
         return savedReservation;
     }
@@ -61,16 +62,16 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public int update(Reservation reservation) {
-        if (!storage.containsKey(reservation.id())) {
+        if (!storage.containsKey(reservation.getId())) {
             return 0;
         }
-        storage.put(reservation.id(), reservation);
+        storage.put(reservation.getId(), reservation);
         return 1;
     }
 
     private boolean isDuplicate(Reservation reservation, LocalDate date, Long timeId, Long themeId) {
-        return reservation.date().equals(date)
-                && reservation.timeSlot().id().equals(timeId)
-                && reservation.theme().id().equals(themeId);
+        return reservation.getDate().equals(date)
+                && reservation.getTimeSlot().getId().equals(timeId)
+                && reservation.getTheme().getId().equals(themeId);
     }
 }

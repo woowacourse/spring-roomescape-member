@@ -103,10 +103,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         long reservationId = insert.executeAndReturnKey(params).longValue();
         return new Reservation(
                 reservationId,
-                reservation.name(),
-                reservation.date(),
-                reservation.timeSlot(),
-                reservation.theme()
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTimeSlot(),
+                reservation.getTheme()
         );
     }
 
@@ -146,11 +146,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "UPDATE reservation SET name = ?, date = ?, time_id = ?, theme_id = ? WHERE id = ?";
         return jdbcTemplate.update(
                 sql,
-                reservation.name(),
-                reservation.date(),
-                reservation.timeSlot().id(),
-                reservation.theme().id(),
-                reservation.id()
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTimeSlot().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
         );
     }
 
@@ -162,10 +162,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private Map<String, Object> createParams(Reservation reservation) {
         return Map.of(
-                "name", reservation.name(),
-                "date", reservation.date(),
-                "time_id", reservation.timeSlot().id(),
-                "theme_id", reservation.theme().id()
+                "name", reservation.getName(),
+                "date", reservation.getDate(),
+                "time_id", reservation.getTimeSlot().getId(),
+                "theme_id", reservation.getTheme().getId()
         );
     }
 

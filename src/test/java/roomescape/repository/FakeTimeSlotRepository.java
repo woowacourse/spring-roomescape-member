@@ -25,7 +25,7 @@ public class FakeTimeSlotRepository implements TimeSlotRepository {
     @Override
     public TimeSlot save(TimeSlot timeSlot) {
         long id = sequence++;
-        TimeSlot savedTimeSlot = new TimeSlot(id, timeSlot.startAt());
+        TimeSlot savedTimeSlot = new TimeSlot(id, timeSlot.getStartAt());
         storage.put(id, savedTimeSlot);
         return savedTimeSlot;
     }

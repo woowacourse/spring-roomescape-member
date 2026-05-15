@@ -39,7 +39,7 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(timeSlot);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new TimeSlot(reservationId, timeSlot.startAt());
+        return new TimeSlot(reservationId, timeSlot.getStartAt());
     }
 
     @Override
@@ -51,9 +51,9 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     @Override
     public int update(TimeSlot timeSlot) {
         String sql = "UPDATE time_slot SET start_at = ? WHERE id = ?";
-        return jdbcTemplate.update(sql, timeSlot.startAt(), timeSlot.id());
+        return jdbcTemplate.update(sql, timeSlot.getStartAt(), timeSlot.getId());
     }
-    
+
     private SimpleJdbcInsert createInsert() {
         return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("time_slot")
@@ -61,7 +61,7 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     }
 
     private Map<String, Object> createParams(TimeSlot timeSlot) {
-        return Map.of("start_at", timeSlot.startAt());
+        return Map.of("start_at", timeSlot.getStartAt());
     }
 
     private RowMapper<TimeSlot> rowMapper() {

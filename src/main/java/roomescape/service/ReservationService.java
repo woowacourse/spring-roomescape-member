@@ -69,10 +69,10 @@ public class ReservationService {
         existsAndModifiableReservation(id, userName);
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         Reservation reservation = new Reservation(
-                id, transientReservation.name(),
-                transientReservation.date(),
-                transientReservation.timeSlot(),
-                transientReservation.theme()
+                id, transientReservation.getName(),
+                transientReservation.getDate(),
+                transientReservation.getTimeSlot(),
+                transientReservation.getTheme()
         );
         validDuplicatedReservation(reservation);
         reservationRepository.update(reservation);
@@ -95,8 +95,8 @@ public class ReservationService {
 
     private void existsAndModifiableReservation(long id, String userName) {
         Reservation existingReservation = findReservationById(id);
-        validOwnership(existingReservation.name(), userName);
-        validNotPast(existingReservation.date(), existingReservation.timeSlot().startAt());
+        validOwnership(existingReservation.getName(), userName);
+        validNotPast(existingReservation.getDate(), existingReservation.getTimeSlot().getStartAt());
     }
 
     private void validOwnership(String ownerName, String requesterName) {
@@ -114,7 +114,7 @@ public class ReservationService {
     private Reservation createTransientWithValidField(String name, LocalDate date, Long timeId, Long themeId) {
         TimeSlot timeSlot = findTimeSlot(timeId);
         Theme theme = findTheme(themeId);
-        validDateTime(date, timeSlot.startAt());
+        validDateTime(date, timeSlot.getStartAt());
         return Reservation.transientOf(name, date, timeSlot, theme);
     }
 
@@ -129,11 +129,11 @@ public class ReservationService {
 
     private void validDuplicatedReservation(Reservation reservation) {
         reservationRepository.findByDateAndTimeIdAndThemeId(
-                        reservation.date(),
-                        reservation.timeSlot().id(),
-                        reservation.theme().id()
+                        reservation.getDate(),
+                        reservation.getTimeSlot().getId(),
+                        reservation.getTheme().getId()
                 )
-                .filter(existing -> reservation.id() == null || !reservation.id().equals(existing.id()))
+                .filter(existing -> reservation.getId() == null || !reservation.getId().equals(existing.getId()))
                 .ifPresent(existing -> {
                     throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
                 });

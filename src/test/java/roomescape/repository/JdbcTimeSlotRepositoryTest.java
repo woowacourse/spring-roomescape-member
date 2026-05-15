@@ -42,16 +42,16 @@ class JdbcTimeSlotRepositoryTest {
     void save() {
         TimeSlot timeSlot = TimeSlot.transientOf(LocalTime.of(10, 0));
         TimeSlot savedTimeSlot = timeRepository.save(timeSlot);
-        assertThat(savedTimeSlot.id()).isPositive();
+        assertThat(savedTimeSlot.getId()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        Optional<TimeSlot> foundTimeSlot = timeRepository.findById(savedTimeSlot.id());
+        Optional<TimeSlot> foundTimeSlot = timeRepository.findById(savedTimeSlot.getId());
         assertThat(foundTimeSlot).isPresent();
-        assertThat(foundTimeSlot.get().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(foundTimeSlot.get().getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
@@ -59,7 +59,7 @@ class JdbcTimeSlotRepositoryTest {
     void deleteExisting() {
         int defaultSize = timeRepository.findAll().size();
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        timeRepository.deleteById(savedTimeSlot.id());
+        timeRepository.deleteById(savedTimeSlot.getId());
         assertThat(timeRepository.findAll().size() == defaultSize).isTrue();
     }
 
@@ -74,7 +74,7 @@ class JdbcTimeSlotRepositoryTest {
     @DisplayName("존재하는 예약 시간 정보를 수정한다.")
     void updateExisting() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        TimeSlot updateTime = new TimeSlot(savedTimeSlot.id(), LocalTime.of(12, 0));
+        TimeSlot updateTime = new TimeSlot(savedTimeSlot.getId(), LocalTime.of(12, 0));
         assertThat(timeRepository.update(updateTime)).isEqualTo(1);
     }
 
@@ -93,7 +93,7 @@ class JdbcTimeSlotRepositoryTest {
         reservationRepository.save(
                 Reservation.transientOf("브라운", LocalDate.now().plusDays(1), savedTimeSlot, savedTheme));
 
-        assertThatThrownBy(() -> timeRepository.deleteById(savedTimeSlot.id()))
+        assertThatThrownBy(() -> timeRepository.deleteById(savedTimeSlot.getId()))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

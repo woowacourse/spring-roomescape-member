@@ -13,7 +13,7 @@ class TimeSlotTest {
     @DisplayName("정상적인 값을 입력하면 예약 시간 객체가 생성된다.")
     void create_ValidParameters_CreatesReservationTime() {
         TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
-        assertThat(timeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(timeSlot.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test

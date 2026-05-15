@@ -12,10 +12,10 @@ public class ThemeTest {
     @DisplayName("정상적인 값을 입력하면 방탈출 테마 객체가 생성된다.")
     void createValidTheme() {
         Theme theme = new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com");
-        assertThat(theme.id()).isEqualTo(1L);
-        assertThat(theme.name()).isEqualTo("공포");
-        assertThat(theme.description()).isEqualTo("귀신의 집 탈출");
-        assertThat(theme.thumbnailUrl()).isEqualTo("https://test.com");
+        assertThat(theme.getId()).isEqualTo(1L);
+        assertThat(theme.getName()).isEqualTo("공포");
+        assertThat(theme.getDescription()).isEqualTo("귀신의 집 탈출");
+        assertThat(theme.getThumbnailUrl()).isEqualTo("https://test.com");
     }
 
     @Test

@@ -49,7 +49,7 @@ class JdbcReservationRepositoryTest {
     void save() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
         Reservation savedReservation = jdbcReservationRepository.save(reservation);
-        assertThat(savedReservation.id()).isPositive();
+        assertThat(savedReservation.getId()).isPositive();
     }
 
     @Test
@@ -61,9 +61,9 @@ class JdbcReservationRepositoryTest {
                 savedTimeSlot,
                 savedTheme
         ));
-        Optional<Reservation> foundReservation = jdbcReservationRepository.findById(savedReservation.id());
+        Optional<Reservation> foundReservation = jdbcReservationRepository.findById(savedReservation.getId());
         assertThat(foundReservation).isPresent();
-        assertThat(foundReservation.get().name()).isEqualTo("브라운");
+        assertThat(foundReservation.get().getName()).isEqualTo("브라운");
     }
 
     @Test
@@ -87,7 +87,7 @@ class JdbcReservationRepositoryTest {
                 savedTimeSlot,
                 savedTheme
         ));
-        jdbcReservationRepository.deleteById(savedReservation.id());
+        jdbcReservationRepository.deleteById(savedReservation.getId());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 
@@ -98,12 +98,12 @@ class JdbcReservationRepositoryTest {
         jdbcReservationRepository.save(reservation);
         Optional<Reservation> existingReservation = jdbcReservationRepository.findByDateAndTimeIdAndThemeId(
                 LocalDate.now(),
-                savedTimeSlot.id(),
-                savedTheme.id()
+                savedTimeSlot.getId(),
+                savedTheme.getId()
         );
 
         assertThat(existingReservation).isPresent();
-        assertThat(existingReservation.get().name()).isEqualTo("브라운");
+        assertThat(existingReservation.get().getName()).isEqualTo("브라운");
     }
 
     @Test
@@ -126,7 +126,7 @@ class JdbcReservationRepositoryTest {
         );
 
         Reservation updateReservation = new Reservation(
-                newReservation.id(),
+                newReservation.getId(),
                 "네오",
                 LocalDate.now(),
                 savedTimeSlot,
@@ -143,7 +143,7 @@ class JdbcReservationRepositoryTest {
     void deleteExisting() {
         Reservation saved = jdbcReservationRepository.save(
                 Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme));
-        jdbcReservationRepository.deleteById(saved.id());
+        jdbcReservationRepository.deleteById(saved.getId());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 

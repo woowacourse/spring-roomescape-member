@@ -57,7 +57,8 @@ public class TimeSlotService {
     @Transactional
     public void patchTime(long id, LocalTime startAt) {
         TimeSlot timeSlot = findTimeSlotById(id);
-        timeSlotRepository.update(timeSlot.patch(startAt));
+        timeSlot.patch(startAt);
+        timeSlotRepository.update(timeSlot);
     }
 
     public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
@@ -69,7 +70,7 @@ public class TimeSlotService {
     }
 
     private AvailableTimeSlot mapToAvailable(TimeSlot timeSlot, List<Long> reservedIds) {
-        boolean isAvailable = !reservedIds.contains(timeSlot.id());
+        boolean isAvailable = !reservedIds.contains(timeSlot.getId());
         return new AvailableTimeSlot(timeSlot, isAvailable);
     }
 }

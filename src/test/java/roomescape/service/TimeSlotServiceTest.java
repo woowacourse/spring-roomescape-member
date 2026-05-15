@@ -27,14 +27,14 @@ class TimeSlotServiceTest {
     @DisplayName("시간 정보를 입력하여 새로운 예약 시간을 생성하고 반환한다.")
     void saveTime() {
         TimeSlot timeSlot = reservationTimeSlotService.saveTime(LocalTime.of(10, 0));
-        assertThat(timeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(timeSlot.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     @DisplayName("존재하는 예약 시간을 삭제하면 전체 목록에서 사라진다.")
     void removeTime() {
         TimeSlot timeSlot = reservationTimeSlotService.saveTime(LocalTime.of(10, 0));
-        reservationTimeSlotService.removeTime(timeSlot.id());
+        reservationTimeSlotService.removeTime(timeSlot.getId());
         assertThat(reservationTimeSlotService.allTimes()).isEmpty();
     }
 
@@ -50,7 +50,7 @@ class TimeSlotServiceTest {
     @DisplayName("식별자를 통해 특정 예약 시간 객체를 조회한다.")
     void findTime() {
         TimeSlot savedTimeSlot = reservationTimeSlotService.saveTime(LocalTime.of(10, 0));
-        TimeSlot foundTimeSlot = reservationTimeSlotService.findTimeSlotById(savedTimeSlot.id());
-        assertThat(foundTimeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
+        TimeSlot foundTimeSlot = reservationTimeSlotService.findTimeSlotById(savedTimeSlot.getId());
+        assertThat(foundTimeSlot.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 }
