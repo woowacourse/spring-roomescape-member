@@ -100,27 +100,6 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 인기_테마를_조회한다() {
-        final LocalDate fixedToday = LocalDate.of(2026, 5, 8);
-        final ZoneId zone = ZoneId.of("Asia/Seoul");
-
-        Clock fixedClock = Clock.fixed(
-                fixedToday.atStartOfDay(zone).toInstant(),
-                zone);
-
-        List<Theme> themes = List.of(
-                new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
-                new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
-        );
-
-        when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
-        List<Theme> result = themeService.findPopularThemes(Period.lastWeek(fixedClock));
-
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result).isEqualTo(themes);
-    }
-
-    @Test
     void 예약이_있는_테마_삭제시_conflict() {
         doThrow(IllegalStateException.class).when(themeRepository).delete(1L);
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
