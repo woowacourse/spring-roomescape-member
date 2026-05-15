@@ -67,7 +67,7 @@ class ReservationDateTest {
         Long loadValidId = 1L;
         LocalDate loadValidDate = LocalDate.of(2099, 1, 1);
         ReservationDate createdDate = ReservationDate.create(loadValidDate);
-        ReservationDate loadedDate = ReservationDate.load(loadValidId, loadValidDate, false);
+        ReservationDate loadedDate = ReservationDate.load(loadValidId, loadValidDate, true);
 
         // when & then
         Assertions.assertThat(createdDate)

@@ -1,12 +1,18 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.exception.ReservationDateErrorInformation.INACTIVE_DATE_NOT_ALLOWED;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.exception.ThemeErrorInformation.INACTIVE_THEME_NOT_ALLOWED;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.theme.fixture.ThemeApiFixture.updateThemeStatus;
+import static roomescape.time.exception.ReservationTimeErrorInformation.INACTIVE_TIME_NOT_ALLOWED;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
+import static roomescape.time.fixture.ReservationTimeApiFixture.updateTimeStatus;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -467,6 +473,75 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getHttpStatus().value())
                 .body("message", is(RESERVATION_NEW_SCHEDULE_PAST_NOT_ALLOWED.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비활성화된 날짜로 예약을 생성하면 예외가 발생한다.")
+    void create_reservation_with_inactive_date() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+        updateDateStatus(dateId, false);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(INACTIVE_DATE_NOT_ALLOWED.getHttpStatus().value())
+                .body("message", is(INACTIVE_DATE_NOT_ALLOWED.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비활성화된 시간으로 예약을 생성하면 예외가 발생한다.")
+    void create_reservation_with_inactive_time() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+        updateTimeStatus(timeId, false);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(INACTIVE_TIME_NOT_ALLOWED.getHttpStatus().value())
+                .body("message", is(INACTIVE_TIME_NOT_ALLOWED.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비활성화된 테마로 예약을 생성하면 예외가 발생한다.")
+    void create_reservation_with_inactive_theme() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
+        Integer themeId = createTheme(themeName);
+        updateThemeStatus(themeId, false);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservationName);
+        params.put("dateId", dateId);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/member/reservations")
+                .then().log().all()
+                .statusCode(INACTIVE_THEME_NOT_ALLOWED.getHttpStatus().value())
+                .body("message", is(INACTIVE_THEME_NOT_ALLOWED.getMessage()));
     }
 
 }

@@ -152,6 +152,7 @@ class ReservationServiceTest {
         // given
         Reservation reservation = reservation(name, reservationDate1, reservationTime1, theme1);
         ReservationSaveCommand duplicated = ReservationFixture.toCommand(name, reservationDate1, reservationTime1, theme1);
+        System.out.println(reservationDate1.isActive());
         save(reservation);
 
         //  when & then

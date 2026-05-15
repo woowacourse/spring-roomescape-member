@@ -21,7 +21,7 @@ public class ReservationTime {
 
     public static ReservationTime create(LocalTime startAt) {
         validateStartAt(startAt);
-        return new ReservationTime(null, startAt, false);
+        return new ReservationTime(null, startAt, true);
     }
 
     public static ReservationTime load(Long timeId, LocalTime startAt, boolean isActive) {

@@ -33,7 +33,7 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     @Override
     public ReservationDate save(ReservationDate reservationDate) {
         autoIncrement();
-        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.getDate(), false);
+        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.getDate(), true);
         this.reservationDates.add(savedReservationDate);
         return savedReservationDate;
     }

@@ -33,7 +33,7 @@ class ThemeTest {
                 .returns(null, Theme::getId)
                 .returns(name, Theme::getName)
                 .returns(description, Theme::getDescription)
-                .returns(false, Theme::isActive);
+                .returns(true, Theme::isActive);
     }
 
     @Test

@@ -19,7 +19,7 @@ public class ReservationDate {
 
     public static ReservationDate create(LocalDate date) {
         validateDate(date);
-        return new ReservationDate(null, date, false);
+        return new ReservationDate(null, date, true);
     }
 
     public static ReservationDate load(Long id, LocalDate date, boolean isActive) {

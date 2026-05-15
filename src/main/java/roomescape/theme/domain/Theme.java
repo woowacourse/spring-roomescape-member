@@ -23,7 +23,7 @@ public class Theme {
 
     public static Theme create(String name, String description, String thumbnailUrl) {
         validate(name, description, thumbnailUrl);
-        return new Theme(null, name, description, resolveThumbnailUrl(thumbnailUrl), false);
+        return new Theme(null, name, description, resolveThumbnailUrl(thumbnailUrl), true);
     }
 
     public static Theme load(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
