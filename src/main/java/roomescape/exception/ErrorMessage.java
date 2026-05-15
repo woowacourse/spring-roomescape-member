@@ -11,6 +11,8 @@ public enum ErrorMessage {
 
     TIME_NOT_FOUND("해당하는 ID의 시간이 존재하지 않습니다."),
     TIME_IN_USE("해당 시간에 예약이 존재하여 삭제할 수 없습니다."),
+    DUPLICATE_TIME("이미 존재하는 예약 시간입니다."),
+    DUPLICATE_THEME("이미 존재하는 테마 이름입니다."),
 
     INVALID_DATA_FORMAT("요청 데이터의 형식이 올바르지 않습니다."),
     ;

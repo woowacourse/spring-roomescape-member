@@ -72,6 +72,18 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper, ThemeStatus.AVAILABLE.name());
     }
 
+    public boolean existsByName(String name) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM theme
+                    WHERE name = ? AND status = ?
+                )
+                """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, name, ThemeStatus.AVAILABLE.name())
+        );
+    }
+
     public List<Theme> findSortedPopularThemesBy(LocalDate startAt, LocalDate endAt, int limit) {
         String sql = """
                 SELECT 

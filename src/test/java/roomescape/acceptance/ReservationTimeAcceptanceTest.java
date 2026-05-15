@@ -29,6 +29,27 @@ public class ReservationTimeAcceptanceTest extends AcceptanceTestSupport{
     }
 
     @Test
+    @DisplayName("이미 등록된 시작 시간으로 생성 요청 시 409 상태코드를 반환한다.")
+    void duplicateStartAtReservationTimeRequestTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is(ErrorMessage.DUPLICATE_TIME.getMessage()));
+    }
+
+    @Test
     @DisplayName("예약 시간 생성 요청에 형식이 맞지 않은 시간이 입력된 경우 400 상태코드와 검증 실패 메시지를 반환한다.")
     void invalidFormatReservationTimeRequestTest() {
 

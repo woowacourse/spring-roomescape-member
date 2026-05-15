@@ -82,6 +82,18 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, rowMapper, date, themeId, TimeStatus.AVAILABLE.name());
     }
 
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation_time
+                    WHERE start_at = ? AND status = ?
+                )
+                """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, startAt, TimeStatus.AVAILABLE.name())
+        );
+    }
+
     public Optional<ReservationTime> findByTimeId(long timeId) {
         String sql = "SELECT id, start_at, status FROM reservation_time WHERE id = ? AND status = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, timeId, TimeStatus.AVAILABLE.name()));

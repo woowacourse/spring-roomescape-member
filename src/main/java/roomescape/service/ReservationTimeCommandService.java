@@ -18,8 +18,15 @@ public class ReservationTimeCommandService {
     private final ReservationTimeDao reservationTimeDao;
 
     public ReservationTimeResponse create(LocalTime startAt) {
+        validateNoDuplicateReservationTime(startAt);
         ReservationTime savedReservationTime = reservationTimeDao.save(ReservationTime.pending(startAt));
         return ReservationTimeResponse.from(savedReservationTime);
+    }
+
+    private void validateNoDuplicateReservationTime(LocalTime startAt) {
+        if (reservationTimeDao.existsByStartAt(startAt)) {
+            throw new ConflictException(ErrorMessage.DUPLICATE_TIME);
+        }
     }
 
     public void delete(long reservationTimeId) {

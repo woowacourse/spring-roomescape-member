@@ -8,8 +8,32 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ErrorMessage;
 
 public class ThemeAcceptanceTest extends AcceptanceTestSupport{
+
+    @Test
+    @DisplayName("이미 등록된 테마명으로 생성 요청 시 409 상태코드를 반환한다.")
+    void duplicateThemeNameRequestTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "공포");
+        params.put("thumbnailUrl", "http://localhost:8080/roomescape.app/admin/themes");
+        params.put("description", "공포_설명");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is(ErrorMessage.DUPLICATE_THEME.getMessage()));
+    }
 
     @Test
     @DisplayName("테마 생성 요청에 테마명이 누락된 경우 400 상태코드와 검증 실패 메시지를 반환한다.")

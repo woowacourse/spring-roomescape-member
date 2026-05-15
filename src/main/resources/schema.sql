@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS theme
     thumbnail_url VARCHAR(255),
     description   VARCHAR(500),
     status   VARCHAR(20) CHECK ( status IN ('AVAILABLE', 'DELETED')),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (name)
 );
 
 
@@ -14,7 +15,8 @@ CREATE TABLE IF NOT EXISTS reservation_time
     id       BIGINT      NOT NULL AUTO_INCREMENT,
     start_at TIME        NOT NULL,
     status   VARCHAR(20) CHECK ( status IN ('AVAILABLE', 'DELETED')),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (start_at)
 );
 
 
