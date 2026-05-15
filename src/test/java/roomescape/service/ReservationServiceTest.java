@@ -484,7 +484,7 @@ class ReservationServiceTest {
         void 지난_날짜의_예약을_변경하는_경우_예외가_발생한다() {
             // given
             Reservation previous = new Reservation(
-                1L, NAME, new ReservationLocalDate(TOMORROW.minusDays(1)), SAVED_TIME, SAVED_THEME);
+                1L, NAME, new ReservationLocalDate(TOMORROW.minusDays(2)), SAVED_TIME, SAVED_THEME);
             ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
 
             when(reservationRepository.findById(anyLong()))
