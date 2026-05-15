@@ -63,7 +63,8 @@
 <script>
     async function loadThemes() {
         const res = await fetch('/themes');
-        const themes = await res.json();
+        const data = await res.json();
+        const themes = data.themes;
         const tbody = document.getElementById('theme-list');
         tbody.innerHTML = '';
 

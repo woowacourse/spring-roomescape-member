@@ -80,7 +80,8 @@
 <script>
     async function loadThemes() {
         const res = await fetch('/themes');
-        const themes = await res.json();
+        const data = await res.json();
+        const themes = data.themes; // 💡 DTO 구조에 맞게 수정 (.themes 추출)
         const sel = document.getElementById('themeId');
         themes.forEach(t => {
             sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
@@ -126,7 +127,7 @@
         data.times.forEach(t => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.textContent = t.StartAt;
+            btn.textContent = t.startAt || t.StartAt;
 
             if (t.available) {
                 btn.className = 'btn btn-outline-primary';

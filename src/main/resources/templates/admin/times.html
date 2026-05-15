@@ -54,7 +54,8 @@
 <script>
     async function loadTimes() {
         const res = await fetch('/times');
-        const times = await res.json();
+        const data = await res.json();
+        const times = data.times;
         const tbody = document.getElementById('time-list');
         tbody.innerHTML = '';
 
