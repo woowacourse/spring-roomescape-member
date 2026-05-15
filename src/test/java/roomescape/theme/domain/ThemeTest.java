@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.global.exception.validation.InvalidIdException;
+import roomescape.util.fixture.ThemeFixture;
 
 class ThemeTest {
 
@@ -29,8 +30,8 @@ class ThemeTest {
     @Test
     void 식별자가_같은_경우_동등한_객체로_판단한다() {
         // given
-        Theme themeA = new Theme(1L, "A", "hello", "/resources/image/.../A");
-        Theme themeB = new Theme(1L, "B", "hello", "/resources/image/.../B");
+        Theme themeA = ThemeFixture.createByIdAndName(1L, "A");
+        Theme themeB = ThemeFixture.createByIdAndName(1L, "B");
 
         // when & then
         Assertions.assertThat(themeA).isEqualTo(themeB);

@@ -10,4 +10,8 @@ public class ReservationTimeFixture {
     public static ReservationTime create(LocalTime time) {
         return new ReservationTime(idSequence++, time);
     }
+
+    public static ReservationTime createWithId(Long id, LocalTime time) {
+        return new ReservationTime(id, time);
+    }
 }
