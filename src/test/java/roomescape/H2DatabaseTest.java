@@ -42,7 +42,7 @@ public class H2DatabaseTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".");
+                .jsonPath().getList("data");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(*) from reservation", Integer.class);
 
