@@ -87,10 +87,10 @@ public class ReservationService {
     }
 
     private void validateAddReservation(ReservationCommand reservationCommand) {
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+
         ReservationTime reservationTime = getReservationTime(reservationCommand.timeId());
         reservationCommand.validatePastDateTime(reservationTime);
-
-        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
     }
 
     private void validateDeleteReservation(long id, String name) {
@@ -104,16 +104,18 @@ public class ReservationService {
 
     private void validateUpdateReservation(long id, String name, ReservationCommand reservationCommand) {
         ReservationWithTime reservationWithTime = getReservationWithTime(id);
-        ReservationTime reservationTime = getReservationTime(reservationCommand.timeId());
 
         if (!reservationWithTime.name().equals(name)) {
             throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
         }
 
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+
+        ReservationTime reservationTime = getReservationTime(reservationCommand.timeId());
         reservationCommand.validatePastDateTime(reservationTime);
+
         reservationWithTime.validDateReservationPastDateTime(CANNOT_UPDATE_PAST_RESERVATION);
         reservationWithTime.validateEqualValue(reservationCommand);
-        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
     }
 
     private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
