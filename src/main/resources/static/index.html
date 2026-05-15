@@ -804,6 +804,13 @@
     const reservationNav = document.getElementById('reservation-nav');
     const adminNav = document.getElementById('admin-nav');
 
+    // Admin API 엔드포인트 수정
+    const API_THEMES = '/api/v1/themes';
+    const API_ADMIN_THEMES = '/api/v1/admin/themes';
+    const API_TIMES = '/api/v1/times';
+    const API_ADMIN_TIMES = '/api/v1/admin/times';
+    const API_RESERVATIONS = '/api/v1/reservations';
+
     document.addEventListener("DOMContentLoaded", () => {
         // 네비게이션 이벤트
         reservationNav.addEventListener('click', () => showPage('reservation'));
@@ -840,6 +847,23 @@
             .replaceAll(">", "&gt;")
             .replaceAll("\"", "&quot;")
             .replaceAll("'", "&#39;");
+    }
+
+    // 서버의 ErrorResponse 포맷을 처리하는 헬퍼 함수
+    async function checkResponse(response, defaultMessage) {
+        if (!response.ok) {
+            let errorMessage = defaultMessage;
+            try {
+                const errorData = await response.json();
+                if (errorData && errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {
+                // 파싱 실패 시 기본 메시지 사용
+            }
+            throw new Error(errorMessage);
+        }
+        return response;
     }
 
     // --- 예약 페이지 스크립트 ---
@@ -889,8 +913,8 @@
 
     async function loadThemes() {
         try {
-            const response = await fetch("/api/v1/themes");
-            if (!response.ok) throw new Error("테마 목록을 불러오지 못했습니다.");
+            const response = await fetch(API_THEMES);
+            await checkResponse(response, "테마 목록을 불러오지 못했습니다.");
             const themes = await response.json();
             state.themes = themes;
             renderThemes();
@@ -918,8 +942,8 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
-            if (!response.ok) throw new Error("인기 테마를 불러오지 못했습니다.");
+            const response = await fetch(`${API_THEMES}/popular?${searchParams.toString()}`);
+            await checkResponse(response, "인기 테마를 불러오지 못했습니다.");
             const popularThemes = await response.json();
             state.popularThemes = popularThemes;
             renderPopularThemes();
@@ -1041,8 +1065,9 @@
         });
 
         try {
-            const response = await fetch(`/api/v1/times?${searchParams.toString()}`);
-            if (!response.ok) throw new Error("가능 시간을 불러오지 못했습니다.");
+            // 변경된 엔드포인트 적용 (/api/v1/reservations/available-times)
+            const response = await fetch(`${API_RESERVATIONS}/available-times?${searchParams.toString()}`);
+            await checkResponse(response, "가능 시간을 불러오지 못했습니다.");
             const times = await response.json();
 
             // 시간을 기준으로 오름차순 정렬
@@ -1085,7 +1110,7 @@
             button.type = "button";
             button.className = "time-slot";
             button.disabled = !time.available;
-            button.dataset.timeId = String(time.id);
+            button.dataset.timeId = String(time.id); // 다시 time.id로 복구
             button.innerHTML = `
                 <strong>${escapeHtml(time.time)}</strong>
                 <small class="${time.available ? "available" : "booked"}">${time.available ? "예약 가능" : "예약 완료"}</small>
@@ -1098,7 +1123,7 @@
     }
 
     function selectTime(time) {
-        state.selectedTimeId = time.id;
+        state.selectedTimeId = time.id; // 다시 time.id로 복구
         selectedTimeLabel.textContent = time.time;
         reserveButton.disabled = false;
         timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
@@ -1142,7 +1167,7 @@
         reserveButton.disabled = true;
         setStatus("예약을 생성하는 중입니다.", "neutral");
         try {
-            const response = await fetch("/api/v1/reservations", {
+            const response = await fetch(API_RESERVATIONS, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -1154,13 +1179,7 @@
                     themeId: state.selectedThemeId
                 })
             });
-            if (response.status === 409) {
-                throw new Error("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
-            }
-
-            if (!response.ok) {
-                throw new Error("예약 생성에 실패했습니다.");
-            }
+            await checkResponse(response, "예약 생성에 실패했습니다.");
             const createdReservation = await response.json();
             reservationNameInput.value = "";
             setStatus(`예약이 완료되었습니다. 예약 번호는 ${createdReservation.id}입니다.`, "success");
@@ -1204,9 +1223,6 @@
     }
 
     // --- 관리자 페이지 스크립트 ---
-    const API_THEMES = '/api/v1/themes';
-    const API_TIMES = '/api/v1/times';
-    const API_RESERVATIONS = '/api/v1/reservations';
 
     function initializeAdminPage() {
         document.getElementById('themeForm').addEventListener('submit', addTheme);
@@ -1222,7 +1238,7 @@
     async function fetchAndRender(url, tableId, renderRowFn) {
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`${url} 로딩 실패`);
+            await checkResponse(response, `${url} 로딩 실패`);
             let data = await response.json();
 
             // 관리자 페이지의 시간 목록도 시작 시간 기준으로 오름차순 정렬
@@ -1239,12 +1255,10 @@
 
     async function deleteTheme(id) {
         try {
-            const response = await fetch(`${API_THEMES}/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userName: 'ADMIN' }) // 관리자 권한 확인을 위해 하드코딩된 userName 포함
+            const response = await fetch(`${API_ADMIN_THEMES}/${id}`, {
+                method: 'DELETE'
             });
-            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
+            await checkResponse(response, `삭제 실패: ${id}`);
             loadAdminThemes();
             loadThemes(); // 메인 화면의 테마 목록도 갱신
             loadPopularThemes(); // 인기 테마 목록도 갱신
@@ -1256,8 +1270,10 @@
 
     async function deleteTimeOrReservation(url, id, callback) {
         try {
-            const response = await fetch(`${url}/${id}`, {method: 'DELETE'});
-            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
+            // 시간 삭제일 경우 Admin API 엔드포인트 사용
+            const endpoint = url === API_TIMES ? `${API_ADMIN_TIMES}/${id}` : `${url}/${id}`;
+            const response = await fetch(endpoint, {method: 'DELETE'});
+            await checkResponse(response, `삭제 실패: ${id}`);
             callback();
 
             // 예약 내역 삭제 시 화면 갱신
@@ -1278,14 +1294,20 @@
         const name = document.getElementById('themeName').value;
         const description = document.getElementById('themeDesc').value;
         const imgUrl = document.getElementById('themeImgUrl').value;
-        await fetch(API_THEMES, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name, description, imgUrl, userName: 'ADMIN'}) // userName 하드코딩
-        });
-        e.target.reset();
-        loadAdminThemes();
-        loadThemes(); // 메인 화면의 테마 목록도 갱신
+        try {
+            const response = await fetch(API_ADMIN_THEMES, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, description, imgUrl})
+            });
+            await checkResponse(response, "테마 추가에 실패했습니다.");
+            e.target.reset();
+            loadAdminThemes();
+            loadThemes(); // 메인 화면의 테마 목록도 갱신
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
     }
 
     function loadAdminThemes() {
@@ -1302,13 +1324,19 @@
     async function addTime(e) {
         e.preventDefault();
         const startAt = document.getElementById('timeStartAt').value;
-        await fetch(API_TIMES, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({startAt})
-        });
-        e.target.reset();
-        loadAdminTimes();
+        try {
+            const response = await fetch(API_ADMIN_TIMES, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({startAt})
+            });
+            await checkResponse(response, "시간 추가에 실패했습니다.");
+            e.target.reset();
+            loadAdminTimes();
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
     }
 
     function loadAdminTimes() {
