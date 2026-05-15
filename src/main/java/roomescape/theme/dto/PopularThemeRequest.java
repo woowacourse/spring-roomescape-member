@@ -3,8 +3,6 @@ package roomescape.theme.dto;
 import jakarta.validation.constraints.Positive;
 
 public record PopularThemeRequest(
-        String sort,
-
         @Positive(message = "limit는 양수여야 합니다.")
         int limit,
 

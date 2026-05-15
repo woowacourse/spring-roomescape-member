@@ -96,7 +96,7 @@ class ThemeServiceTest {
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 2L, 1L);
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 3L, 1L);
 
-        PopularThemesResponse response = themeService.findPopularThemes("reservations", 10, 7);
+        PopularThemesResponse response = themeService.findPopularThemes(10, 7);
 
         assertThat(response).isNotNull();
         assertThat(response.getPopularThemeResponses()).hasSize(2);

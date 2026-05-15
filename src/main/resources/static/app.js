@@ -69,7 +69,7 @@ function loadThemes() {
 
 // 인기 테마 통계 조회
 function loadPopularThemes() {
-    fetch('/themes?sort=reservations&limit=10&days=7')
+    fetch('/themes/popular?limit=10&days=7')
         .then(res => res.json())
         .then(popularThemes => {
             const popularList = document.getElementById('popular-themes-list');

@@ -24,10 +24,10 @@ public class ThemeController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping(params = "sort")
+    @GetMapping("/popular")
     public ResponseEntity<PopularThemesResponse> findPopularThemes(
             @Valid @ModelAttribute PopularThemeRequest request) {
-        PopularThemesResponse responses = themeService.findPopularThemes(request.sort(), request.limit(), request.days());
+        PopularThemesResponse responses = themeService.findPopularThemes(request.limit(), request.days());
         return ResponseEntity.ok(responses);
     }
 }

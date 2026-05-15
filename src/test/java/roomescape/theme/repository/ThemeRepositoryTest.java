@@ -100,7 +100,7 @@ class ThemeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 2L, 1L);
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 3L, 1L);
 
-        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes("reservations", 10, 7);
+        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes(10, 7);
 
         assertThat(popularThemes).hasSize(2);
         assertThat(popularThemes.get(0).getThemeName()).isEqualTo("테마1");
