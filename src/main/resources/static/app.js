@@ -5,6 +5,8 @@ const state = {
   selectedDate: formatDate(new Date()),
   selectedTimeId: null,
   availableTimes: [],
+  changingReservation: null,
+  changeSelectedTimeId: null,
 };
 
 const elements = {
@@ -21,7 +23,16 @@ const elements = {
   searchForm: document.querySelector("#reservation-search-form"),
   searchNameInput: document.querySelector("#reservation-search-name"),
   searchResult: document.querySelector("#reservation-search-result"),
-  toast: document.querySelector("#toast"),
+  // 에러 모달
+  errorModal: document.querySelector("#error-modal"),
+  errorModalBody: document.querySelector("#error-modal-body"),
+  errorModalClose: document.querySelector("#error-modal-close"),
+  // 예약 변경 모달
+  changeModal: document.querySelector("#change-modal"),
+  changeDateInput: document.querySelector("#change-date"),
+  changeTimeList: document.querySelector("#change-time-list"),
+  changeModalCancel: document.querySelector("#change-modal-cancel"),
+  changeModalConfirm: document.querySelector("#change-modal-confirm"),
 };
 
 document.addEventListener("DOMContentLoaded", initialize);
@@ -38,7 +49,37 @@ function bindEvents() {
   elements.dateInput.addEventListener("change", handleDateChange);
   elements.form.addEventListener("submit", handleReservationSubmit);
   elements.searchForm.addEventListener("submit", handleReservationSearch);
+  elements.errorModalClose.addEventListener("click", closeErrorModal);
+  elements.errorModal.addEventListener("click", (e) => {
+    if (e.target === elements.errorModal) closeErrorModal();
+  });
+  elements.changeModalCancel.addEventListener("click", closeChangeModal);
+  elements.changeModal.addEventListener("click", (e) => {
+    if (e.target === elements.changeModal) closeChangeModal();
+  });
+  elements.changeDateInput.addEventListener("change", handleChangeDateChange);
+  elements.changeModalConfirm.addEventListener("click", handleChangeConfirm);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeErrorModal();
+      closeChangeModal();
+    }
+  });
 }
+
+// ── 에러 모달 ──────────────────────────────────────────
+
+function showErrorModal(message) {
+  elements.errorModalBody.textContent = message;
+  elements.errorModal.hidden = false;
+  elements.errorModalClose.focus();
+}
+
+function closeErrorModal() {
+  elements.errorModal.hidden = true;
+}
+
+// ── 테마 로드 / 렌더 ───────────────────────────────────
 
 async function loadThemes() {
   renderLoading(elements.themeList, "테마를 불러오는 중입니다.");
@@ -163,6 +204,8 @@ async function handleDateChange(event) {
   await loadAvailableTimes();
 }
 
+// ── 예약 가능 시간 ──────────────────────────────────────
+
 function renderAvailableTimes() {
   elements.timeList.innerHTML = "";
   if (state.availableTimes.length === 0) {
@@ -195,18 +238,44 @@ function handleTimeSelect(timeId) {
   updateSubmitButton();
 }
 
+// ── 예약 생성 ───────────────────────────────────────────
+
 async function handleReservationSubmit(event) {
   event.preventDefault();
   const reservation = await createReservation();
+  if (!reservation) return;
   renderReservationResult(reservation);
-  showToast("예약이 완료되었습니다.");
   await loadAvailableTimes();
 }
+
+async function createReservation() {
+  const payload = {
+    name: elements.nameInput.value.trim(),
+    date: state.selectedDate,
+    timeId: state.selectedTimeId,
+    themeId: state.selectedThemeId,
+  };
+  return requestJson("/reservations", createPostOption(payload));
+}
+
+function renderReservationResult(reservation) {
+  elements.result.hidden = false;
+  elements.result.innerHTML = `
+    <h3>예약 완료</h3>
+    <p>예약자: ${escapeHtml(reservation.name)}</p>
+    <p>날짜: ${reservation.date}</p>
+    <p>시간: ${formatStartAt(reservation.time.startAt)}</p>
+    <p>테마: ${escapeHtml(reservation.theme.name)}</p>
+  `;
+}
+
+// ── 내 예약 조회 / 취소 / 변경 ────────────────────────────
 
 async function handleReservationSearch(event) {
   event.preventDefault();
   renderLoading(elements.searchResult, "예약을 조회하는 중입니다.");
   const reservations = await requestJson(reservationSearchUrl());
+  if (reservations === undefined) return;
   renderSearchResult(reservations);
 }
 
@@ -233,6 +302,7 @@ function createReservationItem(reservation) {
   item.append(createTextElement("span", reservation.name));
   item.append(createTextElement("span", reservation.date));
   item.append(createTextElement("span", formatStartAt(reservation.time.startAt)));
+  item.append(createChangeButton(reservation));
   item.append(createCancelButton(reservation));
   return item;
 }
@@ -243,6 +313,15 @@ function createCancelButton(reservation) {
   button.className = "danger-button";
   button.textContent = "취소";
   button.addEventListener("click", () => confirmCancelReservation(reservation));
+  return button;
+}
+
+function createChangeButton(reservation) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "secondary-button";
+  button.textContent = "변경";
+  button.addEventListener("click", () => openChangeModal(reservation));
   return button;
 }
 
@@ -259,45 +338,112 @@ function cancelConfirmMessage(reservation) {
 }
 
 async function cancelReservation(reservationId) {
-  await request(`/reservations/${reservationId}`, {method: "DELETE"});
-  showToast("예약이 취소되었습니다.");
+  const ok = await request(`/reservations/${reservationId}`, {method: "DELETE"});
+  if (!ok) return;
   await refreshReservationSearch();
   await loadAvailableTimes();
 }
 
 async function refreshReservationSearch() {
   const reservations = await requestJson(reservationSearchUrl());
+  if (reservations === undefined) return;
   renderSearchResult(reservations);
 }
 
-async function createReservation() {
-  const payload = {
-    name: elements.nameInput.value.trim(),
-    date: state.selectedDate,
-    timeId: state.selectedTimeId,
-    themeId: state.selectedThemeId,
-  };
-  return requestJson("/reservations", createPostOption(payload));
+// ── 예약 변경 모달 ──────────────────────────────────────
+
+async function openChangeModal(reservation) {
+  state.changingReservation = reservation;
+  state.changeSelectedTimeId = null;
+
+  elements.changeDateInput.value = reservation.date;
+  elements.changeModalConfirm.disabled = true;
+  elements.changeModal.hidden = false;
+  elements.changeDateInput.focus();
+
+  await loadChangeAvailableTimes();
 }
 
-function createPostOption(payload) {
-  return {
-    method: "POST",
+function closeChangeModal() {
+  elements.changeModal.hidden = true;
+  state.changingReservation = null;
+  state.changeSelectedTimeId = null;
+}
+
+async function handleChangeDateChange() {
+  state.changeSelectedTimeId = null;
+  elements.changeModalConfirm.disabled = true;
+  await loadChangeAvailableTimes();
+}
+
+async function loadChangeAvailableTimes() {
+  const reservation = state.changingReservation;
+  if (!reservation) return;
+  const date = elements.changeDateInput.value;
+  const url = `/times/available?date=${date}&themeId=${reservation.theme.id}`;
+  renderLoading(elements.changeTimeList, "시간을 불러오는 중입니다.");
+  const times = await requestJson(url);
+  if (times === undefined) return;
+  renderChangeTimelist(times);
+}
+
+function renderChangeTimelist(times) {
+  elements.changeTimeList.innerHTML = "";
+  if (times.length === 0) {
+    renderEmpty(elements.changeTimeList, "선택 가능한 시간이 없습니다.");
+    return;
+  }
+  times.forEach((t) => elements.changeTimeList.appendChild(createChangeTimeButton(t)));
+}
+
+function createChangeTimeButton(timeAvailability) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = changeTimeButtonClassName(timeAvailability);
+  button.disabled = !timeAvailability.available;
+  button.dataset.timeId = timeAvailability.time.id;
+  button.textContent = formatStartAt(timeAvailability.time.startAt);
+  button.addEventListener("click", () => handleChangeTimeSelect(timeAvailability.time.id));
+  return button;
+}
+
+function changeTimeButtonClassName(timeAvailability) {
+  if (timeAvailability.time.id === state.changeSelectedTimeId) {
+    return "time-button is-selected";
+  }
+  return "time-button";
+}
+
+function handleChangeTimeSelect(timeId) {
+  state.changeSelectedTimeId = timeId;
+  elements.changeModalConfirm.disabled = false;
+  Array.from(elements.changeTimeList.querySelectorAll(".time-button")).forEach((btn) => {
+    btn.className = Number(btn.dataset.timeId) === timeId ? "time-button is-selected" : "time-button";
+  });
+}
+
+async function handleChangeConfirm() {
+  const reservation = state.changingReservation;
+  if (!reservation || !state.changeSelectedTimeId) return;
+
+  const payload = {
+    date: elements.changeDateInput.value,
+    timeId: state.changeSelectedTimeId,
+  };
+
+  const ok = await request(`/reservations/${reservation.id}`, {
+    method: "PATCH",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(payload),
-  };
+  });
+
+  if (!ok) return;
+  closeChangeModal();
+  await refreshReservationSearch();
+  await loadAvailableTimes();
 }
 
-function renderReservationResult(reservation) {
-  elements.result.hidden = false;
-  elements.result.innerHTML = `
-    <h3>예약 완료</h3>
-    <p>예약자: ${escapeHtml(reservation.name)}</p>
-    <p>날짜: ${reservation.date}</p>
-    <p>시간: ${formatStartAt(reservation.time.startAt)}</p>
-    <p>테마: ${escapeHtml(reservation.theme.name)}</p>
-  `;
-}
+// ── 공통 유틸 ───────────────────────────────────────────
 
 function resetSelectedTime() {
   state.selectedTimeId = null;
@@ -310,6 +456,7 @@ function updateSubmitButton() {
 
 async function requestJson(url, options = {}) {
   const response = await request(url, options);
+  if (!response) return undefined;
   return response.json();
 }
 
@@ -319,19 +466,19 @@ async function request(url, options = {}) {
     return response;
   }
   await handleErrorResponse(response);
+  return null;
 }
 
 async function handleErrorResponse(response) {
   const error = await readError(response);
-  showToast(error.message, true);
-  throw new Error(error.message);
+  showErrorModal(error.message);
 }
 
 async function readError(response) {
   const fallback = {message: "요청을 처리하지 못했습니다."};
   try {
-    return response.json();
-  } catch (error) {
+    return await response.json();
+  } catch {
     return fallback;
   }
 }
@@ -384,13 +531,12 @@ function renderEmpty(container, message) {
   container.innerHTML = `<div class="empty">${message}</div>`;
 }
 
-function showToast(message, error = false) {
-  elements.toast.textContent = message;
-  elements.toast.className = error ? "toast is-error" : "toast";
-  elements.toast.hidden = false;
-  window.setTimeout(() => {
-    elements.toast.hidden = true;
-  }, 2400);
+function createPostOption(payload) {
+  return {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  };
 }
 
 function escapeHtml(value) {

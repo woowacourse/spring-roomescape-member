@@ -76,7 +76,8 @@
               <th>날짜</th>
               <th>시간</th>
               <th>테마</th>
-              <th>관리</th>
+              <th>변경</th>
+              <th>취소</th>
             </tr>
           </thead>
           <tbody id="reservation-table-body"></tbody>
@@ -133,6 +134,55 @@
       </article>
     </section>
   </main>
+
+  <!-- 에러 모달 -->
+  <div id="error-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="error-modal-title" hidden>
+    <div class="modal">
+      <h2 id="error-modal-title" class="modal-title is-error">요청 실패</h2>
+      <p id="error-modal-body" class="modal-body"></p>
+      <div class="modal-actions">
+        <button id="error-modal-close" class="primary-button" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 확인 모달 -->
+  <div id="confirm-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" hidden>
+    <div class="modal">
+      <h2 id="confirm-modal-title" class="modal-title">확인</h2>
+      <p id="confirm-modal-body" class="modal-body"></p>
+      <div class="modal-actions">
+        <button id="confirm-modal-cancel" class="secondary-button" type="button">취소</button>
+        <button id="confirm-modal-ok" class="danger-button" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예약 변경 모달 -->
+  <div id="change-modal" class="modal-backdrop change-modal" role="dialog" aria-modal="true" aria-labelledby="change-modal-title" hidden>
+    <div class="modal">
+      <h2 id="change-modal-title" class="modal-title">예약 변경</h2>
+      <div class="change-modal-form">
+        <div class="field">
+          <label for="change-theme">테마 <span class="field-hint">(시간 조회 기준)</span></label>
+          <select id="change-theme"></select>
+        </div>
+        <div class="field">
+          <label for="change-date">변경할 날짜</label>
+          <input id="change-date" type="date" required>
+        </div>
+        <div class="field">
+          <label>변경할 시간</label>
+          <div id="change-time-list" class="change-time-grid"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="change-modal-cancel" class="secondary-button" type="button">취소</button>
+        <button id="change-modal-confirm" class="primary-button" type="button" disabled>변경하기</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script src="/admin.js" defer></script>
 </body>

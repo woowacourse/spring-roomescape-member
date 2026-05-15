@@ -269,6 +269,12 @@ button {
   font-weight: 800;
 }
 
+.field-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
 .field input {
   width: 100%;
   min-height: 44px;
@@ -378,7 +384,7 @@ button {
 
 .reservation-item {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(90px, auto)) 92px;
+  grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(90px, auto)) 76px 76px;
   gap: 12px;
   align-items: center;
   border: 1px solid var(--line);
@@ -594,6 +600,78 @@ button {
 .status-badge.is-used {
   background: var(--selected-soft);
   color: #9a5204;
+}
+
+/* ── 모달 ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(32, 24, 16, 0.48);
+  z-index: 200;
+  padding: 16px;
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal {
+  width: min(480px, 100%);
+  border-radius: 12px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+  padding: 28px 28px 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.modal-title.is-error {
+  color: var(--danger);
+}
+
+.modal-body {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-actions .primary-button,
+.modal-actions .secondary-button,
+.modal-actions .danger-button {
+  min-width: 80px;
+}
+
+/* 예약 변경 모달 */
+.change-modal .modal {
+  width: min(520px, 100%);
+}
+
+.change-modal-form {
+  display: grid;
+  gap: 14px;
+}
+
+.change-time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 @media (max-width: 900px) {
