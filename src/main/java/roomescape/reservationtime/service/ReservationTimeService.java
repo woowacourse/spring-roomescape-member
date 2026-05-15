@@ -49,7 +49,7 @@ public class ReservationTimeService {
             throw new DomainException(RESERVATION_TIME_HAS_RESERVATION);
         }
 
-        if (!reservationTimeRepository.deleteById(id)) {
+        if (!reservationTimeRepository.cancelById(id)) {
             throw new DomainException(RESERVATION_TIME_NOT_FOUND);
         }
     }

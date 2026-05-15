@@ -135,6 +135,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count == 1;
     }
 
+    @Override
     public boolean cancelById(Long id) {
         int rowCount = jdbcTemplate.update("""
                 UPDATE reservation

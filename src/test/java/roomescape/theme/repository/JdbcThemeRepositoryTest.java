@@ -308,7 +308,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("Theme를 삭제한다.")
-    public void deleteById() {
+    public void cancelById() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -326,7 +326,7 @@ class JdbcThemeRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
         clock.setFixed(now);
 
-        boolean deleted = jdbcThemeRepository.deleteById(theme.getId());
+        boolean deleted = jdbcThemeRepository.cancelById(theme.getId());
 
         assertThat(deleted).isTrue();
         assertThat(jdbcThemeRepository.findAll()).isEmpty();
@@ -337,12 +337,12 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 Theme는 삭제되지 않는다.")
-    public void deleteById_fail() {
+    public void cancelById_fail() {
         // given
         Long id = 1L;
 
         // when
-        boolean deleted = jdbcThemeRepository.deleteById(id);
+        boolean deleted = jdbcThemeRepository.cancelById(id);
 
         // then
         assertThat(deleted).isFalse();

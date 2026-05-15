@@ -127,7 +127,7 @@ class JdbcReservationTimeRepositoryTest {
         clock.setFixed(now);
 
         // when
-        boolean deleted = reservationTimeRepository.deleteById(reservationTime.getId());
+        boolean deleted = reservationTimeRepository.cancelById(reservationTime.getId());
 
         // then
         assertThat(deleted).isTrue();
@@ -140,12 +140,12 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간은 삭제되지 않는다.")
-    public void deleteById_fail() {
+    public void cancelById_fail() {
         // given
         Long id = 1L;
 
         // when
-        boolean deleted = reservationTimeRepository.deleteById(id);
+        boolean deleted = reservationTimeRepository.cancelById(id);
 
         // then
         assertThat(deleted).isFalse();

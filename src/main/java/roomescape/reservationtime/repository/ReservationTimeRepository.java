@@ -12,12 +12,10 @@ public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
-
-    boolean deleteById(Long id);
-
     Optional<ReservationTime> findById(Long id);
+    List<ReservationTimeAvailability> findAllByDateAndThemeIdWithAvailability(LocalDate date, Long themeId);
 
     boolean existsByStartAt(LocalTime startAt);
 
-    List<ReservationTimeAvailability> findAllByDateAndThemeIdWithAvailability(LocalDate date, Long themeId);
+    boolean cancelById(Long id);
 }

@@ -49,6 +49,17 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public Optional<Theme> findById(Long id) {
+        return jdbcTemplate.query("""
+                        SELECT id, name, description, thumbnail
+                        FROM theme
+                        WHERE id = ? AND deleted_at IS NULL
+                        """, themeRowMapper, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
         return jdbcTemplate.query("""
                         SELECT
@@ -70,17 +81,6 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
-        return jdbcTemplate.query("""
-                        SELECT id, name, description, thumbnail
-                        FROM theme
-                        WHERE id = ? AND deleted_at IS NULL
-                        """, themeRowMapper, id)
-                .stream()
-                .findFirst();
-    }
-
-    @Override
     public boolean existsById(Long id) {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
@@ -91,7 +91,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean cancelById(Long id) {
         int rowCount = jdbcTemplate.update("""
                 UPDATE theme
                 SET deleted_at = ?

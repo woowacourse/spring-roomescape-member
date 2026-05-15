@@ -45,16 +45,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        int rowCount = jdbcTemplate.update("""
-                UPDATE reservation_time
-                SET deleted_at = ?, delete_token = ?
-                WHERE id = ? AND deleted_at IS NULL
-                """, LocalDateTime.now(clock), id, id);
-        return rowCount > 0;
-    }
-
-    @Override
     public Optional<ReservationTime> findById(Long id) {
         return jdbcTemplate.query("""
                         SELECT id, start_at
@@ -63,16 +53,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                         """, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
-    }
-
-    @Override
-    public boolean existsByStartAt(LocalTime startAt) {
-        Integer count = jdbcTemplate.queryForObject("""
-                SELECT COUNT(*)
-                FROM reservation_time
-                WHERE start_at = ? AND deleted_at IS NULL
-                """, Integer.class, startAt.toString());
-        return count != null && count > 0;
     }
 
     @Override
@@ -92,6 +72,26 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 """;
 
         return jdbcTemplate.query(sql, reservationTimeAvailabilityRowMapper, date, themeId);
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation_time
+                WHERE start_at = ? AND deleted_at IS NULL
+                """, Integer.class, startAt.toString());
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean cancelById(Long id) {
+        int rowCount = jdbcTemplate.update("""
+                UPDATE reservation_time
+                SET deleted_at = ?, delete_token = ?
+                WHERE id = ? AND deleted_at IS NULL
+                """, LocalDateTime.now(clock), id, id);
+        return rowCount > 0;
     }
 
     private void insert(ReservationTime reservationTime, KeyHolder keyHolder) {

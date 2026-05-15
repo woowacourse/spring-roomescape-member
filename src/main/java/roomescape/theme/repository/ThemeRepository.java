@@ -10,12 +10,10 @@ public interface ThemeRepository {
     Theme save(Theme theme);
 
     List<Theme> findAll();
-
-    List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit);
-
     Optional<Theme> findById(Long id);
+    List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit);
 
     boolean existsById(Long id);
 
-    boolean deleteById(Long id);
+    boolean cancelById(Long id);
 }
