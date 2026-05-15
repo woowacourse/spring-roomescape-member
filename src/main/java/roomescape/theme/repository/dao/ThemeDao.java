@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -21,11 +22,12 @@ public class ThemeDao {
                     rs.getString("image_url"),
                     rs.getBoolean("is_deleted")
             );
-    private final JdbcTemplate jdbcTemplate;
+
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -33,7 +35,7 @@ public class ThemeDao {
 
     public List<ThemeEntity> findAll() {
         String sql = "SELECT * FROM theme WHERE is_deleted = FALSE";
-        return jdbcTemplate.query(sql, themeEntityRowMapper);
+        return namedParameterJdbcTemplate.query(sql, themeEntityRowMapper);
     }
 
     public Long save(String name, String description, String imageUrl) {
@@ -47,20 +49,23 @@ public class ThemeDao {
     }
 
     public int deleteById(Long id) {
-        String sql = "UPDATE theme SET is_deleted = TRUE WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        String sql = "UPDATE theme SET is_deleted = TRUE WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
     public Optional<ThemeEntity> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ? AND is_deleted = FALSE";
-        return jdbcTemplate.query(sql, themeEntityRowMapper, id)
+        String sql = "SELECT * FROM theme WHERE id = :id AND is_deleted = FALSE";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameters, themeEntityRowMapper)
                 .stream()
                 .findFirst();
     }
 
     public ThemeEntity getByIdIncludingDeleted(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id);
+        String sql = "SELECT * FROM theme WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.queryForObject(sql, parameters, themeEntityRowMapper);
     }
 
     public List<ThemeEntity> findThemesOrderByReservationCountDesc(String startDate, String endDate, int limit) {
@@ -74,29 +79,31 @@ public class ThemeDao {
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
                 WHERE t.is_deleted = FALSE
-                  AND r.date >= ?
-                  AND r.date <= ?
+                  AND r.date >= :startDate
+                  AND r.date <= :endDate
                 GROUP BY t.id, t.name, t.description, t.image_url
                 ORDER BY COUNT(r.id) DESC , t.name
-                LIMIT ?
+                LIMIT :limit
                 """;
 
-        return jdbcTemplate.query(sql, themeEntityRowMapper, startDate, endDate, limit);
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("limit", limit);
+
+        return namedParameterJdbcTemplate.query(sql, parameters, themeEntityRowMapper);
     }
 
     public boolean existsById(Long id) {
         String sql = """
                 SELECT COUNT(*)
                 FROM theme
-                WHERE id = ?
+                WHERE id = :id
                   AND is_deleted = FALSE
                 """;
 
-        Integer count = jdbcTemplate.queryForObject(
-                sql,
-                Integer.class,
-                id
-        );
+        MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
 
         return count != null && count > 0;
     }
