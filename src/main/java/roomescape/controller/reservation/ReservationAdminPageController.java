@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.exception.ApiException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.reservation.ReservationService;
 
 @Controller
@@ -45,7 +46,7 @@ public class ReservationAdminPageController {
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/admin/reservations";
         } catch (Exception exception) {
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            redirectAttributes.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
             return "redirect:/pages/admin/reservations";
         }
 

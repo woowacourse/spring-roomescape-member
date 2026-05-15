@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.exception.ApiException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidInputException;
 import roomescape.service.reservation.ReservationService;
 import roomescape.controller.reservationtime.dto.ReservationTimeResponse;
 import roomescape.service.reservationtime.ReservationTimeService;
@@ -106,7 +108,7 @@ public class ReservationPageController {
                     parsedThemeId,
                     parsedDate,
                     name,
-                    "INTERNAL_SERVER_ERROR"
+                    ErrorCode.INTERNAL_SERVER_ERROR.getCode()
             );
         }
 
@@ -135,7 +137,7 @@ public class ReservationPageController {
                     null,
                     null,
                     reservationName,
-                    "INTERNAL_SERVER_ERROR"
+                    ErrorCode.INTERNAL_SERVER_ERROR.getCode()
             );
         }
 
@@ -172,7 +174,7 @@ public class ReservationPageController {
                     null,
                     null,
                     reservationName,
-                    "INTERNAL_SERVER_ERROR"
+                    ErrorCode.INTERNAL_SERVER_ERROR.getCode()
             );
         }
 
@@ -278,8 +280,8 @@ public class ReservationPageController {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException exception) {
-            throw new roomescape.exception.InvalidInputException(
-                    "INVALID_TYPE_VALUE",
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_TYPE_VALUE,
                     "숫자 형식의 값이 필요합니다."
             );
         }
@@ -293,8 +295,8 @@ public class ReservationPageController {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException exception) {
-            throw new roomescape.exception.InvalidInputException(
-                    "INVALID_DATE_FORMAT",
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_DATE_FORMAT,
                     "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식이어야 합니다."
             );
         }
@@ -313,7 +315,7 @@ public class ReservationPageController {
             return List.of();
         }
 
-        if ("RESERVATION_NAME_REQUIRED".equals(errorCode)) {
+        if (ErrorCode.RESERVATION_NAME_REQUIRED.getCode().equals(errorCode)) {
             return List.of();
         }
 

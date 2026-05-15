@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -47,7 +48,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 return preparedStatement;
             }, keyHolder);
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("RESERVATION_TIME_DUPLICATED", "같은 시간을 추가할 수 없습니다.");
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_DUPLICATED, "같은 시간을 추가할 수 없습니다.");
         }
 
         Number key = keyHolder.getKey();
@@ -80,7 +81,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             jdbcTemplate.update(sql, timeId);
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("RESERVATION_TIME_IN_USE", "이미 예약된 시간은 삭제할 수 없습니다.");
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_IN_USE, "이미 예약된 시간은 삭제할 수 없습니다.");
         }
     }
 

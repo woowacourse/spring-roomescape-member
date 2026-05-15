@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.exception.ApiException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.theme.ThemeService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -47,7 +48,7 @@ public class ThemeAdminPageController {
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/admin/themes";
         } catch (Exception exception) {
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            redirectAttributes.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
             return "redirect:/pages/admin/themes";
         }
 
@@ -62,7 +63,7 @@ public class ThemeAdminPageController {
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/admin/themes";
         } catch (Exception exception) {
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            redirectAttributes.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
             return "redirect:/pages/admin/themes";
         }
 

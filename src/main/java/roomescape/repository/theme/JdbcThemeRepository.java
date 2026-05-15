@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -52,7 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("THEME_IN_USE", "이미 예약된 테마는 삭제할 수 없습니다.");
+            throw new ConflictException(ErrorCode.THEME_IN_USE, "이미 예약된 테마는 삭제할 수 없습니다.");
         }
     }
 
@@ -70,7 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 return preparedStatement;
             }, keyHolder);
         } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("THEME_NAME_DUPLICATED", "테마 이름 중복은 불가능합니다.");
+            throw new ConflictException(ErrorCode.THEME_NAME_DUPLICATED, "테마 이름 중복은 불가능합니다.");
         }
 
         Number key = keyHolder.getKey();

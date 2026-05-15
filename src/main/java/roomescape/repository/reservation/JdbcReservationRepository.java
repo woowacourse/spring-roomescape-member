@@ -15,6 +15,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -166,7 +167,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             }, keyHolder);
         } catch (DataIntegrityViolationException exception) {
             throw new ConflictException(
-                    "RESERVATION_DUPLICATED",
+                    ErrorCode.RESERVATION_DUPLICATED,
                     "동일한 시기에 예약을 할 수 없습니다."
             );
         }
@@ -196,7 +197,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             );
         } catch (DataIntegrityViolationException exception) {
             throw new ConflictException(
-                    "RESERVATION_DUPLICATED",
+                    ErrorCode.RESERVATION_DUPLICATED,
                     "동일한 시기에 예약을 할 수 없습니다."
             );
         }

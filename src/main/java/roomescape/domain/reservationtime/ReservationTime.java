@@ -5,6 +5,9 @@ import java.util.Objects;
 import roomescape.exception.InvalidInputException;
 
 public class ReservationTime {
+    private static final String INVALID_RESERVATION_TIME = "INVALID_RESERVATION_TIME";
+    private static final String INVALID_RESERVATION_TIME_ID = "INVALID_RESERVATION_TIME_ID";
+
     private final Long id;
     private final LocalTime startAt;
 
@@ -17,7 +20,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_TIME", "예약 시간을 비어있을 수 없습니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_TIME, "예약 시간을 비어있을 수 없습니다.");
         }
     }
 
@@ -37,7 +40,7 @@ public class ReservationTime {
 
     private static void validateId(final Long id){
         if(id == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_TIME_ID", "Id는 비어있을 수 없습니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_TIME_ID, "Id는 비어있을 수 없습니다.");
         }
     }
 

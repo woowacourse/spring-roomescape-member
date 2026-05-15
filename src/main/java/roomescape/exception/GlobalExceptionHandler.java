@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNoResourceFound(final NoResourceFoundException exception) {
         return errorResponse(
                 HttpStatus.NOT_FOUND,
-                "RESOURCE_NOT_FOUND",
+                ErrorCode.RESOURCE_NOT_FOUND.getCode(),
                 "요청한 리소스를 찾을 수 없습니다."
         );
     }
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
     ) {
         return errorResponse(
                 HttpStatus.CONFLICT,
-                "DATA_CONFLICT",
+                ErrorCode.DATA_CONFLICT.getCode(),
                 "저장 중 충돌이 발생했습니다. 잠시 후 다시 시도해 주세요."
         );
     }
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
         return errorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "INTERNAL_SERVER_ERROR",
+                ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
                 "서버 내부 오류가 발생했습니다."
         );
     }
@@ -118,33 +118,33 @@ public class GlobalExceptionHandler {
 
             if (message.contains("java.time.LocalDate")) {
                 return badRequest(
-                        "INVALID_DATE_FORMAT",
+                        ErrorCode.INVALID_DATE_FORMAT.getCode(),
                         "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식이어야 합니다."
                 );
             }
 
             if (message.contains("java.time.LocalTime")) {
                 return badRequest(
-                        "INVALID_TIME_FORMAT",
+                        ErrorCode.INVALID_TIME_FORMAT.getCode(),
                         "시간 형식이 올바르지 않습니다. HH:mm 형식이어야 합니다."
                 );
             }
         }
 
         if (cause instanceof JsonParseException) {
-            return badRequest("MALFORMED_JSON", "요청 본문 JSON 형식이 올바르지 않습니다.");
+            return badRequest(ErrorCode.MALFORMED_JSON.getCode(), "요청 본문 JSON 형식이 올바르지 않습니다.");
         }
 
         if (cause instanceof MismatchedInputException) {
-            return badRequest("INVALID_TYPE_VALUE", "요청 값의 타입이 올바르지 않습니다.");
+            return badRequest(ErrorCode.INVALID_TYPE_VALUE.getCode(), "요청 값의 타입이 올바르지 않습니다.");
         }
 
-        return badRequest("INVALID_INPUT", "요청 형식이 올바르지 않습니다.");
+        return badRequest(ErrorCode.INVALID_INPUT.getCode(), "요청 형식이 올바르지 않습니다.");
     }
 
     private ResponseEntity<ErrorResponse> buildValidationErrorResponse(final FieldError fieldError) {
         if (Objects.isNull(fieldError)) {
-            return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
+            return badRequest(ErrorCode.INVALID_INPUT.getCode(), "유효하지 않은 입력입니다.");
         }
 
         ValidationErrorDetail validationErrorDetail = resolveValidationErrorDetail(fieldError);
@@ -153,7 +153,7 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponse> buildBindingErrorResponse(final FieldError fieldError) {
         if (Objects.isNull(fieldError)) {
-            return badRequest("INVALID_INPUT", "유효하지 않은 입력입니다.");
+            return badRequest(ErrorCode.INVALID_INPUT.getCode(), "유효하지 않은 입력입니다.");
         }
 
         if ("typeMismatch".equals(fieldError.getCode())) {
@@ -191,14 +191,14 @@ public class GlobalExceptionHandler {
 
     private String resolveBindingCode(final FieldError fieldError) {
         if ("date".equals(fieldError.getField())) {
-            return "INVALID_DATE_FORMAT";
+            return ErrorCode.INVALID_DATE_FORMAT.getCode();
         }
 
         if ("startAt".equals(fieldError.getField())) {
-            return "INVALID_TIME_FORMAT";
+            return ErrorCode.INVALID_TIME_FORMAT.getCode();
         }
 
-        return "INVALID_TYPE_VALUE";
+        return ErrorCode.INVALID_TYPE_VALUE.getCode();
     }
 
     private ValidationErrorDetail resolveValidationErrorDetail(final FieldError fieldError) {
@@ -206,10 +206,10 @@ public class GlobalExceptionHandler {
 
         if (Objects.isNull(defaultMessage) || !defaultMessage.contains(VALIDATION_MESSAGE_SEPARATOR)) {
             if (Objects.isNull(defaultMessage)) {
-                return new ValidationErrorDetail("INVALID_INPUT", "유효하지 않은 입력입니다.");
+                return new ValidationErrorDetail(ErrorCode.INVALID_INPUT.getCode(), "유효하지 않은 입력입니다.");
             }
 
-            return new ValidationErrorDetail("INVALID_INPUT", defaultMessage);
+            return new ValidationErrorDetail(ErrorCode.INVALID_INPUT.getCode(), defaultMessage);
         }
 
         String[] parts = defaultMessage.split(VALIDATION_MESSAGE_SEPARATOR, 2);
@@ -218,26 +218,26 @@ public class GlobalExceptionHandler {
 
     private String resolveMissingParameterCode(final String parameterName) {
         if ("name".equals(parameterName)) {
-            return "RESERVATION_NAME_REQUIRED";
+            return ErrorCode.RESERVATION_NAME_REQUIRED.getCode();
         }
 
         if ("date".equals(parameterName)) {
-            return "RESERVATION_DATE_REQUIRED";
+            return ErrorCode.RESERVATION_DATE_REQUIRED.getCode();
         }
 
         if ("themeId".equals(parameterName)) {
-            return "THEME_ID_REQUIRED";
+            return ErrorCode.THEME_ID_REQUIRED.getCode();
         }
 
         if ("timeId".equals(parameterName)) {
-            return "RESERVATION_TIME_ID_REQUIRED";
+            return ErrorCode.RESERVATION_TIME_ID_REQUIRED.getCode();
         }
 
         if ("startAt".equals(parameterName)) {
-            return "RESERVATION_TIME_REQUIRED";
+            return ErrorCode.RESERVATION_TIME_REQUIRED.getCode();
         }
 
-        return "INVALID_INPUT";
+        return ErrorCode.INVALID_INPUT.getCode();
     }
 
     private String resolveMissingParameterMessage(final String parameterName) {
@@ -266,22 +266,22 @@ public class GlobalExceptionHandler {
 
     private String resolveTypeMismatchCode(final Class<?> targetType) {
         if (Objects.isNull(targetType)) {
-            return "INVALID_TYPE_VALUE";
+            return ErrorCode.INVALID_TYPE_VALUE.getCode();
         }
 
         if (LocalDate.class.equals(targetType)) {
-            return "INVALID_DATE_FORMAT";
+            return ErrorCode.INVALID_DATE_FORMAT.getCode();
         }
 
         if (LocalTime.class.equals(targetType)) {
-            return "INVALID_TIME_FORMAT";
+            return ErrorCode.INVALID_TIME_FORMAT.getCode();
         }
 
         if (targetType.isEnum()) {
-            return "INVALID_ENUM_VALUE";
+            return ErrorCode.INVALID_ENUM_VALUE.getCode();
         }
 
-        return "INVALID_TYPE_VALUE";
+        return ErrorCode.INVALID_TYPE_VALUE.getCode();
     }
 
     private String resolveTypeMismatchMessage(final Class<?> targetType) {

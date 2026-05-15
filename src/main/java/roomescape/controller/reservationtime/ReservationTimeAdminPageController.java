@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.reservationtime.dto.ReservationTimeResponse;
 import roomescape.exception.ApiException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidInputException;
 import roomescape.service.reservationtime.ReservationTimeService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -46,7 +48,7 @@ public class ReservationTimeAdminPageController {
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/admin/reservation-times";
         } catch (Exception exception) {
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            redirectAttributes.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
             return "redirect:/pages/admin/reservation-times";
         }
 
@@ -64,7 +66,7 @@ public class ReservationTimeAdminPageController {
             redirectAttributes.addAttribute("errorCode", exception.getCode());
             return "redirect:/pages/admin/reservation-times";
         } catch (Exception exception) {
-            redirectAttributes.addAttribute("errorCode", "INTERNAL_SERVER_ERROR");
+            redirectAttributes.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
             return "redirect:/pages/admin/reservation-times";
         }
 
@@ -79,8 +81,8 @@ public class ReservationTimeAdminPageController {
         try {
             return LocalTime.parse(startAt);
         } catch (DateTimeParseException exception) {
-            throw new roomescape.exception.InvalidInputException(
-                    "INVALID_TIME_FORMAT",
+            throw new InvalidInputException(
+                    ErrorCode.INVALID_TIME_FORMAT,
                     "시간 형식이 올바르지 않습니다. HH:mm 형식이어야 합니다."
             );
         }

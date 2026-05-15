@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -34,7 +35,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = ReservationTime.createNew(startAt);
 
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new ConflictException("RESERVATION_TIME_DUPLICATED", "같은 시간을 추가할 수 없습니다.");
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_DUPLICATED, "같은 시간을 추가할 수 없습니다.");
         }
 
         return reservationTimeRepository.save(reservationTime);
@@ -52,7 +53,7 @@ public class ReservationTimeService {
 
     public void deleteById(final long timeId) {
         if (reservationRepository.existsByTimeId(timeId)) {
-            throw new ConflictException("RESERVATION_TIME_IN_USE", "이미 예약된 시간은 삭제할 수 없습니다.");
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_IN_USE, "이미 예약된 시간은 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(timeId);
     }
@@ -63,7 +64,7 @@ public class ReservationTimeService {
 
     public ReservationTime getById(final long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ResourceNotFoundException("RESERVATION_TIME_NOT_FOUND", "찾는 시간이 없습니다"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND, "찾는 시간이 없습니다"));
     }
 
     private boolean isAvailableOn(final LocalDate date, final ReservationTime reservationTime) {

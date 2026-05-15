@@ -4,9 +4,14 @@ import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
 
 public class Reservation {
+    private static final String INVALID_RESERVATION_ID = "INVALID_RESERVATION_ID";
+    private static final String INVALID_RESERVATION_DATE = "INVALID_RESERVATION_DATE";
+    private static final String INVALID_RESERVATION_THEME = "INVALID_RESERVATION_THEME";
+    private static final String INVALID_RESERVATION_TIME = "INVALID_RESERVATION_TIME";
 
     private final Long id;
     private final String name;
@@ -43,29 +48,29 @@ public class Reservation {
 
     private static void validateId(final Long id){
         if(id == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_ID", "Id는 비어있을 수 없습니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_ID, "Id는 비어있을 수 없습니다.");
         }
     }
 
     private void validate(final String name, final LocalDate date, final Theme theme, final ReservationTime time) {
         if (name == null || name.isBlank()) {
-            throw new InvalidInputException("RESERVATION_NAME_REQUIRED", "예약자 이름은 비어 있을 수 없습니다.");
+            throw new InvalidInputException(ErrorCode.RESERVATION_NAME_REQUIRED, "예약자 이름은 비어 있을 수 없습니다.");
         }
 
         if (name.length() >= 10) {
-            throw new InvalidInputException("RESERVATION_NAME_TOO_LONG", "예약자 이름은 10자 미만이어야 합니다.");
+            throw new InvalidInputException(ErrorCode.RESERVATION_NAME_TOO_LONG, "예약자 이름은 10자 미만이어야 합니다.");
         }
 
         if(date == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_DATE", "날짜는 비어있을 수 없습니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_DATE, "날짜는 비어있을 수 없습니다.");
         }
 
         if(theme == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_THEME", "테마는 비어있으면 안됩니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_THEME, "테마는 비어있으면 안됩니다.");
         }
 
         if(time == null) {
-            throw new InvalidInputException("INVALID_RESERVATION_TIME", "시간은 비어있으면 안됩니다.");
+            throw new InvalidInputException(INVALID_RESERVATION_TIME, "시간은 비어있으면 안됩니다.");
         }
     }
 
