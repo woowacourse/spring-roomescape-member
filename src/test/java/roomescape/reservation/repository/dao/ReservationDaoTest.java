@@ -162,6 +162,4 @@ class ReservationDaoTest {
         ReservationEntity entity = reservationDao.findById(savedId).orElseThrow();
         Assertions.assertThat(entity.isCancelled()).isTrue();
     }
-
-
 }

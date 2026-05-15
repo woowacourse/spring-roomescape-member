@@ -1,5 +1,6 @@
 package roomescape.global.exception;
 
+import java.time.format.DateTimeParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,13 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e.getDetail(),  e);
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.of(e.getErrorCode(), e.getDetail()));
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.status(ErrorCode.INVALID_DATE.getStatus())
+                .body(ErrorResponse.of(ErrorCode.INVALID_DATE, e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
