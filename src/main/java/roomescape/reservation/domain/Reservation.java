@@ -23,7 +23,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 예약자 이름은 공백일 수 없습니다.");
+            throw new IllegalArgumentException("예약자 이름은 공백일 수 없습니다.");
         }
     }
 
