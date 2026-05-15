@@ -16,6 +16,7 @@ import roomescape.fake.FakeThemeRepository;
 import roomescape.global.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
@@ -95,5 +96,91 @@ class ReservationServiceTest {
         Assertions.assertThatThrownBy(() -> reservationService.save(request, LocalDateTime.of(2026, 5, 6, 11, 0)))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+    }
+
+    @DisplayName("이름으로 본인 예약 목록 조회를 테스트합니다.")
+    @Test
+    void find_reservations_by_name() {
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(11, 0)));
+
+        reservationService.save(
+                new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+        reservationService.save(
+                new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 7), 1L, 2L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+        reservationService.save(
+                new ReservationCreateCommand("카야", LocalDate.of(2026, 5, 8), 1L, 2L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(reservationService.findAllByName("스타크")).hasSize(2);
+            assertSoftly.assertThat(reservationService.findAllByName("카야")).hasSize(1);
+        });
+    }
+
+    @DisplayName("본인 예약의 날짜와 시간을 변경합니다.")
+    @Test
+    void update_reservation() {
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(11, 0)));
+        reservationService.save(
+                new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+
+        ReservationQueryResult updatedReservation = reservationService.update(
+                new ReservationUpdateCommand(1L, "스타크", LocalDate.of(2026, 5, 7), 2L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(updatedReservation.date()).isEqualTo(LocalDate.of(2026, 5, 7));
+            assertSoftly.assertThat(updatedReservation.time())
+                    .isEqualTo(new ReservationTimeQueryResult(2L, LocalTime.of(11, 0)));
+        });
+    }
+
+    @DisplayName("본인 이름이 아닌 경우 예약 변경 시 예외가 발생합니다.")
+    @Test
+    void update_other_users_reservation() {
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        reservationService.save(
+                new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+
+        Assertions.assertThatThrownBy(() -> reservationService.update(
+                        new ReservationUpdateCommand(1L, "카야", LocalDate.of(2026, 5, 7), 1L),
+                        LocalDateTime.of(2000, 1, 1, 0, 0)
+                ))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("본인의 예약만 변경하거나 취소할 수 있습니다.");
+    }
+
+    @DisplayName("지난 예약은 취소할 수 없습니다.")
+    @Test
+    void cancel_past_reservation() {
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        reservationService.save(
+                new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L),
+                LocalDateTime.of(2000, 1, 1, 0, 0)
+        );
+
+        Assertions.assertThatThrownBy(() -> reservationService.delete(
+                        1L,
+                        "스타크",
+                        LocalDateTime.of(2026, 5, 6, 11, 0)
+                ))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("지난 예약은 변경하거나 취소할 수 없습니다.");
     }
 }

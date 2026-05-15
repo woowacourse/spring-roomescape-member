@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NoArgsConstructor;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationDetail;
@@ -21,10 +22,28 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        return reservations.values().stream()
+                .filter(reservation -> reservation.getName().equals(name))
+                .toList();
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return Optional.ofNullable(reservations.get(id));
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         Reservation savedReservation = reservation.withId(idHolder);
         reservations.put(idHolder++, savedReservation);
         return savedReservation;
+    }
+
+    @Override
+    public Reservation update(Reservation reservation) {
+        reservations.put(reservation.getId(), reservation);
+        return reservation;
     }
 
     @Override
@@ -46,6 +65,15 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(savedReservation -> (savedReservation.getThemeId().equals(themeId) &&
                         savedReservation.getTimeId().equals(timeId) &&
                         savedReservation.getDate().equals(date)));
+    }
+
+    @Override
+    public Boolean existsByDateAndThemeAndTimeExcludingId(LocalDate date, Long themeId, Long timeId, Long id) {
+        return reservations.values().stream()
+                .filter(savedReservation -> !savedReservation.getId().equals(id))
+                .anyMatch(savedReservation -> savedReservation.getThemeId().equals(themeId)
+                        && savedReservation.getTimeId().equals(timeId)
+                        && savedReservation.getDate().equals(date));
     }
 
     public List<Reservation> findAllReservations() {
