@@ -82,13 +82,14 @@ public class ReservationService {
     @Transactional
     public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation existing = findReservationById(id);
-        existing.validateModifiable(userName, LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        existing.validateModifiable(userName, now);
         Reservation patched = existing.reschedule(
                 name,
                 date,
                 findOptionalTime(timeId),
                 findOptionalTheme(themeId),
-                LocalDateTime.now()
+                now
         );
         validDuplicatedReservation(patched);
         reservationRepository.update(patched);
