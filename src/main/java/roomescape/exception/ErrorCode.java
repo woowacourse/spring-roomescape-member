@@ -13,7 +13,7 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST,
             "INVALID_REQUEST_BODY",
             "요청 형식이 올바르지 않습니다.",
-            "날짜는 yyyy-MM-dd, 시간은 HH:mm 형식으로 입력해주세요."
+            "형식을 올바르게 입력해주세요."
     ),
     RESERVATION_NOT_FOUND(
             HttpStatus.NOT_FOUND,
