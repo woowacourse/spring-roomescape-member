@@ -75,4 +75,9 @@ public class ReservationTimeDao {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public Boolean existsByStartAt(LocalTime startAt) {
+        String sql = "select EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+    }
 }
