@@ -199,6 +199,16 @@ button { cursor: pointer; font: inherit; }
 }
 .data-table th { background: #f5f5f5; font-weight: 600; }
 .data-table tr:last-child td { border-bottom: none; }
+.data-table input,
+.data-table select {
+    width: 100%;
+    min-width: 120px;
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font: inherit;
+}
+.editing-row { background: #fcfcfc; }
 
 /* Success page */
 .success-card {

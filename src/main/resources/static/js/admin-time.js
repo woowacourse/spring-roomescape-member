@@ -10,15 +10,17 @@
     addBtn.addEventListener('click', async () => {
         const startAt = startAtEl.value;
         if (!startAt) return alert('시간을 입력해주세요.');
-        const res = await fetch('/admin/times', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({startAt})
-        });
-        if (!res.ok) return alert('추가 실패');
-        const t = await res.json();
-        appendRow(t);
-        startAtEl.value = '';
+        try {
+            const t = await RoomescapeApi.request('/admin/times', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({startAt})
+            }, '시간 추가에 실패했습니다.');
+            appendRow(t);
+            startAtEl.value = '';
+        } catch (e) {
+            alert(e.message);
+        }
     });
 
     function appendRow(t) {
@@ -35,8 +37,11 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/times/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await RoomescapeApi.request(`/admin/times/${id}`, {method: 'DELETE'}, '시간 삭제에 실패했습니다.');
+            tr.remove();
+        } catch (e) {
+            alert(e.message);
+        }
     }
 })();

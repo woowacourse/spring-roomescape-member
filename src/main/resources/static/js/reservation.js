@@ -19,9 +19,11 @@
         const date = dateInput.value;
         if (!date) return;
         try {
-            const res = await fetch(`/themes/${themeId}/times?date=${date}`);
-            if (!res.ok) throw new Error('시간 조회 실패');
-            const times = await res.json();
+            const times = await RoomescapeApi.request(
+                `/themes/${themeId}/times?date=${date}`,
+                undefined,
+                '예약 가능한 시간을 불러오지 못했습니다.'
+            );
             renderTimes(times);
         } catch (e) {
             timeList.innerHTML = `<span style="color:#a00;">${e.message}</span>`;
@@ -57,7 +59,7 @@
         if (!selectedTimeId) return alert('시간을 선택해주세요.');
 
         try {
-            const res = await fetch('/reservations', {
+            const reservation = await RoomescapeApi.request('/reservations', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -66,9 +68,7 @@
                     timeId: selectedTimeId,
                     themeId: Number(themeId)
                 })
-            });
-            if (!res.ok) throw new Error('예약에 실패했습니다.');
-            const reservation = await res.json();
+            }, '예약에 실패했습니다.');
             sessionStorage.setItem('lastReservation', JSON.stringify(reservation));
             location.href = '/reservation/success';
         } catch (e) {
