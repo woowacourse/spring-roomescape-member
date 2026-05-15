@@ -9,16 +9,20 @@
 
     addBtn.addEventListener('click', async () => {
         const startAt = startAtEl.value;
-        if (!startAt) return alert('시간을 입력해주세요.');
-        const res = await fetch('/admin/times', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({startAt})
-        });
-        if (!res.ok) return alert('추가 실패');
-        const t = await res.json();
-        appendRow(t);
-        startAtEl.value = '';
+        if (!startAt) return showToast('시간을 입력해주세요.', null, 'error');
+        try {
+            const res = await apiFetch('/admin/times', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({startAt})
+            });
+            const t = await res.json();
+            appendRow(t);
+            startAtEl.value = '';
+            toastSuccess('시간이 추가되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     });
 
     function appendRow(t) {
@@ -35,8 +39,12 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/times/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await apiFetch(`/admin/times/${id}`, {method: 'DELETE'});
+            tr.remove();
+            toastSuccess('시간이 삭제되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     }
 })();
