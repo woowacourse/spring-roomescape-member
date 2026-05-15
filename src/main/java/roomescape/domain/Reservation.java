@@ -18,10 +18,8 @@ public class Reservation {
     private ReservationTime time;
     private ReservationStatus status;
 
-    public Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
-                       ReservationStatus status) {
-        validate(name, date, theme, time);
-
+    private Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
+                        ReservationStatus status) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -30,14 +28,23 @@ public class Reservation {
         this.status = status;
     }
 
-    public static Reservation of(String name, LocalDate date, Theme theme, ReservationTime time) {
-        Reservation reservation = new Reservation(null, name, date, theme, time, ReservationStatus.RESERVED);
+    public static Reservation create(String name, LocalDate date, Theme theme, ReservationTime time) {
+        validate(name, date, theme, time);
+        validateReservableDateTime(date, time);
 
+        return new Reservation(null, name, date, theme, time, ReservationStatus.RESERVED);
+    }
+
+    public static Reservation restore(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
+                                      ReservationStatus status) {
+        validate(name, date, theme, time);
+        return new Reservation(id, name, date, theme, time, status);
+    }
+
+    private static void validateReservableDateTime(LocalDate date, ReservationTime time) {
         if (!time.isAvailableAt(date)) {
             throw new IllegalArgumentException("현재보다 이전 시간대로 예약할 수 없습니다.");
         }
-
-        return reservation;
     }
 
     private static void validate(String name, LocalDate date, Theme theme, ReservationTime time) {

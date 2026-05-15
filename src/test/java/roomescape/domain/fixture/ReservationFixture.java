@@ -52,7 +52,7 @@ public final class ReservationFixture {
         LocalDate date = LocalDate.now().plusDays(1);
         Theme theme = ThemeFixture.createDefaultTheme();
         ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
-        return Reservation.of(name, date, theme, time);
+        return Reservation.create(name, date, theme, time);
     }
 
     public static Reservation createDefaultReservationWithName(String name, Theme theme, ReservationTime time) {
@@ -61,7 +61,7 @@ public final class ReservationFixture {
     }
 
     public static Reservation createDefaultReservationWithNameAndDate(String name, LocalDate date, Theme theme,
-            ReservationTime time) {
-        return Reservation.of(name, date, theme, time);
+                                                                      ReservationTime time) {
+        return Reservation.create(name, date, theme, time);
     }
 }

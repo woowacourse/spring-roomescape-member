@@ -24,7 +24,7 @@ class ReservationTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         // when
-        Reservation reservation = Reservation.of(name, date, theme, reservationTime);
+        Reservation reservation = Reservation.create(name, date, theme, reservationTime);
 
         // then
         assertThat(reservation).extracting(Reservation::getName, Reservation::getDate, Reservation::getTime)
@@ -39,7 +39,7 @@ class ReservationTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         // when & then
-        assertThatThrownBy(() -> Reservation.of(invalidName, date, theme, reservationTime)).isInstanceOf(
+        assertThatThrownBy(() -> Reservation.create(invalidName, date, theme, reservationTime)).isInstanceOf(
                 IllegalArgumentException.class).hasMessage("예약자 정보는 비어있을 수 없습니다.");
     }
 
@@ -48,7 +48,7 @@ class ReservationTest {
     void 유효하지_않은_예약_일시와_테마로_예약을_생성하면_예외가_발생한다(LocalDate date, Theme theme, ReservationTime reservationTime,
                                               String expectedMessage) {
         // when & then
-        assertThatThrownBy(() -> Reservation.of("이프", date, theme, reservationTime)).isInstanceOf(
+        assertThatThrownBy(() -> Reservation.create("이프", date, theme, reservationTime)).isInstanceOf(
                 IllegalArgumentException.class).hasMessageContaining(expectedMessage);
     }
 
@@ -56,7 +56,7 @@ class ReservationTest {
     void 예약을_취소하면_예약_상태는_취소_상태가_된다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        Reservation reservation = Reservation.of("바니", date, theme, reservationTime);
+        Reservation reservation = Reservation.create("바니", date, theme, reservationTime);
         ReservationStatus beforeCanceledStatus = reservation.getStatus();
 
         // when
@@ -71,7 +71,8 @@ class ReservationTest {
     void 이미_지난_예약을_취소하면_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1);
-        Reservation reservation = new Reservation(1L, "바니", date, theme, reservationTime, ReservationStatus.RESERVED);
+        Reservation reservation = Reservation.restore(1L, "바니", date, theme, reservationTime,
+                ReservationStatus.RESERVED);
 
         // when & then
         assertThatThrownBy(reservation::cancel).isInstanceOf(IllegalArgumentException.class);

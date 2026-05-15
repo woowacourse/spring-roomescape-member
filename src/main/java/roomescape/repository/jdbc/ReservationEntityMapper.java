@@ -21,7 +21,7 @@ public final class ReservationEntityMapper {
                 rs.getString("thumbnail_image_url"),
                 rs.getBoolean("theme_active")
         );
-        return new Reservation(
+        return Reservation.restore(
                 rs.getLong("res_id"),
                 rs.getString("res_name"),
                 rs.getDate("res_date").toLocalDate(),

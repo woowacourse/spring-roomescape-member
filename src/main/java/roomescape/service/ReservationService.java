@@ -40,7 +40,7 @@ public class ReservationService {
 
         validateDuplicateReservation(request.date(), time, theme);
 
-        Reservation reservation = Reservation.of(request.name(), request.date(), theme, time);
+        Reservation reservation = Reservation.create(request.name(), request.date(), theme, time);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 

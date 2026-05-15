@@ -19,7 +19,7 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Reservation saved = new Reservation(counter.getAndIncrement(), reservation.getName(), reservation.getDate(),
+        Reservation saved = Reservation.restore(counter.getAndIncrement(), reservation.getName(), reservation.getDate(),
                 reservation.getTheme(), reservation.getTime(), reservation.getStatus());
         reservations.add(saved);
         return saved;
