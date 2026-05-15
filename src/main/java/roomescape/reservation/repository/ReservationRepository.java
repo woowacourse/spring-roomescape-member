@@ -48,7 +48,8 @@ public class ReservationRepository {
     public List<Reservation> findReservationsFrom(LocalDate localDate) {
         return reservationDao.findAllOnOrAfter(localDate).stream()
                 .map(reservation ->
-                        ReservationMapper.toReservation(reservation,
+                        ReservationMapper.toReservation(
+                                reservation,
                                 reservationTimeDao.getByIdIncludingDeleted(reservation.getTimeId()),
                                 themeDao.getByIdIncludingDeleted(reservation.getThemeId()))
                 ).toList();
