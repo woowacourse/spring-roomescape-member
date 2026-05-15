@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -49,6 +54,11 @@ class ReservationTimeServiceTest {
                 ReservationTimeConflictException.class,
                 () -> reservationTimeService.create(command)
         );
+
+        verify(reservationTimeRepository, times(1)).existsByStartAt(VALID_START_AT);
+        verify(reservationTimeRepository, never()).save(any());
+        verifyNoMoreInteractions(reservationTimeRepository);
+        verifyNoInteractions(reservationRepository, themeRepository);
     }
 
     @Test
@@ -60,6 +70,11 @@ class ReservationTimeServiceTest {
                 .willReturn(new ReservationTime(1L, VALID_START_AT));
 
         assertDoesNotThrow(() -> reservationTimeService.create(command));
+
+        verify(reservationTimeRepository, times(1)).existsByStartAt(VALID_START_AT);
+        verify(reservationTimeRepository, times(1)).save(any(ReservationTime.class));
+        verifyNoMoreInteractions(reservationTimeRepository);
+        verifyNoInteractions(reservationRepository, themeRepository);
     }
 
     @Test
@@ -71,6 +86,11 @@ class ReservationTimeServiceTest {
                 ReservationTimeNotFoundException.class,
                 () -> reservationTimeService.delete(1L)
         );
+
+        verify(reservationTimeRepository, times(1)).existsById(1L);
+        verify(reservationTimeRepository, never()).deleteById(any());
+        verifyNoMoreInteractions(reservationTimeRepository);
+        verifyNoInteractions(reservationRepository, themeRepository);
     }
 
     @Test
@@ -83,6 +103,12 @@ class ReservationTimeServiceTest {
                 ReservationTimeInUseException.class,
                 () -> reservationTimeService.delete(1L)
         );
+
+        verify(reservationTimeRepository, times(1)).existsById(1L);
+        verify(reservationRepository, times(1)).existsByTimeId(1L);
+        verify(reservationTimeRepository, never()).deleteById(any());
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
+        verifyNoInteractions(themeRepository);
     }
 
     @Test
@@ -92,6 +118,12 @@ class ReservationTimeServiceTest {
         given(reservationRepository.existsByTimeId(1L)).willReturn(false);
 
         assertDoesNotThrow(() -> reservationTimeService.delete(1L));
+
+        verify(reservationTimeRepository, times(1)).existsById(1L);
+        verify(reservationRepository, times(1)).existsByTimeId(1L);
+        verify(reservationTimeRepository, times(1)).deleteById(1L);
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
+        verifyNoInteractions(themeRepository);
     }
 
     @Test
@@ -103,6 +135,10 @@ class ReservationTimeServiceTest {
                 ThemeNotFoundException.class,
                 () -> reservationTimeService.findAvailable(LocalDate.of(2026, 5, 9), 1L)
         );
+
+        verify(themeRepository, times(1)).existsById(1L);
+        verifyNoMoreInteractions(themeRepository);
+        verifyNoInteractions(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -112,6 +148,11 @@ class ReservationTimeServiceTest {
         given(reservationTimeRepository.findAvailable(any(), any())).willReturn(List.of());
 
         assertDoesNotThrow(() -> reservationTimeService.findAvailable(LocalDate.of(2026, 5, 9), 1L));
+
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2026, 5, 9), 1L);
+        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -126,6 +167,10 @@ class ReservationTimeServiceTest {
         List<?> result = reservationTimeService.findAvailable(LocalDate.of(2020, 1, 1), 1L);
 
         assertThat(result).isEmpty();
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2020, 1, 1), 1L);
+        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -140,6 +185,10 @@ class ReservationTimeServiceTest {
         List<?> result = reservationTimeService.findAvailable(LocalDate.now(), 1L);
 
         assertThat(result).hasSize(1);
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.now(), 1L);
+        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -154,5 +203,9 @@ class ReservationTimeServiceTest {
         List<?> result = reservationTimeService.findAvailable(LocalDate.of(2099, 12, 31), 1L);
 
         assertThat(result).hasSize(2);
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2099, 12, 31), 1L);
+        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
+        verifyNoInteractions(reservationRepository);
     }
 }
