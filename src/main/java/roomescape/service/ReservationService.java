@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservation.ReservationWithTime;
+import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.exception.DuplicatedRequestException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.exception.UnauthorizedException;
@@ -27,8 +28,6 @@ public class ReservationService {
     private static final String CANNOT_UPDATE_PAST_RESERVATION = "이미 지난 예약은 수정할 수 없습니다.";
     private static final String CANNOT_DELETE_PAST_RESERVATION = "이미 지난 예약은 삭제할 수 없습니다.";
 
-
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -44,31 +43,19 @@ public class ReservationService {
     }
 
     public ReservationWithTimeAndTheme addReservation(ReservationCommand reservationCommand) {
-        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+        validateAddReservation(reservationCommand);
+
         long id = reservationRepository.addReservation(reservationCommand);
         return getReservationWithTimeAndData(id);
     }
 
     public void deleteReservation(long id, String name) {
-        ReservationWithTime reservationWithTime = getReservationWithTime(id);
-
-        if (!reservationWithTime.name().equals(name)) {
-            throw new UnauthorizedException(UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
-        }
-        reservationWithTime.validDateReservationDateTime(CANNOT_DELETE_PAST_RESERVATION);
-
+        validateDeleteReservation(id, name);
         reservationRepository.deleteReservation(id);
     }
 
     public void updateReservation(long id, String name, ReservationCommand reservationCommand) {
-        ReservationWithTime reservationWithTime = getReservationWithTime(id);
-
-        if (!reservationWithTime.name().equals(name)) {
-            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
-        }
-
-        reservationWithTime.validateUpdateValue(reservationCommand);
-        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+        validateUpdateReservation(id, name, reservationCommand);
 
         int updatedRow = reservationRepository.updateAll(id, reservationCommand);
 
@@ -85,6 +72,10 @@ public class ReservationService {
         return getData(() -> reservationRepository.getReservationWithTimeAndTheme(id), INVALID_RESERVATION_ID);
     }
 
+    private ReservationTime getReservationTime(long id) {
+        return getData(() -> reservationTimeRepository.getReservationTime(id), INVALID_RESERVATION_TIME_ID);
+    }
+
     private <T> T getData(Supplier<Optional<T>> supplier, String errorMessage) {
         Optional<T> optionalData = supplier.get();
 
@@ -95,11 +86,37 @@ public class ReservationService {
         return optionalData.get();
     }
 
-    private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
-        if(!reservationTimeRepository.isExistsById(timeId)) {
-            throw new NotFoundResourceException(INVALID_RESERVATION_TIME_ID);
+    private void validateAddReservation(ReservationCommand reservationCommand) {
+        ReservationTime reservationTime = getReservationTime(reservationCommand.timeId());
+        reservationCommand.validatePastDateTime(reservationTime);
+
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+    }
+
+    private void validateDeleteReservation(long id, String name) {
+        ReservationWithTime reservationWithTime = getReservationWithTime(id);
+
+        if (!reservationWithTime.name().equals(name)) {
+            throw new UnauthorizedException(UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
+        }
+        reservationWithTime.validDateReservationPastDateTime(CANNOT_DELETE_PAST_RESERVATION);
+    }
+
+    private void validateUpdateReservation(long id, String name, ReservationCommand reservationCommand) {
+        ReservationWithTime reservationWithTime = getReservationWithTime(id);
+        ReservationTime reservationTime = getReservationTime(reservationCommand.timeId());
+
+        if (!reservationWithTime.name().equals(name)) {
+            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
         }
 
+        reservationCommand.validatePastDateTime(reservationTime);
+        reservationWithTime.validDateReservationPastDateTime(CANNOT_UPDATE_PAST_RESERVATION);
+        reservationWithTime.validateEqualValue(reservationCommand);
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+    }
+
+    private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
         if(!themeRepository.isExistsById(themeId)) {
             throw new NotFoundResourceException(INVALID_THEME_ID);
         }

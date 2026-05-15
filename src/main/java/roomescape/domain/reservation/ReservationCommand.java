@@ -1,7 +1,9 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.exception.InvalidRequestValueException;
 
 public record ReservationCommand(String name, LocalDate date, long timeId, long themeId) {
@@ -24,6 +26,15 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
 
     public ReservationCommand(String name, String date, long timeId, long themeId) {
         this(name, parseDate(date), timeId, themeId);
+    }
+
+    public void validatePastDateTime(ReservationTime reservationTime) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.startAt());
+
+        if(dateTime.isBefore(now)) {
+            throw new InvalidRequestValueException(NOT_RESERVABLE_PAST_DATE);
+        }
     }
 
     private static void validateName(String name) {
@@ -49,9 +60,6 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
     private static void validateDateValue(LocalDate date) {
         if (date == null) {
             throw new InvalidRequestValueException(INVALID_DATE_NULL);
-        }
-        if (date.isBefore(LocalDate.now())) {
-            throw new InvalidRequestValueException(NOT_RESERVABLE_PAST_DATE);
         }
     }
 
