@@ -87,7 +87,7 @@ public class Reservation {
     }
 
     public boolean isPast(LocalDateTime now) {
-        return time.atDate(date).isBefore(now);
+        return time.toLocalDateTime(date).isBefore(now);
     }
 
     @Override

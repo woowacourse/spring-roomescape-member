@@ -45,7 +45,7 @@ public class ReservationTime {
         }
     }
 
-    public LocalDateTime atDate(LocalDate date) {
+    public LocalDateTime toLocalDateTime(LocalDate date) {
         return LocalDateTime.of(date, startAt);
     }
 
