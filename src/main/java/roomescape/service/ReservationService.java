@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
@@ -68,7 +69,11 @@ public class ReservationService {
 
         Reservation reservation = converToReservation(id, request);
 
-        reservationDao.update(reservation);
+        boolean isSucceed = reservationDao.update(reservation);
+
+        if (!isSucceed) {
+            throw new OptimisticLockingFailureException("다른 사용자가 예약했습니다. 다시 시도해주세요.");
+        }
 
         return ReservationResponse.from(reservation);
     }

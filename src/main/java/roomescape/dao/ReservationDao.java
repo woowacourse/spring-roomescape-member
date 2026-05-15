@@ -88,14 +88,14 @@ public class ReservationDao {
                 reservation.getTheme());
     }
 
-    public void update(Reservation reservation) {
+    public boolean update(Reservation reservation) {
         String sql = """
                 UPDATE reservation
                 SET name = ?, date = ?, time_id = ?, theme_id = ?
                 WHERE id = ?;
                 """;
 
-        jdbcTemplate.update(
+        int affectedRows = jdbcTemplate.update(
                 sql,
                 reservation.getName().value(),
                 reservation.getDate(),
@@ -103,6 +103,8 @@ public class ReservationDao {
                 reservation.getTheme().getId(),
                 reservation.getId()
         );
+
+        return affectedRows > 0;
     }
 
     public void delete(Long id) {
