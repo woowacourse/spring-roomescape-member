@@ -54,7 +54,7 @@ public class Reservation {
         }
     }
 
-    public boolean isSameSlot(LocalDate newDate, long newTimeId) {
+    public boolean hasSameDateAndTime(LocalDate newDate, long newTimeId) {
         return this.date.equals(newDate) && this.time.id().equals(newTimeId);
     }
 

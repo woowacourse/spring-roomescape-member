@@ -88,7 +88,7 @@ public class UserReservationService {
         newTime.validateFutureDate(newDate);
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
-        if (!reservation.isSameSlot(newDate, newTimeId) && takenTimeIds.contains(newTimeId)) {
+        if (!reservation.hasSameDateAndTime(newDate, newTimeId) && takenTimeIds.contains(newTimeId)) {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 

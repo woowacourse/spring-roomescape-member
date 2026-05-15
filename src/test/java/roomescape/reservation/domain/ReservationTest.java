@@ -53,25 +53,25 @@ class ReservationTest {
     }
 
     @Test
-    void 같은_날짜와_시간이면_isSameSlot이_true를_반환한다() {
+    void 같은_날짜와_시간이면_hasSameDateAndTime이_true를_반환한다() {
         LocalDate date = LocalDate.of(2099, 12, 31);
         Reservation reservation = new Reservation(1L, "브라운", date, FUTURE_TIME, THEME);
 
-        assertThat(reservation.isSameSlot(date, 1L)).isTrue();
+        assertThat(reservation.hasSameDateAndTime(date, 1L)).isTrue();
     }
 
     @Test
-    void 날짜가_다르면_isSameSlot이_false를_반환한다() {
+    void 날짜가_다르면_hasSameDateAndTime이_false를_반환한다() {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2099, 12, 31), FUTURE_TIME, THEME);
 
-        assertThat(reservation.isSameSlot(LocalDate.of(2099, 12, 30), 1L)).isFalse();
+        assertThat(reservation.hasSameDateAndTime(LocalDate.of(2099, 12, 30), 1L)).isFalse();
     }
 
     @Test
-    void 시간이_다르면_isSameSlot이_false를_반환한다() {
+    void 시간이_다르면_hasSameDateAndTime이_false를_반환한다() {
         LocalDate date = LocalDate.of(2099, 12, 31);
         Reservation reservation = new Reservation(1L, "브라운", date, FUTURE_TIME, THEME);
 
-        assertThat(reservation.isSameSlot(date, 2L)).isFalse();
+        assertThat(reservation.hasSameDateAndTime(date, 2L)).isFalse();
     }
 }
