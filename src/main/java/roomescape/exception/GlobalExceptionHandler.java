@@ -3,6 +3,8 @@ package roomescape.exception;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import roomescape.domain.exception.DomainValidationException;
 import roomescape.service.exception.PastReservationException;
 import roomescape.service.exception.ResourceConflictException;
 import roomescape.service.exception.ResourceNotFoundException;
@@ -19,6 +22,9 @@ import roomescape.service.exception.UnauthorizedReservationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String INTERNAL_ERROR_MESSAGE = "서버 내부에 오류가 발생하였습니다.";
 
     @ExceptionHandler(PastReservationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -80,9 +86,24 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("요청 본문 형식이 올바르지 않습니다");
     }
 
+    @ExceptionHandler(DomainValidationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleDomainValidation(DomainValidationException e) {
+        log.error("도메인 검증 실패 — 잘못된 값이 도메인 계층에 도달했습니다: {}", e.getMessage(), e);
+        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntime(RuntimeException e) {
+        log.error("처리되지 않은 런타임 예외가 발생했습니다", e);
+        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleUnexpected(Exception e) {
-        return new ErrorResponse("서버 내부에 오류가 발생하였습니다.");
+        log.error("처리되지 않은 예외가 발생했습니다", e);
+        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
     }
 }
