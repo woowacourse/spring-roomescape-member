@@ -41,9 +41,20 @@ public class ReservationService {
         return reservationRepository.existsByTimeId(timeId);
     }
 
+    public Reservation findMyReservation(Long id, String name) {
+        return reservationRepository.findById(id)
+                .filter(r -> r.getName().equals(name))
+                .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_FOUND_FORMAT.formatted(id)));
+    }
+
     @Transactional
     public Reservation addReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public Reservation updateReservation(Reservation reservation) {
+        return reservationRepository.update(reservation);
     }
 
     @Transactional

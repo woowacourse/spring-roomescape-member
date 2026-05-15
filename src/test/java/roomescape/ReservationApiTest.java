@@ -458,6 +458,169 @@ class ReservationApiTest {
                 .statusCode(400);
     }
 
+    @Test
+    void 본인_예약_변경은_200을_반환한다() {
+        Integer timeId = createTime("13:00");
+        Integer newTimeId = createTime("15:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+        body.put("timeId", newTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 같은_슬롯으로_변경해도_충돌로_보지_않는다() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-08-05");
+        body.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 다른_사람_이름으로_변경하면_404() {
+        Integer timeId = createTime("13:00");
+        Integer newTimeId = createTime("15:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+        body.put("timeId", newTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=티뉴")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하면_404() {
+        Integer timeId = createTime("13:00");
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+        body.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/9999?name=민욱")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 같은_날짜_테마에_다른_예약이_있는_시간으로_변경하면_409() {
+        Integer timeId = createTime("13:00");
+        Integer otherTimeId = createTime("15:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+        createReservation("티뉴", "2026-08-05", otherTimeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-08-05");
+        body.put("timeId", otherTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 지난_시각으로_변경하면_422() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2020-01-01");
+        body.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 변경_요청에_이름_파라미터가_없으면_400() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+        body.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId)
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 변경_요청에_timeId가_누락되면_400() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 변경_요청의_새_시간_ID가_존재하지_않으면_404() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("date", "2026-09-01");
+        body.put("timeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().put("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(404);
+    }
+
     private Long insertPastReservation(String name, String date, Integer timeId, Integer themeId) {
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",

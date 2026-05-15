@@ -101,6 +101,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     }
 
+    public Reservation update(Reservation reservation) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ?, theme_id = ? WHERE id = ?";
+        jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+        return reservation;
+    }
+
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }

@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.dto.TimeWithStatusResponse;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.ConflictException;
@@ -25,6 +26,7 @@ public class ReservationFacade {
     private static final String CANNOT_DELETE_THEME_IN_USE = "ID %d번 테마를 사용 중인 예약이 존재하여 테마를 삭제할 수 없습니다.";
     private static final String ALREADY_EXISTS_ADD_RESERVATION = "해당 날짜와 시간, 테마에 이미 예약이 존재합니다.";
     private static final String PAST_RESERVATION_REJECTED = "지난 시각에는 예약할 수 없습니다.";
+    private static final String PAST_RESERVATION_UPDATE_REJECTED = "지난 시각으로 예약을 변경할 수 없습니다.";
 
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
@@ -78,6 +80,33 @@ public class ReservationFacade {
         }
 
         return reservationService.addReservation(reservation);
+    }
+
+    @Transactional
+    public Reservation updateMyReservation(Long id, String name, ReservationUpdateRequest request) {
+        Reservation existing = reservationService.findMyReservation(id, name);
+        ReservationTime newTime = reservationTimeService.findById(request.timeId());
+
+        Reservation updated = new Reservation(
+                id,
+                existing.getName(),
+                request.date(),
+                newTime,
+                existing.getTheme()
+        );
+
+        if (updated.isPast(LocalDateTime.now())) {
+            throw new BusinessRuleViolationException(PAST_RESERVATION_UPDATE_REJECTED);
+        }
+
+        Reservations others = reservationService
+                .findByDateAndThemeId(request.date(), existing.getTheme().getId())
+                .excluding(id);
+        if (others.isOccupied(newTime)) {
+            throw new ConflictException(ALREADY_EXISTS_ADD_RESERVATION);
+        }
+
+        return reservationService.updateReservation(updated);
     }
 
     public List<TimeWithStatusResponse> getTimesWithAvailability(LocalDate date, Long themeId) {
