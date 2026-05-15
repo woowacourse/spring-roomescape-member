@@ -1,14 +1,21 @@
 package roomescape.common.exception;
 
-import org.springframework.http.HttpStatus;
+import roomescape.common.ErrorCode;
 
-public class ConflictException extends BaseException {
-
-    public ConflictException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.CONFLICT);
+public class ConflictException extends RestApiException {
+    public ConflictException(ErrorCode errorCode) {
+        super(errorCode);
     }
 
-    public ConflictException(String message) {
-        super(message, HttpStatus.CONFLICT);
+    public ConflictException(ErrorCode errorCode, String detailMessage) {
+        super(errorCode, detailMessage);
+    }
+
+    public ConflictException(ErrorCode errorCode, String detailMessage, Throwable cause) {
+        super(errorCode, detailMessage, cause);
+    }
+
+    public ConflictException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
     }
 }

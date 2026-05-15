@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.ThemeErrorCode;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
@@ -41,7 +42,7 @@ public class ThemeService {
     public ThemeResponseDto findById(Long id) {
         return themeDao.findById(id)
                 .map(ThemeResponseDto::from)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(ThemeErrorCode.NOT_FOUND));
     }
 
     @Transactional
@@ -49,7 +50,7 @@ public class ThemeService {
         Name name = new Name(themeRequest.name());
 
         if (themeDao.existsByName(name.value())) {
-            throw new ConflictException("이미 존재하는 테마 이름입니다.");
+            throw new ConflictException(ThemeErrorCode.DUPLICATE_NAME);
         }
 
         Theme theme = Theme.create(
@@ -64,11 +65,11 @@ public class ThemeService {
     @Transactional
     public void delete(Long id) {
         if (!themeDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new NotFoundException(ThemeErrorCode.NOT_FOUND);
         }
 
         if (reservationDao.existsByThemeId(id)) {
-            throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+            throw new ConflictException(ThemeErrorCode.REFERENCED_BY_RESERVATION);
         }
 
         themeDao.delete(id);

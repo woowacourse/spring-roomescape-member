@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.DomainException;
 import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
@@ -28,7 +27,7 @@ class ReservationTest {
 
         assertThatThrownBy(() ->
                 Reservation.create(name, past, time, theme, fixedNow))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -45,7 +44,7 @@ class ReservationTest {
 
         assertThatThrownBy(() ->
                 Reservation.create(name, day15, time, theme, fixedNow))
-                .isInstanceOf(DomainException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("14일");
     }
 
@@ -56,7 +55,7 @@ class ReservationTest {
 
         assertThatThrownBy(() ->
                 Reservation.create(name, today, noonTime, theme, fixedNow))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

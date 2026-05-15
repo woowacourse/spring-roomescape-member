@@ -2,6 +2,9 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.ReservationErrorCode;
+import roomescape.common.ThemeErrorCode;
+import roomescape.common.TimeErrorCode;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
@@ -50,21 +53,21 @@ public class ReservationService {
     public ReservationResponseDto findById(Long id) {
         return reservationDao.findById(id)
                 .map(ReservationResponseDto::from)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
     }
 
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto reservationRequest) {
         Time time = timeDao.findById(reservationRequest.timeId())
                 .map(TimeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException(TimeErrorCode.NOT_FOUND));
 
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .map(ThemeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(ThemeErrorCode.NOT_FOUND));
 
         if (reservationDao.existsByThemeIdAndTimeIdAndDate(reservationRequest.themeId(), reservationRequest.timeId(), reservationRequest.date())) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다. ");
+            throw new ConflictException(ReservationErrorCode.DUPLICATE);
         }
 
         Reservation reservation = Reservation.create(
@@ -82,7 +85,7 @@ public class ReservationService {
     @Transactional
     public void delete(Long id) {
         if (!reservationDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+            throw new NotFoundException(ReservationErrorCode.NOT_FOUND);
         }
 
         reservationDao.delete(id);

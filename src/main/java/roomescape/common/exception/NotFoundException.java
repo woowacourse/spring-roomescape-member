@@ -1,13 +1,21 @@
 package roomescape.common.exception;
 
-import org.springframework.http.HttpStatus;
+import roomescape.common.ErrorCode;
 
-public class NotFoundException extends BaseException {
-    public NotFoundException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.NOT_FOUND);
+public class NotFoundException extends RestApiException {
+    public NotFoundException(ErrorCode errorCode) {
+        super(errorCode);
     }
 
-    public NotFoundException(String message) {
-        super(message, HttpStatus.NOT_FOUND);
+    public NotFoundException(ErrorCode errorCode, String detailMessage) {
+        super(errorCode, detailMessage);
+    }
+
+    public NotFoundException(ErrorCode errorCode, String detailMessage, Throwable cause) {
+        super(errorCode, detailMessage, cause);
+    }
+
+    public NotFoundException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
     }
 }

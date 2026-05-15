@@ -1,13 +1,21 @@
 package roomescape.common.exception;
 
-import org.springframework.http.HttpStatus;
+import roomescape.common.ErrorCode;
 
-public class BadRequestException extends BaseException {
-    public BadRequestException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.BAD_REQUEST);
+public class BadRequestException extends RestApiException {
+    public BadRequestException(ErrorCode errorCode) {
+        super(errorCode);
     }
 
-    public BadRequestException(String message) {
-        super(message, HttpStatus.BAD_REQUEST);
+    public BadRequestException(ErrorCode errorCode, String detailMessage) {
+        super(errorCode, detailMessage);
+    }
+
+    public BadRequestException(ErrorCode errorCode, String detailMessage, Throwable cause) {
+        super(errorCode, detailMessage, cause);
+    }
+
+    public BadRequestException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
     }
 }

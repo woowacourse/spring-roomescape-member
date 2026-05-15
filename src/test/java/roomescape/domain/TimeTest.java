@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -18,7 +17,7 @@ class TimeTest {
 
     @ParameterizedTest
     @CsvSource(value = {"10:00", "22:00"})
-    void 오전_10시_오후_10시면_정상_생성된다 (LocalTime value) {
+    void 오전_10시_오후_10시면_정상_생성된다(LocalTime value) {
         Time time = Time.create(value);
 
         Assertions.assertThat(time.getStartAt()).isEqualTo(value);

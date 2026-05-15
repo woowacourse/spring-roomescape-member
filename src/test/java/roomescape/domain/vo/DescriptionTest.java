@@ -1,7 +1,6 @@
 package roomescape.domain.vo;
 
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.DomainException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -9,7 +8,7 @@ class DescriptionTest {
     @Test
     void 설명이_공백이면_예외_처리된다() {
         assertThatThrownBy(() -> new Description(""))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -17,6 +16,6 @@ class DescriptionTest {
         String invalidValue = "a".repeat(501);
 
         assertThatThrownBy(() -> new Description(invalidValue))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
