@@ -159,19 +159,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean update(Reservation reservation) {
+    public Optional<Reservation> update(Reservation reservation) {
         String sql = """
                 UPDATE reservation
                 SET date = ?, time_id = ?
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.update(
+        int updatedRowCount = jdbcTemplate.update(
                 sql,
                 Date.valueOf(reservation.getDate()),
                 reservation.getTime().getId(),
                 reservation.getId()
-        ) == 1;
+        );
+
+        if (updatedRowCount == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(reservation);
     }
 
     private int insert(Reservation reservation, KeyHolder keyHolder) {

@@ -58,7 +58,9 @@ public class ReservationService {
         validateNotPast(changedReservation, "현재 시각 이후의 날짜와 시간을 선택해주세요.");
         validateNotDuplicated(changedReservation);
 
-        updateReservation(changedReservation);
+        reservationRepository.update(changedReservation)
+                .orElseThrow(() -> new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요."));
+
         return changedReservation;
     }
 
@@ -112,12 +114,6 @@ public class ReservationService {
                 reservation.getTheme().getId()
         )) {
             throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
-        }
-    }
-
-    private void updateReservation(Reservation reservation) {
-        if (!reservationRepository.update(reservation)) {
-            throw new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
         }
     }
 
