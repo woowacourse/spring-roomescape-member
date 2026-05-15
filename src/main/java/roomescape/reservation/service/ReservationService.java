@@ -69,24 +69,22 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        deleteReservation(id);
+    public void cancel(Long id) {
+        cancelReservation(id);
     }
 
     @Transactional
     public void deleteMine(Long id, String guestName) {
-
         Reservation reservation = getReservation(id);
 
         validateIsMyReservation(guestName, reservation);
         validateAlreadyStarted(reservation);
 
-        deleteReservation(id);
-
+        cancelReservation(id);
     }
 
-    private void deleteReservation(Long id) {
-        if(!reservationRepository.deleteById(id)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 삭제 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
+    private void cancelReservation(Long id) {
+        if(!reservationRepository.cancelById(id)) { // 위에서 NOT_FOUND를 검증하긴 하지만, 삭제 과정 중에 다른 사람이 변경할 수도 있기에 이중으로 검증
             throw new DomainException(RESERVATION_NOT_FOUND);
         }
     }

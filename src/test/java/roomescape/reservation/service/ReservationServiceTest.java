@@ -83,20 +83,20 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("해당 예약이 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
-    public void delete_fail() {
+    @DisplayName("해당 예약이 존재하지 않으면 취소할 수 없기 때문에 예외가 발생한다.")
+    public void cancel_fail() {
         // given
         Long id = 1L;
 
         // when, then
-        assertThatThrownBy(() -> reservationService.delete(id))
+        assertThatThrownBy(() -> reservationService.cancel(id))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(RESERVATION_NOT_FOUND.message());
     }
 
     @Test
     @DisplayName("본인의 예약을 삭제한다.")
-    public void deleteMine_success() {
+    public void cancelMine_success() {
         // given
         clock.setFixed(LocalDate.of(2023, 7, 6));
 
@@ -117,7 +117,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("해당 예약이 존재하지 않으면 본인의 예약을 삭제할 수 없기 때문에 예외가 발생한다.")
-    public void deleteMine_fail1() {
+    public void cancelMine_fail1() {
         // given
         Long id = 1L;
 
@@ -129,7 +129,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("이미 시작된 예약은 삭제할 수 없다.")
-    public void deleteMine_fail2() {
+    public void cancelMine_fail2() {
         // given
         clock.setFixed(LocalDate.of(2023, 8, 11));
 
@@ -144,7 +144,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("본인의 예약이 아니면 삭제할 수 없기 때문에 예외가 발생한다.")
-    public void deleteMine_fail3() {
+    public void cancelMine_fail3() {
         // given
         clock.setFixed(LocalDate.of(2023, 7, 6));
 

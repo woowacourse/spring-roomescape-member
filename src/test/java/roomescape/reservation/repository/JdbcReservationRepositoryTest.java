@@ -12,11 +12,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.test_config.MutableClock;
+import roomescape.test_config.TestClockConfig;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
 @JdbcTest
-@Import(JdbcReservationRepository.class)
+@Import({JdbcReservationRepository.class, TestClockConfig.class})
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -34,6 +38,10 @@ class JdbcReservationRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private MutableClock clock;
+
 
     @Test
     @DisplayName("id로 특정 예약을 조회한다.")
@@ -120,23 +128,11 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(result).isTrue();
 
-        Map<String, Object> map = findById(reservation);
+        Map<String, Object> map = findDateAndTimeIdById(reservation.getId());
         LocalDate date = ((Date) map.get("date")).toLocalDate();
         Long timeId = ((Number) map.get("time_id")).longValue();
         assertThat(date).isEqualTo(updatedDate);
         assertThat(timeId).isEqualTo(updatedTime.getId());
-    }
-
-    private Map<String, Object> findById(Reservation reservation) {
-        return jdbcTemplate.queryForMap("""
-        SELECT
-            r.date,
-            t.id AS time_id
-        FROM reservation r
-        INNER JOIN reservation_time t
-            ON r.time_id = t.id
-        WHERE r.id = ?
-        """, reservation.getId());
     }
 
     @Test
@@ -216,6 +212,40 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(deleted).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약을 취소하면 deleted_at이 현재시간, delete_token이 해당 데이터의 pk값으로 설정된다.")
+    public void cancelById_success() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
+        clock.setFixed(now);
+
+        // when
+        boolean result = reservationRepository.cancelById(reservation.getId());
+
+        // then
+        assertThat(result).isTrue();
+        Map<String, Object> reservationMap = findDeleteAtAndDeleteToken(reservation.getId());
+        assertThat(((Timestamp) reservationMap.get("deleted_at")).toLocalDateTime()).isEqualTo(now);
+        assertThat(((Long) reservationMap.get("delete_token"))).isEqualTo(reservation.getId());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약은 취소되지 않는다.")
+    public void cancelById_fail() {
+        // given
+        Long id = 1L;
+
+        // when
+        boolean result = reservationRepository.cancelById(id);
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -303,6 +333,26 @@ class JdbcReservationRepositoryTest {
 
         return new Reservation(getGeneratedId(keyHolder), guestName, date, time, theme);
     }
+
+    private Map<String, Object> findDateAndTimeIdById(Long id) {
+        return jdbcTemplate.queryForMap("""
+                SELECT
+                    r.date,
+                    time_id
+                FROM reservation r
+                WHERE r.id = ?
+                """, id);
+    }
+
+    private Map<String, Object> findDeleteAtAndDeleteToken(Long id) {
+        return jdbcTemplate.queryForMap("""
+                SELECT
+                    deleted_at, delete_token
+                FROM reservation r
+                WHERE r.id = ?
+                """, id);
+    }
+
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         return keyHolder.getKey().longValue();

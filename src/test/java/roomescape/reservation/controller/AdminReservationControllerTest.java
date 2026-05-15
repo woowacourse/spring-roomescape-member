@@ -123,8 +123,8 @@ class AdminReservationControllerTest {
     }
 
     @Test
-    @DisplayName("특정 예약을 삭제하는 요청을 한다.")
-    public void delete() throws Exception {
+    @DisplayName("특정 예약을 취소하는 요청을 한다.")
+    public void cancel_success() throws Exception {
         // when then
         long id = 1L;
         mockMvc.perform(
@@ -132,6 +132,6 @@ class AdminReservationControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        then(reservationService).should().delete(id);
+        then(reservationService).should().cancel(id);
     }
 }

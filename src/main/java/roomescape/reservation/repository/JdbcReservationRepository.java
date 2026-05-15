@@ -12,7 +12,9 @@ import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
     @Override
     public Optional<Reservation> findById(Long id) {
@@ -97,7 +100,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        insert(reservation, keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                            INSERT INTO reservation (guest_name, date, time_id, theme_id)
+                            VALUES (?, ?, ?, ?)
+                            """,
+                    new String[]{"id"}
+            );
+            preparedStatement.setString(1, reservation.getGuestName());
+            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
+            preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(4, reservation.getTheme().getId());
+            return preparedStatement;
+        }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
         return reservation.withId(id);
@@ -125,6 +141,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 DELETE FROM reservation
                 WHERE id = ?
                 """, id);
+        return rowCount == 1;
+    }
+
+    public boolean cancelById(Long id) {
+        int rowCount = jdbcTemplate.update("""
+                UPDATE reservation
+                SET deleted_at = ?, delete_token = ?
+                WHERE id = ?
+                """, LocalDateTime.now(clock), id, id);
+
         return rowCount == 1;
     }
 
@@ -167,23 +193,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE theme_id = ?
                 """, Integer.class, themeId);
         return count != null && count > 0;
-    }
-
-    private void insert(Reservation reservation, KeyHolder keyHolder) {
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    """
-                            INSERT INTO reservation (guest_name, date, time_id, theme_id)
-                            VALUES (?, ?, ?, ?)
-                            """,
-                    new String[]{"id"}
-            );
-            preparedStatement.setString(1, reservation.getGuestName());
-            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
-            preparedStatement.setLong(3, reservation.getTime().getId());
-            preparedStatement.setLong(4, reservation.getTheme().getId());
-            return preparedStatement;
-        }, keyHolder);
     }
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {

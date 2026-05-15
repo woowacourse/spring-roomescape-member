@@ -22,6 +22,8 @@ CREATE TABLE reservation
     date     DATE         NOT NULL,
     time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
+    deleted_at TIMESTAMP,
+    delete_token BIGINT NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id),
     UNIQUE (date, time_id, theme_id),
