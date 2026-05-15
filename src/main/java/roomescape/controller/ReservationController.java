@@ -1,17 +1,18 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
-import roomescape.exception.InvalidOwnershipException;
-import roomescape.exception.UnauthorizedException;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -47,55 +48,49 @@ public class ReservationController {
                 .body(toResponse(reservation));
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteReservationWithoutUserName(@PathVariable(required = false) Long id) {
-        throw new InvalidOwnershipException();
-    }
-
-    @DeleteMapping(value = "/{id}", params = {"userName"})
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable
             long id,
-            @RequestParam(required = false)
+            @RequestParam @NotBlank
             String userName
     ) {
-        checkValidUserName(userName);
         reservationService.removeReservation(id, userName);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value = "/{id}", params = {"userName"})
+    @PutMapping(value = "/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable
             long id,
             @RequestBody @Valid
             ReservationPutRequest request,
-            @RequestParam(required = false)
+            @RequestParam @NotBlank
             String userName
     ) {
-        checkValidUserName(userName);
         reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(),
                 request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
-    @PatchMapping(value = "/{id}", params = {"userName"})
+    @PatchMapping(value = "/{id}")
     public ResponseEntity<ReservationResponse> patchReservation(
-            @PathVariable long id,
-            @RequestBody ReservationPatchRequest request,
-            @RequestParam(required = false)
+            @PathVariable
+            long id,
+            @RequestBody
+            ReservationPatchRequest request,
+            @RequestParam @NotBlank
             String userName
     ) {
-        checkValidUserName(userName);
-        reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(),
-                request.themeId());
+        reservationService.patchReservation(
+                id,
+                userName,
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId()
+        );
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
-    }
-
-    private void checkValidUserName(String userName) {
-        if (userName == null || userName.isBlank()) {
-            throw new UnauthorizedException();
-        }
     }
 
     private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {
