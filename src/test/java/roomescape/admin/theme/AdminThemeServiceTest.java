@@ -2,6 +2,7 @@ package roomescape.admin.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,8 +43,10 @@ class AdminThemeServiceTest {
         when(adminThemeRepository.save(any(Theme.class))).thenReturn(saved);
         AdminThemeResponse response = adminThemeService.createTheme(request);
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo("테마1");
+        assertAll(
+            () -> assertThat(response.id()).isEqualTo(1L),
+            () -> assertThat(response.name()).isEqualTo("테마1")
+        );
     }
 
     @Test
@@ -66,8 +69,10 @@ class AdminThemeServiceTest {
 
         AdminThemesResponse response = adminThemeService.getAllThemes();
 
-        assertThat(response.themes()).hasSize(2);
-        assertThat(response.themes().get(0).name()).isEqualTo("테마1");
+        assertAll(
+            () -> assertThat(response.themes()).hasSize(2),
+            () -> assertThat(response.themes().get(0).name()).isEqualTo("테마1")
+        );
     }
 
     @Test

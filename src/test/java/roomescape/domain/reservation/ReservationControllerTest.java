@@ -3,6 +3,8 @@ package roomescape.domain.reservation;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -44,7 +46,7 @@ class ReservationControllerTest {
         Integer count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM reservation WHERE name = ?", Integer.class, "유저1"
         );
-        org.junit.jupiter.api.Assertions.assertEquals(1, count);
+        assertEquals(1, count);
     }
 
     @Test
@@ -210,7 +212,7 @@ class ReservationControllerTest {
         Integer count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM reservation WHERE id = ?", Integer.class, reservationId
         );
-        org.junit.jupiter.api.Assertions.assertEquals(0, count);
+        assertEquals(0, count);
     }
 
     @Test
@@ -246,8 +248,10 @@ class ReservationControllerTest {
         Long updatedTimeId = jdbcTemplate.queryForObject(
             "SELECT time_id FROM reservation WHERE id = ?", Long.class, reservationId
         );
-        org.junit.jupiter.api.Assertions.assertEquals("2099-12-31", date);
-        org.junit.jupiter.api.Assertions.assertEquals(timeId2, updatedTimeId);
+        assertAll(
+            () -> assertEquals("2099-12-31", date),
+            () -> assertEquals(timeId2, updatedTimeId)
+        );
     }
 
     @Test

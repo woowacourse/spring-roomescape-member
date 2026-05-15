@@ -2,10 +2,8 @@ package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -184,9 +182,11 @@ class ReservationServiceTest {
 
             MyReservationsResponse response = reservationService.getMyReservations("유저1");
 
-            assertThat(response.reservations()).hasSize(1);
-            assertThat(response.reservations().get(0).name()).isEqualTo("유저1");
-            assertThat(response.reservations().get(0).themeName()).isEqualTo("테마1");
+            assertAll(
+                () -> assertThat(response.reservations()).hasSize(1),
+                () -> assertThat(response.reservations().get(0).name()).isEqualTo("유저1"),
+                () -> assertThat(response.reservations().get(0).themeName()).isEqualTo("테마1")
+            );
         }
 
         @Test
