@@ -53,7 +53,7 @@ public class ReservationController {
         return ReservationResponse.toDto(reservation);
     }
 
-    @DeleteMapping("/admin/reservations/{id}")
+    @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
         reservationService.cancel(id, LocalDateTime.now());

@@ -81,13 +81,12 @@ docker-compose up
 
 ### 어드민 API
 
-| 기능    | 메서드 / URL                         | 요청 본문                                 | 쿼리 파라미터 | 응답                                                                |
-|-------|-----------------------------------|---------------------------------------|---------|-------------------------------------------------------------------|
-| 예약 삭제 | `DELETE /admin/reservations/{id}` | -                                     | -       | `200 OK`                                                          |
-| 시간 추가 | `POST /admin/times`               | `{startAt}`                           | -       | `201 Created` <br> `{timeId, startAt}`                            |
-| 시간 삭제 | `DELETE /admin/times/{id}`        | -                                     | -       | `200 OK`                                                          |
-| 테마 생성 | `POST /admin/themes`              | `{reservationName, description, url}` | -       | `201 Created` <br> `{themeId, reservationName, description, url}` |
-| 테마 삭제 | `DELETE /admin/themes/{id}`       | -                                     | -       | `200 OK`                                                          |
+| 기능    | 메서드 / URL                   | 요청 본문                                 | 쿼리 파라미터 | 응답                                                                |
+|-------|-----------------------------|---------------------------------------|---------|-------------------------------------------------------------------|
+| 시간 추가 | `POST /admin/times`         | `{startAt}`                           | -       | `201 Created` <br> `{timeId, startAt}`                            |
+| 시간 삭제 | `DELETE /admin/times/{id}`  | -                                     | -       | `200 OK`                                                          |
+| 테마 생성 | `POST /admin/themes`        | `{reservationName, description, url}` | -       | `201 Created` <br> `{themeId, reservationName, description, url}` |
+| 테마 삭제 | `DELETE /admin/themes/{id}` | -                                     | -       | `200 OK`                                                          |
 
 ## 에러 응답 명세
 

@@ -59,6 +59,8 @@ public class ReservationService {
     public Reservation update(ReservationUpdateRequest request, long id, LocalDateTime now) {
         Reservation reservation = findReservationById(id);
 
+        reservation.ensureNotPast(now);
+
         ReservationDate reservationDate = new ReservationDate(request.getDate());
         ReservationTime reservationTime = findReservationTimeByTimeId(request.getTimeId());
 
@@ -66,6 +68,7 @@ public class ReservationService {
 
         Reservation target = Reservation.reserve(reservation.getName(), reservationDate, reservationTime,
                 reservation.getTheme(), now);
+        target.ensureNotPast(now);
 
         return reservationRepository.update(id, target);
     }

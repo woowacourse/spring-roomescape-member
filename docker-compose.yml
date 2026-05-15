@@ -3,10 +3,14 @@ services:
     build: .
     ports:
       - "8080:8080"
+    environment:
+      - TZ=Asia/Seoul
 
   frontend:
-    image: alstj2384/spring-roomescape-member-front:v3.0
+    image: alstj2384/spring-roomescape-member-front:v3.1
     ports:
       - "4173:4173"
+    environment:
+      - TZ=Asia/Seoul
     depends_on:
       - backend
