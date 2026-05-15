@@ -1,8 +1,12 @@
 package roomescape.domain.time.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +20,7 @@ import roomescape.domain.time.service.TimeService;
 
 @RestController
 @RequestMapping("/api/admin/times")
+@Validated
 public class AdminTimeController {
 
     private final TimeService timeService;
@@ -31,13 +36,14 @@ public class AdminTimeController {
     }
 
     @PostMapping()
-    public ResponseEntity<TimeResponseDto> saveTime(@RequestBody TimeCreateRequestDto requestDto) {
+    public ResponseEntity<TimeResponseDto> saveTime(
+        @NotNull @Valid @RequestBody TimeCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(timeService.saveTime(requestDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTime(@NotNull @PathVariable @Min(1) Long id) {
         timeService.deleteTimeById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
