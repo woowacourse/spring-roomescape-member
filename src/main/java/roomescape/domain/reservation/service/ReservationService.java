@@ -1,12 +1,14 @@
 package roomescape.domain.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationCancelResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
@@ -73,6 +75,10 @@ public class ReservationService {
             throw new GeneralException(ReservationErrorType.RESERVATION_UPDATE_FORBIDDEN);
         }
 
+        if (existingReservation.getCanceledAt() != null) {
+            throw new GeneralException(ReservationErrorType.ALREADY_CANCELED);
+        }
+
         if (existingReservation.getDate().isBefore(LocalDate.now())) {
             throw new GeneralException(ReservationErrorType.PAST_RESERVATION_UPDATE);
         }
@@ -84,6 +90,29 @@ public class ReservationService {
         }
 
         return ReservationMapper.toCreateResponseDto(reservationRepository.update(updateReservation));
+    }
+
+    public ReservationCancelResponseDto cancelReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findReservationByIdAndDeletedAtIsNull(id)
+            .orElseThrow(() -> new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND));
+
+        if (!reservation.getName().equals(name)) {
+            throw new GeneralException(ReservationErrorType.RESERVATION_CANCEL_FORBIDDEN);
+        }
+
+        if (reservation.getCanceledAt() != null) {
+            throw new GeneralException(ReservationErrorType.ALREADY_CANCELED);
+        }
+
+        if (reservation.getDate().isBefore(LocalDate.now())) {
+            throw new GeneralException(ReservationErrorType.PAST_RESERVATION_CANCEL);
+        }
+
+        Reservation canceledReservation = Reservation.reconstruct(reservation.getId(), reservation.getName(),
+            reservation.getDate(), reservation.getTime(), reservation.getTheme(), LocalDateTime.now(),
+            reservation.getDeletedAt());
+
+        return ReservationMapper.toCancelResponseDto(reservationRepository.update(canceledReservation));
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {

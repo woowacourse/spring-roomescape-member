@@ -4,5 +4,6 @@ public enum ReservationStatus {
 
     EDITABLE,
     EDIT_RECOMMENDED,
-    LOCKED
+    LOCKED,
+    CANCELED
 }

@@ -1,5 +1,7 @@
 package roomescape.domain.reservation.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +35,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findReservationsByDeletedAtIsNull() {
         return jdbcTemplate.query(
             """
-                SELECT r.id, r.name, r.date,
+                SELECT r.id, r.name, r.date, r.canceled_at,
                        rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                        t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                        t.deleted_at AS theme_deleted_at
@@ -49,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findReservationsByNameAndDeletedAtIsNull(String name) {
         String sql = """
-            SELECT r.id, r.name, r.date,
+            SELECT r.id, r.name, r.date, r.canceled_at,
                    rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                    t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                    t.deleted_at AS theme_deleted_at
@@ -72,7 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findReservationByIdAndDeletedAtIsNull(Long id) {
         String sql = """
-            SELECT r.id, r.name, r.date,
+            SELECT r.id, r.name, r.date, r.canceled_at,
                    rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
                    t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
                    t.deleted_at AS theme_deleted_at
@@ -102,6 +104,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             WHERE r.date = :date
               AND r.theme_id = :themeId
               AND r.deleted_at IS NULL
+              AND r.canceled_at IS NULL
               AND rt.deleted_at IS NULL
               AND t.deleted_at IS NULL
             """;
@@ -138,24 +141,25 @@ public class JdbcReservationRepository implements ReservationRepository {
             SET name = :name,
                 date = :date,
                 time_id = :timeId,
-                theme_id = :themeId
+                theme_id = :themeId,
+                canceled_at = :canceledAt
             WHERE id = :id
               AND deleted_at IS NULL
             """;
-        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
-            "id", reservation.getId(),
-            "name", reservation.getName(),
-            "date", reservation.getDate(),
-            "timeId", reservation.getTime().getId(),
-            "themeId", reservation.getTheme().getId()
-        ));
+        SqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("id", reservation.getId())
+            .addValue("name", reservation.getName())
+            .addValue("date", reservation.getDate())
+            .addValue("timeId", reservation.getTime().getId())
+            .addValue("themeId", reservation.getTheme().getId())
+            .addValue("canceledAt", reservation.getCanceledAt());
         jdbcTemplate.update(sql, parameters);
 
         return Reservation.reconstruct(reservation.getId(), reservation.getName(), reservation.getDate(),
-            reservation.getTime(), reservation.getTheme());
+            reservation.getTime(), reservation.getTheme(), reservation.getCanceledAt());
     }
 
-    private Reservation mapReservation(java.sql.ResultSet rs) throws java.sql.SQLException {
+    private Reservation mapReservation(ResultSet rs) throws SQLException {
         return Reservation.reconstruct(
             rs.getLong("id"),
             rs.getString("name"),
@@ -171,12 +175,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("description"),
                 rs.getString("image_url"),
                 getNullableLocalDateTime(rs, "theme_deleted_at")
-            )
+            ),
+            getNullableLocalDateTime(rs, "canceled_at")
         );
     }
 
-    private LocalDateTime getNullableLocalDateTime(java.sql.ResultSet rs, String columnLabel)
-        throws java.sql.SQLException {
+    private LocalDateTime getNullableLocalDateTime(ResultSet rs, String columnLabel)
+        throws SQLException {
         java.sql.Timestamp timestamp = rs.getTimestamp(columnLabel);
         if (timestamp == null) {
             return null;
@@ -217,6 +222,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                   AND time_id = :timeId
                   AND theme_id = :themeId
                   AND deleted_at IS NULL
+                  AND canceled_at IS NULL
             )
             """;
 
@@ -242,6 +248,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                   AND theme_id = :themeId
                   AND id != :id
                   AND deleted_at IS NULL
+                  AND canceled_at IS NULL
             )
             """;
 

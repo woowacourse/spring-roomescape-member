@@ -9,7 +9,10 @@ public enum ReservationErrorType implements ErrorType {
     UPDATE_FIELD_RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "수정할 자원이 존재하지 않습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
     RESERVATION_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "예약을 변경할 권한이 없습니다."),
-    PAST_RESERVATION_UPDATE(HttpStatus.CONFLICT, "지난 예약은 변경할 수 없습니다.");
+    RESERVATION_CANCEL_FORBIDDEN(HttpStatus.FORBIDDEN, "예약을 취소할 권한이 없습니다."),
+    PAST_RESERVATION_UPDATE(HttpStatus.CONFLICT, "지난 예약은 변경할 수 없습니다."),
+    PAST_RESERVATION_CANCEL(HttpStatus.CONFLICT, "지난 예약은 취소할 수 없습니다."),
+    ALREADY_CANCELED(HttpStatus.CONFLICT, "이미 취소된 예약입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -2,6 +2,7 @@ package roomescape.domain.reservation.mapper;
 
 import java.time.LocalDate;
 import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationCancelResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationStatus;
@@ -28,6 +29,10 @@ public final class ReservationMapper {
     }
 
     private static ReservationStatus getStatus(Reservation reservation) {
+        if (reservation.getCanceledAt() != null) {
+            return ReservationStatus.CANCELED;
+        }
+
         if (reservation.getDate().isBefore(LocalDate.now())) {
             return ReservationStatus.LOCKED;
         }
@@ -44,6 +49,10 @@ public final class ReservationMapper {
             return "";
         }
 
+        if (status == ReservationStatus.CANCELED) {
+            return "취소된 예약입니다.";
+        }
+
         if (status == ReservationStatus.EDIT_RECOMMENDED) {
             return "현재 예약의 시간 또는 테마가 더 이상 제공되지 않습니다. 다른 예약 정보로 수정해주세요.";
         }
@@ -54,5 +63,10 @@ public final class ReservationMapper {
     public static ReservationCreateResponseDto toCreateResponseDto(Reservation reservation) {
         return new ReservationCreateResponseDto(reservation.getId(), reservation.getName(), reservation.getDate(),
             reservation.getTime().getId(), reservation.getTheme().getId());
+    }
+
+    public static ReservationCancelResponseDto toCancelResponseDto(Reservation reservation) {
+        return new ReservationCancelResponseDto(reservation.getId(), reservation.getName(), reservation.getDate(),
+            reservation.getTime().getId(), reservation.getTheme().getId(), reservation.getCanceledAt());
     }
 }

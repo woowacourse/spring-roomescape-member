@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationCancelResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.service.ReservationService;
 
@@ -54,5 +55,16 @@ public class ReservationController {
         @PathVariable @Positive(message = "id의 값은 양수여야 합니다.") Long id,
         @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
         return ResponseEntity.ok(reservationService.updateReservation(id, requestDto));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ReservationCancelResponseDto> cancelReservation(
+        @PathVariable @Positive(message = "id의 값은 양수여야 합니다.") Long id,
+        @RequestParam
+        @NotBlank(message = "예약자명은 필수입니다.")
+        @Size(max = 20, message = "예약자명의 길이는 1이상 20이하 입니다.")
+        String name
+    ) {
+        return ResponseEntity.ok(reservationService.cancelReservation(id, name));
     }
 }

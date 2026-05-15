@@ -20,6 +20,7 @@ CREATE TABLE reservation (
     date DATE NOT NULL,
     time_id BIGINT NOT NULL,
     theme_id BIGINT NOT NULL,
+    canceled_at DATETIME DEFAULT NULL,
     deleted_at DATETIME DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
