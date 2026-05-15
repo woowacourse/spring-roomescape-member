@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
@@ -26,13 +28,15 @@ public class ReservationServiceTest {
 
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
+    private ThemeDao themeDao;
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
         reservationDao = mock(ReservationDao.class);
         reservationTimeDao = mock(ReservationTimeDao.class);
-        reservationService = new ReservationService(reservationDao, reservationTimeDao);
+        themeDao = mock(ThemeDao.class);
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @Test
@@ -55,17 +59,19 @@ public class ReservationServiceTest {
         Long generatedId = 1L;
         LocalDate date = LocalDate.of(2026, 12, 31);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "url");
         Reservation expected = new Reservation(generatedId, "이든", date, 1L, 1L);
 
         when(reservationTimeDao.findById(1L)).thenReturn(time);
         when(reservationDao.insertReservation("이든", date, 1L, 1L)).thenReturn(generatedId);
         when(reservationDao.findReservationById(generatedId)).thenReturn(expected);
+        when(themeDao.findById(1L)).thenReturn(theme);
 
         ReservationResponse actual = reservationService.createReservation(new ReservationCreateRequest(
                 "이든", date, 1L, 1L
         ));
 
-        assertThat(actual).isEqualTo(ReservationResponse.from(expected, time));
+        assertThat(actual).isEqualTo(ReservationResponse.from(expected, time, theme));
         verify(reservationDao).insertReservation("이든", date, 1L, 1L);
         verify(reservationDao).findReservationById(generatedId);
     }

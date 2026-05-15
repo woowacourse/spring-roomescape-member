@@ -43,7 +43,9 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", "/api/v1/reservations/1")
-                .body("id", is(1));
+                .body("id", is(1))
+                .body("theme.id", is(1))
+                .body("theme.name", is("이든의 공포 하우스"));
     }
 
     @Test
@@ -106,13 +108,15 @@ public class ReservationControllerTest {
                 .body("[0].date", is("2026-12-31"))
                 .body("[0].time.id", is(1))
                 .body("[0].time.startAt", is("10:00"))
-                .body("[0].themeId", is(1))
+                .body("[0].theme.id", is(1))
+                .body("[0].theme.name", is("이든의 공포 하우스"))
                 .body("[1].id", is(2))
                 .body("[1].name", is("브리"))
                 .body("[1].date", is("2026-12-31"))
                 .body("[1].time.id", is(2))
                 .body("[1].time.startAt", is("11:00"))
-                .body("[1].themeId", is(1));
+                .body("[1].theme.id", is(1))
+                .body("[1].theme.name", is("이든의 공포 하우스"));
     }
 
     @Test

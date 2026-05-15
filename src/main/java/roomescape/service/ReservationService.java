@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
@@ -26,11 +28,13 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     @Autowired
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -38,7 +42,8 @@ public class ReservationService {
         return reservations.stream()
                 .map(reservation -> {
                     ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
-                    return ReservationResponse.from(reservation, time);
+                    Theme theme = themeDao.findById(reservation.getThemeId());
+                    return ReservationResponse.from(reservation, time, theme);
                 })
                 .collect(Collectors.toList());
     }
@@ -52,8 +57,9 @@ public class ReservationService {
         Long id = reservationDao.insertReservation(request.name(), request.date(),
                 request.timeId(), request.themeId());
         Reservation reservation = reservationDao.findReservationById(id);
+        Theme theme = themeDao.findById(reservation.getThemeId());
         
-        return ReservationResponse.from(reservation, time);
+        return ReservationResponse.from(reservation, time, theme);
     }
 
     @Transactional
