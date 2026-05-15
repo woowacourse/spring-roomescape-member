@@ -58,7 +58,4 @@ class AdminTimeTest {
                 .then().log().all()
                 .statusCode(400);
     }
-
 }
-
-

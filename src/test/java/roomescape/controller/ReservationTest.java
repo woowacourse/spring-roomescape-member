@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -14,11 +15,12 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Import(FixedClockConfig.class)
 public class ReservationTest {
 
     @Test
-    @DisplayName("예약 생성 테스트")
-    void createReservation() {
+    @DisplayName("예약이 성공적으로 테스트가 되는지 확인한다.")
+    void createReservationTest() {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -52,7 +54,25 @@ public class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약 삭제 테스트")
+    @DisplayName("이전 시간에 대해서는 예약을 생성할 수 없다.")
+    void pastReservationTest() {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", "2026-04-05");
+        params.put("timeId", 1L);
+        params.put("themeId", 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약이 성공적으로 삭제되는지 확인한다.")
     void deleteReservationTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
