@@ -38,8 +38,8 @@
 
 ## 사이클2 - 2단계 에러 응답 설계
 
-* [ ] 전역 예외 처리 도입 (`@RestControllerAdvice` / `@ExceptionHandler`)
-* [ ] 공통 에러 응답 본문 형식 (RFC 9457 Problem Details, `application/problem+json`)
-* [ ] 예외 계층 도입 (`NotFoundException` 404 / `ConflictException` 409 / `BusinessRuleViolationException` 422)
-* [ ] 처리되지 않은 예외가 500으로 새지 않도록 보강
+* [x] 전역 예외 처리 도입 (`@RestControllerAdvice` / `@ExceptionHandler`)
+* [x] 공통 에러 응답 본문 형식 (RFC 9457 Problem Details, `application/problem+json`)
+* [x] 예외 계층 도입 (`NotFoundException` 404 / `ConflictException` 409 / `BusinessRuleViolationException` 422)
+* [x] 처리되지 않은 예외가 500으로 새지 않도록 보강
 * [ ] 클라이언트 화면 에러 메시지 노출
