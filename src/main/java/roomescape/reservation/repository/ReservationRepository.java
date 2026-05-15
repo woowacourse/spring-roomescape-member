@@ -9,10 +9,6 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    int deleteById(Long id);
-
-    void update(Reservation reservation);
-
     List<Reservation> findAllByName(String name);
 
     Optional<Reservation> findById(Long id);
@@ -24,4 +20,8 @@ public interface ReservationRepository {
     List<PopularThemeQueryResult> findPopularThemes(LocalDate from, LocalDate to, int limit);
 
     boolean existByDateAndTimeIdAndThemeIdExceptId(LocalDate date, Long timeId, Long themeId, Long id);
+
+    void update(Reservation reservation);
+
+    int deleteById(Long id);
 }

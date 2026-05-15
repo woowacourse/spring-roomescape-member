@@ -10,8 +10,6 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    int deleteById(Long id);
-
     Optional<ReservationTime> findById(Long id);
 
     boolean existByStartAt(LocalTime localTime);
@@ -19,4 +17,6 @@ public interface ReservationTimeRepository {
     List<ReservationTime> findAll();
 
     List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date);
+
+    int deleteById(Long id);
 }

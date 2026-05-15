@@ -55,16 +55,6 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
-        String sql = """
-               DELETE FROM theme
-               WHERE id = ?
-               """;
-
-        return jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public Optional<Theme> findById(Long id) {
         String sql = """
                SELECT *
@@ -98,5 +88,15 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, ThemeMapper);
+    }
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = """
+               DELETE FROM theme
+               WHERE id = ?
+               """;
+
+        return jdbcTemplate.update(sql, id);
     }
 }

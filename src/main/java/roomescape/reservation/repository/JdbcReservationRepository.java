@@ -76,38 +76,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
-        String sql = """
-               DELETE FROM reservation
-               WHERE id = ?
-               """;
-
-        return jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public void update(Reservation reservation) {
-        String sql = """
-                UPDATE reservation
-                SET name = ?, reservation_date = ?, time_id = ?, theme_id = ?
-                WHERE id = ?
-                """;
-
-        int affectedRow = jdbcTemplate.update(
-                sql,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId(),
-                reservation.getId()
-        );
-
-        if (affectedRow == 0) {
-            throw new ReservationNotFoundException();
-        }
-    }
-
-    @Override
     public List<Reservation> findAllByName(String name) {
         String sql = """
         SELECT r.id AS reservation_id,
@@ -237,5 +205,37 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, id);
         return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET name = ?, reservation_date = ?, time_id = ?, theme_id = ?
+                WHERE id = ?
+                """;
+
+        int affectedRow = jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+
+        if (affectedRow == 0) {
+            throw new ReservationNotFoundException();
+        }
+    }
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = """
+               DELETE FROM reservation
+               WHERE id = ?
+               """;
+
+        return jdbcTemplate.update(sql, id);
     }
 }

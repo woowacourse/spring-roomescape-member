@@ -8,11 +8,11 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    int deleteById(Long id);
-
     Optional<Theme> findById(Long id);
 
     boolean existByName(String name);
 
     List<Theme> findAll();
+
+    int deleteById(Long id);
 }
