@@ -1,6 +1,7 @@
 package roomescape.repository.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -61,6 +63,22 @@ class JdbcReservationRepositoryTest {
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getTime()).isEqualTo(savedTime);
         assertThat(saved.getTheme()).isEqualTo(savedTheme);
+    }
+
+    @Test
+    void 동일한_날짜_시간_테마를_가지는_예약을_추가하면_예외가_발생한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", date, savedTime, savedTheme));
+
+        Reservation duplicated = new Reservation("n", date, savedTime, savedTheme);
+
+        // when & then
+        assertThatThrownBy(() -> reservationRepository.createReservation(duplicated))
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -333,6 +351,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정 테마를 사용하는 예약이 있는 지 조회한다")
     class ExistsReservationByThemeId {
 
+
         @Test
         void 해당_테마를_사용하고_있는_테마가_있는_경우_TRUE를_반환한다() {
             // given
@@ -366,6 +385,7 @@ class JdbcReservationRepositoryTest {
             // then
             assertThat(exists).isFalse();
         }
+
     }
 
     @Test

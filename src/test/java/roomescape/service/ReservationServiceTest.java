@@ -611,7 +611,6 @@ class ReservationServiceTest {
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
-
     private ReservationRequest requestDtoFrom(Reservation reservation) {
         return new ReservationRequest(
             reservation.getName().value(),
