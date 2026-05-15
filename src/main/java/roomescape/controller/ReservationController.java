@@ -1,29 +1,16 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationPatchRequest;
-import roomescape.controller.dto.ReservationPutRequest;
-import roomescape.controller.dto.ReservationRequest;
-import roomescape.controller.dto.ReservationResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.TimeResponse;
+import org.springframework.web.bind.annotation.*;
+import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
 import roomescape.exception.InvalidOwnershipException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.service.ReservationService;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -33,12 +20,6 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-    }
-
-    private static void checkValidUserName(String userName) {
-        if (userName == null || userName.isBlank()) {
-            throw new UnauthorizedException();
-        }
     }
 
     @GetMapping
@@ -109,6 +90,12 @@ public class ReservationController {
         reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(),
                 request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
+    }
+
+    private void checkValidUserName(String userName) {
+        if (userName == null || userName.isBlank()) {
+            throw new UnauthorizedException();
+        }
     }
 
     private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {
