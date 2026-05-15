@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.test_config.MutableClock;
+import roomescape.test_config.TestClockConfig;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
@@ -18,13 +20,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
 @JdbcTest
-@Import(JdbcThemeRepository.class)
+@Import({JdbcThemeRepository.class, TestClockConfig.class})
 class JdbcThemeRepositoryTest {
 
     @Autowired
@@ -32,6 +35,9 @@ class JdbcThemeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private MutableClock clock;
 
     @Test
     @DisplayName("Theme를 저장하고 조회한다.")
@@ -49,11 +55,63 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("삭제된 Theme는 id로 조회되지 않는다.")
+    public void findById_softDelete() {
+        // given
+        Theme theme = insertDeletedTheme("kim", "desc1", "thumb1");
+
+        // when
+        Optional<Theme> found = jdbcThemeRepository.findById(theme.getId());
+
+        // then
+        assertThat(found).isEmpty();
+    }
+
+    @Test
     @DisplayName("모든 Theme를 불러온다.")
     public void findAll() {
-        insertTheme("kim", "desc1", "thumb1");
-        insertTheme("lee", "desc2", "thumb2");
-        insertTheme("park", "desc3", "thumb3");
+        KeyHolder keyHolder2 = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection2 -> {
+            PreparedStatement preparedStatement2 = connection2.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement2.setString(1, "kim");
+            preparedStatement2.setString(2, "desc1");
+            preparedStatement2.setString(3, "thumb1");
+            return preparedStatement2;
+        }, keyHolder2);
+
+        new Theme(getGeneratedId(keyHolder2), "kim", "desc1", "thumb1");
+        KeyHolder keyHolder1 = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection1 -> {
+            PreparedStatement preparedStatement1 = connection1.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement1.setString(1, "lee");
+            preparedStatement1.setString(2, "desc2");
+            preparedStatement1.setString(3, "thumb2");
+            return preparedStatement1;
+        }, keyHolder1);
+
+        new Theme(getGeneratedId(keyHolder1), "lee", "desc2", "thumb2");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "park");
+            preparedStatement.setString(2, "desc3");
+            preparedStatement.setString(3, "thumb3");
+            return preparedStatement;
+        }, keyHolder);
+
+        new Theme(getGeneratedId(keyHolder), "park", "desc3", "thumb3");
 
         List<Theme> themes = jdbcThemeRepository.findAll();
 
@@ -70,15 +128,70 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("Theme 목록은 삭제되지 않은 Theme만 조회한다.")
+    public void findAll_softDelete() {
+        // given
+        insertDeletedTheme("kim", "desc1", "thumb1");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "lee");
+            preparedStatement.setString(2, "desc2");
+            preparedStatement.setString(3, "thumb2");
+            return preparedStatement;
+        }, keyHolder);
+
+        Theme activeTheme = new Theme(getGeneratedId(keyHolder), "lee", "desc2", "thumb2");
+
+        // when
+        List<Theme> themes = jdbcThemeRepository.findAll();
+
+        // then
+        assertThat(themes)
+                .extracting(Theme::getId, Theme::getName)
+                .containsExactly(tuple(activeTheme.getId(), activeTheme.getName()));
+    }
+
+    @Test
     @DisplayName("Theme 존재 여부를 조회한다.")
     public void existsById() {
-        Theme theme = insertTheme("kim", "desc1", "thumb1");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "kim");
+            preparedStatement.setString(2, "desc1");
+            preparedStatement.setString(3, "thumb1");
+            return preparedStatement;
+        }, keyHolder);
+
+        Theme theme = new Theme(getGeneratedId(keyHolder), "kim", "desc1", "thumb1");
 
         boolean exists = jdbcThemeRepository.existsById(theme.getId());
         boolean notExists = jdbcThemeRepository.existsById(theme.getId() + 1);
 
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("삭제된 Theme는 존재하지 않는 것으로 조회한다.")
+    public void existsById_softDelete() {
+        // given
+        Theme theme = insertDeletedTheme("kim", "desc1", "thumb1");
+
+        // when
+        boolean exists = jdbcThemeRepository.existsById(theme.getId());
+
+        // then
+        assertThat(exists).isFalse();
     }
 
     @Test
@@ -104,8 +217,34 @@ class JdbcThemeRepositoryTest {
     @DisplayName("인기 테마 조회는 삭제된 예약을 집계에서 제외한다.")
     public void findTopThemesByReservationCount_softDelete() {
         // given
-        Theme activeTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-        Theme deletedTheme = insertTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
+        KeyHolder keyHolder1 = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection1 -> {
+            PreparedStatement preparedStatement1 = connection1.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement1.setString(1, "레벨2 탈출");
+            preparedStatement1.setString(2, "우테코 레벨2를 탈출하는 내용입니다.");
+            preparedStatement1.setString(3, "https://example.com/theme.png");
+            return preparedStatement1;
+        }, keyHolder1);
+
+        Theme activeTheme = new Theme(getGeneratedId(keyHolder1), "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "레벨3 탈출");
+            preparedStatement.setString(2, "우테코 레벨3을 탈출하는 내용입니다.");
+            preparedStatement.setString(3, "https://example.com/theme.png");
+            return preparedStatement;
+        }, keyHolder);
+
+        Theme deletedTheme = new Theme(getGeneratedId(keyHolder), "레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
         Long timeId = insertReservationTime(LocalTime.of(10, 0));
         Long otherTimeId = insertReservationTime(LocalTime.of(12, 0));
         LocalDate targetDate = LocalDate.of(2026, 5, 1);
@@ -128,14 +267,72 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("인기 테마 조회는 삭제된 Theme를 집계에서 제외한다.")
+    public void findTopThemesByReservationCount_deletedTheme() {
+        // given
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "레벨2 탈출");
+            preparedStatement.setString(2, "우테코 레벨2를 탈출하는 내용입니다.");
+            preparedStatement.setString(3, "https://example.com/theme.png");
+            return preparedStatement;
+        }, keyHolder);
+
+        Theme activeTheme = new Theme(getGeneratedId(keyHolder), "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme deletedTheme = insertDeletedTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Long timeId = insertReservationTime(LocalTime.of(10, 0));
+        Long otherTimeId = insertReservationTime(LocalTime.of(12, 0));
+        LocalDate targetDate = LocalDate.of(2026, 5, 1);
+
+        insertReservation("브라운", targetDate, timeId, activeTheme);
+        insertReservation("포비", targetDate, otherTimeId, deletedTheme);
+
+        // when
+        List<Theme> topThemes = jdbcThemeRepository.findTopThemesByReservationCount(
+                LocalDate.of(2026, 4, 29),
+                LocalDate.of(2026, 5, 5),
+                10
+        );
+
+        // then
+        assertThat(topThemes)
+                .extracting(Theme::getId)
+                .containsExactly(activeTheme.getId())
+                .doesNotContain(deletedTheme.getId());
+    }
+
+    @Test
     @DisplayName("Theme를 삭제한다.")
     public void deleteById() {
-        Theme theme = insertTheme("kim", "desc1", "thumb1");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, "kim");
+            preparedStatement.setString(2, "desc1");
+            preparedStatement.setString(3, "thumb1");
+            return preparedStatement;
+        }, keyHolder);
+
+        Theme theme = new Theme(getGeneratedId(keyHolder), "kim", "desc1", "thumb1");
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
+        clock.setFixed(now);
 
         boolean deleted = jdbcThemeRepository.deleteById(theme.getId());
 
         assertThat(deleted).isTrue();
         assertThat(jdbcThemeRepository.findAll()).isEmpty();
+
+        Map<String, Object> deleteInfo = findDeleteInfoById(theme.getId());
+        assertThat(((Timestamp) deleteInfo.get("deleted_at")).toLocalDateTime()).isEqualTo(now);
     }
 
     @Test
@@ -151,17 +348,18 @@ class JdbcThemeRepositoryTest {
         assertThat(deleted).isFalse();
     }
 
-    private Theme insertTheme(String name, String description, String thumbnail) {
+    private Theme insertDeletedTheme(String name, String description, String thumbnail) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
+        LocalDateTime now = LocalDateTime.now(clock);
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement("""
-                    INSERT INTO theme (name, description, thumbnail)
-                    VALUES (?, ?, ?)
+                    INSERT INTO theme (name, description, thumbnail, deleted_at)
+                    VALUES (?, ?, ?, ?)
                     """, new String[]{"id"});
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
             preparedStatement.setString(3, thumbnail);
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(now));
             return preparedStatement;
         }, keyHolder);
 
@@ -210,6 +408,14 @@ class JdbcThemeRepositoryTest {
             preparedStatement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             return preparedStatement;
         });
+    }
+
+    private Map<String, Object> findDeleteInfoById(Long id) {
+        return jdbcTemplate.queryForMap("""
+                SELECT deleted_at
+                FROM theme
+                WHERE id = ?
+                """, id);
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {

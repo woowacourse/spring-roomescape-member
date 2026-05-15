@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             );
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
     @Override
     public Theme save(Theme theme) {
@@ -41,6 +44,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query("""
                 SELECT id, name, description, thumbnail
                 FROM theme
+                WHERE deleted_at IS NULL
                 """, themeRowMapper);
     }
 
@@ -56,6 +60,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                         INNER JOIN reservation r
                             ON r.theme_id = t.id
                         WHERE r.date BETWEEN ? AND ?
+                            AND t.deleted_at IS NULL
                             AND r.deleted_at IS NULL
                         GROUP BY t.id, t.name, t.description, t.thumbnail
                         ORDER BY COUNT(r.id) DESC
@@ -69,7 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query("""
                         SELECT id, name, description, thumbnail
                         FROM theme
-                        WHERE id = ?
+                        WHERE id = ? AND deleted_at IS NULL
                         """, themeRowMapper, id)
                 .stream()
                 .findFirst();
@@ -80,7 +85,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM theme
-                WHERE id = ?
+                WHERE id = ? AND deleted_at IS NULL
                 """, Integer.class, id);
         return count != null && count > 0;
     }
@@ -88,9 +93,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public boolean deleteById(Long id) {
         int rowCount = jdbcTemplate.update("""
-                DELETE FROM theme
-                WHERE id = ?
-                """, id);
+                UPDATE theme
+                SET deleted_at = ?
+                WHERE id = ? AND deleted_at IS NULL
+                """, LocalDateTime.now(clock), id);
         return rowCount > 0;
     }
 
