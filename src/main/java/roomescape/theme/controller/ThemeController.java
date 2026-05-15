@@ -19,6 +19,7 @@ import roomescape.theme.controller.dto.ThemeRankResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.controller.dto.request.GetAvailableTimesRequest;
+import roomescape.time.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.dto.response.ThemeReservationTimesResponse;
 
 @RestController
@@ -60,7 +61,9 @@ public class ThemeController {
             @RequestParam LocalDate date,
             @RequestParam(required = false) Boolean available
     ) {
-        return ResponseEntity.ok(themeService.findAllAvailableTimes(
-                GetAvailableTimesRequest.of(id, date, available)));
+        List<AvailableReservationTimeResponse> allAvailableTimes = themeService.findAllAvailableTimes(
+                GetAvailableTimesRequest.of(id, date, available));
+        ThemeResponse theme = themeService.findTheme(id);
+        return ResponseEntity.ok(ThemeReservationTimesResponse.from(theme, allAvailableTimes));
     }
 }
