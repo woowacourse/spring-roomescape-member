@@ -25,27 +25,17 @@ class UpdateReservationRequestTest {
     @Test
     @DisplayName("모든 필드가 유효하면 검증 통과")
     void success() {
-        UpdateReservationRequest request = new UpdateReservationRequest(1L, "브라운", "2026-05-13", 1L, 1L);
+        UpdateReservationRequest request = new UpdateReservationRequest( "브라운", "2026-05-13", 1L, 1L);
         Set<ConstraintViolation<UpdateReservationRequest>> violations = validator.validate(request);
 
         assertThat(violations).isEmpty();
-    }
-
-    @Test
-    @DisplayName("예약 ID가 null이면 검증 실패")
-    void nullId() {
-        UpdateReservationRequest request = new UpdateReservationRequest(null, "브라운", "2026-05-13", 1L, 1L);
-        Set<ConstraintViolation<UpdateReservationRequest>> violations = validator.validate(request);
-
-        assertThat(violations).hasSize(1);
-        assertThat(violations).extracting("message").contains("예약 ID가 반드시 포함되어야 합니다.");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
     @DisplayName("이름이 비어있거나 공백이면 검증 실패")
     void invalidName(String name) {
-        UpdateReservationRequest request = new UpdateReservationRequest(1L, name, "2026-05-13", 1L, 1L);
+        UpdateReservationRequest request = new UpdateReservationRequest(name, "2026-05-13", 1L, 1L);
         Set<ConstraintViolation<UpdateReservationRequest>> violations = validator.validate(request);
 
         assertThat(violations).isNotEmpty();
@@ -56,7 +46,7 @@ class UpdateReservationRequestTest {
     @ValueSource(strings = {"2026/05/13", "26-05-13", "2026-5-13", "not-date"})
     @DisplayName("날짜 형식이 YYYY-MM-DD가 아니면 검증 실패")
     void invalidDateFormat(String date) {
-        UpdateReservationRequest request = new UpdateReservationRequest(1L, "브라운", date, 1L, 1L);
+        UpdateReservationRequest request = new UpdateReservationRequest("브라운", date, 1L, 1L);
         Set<ConstraintViolation<UpdateReservationRequest>> violations = validator.validate(request);
 
         assertThat(violations).isNotEmpty();
@@ -66,7 +56,7 @@ class UpdateReservationRequestTest {
     @Test
     @DisplayName("시간 ID 또는 테마 ID가 null이면 검증 실패")
     void nullIds() {
-        UpdateReservationRequest request = new UpdateReservationRequest(1L, "브라운", "2026-05-13", null, null);
+        UpdateReservationRequest request = new UpdateReservationRequest("브라운", "2026-05-13", null, null);
         Set<ConstraintViolation<UpdateReservationRequest>> violations = validator.validate(request);
 
         assertThat(violations).hasSize(2);
