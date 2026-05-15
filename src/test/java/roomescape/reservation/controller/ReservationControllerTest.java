@@ -62,7 +62,9 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(404)
+                .body("code", equalTo("RESERVATION_TIME_NOT_FOUND"))
+                .body("message", equalTo("예약 시간을 찾을 수 없습니다."));
     }
 
     @Test
@@ -87,7 +89,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("INVALID_NAME_FORMAT"))
+                .body("code", equalTo("INVALID_REQUEST"))
                 .body("message", equalTo("이름은 필수입니다."));
     }
 

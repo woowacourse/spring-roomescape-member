@@ -24,6 +24,8 @@ import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationChangeRequest;
+import roomescape.theme.Theme;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.time.ReservationTime;
 import roomescape.time.dao.TimeDao;
 
@@ -32,6 +34,9 @@ public class ReservationServiceTest {
 
     @Mock
     private ReservationDao reservationDao;
+
+    @Mock
+    private ThemeDao themeDao;
 
     @Mock
     private TimeDao timeDao;
@@ -66,15 +71,18 @@ public class ReservationServiceTest {
 
     @Test
     void 이미_예약이_존재하는_경우_예외발생() {
+        Long themeId = 1L;
         ReservationTime mockTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         when(timeDao.selectById(anyLong())).thenReturn(Optional.of(mockTime));
+        when(themeDao.selectById(themeId))
+                .thenReturn(Optional.of(new Theme(themeId, "테마", "설명", "image")));
 
         List<Reservation> reservations = new ArrayList<>();
-        Reservation reservation = new Reservation("초록", 1L, LocalDate.of(2026, 5, 20), mockTime);
+        Reservation reservation = new Reservation("초록", themeId, LocalDate.of(2026, 5, 20), mockTime);
         reservations.add(reservation);
         when(reservationDao.selectByThemeIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(reservations);
 
-        assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 20), mockTime.getId()))
+        assertThatThrownBy(() -> reservationService.add("브라운", themeId, LocalDate.of(2026, 5, 20), mockTime.getId()))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.getMessage());
     }
@@ -96,35 +104,26 @@ public class ReservationServiceTest {
                 new ReservationTime(3L, LocalTime.of(10, 0))
         );
 
-        Reservation changedReservation = new Reservation(
-                reservationId,
-                name,
-                themeId,
-                date,
-                time
-        );
-
         given(reservationDao.selectById(reservationId))
                 .willReturn(Optional.of(originReservation));
         given(timeDao.selectById(timeId))
                 .willReturn(Optional.of(time));
+        given(themeDao.selectById(themeId))
+                .willReturn(Optional.of(new Theme(themeId, "테마", "설명", "image")));
         given(reservationDao.selectByThemeIdAndDate(themeId, date))
                 .willReturn(List.of());
+
+        Reservation changedReservation = new Reservation(reservationId, name, themeId, date, time);
+
         given(reservationDao.updateDateTimeById(reservationId, date, timeId))
                 .willReturn(Optional.of(changedReservation));
 
-        Reservation reservation = reservationService.modifyDateTimeByName(
-                reservationId,
-                name,
-                themeId,
-                date,
-                timeId
-        );
+        Reservation actual = reservationService.modifyDateTimeByName(reservationId, name, themeId, date, timeId);
 
-        assertThat(reservation.getId()).isEqualTo(reservationId);
-        assertThat(reservation.getName()).isEqualTo(name);
-        assertThat(reservation.getDate()).isEqualTo(date);
-        assertThat(reservation.getTime().getId()).isEqualTo(timeId);
+        assertThat(actual.getId()).isEqualTo(reservationId);
+        assertThat(actual.getName()).isEqualTo(name);
+        assertThat(actual.getDate()).isEqualTo(date);
+        assertThat(actual.getTime().getId()).isEqualTo(timeId);
     }
 
     @Test

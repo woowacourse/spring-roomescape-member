@@ -44,6 +44,11 @@ public class ReservationService {
         validateDateTime(date, time, ErrorCode.PAST_RESERVATION);
         validateThemeExists(themeId);
 
+        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
+        for (Reservation reserved : reservedList) {
+            validateReserved(timeId, reserved.getTime());
+        }
+
         Reservation newReservation = new Reservation(name, themeId, date, time);
         return reservationDao.insert(newReservation);
     }
