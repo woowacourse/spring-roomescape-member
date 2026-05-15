@@ -10,7 +10,8 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.PastDateTimeReservationException;
+import roomescape.exception.PastReservationModificationException;
 import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -74,7 +75,7 @@ public class ReservationService {
         Reservation existing = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약", id));
         validateReservationOwner(request.name(), existing);
-        validateNotPastDateTime(existing);
+        validateExistingNotInPast(existing);
 
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("테마", request.themeId()));
@@ -122,7 +123,13 @@ public class ReservationService {
 
     private void validateNotPastDateTime(Reservation reservation) {
         if (reservation.isInPast(timeProvider.currentDateTime())) {
-            throw new InvalidReservationDateTimeException();
+            throw new PastDateTimeReservationException();
+        }
+    }
+
+    private void validateExistingNotInPast(Reservation existing) {
+        if (existing.isInPast(timeProvider.currentDateTime())) {
+            throw new PastReservationModificationException();
         }
     }
 

@@ -32,7 +32,7 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.PastDateTimeReservationException;
 import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.service.ReservationService;
 
@@ -119,8 +119,8 @@ class ReservationControllerTest {
     }
 
     @Test
-    void POST_reservations_서비스가_InvalidReservationDateTimeException을_던지면_422_와_메시지를_반환한다() throws Exception {
-        willThrow(new InvalidReservationDateTimeException())
+    void POST_reservations_서비스가_PastDateTimeReservationException을_던지면_422_와_메시지를_반환한다() throws Exception {
+        willThrow(new PastDateTimeReservationException())
                 .given(reservationService).createReservation(any(CreateReservationRequest.class));
 
         Map<String, Object> body = Map.of(
@@ -244,8 +244,8 @@ class ReservationControllerTest {
     }
 
     @Test
-    void PUT_reservations_id_서비스가_InvalidReservationDateTimeException을_던지면_422과_메시지를_반환한다() throws Exception {
-        willThrow(new InvalidReservationDateTimeException())
+    void PUT_reservations_id_서비스가_PastDateTimeReservationException을_던지면_422과_메시지를_반환한다() throws Exception {
+        willThrow(new PastDateTimeReservationException())
                 .given(reservationService).updateOwnReservation(eq(1L), any(UpdateReservationRequest.class));
 
         Map<String, Object> body = Map.of(

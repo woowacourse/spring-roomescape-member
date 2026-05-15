@@ -15,7 +15,8 @@ import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidReservationDateTimeException;
+import roomescape.exception.PastDateTimeReservationException;
+import roomescape.exception.PastReservationModificationException;
 import roomescape.exception.ReservationOwnerMismatchException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.fake.FakeReservationRepository;
@@ -61,7 +62,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
                 "브라운", themeId, LocalDate.of(2026, 5, 5), timeId)))
-                .isInstanceOf(InvalidReservationDateTimeException.class)
+                .isInstanceOf(PastDateTimeReservationException.class)
                 .hasMessage("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다.");
     }
 
@@ -239,7 +240,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
                 new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 6, 2), timeId)))
-                .isInstanceOf(InvalidReservationDateTimeException.class);
+                .isInstanceOf(PastReservationModificationException.class);
     }
 
     @Test
@@ -251,7 +252,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> service.updateOwnReservation(reservationId,
                 new UpdateReservationRequest("브라운", themeId, LocalDate.of(2026, 5, 1), timeId)))
-                .isInstanceOf(InvalidReservationDateTimeException.class);
+                .isInstanceOf(PastDateTimeReservationException.class);
     }
 
     @Test
