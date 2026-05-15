@@ -74,6 +74,10 @@ public class UserReservationService {
 
     @Transactional
     public Reservation updateReservation(long id, String name, LocalDate newDate, long newTimeId) {
+        if (newDate.isBefore(LocalDate.now())) {
+            throw new BusinessRuleException("지나간 날짜·시간에는 예약할 수 없습니다.");
+        }
+
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
         validateOwnerAndActive(reservation, name);
