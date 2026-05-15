@@ -3,6 +3,7 @@ package roomescape.domain.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -22,10 +23,12 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public List<ThemeResponseDto> getThemes() {
         return convertThemesToDto(themeRepository.findAllThemes());
     }
 
+    @Transactional
     public List<ThemeResponseDto> getPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
         validateDate(startDate, endDate);
         return convertThemesToDto(themeRepository.findPopularThemesDateBetween(startDate, endDate, limit));
@@ -43,6 +46,7 @@ public class ThemeService {
             .toList();
     }
 
+    @Transactional
     public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
         validateDuplicates(requestDto.name());
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
@@ -50,6 +54,7 @@ public class ThemeService {
         return ThemeResponseDto.from(themeRepository.save(theme));
     }
 
+    @Transactional
     public void deleteThemeById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new BusinessException(ErrorCode.THEME_REFERENCED_BY_RESERVATION);

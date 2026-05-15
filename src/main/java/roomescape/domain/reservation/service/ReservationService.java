@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
@@ -37,11 +38,13 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public List<ReservationResponseDto> getReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
         return convertReservationsToDto(reservations);
     }
 
+    @Transactional
     public List<ReservationResponseDto> getReservationsByName(String name) {
         List<Reservation> reservations = reservationRepository.findReservationsByName(name);
         return convertReservationsToDto(reservations);
@@ -53,6 +56,7 @@ public class ReservationService {
             .toList();
     }
 
+    @Transactional
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
         validateDuplicates(requestDto.date(), requestDto.timeId(), requestDto.themeId());
@@ -73,6 +77,7 @@ public class ReservationService {
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme, clock);
     }
 
+    @Transactional
     public void updateReservation(String name, Long id, ReservationUpdateRequestDto requestDto) {
         Reservation reservation = getReservationById(id);
         ReservationValidator.validateOwner(name, reservation);
@@ -105,12 +110,14 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void deleteReservationById(Long id) {
         if (reservationRepository.deleteReservationById(id) == 0) {
             throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 
+    @Transactional
     public void deleteMemberReservationById(String name, Long id) {
         Reservation reservation = getReservationById(id);
         ReservationValidator.validateOwner(name, reservation);

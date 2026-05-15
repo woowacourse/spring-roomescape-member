@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
@@ -30,6 +31,7 @@ public class TimeService {
         this.timeRepository = timeRepository;
     }
 
+    @Transactional
     public List<TimeResponseDto> getTimes() {
         return timeRepository.findAllTimes()
             .stream()
@@ -37,6 +39,7 @@ public class TimeService {
             .toList();
     }
 
+    @Transactional
     public List<TimeResponseDto> getAvailableTimes(LocalDate date, Long themeId) {
         validateDate(date);
         validateThemeId(themeId);
@@ -65,6 +68,7 @@ public class TimeService {
         }
     }
 
+    @Transactional
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
         Time time = Time.create(requestDto.startAt());
         if (timeRepository.existsByStartAt(time.getStartAt())) {
@@ -74,6 +78,7 @@ public class TimeService {
         return TimeResponseDto.from(timeRepository.save(time));
     }
 
+    @Transactional
     public void deleteTimeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new BusinessException(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
