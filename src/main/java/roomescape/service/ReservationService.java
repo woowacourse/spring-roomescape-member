@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidOwnershipException;
 import roomescape.exception.PastReservationControlException;
 import roomescape.exception.PastTimeException;
@@ -136,7 +136,11 @@ public class ReservationService {
                 )
                 .filter(existing -> reservation.getId() == null || !reservation.getId().equals(existing.getId()))
                 .ifPresent(existing -> {
-                    throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
+                    throw new DuplicateReservationException(
+                            existing.getDate().toString(),
+                            existing.getTimeSlot().getId(),
+                            existing.getTheme().getId()
+                    );
                 });
     }
 

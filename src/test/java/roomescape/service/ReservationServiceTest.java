@@ -9,10 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidOwnershipException;
 import roomescape.exception.PastReservationControlException;
 import roomescape.exception.PastTimeException;
@@ -59,8 +59,8 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.saveReservation("토미", futureDate, savedTimeSlot.getId(), savedTheme.getId()))
-                .isInstanceOf(DuplicateKeyException.class)
-                .hasMessage("선택하신 시간과 테마는 이미 예약되었습니다.");
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessageContaining("는 이미 예약되어 있습니다.");
     }
 
     @Test
@@ -182,7 +182,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.putReservation(
                 target.getId(), "브라운", "브라운", futureDate, otherTime.getId(), savedTheme.getId()
-        )).isInstanceOf(DuplicateKeyException.class);
+        )).isInstanceOf(DuplicateReservationException.class);
     }
 
     @Test
