@@ -12,7 +12,6 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,16 +21,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository,
-                              Clock clock) {
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +100,7 @@ public class ReservationService {
     }
 
     private void validateNotPast(Reservation reservation, String message) {
-        if (reservation.isPastAt(LocalDateTime.now(clock))) {
+        if (reservation.isPastAt(LocalDateTime.now())) {
             throw new InvalidRequestException(message);
         }
     }

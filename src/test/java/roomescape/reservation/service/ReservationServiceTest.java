@@ -4,9 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.InvalidRequestException;
@@ -18,11 +15,8 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,9 +27,10 @@ class ReservationServiceTest {
 
     private static final String NAME = "브라운";
     private static final String OTHER_NAME = "레아";
-    private static final LocalDate FUTURE_DATE = LocalDate.of(2026, 5, 14);
-    private static final LocalDate NEXT_FUTURE_DATE = LocalDate.of(2026, 5, 15);
-    private static final LocalDate PAST_DATE = LocalDate.of(2026, 5, 13);
+    private static final LocalDate TODAY = LocalDate.now();
+    private static final LocalDate FUTURE_DATE = TODAY.plusDays(1);
+    private static final LocalDate NEXT_FUTURE_DATE = TODAY.plusDays(2);
+    private static final LocalDate PAST_DATE = TODAY.minusDays(1);
     private static final long NOT_FOUND_ID = 37L;
 
     @Autowired
@@ -49,22 +44,6 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @TestConfiguration
-    static class FixedClockConfig {
-
-        @Bean
-        @Primary
-        Clock fixedClock() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return Clock.fixed(
-                    LocalDateTime.of(2026, 5, 13, 15, 0)
-                            .atZone(zoneId)
-                            .toInstant(),
-                    zoneId
-            );
-        }
-    }
 
     @Test
     @DisplayName("예약을 생성한다.")

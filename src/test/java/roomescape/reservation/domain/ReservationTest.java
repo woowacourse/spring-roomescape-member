@@ -7,8 +7,10 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
@@ -72,6 +74,33 @@ class ReservationTest {
                 () -> reservation.withId(2L),
                 "이미 식별자가 존재하는 예약입니다."
         );
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간이 기준 시각보다 이전이면 과거 예약이다.")
+    void isPastAt_success_whenReservationDateTimeIsBeforeNow() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
+
+        assertThat(reservation.isPastAt(now)).isTrue();
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간이 기준 시각과 같으면 과거 예약이 아니다.")
+    void isPastAt_false_whenReservationDateTimeIsSameAsNow() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
+
+        assertThat(reservation.isPastAt(now)).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간이 기준 시각보다 이후이면 과거 예약이 아니다.")
+    void isPastAt_false_whenReservationDateTimeIsAfterNow() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
+
+        assertThat(reservation.isPastAt(now)).isFalse();
     }
 
     private void assertInvalidRequestException(Runnable runnable, String message) {
