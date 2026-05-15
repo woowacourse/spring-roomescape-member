@@ -12,8 +12,7 @@ import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
-    private static final String TIME_SLOT_DOES_NOT_EXIST = "조회된 타임 슬롯이 없습니다.";
-    public static final String INVALID_TIME_ID = "요청한 시간을 찾을 수 없습니다";
+    private static final String TIME_NOT_FOUND = "요청한 시간을 찾을 수 없습니다.";
     private static final String TIME_HAS_RESERVATION = "해당 시간에 예약이 존재하여 삭제할 수 없습니다.";
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -36,12 +35,12 @@ public class ReservationTimeService {
 
     public ReservationTime find(long reservationTimeId) {
         return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new NotFoundException(TIME_SLOT_DOES_NOT_EXIST));
+                .orElseThrow(() -> new NotFoundException(TIME_NOT_FOUND));
     }
 
     public void delete(long reservationTimeId) {
         reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new NotFoundException(INVALID_TIME_ID));
+                .orElseThrow(() -> new NotFoundException(TIME_NOT_FOUND));
         if (reservationRepository.existsByTimeId(reservationTimeId)) {
             throw new ConflictException(TIME_HAS_RESERVATION);
         }
