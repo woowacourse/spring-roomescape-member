@@ -3,6 +3,8 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class Reservation {
 
@@ -26,6 +28,12 @@ public class Reservation {
 
     public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(null, name, date, time, theme);
+    }
+
+    public void validateOwner(String newRequestOwner) {
+        if (!name.equals(newRequestOwner)) {
+            throw new RoomescapeException(ErrorCode.UNAUTHORIZED_NAME);
+        }
     }
 
     public Long getId() {

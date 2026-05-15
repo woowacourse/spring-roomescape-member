@@ -1,6 +1,10 @@
 package roomescape.domain.reservationtime;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class ReservationTime {
 
@@ -20,6 +24,14 @@ public class ReservationTime {
 
     public static ReservationTime of(LocalTime startAt, LocalTime finishAt) {
         return new ReservationTime(null, startAt, finishAt);
+    }
+
+    public void validateIfTimePast(LocalDate reservationDate) {
+        LocalDateTime now = LocalDateTime.now();
+        if (reservationDate.isBefore(now.toLocalDate())
+            || (reservationDate.isEqual(now.toLocalDate()) && startAt.isBefore(now.toLocalTime()))) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
+        }
     }
 
     public Long getId() {

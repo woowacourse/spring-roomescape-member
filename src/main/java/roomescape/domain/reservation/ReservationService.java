@@ -1,7 +1,6 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,12 +32,13 @@ public class ReservationService {
     }
 
     public void createReservation(ReservationRequest request) {
-        validateNewRequest(request);
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
         Theme theme = adminThemeRepository.findById(request.themeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND));
 
+        validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
+        time.validateIfTimePast(request.date());
         Reservation reservation = Reservation.of(
             request.name(),
             request.date(),
@@ -76,22 +76,9 @@ public class ReservationService {
         reservationTimeRepository.findById(fixRequest.timeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
 
-        validateReservationOwner(fixRequest.name(), reservation.getName());
+        reservation.validateOwner(fixRequest.name());
 
         reservationRepository.updateDateAndTime(id, fixRequest.date(), fixRequest.timeId());
-    }
-
-    private void validateNewRequest(ReservationRequest request) {
-        LocalDate reservationDate = request.date();
-        LocalTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND))
-            .getStartAt();
-
-        validatePastReservation(reservationDate, reservationTime);
-        validateDuplicateReservation(
-            request.date(),
-            request.timeId(),
-            request.themeId());
     }
 
     private void validateReservationId(Long id) {
@@ -106,15 +93,8 @@ public class ReservationService {
         }
         ReservationTime newTime = reservationTimeRepository.findById(newRequest.timeId())
             .orElseThrow();
-        validatePastReservation(newRequest.date(), newTime.getStartAt());
+        newTime.validateIfTimePast(newRequest.date());
         validateDuplicateReservation(newRequest.date(), newRequest.timeId(), theme.getId());
-    }
-
-    private void validatePastReservation(LocalDate reservationDate, LocalTime reservationTime) {
-        if (reservationDate.isBefore(LocalDate.now())
-            || (reservationDate.isEqual(LocalDate.now()) && reservationTime.isBefore(LocalTime.now()))) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_PASSED);
-        }
     }
 
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
