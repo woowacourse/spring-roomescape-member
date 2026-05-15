@@ -113,4 +113,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return template.query(sql, themeRowMapper);
     }
+
+    @Override
+    public boolean existsAlreadyTheme(String themeName) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = :themeName)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("themeName", themeName);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
+    }
 }

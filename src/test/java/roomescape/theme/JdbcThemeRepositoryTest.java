@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -78,5 +79,31 @@ class JdbcThemeRepositoryTest {
         assertThat(themes)
                 .extracting(Theme::getId)
                 .containsExactlyInAnyOrder(1L, 2L, 3L, 4L);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 테마이면 true를 반환한다.")
+    void existsAlreadyTheme_테스트_1() {
+        // given
+        String themeName = "세기의 도둑";
+
+        // when
+        boolean result = repository.existsAlreadyTheme(themeName);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마이면 false를 반환한다.")
+    void existsAlreadyTheme_테스트_2() {
+        // given
+        String themeName = "이삭";
+
+        // when
+        boolean result = repository.existsAlreadyTheme(themeName);
+
+        // then
+        assertThat(result).isFalse();
     }
 }

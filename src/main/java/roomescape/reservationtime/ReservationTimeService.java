@@ -56,7 +56,7 @@ public class ReservationTimeService {
 
     private void validateAlreadyTimeNot(LocalTime startAt) {
         if (reservationTimeRepository.existsAlreadyTime(startAt)) {
-            throw new ReservationTimeAlreadyExistsException(ErrorCode.RESERVATIONTIME_ALREADY_EXIST, startAt);
+            throw new ReservationTimeAlreadyExistsException(ErrorCode.RESERVATIONTIME_ALREADY_EXIST);
         }
     }
 }

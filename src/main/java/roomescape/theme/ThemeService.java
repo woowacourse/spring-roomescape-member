@@ -2,6 +2,9 @@ package roomescape.theme;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
+import roomescape.exception.theme.ThemeAlreadyExistsException;
 import roomescape.schedule.ScheduleService;
 import roomescape.theme.dto.request.ThemeSaveRequest;
 import roomescape.theme.dto.response.ThemeFindResponse;
@@ -20,8 +23,8 @@ public class ThemeService {
     private final Clock clock;
 
     public ThemeSaveResponse save(ThemeSaveRequest body) {
-        Theme newTheme = themeRepository.save(body.toDomain());
-        return ThemeSaveResponse.from(newTheme);
+        validateAlreadyThemeNot(body.name());
+        return ThemeSaveResponse.from(themeRepository.save(body.toDomain()));
     }
 
     public void delete(long id) {
@@ -43,5 +46,11 @@ public class ThemeService {
     public List<ThemeFindResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
         return ThemeFindResponse.from(themes);
+    }
+
+    private void validateAlreadyThemeNot(String themeName) {
+        if (themeRepository.existsAlreadyTheme(themeName)) {
+            throw new ThemeAlreadyExistsException(ErrorCode.THEME_ALREADY_EXIST);
+        }
     }
 }

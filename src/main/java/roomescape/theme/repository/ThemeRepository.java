@@ -19,4 +19,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(long id);
 
     List<Theme> findAll();
+
+    boolean existsAlreadyTheme(String name);
 }
