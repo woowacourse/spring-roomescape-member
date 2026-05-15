@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import roomescape.domain.TimeSlot;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,5 +39,12 @@ public class FakeTimeSlotRepository implements TimeSlotRepository {
     @Override
     public void deleteById(long id) {
         storage.remove(id);
+    }
+
+    @Override
+    public Optional<TimeSlot> findByStartAt(LocalTime startAt) {
+        return storage.values().stream()
+                .filter(timeSlot -> timeSlot.getStartAt().equals(startAt))
+                .findFirst();
     }
 }

@@ -35,6 +35,13 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     }
 
     @Override
+    public Optional<TimeSlot> findByStartAt(LocalTime startAt) {
+        String sql = "SELECT id, start_at FROM time_slot where start_at = ?";
+        List<TimeSlot> timeSlots = jdbcTemplate.query(sql, rowMapper(), startAt);
+        return Optional.ofNullable(DataAccessUtils.singleResult(timeSlots));
+    }
+
+    @Override
     public TimeSlot save(TimeSlot timeSlot) {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(timeSlot);
