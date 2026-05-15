@@ -21,6 +21,9 @@ import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,7 +98,46 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 과거_날짜로_변경시_예외가_발생한다() {
+    void 중복_예약시_ConflictException이_발생한다() {
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 1L);
+        ReservationTime time = ReservationTime.of(1L, "10:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        Reservation existing = Reservation.of(1L, "기존유저", FUTURE_DATE, time, theme);
+
+        given(reservationTimeService.find(1L)).willReturn(time);
+        given(themeService.find(1L)).willReturn(theme);
+        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of(existing));
+
+        assertThatThrownBy(() -> reservationService.reserve(request))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 날짜, 테마, 시간에 이미 중복된 예약이 존재합니다.");
+    }
+
+    @Test
+    void 존재하지_않는_예약_취소시_NotFoundException이_발생한다() {
+        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.cancel(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("요청한 예약을 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 과거_날짜_예약시_BusinessRuleViolationException이_발생한다() {
+        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2020-01-01", 1L, 1L);
+        ReservationTime time = ReservationTime.of(1L, "10:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+
+        given(reservationTimeService.find(1L)).willReturn(time);
+        given(themeService.find(1L)).willReturn(theme);
+
+        assertThatThrownBy(() -> reservationService.reserve(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
+    void 과거_날짜로_변경시_BusinessRuleViolationException이_발생한다() {
         ReservationTime oldTime = ReservationTime.of(1L, "10:00");
         ReservationTime newTime = ReservationTime.of(2L, "10:00");
         Theme theme = Theme.of(1L, "공포", "desc", "url");
@@ -107,12 +149,12 @@ class ReservationServiceTest {
         ReservationUpdateRequest request = new ReservationUpdateRequest("2020-01-01", 2L);
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
     @Test
-    void 변경하려는_시간이_이미_차있으면_예외가_발생한다() {
+    void 변경하려는_시간이_이미_차있으면_ConflictException이_발생한다() {
         ReservationTime oldTime = ReservationTime.of(1L, "10:00");
         ReservationTime newTime = ReservationTime.of(2L, "11:00");
         Theme theme = Theme.of(1L, "공포", "desc", "url");
@@ -126,59 +168,20 @@ class ReservationServiceTest {
         ReservationUpdateRequest request = new ReservationUpdateRequest(FUTURE_DATE2, 2L);
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 테마의 시간대입니다.");
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 날짜, 테마, 시간에 이미 중복된 예약이 존재합니다.");
     }
 
     @Test
-    void 중복_예약시_예외가_발생한다() {
-        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 1L);
-        ReservationTime time = ReservationTime.of(1L, "10:00");
-        Theme theme = Theme.of(1L, "공포", "desc", "url");
-        Reservation existing = Reservation.of(1L, "기존유저", FUTURE_DATE, time, theme);
-
-        given(reservationTimeService.find(1L)).willReturn(time);
-        given(themeService.find(1L)).willReturn(theme);
-        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of(existing));
-
-        assertThatThrownBy(() -> reservationService.reserve(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 테마의 시간대입니다.");
-    }
-
-    @Test
-    void 존재하지_않는_예약_취소시_예외가_발생한다() {
-        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> reservationService.cancel(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("요청한 예약을 찾을 수 없습니다.");
-    }
-
-    @Test
-    void 존재하지_않는_테마로_예약시_예외가_발생한다() {
+    void 존재하지_않는_테마로_예약시_NotFoundException이_발생한다() {
         ReservationCreateRequest request = new ReservationCreateRequest("아이큐", FUTURE_DATE, 1L, 999L);
         ReservationTime time = ReservationTime.of(1L, "10:00");
 
         given(reservationTimeService.find(1L)).willReturn(time);
-        given(themeService.find(999L)).willThrow(new IllegalArgumentException("존재하지 않는 테마입니다"));
+        given(themeService.find(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다"));
 
         assertThatThrownBy(() -> reservationService.reserve(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다");
-    }
-
-    @Test
-    void 과거_날짜_예약시_예외가_발생한다() {
-        ReservationCreateRequest request = new ReservationCreateRequest("아이큐", "2020-01-01", 1L, 1L);
-        ReservationTime time = ReservationTime.of(1L, "10:00");
-        Theme theme = Theme.of(1L, "공포", "desc", "url");
-
-        given(reservationTimeService.find(1L)).willReturn(time);
-        given(themeService.find(1L)).willReturn(theme);
-
-        assertThatThrownBy(() -> reservationService.reserve(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 }

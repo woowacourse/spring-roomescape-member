@@ -104,6 +104,53 @@ class ReservationIntegrationTest {
     }
 
     @Test
+    void 과거_날짜로_예약_생성시_422를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+
+        Map<String, Object> params = Map.of(
+                "name", "아이큐",
+                "date", "2020-01-01",
+                "timeId", time.getId(),
+                "themeId", theme.getId()
+        );
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("지나간 날짜·시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
+    void 중복_예약시_409를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
+
+        Map<String, Object> params = Map.of(
+                "name", "브라운",
+                "date", FUTURE_DATE,
+                "timeId", time.getId(),
+                "themeId", theme.getId()
+        );
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isNotNull();
+    }
+
+    @Test
     void 예약을_변경한다() {
         ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of("10:00"));
         ReservationTime time2 = reservationTimeRepository.save(ReservationTime.of("11:00"));
@@ -127,7 +174,7 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    void 과거_날짜로_변경시_400을_반환한다() {
+    void 과거_날짜로_변경시_422를_반환한다() {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
         Reservation saved = reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
@@ -142,7 +189,7 @@ class ReservationIntegrationTest {
                 .body(updateParams)
                 .when().patch("/reservations/" + saved.getId())
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(422)
                 .extract().jsonPath().getMap(".");
 
         assertThat(response.get("message")).isEqualTo("지나간 날짜·시간에는 예약할 수 없습니다.");
