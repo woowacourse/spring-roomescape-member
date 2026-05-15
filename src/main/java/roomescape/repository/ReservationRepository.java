@@ -15,6 +15,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    List<Reservation> findByName(String name);
+
     void delete(Long id);
 
     boolean existByTimeId(Long timeId);

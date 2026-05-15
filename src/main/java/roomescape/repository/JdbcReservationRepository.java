@@ -125,6 +125,35 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                    select r.id as reservation_id,   
+                    r.name, r.date, 
+                    t.id as reservation_time_id,
+                    t.start_at as time_value,
+                    th.id as reservation_theme_id,
+                    th.name as reservation_theme_name,
+                    th.description as reservation_theme_description,
+                    th.image_url as reservation_theme_image_url
+                    from reservation as r 
+                    inner join reservation_time as t
+                    on r.time_id = t.id 
+                    inner join theme as th
+                    on r.theme_id = th.id
+                    where r.name = :name
+                """;
+
+        Map<String, Object> params = Map.of("name", name);
+
+        List<Reservation> results = jdbcTemplate.query(
+                sql,
+                params,
+                getReservationRowMapper()
+        );
+        return results;
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "delete from reservation where id = :id";
         Map<String, Object> params = Map.of("id", id);

@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,14 +22,12 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationRepository reservationRepository,
+    public ReservationService(ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -55,7 +52,6 @@ public class ReservationService {
 
         return ReservationResponseDTO.from(savedReservation);
     }
-
     private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, time, theme)) {
             throw new RoomEscapeException(ReservationErrorCode.RESERVATION_DUPLICATE);
@@ -74,6 +70,14 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약이 존재하지 않습니다."));
         return ReservationResponseDTO.from(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDTO> findReservationsByName(String name) {
+        return reservationRepository.findByName(name)
+                .stream()
+                .map(ReservationResponseDTO::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
