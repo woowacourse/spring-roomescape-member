@@ -82,7 +82,8 @@ public class ReservationDaoTest {
         Reservation reservation = reservationDao.findReservationById(reservationId);
 
         assertThat(reservation.getName()).isEqualTo("이든");
-        assertThat(reservation.getTime().getId()).isEqualTo(timeId);
-        assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(15, 30));
+        assertThat(reservation.getTimeId()).isEqualTo(timeId);
+        assertThat(reservation.getThemeId()).isEqualTo(themeId);
+        assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
     }
 }

@@ -1,8 +1,7 @@
 package roomescape.dto.response;
 
 import roomescape.domain.Reservation;
-
-import java.util.List;
+import roomescape.domain.ReservationTime;
 
 public record ReservationResponse(
         Long id,
@@ -11,19 +10,13 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         Long themeId
 ) {
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation, ReservationTime reservationTime) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().toString(),
-                ReservationTimeResponse.from(reservation.getTime()),
+                ReservationTimeResponse.from(reservationTime),
                 reservation.getThemeId()
         );
-    }
-
-    public static List<ReservationResponse> from(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
     }
 }

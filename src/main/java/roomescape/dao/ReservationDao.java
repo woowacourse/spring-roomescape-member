@@ -2,7 +2,6 @@ package roomescape.dao;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.ReservationAlreadyExistsException;
 
@@ -27,46 +25,20 @@ public class ReservationDao {
     }
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("reservation_id"),
+            resultSet.getLong("id"),
             resultSet.getString("name"),
             LocalDate.parse(resultSet.getString("date")),
-            new ReservationTime(
-                    resultSet.getLong("time_id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
-            ),
+            resultSet.getLong("time_id"),
             resultSet.getLong("theme_id")
     );
 
     public List<Reservation> findAllReservations() {
-        String sql = """
-                SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at,
-                    r.theme_id
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                  ON r.time_id = t.id
-                """;
+        String sql = "SELECT * FROM reservation";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation findReservationById(Long id) {
-        String sql = """
-                SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at,
-                    r.theme_id
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                  ON r.time_id = t.id
-                WHERE r.id = ?
-                """;
+        String sql = "SELECT * FROM reservation WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 

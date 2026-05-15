@@ -55,7 +55,7 @@ public class ReservationServiceTest {
         Long generatedId = 1L;
         LocalDate date = LocalDate.of(2026, 12, 31);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation expected = new Reservation(generatedId, "이든", date, time, 1L);
+        Reservation expected = new Reservation(generatedId, "이든", date, 1L, 1L);
 
         when(reservationTimeDao.findById(1L)).thenReturn(time);
         when(reservationDao.insertReservation("이든", date, 1L, 1L)).thenReturn(generatedId);
@@ -65,7 +65,7 @@ public class ReservationServiceTest {
                 "이든", date, 1L, 1L
         ));
 
-        assertThat(actual).isEqualTo(ReservationResponse.from(expected));
+        assertThat(actual).isEqualTo(ReservationResponse.from(expected, time));
         verify(reservationDao).insertReservation("이든", date, 1L, 1L);
         verify(reservationDao).findReservationById(generatedId);
     }

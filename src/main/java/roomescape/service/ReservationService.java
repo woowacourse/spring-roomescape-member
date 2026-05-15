@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
@@ -14,7 +15,6 @@ import roomescape.exception.ReservationNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +34,26 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getReservations() {
-        return ReservationResponse.from(reservationDao.findAllReservations());
+        List<Reservation> reservations = reservationDao.findAllReservations();
+        return reservations.stream()
+                .map(reservation -> {
+                    ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
+                    return ReservationResponse.from(reservation, time);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public ReservationResponse createReservation(ReservationCreateRequest request) {
-        LocalTime time = reservationTimeDao.findById(request.timeId()).getStartAt();
-        LocalDateTime dateTime = LocalDateTime.of(request.date(), time);
+        ReservationTime time = reservationTimeDao.findById(request.timeId());
+        LocalDateTime dateTime = LocalDateTime.of(request.date(), time.getStartAt());
         validateNotPastDate(dateTime);
+        
         Long id = reservationDao.insertReservation(request.name(), request.date(),
                 request.timeId(), request.themeId());
-        return ReservationResponse.from(reservationDao.findReservationById(id));
+        Reservation reservation = reservationDao.findReservationById(id);
+        
+        return ReservationResponse.from(reservation, time);
     }
 
     @Transactional
