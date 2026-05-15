@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -31,6 +31,10 @@ public class UserReservationService {
 
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessRuleException("지나간 날짜·시간에는 예약할 수 없습니다.");
+        }
+
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
