@@ -16,7 +16,7 @@ import roomescape.dto.ReservationTimeResponseDTO;
 import roomescape.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @Validated
 public class AdminReservationTimeController {
 

@@ -9,7 +9,7 @@ import roomescape.dto.ReservationResponseDTO;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/admin")
 public class AdminReservationController {
 
     public AdminReservationController(ReservationService reservationService) {
