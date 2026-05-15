@@ -19,7 +19,7 @@ import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.ReservationThemeCommand;
 import roomescape.domain.theme.ReservationThemeWithCount;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.DuplicatedRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.InvalidRequestValueException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.exception.UnauthorizedException;
@@ -70,7 +70,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 생성 시 중복된 예약이 있으면 DuplicatedRequestException 발생")
+    @DisplayName("예약 생성 시 중복된 예약이 있으면 ConflictException 발생")
     void addReservationFailByDuplicateTest() {
         ReservationTime reservationTime = new ReservationTime(1, LocalTime.of(10, 0));
         Theme theme = new Theme(1, "테마", "설명", "url");
@@ -82,7 +82,7 @@ public class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(new ReservationCommand("브라운", LocalDate.now(), 1, 1)))
-                .isExactlyInstanceOf(DuplicatedRequestException.class)
+                .isExactlyInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다.");
     }
 
@@ -141,7 +141,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 수정 시 수정하려는 시간에 이미 다른 예약이 존재하면 DuplicatedRequestException 발생")
+    @DisplayName("예약 수정 시 수정하려는 시간에 이미 다른 예약이 존재하면 ConflictException 발생")
     void updateReservationFailByDuplicateTest() {
         LocalDate date = LocalDate.now().plusDays(6);
         ReservationWithTimeAndTheme reservation = new ReservationWithTimeAndTheme(
@@ -159,7 +159,7 @@ public class ReservationServiceTest {
         ReservationCommand newCommand = new ReservationCommand("브라운", date, 2, 2);
 
         assertThatThrownBy(() -> reservationService.updateReservation(1, "브라운", newCommand))
-                .isExactlyInstanceOf(DuplicatedRequestException.class)
+                .isExactlyInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다.");
     }
 

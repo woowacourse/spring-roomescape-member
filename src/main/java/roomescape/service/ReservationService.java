@@ -9,7 +9,7 @@ import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservation.ReservationWithTime;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.exception.DuplicatedRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.repository.theme.ThemeRepository;
@@ -124,7 +124,7 @@ public class ReservationService {
         }
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(timeId, themeId, date)) {
-            throw new DuplicatedRequestException(DUPLICATED_RESERVATION_REQUEST);
+            throw new ConflictException(DUPLICATED_RESERVATION_REQUEST);
         }
     }
 }
