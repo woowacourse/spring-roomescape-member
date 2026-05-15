@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
+import roomescape.domain.vo.ThemeName;
 import roomescape.repository.time.JdbcReservationTimeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
 
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class JdbcReservationRepositoryTest {
 
     private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
-    private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
+    private static final Theme THEME = new Theme(new ThemeName("테마명"), "설명", ThemeImageUrl.defaultImageUrl());
     private static final ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
 
     private final ReservationRepository reservationRepository;
@@ -65,7 +66,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
         ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
 
-        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        Theme savedTheme = themeRepository.createTheme(new Theme(new ThemeName("a"), "a", ThemeImageUrl.defaultImageUrl()));
 
         reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime1, savedTheme));
         reservationRepository.createReservation(Reservation.create(new MemberName("제임스"),  tomorrow, savedTime2, savedTheme));
@@ -83,14 +84,14 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservations)
             .extracting(Reservation::getTheme)
-            .allSatisfy(theme -> assertThat(theme.getNameValue()).isEqualTo("a"));
+            .allSatisfy(theme -> assertThat(theme.getName().value()).isEqualTo("a"));
     }
 
     @Test
     void 저장되어_있는_예약을_아이디로_조회하여_삭제한다() {
         // given
         ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
-        Theme theme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        Theme theme = themeRepository.createTheme(new Theme(new ThemeName("a"), "a", ThemeImageUrl.defaultImageUrl()));
 
         Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, time, theme));
 

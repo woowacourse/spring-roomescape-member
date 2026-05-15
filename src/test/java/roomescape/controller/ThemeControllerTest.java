@@ -8,7 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +190,9 @@ class ThemeControllerTest {
 
     private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-            theme.getNameValue(),
+            theme.getName(),
             theme.getDescription(),
-            theme.getImageUrlValue()
+            theme.getImageUrl()
         );
     }
 }

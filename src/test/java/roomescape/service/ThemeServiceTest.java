@@ -95,9 +95,9 @@ class ThemeServiceTest {
 
     ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-            theme.getNameValue(),
+            theme.getName(),
             theme.getDescription(),
-            theme.getImageUrlValue()
+            theme.getImageUrl()
         );
     }
 }
