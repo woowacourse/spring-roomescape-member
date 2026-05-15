@@ -150,63 +150,41 @@
 
     if (!themeId) return;
 
-    function showErrorModal(title, detail) {
-      document.getElementById('error-modal-title').textContent = title;
-      document.getElementById('error-modal-detail').textContent = detail;
-      document.getElementById('error-modal-overlay').style.display = 'block';
-      document.getElementById('error-modal').style.display = 'block';
+    // 초기화: 전체 시간 목록(allTimes)을 최초 1회만 조회하여 캐싱
+    fetchAllTimes();
+
+    function fetchAllTimes() {
+      fetch('/times')
+        .then(res => res.json())
+        .then(times => {
+          allTimes = times;
+          renderTimeButtons([]); // 초기에는 비활성화 없이 렌더링
+        })
+        .catch(err => console.error('전체 시간 목록 조회 실패:', err));
     }
 
-    function closeErrorModal() {
-      document.getElementById('error-modal-overlay').style.display = 'none';
-      document.getElementById('error-modal').style.display = 'none';
-    }
-
-    fetch(`/themes/${themeId}`)
-    .then(async res => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        const errorData = await res.json().catch(() => null);
-        showErrorModal(errorData?.title || '오류', errorData?.detail || '테마 정보를 불러올 수 없습니다.');
-        throw new Error('테마 정보 조회 실패');
-      }
-    })
-    .then(theme => {
-      document.getElementById('theme-name').textContent = theme.name;
-      document.getElementById('theme-desc').textContent = theme.description;
-      document.getElementById('theme-time').textContent = theme.runningTime + '분';
-      const img = document.getElementById('theme-image');
-      img.src = theme.imageUrl;
-      img.style.display = 'block';
-    })
-    .catch(err => console.error(err));
-
-    fetch('/times')
-    .then(res => res.json())
-    .then(times => {
-      allTimes = times;
-      renderTimeButtons([]);
-    });
-
-    datePicker.addEventListener('change', () => {
+    function fetchReservedTimes() {
       const selectedDate = datePicker.value;
+      if (!selectedDate) return;
+
       fetch(`/times/reserved?themeId=${themeId}&selectedDate=${selectedDate}`)
-      .then(async res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          const errorData = await res.json().catch(() => null);
-          showErrorModal(errorData?.title || '오류', errorData?.detail || '예약 가능 시간을 불러올 수 없습니다.');
-          throw new Error('예약 시간 조회 실패');
-        }
-      })
-      .then(bookedTimes => {
-        const bookedTimeIds = bookedTimes.map(t => t.id);
-        renderTimeButtons(bookedTimeIds);
-      })
-      .catch(err => console.error(err));
-    });
+        .then(async res => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            const errorData = await res.json().catch(() => null);
+            showErrorModal(errorData?.title || '오류', errorData?.detail || '예약 가능 시간을 불러올 수 없습니다.');
+            throw new Error('예약 시간 조회 실패');
+          }
+        })
+        .then(bookedTimes => {
+          const bookedTimeIds = bookedTimes.map(t => t.id);
+          renderTimeButtons(bookedTimeIds);
+        })
+        .catch(err => console.error(err));
+    }
+
+    datePicker.addEventListener('change', fetchReservedTimes);
 
     function renderTimeButtons(bookedTimeIds) {
       const timeList = document.getElementById('time-list');
@@ -230,6 +208,39 @@
         timeList.appendChild(btn);
       });
     }
+
+    function showErrorModal(title, detail) {
+      document.getElementById('error-modal-title').textContent = title;
+      document.getElementById('error-modal-detail').textContent = detail;
+      document.getElementById('error-modal-overlay').style.display = 'block';
+      document.getElementById('error-modal').style.display = 'block';
+    }
+
+    function closeErrorModal() {
+      document.getElementById('error-modal-overlay').style.display = 'none';
+      document.getElementById('error-modal').style.display = 'none';
+    }
+
+    // 테마 정보 조회
+    fetch(`/themes/${themeId}`)
+      .then(async res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          const errorData = await res.json().catch(() => null);
+          showErrorModal(errorData?.title || '오류', errorData?.detail || '테마 정보를 불러올 수 없습니다.');
+          throw new Error('테마 정보 조회 실패');
+        }
+      })
+      .then(theme => {
+        document.getElementById('theme-name').textContent = theme.name;
+        document.getElementById('theme-desc').textContent = theme.description;
+        document.getElementById('theme-time').textContent = theme.runningTime + '분';
+        const img = document.getElementById('theme-image');
+        img.src = theme.imageUrl;
+        img.style.display = 'block';
+      })
+      .catch(err => console.error(err));
 
     document.getElementById('reserve-btn').addEventListener('click', () => {
       const name = document.getElementById('user-name').value;
