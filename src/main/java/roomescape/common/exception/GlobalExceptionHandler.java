@@ -61,6 +61,15 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(errorCode, errorCode.getMessage()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
+        log.warn("잘못된 요청 예외가 발생했습니다. message={}", exception.getMessage());
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode, exception.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleException(Exception exception) {
         log.error("예상하지 못한 서버 예외가 발생했습니다.", exception);
