@@ -47,21 +47,20 @@ class UserServiceTest {
     @Test
     void 기존_유저가_로그인하면_새로_생성하지_않고_조회한다() {
         User user = userRepository.create(new User("소낙눈", Role.USER));
+        UserResponse response=userService.getOrCreateUserByName(user.getName());
 
-        User createdUser = userService.getOrCreateUserByName("소낙눈");
-
-        assertThat(createdUser.getId()).isEqualTo(user.getId());
+        assertThat(response.getId()).isEqualTo(user.getId());
     }
 
     @Test
     void 새로운_유저가_로그인하면_DB에_새로_저장된다() {
-        User newUser = userService.getOrCreateUserByName("피노");
+        UserResponse response = userService.getOrCreateUserByName("피노");
 
-        assertThat(newUser).isNotNull();
-        assertThat(newUser.getId()).isNotNull();
-        assertThat(newUser.getName()).isEqualTo("피노");
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getName()).isEqualTo("피노");
 
-        Optional<User> foundUser = userRepository.findById(newUser.getId());
+        Optional<User> foundUser = userRepository.findById(response.getId());
         assertThat(foundUser).isPresent();
     }
 }

@@ -31,8 +31,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 
-    public User getOrCreateUserByName(String name) {
-        return userRepository.findByName(name)
+    public UserResponse getOrCreateUserByName(String name) {
+        User user = userRepository.findByName(name)
                 .orElseGet(() -> userRepository.create(new User(name, Role.USER)));
+
+        return UserResponse.from(user);
     }
 }
