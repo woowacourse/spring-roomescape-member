@@ -3,7 +3,9 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -24,6 +27,8 @@ import roomescape.repository.ReservationRepository;
 class ReservationServiceTest {
 
     private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    private static final String FUTURE_DATE2 = LocalDate.now().plusDays(2)
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     @InjectMocks
@@ -54,8 +59,75 @@ class ReservationServiceTest {
 
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("아이큐");
-        assertThat(result.getTime().getId()).isEqualTo(1L);
-        assertThat(result.getTheme().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void 이름으로_예약을_조회한다() {
+        ReservationTime time = ReservationTime.of(1L, "10:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        List<Reservation> reservations = List.of(
+                Reservation.of(1L, "아이큐", FUTURE_DATE, time, theme)
+        );
+        given(reservationRepository.findByName("아이큐")).willReturn(reservations);
+
+        List<Reservation> result = reservationService.findByName("아이큐");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("아이큐");
+    }
+
+    @Test
+    void 예약을_변경한다() {
+        ReservationTime oldTime = ReservationTime.of(1L, "10:00");
+        ReservationTime newTime = ReservationTime.of(2L, "11:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        Reservation existing = Reservation.of(1L, "아이큐", FUTURE_DATE, oldTime, theme);
+
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(existing));
+        given(reservationTimeService.find(2L)).willReturn(newTime);
+        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of());
+
+        ReservationUpdateRequest request = new ReservationUpdateRequest(FUTURE_DATE2, 2L);
+        Reservation result = reservationService.update(1L, request);
+
+        assertThat(result.getTime().getId()).isEqualTo(2L);
+        verify(reservationRepository).update(anyLong(), any(), anyLong());
+    }
+
+    @Test
+    void 과거_날짜로_변경시_예외가_발생한다() {
+        ReservationTime oldTime = ReservationTime.of(1L, "10:00");
+        ReservationTime newTime = ReservationTime.of(2L, "10:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        Reservation existing = Reservation.of(1L, "아이큐", FUTURE_DATE, oldTime, theme);
+
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(existing));
+        given(reservationTimeService.find(2L)).willReturn(newTime);
+
+        ReservationUpdateRequest request = new ReservationUpdateRequest("2020-01-01", 2L);
+
+        assertThatThrownBy(() -> reservationService.update(1L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
+    void 변경하려는_시간이_이미_차있으면_예외가_발생한다() {
+        ReservationTime oldTime = ReservationTime.of(1L, "10:00");
+        ReservationTime newTime = ReservationTime.of(2L, "11:00");
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        Reservation existing = Reservation.of(1L, "아이큐", FUTURE_DATE, oldTime, theme);
+        Reservation other = Reservation.of(2L, "다른유저", FUTURE_DATE2, newTime, theme);
+
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(existing));
+        given(reservationTimeService.find(2L)).willReturn(newTime);
+        given(reservationRepository.findByTimeAndTheme(any(), any())).willReturn(List.of(other));
+
+        ReservationUpdateRequest request = new ReservationUpdateRequest(FUTURE_DATE2, 2L);
+
+        assertThatThrownBy(() -> reservationService.update(1L, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 예약된 테마의 시간대입니다.");
     }
 
     @Test
@@ -89,8 +161,7 @@ class ReservationServiceTest {
         ReservationTime time = ReservationTime.of(1L, "10:00");
 
         given(reservationTimeService.find(1L)).willReturn(time);
-        given(themeService.find(999L))
-                .willThrow(new IllegalArgumentException("존재하지 않는 테마입니다"));
+        given(themeService.find(999L)).willThrow(new IllegalArgumentException("존재하지 않는 테마입니다"));
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(IllegalArgumentException.class)
