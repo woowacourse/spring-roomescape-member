@@ -44,14 +44,14 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody CreateThemeRequest createThemeRequest) {
-        ThemeResponse themeResponse = themeService.addTheme(createThemeRequest);
+        ThemeResponse themeResponse = themeService.createTheme(createThemeRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.removeRegisteredTheme(id);
+        themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 

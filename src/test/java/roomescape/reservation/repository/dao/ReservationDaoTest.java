@@ -46,7 +46,7 @@ class ReservationDaoTest {
         Long themeId = 1L;
 
         //when
-        Long savedId = reservationDao.insert(name, date, timeId, themeId);
+        Long savedId = reservationDao.save(name, date, timeId, themeId);
 
         //then
         ReservationEntity reservationEntity = jdbcTemplate.queryForObject(
@@ -63,8 +63,8 @@ class ReservationDaoTest {
     @Test
     void 예약_전체_목록을_조회한다() {
         //given
-        reservationDao.insert("userA", LocalDate.now(), 1L, 1L);
-        reservationDao.insert("userB", LocalDate.now().plusDays(1), 1L, 1L);
+        reservationDao.save("userA", LocalDate.now(), 1L, 1L);
+        reservationDao.save("userB", LocalDate.now().plusDays(1), 1L, 1L);
 
         //when
         List<ReservationEntity> reservations = reservationDao.findAll();
@@ -79,8 +79,8 @@ class ReservationDaoTest {
         String targetUserName = "userA";
         String otherUserName = "userB";
 
-        reservationDao.insert(targetUserName, LocalDate.now(), 1L, 1L);
-        reservationDao.insert(otherUserName, LocalDate.now().plusDays(1), 1L, 1L);
+        reservationDao.save(targetUserName, LocalDate.now(), 1L, 1L);
+        reservationDao.save(otherUserName, LocalDate.now().plusDays(1), 1L, 1L);
 
         //when
         List<ReservationEntity> reservations = reservationDao.findByName(targetUserName);
@@ -98,9 +98,9 @@ class ReservationDaoTest {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        reservationDao.insert("userA", yesterday, 1L, 1L);
-        reservationDao.insert("userB", today, 1L, 1L);
-        reservationDao.insert("userC", tomorrow, 1L, 1L);
+        reservationDao.save("userA", yesterday, 1L, 1L);
+        reservationDao.save("userB", today, 1L, 1L);
+        reservationDao.save("userC", tomorrow, 1L, 1L);
 
         //when
         List<LocalDate> findDates = reservationDao.findAllOnOrAfter(today).stream()
@@ -118,7 +118,7 @@ class ReservationDaoTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.now().plusDays(1);
 
-        Long reservationId = reservationDao.insert("userC", date, timeId, themeId);
+        Long reservationId = reservationDao.save("userC", date, timeId, themeId);
 
         //예약을 취소한 경우, 해당 예약은 유효하지 않다
         reservationDao.updateCancelledById(reservationId, true);
@@ -136,7 +136,7 @@ class ReservationDaoTest {
         Long timeId = 1L;
         Long themeId = 1L;
 
-        Long savedId = reservationDao.insert(name, date, timeId, themeId);
+        Long savedId = reservationDao.save(name, date, timeId, themeId);
 
         //when
         reservationDao.deleteById(savedId);
@@ -153,7 +153,7 @@ class ReservationDaoTest {
         Long timeId = 1L;
         Long themeId = 1L;
 
-        Long savedId = reservationDao.insert(name, date, timeId, themeId);
+        Long savedId = reservationDao.save(name, date, timeId, themeId);
 
         //when
         reservationDao.updateCancelledById(savedId, true);

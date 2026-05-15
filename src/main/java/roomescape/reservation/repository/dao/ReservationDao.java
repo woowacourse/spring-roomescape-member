@@ -53,7 +53,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
-    public Long insert(String name, LocalDate date, Long timeId, Long themeId) {
+    public Long save(String name, LocalDate date, Long timeId, Long themeId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("date", date)

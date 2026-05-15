@@ -21,7 +21,7 @@ public class ReservationTimeRepository {
 
     @Transactional
     public ReservationTime save(CreateReservationTimeParams params) {
-        Long id = reservationTimeDao.insert(params.startAt());
+        Long id = reservationTimeDao.save(params.startAt());
         return new ReservationTime(id, params.startAt());
     }
 

@@ -31,7 +31,7 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Long insert(LocalTime startAt) {
+    public Long save(LocalTime startAt) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("startAt", startAt)
                 .addValue("is_deleted", false);

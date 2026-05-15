@@ -50,7 +50,7 @@ class ReservationTimeServiceTest {
                     .thenReturn(List.of(ReservationFixture.createByTime(otherTime)));
 
             // when & then
-            Assertions.assertThatCode(() -> reservationTimeService.removeRegisteredReservationTime(targetTime.getId()))
+            Assertions.assertThatCode(() -> reservationTimeService.deleteReservationTime(targetTime.getId()))
                     .doesNotThrowAnyException();
         }
 
@@ -67,7 +67,7 @@ class ReservationTimeServiceTest {
 
             // when & then
             Assertions.assertThatThrownBy(
-                            () -> reservationTimeService.removeRegisteredReservationTime(targetTime.getId()))
+                            () -> reservationTimeService.deleteReservationTime(targetTime.getId()))
                     .isInstanceOf(ReservationTimeDeletionNotAllowedException.class);
         }
     }

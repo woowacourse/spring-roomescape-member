@@ -21,7 +21,7 @@ public class ThemeRepository {
 
     @Transactional
     public Theme save(CreateThemeParams params) {
-        Long id = themeDao.insert(params.name(), params.description(), params.imageURl());
+        Long id = themeDao.save(params.name(), params.description(), params.imageURl());
         ThemeEntity themeEntity = new ThemeEntity(id, params.name(), params.description(), params.imageURl(), false);
         return ThemeMapper.toTheme(themeEntity);
     }

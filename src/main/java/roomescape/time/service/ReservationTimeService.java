@@ -23,7 +23,7 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    public ReservationTimeResponse addReservationTime(CreateReservationTimeRequest request) {
+    public ReservationTimeResponse createReservationTime(CreateReservationTimeRequest request) {
         CreateReservationTimeParams params = new CreateReservationTimeParams(request.startAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(params);
 
@@ -37,7 +37,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void removeRegisteredReservationTime(Long id) {
+    public void deleteReservationTime(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id);
 
         validateNotReservedInFuture(reservationTime);

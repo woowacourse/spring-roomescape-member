@@ -29,7 +29,7 @@ public class ThemeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Transactional
-    public ThemeResponse addTheme(CreateThemeRequest request) {
+    public ThemeResponse createTheme(CreateThemeRequest request) {
         CreateThemeParams params = new CreateThemeParams(
                 request.name(),
                 request.description(),
@@ -47,7 +47,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void removeRegisteredTheme(Long id) {
+    public void deleteTheme(Long id) {
         themeRepository.deleteById(id);
     }
 
