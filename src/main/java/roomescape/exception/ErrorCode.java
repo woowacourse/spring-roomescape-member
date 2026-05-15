@@ -19,6 +19,7 @@ public enum ErrorCode {
     PAST_RESERVATION_UPDATE(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 날짜의 예약은 수정할 수 없습니다"),
     PAST_DATE_RESERVATION(HttpStatus.UNPROCESSABLE_ENTITY, "과거 날짜로 예약을 추가/변경할 수 없습니다"),
     INVALID_TIME_FORMAT(HttpStatus.UNPROCESSABLE_ENTITY, "예약은 1시간 단위로 가능합니다"),
+    RESERVATION_CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "다른 사용자가 동시에 요청하여 예약 수정에 실패했습니다"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예상치 못한 서버 오류가 발생했습니다"),
     ;
 

@@ -38,8 +38,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getString("theme_name")),
                 rs.getString("theme_description"),
                 new ThemeImageUrl(
-                    rs.getString("theme_image_url"))
-            ));
+                    rs.getString("theme_image_url")))
+        );
 
     private final JdbcTemplate template;
 
@@ -57,10 +57,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName().value());
+            ps.setString(1, reservation.getNameValue());
             ps.setDate(2, Date.valueOf(reservation.getDateValue()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setLong(3, reservation.getTimeId());
+            ps.setLong(4, reservation.getThemeId());
             return ps;
         }, keyHolder);
 
@@ -126,6 +126,23 @@ public class JdbcReservationRepository implements ReservationRepository {
             id);
 
         return reservations.stream().findFirst();
+    }
+
+    @Override
+    public int findVersionById(long id) {
+        Integer version = template.queryForObject("""
+                SELECT version
+                FROM reservation
+                WHERE id = ?
+                """,
+            Integer.class,
+            id
+        );
+
+        if (version == null) {
+            return 0;
+        }
+        return version;
     }
 
     @Override
@@ -197,17 +214,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void updateById(Long id, Reservation updated) {
-        template.update("""
+    public int updateById(Reservation updated, int version) {
+        return template.update("""
                 UPDATE reservation
-                SET name = ?, res_date = ?, time_id = ?, theme_id = ?
-                WHERE id = ?
+                SET name = ?, res_date = ?, time_id = ?, theme_id = ?, version = version + 1
+                WHERE id = ? AND version = ?
                 """,
-            updated.getName().value(),
+            updated.getNameValue(),
             Date.valueOf(updated.getDateValue()),
             updated.getTimeId(),
             updated.getThemeId(),
-            id
+            updated.getId(),
+            version
         );
     }
 

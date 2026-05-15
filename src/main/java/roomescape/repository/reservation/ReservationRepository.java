@@ -24,7 +24,9 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByMemberName(MemberName name);
 
-    void updateById(Long id, Reservation updated);
+    int findVersionById(long id);
+
+    int updateById(Reservation updated, int version);
 
     boolean existsByThemeId(long themeId);
 }

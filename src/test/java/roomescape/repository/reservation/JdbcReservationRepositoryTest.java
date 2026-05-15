@@ -221,14 +221,12 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate today = LocalDate.now();
-        Reservation saved = reservationRepository.createReservation(
-            new Reservation(
-                null,
-                new MemberName("n"),
-                new ReservationLocalDate(today),
-                savedTime,
-                savedTheme));
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Reservation saved = reservationRepository.createReservation(new Reservation(
+            "n",
+            tomorrow,
+            savedTime,
+            savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(saved.getTimeId(), LocalDate.now());
@@ -243,9 +241,9 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        ReservationLocalDate yesterday = new ReservationLocalDate(LocalDate.now().minusDays(1));
-        reservationRepository.createReservation(
-            new Reservation(null, new MemberName("n"), yesterday, savedTime, savedTheme));
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        reservationRepository.createReservation(new Reservation(
+            null, new MemberName("n"), new ReservationLocalDate(yesterday), savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(savedTime.getId(), LocalDate.now());
@@ -262,9 +260,8 @@ class JdbcReservationRepositoryTest {
 
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        ReservationLocalDate today = new ReservationLocalDate(LocalDate.now());
-        reservationRepository.createReservation(
-            new Reservation(null, new MemberName("n"), today, savedTime, savedTheme));
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("n", tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(otherTime.getId(), LocalDate.now());
@@ -403,9 +400,12 @@ class JdbcReservationRepositoryTest {
         LocalDate newDate = tomorrow.plusDays(1);
         Reservation updated = previous.updateDateTime(newDate, newTime);
         // when
-        reservationRepository.updateById(previous.getId(), updated);
+        int version = reservationRepository.findVersionById(previous.getId());
+        int affected = reservationRepository.updateById(updated, version);
 
         // then
+        assertThat(affected).isNotEqualTo(0);
+
         Reservation actual = reservationRepository.findById(previous.getId()).get();
         assertThat(actual.getName()).isEqualTo(previous.getName());
 

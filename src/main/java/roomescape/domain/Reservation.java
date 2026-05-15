@@ -34,12 +34,20 @@ public class Reservation {
         return memberName;
     }
 
+    public String getNameValue() {
+        return memberName.value();
+    }
+
     public LocalDate getDateValue() {
         return date.value();
     }
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Long getTimeId() {
+        return time.getId();
     }
 
     public Theme getTheme() {
@@ -50,12 +58,8 @@ public class Reservation {
         return theme.getId();
     }
 
-    public Long getTimeId() {
-        return time.getId();
-    }
-
     public Reservation withId(Long key) {
-        return new Reservation(key, this.memberName, this.date, this.time, this.theme);
+        return new Reservation(key, memberName, date, time, theme);
     }
 
     public boolean isBeforeNow() {
@@ -86,12 +90,6 @@ public class Reservation {
     }
 
     public Reservation updateDateTime(LocalDate date, ReservationTime time) {
-        return new Reservation(
-            id,
-            memberName,
-            new ReservationLocalDate(date),
-            time,
-            theme
-        );
+        return new Reservation(id, memberName, new ReservationLocalDate(date), time, theme);
     }
 }

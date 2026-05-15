@@ -2,7 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -66,7 +66,46 @@ public class ReservationService {
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
         try {
             return reservationRepository.createReservation(reservation);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DuplicateKeyException e) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        }
+    }
+
+    public void updateDateTime(long reservationId, String requestName, ReservationUpdateRequest request) {
+        if (!request.date().isAfter(LocalDate.now())) {
+            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
+        }
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
+
+        boolean alreadyExists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+            request.date(), request.timeId(), reservation.getThemeId());
+        if (alreadyExists) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        }
+
+        MemberName name = new MemberName(requestName);
+        if (!reservation.isBooker(name)) {
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
+        }
+        if (reservation.isBeforeNow()) {
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
+        }
+
+        int version = reservationRepository.findVersionById(reservationId);
+        Reservation updated = reservation.updateDateTime(request.date(), reservationTime);
+        try {
+            int affected = reservationRepository.updateById(updated, version);
+            if (affected == 0) {
+                if (!reservationRepository.existsById(reservationId)) {
+                    throw new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
+                }
+                throw new RoomEscapeException(ErrorCode.RESERVATION_CONCURRENT_MODIFICATION);
+            }
+        } catch (DuplicateKeyException e) {
             throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
         }
     }
@@ -112,37 +151,5 @@ public class ReservationService {
             .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         return reservationTimeRepository.findAvailableTimeByDateAndThemeId(date, theme.getId());
-    }
-
-    public void updateDateTime(long reservationId, String requestName, ReservationUpdateRequest request) {
-        if (!request.date().isAfter(LocalDate.now())) {
-            throw new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
-        }
-
-        Reservation reservation = reservationRepository.findById(reservationId)
-            .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
-
-        boolean alreadyExists = reservationRepository.existsByDateAndTimeIdAndThemeId(
-            request.date(), request.timeId(), reservation.getThemeId());
-        if (alreadyExists) {
-            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
-        }
-
-        MemberName name = new MemberName(requestName);
-        if (!reservation.isBooker(name)) {
-            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
-        }
-        if (reservation.isBeforeNow()) {
-            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_UPDATE);
-        }
-
-        Reservation updated = reservation.updateDateTime(request.date(), reservationTime);
-        try {
-            reservationRepository.updateById(reservation.getId(), updated);
-        } catch (DataIntegrityViolationException e) {
-            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
-        }
     }
 }

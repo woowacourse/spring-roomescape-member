@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -263,10 +264,10 @@ class ReservationServiceTest {
     @Test
     void 예약자_이름으로_된_예약_목록을_조회한다() {
         // given
-        Reservation savedReservation1 = new Reservation(1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME,
-            SAVED_THEME);
-        Reservation savedReservation2 = new Reservation(2L, NAME, new ReservationLocalDate(TOMORROW.plusDays(1)),
-            SAVED_TIME, SAVED_THEME);
+        Reservation savedReservation1 = new Reservation(
+            1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME, SAVED_THEME);
+        Reservation savedReservation2 = new Reservation(
+            2L, NAME, new ReservationLocalDate(TOMORROW.plusDays(1)), SAVED_TIME, SAVED_THEME);
 
         when(reservationRepository.findAllByMemberName(any()))
             .thenReturn(List.of(savedReservation1, savedReservation2));
@@ -371,6 +372,10 @@ class ReservationServiceTest {
             .thenReturn(Optional.of(updated.getTime()));
         when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
             .thenReturn(false);
+        when(reservationRepository.findVersionById(anyLong()))
+            .thenReturn(0);
+        when(reservationRepository.updateById(any(), anyInt()))
+            .thenReturn(1);
 
         //when
         assertThatCode(() -> reservationService.updateDateTime(updated.getId(), name, request))
@@ -381,7 +386,7 @@ class ReservationServiceTest {
         verify(timeRepository, times(1)).findById(updated.getTimeId());
         verify(reservationRepository, times(1))
             .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
-        verify(reservationRepository, times(1)).updateById(previous.getId(), updated);
+        verify(reservationRepository, times(1)).updateById(any(), anyInt());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 

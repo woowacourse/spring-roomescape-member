@@ -14,7 +14,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,14 +91,13 @@ class ReservationControllerTest {
     void 지난_날짜와_시간으로_예약을_추가하는_경우_예외_응답을_반환한다() {
         // given
         RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_DATE_RESERVATION);
-        Reservation reservation = new Reservation(
+        ReservationRequest request = new ReservationRequest(
+            "name",
+            LocalDate.now().minusDays(1),
             1L,
-            new MemberName("n"),
-            new ReservationLocalDate(LocalDate.now().minusDays(1)),
-            new ReservationTime(1L, LocalTime.of(12, 0)),
-            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl()));
+            3L
+        );
 
-        ReservationRequest request = requestDtoFrom(reservation);
         doThrow(exception)
             .when(reservationService).addReservation(any());
 
@@ -590,8 +588,12 @@ class ReservationControllerTest {
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {
-        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(),
-            reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequest(
+            reservation.getName().value(),
+            reservation.getDateValue(),
+            reservation.getTime().getId(),
+            reservation.getTheme().getId()
+        );
     }
 
     private ReservationUpdateRequest updateRequestFrom(Reservation reservation) {
