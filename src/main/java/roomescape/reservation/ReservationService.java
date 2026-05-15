@@ -76,6 +76,7 @@ public class ReservationService {
         return changeAndRespond(reservationUpdateRequest, reservation, theme, reservationTime);
     }
 
+    @Transactional
     public void delete(Long id) {
         Reservation reservation = getReservation(id);
         reservation.cancel(LocalDateTime.now(clock));
