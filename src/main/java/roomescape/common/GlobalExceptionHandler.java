@@ -3,6 +3,7 @@ package roomescape.common;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.List;
+<<<<<<< cycle2
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,6 +11,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+=======
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+>>>>>>> bee9827
 import roomescape.common.exception.BaseException;
 import roomescape.common.exception.handler.FormatHandler;
 
@@ -38,6 +45,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
+<<<<<<< cycle2
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
@@ -52,6 +60,8 @@ public class GlobalExceptionHandler {
                 .body(new ErrorMessage("잘못된 형식의 값입니다: " + e.getName()));
     }
 
+=======
+>>>>>>> bee9827
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity

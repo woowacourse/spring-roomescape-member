@@ -11,8 +11,11 @@ public interface CommonDao<T> {
 
     T insert(T t);
 
+<<<<<<< cycle2
     int update(T t);
 
+=======
+>>>>>>> bee9827
     int delete(Long id);
 
     boolean existsById(Long id);
