@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.BusinessRuleException;
 
 class ReservationTimeTest {
 
@@ -23,7 +23,7 @@ class ReservationTimeTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> time.validateFutureDate(LocalDate.now().minusDays(1)))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -32,7 +32,7 @@ class ReservationTimeTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(0, 0));
 
         assertThatThrownBy(() -> time.validateFutureDate(LocalDate.now()))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
 import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.OwnershipViolationException;
 import roomescape.reservation.domain.Reservation;
@@ -69,7 +68,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
     void 지나간_날짜에_예약하면_예외가_발생한다() {
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now().minusDays(1), 1L, 1L))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -79,7 +78,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
 
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now(), 99L, 1L))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(BusinessRuleException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 

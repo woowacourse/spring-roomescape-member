@@ -49,7 +49,7 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 지나간_날짜에_예약을_시도하면_400_예외가_발생한다() {
+    void 지나간_날짜에_예약을_시도하면_422_예외가_발생한다() {
         Map<String, Object> request = new HashMap<>();
         request.put("themeId", themeId("Theme A"));
         request.put("name", "캐모");
@@ -61,7 +61,7 @@ class RoomescapeApplicationTest {
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
