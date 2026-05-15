@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -26,8 +28,15 @@ public class ThemeService {
     @Transactional
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
         Theme theme = Theme.create(request.name(), request.description(), request.imageUrl());
+        validateDuplicateTheme(theme);
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponseDTO.from(savedTheme);
+    }
+
+    private void validateDuplicateTheme(Theme theme) {
+        if(themeRepository.existByThemeName(theme.getName())) {
+            throw new RoomEscapeException(ThemeErrorCode.THEME_DUPLICATE);
+        }
     }
 
     @Transactional(readOnly = true)

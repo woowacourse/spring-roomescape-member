@@ -15,5 +15,7 @@ public interface ThemeRepository {
 
     List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Long limit);
 
+    boolean existByThemeName(String name);
+
     void delete(Long id);
 }

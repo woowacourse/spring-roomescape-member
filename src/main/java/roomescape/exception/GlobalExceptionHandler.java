@@ -58,7 +58,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        "INVALID_ARGUMENT", "입력 형식이 올바르지 않습니다.", errors
+                        "INVALID_ARGUMENT",
+                        "입력 형식이 올바르지 않습니다.",
+                        errors
                 ));
     }
 

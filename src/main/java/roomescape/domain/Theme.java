@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
 
 public class Theme {
 

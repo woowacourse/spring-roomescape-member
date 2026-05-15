@@ -102,6 +102,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existByThemeName(String name) {
+        String sql = "select count(*) from theme where name = :name";
+        Map<String, Object> params = Map.of("name", name);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "delete from theme where id = :id";
         Map<String, Object> params = Map.of("id", id);
