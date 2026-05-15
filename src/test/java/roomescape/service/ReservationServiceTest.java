@@ -293,11 +293,17 @@ class ReservationServiceTest {
         when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
 
-        when(reservationQueryingDao.findReservationById(reservationId))
-                .thenReturn(Optional.of(reservation));
-
         when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
                 .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
+                .thenReturn(Optional.empty());
+
+        when(reservationQueryingDao.findReservationById(reservationId))
+                .thenReturn(Optional.of(reservation));
 
         // when
         ReservationResponse reservationResponse = reservationService.update(reservationId, updateRequest);
@@ -338,62 +344,121 @@ class ReservationServiceTest {
     @DisplayName("예약을 수정할 때 존재하지 않는 예약 시간인 경우 에러를 발생한다.")
     void 예약_수정_에러_예약시간_없음() {
         // given
-        Long reservationTimeId2 = 2L;
-        LocalTime startAt2 = LocalTime.of(10, 0);
-        ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
 
-        Long reservationId2 = 1L;
-        String name2 = "브라운";
-        LocalDate date2 = LocalDate.now();
-        LocalDateTime createdAt = LocalDateTime.of(date2, startAt2.plusMinutes(10));
-
-        Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt, createdAt);
-
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name2, date2, reservationTimeId2, themeId);
-
-        when(reservationQueryingDao.existsById(anyLong()))
+        when(reservationQueryingDao.existsById(reservationId))
                 .thenReturn(true);
 
-        when(reservationQueryingDao.findReservationById(reservationId2))
-                .thenReturn(Optional.of(reservation2));
-
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId2))
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
                 .thenReturn(Optional.empty());
 
-        // when & then
-        Assertions.assertThrows(CustomException.class,
-                () -> reservationService.update(reservationId2, updateRequest));
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        verify(themeQueryingDao, never()).findThemeById(themeId);
+    }
+
+    @Test
+    @DisplayName("예약을 수정할 때 존재하지 않는 테마인 경우 에러를 발생한다.")
+    void 예약_수정_에러_테마_없음() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+
+        when(reservationQueryingDao.existsById(reservationId))
+                .thenReturn(true);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.empty());
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId);
+    }
+
+    @Test
+    @DisplayName("예약을 수정할 때 중복 데이터가 있는 경우 에러를 발생한다.")
+    void 예약_수정_에러_중복_데이터() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+
+        when(reservationQueryingDao.existsById(reservationId))
+                .thenReturn(true);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
+                .thenReturn(Optional.of(reservation));
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        verify(reservationUpdatingDao, never()).update(reservationTimeId, updateRequest);
+    }
+
+    @Test
+    @DisplayName("예약을 수정할 때 수정 후 에러가 존재하지 않으면 에러를 발생한다.")
+    void 예약_수정_에러_수정_후_예약_없음() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
+
+        when(reservationQueryingDao.existsById(reservationId))
+                .thenReturn(true);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
+                .thenReturn(Optional.empty());
+
+        when(reservationQueryingDao.findReservationById(reservationId))
+                .thenReturn(Optional.empty());
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
     }
 
     @Test
     @DisplayName("예약을 수정할 때 현재보다 과거인 시간 예약 시 에러가 발생한다.")
     void 예약_수정_에러_과거_시간_예약() {
         // given
-        Long reservationTimeId2 = 2L;
-        LocalTime startAt2 = LocalTime.of(10, 0);
-        ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
+        LocalDateTime createdAt2 = LocalDateTime.now().minusDays(10);
+        LocalDateTime updatedAt2 = LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(10, 0)
+        );
 
-        Long reservationId2 = 1L;
-        String name2 = "브라운";
+        LocalTime startAt2 = LocalTime.of(9, 10);
         LocalDate date2 = LocalDate.now();
-        LocalDateTime createdAt = LocalDateTime.of(date2, startAt2.plusMinutes(10));
-
-        Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt, createdAt);
-
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name2, date2, reservationTimeId2, themeId);
+        ReservationTime reservationTime2 = new ReservationTime(2L, startAt2);
+        Reservation reservation2 = new Reservation(reservationId, "브라운", date2, reservationTime2, theme, createdAt2, updatedAt2);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, LocalDate.now(), reservationTime2.getId(), themeId);
 
         when(reservationQueryingDao.existsById(anyLong()))
                 .thenReturn(true);
 
-        when(reservationQueryingDao.findReservationById(reservationId2))
-                .thenReturn(Optional.of(reservation2));
-
-        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId2))
+        when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
                 .thenReturn(Optional.of(reservationTime2));
 
-        // when & then
-        Assertions.assertThrows(CustomException.class,
-                () -> reservationService.update(reservationId2, updateRequest));
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date2, reservationTime2.getId()))
+                .thenReturn(Optional.empty());
+
+        when(reservationQueryingDao.findReservationById(reservationId))
+                .thenReturn(Optional.of(reservation2));
+
+
+        // when && then
+        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
     }
 
     @Test
