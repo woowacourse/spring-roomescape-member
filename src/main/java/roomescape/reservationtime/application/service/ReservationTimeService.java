@@ -7,6 +7,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.service.ReservationQueryService;
+import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
@@ -23,6 +25,7 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
     private final AvailableReservationTimeRepository availableTimeRepository;
+    private final ReservationQueryService queryService;
 
     @Transactional(readOnly = true)
     public ReservationTimeQueryResult findById(Long timeId) {
@@ -57,7 +60,14 @@ public class ReservationTimeService {
     }
 
     public int delete(Long id) {
+        validateNoReservationExists(id);
         return timeRepository.delete(id);
+    }
+
+    private void validateNoReservationExists(Long id) {
+        if (queryService.existsByTImeId(id)) {
+            throw new ReservationTimeException("예약이 존재하는 시간대는 삭제할 수 없습니다");
+        }
     }
 
     private void validateDuplicateTime(LocalTime startAt) {
