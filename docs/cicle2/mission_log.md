@@ -73,3 +73,7 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 `ProblemDetailsAdvice` 가 `ResponseEntityExceptionHandler` 를 상속받았기 떄문에  
 `HttpRequestMethodNotSupportedException` 에 대한 핸들러가 이미 부모 클래스에 존재해  
 추가한 핸들러와 충돌.
+
+#### `해결`
+
+일반적인 예외에 대한 핸들러를 `추가`하는 것이 아닌 `재정의` 해야. 
