@@ -1,7 +1,6 @@
 package roomescape.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,7 +10,6 @@ public record ReservationRequestDTO(
         String name,
 
         @NotNull(message = "예약 날짜는 필수입니다.")
-        @FutureOrPresent(message = "날짜를 다시 확인해주세요.")
         @JsonFormat(pattern = "yyyy-MM-dd")
         String date,
 
