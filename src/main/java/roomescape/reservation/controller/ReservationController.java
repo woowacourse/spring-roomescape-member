@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,25 +52,21 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<?> create(@Valid @RequestBody ReservationRequest request) {
-        try {
-            Reservation reservation = reservationService.add(
-                    request.name(),
-                    request.themeId(),
-                    request.date(),
-                    request.timeId()
-            );
+        Reservation reservation = reservationService.add(
+                request.name(),
+                request.themeId(),
+                request.date(),
+                request.timeId()
+        );
 
-            URI location = URI.create("/reservation/" + reservation.getId());
+        URI location = URI.create("/reservation/" + reservation.getId());
 
-            return ResponseEntity.created(location).body(ReservationResponse.from(reservation));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 불가");
-        }
+        return ResponseEntity.created(location).body(ReservationResponse.from(reservation));
     }
 
     @PatchMapping("/reservations/{id}")
     public ResponseEntity<ReservationResponse> updateDateTimeByName(@PathVariable Long id,
-                                                                    @RequestBody ReservationChangeRequest request) {
+                                                                    @Valid @RequestBody ReservationChangeRequest request) {
         Reservation reservation = reservationService.modifyDateTimeByName(
                 id,
                 request.name(),
@@ -79,8 +74,8 @@ public class ReservationController {
                 request.date(),
                 request.timeId()
         );
-        URI location = URI.create("/reservations/" + reservation.getId());
-        return ResponseEntity.created(location).body(ReservationResponse.from(reservation));
+
+        return ResponseEntity.ok().body(ReservationResponse.from(reservation));
     }
 
     @DeleteMapping("/reservations/{id}")
