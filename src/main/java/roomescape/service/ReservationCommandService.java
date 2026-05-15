@@ -33,6 +33,15 @@ public class ReservationCommandService {
         return ReservationResponse.from(savedReservation);
     }
 
+    public ReservationResponse update(long reservationId, LocalDate date, long timeId, LocalDateTime requestDateTime) {
+        ReservationTime time = getReservationTime(timeId);
+        Reservation existing = reservationDao.findById(reservationId);
+
+        validatePastDateTime(requestDateTime, date, time);
+        validateNoDuplicateReservation(date, timeId, existing.reservationTheme().id());
+        return ReservationResponse.from(reservationDao.update(reservationId, date, timeId));
+    }
+
     @Transactional
     public void delete(long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId);

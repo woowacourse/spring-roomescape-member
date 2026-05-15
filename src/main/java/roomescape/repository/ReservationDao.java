@@ -107,6 +107,12 @@ public class ReservationDao {
         }
     }
 
+    public Reservation update(long reservationId, LocalDate date, long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, reservationId);
+        return findById(reservationId);
+    }
+
     public void delete(long reservationId) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         int affected = jdbcTemplate.update(sql, reservationId);

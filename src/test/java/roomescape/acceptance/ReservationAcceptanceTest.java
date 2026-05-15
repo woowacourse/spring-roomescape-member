@@ -133,6 +133,91 @@ public class ReservationAcceptanceTest extends AcceptanceTestSupport{
 
 
     @Test
+    @DisplayName("예약 날짜와 시간을 수정하면 200 상태코드와 수정된 예약을 반환한다.")
+    void updateReservationTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (2, '14:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
+            """);
+
+        LocalDate originalDate = LocalDate.now().plusDays(1);
+        LocalDate newDate = LocalDate.now().plusDays(2);
+
+        Map<String, Object> createParams = new HashMap<>();
+        createParams.put("name", "타스");
+        createParams.put("date", originalDate);
+        createParams.put("timeId", 1L);
+        createParams.put("themeId", 1L);
+
+        long id = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(createParams)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", newDate);
+        updateParams.put("timeId", 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(newDate)))
+                .body("time.startAt", is("14:00"));
+    }
+
+    @Test
+    @DisplayName("수정 시 지난 날짜로 변경하면 400 상태코드를 반환한다.")
+    void updateReservationWithPastDateTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
+            """);
+
+        LocalDate originalDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> createParams = new HashMap<>();
+        createParams.put("name", "타스");
+        createParams.put("date", originalDate);
+        createParams.put("timeId", 1L);
+        createParams.put("themeId", 1L);
+
+        long id = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(createParams)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", LocalDate.now().minusDays(1));
+        updateParams.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     @DisplayName("예약자 명으로 예약 조회 시 예약자 이름이 누락된 경우 400 상태코드와 검증 실패 메시지를 반환한다.")
     void blankNameWhenFindReservationsByNameTest() {
         RestAssured.given().log().all()
