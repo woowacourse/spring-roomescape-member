@@ -5,9 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record ReservationRequest(
-        @NotBlank(message = "이름은 필수입니다.") String name,
-        @NotNull(message = "날짜는 필수입니다.") LocalDate date,
-        @NotNull Long timeId,
-        @NotNull Long themeId
+        @NotBlank(message = "이름은 필수입니다.")
+        String name,
+        @NotNull(message = "날짜는 필수입니다.")
+        LocalDate date,
+        @NotNull
+        Long timeId,
+        @NotNull
+        Long themeId
 ) {
 }
