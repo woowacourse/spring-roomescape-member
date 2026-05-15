@@ -8,6 +8,8 @@ import roomescape.domain.Reservation;
 public interface ReservationDao extends CommonDao<Reservation> {
     List<Reservation> findAll(int limit, int offset);
 
+    List<Reservation> findAllByName(String name);
+
     long count();
 
     boolean existsByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date);

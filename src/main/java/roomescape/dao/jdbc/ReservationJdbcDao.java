@@ -106,6 +106,31 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAllByName(String name) {
+        String sql = """
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    r.status,
+                    r.deleted_at,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.thumbnail_url AS theme_thumbnail_url,
+                    th.description AS theme_description
+                FROM reservations r
+                INNER JOIN times t ON r.time_id = t.id
+                INNER JOIN themes th ON r.theme_id = th.id
+                WHERE r.name = :name AND r.deleted_at IS NULL
+                ORDER BY r.date, t.start_at
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("name", name);
+        return jdbcTemplate.query(sql, params, ROW_MAPPER);
+    }
+
+    @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM reservations";
         Long result = jdbcTemplate.queryForObject(sql, new MapSqlParameterSource(), Long.class);

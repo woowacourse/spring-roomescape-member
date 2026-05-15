@@ -42,6 +42,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 
+    public List<Reservation> findAllByName(String name) {
+        return reservationDao.findAllByName(name);
+    }
+
     public Reservation findActiveById(Long id) {
         Reservation reservation = findById(id);
         if (!reservation.isActive()) {

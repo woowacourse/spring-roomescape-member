@@ -5,11 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.common.exception.NotFoundException;
+import io.restassured.common.mapper.TypeRef;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -50,30 +50,19 @@ class ReservationControllerTest {
     class Get {
 
         @Test
-        @DisplayName("BOOKED 예약을 조회하면 200을 반환한다")
-        void returnsReservationById() {
-            given(reservationService.findActiveById(reservation.getId())).willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+        @DisplayName("이름으로 예약을 조회하면 200을 반환한다")
+        void returnsReservationsByName() {
+            given(reservationService.findAllByName(reservation.getName())).willReturn(List.of(reservation));
+            List<ReservationResponseDto> expected = List.of(ReservationResponseDto.from(reservation));
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
-                    .when().get("/reservations/" + reservation.getId())
+            List<ReservationResponseDto> actual = RestAssuredMockMvc.given()
+                    .queryParam("name", reservation.getName())
+                    .when().get("/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(new TypeRef<>() {});
 
             assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        @DisplayName("CANCELED 예약을 조회하면 404를 반환한다")
-        void returnsNotFoundWhenCanceled() {
-            willThrow(new NotFoundException("존재하지 않는 예약입니다."))
-                    .given(reservationService).findActiveById(reservation.getId());
-
-            RestAssuredMockMvc.given()
-                    .when().get("/reservations/" + reservation.getId())
-                    .then()
-                    .status(HttpStatus.NOT_FOUND);
         }
     }
 
