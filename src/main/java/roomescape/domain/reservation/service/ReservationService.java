@@ -2,6 +2,7 @@ package roomescape.domain.reservation.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,7 @@ public class ReservationService {
             .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
             .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND, List.of()));
-        return Reservation.create(requestDto.name(), requestDto.date(), time, theme, clock);
+        return Reservation.create(requestDto.name(), requestDto.date(), time, theme, LocalDateTime.now(clock));
     }
 
     @Transactional
@@ -84,8 +85,8 @@ public class ReservationService {
         Time time = getTimeById(requestDto.timeId());
         validateDuplicatesExceptMe(id, requestDto.date(), requestDto.timeId(),
             reservation.getTheme().getId());
-        ReservationValidator.validateDateAccessable(reservation, clock);
-        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, clock);
+        ReservationValidator.validateDateAccessable(reservation, LocalDateTime.now(clock));
+        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, LocalDateTime.now(clock));
 
         reservationRepository.updateReservationById(id, requestDto.date(), requestDto.timeId());
     }
@@ -121,7 +122,7 @@ public class ReservationService {
     public void deleteMemberReservationById(String name, Long id) {
         Reservation reservation = getReservationById(id);
         ReservationValidator.validateOwner(name, reservation);
-        ReservationValidator.validateDateAccessable(reservation, clock);
+        ReservationValidator.validateDateAccessable(reservation, LocalDateTime.now(clock));
         reservationRepository.deleteReservationById(id);
     }
 }

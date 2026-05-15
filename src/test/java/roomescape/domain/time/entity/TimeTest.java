@@ -34,7 +34,7 @@ class TimeTest {
             Time time = Time.create(startAt);
             boolean expected = true;
 
-            boolean actual = time.isPast(fixedClock);
+            boolean actual = time.isPast(LocalTime.now(fixedClock));
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -46,7 +46,7 @@ class TimeTest {
             Time time = Time.create(startAt);
             boolean expected = false;
 
-            boolean actual = time.isPast(fixedClock);
+            boolean actual = time.isPast(LocalTime.now(fixedClock));
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -58,7 +58,7 @@ class TimeTest {
             Time time = Time.create(startAt);
             boolean expected = false;
 
-            boolean actual = time.isPast(fixedClock);
+            boolean actual = time.isPast(LocalTime.now(fixedClock));
 
             assertThat(actual).isEqualTo(expected);
         }

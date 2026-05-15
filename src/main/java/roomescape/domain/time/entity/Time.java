@@ -1,6 +1,5 @@
 package roomescape.domain.time.entity;
 
-import java.time.Clock;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -44,9 +43,7 @@ public class Time {
         return Objects.hashCode(id);
     }
 
-    public boolean isPast(Clock clock) {
-        LocalTime nowTime = LocalTime.now(clock);
-
+    public boolean isPast(LocalTime nowTime) {
         return this.startAt.isBefore(nowTime);
     }
 

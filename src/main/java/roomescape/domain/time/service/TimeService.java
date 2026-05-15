@@ -2,6 +2,7 @@ package roomescape.domain.time.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class TimeService {
         return timeRepository.findAllTimes()
             .stream()
             .filter(time -> !reservedTimeIds.contains(time.getId()))
-            .filter(time -> !time.isPast(clock))
+            .filter(time -> !time.isPast(LocalTime.now(clock)))
             .map(TimeResponseDto::from)
             .toList();
     }

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -111,13 +112,13 @@ class TimeServiceTest {
             ));
 
             reservationRepository.save(
-                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1, fixedClock));
+                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
-                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2, fixedClock));
+                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
-                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3, fixedClock));
+                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
-                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1, fixedClock));
+                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1, LocalDateTime.now(fixedClock)));
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
@@ -221,7 +222,7 @@ class TimeServiceTest {
             Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
             Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 Url"));
             reservationRepository.save(
-                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, LocalDateTime.now(fixedClock)));
 
             assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
                 .isInstanceOf(BusinessException.class)

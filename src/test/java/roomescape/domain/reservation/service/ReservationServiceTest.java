@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -69,13 +70,13 @@ class ReservationServiceTest {
             Theme theme = Theme.reconstruct(1L, "테마 이름", "테마 설명",
                 "https://roomescape.com/images/themes/ring-banner.png");
 
-            reservationRepository.save(Reservation.create("제이콥", date, time, theme, fixedClock));
+            reservationRepository.save(Reservation.create("제이콥", date, time, theme, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("라이", date.plusDays(1),
-                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, fixedClock));
+                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("티모", date.plusDays(2),
-                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, fixedClock));
+                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, LocalDateTime.now(fixedClock)));
 
             // when
             List<ReservationResponseDto> actual = reservationService.getReservations();
@@ -115,13 +116,13 @@ class ReservationServiceTest {
             Theme theme = Theme.reconstruct(1L, "테마 이름", "테마 설명",
                 "https://roomescape.com/images/themes/ring-banner.png");
 
-            reservationRepository.save(Reservation.create("제이콥", date, time, theme, fixedClock));
+            reservationRepository.save(Reservation.create("제이콥", date, time, theme, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("라이", date.plusDays(1),
-                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, fixedClock));
+                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("티모", date.plusDays(2),
-                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, fixedClock));
+                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, LocalDateTime.now(fixedClock)));
             String name = "제이콥";
 
             List<ReservationResponseDto> actual = reservationService.getReservationsByName(name);
@@ -183,7 +184,7 @@ class ReservationServiceTest {
                 theme.getId()
             );
             reservationRepository.save(
-                Reservation.create(request.name(), request.date(), time, theme, fixedClock));
+                Reservation.create(request.name(), request.date(), time, theme, LocalDateTime.now(fixedClock)));
 
             assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(BusinessException.class);
@@ -258,7 +259,7 @@ class ReservationServiceTest {
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             Long id = savedReservation.getId();
             LocalDate changeDate = LocalDate.of(2026, 5, 2);
             Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
@@ -284,7 +285,7 @@ class ReservationServiceTest {
             Reservation savedReservation = reservationRepository.save(
                 Reservation.create(name, LocalDate.of(2026, 5, 3), time,
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 savedReservation.getDate(), time.getId());
 
@@ -308,7 +309,7 @@ class ReservationServiceTest {
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             Long id = savedReservation.getId();
             LocalDate changeDate = LocalDate.of(2026, 5, 2);
             Long wrongId = 99999L;
@@ -332,7 +333,7 @@ class ReservationServiceTest {
                 Reservation.create("시오", LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             String wrongName = "잘못된 이름";
             Long id = savedReservation.getId();
             LocalDate changeDate = LocalDate.of(2026, 5, 2);
@@ -356,10 +357,10 @@ class ReservationServiceTest {
             Time duplicatedTime = timeRepository.save(Time.create(LocalTime.of(20, 30)));
             Reservation savedReservation = reservationRepository.save(
                 Reservation.create(name, LocalDate.of(2026, 5, 3), originalTime, theme,
-                    fixedClock));
+                    LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("다른 이름", LocalDate.of(2026, 5, 4), duplicatedTime, theme,
-                    fixedClock));
+                    LocalDateTime.now(fixedClock)));
             Long id = savedReservation.getId();
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 LocalDate.of(2026, 5, 4), duplicatedTime.getId());
@@ -399,7 +400,7 @@ class ReservationServiceTest {
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             Long id = savedReservation.getId();
             LocalDate changeDate = LocalDate.of(2025, 12, 31);
             Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
@@ -441,12 +442,12 @@ class ReservationServiceTest {
                 Reservation.create("제이슨", LocalDate.of(2026, 5, 2),
                     Time.reconstruct(1L, LocalTime.of(12, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("시오", LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
 
             // when
             reservationService.deleteReservationById(savedReservation.getId());
@@ -473,12 +474,12 @@ class ReservationServiceTest {
                 Reservation.create(name, LocalDate.of(2026, 5, 3),
                     Time.reconstruct(1L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
             reservationRepository.save(
                 Reservation.create("다른 이름", LocalDate.of(2026, 5, 4),
                     Time.reconstruct(2L, LocalTime.of(14, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
 
             reservationService.deleteMemberReservationById(name, savedReservation.getId());
 
@@ -496,7 +497,7 @@ class ReservationServiceTest {
                 Reservation.create("시오", LocalDate.of(2026, 5, 3),
                     Time.reconstruct(1L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+                        "https://roomescape.com/images/themes/ring-banner.png"), LocalDateTime.now(fixedClock)));
 
             assertThatThrownBy(() -> reservationService.deleteMemberReservationById("다른 이름",
                     savedReservation.getId()))

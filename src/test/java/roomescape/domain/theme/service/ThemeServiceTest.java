@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ class ThemeServiceTest {
                         targetDate,
                         Time.reconstruct(1L, LocalTime.of(10, 0)),
                         theme,
-                        fixedClock
+                        LocalDateTime.now(fixedClock)
                     ));
                 }
             }
@@ -228,7 +229,7 @@ class ThemeServiceTest {
             Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"));
             reservationRepository.save(
-                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, LocalDateTime.now(fixedClock)));
             Long referencedId = theme.getId();
 
             assertThatThrownBy(() -> themeService.deleteThemeById(referencedId))

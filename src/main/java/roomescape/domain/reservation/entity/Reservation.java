@@ -1,7 +1,8 @@
 package roomescape.domain.reservation.entity;
 
-import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
@@ -16,8 +17,8 @@ public class Reservation {
     private final Time time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Clock clock) {
-        validateDateTime(date, time, clock);
+    private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+        validateDateTime(date, time, now);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -34,18 +35,19 @@ public class Reservation {
     }
 
 
-    public static Reservation create(String name, LocalDate date, Time time, Theme theme, Clock clock) {
-        return new Reservation(null, name, date, time, theme, clock);
+    public static Reservation create(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+        return new Reservation(null, name, date, time, theme, now);
     }
 
     public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
         return new Reservation(id, name, date, time, theme);
     }
 
-    private void validateDateTime(LocalDate date, Time time, Clock clock) {
-        LocalDate nowDate = LocalDate.now(clock);
+    private void validateDateTime(LocalDate date, Time time, LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
 
-        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock))) {
+        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(nowTime))) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
@@ -54,10 +56,11 @@ public class Reservation {
         return this.name.equals(name);
     }
 
-    public boolean isPast(Clock clock) {
-        LocalDate nowDate = LocalDate.now(clock);
+    public boolean isPast(LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
 
-        return date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock));
+        return date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(nowTime));
     }
 
     public Long getId() {

@@ -1,7 +1,8 @@
 package roomescape.domain.reservation.validator;
 
-import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
@@ -17,15 +18,17 @@ public final class ReservationValidator {
         }
     }
 
-    public static void validateDateAccessable(Reservation reservation, Clock clock) {
-        if (reservation.isPast(clock)) {
+    public static void validateDateAccessable(Reservation reservation, LocalDateTime now) {
+        if (reservation.isPast(now)) {
             throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 
-    public static void validateDateTimeChangeable(LocalDate date, Time time, Clock clock) {
-        LocalDate nowDate = LocalDate.now(clock);
-        if (date.isBefore(LocalDate.now(clock)) || (date.isEqual(nowDate) && time.isPast(clock))) {
+    public static void validateDateTimeChangeable(LocalDate date, Time time, LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
+
+        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(nowTime))) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
     }

@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatCode(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+            assertThatCode(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
                 .doesNotThrowAnyException();
         }
 
@@ -51,7 +52,7 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
@@ -64,7 +65,7 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(10, 0));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
