@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -17,6 +19,8 @@ import roomescape.service.exception.ThemeNotFoundException;
 
 @Service
 public class AdminReservationService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminReservationService.class);
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -41,17 +45,25 @@ public class AdminReservationService {
 
     public ReservationResult create(ReservationCreateCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(
-                        "존재하지 않는 시간입니다: timeId=" + command.timeId()));
+                .orElseThrow(() -> {
+                    log.warn("존재하지 않는 시간으로 예약 생성 시도: timeId={}", command.timeId());
+                    return new ReservationTimeNotFoundException(
+                            "존재하지 않는 시간입니다: timeId=" + command.timeId());
+                });
 
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException(
-                        "존재하지 않는 테마입니다: themeId=" + command.themeId()));
+                .orElseThrow(() -> {
+                    log.warn("존재하지 않는 테마로 예약 생성 시도: themeId={}", command.themeId());
+                    return new ThemeNotFoundException(
+                            "존재하지 않는 테마입니다: themeId=" + command.themeId());
+                });
 
         validateNoConflict(command);
 
         Reservation reservation = new Reservation(null, command.name(), command.date(), time, theme);
         Reservation saved = reservationRepository.save(reservation);
+        log.info("예약 생성 완료: reservationId={}, name={}, date={}, timeId={}, themeId={}",
+                saved.getId(), saved.getName(), saved.getDate(), command.timeId(), command.themeId());
         return ReservationResult.from(saved);
     }
 
@@ -68,6 +80,7 @@ public class AdminReservationService {
 
     public void delete(Long id) {
         if (!reservationRepository.existsById(id)) {
+            log.warn("존재하지 않는 예약 삭제 시도: reservationId={}", id);
             throw new ReservationNotFoundException("존재하지 않는 예약입니다: reservationId=" + id);
         }
         reservationRepository.deleteById(id);
