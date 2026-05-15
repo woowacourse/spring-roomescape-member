@@ -1,9 +1,11 @@
 package roomescape.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,6 +77,20 @@ public class GlobalExceptionHandler {
         log.warn("취소 및 변경 마감 기한 초과: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse("방탈출 시작 1시간 전부터는 예약을 취소하거나 변경할 수 없습니다."));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        log.warn("JSON 형식 오류: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse("요청 데이터의 형식이 올바르지 않습니다."));
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatchException(TypeMismatchException ex) {
+        log.warn("타입 변환 오류: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse("요청 파라미터 또는 헤더의 타입이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(Exception.class)
