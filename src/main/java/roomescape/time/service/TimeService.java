@@ -50,15 +50,8 @@ public class TimeService {
     }
 
     private void validateExistTimeByReservation(LocalDate date, ReservationTime time, Long timeId) {
-        if (!isBeforeDateTime(date, time) && time.getId().equals(timeId)) {
+        if (!time.isBeforeDateTime(date, time) && time.getId().equals(timeId)) {
             throw new RoomescapeException(ErrorCode.CANNOT_DELETE_RESERVED_TIME);
         }
-    }
-
-    private boolean isBeforeDateTime(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            return true;
-        }
-        return date.equals(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
     }
 }

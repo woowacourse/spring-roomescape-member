@@ -1,7 +1,6 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +37,7 @@ public class ReservationService {
     @Transactional
     public Reservation add(String name, Long themeId, LocalDate date, Long timeId) {
         ReservationTime time = timeDao.selectById(timeId);
-        validateDateTime(date, time);
+        validateDateTime(date, time, ErrorCode.PAST_RESERVATION);
 
         List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
         for (Reservation reserved : reservedList) {
@@ -54,12 +53,10 @@ public class ReservationService {
         Reservation originReservation = reservationDao.selectById(id)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!originReservation.getName().equals(name)) {
-            throw new RoomescapeException(ErrorCode.CANNOT_MODIFY_OTHER_RESERVATION);
-        }
+        originReservation.validateSameName(name, ErrorCode.CANNOT_MODIFY_OTHER_RESERVATION);
 
         ReservationTime time = timeDao.selectById(timeId);
-        validateDateTime(date, time);
+        validateDateTime(date, time, ErrorCode.PAST_RESERVATION);
 
         List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
         for (Reservation reserved : reservedList) {
@@ -78,13 +75,10 @@ public class ReservationService {
         Reservation originReservation = reservationDao.selectById(id)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!originReservation.getName().equals(name)) {
-            throw new RoomescapeException(ErrorCode.CANNOT_DELETE_OTHER_RESERVATION);
-        }
+        originReservation.validateSameName(name, ErrorCode.CANNOT_DELETE_OTHER_RESERVATION);
 
-        if (isBeforeDateTime(originReservation.getDate(), originReservation.getTime())) {
-            throw new RoomescapeException(ErrorCode.CANNOT_DELETE_PAST_RESERVATION);
-        }
+        validateDateTime(originReservation.getDate(), originReservation.getTime(),
+                ErrorCode.CANNOT_DELETE_PAST_RESERVATION);
 
         reservationDao.deleteById(id);
     }
@@ -95,16 +89,9 @@ public class ReservationService {
         }
     }
 
-    private void validateDateTime(LocalDate date, ReservationTime time) {
-        if (isBeforeDateTime(date, time)) {
-            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
+    private void validateDateTime(LocalDate date, ReservationTime time, ErrorCode errorCode) {
+        if (time.isBeforeDateTime(date, time)) {
+            throw new RoomescapeException(errorCode);
         }
-    }
-
-    private boolean isBeforeDateTime(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            return true;
-        }
-        return date.equals(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
     }
 }

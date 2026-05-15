@@ -123,7 +123,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().patch("/reservations/1")
                 .then().log().all()
-                .statusCode(201)
+                .statusCode(200)
                 .body("id", is(1))
                 .body("name", is("로치"))
                 .body("date", is("2026-05-20"))
