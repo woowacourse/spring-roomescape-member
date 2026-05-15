@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.dto.ErrorResponse;
+import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ResourceInUseException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -68,5 +71,23 @@ public class GlobalExceptionHandler {
                         "INVALID_FORMAT",
                         e.getName() + " 값의 형식이 올바르지 않습니다."
                 ));
+    }
+
+    @ExceptionHandler(PastReservationException.class)
+    public ResponseEntity<ErrorResponse> handlePastReservationException(PastReservationException e) {
+        return ResponseEntity.unprocessableEntity()
+                .body(new ErrorResponse("PAST_RESERVATION", e.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceInUseException.class)
+    public ResponseEntity<ErrorResponse> handleResourceInUseException(ResourceInUseException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("RESOURCE_IN_USE", e.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateResourceException(DuplicateResourceException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getCode(), e.getMessage()));
     }
 }

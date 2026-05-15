@@ -20,6 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.PastReservationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -78,7 +80,7 @@ class ReservationServiceTest {
                 LocalDate.of(2030, 5, 20),
                 savedTime.getId(),
                 savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약");
     }
 
@@ -133,7 +135,7 @@ class ReservationServiceTest {
                 LocalDate.of(2030, 5, 14),
                 savedTime.getId(),
                 savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastReservationException.class)
                 .hasMessageContaining("지난 날짜 또는 시간은 예약할 수 없습니다.");
     }
 
@@ -148,7 +150,7 @@ class ReservationServiceTest {
                 savedTime.getId(),
                 savedTheme.getId()
         ))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastReservationException.class)
                 .hasMessageContaining("지난 날짜 또는 시간은 예약할 수 없습니다.");
     }
 

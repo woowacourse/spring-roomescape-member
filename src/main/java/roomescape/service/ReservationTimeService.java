@@ -10,6 +10,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeStatusResponse;
+import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.ResourceInUseException;
 
 @Service
 public class ReservationTimeService {
@@ -30,7 +32,10 @@ public class ReservationTimeService {
 
     public ReservationTime save(ReservationTime reservationTime) {
         if (reservationTimeDao.existsByStartAt(reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약시간입니다.");
+            throw new DuplicateResourceException(
+                    "DUPLICATE_RESERVATION_TIME",
+                    "이미 존재하는 예약시간입니다."
+            );
         }
         return reservationTimeDao.save(reservationTime);
     }
@@ -57,7 +62,7 @@ public class ReservationTimeService {
     private void validateHasTime(Long id) {
         boolean hasReservation = reservationDao.existByTimeId(id);
         if (hasReservation) {
-            throw new IllegalArgumentException("예약이 존재해 삭제할 수 없습니다");
+            throw new ResourceInUseException("예약이 존재해 삭제할 수 없습니다");
         }
     }
 }

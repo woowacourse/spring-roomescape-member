@@ -301,4 +301,76 @@ public class MissionStepTest {
                 .body("code", is("INVALID_INPUT"))
                 .body("message", is("테마 이름은 필수입니다."));
     }
+
+    @Test
+    void 중복_예약을_생성하면_실패한다(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> duplicateParams = new HashMap<>();
+        duplicateParams.put("name", "피노");
+        duplicateParams.put("date", "2030-08-05");
+        duplicateParams.put("timeId", 1);
+        duplicateParams.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("이미 존재하는 예약입니다."));
+    }
+
+    @Test
+    void 지난_날짜로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2020-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("PAST_RESERVATION"))
+                .body("message", is("지난 날짜 또는 시간은 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 예약이_존재하는_시간을_삭제하면_실패한다(){
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "맥스");
+        reservation.put("date", "2030-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("message", is("예약이 존재해 삭제할 수 없습니다."));
+    }
 }
