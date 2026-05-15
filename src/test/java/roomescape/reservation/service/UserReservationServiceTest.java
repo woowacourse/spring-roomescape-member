@@ -9,9 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
+import roomescape.ServiceIntegrationTest;
 import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidRequestException;
@@ -19,27 +17,13 @@ import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
-class UserReservationServiceTest {
+class UserReservationServiceTest extends ServiceIntegrationTest {
 
     @Autowired
     private UserReservationService userReservationService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("DELETE FROM reservation");
-        jdbcTemplate.execute("DELETE FROM reservation_time");
-        jdbcTemplate.execute("DELETE FROM themes");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-
         // Theme A(id=1), Theme B(id=2)
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");

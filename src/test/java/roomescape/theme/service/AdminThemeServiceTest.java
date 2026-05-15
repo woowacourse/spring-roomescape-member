@@ -7,34 +7,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
+import roomescape.ServiceIntegrationTest;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.theme.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
-class AdminThemeServiceTest {
+class AdminThemeServiceTest extends ServiceIntegrationTest {
 
     @Autowired
     private AdminThemeService adminThemeService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("DELETE FROM reservation");
-        jdbcTemplate.execute("DELETE FROM reservation_time");
-        jdbcTemplate.execute("DELETE FROM themes");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-
         // Theme A(id=1) — 예약 있음, Theme E(id=5) — 예약 없음
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");

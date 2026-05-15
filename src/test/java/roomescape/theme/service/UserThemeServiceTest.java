@@ -7,34 +7,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
+import roomescape.ServiceIntegrationTest;
 import roomescape.theme.controller.SortColumn;
 import roomescape.theme.controller.SortOrder;
 import roomescape.theme.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
-class UserThemeServiceTest {
+class UserThemeServiceTest extends ServiceIntegrationTest {
 
     @Autowired
     private UserThemeService userThemeService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("DELETE FROM reservation");
-        jdbcTemplate.execute("DELETE FROM reservation_time");
-        jdbcTemplate.execute("DELETE FROM themes");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-        jdbcTemplate.execute("ALTER TABLE themes ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-
         // 5개 테마 (id=1~5), time(id=1)
         jdbcTemplate.update(
                 "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
