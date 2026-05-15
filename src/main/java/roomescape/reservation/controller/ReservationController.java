@@ -50,9 +50,11 @@ public class ReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateReservationRequest updateReservationRequest) {
+            @Valid @RequestBody UpdateReservationRequest updateReservationRequest
+    ) {
         ReservationResponse reservation = reservationService.rescheduleReservation(
-                RescheduleReservationInfo.of(id, updateReservationRequest));
+                RescheduleReservationInfo.of(id, updateReservationRequest)
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservation);
     }

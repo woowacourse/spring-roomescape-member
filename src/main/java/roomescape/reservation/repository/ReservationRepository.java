@@ -67,9 +67,19 @@ public class ReservationRepository {
 
     @Transactional
     public Reservation save(CreateReservationParams params) {
-        Long id = reservationDao.save(params.name(), params.date(), params.timeId(), params.themeId());
-        ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(),
-                params.themeId());
+        Long id = reservationDao.save(
+                params.name(),
+                params.date(),
+                params.timeId(),
+                params.themeId()
+        );
+        ReservationEntity reservationEntity = new ReservationEntity(
+                id,
+                params.name(),
+                params.date(),
+                params.timeId(),
+                params.themeId()
+        );
         ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getByIdIncludingDeleted(params.timeId());
         ThemeEntity themeEntity = themeDao.getByIdIncludingDeleted(params.themeId());
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
