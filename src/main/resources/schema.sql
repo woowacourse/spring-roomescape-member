@@ -22,6 +22,7 @@ CREATE TABLE reservation
     date     DATE         NOT NULL,
     time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
+    status   VARCHAR(20)  NOT NULL DEFAULT 'RESERVED',
     PRIMARY KEY (id),
     CONSTRAINT unique_reservation_slot UNIQUE (date, time_id, theme_id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),

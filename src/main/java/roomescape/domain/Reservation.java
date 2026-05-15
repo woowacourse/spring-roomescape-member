@@ -16,8 +16,10 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final ReservationStatus status;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme,
+                        ReservationStatus status) {
         validateName(name);
         validateNotNull(date, time, theme);
         this.id = id;
@@ -25,14 +27,24 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.status = status;
     }
 
     public static Reservation createNew(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
     }
 
-    public static Reservation from(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+    public static Reservation from(Long id, String name, LocalDate date, ReservationTime time, Theme theme,
+                                   ReservationStatus status) {
+        return new Reservation(id, name, date, time, theme, status);
+    }
+
+    public Reservation changeSchedule(LocalDate date, ReservationTime time) {
+        return new Reservation(id, name, date, time, theme, status);
+    }
+
+    public Reservation cancel() {
+        return new Reservation(id, name, date, time, theme, ReservationStatus.CANCELLED);
     }
 
     private void validateName(String name) {

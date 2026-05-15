@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.reservation.InvalidReservationException;
+import roomescape.global.exception.reservation.ReservationNotFoundException;
 import roomescape.global.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -21,6 +22,8 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.reservation.ReservationPagingCondition;
 import roomescape.service.dto.reservation.ReservationResult;
+import roomescape.service.dto.reservation.ChangeReservationScheduleCommand;
+import roomescape.service.dto.reservation.CancelReservationCommand;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,6 +37,12 @@ public class ReservationService {
 
     public List<ReservationResult> getReservations(ReservationPagingCondition condition) {
         return reservationRepository.findAll(condition.size(), condition.offset()).stream()
+                .map(ReservationResult::from)
+                .toList();
+    }
+
+    public List<ReservationResult> getReservationsByName(String name) {
+        return reservationRepository.findByName(name).stream()
                 .map(ReservationResult::from)
                 .toList();
     }
@@ -65,9 +74,31 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public ReservationResult changeReservationSchedule(ChangeReservationScheduleCommand command) {
+        Reservation reservation = getReservation(command.reservationId(), command.name());
+        ReservationTime time = getReservationTime(command.timeId());
+        validateReservableDateTime(command.date(), time);
+
+        Reservation changedReservation = reservation.changeSchedule(command.date(), time);
+        return ReservationResult.from(reservationRepository.updateSchedule(changedReservation));
+    }
+
+    @Transactional
+    public ReservationResult cancelReservation(CancelReservationCommand command) {
+        Reservation reservation = getReservation(command.reservationId(), command.name());
+        Reservation cancelledReservation = reservation.cancel();
+        return ReservationResult.from(reservationRepository.updateStatus(cancelledReservation));
+    }
+
     @NonNull
     private ReservationTime getReservationTime(CreateReservationCommand command) {
-        return reservationTimeRepository.findById(command.timeId())
+        return getReservationTime(command.timeId());
+    }
+
+    @NonNull
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
@@ -75,6 +106,16 @@ public class ReservationService {
     private Theme getTheme(CreateReservationCommand command) {
         return themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
+    }
+
+    @NonNull
+    private Reservation getReservation(Long reservationId, String name) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("해당 예약을 찾을 수 없습니다."));
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationNotFoundException("해당 예약을 찾을 수 없습니다.");
+        }
+        return reservation;
     }
 
     private void validateReservableDateTime(LocalDate date, ReservationTime time) {
