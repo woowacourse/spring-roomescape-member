@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -44,21 +45,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableExceptions(HttpMessageNotReadableException ex) {
         log.warn("JSON 형식 오류: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse("요청 데이터의 형식이 올바르지 않습니다."));
     }
 
-    @ExceptionHandler(TypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatchException(TypeMismatchException ex) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchExceptions(MethodArgumentTypeMismatchException ex) {
         log.warn("타입 변환 오류: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse("요청 파라미터 또는 헤더의 타입이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(RoomEscapeException.class)
-    public ResponseEntity<ErrorResponse> handleRoomEscapeException(RoomEscapeException ex) {
+    public ResponseEntity<ErrorResponse> handleRoomEscapeExceptions(RoomEscapeException ex) {
         log.warn("비즈니스 예외 발생: {}", ex.getMessage());
 
         return ResponseEntity
