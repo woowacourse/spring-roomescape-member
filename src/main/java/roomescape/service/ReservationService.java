@@ -84,6 +84,12 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(
+                        ReservationErrorCode.RESERVATION_NOT_FOUND)
+                );
+        reservation.validateNotPastTime();
+        // TODO: 내 예약이 아니면 예외(관리자 모드 제외)
         reservationRepository.delete(id);
     }
 }
