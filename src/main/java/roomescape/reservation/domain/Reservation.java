@@ -37,13 +37,13 @@ public class Reservation {
                 .build();
     }
 
-    public Reservation changeTime(LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation reschedule(LocalDate date, ReservationTime time) {
         return Reservation.builder()
                 .id(id)
                 .name(this.name)
                 .date(date)
                 .time(time)
-                .theme(theme)
+                .theme(this.theme)
                 .build();
     }
 

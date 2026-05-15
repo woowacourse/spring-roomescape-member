@@ -77,7 +77,7 @@ public class ReservationService {
         ReservationTime newTime = reservationTimeService.getById(request.timeId());
         LocalDate newDate = request.date();
 
-        Reservation changed = reservation.changeTime(newDate, newTime, reservation.getTheme());
+        Reservation changed = reservation.reschedule(newDate, newTime);
         if (changed.isPast()) {
             throw new PastTimeReservationException("이미 지난 시간으로 변경할 수 없습니다.");
         }
