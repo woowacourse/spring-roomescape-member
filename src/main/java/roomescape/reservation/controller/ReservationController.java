@@ -4,10 +4,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationCancelDto;
-import roomescape.reservation.dto.request.ReservationChangeScheduleDto;
-import roomescape.reservation.dto.request.ReservationSaveDto;
-import roomescape.reservation.dto.response.ReservationDetailDto;
+import roomescape.reservation.controller.dto.request.ReservationCancelDto;
+import roomescape.reservation.controller.dto.request.ReservationChangeScheduleDto;
+import roomescape.reservation.controller.dto.request.ReservationSaveDto;
+import roomescape.reservation.controller.dto.response.ReservationDetailDto;
 import roomescape.reservation.service.ReservationService;
 
 import java.util.List;

@@ -2,13 +2,14 @@ package roomescape.reservation.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationChangeScheduleDto;
-import roomescape.reservation.dto.response.ReservationDetailDto;
-import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.controller.dto.request.ReservationChangeScheduleDto;
+import roomescape.reservation.controller.dto.response.ReservationDetailDto;
+import roomescape.reservation.controller.dto.request.ReservationSaveDto;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -30,7 +31,7 @@ public class ReservationAdminController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationDetailDto> createReservation(@Validated @RequestBody ReservationSaveDto dto) {
+    public ResponseEntity<ReservationDetailDto> createReservation(@Valid @RequestBody ReservationSaveDto dto) {
         Reservation reservation = reservationService.reserve(dto.toCommand());
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);

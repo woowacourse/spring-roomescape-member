@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.request.ReservationTimeSaveDto;
-import roomescape.time.dto.request.ReservationTimeStatusUpdateDto;
-import roomescape.time.dto.response.ReservationTimeDetailDto;
+import roomescape.time.controller.dto.request.ReservationTimeSaveDto;
+import roomescape.time.controller.dto.request.ReservationTimeStatusUpdateDto;
+import roomescape.time.controller.dto.response.ReservationTimeDetailDto;
 import roomescape.time.service.ReservationTimeService;
 
 @RestController

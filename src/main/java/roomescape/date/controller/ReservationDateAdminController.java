@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.date.domain.ReservationDate;
-import roomescape.date.dto.request.ReservationDateSaveDto;
-import roomescape.date.dto.request.ReservationDateStatusUpdateDto;
-import roomescape.date.dto.response.ReservationDateDetailDto;
+import roomescape.date.controller.dto.request.ReservationDateSaveDto;
+import roomescape.date.controller.dto.request.ReservationDateStatusUpdateDto;
+import roomescape.date.controller.dto.response.ReservationDateDetailDto;
 import roomescape.date.service.ReservationDateService;
 
 @RestController

@@ -1,4 +1,4 @@
-package roomescape.time.dto.response;
+package roomescape.time.controller.dto.response;
 
 import java.time.LocalTime;
 

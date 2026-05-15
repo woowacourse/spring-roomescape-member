@@ -1,4 +1,4 @@
-package roomescape.theme.dto.response;
+package roomescape.theme.controller.dto.response;
 
 import roomescape.theme.repository.projection.PopularThemeResult;
 

@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.request.ThemeActiveUpdateDto;
-import roomescape.theme.dto.request.ThemeSaveDto;
-import roomescape.theme.dto.response.PopularThemeDetailDto;
-import roomescape.theme.dto.response.ThemeDetailDto;
+import roomescape.theme.controller.dto.request.ThemeActiveUpdateDto;
+import roomescape.theme.controller.dto.request.ThemeSaveDto;
+import roomescape.theme.controller.dto.response.PopularThemeDetailDto;
+import roomescape.theme.controller.dto.response.ThemeDetailDto;
 import roomescape.theme.service.ThemeService;
 
 @RestController

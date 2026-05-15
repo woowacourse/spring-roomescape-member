@@ -3,7 +3,7 @@ package roomescape.reservation.fixture;
 import roomescape.date.domain.ReservationDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.controller.dto.request.ReservationSaveDto;
 import roomescape.reservation.service.dto.ReservationSaveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;

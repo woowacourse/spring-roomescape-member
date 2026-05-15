@@ -1,7 +1,7 @@
 package roomescape.time.fixture;
 
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.controller.dto.request.ReservationTimeSaveDto;
 
 import java.time.LocalTime;
 
