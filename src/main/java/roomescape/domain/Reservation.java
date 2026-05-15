@@ -109,6 +109,13 @@ public class Reservation {
         }
     }
 
+    public void validateUpdateAvailability(LocalDate date, ReservationTime time,
+            LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

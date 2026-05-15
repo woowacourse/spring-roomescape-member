@@ -179,11 +179,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
         String sql = "select count(*) from reservation where date = :date AND time_id = :time_id AND theme_id = :theme_id";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", date.toString())
-                .addValue("time_id", time.getId())
-                .addValue("theme_id", theme.getId());
+        SqlParameterSource params = new MapSqlParameterSource().addValue("date", date.toString())
+                .addValue("time_id", time.getId()).addValue("theme_id", theme.getId());
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count > 0;
+    }
+
+    @Override
+    public Reservation update(Long id, LocalDate date, ReservationTime time) {
+        String sql = "update reservation SET date = :date, time_id = :time_id where id = :id";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("date", date)
+                .addValue("time_id", time.getId()).addValue("id", id);
+        jdbcTemplate.update(sql, params);
+        return findById(id)
+                .orElseThrow(() -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 }

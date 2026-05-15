@@ -1,6 +1,8 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.dto.ReservedTimeResponseDTO;
 import roomescape.exception.ReservationErrorCode;
 import roomescape.exception.ReservationTimeErrorCode;
@@ -22,12 +25,14 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
+    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public ReservationService(Clock clock, ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -84,6 +89,23 @@ public class ReservationService {
     public List<ReservedTimeResponseDTO> findReservedTimes(LocalDate targetDate,
             Long targetThemeId) {
         return reservationTimeRepository.findReservedTimes(targetDate, targetThemeId);
+    }
+
+    @Transactional
+    public ReservationResponseDTO updateReservation(Long id, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+                () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND)
+        );
+        reservation.validateNotPastTime();
+
+        ReservationTime time = reservationTimeRepository.findById(request.timeId()).orElseThrow(
+                () -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND)
+        );
+
+        reservation.validateUpdateAvailability(request.date(), time, LocalDateTime.now(clock));
+        validateDuplicateReservation(request.date(), time, reservation.getTheme());
+
+        return ReservationResponseDTO.from(reservationRepository.update(id, request.date(), time));
     }
 
     @Transactional

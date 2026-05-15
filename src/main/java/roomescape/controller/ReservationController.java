@@ -62,7 +62,13 @@ public class ReservationController {
                 selectedDate, themeId));
     }
 
-    @PatchMapping()
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponseDTO> updateReservation(
+            @Positive(message = "예약 아이디는 1 이상이어야 합니다.") @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request) {
+        ReservationResponseDTO updated = reservationService.updateReservation(id, request);
+        return ResponseEntity.ok(updated);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id) {
