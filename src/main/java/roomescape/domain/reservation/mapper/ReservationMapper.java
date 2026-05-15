@@ -18,7 +18,8 @@ public final class ReservationMapper {
 
     public static ReservationResponseDto toResponseDto(Reservation reservation) {
         return new ReservationResponseDto(reservation.getId(), reservation.getName(), reservation.getDate(),
-            TimeMapper.toResponseDto(reservation.getTime()), ThemeMapper.toResponseDto(reservation.getTheme()));
+            TimeMapper.toResponseDto(reservation.getTime()), ThemeMapper.toResponseDto(reservation.getTheme()),
+            reservation.getCanceledAt() != null);
     }
 
     public static ReservationByNameResponseDto toByNameResponseDto(Reservation reservation) {

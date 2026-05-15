@@ -85,11 +85,32 @@ class ReservationServiceTest {
             // then
             assertThat(actual).containsExactly(
                 new ReservationResponseDto(1L, "제이콥", date, TimeMapper.toResponseDto(time1),
-                    ThemeMapper.toResponseDto(theme)),
+                    ThemeMapper.toResponseDto(theme), false),
                 new ReservationResponseDto(2L, "라이", date.plusDays(1), TimeMapper.toResponseDto(time2),
-                    ThemeMapper.toResponseDto(theme)),
+                    ThemeMapper.toResponseDto(theme), false),
                 new ReservationResponseDto(3L, "티모", date.plusDays(2), TimeMapper.toResponseDto(time3),
-                    ThemeMapper.toResponseDto(theme))
+                    ThemeMapper.toResponseDto(theme), false)
+            );
+        }
+
+        @Test
+        void 취소된_예약은_취소_여부를_함께_반환한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 4, 30);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(
+                Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+            Reservation reservation = reservationRepository.save(Reservation.create("제이콥", date, time, theme));
+            reservationRepository.update(Reservation.reconstruct(reservation.getId(), reservation.getName(),
+                reservation.getDate(), reservation.getTime(), reservation.getTheme(), LocalDateTime.now(), null));
+
+            // when
+            List<ReservationResponseDto> actual = reservationService.getReservations();
+
+            // then
+            assertThat(actual).containsExactly(
+                new ReservationResponseDto(reservation.getId(), "제이콥", date, TimeMapper.toResponseDto(time),
+                    ThemeMapper.toResponseDto(theme), true)
             );
         }
 
@@ -187,7 +208,7 @@ class ReservationServiceTest {
                 new ReservationByNameResponseDto(savedReservation.getId(), "브라운", date,
                     new ReservationTimeResponseDto(time.getId(), time.getStartAt(), false),
                     new ReservationThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(),
-                        theme.getImageUrl(), false), ReservationStatus.LOCKED, "지난 예약은 수정하거나 삭제할 수 없습니다.")
+                        theme.getImageUrl(), false), ReservationStatus.LOCKED, "지난 예약은 수정하거나 취소할 수 없습니다.")
             );
         }
 

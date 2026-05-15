@@ -124,6 +124,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             WHERE r.date BETWEEN :startDate AND :endDate
               AND t.deleted_at IS NULL
               AND r.deleted_at IS NULL
+              AND r.canceled_at IS NULL
               AND rt.deleted_at IS NULL
             GROUP BY t.id, t.name, t.description, t.image_url
             ORDER BY COUNT(r.id) DESC, t.id ASC

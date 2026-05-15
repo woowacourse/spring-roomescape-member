@@ -43,6 +43,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
                 WHERE r.deleted_at IS NULL
+                ORDER BY r.id ASC
                 """,
             (rs, rowNum) -> mapReservation(rs)
         );

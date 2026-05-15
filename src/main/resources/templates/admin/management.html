@@ -190,11 +190,11 @@
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
         <tr>
-          <th>ID</th><th>이름</th><th>날짜</th><th>테마</th><th>시간</th><th>삭제</th>
+          <th>ID</th><th>이름</th><th>날짜</th><th>테마</th><th>시간</th><th>상태</th><th>삭제</th>
         </tr>
         </thead>
         <tbody id="reservationList">
-        <tr><td colspan="6" class="text-center text-muted py-4">로딩 중...</td></tr>
+        <tr><td colspan="7" class="text-center text-muted py-4">로딩 중...</td></tr>
         </tbody>
       </table>
     </div>
@@ -385,7 +385,7 @@
 
       if (allReservations.length === 0) {
         reservations = [];
-        list.innerHTML = emptyRow(6, '등록된 예약이 없습니다.');
+        list.innerHTML = emptyRow(7, '등록된 예약이 없습니다.');
         renderReservationPagination();
         return;
       }
@@ -393,7 +393,7 @@
       applyReservationFilters(false);
     } catch (error) {
       document.getElementById('reservationList').innerHTML =
-          emptyRow(6, error.data?.message || '예약 목록을 불러오지 못했습니다.');
+          emptyRow(7, error.data?.message || '예약 목록을 불러오지 못했습니다.');
       document.getElementById('reservationPageInfo').innerText = '';
       document.getElementById('reservationPagination').innerHTML = '';
     }
@@ -403,7 +403,7 @@
     const list = document.getElementById('reservationList');
 
     if (reservations.length === 0) {
-      list.innerHTML = emptyRow(6, '조건에 맞는 예약이 없습니다.');
+      list.innerHTML = emptyRow(7, '조건에 맞는 예약이 없습니다.');
       renderReservationPagination();
       return;
     }
@@ -418,6 +418,7 @@
             <td>${escapeHtml(res.date)}</td>
             <td>${escapeHtml(res.theme.name)}</td>
             <td>${escapeHtml(res.time.startAt)}</td>
+            <td>${renderReservationStatusBadge(res)}</td>
             <td><button class="btn btn-danger btn-sm" onclick="deleteReservation(${res.id})">삭제</button></td>
         </tr>
     `).join('');
@@ -461,6 +462,14 @@
     `;
 
     pagination.innerHTML = pageItems;
+  }
+
+  function renderReservationStatusBadge(reservation) {
+    if (reservation.canceled) {
+      return '<span class="badge bg-secondary">취소됨</span>';
+    }
+
+    return '<span class="badge bg-success">예약됨</span>';
   }
 
   function changeReservationPage(page) {
