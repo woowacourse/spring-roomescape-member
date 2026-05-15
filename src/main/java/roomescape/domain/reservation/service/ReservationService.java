@@ -1,9 +1,11 @@
 package roomescape.domain.reservation.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -63,6 +65,27 @@ public class ReservationService {
         return ReservationMapper.toCreateResponseDto(reservationRepository.save(reservation));
     }
 
+    public ReservationCreateResponseDto updateReservation(Long id, ReservationUpdateRequestDto requestDto) {
+        Reservation existingReservation = reservationRepository.findReservationByIdAndDeletedAtIsNull(id)
+            .orElseThrow(() -> new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND));
+
+        if (!existingReservation.getName().equals(requestDto.name())) {
+            throw new GeneralException(ReservationErrorType.RESERVATION_UPDATE_FORBIDDEN);
+        }
+
+        if (existingReservation.getDate().isBefore(LocalDate.now())) {
+            throw new GeneralException(ReservationErrorType.PAST_RESERVATION_UPDATE);
+        }
+
+        Reservation updateReservation = createUpdateReservation(existingReservation, requestDto);
+        if (reservationRepository.existsReservationByDateAndTimeAndThemeAndDeletedAtIsNullAndIdNot(
+            updateReservation.getDate(), updateReservation.getTime(), updateReservation.getTheme(), id)) {
+            throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
+        }
+
+        return ReservationMapper.toCreateResponseDto(reservationRepository.update(updateReservation));
+    }
+
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
 
         List<ParameterErrorResponseDto> parameterErrorResponses = new ArrayList<>();
@@ -82,6 +105,55 @@ public class ReservationService {
         }
 
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme);
+    }
+
+    private Reservation createUpdateReservation(Reservation existingReservation,
+        ReservationUpdateRequestDto requestDto) {
+        LocalDate date = getUpdateDate(existingReservation, requestDto);
+        Time time = getUpdateTime(existingReservation, requestDto);
+        Theme theme = getUpdateTheme(existingReservation, requestDto);
+
+        validateUpdateResources(time, theme);
+
+        return Reservation.reconstruct(existingReservation.getId(), existingReservation.getName(), date, time, theme);
+    }
+
+    private LocalDate getUpdateDate(Reservation existingReservation, ReservationUpdateRequestDto requestDto) {
+        if (requestDto.date() == null) {
+            return existingReservation.getDate();
+        }
+        return requestDto.date();
+    }
+
+    private Time getUpdateTime(Reservation existingReservation, ReservationUpdateRequestDto requestDto) {
+        if (requestDto.timeId() == null) {
+            return existingReservation.getTime();
+        }
+        return timeRepository.findTimeByIdAndDeletedAtIsNull(requestDto.timeId()).orElse(null);
+    }
+
+    private Theme getUpdateTheme(Reservation existingReservation, ReservationUpdateRequestDto requestDto) {
+        if (requestDto.themeId() == null) {
+            return existingReservation.getTheme();
+        }
+        return themeRepository.findThemeByIdAndDeletedAtIsNull(requestDto.themeId()).orElse(null);
+    }
+
+    private void validateUpdateResources(Time time, Theme theme) {
+        List<ParameterErrorResponseDto> parameterErrorResponses = new ArrayList<>();
+
+        if (time == null || time.getDeletedAt() != null) {
+            parameterErrorResponses.add(new ParameterErrorResponseDto("timeId", "존재 하지 않는 시간대입니다."));
+        }
+
+        if (theme == null || theme.getDeletedAt() != null) {
+            parameterErrorResponses.add(new ParameterErrorResponseDto("themeId", "존재 하지 않는 테마입니다."));
+        }
+
+        if (!parameterErrorResponses.isEmpty()) {
+            throw new GeneralNotFoundException(ReservationErrorType.UPDATE_FIELD_RESOURCE_NOT_FOUND,
+                parameterErrorResponses);
+        }
     }
 
     public void deleteReservationById(Long id) {
