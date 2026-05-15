@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -63,7 +64,11 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
-        return reservationRepository.createReservation(reservation);
+        try {
+            return reservationRepository.createReservation(reservation);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        }
     }
 
     public void deleteReservation(final long id, String requestName) {
@@ -134,6 +139,10 @@ public class ReservationService {
         }
 
         Reservation updated = reservation.updateDateTime(request.date(), reservationTime);
-        reservationRepository.updateById(reservation.getId(), updated);
+        try {
+            reservationRepository.updateById(reservation.getId(), updated);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        }
     }
 }
