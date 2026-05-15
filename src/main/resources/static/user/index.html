@@ -315,7 +315,23 @@
     <!-- 인기 테마 -->
     <div class="section" id="section-popular">
         <div class="card">
-            <div class="card-title">최근 1주 인기 테마 TOP 10</div>
+            <div class="card-title">인기 테마 TOP 10</div>
+            <div style="margin-bottom: 16px;">
+                <div class="sort-bar" style="margin-bottom: 10px;">
+                    <span class="sort-label">기간</span>
+                    <button class="sort-btn active" id="preset-7"   onclick="setPopularPreset(7, this)">최근 1주</button>
+                    <button class="sort-btn"         id="preset-30"  onclick="setPopularPreset(30, this)">최근 1개월</button>
+                    <button class="sort-btn"         id="preset-90"  onclick="setPopularPreset(90, this)">최근 3개월</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <input type="date" id="popular-start" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <span style="color: #94a3b8; font-size: 0.9rem;">~</span>
+                    <input type="date" id="popular-end" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <button class="btn-primary btn-sm" onclick="loadPopularThemes()">조회</button>
+                </div>
+            </div>
             <div class="popular-grid" id="popularGrid"></div>
         </div>
     </div>
@@ -351,7 +367,7 @@
         });
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('section-' + name).classList.add('active');
-        if (name === 'popular') loadPopularThemes();
+        if (name === 'popular') { initPopularDates(); loadPopularThemes(); }
     }
 
     async function searchReservations() {
@@ -570,18 +586,48 @@
         }
     }
 
-    async function loadPopularThemes() {
-        const today = new Date();
-        const endDate = new Date(today);
-        endDate.setDate(today.getDate() - 1);
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 7);
-        const endAt = endDate.toISOString().slice(0, 10);
-        const startAt = startDate.toISOString().slice(0, 10);
+    function toDateStr(date) {
+        return date.toISOString().slice(0, 10);
+    }
 
+    function setPopularPreset(days, btn) {
+        const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - days);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadPopularThemes();
+    }
+
+    function clearPopularPreset() {
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+    }
+
+    async function loadPopularThemes() {
+        const startAt = document.getElementById('popular-start').value;
+        const endAt   = document.getElementById('popular-end').value;
+        const grid    = document.getElementById('popularGrid');
+
+        if (!startAt || !endAt) {
+            grid.innerHTML = '<p class="empty-text">기간을 선택해주세요.</p>';
+            return;
+        }
+        if (startAt > endAt) {
+            grid.innerHTML = '<p class="empty-text">시작일이 종료일보다 늦을 수 없습니다.</p>';
+            return;
+        }
+
+        grid.innerHTML = '<p class="empty-text">불러오는 중...</p>';
         const res = await fetch(`/themes/popular?startAt=${startAt}&endAt=${endAt}&limit=10`);
         const themes = await res.json();
-        const grid = document.getElementById('popularGrid');
+
+        if (themes.length === 0) {
+            grid.innerHTML = '<p class="empty-text">해당 기간에 예약된 테마가 없습니다.</p>';
+            return;
+        }
+
         grid.innerHTML = themes.map((t, i) => `
             <div class="popular-card">
                 <img src="${t.thumbnailUrl}" alt="${t.name}">
@@ -592,6 +638,14 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    function initPopularDates() {
+        const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - 7);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
     }
 
     function showAlert(msg, type) {
