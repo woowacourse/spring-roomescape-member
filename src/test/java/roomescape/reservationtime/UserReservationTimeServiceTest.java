@@ -5,12 +5,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.ReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableTime;
+import roomescape.reservationtime.dto.ScheduleResponse;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.service.UserReservationTimeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;

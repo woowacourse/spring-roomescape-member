@@ -9,6 +9,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.reservationtime.controller.UserReservationTimeController;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableTime;
+import roomescape.reservationtime.dto.ScheduleResponse;
+import roomescape.reservationtime.service.UserReservationTimeService;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;

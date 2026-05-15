@@ -8,6 +8,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import roomescape.theme.domain.SortOrder;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeSort;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.UserThemeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;

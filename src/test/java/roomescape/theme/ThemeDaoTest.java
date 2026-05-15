@@ -10,6 +10,10 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.SortOrder;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeSort;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
