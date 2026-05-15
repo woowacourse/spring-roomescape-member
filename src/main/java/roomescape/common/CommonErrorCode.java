@@ -17,11 +17,11 @@ public enum CommonErrorCode implements ErrorCode {
 
     @Override
     public HttpStatus getHttpStatus() {
-        return null;
+        return httpStatus;
     }
 
     @Override
     public String getMessage() {
-        return "";
+        return message;
     }
 }
