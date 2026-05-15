@@ -22,6 +22,7 @@ import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.dto.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.exception.InvalidOwnershipException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -32,6 +33,12 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    private static void checkValidUserName(String userName) {
+        if (userName == null || userName.isBlank()) {
+            throw new UnauthorizedException();
+        }
     }
 
     @GetMapping
@@ -65,17 +72,27 @@ public class ReservationController {
     }
 
     @DeleteMapping(value = "/{id}", params = {"userName"})
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id, @RequestParam String userName) {
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable
+            long id,
+            @RequestParam(required = false)
+            String userName
+    ) {
+        checkValidUserName(userName);
         reservationService.removeReservation(id, userName);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/{id}", params = {"userName"})
     public ResponseEntity<ReservationResponse> updateReservation(
-            @PathVariable long id,
-            @RequestBody @Valid ReservationPutRequest request,
-            @RequestParam String userName
+            @PathVariable
+            long id,
+            @RequestBody @Valid
+            ReservationPutRequest request,
+            @RequestParam(required = false)
+            String userName
     ) {
+        checkValidUserName(userName);
         reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(),
                 request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
@@ -85,8 +102,10 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> patchReservation(
             @PathVariable long id,
             @RequestBody ReservationPatchRequest request,
-            @RequestParam String userName
+            @RequestParam(required = false)
+            String userName
     ) {
+        checkValidUserName(userName);
         reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(),
                 request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
