@@ -54,7 +54,7 @@ public class ReservationTimeAcceptanceTest {
     }
 
     @Test
-    @DisplayName("중복된 예약 시간을 생성하면 400 에러가 발생한다")
+    @DisplayName("중복된 예약 시간을 생성하면 에러가 발생한다")
     public void scenario2() throws JsonProcessingException {
         LocalTime startAt = LocalTime.of(10, 30);
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(startAt);
