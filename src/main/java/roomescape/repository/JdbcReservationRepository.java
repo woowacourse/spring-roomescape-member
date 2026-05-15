@@ -8,7 +8,9 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -133,6 +135,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existByTimeId(Long timeId) {
         String sql = "select count(*) from reservation where time_id = :time_id";
         Map<String, Object> params = Map.of("time_id", timeId);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
+        String sql = "select count(*) from reservation where date = :date AND time_id = :time_id AND theme_id = :theme_id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date.toString())
+                .addValue("time_id", time.getId())
+                .addValue("theme_id", theme.getId());
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count > 0;
     }

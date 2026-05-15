@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,10 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.dto.ReservedTimeResponseDTO;
+import roomescape.exception.ReservationErrorCode;
+import roomescape.exception.ReservationTimeErrorCode;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -18,13 +23,14 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
+    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository) {
+    public ReservationService(Clock clock, ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -33,17 +39,27 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND));
+
+        LocalDate date = LocalDate.parse(reservationRequestDTO.date());
+
+        validateDuplicateReservation(date, time, theme);
 
         Reservation reservation = Reservation.create(reservationRequestDTO.name(),
-                reservationRequestDTO.date(), time, theme);
+                date, time, theme);
+        reservation.validateNotPastTime();
 
         Reservation savedReservation = reservationRepository.save(reservation);
+
         return ReservationResponseDTO.from(savedReservation);
+    }
+
+    private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(date, time, theme)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_DUPLICATE);
+        }
     }
 
     @Transactional(readOnly = true)
