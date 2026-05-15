@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.custom.BusinessException;
 import roomescape.reservation.application.ReservationService;
@@ -133,6 +133,25 @@ public class ReservationServiceTest {
 
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.time().time()).isEqualTo(LocalTime.of(13, 0));
+        verify(reservationRepository).save(any(Reservation.class));
+    }
+
+    @Test
+    void 같은_날짜_시간_테마에_이미_예약이_있으면_예외가_발생한다() {
+        ReservationSaveRequest request = new ReservationSaveRequest("브라운", LocalDate.of(2026, 5, 7), 2L, 1L);
+        ReservationTime time = new ReservationTime(2L, LocalTime.of(11, 0));
+        Theme theme = new Theme(1L, "세기의 도둑", "설명", "thumb");
+
+        when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(time));
+        when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
+        when(reservationRepository.save(any(Reservation.class)))
+                .thenThrow(new DuplicateKeyException("duplicate reservation"));
+
+        assertThatThrownBy(() -> reservationService.save(request))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ReservationErrorCode.DUPLICATE_RESERVATION);
+
         verify(reservationRepository).save(any(Reservation.class));
     }
 }

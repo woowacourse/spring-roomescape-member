@@ -137,4 +137,22 @@ public class ReservationControllerTest {
                 .body("code", is("RESERVATION_DATE_TIME_EXPIRED"))
                 .body("message", is("지난 날짜와 시간으로는 예약할 수 없습니다."));
     }
+
+    @Test
+    void 중복된_예약을_생성하는_경우_예약에_실패한다() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2026-05-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("해당 날짜와 시간, 테마에는 이미 예약이 존재합니다."));
+    }
 }

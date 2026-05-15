@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.Reservation;
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -73,5 +75,16 @@ class JdbcReservationRepositoryTest {
         List<Long> result = reservationRepository.findTimeIdByDateAndThemeId(LocalDate.parse("2026-05-05"), 1L);
 
         assertThat(result).containsExactly(1L, 2L);
+    }
+
+    @Test
+    void 중복된_예약은_DB_유니크_제약으로_저장에_실패한다() {
+        Reservation reservation = new Reservation(null, "브라운", LocalDate.of(2026, 5, 5),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "세기의 도둑", "보안을 뚫고 보석을 훔쳐라", "https://example.com/themes/time.jpg")
+        );
+
+        assertThatThrownBy(() -> reservationRepository.save(reservation))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 }

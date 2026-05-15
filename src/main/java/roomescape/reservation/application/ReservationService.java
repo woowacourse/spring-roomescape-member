@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.custom.BusinessException;
@@ -41,9 +42,12 @@ public class ReservationService {
 
         validateReservationDateTime(body.date(), time.getStartAt());
 
-        Reservation reservation = reservationRepository.save(body.toDomain(time, theme));
-
-        return ReservationSaveResponse.of(time, theme, reservation);
+        try {
+            Reservation reservation = reservationRepository.save(body.toDomain(time, theme));
+            return ReservationSaveResponse.of(time, theme, reservation);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 
     public List<ReservationFindResponse> findAll() {
@@ -78,5 +82,4 @@ public class ReservationService {
             throw new BusinessException(ReservationErrorCode.RESERVATION_DATE_TIME_EXPIRED);
         }
     }
-
 }
