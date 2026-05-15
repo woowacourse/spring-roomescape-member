@@ -1,6 +1,7 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +30,6 @@ import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.ExceptionAssertions;
 
 class TimeServiceTest {
 
@@ -140,11 +140,10 @@ class TimeServiceTest {
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long wrongThemeId = 1L;
 
-            ExceptionAssertions.assertErrorCode(
-                () -> timeService.getAvailableTimes(date, wrongThemeId),
-                BadRequestException.class,
-                ErrorCode.COMMON_INVALID_REQUEST
-            );
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, wrongThemeId))
+                .isInstanceOf(BadRequestException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST);
         }
 
         @Test
@@ -154,11 +153,10 @@ class TimeServiceTest {
             LocalDate date = LocalDate.of(2025, 1, 1);
             Long themeId = theme.getId();
 
-            ExceptionAssertions.assertErrorCode(
-                () -> timeService.getAvailableTimes(date, themeId),
-                UnprocessableEntityException.class,
-                ErrorCode.TIME_INVALID_DATE
-            );
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_INVALID_DATE);
         }
     }
 
@@ -190,11 +188,10 @@ class TimeServiceTest {
             timeRepository.save(Time.create(LocalTime.of(15, 30)));
             TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> timeService.saveTime(request),
-                ConflictException.class,
-                ErrorCode.TIME_DUPLICATE
-            );
+            assertThatThrownBy(() -> timeService.saveTime(request))
+                .isInstanceOf(ConflictException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_DUPLICATE);
         }
     }
 
@@ -229,11 +226,10 @@ class TimeServiceTest {
             reservationRepository.save(
                 Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> timeService.deleteTimeById(time.getId()),
-                ConflictException.class,
-                ErrorCode.TIME_REFERENCED_BY_RESERVATION
-            );
+            assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
+                .isInstanceOf(ConflictException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
         }
 
         @Test
@@ -241,11 +237,10 @@ class TimeServiceTest {
         void 실패2() {
             Long wrongId = 99999L;
 
-            ExceptionAssertions.assertErrorCode(
-                () -> timeService.deleteTimeById(wrongId),
-                NotFoundException.class,
-                ErrorCode.TIME_NOT_FOUND
-            );
+            assertThatThrownBy(() -> timeService.deleteTimeById(wrongId))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_NOT_FOUND);
         }
     }
 }

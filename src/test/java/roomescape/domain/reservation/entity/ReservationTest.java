@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -15,7 +16,6 @@ import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
-import roomescape.global.ExceptionAssertions;
 
 class ReservationTest {
 
@@ -51,11 +51,10 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            ExceptionAssertions.assertErrorCode(
-                () -> Reservation.create("브라운", date, time, theme, fixedClock),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
 
         @Test
@@ -65,11 +64,10 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(10, 0));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            ExceptionAssertions.assertErrorCode(
-                () -> Reservation.create("브라운", date, time, theme, fixedClock),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 

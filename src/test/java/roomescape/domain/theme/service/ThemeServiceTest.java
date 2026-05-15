@@ -1,6 +1,7 @@
 package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +30,6 @@ import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
-import roomescape.global.ExceptionAssertions;
 
 class ThemeServiceTest {
 
@@ -128,15 +128,14 @@ class ThemeServiceTest {
         @Test
         @DisplayName("시작일이 종료일보다 늦으면 예외가 발생한다.")
         void 실패1() {
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.getPopularThemes(
+            assertThatThrownBy(() -> themeService.getPopularThemes(
                     LocalDate.of(2026, 5, 31),
                     LocalDate.of(2026, 5, 1),
                     10
-                ),
-                UnprocessableEntityException.class,
-                ErrorCode.THEME_INVALID_DATE
-            );
+                ))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_INVALID_DATE);
         }
     }
 
@@ -184,11 +183,10 @@ class ThemeServiceTest {
             );
 
             // when & then
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.saveTheme(request),
-                ConflictException.class,
-                ErrorCode.THEME_DUPLICATE
-            );
+            assertThatThrownBy(() -> themeService.saveTheme(request))
+                .isInstanceOf(ConflictException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_DUPLICATE);
         }
     }
 
@@ -219,11 +217,10 @@ class ThemeServiceTest {
         void 실패1() {
             Long wrongId = 1000L;
 
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.deleteThemeById(wrongId),
-                NotFoundException.class,
-                ErrorCode.THEME_NOT_FOUND
-            );
+            assertThatThrownBy(() -> themeService.deleteThemeById(wrongId))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_NOT_FOUND);
         }
 
         @Test
@@ -236,11 +233,10 @@ class ThemeServiceTest {
                 Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
             Long referencedId = theme.getId();
 
-            ExceptionAssertions.assertErrorCode(
-                () -> themeService.deleteThemeById(referencedId),
-                ConflictException.class,
-                ErrorCode.THEME_REFERENCED_BY_RESERVATION
-            );
+            assertThatThrownBy(() -> themeService.deleteThemeById(referencedId))
+                .isInstanceOf(ConflictException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_REFERENCED_BY_RESERVATION);
         }
     }
 }

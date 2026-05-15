@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.validator;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -16,7 +17,6 @@ import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
-import roomescape.global.ExceptionAssertions;
 
 class ReservationValidatorTest {
 
@@ -45,11 +45,10 @@ class ReservationValidatorTest {
             Reservation reservation = reservation("브라운", LocalDate.of(2026, 5, 1),
                 LocalTime.of(13, 0));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> ReservationValidator.validateOwner("다른 이름", reservation),
-                ForbiddenException.class,
-                ErrorCode.RESERVATION_FORBIDDEN
-            );
+            assertThatThrownBy(() -> ReservationValidator.validateOwner("다른 이름", reservation))
+                .isInstanceOf(ForbiddenException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
         }
     }
 
@@ -63,7 +62,8 @@ class ReservationValidatorTest {
             Reservation reservation = reservation("브라운", LocalDate.of(2026, 5, 1),
                 LocalTime.of(13, 0));
 
-            assertThatCode(() -> ReservationValidator.validateDateAccessable(reservation, fixedClock))
+            assertThatCode(
+                () -> ReservationValidator.validateDateAccessable(reservation, fixedClock))
                 .doesNotThrowAnyException();
         }
 
@@ -75,11 +75,11 @@ class ReservationValidatorTest {
                 Time.reconstruct(1L, LocalTime.of(13, 0)),
                 Theme.reconstruct(1L, "테마 이름", "테마 설명", "imageUrl"));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> ReservationValidator.validateDateAccessable(reservation, fixedClock),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(
+                () -> ReservationValidator.validateDateAccessable(reservation, fixedClock))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 
@@ -100,27 +100,27 @@ class ReservationValidatorTest {
         @Test
         @DisplayName("변경하려는 날짜가 과거이면 예외가 발생한다.")
         void 실패1() {
-            ExceptionAssertions.assertErrorCode(
-                () -> ReservationValidator.validateDateTimeChangeable(
-                    LocalDate.of(2025, 12, 31),
-                    Time.reconstruct(1L, LocalTime.of(13, 0)),
-                    fixedClock),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_TIME_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> ReservationValidator.validateDateTimeChangeable(
+                LocalDate.of(2025, 12, 31),
+                Time.reconstruct(1L, LocalTime.of(13, 0)),
+                fixedClock)
+            )
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
 
         @Test
         @DisplayName("변경하려는 날짜가 오늘이고 시간이 과거이면 예외가 발생한다.")
         void 실패2() {
-            ExceptionAssertions.assertErrorCode(
-                () -> ReservationValidator.validateDateTimeChangeable(
-                    LocalDate.of(2026, 1, 1),
-                    Time.reconstruct(1L, LocalTime.of(9, 0)),
-                    fixedClock),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_TIME_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> ReservationValidator.validateDateTimeChangeable(
+                LocalDate.of(2026, 1, 1),
+                Time.reconstruct(1L, LocalTime.of(9, 0)),
+                fixedClock)
+            )
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
     }
 

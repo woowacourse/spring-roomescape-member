@@ -37,7 +37,6 @@ import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.ExceptionAssertions;
 
 class ReservationServiceTest {
 
@@ -207,11 +206,10 @@ class ReservationServiceTest {
                 theme.getId()
             );
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.saveReservation(request),
-                BadRequestException.class,
-                ErrorCode.TIME_NOT_FOUND
-            );
+            assertThatThrownBy(() -> reservationService.saveReservation(request))
+                .isInstanceOf(BadRequestException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_NOT_FOUND);
         }
 
         @Test
@@ -226,11 +224,10 @@ class ReservationServiceTest {
                 wrongThemeId
             );
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.saveReservation(request),
-                BadRequestException.class,
-                ErrorCode.THEME_NOT_FOUND
-            );
+            assertThatThrownBy(() -> reservationService.saveReservation(request))
+                .isInstanceOf(BadRequestException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_NOT_FOUND);
         }
 
         @Test
@@ -246,11 +243,10 @@ class ReservationServiceTest {
                 theme.getId()
             );
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.saveReservation(request),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> reservationService.saveReservation(request))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 
@@ -300,6 +296,7 @@ class ReservationServiceTest {
 
             Optional<Reservation> actual = reservationRepository.findReservationById(
                 savedReservation.getId());
+
             assertAll(
                 () -> assertThat(actual).isPresent(),
                 () -> assertThat(actual.get().getDate()).isEqualTo(savedReservation.getDate()),
@@ -324,11 +321,12 @@ class ReservationServiceTest {
             List<ErrorDetail> expectedErrors = List.of(
                 ErrorDetail.of("timeId", wrongId, "요청한 시간 id가 존재하지 않습니다."));
 
-            ExceptionAssertions.assertErrorCodeWithErrors(
-                () -> reservationService.updateReservation(name, id, request),
-                ErrorCode.COMMON_INVALID_REQUEST_BODY,
-                expectedErrors
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation(name, id, request))
+                .isInstanceOfSatisfying(BadRequestException.class, exception -> assertAll(
+                    () -> assertThat(exception.getErrorCode())
+                        .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST_BODY),
+                    () -> assertThat(exception.getErrors()).isEqualTo(expectedErrors)
+                ));
         }
 
         @Test
@@ -346,11 +344,10 @@ class ReservationServiceTest {
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 changeDate, wrongId);
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.updateReservation(wrongName, id, request),
-                ForbiddenException.class,
-                ErrorCode.RESERVATION_FORBIDDEN
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation(wrongName, id, request))
+                .isInstanceOf(ForbiddenException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
         }
 
         @Test
@@ -371,11 +368,10 @@ class ReservationServiceTest {
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 LocalDate.of(2026, 5, 4), duplicatedTime.getId());
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.updateReservation(name, id, request),
-                ConflictException.class,
-                ErrorCode.RESERVATION_DUPLICATE
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation(name, id, request))
+                .isInstanceOf(ConflictException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_DUPLICATE);
         }
 
         @Test
@@ -393,11 +389,10 @@ class ReservationServiceTest {
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 changeDate, changeTimeId);
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.updateReservation(name, id, request),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation(name, id, request))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
 
         @Test
@@ -415,11 +410,10 @@ class ReservationServiceTest {
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 changeDate, changeTimeId);
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.updateReservation(name, id, request),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_TIME_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation(name, id, request))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
 
         @Test
@@ -430,11 +424,10 @@ class ReservationServiceTest {
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 LocalDate.of(2026, 5, 2), timeId);
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.updateReservation("시오", notFoundId, request),
-                NotFoundException.class,
-                ErrorCode.RESERVATION_NOT_FOUND
-            );
+            assertThatThrownBy(() -> reservationService.updateReservation("시오", notFoundId, request))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
     }
@@ -509,12 +502,11 @@ class ReservationServiceTest {
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
                         "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.deleteMemberReservationById("다른 이름",
-                    savedReservation.getId()),
-                ForbiddenException.class,
-                ErrorCode.RESERVATION_FORBIDDEN
-            );
+            assertThatThrownBy(() -> reservationService.deleteMemberReservationById("다른 이름",
+                    savedReservation.getId()))
+                .isInstanceOf(ForbiddenException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
         }
 
         @Test
@@ -522,11 +514,10 @@ class ReservationServiceTest {
         void 실패2() {
             Long notFoundId = 99999L;
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.deleteMemberReservationById("시오", notFoundId),
-                NotFoundException.class,
-                ErrorCode.RESERVATION_NOT_FOUND
-            );
+            assertThatThrownBy(() -> reservationService.deleteMemberReservationById("시오", notFoundId))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         @Test
@@ -539,12 +530,11 @@ class ReservationServiceTest {
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
                         "https://roomescape.com/images/themes/ring-banner.png")));
 
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.deleteMemberReservationById(name,
-                    savedReservation.getId()),
-                UnprocessableEntityException.class,
-                ErrorCode.RESERVATION_ALREADY_PASSED
-            );
+            assertThatThrownBy(() -> reservationService.deleteMemberReservationById(name,
+                    savedReservation.getId()))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 }
