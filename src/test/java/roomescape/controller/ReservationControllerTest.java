@@ -227,6 +227,16 @@ public class ReservationControllerTest {
                 .body("errorCode", is("UNSUPPORTED_MEDIA_TYPE"));
     }
 
+    @Test
+    void 요청_파라미터가_빈값이면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .queryParam("name", "")
+                .when().get("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("INVALID_INPUT_VALUE"));
+    }
+
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");

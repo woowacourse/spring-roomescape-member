@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -138,6 +139,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE,
                 message,
                 "UNSUPPORTED_MEDIA_TYPE",
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException e,
+                                                                   HttpServletRequest request) {
+        return createErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                "INVALID_INPUT_VALUE",
                 request.getRequestURI()
         );
     }
