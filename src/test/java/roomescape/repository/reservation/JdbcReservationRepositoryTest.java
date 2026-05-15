@@ -27,7 +27,7 @@ class JdbcReservationRepositoryTest {
 
     private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
     private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
-    private static final LocalDate tomorrow = LocalDate.now().plusDays(1);
+    private static final ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
@@ -52,7 +52,7 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         // when
-        Reservation saved = reservationRepository.createReservation(Reservation.create("name", tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("name"), tomorrow, savedTime, savedTheme));
 
         // then
         assertThat(saved.getTime()).isEqualTo(savedTime);
@@ -67,8 +67,8 @@ class JdbcReservationRepositoryTest {
 
         Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
 
-        reservationRepository.createReservation(Reservation.create("브라운",  tomorrow, savedTime1, savedTheme));
-        reservationRepository.createReservation(Reservation.create("제임스",  tomorrow, savedTime2, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime1, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("제임스"),  tomorrow, savedTime2, savedTheme));
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -92,7 +92,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
         Theme theme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
 
-        Reservation saved = reservationRepository.createReservation(Reservation.create("브라운",  tomorrow, time, theme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, time, theme));
 
         // when & then
         assertThatCode(() -> reservationRepository.deleteById(saved.getId()))
@@ -105,7 +105,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        Reservation saved = reservationRepository.createReservation(Reservation.create("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime, savedTheme));
 
         // when
         Reservation target = reservationRepository.findById(saved.getId()).get();
@@ -113,7 +113,7 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(target.getId()).isEqualTo(saved.getId());
         assertThat(target.getName()).isEqualTo(saved.getName());
-        assertThat(target.getDateValue()).isEqualTo(saved.getDateValue());
+        assertThat(target.getDate()).isEqualTo(saved.getDate());
         assertThat(target.getTime()).isEqualTo(saved.getTime());
         assertThat(target.getTheme()).isEqualTo(saved.getTheme());
     }
@@ -124,7 +124,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        Reservation saved = reservationRepository.createReservation(Reservation.create("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeId(saved.getTimeId());
@@ -141,7 +141,7 @@ class JdbcReservationRepositoryTest {
             new ReservationTime(2L, "17:00"));
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        reservationRepository.createReservation(Reservation.create("브라운", tomorrow, savedTime, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("브라운"), tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeId(otherTime.getId());
@@ -153,7 +153,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 사용자_이름으로_해당_사용자의_예약_목록을_조회한다() {
         // given
-        String testName = "브라운";
+        MemberName testName = new MemberName("브라운");
         ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
         ReservationTime otherTime = timeRepository.createReservationTime(
                 new ReservationTime(2L, "17:00"));
@@ -163,7 +163,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.createReservation(Reservation.create(testName, tomorrow, otherTime, savedTheme));
 
         // when
-        List<Reservation> reservations = reservationRepository.findReservationsByName(new MemberName(testName));
+        List<Reservation> reservations = reservationRepository.findReservationsByName(testName);
 
         // then
         assertThat(reservations).hasSize(2);
@@ -179,8 +179,8 @@ class JdbcReservationRepositoryTest {
         ReservationTime updatedTime = timeRepository.createReservationTime(new ReservationTime("17:00"));
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        Reservation oldReservation = reservationRepository.createReservation(Reservation.create(testName.value(), tomorrow, time, savedTheme));
-        Reservation updatedReservation = new Reservation(oldReservation.getId(), testName, new ReservationDate(tomorrow), updatedTime, savedTheme);;
+        Reservation oldReservation = reservationRepository.createReservation(Reservation.create(testName, tomorrow, time, savedTheme));
+        Reservation updatedReservation = new Reservation(oldReservation.getId(), testName, tomorrow, updatedTime, savedTheme);;
 
         // when
         reservationRepository.update(updatedReservation);

@@ -68,7 +68,7 @@ class ReservationServiceTest {
 
         // when
         Map<ReservationTime, Boolean> timesWithAvailability = reservationService
-            .getTimesWithAvailability(RESERVATION.getDateValue(), RESERVATION.getThemeId());
+            .getTimesWithAvailability(RESERVATION.getDate(), RESERVATION.getThemeId());
 
         // then
         assertThat(timesWithAvailability).hasSize(2);
@@ -97,15 +97,15 @@ class ReservationServiceTest {
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = Reservation.create("이름", tomorrow, SAVED_TIME, otherTheme);
+        ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
+        Reservation reservation = Reservation.create(new MemberName("이름"), tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));
         when(themeRepository.findById(otherTheme.getId()))
             .thenReturn(Optional.of(otherTheme));
 
-        when(timeRepository.findTimesByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
+        when(timeRepository.findTimesByDateAndThemeId(any(ReservationDate.class), eq(otherTheme.getId())))
             .thenReturn(List.of(SAVED_TIME));
 
         // when & then
@@ -127,7 +127,7 @@ class ReservationServiceTest {
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(),
+        return new ReservationRequestDto(reservation.getName(), reservation.getDate(),
             reservation.getTime().getId(), reservation.getThemeId());
     }
 
@@ -207,7 +207,10 @@ class ReservationServiceTest {
         when(reservationRepository.findById(reservationId))
                 .thenReturn(Optional.of(oldReservation));
 
-        ReservationUpdateRequestDto updateRequestDto = new ReservationUpdateRequestDto(reservationId, name, LocalDate.now().plusDays(2), SAVED_TIME.getId(), SAVED_THEME.getId());
+        ReservationDate otherDate = new ReservationDate(LocalDate.now().plusDays(2));
+        ReservationUpdateRequestDto updateRequestDto = new ReservationUpdateRequestDto(reservationId, name, otherDate, SAVED_TIME.getId(), SAVED_THEME.getId());
+        when(timeRepository.findTimesByDateAndThemeId(eq(otherDate), eq(SAVED_THEME.getId())))
+                .thenReturn(List.of(SAVED_TIME));
 
         // when
         reservationService.update(updateRequestDto, name);
@@ -216,7 +219,7 @@ class ReservationServiceTest {
         Reservation updatedReservation = new Reservation(
                 updateRequestDto.id(),
                 updateRequestDto.name(),
-                new ReservationDate(updateRequestDto.date()),
+                updateRequestDto.date(),
                 SAVED_TIME,
                 SAVED_THEME);
 

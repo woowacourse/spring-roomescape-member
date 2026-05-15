@@ -16,6 +16,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.util.List;
+
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
@@ -107,7 +110,7 @@ class JdbcThemeRepositoryTest {
         for (int i = 0; i < tenPopularThemesOrderByRank.size(); i++) {
             for (int j = 0; j < i + 1; j++) {
                 reservationRepository.createReservation(Reservation.create(
-                    "name", LocalDate.now().minusDays(1), times.get(j), tenPopularThemesOrderByRank.get(i)
+                        new MemberName("name"), new ReservationDate(LocalDate.now().minusDays(1)), times.get(j), tenPopularThemesOrderByRank.get(i)
                 ));
             }
         }

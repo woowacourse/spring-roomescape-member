@@ -40,8 +40,8 @@ class ReservationControllerTest {
     private static final ReservationTime TIME = new ReservationTime(1L, LocalTime.now().plusHours(1));
     private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", ThemeImageUrl.defaultImageUrl());
     private static final Reservation RESERVATION = Reservation.create(
-            "이름",
-            LocalDate.now().plusDays(1L),
+            new MemberName("이름"),
+            new ReservationDate(LocalDate.now().plusDays(1L)),
             TIME,
             THEME);
 
@@ -131,8 +131,7 @@ class ReservationControllerTest {
         String errorCode = response.jsonPath().getString("code");
         String errorMessage = response.jsonPath().getString("message");
 
-        assertThat(errorCode).isEqualTo("RESERVATION_004");
-        assertThat(errorMessage).isEqualTo("타인의 예약은 수정/삭제할 수 없습니다.");
+        assertThat(errorMessage).isEqualTo(ErrorCode.RESERVATION_ACCESS_DENIED.getMessage());
     }
 
     @Test
@@ -165,7 +164,7 @@ class ReservationControllerTest {
     void 사용자_이름으로_사용자의_모든_예약을_조회한다() {
         // given
         MemberName testName = new MemberName("브라운");
-        Reservation reservation = Reservation.create(testName.value(), LocalDate.now(), TIME, THEME);
+        Reservation reservation = Reservation.create(testName, new ReservationDate(LocalDate.now()), TIME, THEME);
         List<Reservation> reservations = List.of(reservation.withId(1L), reservation.withId(2L), reservation.withId(3L));
         ReservationsResponseDto expected = new ReservationsResponseDto(reservations.stream()
                 .map(ReservationResponseDto::from)
@@ -212,10 +211,10 @@ class ReservationControllerTest {
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequestDto(reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 
     private ReservationUpdateRequestDto updateRequestDtoFrom(Reservation reservation) {
-        return new ReservationUpdateRequestDto(reservation.getId(), reservation.getName(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationUpdateRequestDto(reservation.getId(), reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }
