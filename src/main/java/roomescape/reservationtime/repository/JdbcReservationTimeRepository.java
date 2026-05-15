@@ -10,7 +10,9 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.dto.ReservationTimeAvailability;
 
 import java.sql.PreparedStatement;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
+
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -36,15 +40,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query("""
                 SELECT id, start_at
                 FROM reservation_time
+                WHERE deleted_at IS NULL
                 """, reservationTimeRowMapper);
     }
 
     @Override
     public boolean deleteById(Long id) {
         int rowCount = jdbcTemplate.update("""
-                DELETE FROM reservation_time
-                WHERE id = ?
-                """, id);
+                UPDATE reservation_time
+                SET deleted_at = ?, delete_token = ?
+                WHERE id = ? AND deleted_at IS NULL
+                """, LocalDateTime.now(clock), id, id);
         return rowCount > 0;
     }
 
@@ -53,7 +59,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query("""
                         SELECT id, start_at
                         FROM reservation_time
-                        WHERE id = ?
+                        WHERE id = ? AND deleted_at IS NULL
                         """, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
@@ -64,7 +70,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation_time
-                WHERE start_at = ?
+                WHERE start_at = ? AND deleted_at IS NULL
                 """, Integer.class, startAt.toString());
         return count != null && count > 0;
     }
@@ -81,6 +87,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     AND r.date = ?
                     AND r.theme_id = ?
                     AND r.deleted_at IS NULL
+                WHERE rt.deleted_at IS NULL
                 ORDER BY rt.start_at
                 """;
 
@@ -108,20 +115,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             );
 
     private final RowMapper<ReservationTimeAvailability> reservationTimeAvailabilityRowMapper = (resultSet, rowNum) -> {
+        ReservationTime reservationTime = new ReservationTime(
+                resultSet.getLong("id"),
+                LocalTime.parse(resultSet.getString("start_at"))
+        );
 
         if(resultSet.getBoolean("available")) {
-            return ReservationTimeAvailability.available(
-                    new ReservationTime(
-                            resultSet.getLong("id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
-                    )
-            );
+            return ReservationTimeAvailability.available(reservationTime);
         }
-        return ReservationTimeAvailability.unavailable(
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                )
-        );
+        return ReservationTimeAvailability.unavailable(reservationTime);
     };
 }
