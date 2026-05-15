@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
 import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidRequestException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
-import roomescape.exception.UnauthorizedActionException;
+import roomescape.exception.OwnershipViolationException;
 import roomescape.reservation.domain.Reservation;
 
 class UserReservationServiceTest extends ServiceIntegrationTest {
@@ -69,7 +69,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
     void 지나간_날짜에_예약하면_예외가_발생한다() {
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now().minusDays(1), 1L, 1L))
-                .isInstanceOf(InvalidRequestException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -79,7 +79,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
 
         assertThatThrownBy(
                 () -> userReservationService.createReservation("브라운", LocalDate.now(), 99L, 1L))
-                .isInstanceOf(InvalidRequestException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
     }
 
@@ -103,7 +103,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
     @Test
     void 예약자_이름이_다르면_예외가_발생한다() {
         assertThatThrownBy(() -> userReservationService.deleteReservation(1L, "WrongName"))
-                .isInstanceOf(UnauthorizedActionException.class)
+                .isInstanceOf(OwnershipViolationException.class)
                 .hasMessage("예약자 이름이 일치하지 않습니다.");
     }
 
@@ -149,7 +149,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
     void 다른_사람의_예약을_변경하면_예외가_발생한다() {
         assertThatThrownBy(
                 () -> userReservationService.updateReservation(1L, "WrongName", LocalDate.now().plusDays(1), 2L))
-                .isInstanceOf(UnauthorizedActionException.class)
+                .isInstanceOf(OwnershipViolationException.class)
                 .hasMessage("예약자 이름이 일치하지 않습니다.");
     }
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.exception.EntityInUseException;
 import roomescape.reservationtime.domain.ReservationTime;
 
 class AdminReservationTimeServiceTest extends ServiceIntegrationTest {
@@ -45,7 +45,7 @@ class AdminReservationTimeServiceTest extends ServiceIntegrationTest {
     @Test
     void 예약이_있으면_예약_시간을_삭제할_수_없다() {
         assertThatThrownBy(() -> adminReservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(ResourceInUseException.class)
+                .isInstanceOf(EntityInUseException.class)
                 .hasMessage("예약이 있어 삭제할 수 없습니다.");
     }
 

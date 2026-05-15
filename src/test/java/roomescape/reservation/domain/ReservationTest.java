@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BusinessRuleException;
-import roomescape.exception.UnauthorizedActionException;
+import roomescape.exception.OwnershipViolationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -31,7 +31,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.now().plusDays(1), FUTURE_TIME, THEME);
 
         assertThatThrownBy(() -> reservation.validateOwner("코니"))
-                .isInstanceOf(UnauthorizedActionException.class)
+                .isInstanceOf(OwnershipViolationException.class)
                 .hasMessage("예약자 이름이 일치하지 않습니다.");
     }
 

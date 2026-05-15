@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.exception.EntityInUseException;
 import roomescape.theme.domain.Theme;
 
 class AdminThemeServiceTest extends ServiceIntegrationTest {
@@ -53,7 +53,7 @@ class AdminThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void 예약이_있으면_테마를_삭제할_수_없다() {
         assertThatThrownBy(() -> adminThemeService.delete(1L))
-                .isInstanceOf(ResourceInUseException.class)
+                .isInstanceOf(EntityInUseException.class)
                 .hasMessage("예약이 있어 삭제할 수 없습니다.");
     }
 

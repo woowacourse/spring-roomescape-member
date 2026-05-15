@@ -65,16 +65,16 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(ResourceInUseException.class)
-    public ResponseEntity<ErrorResponse> handleResourceInUseException(ResourceInUseException e) {
+    @ExceptionHandler(EntityInUseException.class)
+    public ResponseEntity<ErrorResponse> handleResourceInUseException(EntityInUseException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(response);
     }
 
-    @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorizedActionException(UnauthorizedActionException e) {
+    @ExceptionHandler(OwnershipViolationException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedActionException(OwnershipViolationException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
@@ -89,8 +89,8 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException e) {
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidInputException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

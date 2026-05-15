@@ -6,8 +6,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.exception.InvalidInputException;
+import roomescape.exception.EntityInUseException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
@@ -27,7 +27,7 @@ public class AdminReservationTimeService {
         } catch (DuplicateKeyException e) {
             throw new DuplicateException("이미 존재하는 예약 시간입니다.");
         } catch (DataIntegrityViolationException e) {
-            throw new InvalidRequestException("요청이 데이터 무결성 조건을 위반했습니다.");
+            throw new InvalidInputException("요청이 데이터 무결성 조건을 위반했습니다.");
         }
     }
 
@@ -36,7 +36,7 @@ public class AdminReservationTimeService {
         try {
             reservationTimeRepository.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다.");
+            throw new EntityInUseException("예약이 있어 삭제할 수 없습니다.");
         }
     }
 }
