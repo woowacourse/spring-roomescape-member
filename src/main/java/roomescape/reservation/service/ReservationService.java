@@ -58,10 +58,8 @@ public class ReservationService {
         validateNotPast(changedReservation, "현재 시각 이후의 날짜와 시간을 선택해주세요.");
         validateNotDuplicated(changedReservation);
 
-        reservationRepository.update(changedReservation)
+        return reservationRepository.update(changedReservation)
                 .orElseThrow(() -> new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요."));
-
-        return changedReservation;
     }
 
     @Transactional(readOnly = true)
