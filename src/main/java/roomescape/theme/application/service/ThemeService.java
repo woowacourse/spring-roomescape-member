@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeQueryResult;
@@ -18,6 +19,7 @@ import roomescape.theme.domain.repository.ThemeRepository;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationQueryService queryService;
 
     @Transactional(readOnly = true)
     public ThemeQueryResult findById(Long id) {
@@ -49,7 +51,14 @@ public class ThemeService {
     }
 
     public int delete(long id) {
+        validateNoReReservationExists(id);
         return themeRepository.delete(id);
+    }
+
+    private void validateNoReReservationExists(long id) {
+        if (queryService.existsByThemeId(id)) {
+            throw new ThemeException("예약이 존재하는 테마는 삭제할 수 없습니다");
+        }
     }
 
     private void validateDuplicateTheme(Theme theme) {
