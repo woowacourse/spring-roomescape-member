@@ -133,6 +133,16 @@ public class ReservationTimeControllerTest {
                 .statusCode(200);
     }
 
+    @Test
+    void 예약이_참조하는_시간인_경우_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESERVATION_TIME_DELETE_CONFLICT"))
+                .body("message", is("이미 예약에 사용 중인 시간대는 삭제할 수 없습니다."));
+    }
+
     private void deleteTable() {
         jdbcTemplate.update("DELETE FROM schedule");
         jdbcTemplate.update("DELETE FROM reservation");

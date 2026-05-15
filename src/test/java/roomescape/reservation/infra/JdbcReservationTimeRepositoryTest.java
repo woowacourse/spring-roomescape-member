@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.ReservationTime;
@@ -13,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -37,7 +40,8 @@ public class JdbcReservationTimeRepositoryTest {
         assertThat(reservationTimes).hasSize(4);
         assertThat(reservationTimes)
                 .extracting(ReservationTime::getStartAt)
-                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00));
+                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00),
+                        LocalTime.of(13, 00));
     }
 
     @Test
@@ -60,6 +64,13 @@ public class JdbcReservationTimeRepositoryTest {
 
         assertThat(result)
                 .extracting(ReservationTime::getStartAt)
-                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00));
+                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00),
+                        LocalTime.of(13, 00));
+    }
+
+    @Test
+    void 예약이_참조중인_시간은_삭제할_수_없다() {
+        assertThatThrownBy(() -> repository.deleteById(1L))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

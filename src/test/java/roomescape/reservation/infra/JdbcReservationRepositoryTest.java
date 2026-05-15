@@ -30,7 +30,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약_저장_레포지토리_테스트() {
         Reservation reservation = new Reservation(null, "브라운", LocalDate.of(2026, 5, 5),
-                new ReservationTime(2L, LocalTime.of(11, 0)),
+                new ReservationTime(3L, LocalTime.of(12, 0)),
                 new Theme(1L, "세기의 도둑", "보안을 뚫고 보석을 훔쳐라", "https://example.com/themes/time.jpg")
         );
 
@@ -38,8 +38,8 @@ class JdbcReservationRepositoryTest {
 
         assertThat(savedReservation.getName()).isEqualTo("브라운");
         assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
-        assertThat(savedReservation.getTime().getId()).isEqualTo(2L);
-        assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(savedReservation.getTime().getId()).isEqualTo(3L);
+        assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(12, 0));
     }
 
     @Test

@@ -1,8 +1,11 @@
 package roomescape.reservation.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.custom.BusinessException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
@@ -40,13 +43,11 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        // TODO: 사이클2 요구사항에서 검증로직 추가 예정
-        /**
-         * 1. reservation time id 존재 유무 검증
-         * 2. 예약에서 참조되어 있는 경우 검증
-         * 3. 스케줄에서 참조되어 있는 경우 검증
-         */
-        reservationTimeRepository.deleteById(id);
+        try {
+            reservationTimeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_TIME_DELETE_CONFLICT);
+        }
     }
 
     public List<AvailableTimeFindResponse> findTimesByDateAndThemeId(LocalDate date, long themeId) {
