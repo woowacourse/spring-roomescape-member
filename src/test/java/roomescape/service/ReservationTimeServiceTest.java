@@ -92,7 +92,7 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.delete(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("요청한 시간을 찾을 수 없습니다");
+                .hasMessage("요청한 시간을 찾을 수 없습니다.");
     }
 
     @Test

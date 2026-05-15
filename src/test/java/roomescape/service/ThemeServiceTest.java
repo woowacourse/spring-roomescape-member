@@ -18,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +31,9 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @Test
     void 테마를_생성한다() {
@@ -66,9 +71,33 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_삭제한다() {
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
+        given(reservationRepository.existsByThemeId(1L)).willReturn(false);
+
         themeService.delete(1L);
 
         verify(themeRepository).deleteById(1L);
+    }
+
+    @Test
+    void 존재하지_않는_테마_삭제시_NotFoundException이_발생한다() {
+        given(themeRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> themeService.delete(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다");
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제시_ConflictException이_발생한다() {
+        Theme theme = Theme.of(1L, "공포", "desc", "url");
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
+        given(reservationRepository.existsByThemeId(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> themeService.delete(1L))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test

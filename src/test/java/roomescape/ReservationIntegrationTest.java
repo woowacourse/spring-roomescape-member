@@ -228,4 +228,28 @@ class ReservationIntegrationTest {
 
         assertThat(response.get("message")).isEqualTo("요청한 예약을 찾을 수 없습니다.");
     }
+
+    @Test
+    void 변경하려는_시간이_이미_차있으면_409를_반환한다() {
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        ReservationTime time2 = reservationTimeRepository.save(ReservationTime.of("11:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        Reservation saved = reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time1, theme));
+        reservationRepository.save(Reservation.of("브라운", FUTURE_DATE2, time2, theme));
+
+        Map<String, Object> updateParams = Map.of(
+                "date", FUTURE_DATE2,
+                "timeId", time2.getId()
+        );
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + saved.getId())
+                .then().log().all()
+                .statusCode(409)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isNotNull();
+    }
 }

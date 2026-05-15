@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,5 +118,37 @@ class ThemeControllerTest {
                 .extract().jsonPath().getList(".");
 
         assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void 존재하지_않는_테마_삭제시_404를_반환한다() {
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/themes/999")
+                .then().log().all()
+                .statusCode(404)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("존재하지 않는 테마입니다");
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제시_409를_반환한다() {
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        String futureDate = LocalDate.now().plusDays(1)
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "아이큐", futureDate, time.getId(), theme.getId()
+        );
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/themes/" + theme.getId())
+                .then().log().all()
+                .statusCode(409)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

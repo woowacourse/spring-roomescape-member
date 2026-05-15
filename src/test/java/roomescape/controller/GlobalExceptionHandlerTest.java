@@ -53,7 +53,7 @@ class GlobalExceptionHandlerTest {
                 .statusCode(404)
                 .extract().jsonPath().getMap(".");
 
-        assertThat(response.get("message")).isEqualTo("요청한 시간을 찾을 수 없습니다");
+        assertThat(response.get("message")).isEqualTo("요청한 시간을 찾을 수 없습니다.");  // 마침표 추가
     }
 
     @Test
