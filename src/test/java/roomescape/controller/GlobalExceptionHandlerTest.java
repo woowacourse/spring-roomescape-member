@@ -48,12 +48,12 @@ class GlobalExceptionHandlerTest {
     @Test
     void 존재하지_않는_시간_삭제시_404를_반환한다() {
         Map<String, Object> response = RestAssured.given().log().all()
-                .when().delete("/times/999")
+                .when().delete("/admin/times/999")  // 변경
                 .then().log().all()
                 .statusCode(404)
                 .extract().jsonPath().getMap(".");
 
-        assertThat(response.get("message")).isEqualTo("요청한 시간을 찾을 수 없습니다.");  // 마침표 추가
+        assertThat(response.get("message")).isEqualTo("요청한 시간을 찾을 수 없습니다.");
     }
 
     @Test

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,7 @@ class ThemeControllerTest {
         Map<String, Object> result = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().getMap(".");
@@ -93,7 +94,7 @@ class ThemeControllerTest {
         Theme saved = themeRepository.save(Theme.of("공포", "무서운 테마", "https://example.com/img.jpg"));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + saved.getId())
+                .when().delete("/admin/themes/" + saved.getId())
                 .then().log().all()
                 .statusCode(204);
 
@@ -101,29 +102,9 @@ class ThemeControllerTest {
     }
 
     @Test
-    void 인기_테마를_조회한다() {
-        Theme theme1 = themeRepository.save(Theme.of("공포", "desc", "url"));
-        Theme theme2 = themeRepository.save(Theme.of("추리", "desc", "url"));
-        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
-
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저1", java.time.LocalDate.now().minusDays(1), time.getId(), theme1.getId());
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저2", java.time.LocalDate.now().minusDays(1), time.getId(), theme2.getId());
-
-        List<Map<String, Object>> result = RestAssured.given().log().all()
-                .when().get("/themes/famous")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList(".");
-
-        assertThat(result).hasSize(2);
-    }
-
-    @Test
     void 존재하지_않는_테마_삭제시_404를_반환한다() {
         Map<String, Object> response = RestAssured.given().log().all()
-                .when().delete("/themes/999")
+                .when().delete("/admin/themes/999")
                 .then().log().all()
                 .statusCode(404)
                 .extract().jsonPath().getMap(".");
@@ -136,7 +117,7 @@ class ThemeControllerTest {
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         String futureDate = LocalDate.now().plusDays(1)
-                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
@@ -144,11 +125,31 @@ class ThemeControllerTest {
         );
 
         Map<String, Object> response = RestAssured.given().log().all()
-                .when().delete("/themes/" + theme.getId())
+                .when().delete("/admin/themes/" + theme.getId())
                 .then().log().all()
                 .statusCode(409)
                 .extract().jsonPath().getMap(".");
 
         assertThat(response.get("message")).isEqualTo("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
+    }
+
+    @Test
+    void 인기_테마를_조회한다() {
+        Theme theme1 = themeRepository.save(Theme.of("공포", "desc", "url"));
+        Theme theme2 = themeRepository.save(Theme.of("추리", "desc", "url"));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저1", LocalDate.now().minusDays(1), time.getId(), theme1.getId());
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저2", LocalDate.now().minusDays(1), time.getId(), theme2.getId());
+
+        List<Map<String, Object>> result = RestAssured.given().log().all()
+                .when().get("/themes/famous")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".");
+
+        assertThat(result).hasSize(2);
     }
 }

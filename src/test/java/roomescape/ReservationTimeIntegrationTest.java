@@ -54,7 +54,7 @@ public class ReservationTimeIntegrationTest {
         int createdId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")  // 변경
                 .then().log().all()
                 .statusCode(201)
                 .extract().path("id");
@@ -69,7 +69,7 @@ public class ReservationTimeIntegrationTest {
         assertThat(times.get(0).get("startAt")).isEqualTo("10:00");
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + createdId)
+                .when().delete("/admin/times/" + createdId)  // 변경
                 .then().log().all()
                 .statusCode(204);
     }
@@ -109,7 +109,7 @@ public class ReservationTimeIntegrationTest {
         reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
 
         Map<String, Object> response = RestAssured.given().log().all()
-                .when().delete("/times/" + time.getId())
+                .when().delete("/admin/times/" + time.getId())  // /times → /admin/times
                 .then().log().all()
                 .statusCode(409)
                 .extract().jsonPath().getMap(".");
