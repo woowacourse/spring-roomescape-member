@@ -15,6 +15,8 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
+    Reservation update(Reservation reservation);
+
     void deleteById(Long id);
 
     boolean exists(Reservation reservation);

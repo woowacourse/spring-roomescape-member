@@ -55,4 +55,8 @@ public class Reservation {
     public boolean isOwnedBy(String username) {
         return this.username.equals(username);
     }
+
+    public boolean hasSameSchedule(LocalDate date, ReservationTime time) {
+        return this.date.equals(date) && this.time.getId().equals(time.getId());
+    }
 }

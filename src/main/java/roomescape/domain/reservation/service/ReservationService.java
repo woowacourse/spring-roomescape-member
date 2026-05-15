@@ -8,6 +8,7 @@ import roomescape.domain.reservation.exception.PastReservationDateException;
 import roomescape.domain.reservation.exception.ReservationOwnerMismatchException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
+import roomescape.domain.reservation.request.ReservationUpdateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -84,6 +85,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
     public void cancelReservationBy(Long id, String username) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -96,6 +98,36 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public ReservationResponse updateReservationSchedule(Long id, String username, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "해당 id의 Reservation이 존재하지 않습니다. reservationId=" + id));
+
+        if (!reservation.isOwnedBy(username)) {
+            throw new ReservationOwnerMismatchException();
+        }
+
+        ReservationTime time = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "해당 id의 ReservationTime이 존재하지 않습니다. timeId=" + request.timeId()));
+
+        validateReservationDateTimeIsNotPast(request.date(), time);
+
+        Reservation updatedReservation = new Reservation(
+                reservation.getId(),
+                reservation.getUsername(),
+                reservation.getTheme(),
+                request.date(),
+                time
+        );
+
+        if (!reservation.hasSameSchedule(request.date(), time) && reservationRepository.exists(updatedReservation)) {
+            throw new DuplicateReservationException();
+        }
+
+        return ReservationResponse.from(reservationRepository.update(updatedReservation));
+    }
 
     private void validateReservationDateTimeIsNotPast(LocalDate date, ReservationTime time) {
         if (date.isBefore(LocalDate.now(clock))) {

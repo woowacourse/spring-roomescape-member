@@ -51,6 +51,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE id = :id
             """;
 
+    private static final String UPDATE_RESERVATION_QUERY = """
+            UPDATE reservation
+            SET date = :date,
+                time_id = :timeId
+            WHERE id = :id
+            """;
+
     private static final String EXISTS_RESERVATION_QUERY = """
             SELECT COUNT(*)
             FROM reservation
@@ -132,6 +139,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 reservation.getDate(),
                 reservation.getTime()
         );
+    }
+
+    @Override
+    public Reservation update(Reservation reservation) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", reservation.getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId());
+
+        jdbcTemplate.update(
+                UPDATE_RESERVATION_QUERY,
+                parameters
+        );
+
+        return reservation;
     }
 
     @Override

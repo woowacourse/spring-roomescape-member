@@ -114,4 +114,45 @@ class ReservationControllerTest {
                 .body("code", is("RESERVATION_OWNER_MISMATCH"))
                 .body("message", is("본인의 예약만 취소할 수 있습니다."));
     }
+
+    @Test
+    @DisplayName("사용자는 본인의 예약 날짜와 시간을 변경한다.")
+    void updateReservationSchedule() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "9999-05-08");
+        params.put("timeId", 6);
+
+        RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("username", is("흑곰"))
+                .body("theme.id", is(1))
+                .body("theme.name", is("워너비"))
+                .body("date", is("9999-05-08"))
+                .body("time.id", is(6))
+                .body("time.startAt", is("15:00"));
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약 날짜와 시간을 변경할 수 없다.")
+    void updateReservationSchedule_throwsException_whenUsernameDoesNotMatch() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "9999-05-08");
+        params.put("timeId", 6);
+
+        RestAssured.given().log().all()
+                .queryParam("username", "민준")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+    }
 }

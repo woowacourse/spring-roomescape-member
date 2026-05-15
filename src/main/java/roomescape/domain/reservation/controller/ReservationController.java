@@ -1,20 +1,16 @@
 package roomescape.domain.reservation.controller;
 
-import java.net.URI;
-import java.util.List;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
+import roomescape.domain.reservation.request.ReservationUpdateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.reservation.service.ReservationService;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -46,5 +42,19 @@ public class ReservationController {
     ) {
         reservationService.cancelReservationBy(reservationId, username);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> updateReservationSchedule(
+            @PathVariable Long reservationId,
+            @RequestParam String username,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        ReservationResponse response = reservationService.updateReservationSchedule(
+                reservationId,
+                username,
+                request
+        );
+        return ResponseEntity.ok(response);
     }
 }
