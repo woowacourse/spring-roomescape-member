@@ -28,7 +28,6 @@ public class ReservationController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> findAll(@RequestParam(required = false) String name) {
         List<Reservation> reservations = (name != null)
                 ? reservationService.findByName(name)
