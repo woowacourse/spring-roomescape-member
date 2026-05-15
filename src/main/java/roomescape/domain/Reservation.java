@@ -44,6 +44,9 @@ public class Reservation {
         if (reservationDateTime.isBefore(now)) {
             throw new IllegalArgumentException("지난 예약은 취소 불가능합니다.");
         }
+    }
+
+    public void cancel(LocalDateTime now) {
         this.status = ReservationStatus.CANCELED;
         this.deletedAt = now;
     }

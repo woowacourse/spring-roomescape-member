@@ -91,7 +91,16 @@ public class ReservationService {
     @Transactional
     public void cancel(Long id) {
         Reservation reservation = findById(id);
-        reservation.validateCancel(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        reservation.validateCancel(now);
+        reservation.cancel(now);
+        reservationDao.update(reservation);
+    }
+
+    @Transactional
+    public void cancelByAdmin(Long id) {
+        Reservation reservation = findById(id);
+        reservation.cancel(LocalDateTime.now());
         reservationDao.update(reservation);
     }
 

@@ -40,17 +40,16 @@ class ReservationTest {
     }
 
     @Nested
-    class validateCancel {
+    class ValidateCancel {
 
         @Test
-        @DisplayName("예약 시간이 과거가 아니면 취소에 성공한다.")
-        void doesNotThrowWhenJustFuture() {
+        @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
+        void doesNotThrowWhenPresent() {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
             assertThatCode(() -> reservation.validateCancel(NOW))
                     .doesNotThrowAnyException();
-            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
 
         @Test
@@ -61,6 +60,32 @@ class ReservationTest {
 
             assertThatThrownBy(() -> reservation.validateCancel(NOW))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    class Cancel {
+
+        @Test
+        @DisplayName("취소 시 status가 CANCELED로 변경된다")
+        void setsStatusToCanceled() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+
+            reservation.cancel(NOW);
+
+            assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
+        }
+
+        @Test
+        @DisplayName("취소 시 deletedAt이 now로 설정된다")
+        void setsDeletedAt() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+
+            reservation.cancel(NOW);
+
+            assertThat(reservation.getDeletedAt()).isEqualTo(NOW);
         }
     }
 }

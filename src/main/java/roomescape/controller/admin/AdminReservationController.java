@@ -61,6 +61,12 @@ public class AdminReservationController {
         return ResponseEntity.ok(AdminReservationResponseDto.from(updated));
     }
 
+    @DeleteMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        reservationService.cancelByAdmin(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);

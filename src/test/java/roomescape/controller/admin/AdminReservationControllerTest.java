@@ -139,6 +139,23 @@ class AdminReservationControllerTest {
     }
 
     @Nested
+    class Cancel {
+
+        @Test
+        @DisplayName("어드민이 예약을 취소하면 204를 반환한다")
+        void cancelsReservation() {
+            willDoNothing().given(reservationService).cancelByAdmin(reservation.getId());
+
+            RestAssuredMockMvc.given()
+                    .when().delete("/admin/reservations/" + reservation.getId() + "/cancel")
+                    .then()
+                    .status(HttpStatus.NO_CONTENT);
+
+            then(reservationService).should().cancelByAdmin(reservation.getId());
+        }
+    }
+
+    @Nested
     class Delete {
 
         @Test

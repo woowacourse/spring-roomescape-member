@@ -272,6 +272,29 @@ class ReservationServiceTest {
     }
 
     @Nested
+    class CancelByAdmin {
+
+        @Test
+        @DisplayName("과거 예약도 취소할 수 있다")
+        void cancelsPastReservation() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().minusDays(1), savedTime1, savedTheme1));
+
+            reservationService.cancelByAdmin(saved.getId());
+
+            Reservation canceled = reservationDao.findById(saved.getId()).orElseThrow();
+            assertThat(canceled.getStatus()).isEqualTo(ReservationStatus.CANCELED);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
+            assertThatThrownBy(() -> reservationService.cancelByAdmin(-1L))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
     class Delete {
 
         @Test
