@@ -62,13 +62,6 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationDetailResponse> findAllIncludeDetail() {
-        List<Reservation> reservations = reservationRepository.findAll();
-
-        return mapToDetailResponses(reservations);
-    }
-
-    @Transactional(readOnly = true)
     public List<ReservationDetailResponse> findAllIncludeDetail(String name) {
         List<Reservation> reservations = reservationRepository.findByName(name);
 
@@ -106,11 +99,6 @@ public class ReservationService {
         ReservationTime time = findTimeById(reservation.timeId());
         validateReservationAvailable(reservation.date(), time.startAt());
 
-        deleteWithoutValidate(reservationId);
-    }
-
-    @Transactional
-    public void deleteWithoutValidate(EntityId reservationId) {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {

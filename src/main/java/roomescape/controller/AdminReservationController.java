@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationDetailResponse;
 import roomescape.domain.EntityId;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 @RestController
 @RequestMapping("/admin/reservations")
 @RequiredArgsConstructor
 public class AdminReservationController {
 
-    private final ReservationService service;
+    private final AdminReservationService service;
 
     @GetMapping
     public ResponseEntity<List<ReservationDetailResponse>> findAll() {
@@ -28,10 +28,10 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(
+    public ResponseEntity<Void> delete(
             @PathVariable UUID id
     ) {
-        service.deleteWithoutValidate(EntityId.fromUuid(id));
+        service.delete(EntityId.fromUuid(id));
 
         return ResponseEntity.ok().build();
     }
