@@ -59,6 +59,7 @@ public class ReservationService {
         return reservationRepository.save(transientReservation);
     }
 
+    @Transactional
     public void removeReservation(long reservationId, String userName) {
         existsAndModifiableReservation(reservationId, userName);
         reservationRepository.deleteById(reservationId);
