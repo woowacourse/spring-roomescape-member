@@ -143,4 +143,26 @@ public class ReservationServiceTest {
                 .isInstanceOf(PastReservationTimeException.class)
                 .hasMessage("이전 날짜는 예약할 수 없습니다.");
     }
+    
+    @Test
+    void 사용자_이름으로_예약_목록_조회_테스트() {
+        String name = "브리";
+        LocalDate date = LocalDate.of(2026, 12, 31);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "url");
+        Reservation reservation = new Reservation(1L, name, date, 1L, 1L);
+
+        when(reservationDao.findUserReservations(name)).thenReturn(List.of(reservation));
+        when(reservationTimeDao.findById(1L)).thenReturn(time);
+        when(themeDao.findById(1L)).thenReturn(theme);
+
+        List<ReservationResponse> actual = reservationService.getUserReservations(name);
+
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0)).isEqualTo(ReservationResponse.from(reservation, time, theme));
+        
+        verify(reservationDao).findUserReservations(name);
+        verify(reservationTimeDao).findById(1L);
+        verify(themeDao).findById(1L);
+    }
 }

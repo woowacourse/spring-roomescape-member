@@ -118,6 +118,20 @@ public class ReservationControllerTest {
                 .body("[1].theme.id", is(1))
                 .body("[1].theme.name", is("이든의 공포 하우스"));
     }
+    
+    @Test
+    void 사용자_이름으로_예약_목록_조회() {
+        createReservation(reservationParams(Map.of("name", "브리")));
+        createTime("11:00");
+        createReservation(reservationParams(Map.of("name", "브라운", "timeId", 2, "themeId", 1)));
+
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations?name=브리")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].name", is("브리"));
+    }
 
     @Test
     void 예약_삭제() {
