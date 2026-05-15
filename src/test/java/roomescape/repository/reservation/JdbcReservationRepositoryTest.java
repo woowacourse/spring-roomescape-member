@@ -46,7 +46,6 @@ class JdbcReservationRepositoryTest {
         this.themeRepository = themeRepository;
     }
 
-
     @Test
     void 예약을_저장한다() {
         // given
@@ -367,5 +366,35 @@ class JdbcReservationRepositoryTest {
             // then
             assertThat(exists).isFalse();
         }
+    }
+
+    @Test
+    void 기존_예약의_날짜와_시간을_수정한다() {
+        // given
+        ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme theme = themeRepository.createTheme(THEME);
+
+        LocalTime newTimeValue = time.getStartAt().plusHours(1);
+        ReservationTime newTime = timeRepository.createReservationTime(new ReservationTime(newTimeValue));
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Reservation previous = reservationRepository.createReservation(new Reservation("name", tomorrow, time, theme));
+
+        LocalDate newDate = tomorrow.plusDays(1);
+        Reservation updated = previous.updateDateTime(newDate, newTime);
+        // when
+        reservationRepository.updateById(previous.getId(), updated);
+
+        // then
+        Reservation actual = reservationRepository.findById(previous.getId()).get();
+        assertThat(actual.getName()).isEqualTo(previous.getName());
+
+        assertThat(actual.getTheme().getNameValue()).isEqualTo(previous.getTheme().getNameValue());
+        assertThat(actual.getTheme().getDescription()).isEqualTo(previous.getTheme().getDescription());
+        assertThat(actual.getTheme().getImageUrlValue()).isEqualTo(previous.getTheme().getImageUrlValue());
+
+        assertThat(actual.getDateValue()).isEqualTo(newDate);
+        assertThat(actual.getTimeId()).isEqualTo(newTime.getId());
+        assertThat(actual.getTime()).isEqualTo(newTime);
     }
 }
