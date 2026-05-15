@@ -1,6 +1,7 @@
 package roomescape.time.dao;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,9 +30,10 @@ public class TimeDao {
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public ReservationTime selectById(Long id) {
+    public Optional<ReservationTime> selectById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+        List<ReservationTime> times = jdbcTemplate.query(sql, timeRowMapper, id);
+        return times.stream().findFirst();
     }
 
     public ReservationTime insert(ReservationTime time) {

@@ -10,6 +10,8 @@ public enum ErrorCode {
     PAST_RESERVATION(HttpStatus.BAD_REQUEST, "지난 시간에는 예약할 수 없습니다."),
     CANNOT_DELETE_PAST_RESERVATION(HttpStatus.BAD_REQUEST, "지난 시간 예약을 취소할 수 없습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+    RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 시간을 찾을 수 없습니다."),
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "테마를 찾을 수 없습니다."),
     RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 예약이 존재합니다."),
     CANNOT_DELETE_RESERVED_TIME(HttpStatus.CONFLICT, "이미 예약이 존재하는 시간대이므로 삭제할 수 없습니다."),
     ;

@@ -8,16 +8,19 @@ import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.RoomescapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.time.ReservationTime;
 import roomescape.time.dao.TimeDao;
 
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
     private final TimeDao timeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, TimeDao timeDao) {
         this.reservationDao = reservationDao;
+        this.themeDao = themeDao;
         this.timeDao = timeDao;
     }
 
@@ -36,13 +39,10 @@ public class ReservationService {
 
     @Transactional
     public Reservation add(String name, Long themeId, LocalDate date, Long timeId) {
-        ReservationTime time = timeDao.selectById(timeId);
+        ReservationTime time = timeDao.selectById(timeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         validateDateTime(date, time, ErrorCode.PAST_RESERVATION);
-
-        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
-        for (Reservation reserved : reservedList) {
-            validateReserved(timeId, reserved.getTime());
-        }
+        validateThemeExists(themeId);
 
         Reservation newReservation = new Reservation(name, themeId, date, time);
         return reservationDao.insert(newReservation);
@@ -55,8 +55,10 @@ public class ReservationService {
 
         originReservation.validateSameName(name, ErrorCode.CANNOT_MODIFY_OTHER_RESERVATION);
 
-        ReservationTime time = timeDao.selectById(timeId);
+        ReservationTime time = timeDao.selectById(timeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         validateDateTime(date, time, ErrorCode.PAST_RESERVATION);
+        validateThemeExists(themeId);
 
         List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
         for (Reservation reserved : reservedList) {
@@ -93,5 +95,10 @@ public class ReservationService {
         if (time.isBeforeDateTime(date, time)) {
             throw new RoomescapeException(errorCode);
         }
+    }
+
+    private void validateThemeExists(Long themeId) {
+        themeDao.selectById(themeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
     }
 }

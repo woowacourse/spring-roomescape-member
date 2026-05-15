@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.theme.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -49,10 +51,12 @@ public class ThemeDaoTest {
 
     @Test
     void 테마_단일_조회_테스트() {
-        Theme firstTheme = themeDao.selectById(1L);
+        Theme firstTheme = themeDao.selectById(1L)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
         assertThat(firstTheme.getName()).isEqualTo("은하수");
 
-        Theme secoundTheme = themeDao.selectById(2L);
+        Theme secoundTheme = themeDao.selectById(2L)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
         assertThat(secoundTheme.getName()).isEqualTo("지구");
     }
 
