@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -14,6 +15,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
+    @Builder(access = lombok.AccessLevel.PRIVATE)
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -23,12 +25,26 @@ public class Reservation {
     }
 
     public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+        return Reservation.builder()
+                .id(id).name(name).date(date).time(time).theme(theme)
+                .build();
     }
 
     public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
-        return new Reservation(null, name, date, time, theme);
+        return Reservation.builder()
+                .name(name).date(date).time(time).theme(theme)
+                .build();
+    }
+
+    public Reservation changeTime(LocalDate date, ReservationTime time, Theme theme) {
+        return Reservation.builder()
+                .id(id)
+                .name(this.name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build();
     }
 
     private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {

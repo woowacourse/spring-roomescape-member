@@ -76,7 +76,8 @@ public class ReservationService {
         ReservationTime newTime = reservationTimeService.getById(request.timeId());
         LocalDate newDate = request.date();
 
-        if (Reservation.of(reservation.getId(), reservation.getName(), newDate, newTime, reservation.getTheme()).isPast()) {
+        Reservation changed = reservation.changeTime(newDate, newTime, reservation.getTheme());
+        if (changed.isPast()) {
             throw new PastTimeReservationException("이미 지난 시간으로 변경할 수 없습니다.");
         }
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(newDate, request.timeId(), reservation.getTheme().getId())) {
@@ -84,9 +85,7 @@ public class ReservationService {
         }
 
         reservationRepository.update(id, newDate, request.timeId());
-        return ReservationResponse.from(
-                Reservation.of(reservation.getId(), reservation.getName(), newDate, newTime, reservation.getTheme())
-        );
+        return ReservationResponse.from(changed);
     }
 
     @NonNull
