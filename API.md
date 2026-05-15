@@ -15,7 +15,7 @@
 
 ```json
 {
-  "message": "[ERROR] 올바른 입력값 형식이 아닙니다.",
+  "message": "올바른 입력값 형식이 아닙니다.",
   "errorCode": "COMMON400_004"
 }
 ```

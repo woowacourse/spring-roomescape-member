@@ -14,13 +14,11 @@ import roomescape.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String ERROR_PREFIX = "[ERROR] ";
-
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleReservationNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "존재하지 않는 예약입니다.",
+                        "존재하지 않는 예약입니다.",
                         "RESERVE404_001"));
     }
 
@@ -28,7 +26,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleReservationAlreadyExists() {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "이미 예약이 존재합니다.",
+                        "이미 예약이 존재합니다.",
                         "RESERVATION409_001"));
     }
 
@@ -36,7 +34,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handlePastReservation() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "지나간 날짜와 시간으로는 예약할 수 없습니다.",
+                        "지나간 날짜와 시간으로는 예약할 수 없습니다.",
                         "RESERVATION400_001"));
     }
 
@@ -44,7 +42,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handlePastReservationCancel() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "이미 지난 예약은 취소할 수 없습니다.",
+                        "이미 지난 예약은 취소할 수 없습니다.",
                         "RESERVATION400_002"));
     }
 
@@ -52,7 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleReservationOwnerMismatch() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "예약자의 이름이 일치하지 않습니다.",
+                        "예약자의 이름이 일치하지 않습니다.",
                         "RESERVATION400_003"));
     }
 
@@ -60,7 +58,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleReservationTimeNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "존재하지 않는 예약시간입니다.",
+                        "존재하지 않는 예약시간입니다.",
                         "RESERVATION_TIME404_001"));
     }
 
@@ -68,7 +66,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleReservationTimeInUse() {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "예약이 존재하는 예약시간은 삭제할 수 없습니다.",
+                        "예약이 존재하는 예약시간은 삭제할 수 없습니다.",
                         "RESERVATION_TIME409_001"));
     }
 
@@ -76,7 +74,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleThemeNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "존재하지 않는 테마입니다.",
+                        "존재하지 않는 테마입니다.",
                         "THEME404_001"));
     }
 
@@ -84,7 +82,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleThemeInUse() {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "예약이 존재하는 테마는 삭제할 수 없습니다.",
+                        "예약이 존재하는 테마는 삭제할 수 없습니다.",
                         "THEME409_001"));
     }
 
@@ -92,7 +90,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgument() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "유효하지 않은 요청필드입니다.",
+                        "유효하지 않은 요청필드입니다.",
                         "COMMON400_001"));
     }
 
@@ -100,7 +98,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingPathVariable() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "경로 변수(PathVariable)가 누락됐습니다.",
+                        "경로 변수(PathVariable)가 누락됐습니다.",
                         "COMMON400_002"));
     }
 
@@ -108,7 +106,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "쿼리 스트링이 누락됐습니다.",
+                        "쿼리 스트링이 누락됐습니다.",
                         "COMMON400_003"));
     }
 
@@ -116,7 +114,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "올바른 입력값 형식이 아닙니다.",
+                        "올바른 입력값 형식이 아닙니다.",
                         "COMMON400_004"
                 ));
     }
@@ -125,7 +123,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "올바른 쿼리 스트링 형식이 아닙니다.",
+                        "올바른 쿼리 스트링 형식이 아닙니다.",
                         "COMMON400_005"
                 ));
     }
@@ -134,7 +132,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraintViolation() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "유효하지 않은 쿼리 스트링 값입니다.",
+                        "유효하지 않은 쿼리 스트링 값입니다.",
                         "COMMON400_006"
                 ));
     }
@@ -143,7 +141,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(
-                        ERROR_PREFIX + "예기치 못한 예외가 발생했습니다.",
+                        "예기치 못한 예외가 발생했습니다.",
                         "COMMON500_001"));
     }
 }
