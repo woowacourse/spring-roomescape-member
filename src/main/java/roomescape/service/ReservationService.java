@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservedTimes;
@@ -34,10 +35,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResult createReservation(CreateReservationCommand command) {
-        ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
-        Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
+        ReservationTime time = getReservationTime(command);
+        Theme theme = getTheme(command);
         ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
                 theme.getId(),
                 command.date()
@@ -45,7 +44,12 @@ public class ReservationService {
         reservedTimes.validateAvailable(time.getId());
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew(command.name(), command.date(), time, theme));
+                Reservation.createNew(
+                        command.name(),
+                        command.date(),
+                        time,
+                        theme)
+        );
 
         return ReservationResult.from(reservation);
     }
@@ -53,5 +57,17 @@ public class ReservationService {
     @Transactional
     public void cancelReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @NonNull
+    private ReservationTime getReservationTime(CreateReservationCommand command) {
+        return reservationTimeRepository.findById(command.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
+    }
+
+    @NonNull
+    private Theme getTheme(CreateReservationCommand command) {
+        return themeRepository.findById(command.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
     }
 }
