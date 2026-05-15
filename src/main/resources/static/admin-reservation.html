@@ -406,7 +406,7 @@
             let page = 0;
             let rawReservations = [];
             while (true) {
-                const res = await fetch(`/reservations?page=${page}&size=100`);
+                const res = await fetch(`/admin/reservations?page=${page}&size=100`);
                 if (!res.ok) break;
                 const data = await res.json();
                 const items = data.reservations || data;
@@ -511,7 +511,7 @@
     async function deleteRes(id) {
         if (!confirm('정말로 해당 예약을 삭제(취소)하시겠습니까?')) return;
         try {
-            const res = await fetch(`/reservations/${id}`, {method: 'DELETE'});
+            const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
             if (res.ok) loadReservations();
             else alert('삭제에 실패했습니다.');
         } catch (e) {
