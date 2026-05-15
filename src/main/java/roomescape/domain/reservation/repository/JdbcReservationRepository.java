@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,40 +149,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void updateReservationById(Long id, LocalDate date, Long timeId) {
-        StringBuilder sql = new StringBuilder("UPDATE reservation SET ");
-        List<String> clauses = getSetClauses(date, timeId);
-        MapSqlParameterSource parameters = new MapSqlParameterSource(
-            getSetParameters(id, date, timeId));
-        if (clauses.isEmpty()) {
-            return;
-        }
-        sql.append(String.join(", ", clauses));
-        sql.append(" WHERE id = :id");
+        String sql = "UPDATE reservation SET date = :date, time_id = :timeId WHERE id = :id";
+        MapSqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "date", date,
+            "timeId", timeId,
+            "id", id
+        ));
 
-        jdbcTemplate.update(sql.toString(), parameters);
-    }
-
-    private List<String> getSetClauses(LocalDate date, Long timeId) {
-        List<String> clauses = new ArrayList<>();
-        if (date != null) {
-            clauses.add("date = :date");
-        }
-        if (timeId != null) {
-            clauses.add("time_id = :timeId");
-        }
-        return clauses;
-    }
-
-    private Map<String, Object> getSetParameters(Long id, LocalDate date, Long timeId) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", id);
-        if (date != null) {
-            parameters.put("date", date);
-        }
-        if (timeId != null) {
-            parameters.put("timeId", timeId);
-        }
-        return parameters;
+        jdbcTemplate.update(sql, parameters);
     }
 
     @Override

@@ -86,10 +86,6 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public void updateReservationById(Long id, LocalDate date, Long timeId) {
-        if (date == null && timeId == null) {
-            return;
-        }
-
         for (int i = 0; i < reservations.size(); i++) {
             Reservation reservation = reservations.get(i);
 
@@ -98,15 +94,11 @@ public class FakeReservationRepository implements ReservationRepository {
             }
 
             Time time = reservation.getTime();
-            if (timeId != null) {
-                time = Time.reconstruct(timeId, time.getStartAt());
-            }
-
             Reservation updatedReservation = Reservation.reconstruct(
                 reservation.getId(),
                 reservation.getName(),
-                date != null ? date : reservation.getDate(),
-                time,
+                date,
+                Time.reconstruct(timeId, time.getStartAt()),
                 reservation.getTheme()
             );
             reservations.set(i, updatedReservation);
