@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -32,8 +33,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(
             """
                 SELECT r.id, r.name, r.date,
-                       rt.id AS time_id, rt.start_at,
-                       t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+                       rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
+                       t.deleted_at AS theme_deleted_at
                 FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
@@ -47,13 +49,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findReservationsByNameAndDeletedAtIsNull(String name) {
         String sql = """
             SELECT r.id, r.name, r.date,
-                   rt.id AS time_id, rt.start_at,
-                   t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+                   rt.id AS time_id, rt.start_at, rt.deleted_at AS time_deleted_at,
+                   t.id AS theme_id, t.name AS theme_name, t.description, t.image_url,
+                   t.deleted_at AS theme_deleted_at
             FROM reservation r
             JOIN reservation_time rt ON r.time_id = rt.id
             JOIN theme t ON r.theme_id = t.id
             WHERE r.name = :name
               AND r.deleted_at IS NULL
+            ORDER BY r.date ASC, rt.start_at ASC
             """;
         SqlParameterSource parameters = new MapSqlParameterSource("name", name);
 
@@ -110,15 +114,26 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getDate("date").toLocalDate(),
             Time.reconstruct(
                 rs.getLong("time_id"),
-                rs.getTime("start_at").toLocalTime()
+                rs.getTime("start_at").toLocalTime(),
+                getNullableLocalDateTime(rs, "time_deleted_at")
             ),
             Theme.reconstruct(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("description"),
-                rs.getString("image_url")
+                rs.getString("image_url"),
+                getNullableLocalDateTime(rs, "theme_deleted_at")
             )
         );
+    }
+
+    private LocalDateTime getNullableLocalDateTime(java.sql.ResultSet rs, String columnLabel)
+        throws java.sql.SQLException {
+        java.sql.Timestamp timestamp = rs.getTimestamp(columnLabel);
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toLocalDateTime();
     }
 
     @Override

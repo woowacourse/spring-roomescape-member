@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
@@ -37,9 +38,11 @@ public class ReservationService {
         return convertReservationsToDto(reservations);
     }
 
-    public List<ReservationResponseDto> getReservationsByName(String name) {
+    public List<ReservationByNameResponseDto> getReservationsByName(String name) {
         List<Reservation> reservations = reservationRepository.findReservationsByNameAndDeletedAtIsNull(name);
-        return convertReservationsToDto(reservations);
+        return reservations.stream()
+            .map(ReservationMapper::toByNameResponseDto)
+            .toList();
     }
 
     private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
