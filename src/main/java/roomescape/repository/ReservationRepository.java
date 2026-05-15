@@ -71,6 +71,29 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description,
+                    t.image_path
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE r.name = :name
+                ORDER BY r.id
+                """;
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name);
+        return jdbcTemplate.query(sql, parameters, reservationRowMapper);
+    }
+
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
