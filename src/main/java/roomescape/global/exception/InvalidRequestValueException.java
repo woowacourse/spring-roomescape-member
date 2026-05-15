@@ -1,6 +1,6 @@
 package roomescape.global.exception;
 
-public class InvalidRequestValueException extends BusinessException{
+public class InvalidRequestValueException extends BusinessException {
 
     public InvalidRequestValueException(String message) {
         super(message);

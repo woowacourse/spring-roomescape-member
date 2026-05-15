@@ -1,4 +1,4 @@
-package roomescape.global.exception.advice;
+package roomescape.global.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import roomescape.global.exception.DeleteFailedException;
 import roomescape.global.exception.DuplicateException;
 import roomescape.global.exception.InvalidRequestValueException;
 import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.response.ErrorResponse;
 import roomescape.reservation.exception.ForbiddenException;
 
 @RestControllerAdvice

@@ -1,4 +1,4 @@
-package roomescape.global.auth;
+package roomescape.reservation.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
