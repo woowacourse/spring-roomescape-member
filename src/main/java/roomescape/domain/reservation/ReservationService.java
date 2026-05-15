@@ -64,6 +64,7 @@ public class ReservationService {
     }
 
     public MyReservationsResponse getMyReservations(String name) {
+        validateName(name);
         List<Reservation> reservations = reservationRepository.findByName(name);
         return MyReservationsResponse.from(reservations);
     }
@@ -123,9 +124,9 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationOwner(String requestName, String reservationName) {
-        if (!requestName.equals(reservationName)) {
-            throw new RoomescapeException(ErrorCode.UNAUTHORIZED_NAME);
+    private void validateName(String name) {
+        if (name == null || name.isBlank()){
+            throw new RoomescapeException(ErrorCode.MISSING_NAME);
         }
     }
 }
