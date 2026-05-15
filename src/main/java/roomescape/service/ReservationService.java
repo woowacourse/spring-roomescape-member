@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -49,37 +48,6 @@ public class ReservationService {
         return reservationRepository.addReservation(reservation);
     }
 
-    private void validateReservableDateTime(LocalDate date, LocalTime startAt) {
-        if (date == null || startAt == null) {
-            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
-        }
-
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_TIME);
-        }
-    }
-
-    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
-        }
-    }
-
-    @NonNull
-    private ReservationTime findReservationTime(Long timeId) {
-        return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-    }
-
-    @NonNull
-    private Theme findTheme(ReservationSaveCommand command) {
-        return themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
-    }
-
-    @NonNull
     public List<Reservation> findReservationsByName(String name) {
         if (Objects.isNull(name)) {
             throw new RoomescapeException(ErrorCode.INVALID_INPUT);
@@ -107,19 +75,6 @@ public class ReservationService {
         reservationRepository.deleteById(reservation.id());
     }
 
-    private Reservation findReservation(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
-    }
-
-    private void validateNotPastReservation(Reservation reservation) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_PAST);
-        }
-    }
-
     public Reservation changeReservationDateTime(Long id, ReservationUpdateCommand command) {
         Reservation reservation = findReservation(id);
         validateNotPastReservation(reservation);
@@ -139,6 +94,47 @@ public class ReservationService {
                 reservationTime,
                 reservation.theme()
         );
+    }
+
+    private void validateReservableDateTime(LocalDate date, LocalTime startAt) {
+        if (date == null || startAt == null) {
+            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
+        }
+
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_TIME);
+        }
+    }
+
+    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
+    private ReservationTime findReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+    }
+
+    private Theme findTheme(ReservationSaveCommand command) {
+        return themeRepository.findById(command.themeId())
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+    }
+
+    private Reservation findReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateNotPastReservation(Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
     }
 
     private void validateConflictingReservation(LocalDate date, Long timeId, Long themeId, Long reservationId) {
