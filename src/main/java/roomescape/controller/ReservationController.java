@@ -30,12 +30,10 @@ public class ReservationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> findAll(@RequestParam(required = false) String name) {
-        if (name != null) {
-            return reservationService.findByName(name).stream()
-                    .map(ReservationResponse::toDto)
-                    .toList();
-        }
-        return reservationService.findAll().stream()
+        List<Reservation> reservations = (name != null)
+                ? reservationService.findByName(name)
+                : reservationService.findAll();
+        return reservations.stream()
                 .map(ReservationResponse::toDto)
                 .toList();
     }
