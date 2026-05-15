@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
+import roomescape.domain.reservation.ReservationWithTime;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
@@ -35,7 +35,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String ALIAS_THEME_DESCRIPTION = "themeDescription";
     private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
 
-    private static final String SELECT_BY_ID_SQL = "SELECT id, name, date, time_id, theme_id FROM reservation WHERE id = ?";
+    private static final String SELECT_WITH_TIME_BY_ID_SQL = """
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.date AS date,
+            rt.id AS timeId,
+            rt.start_at AS startAt,
+        FROM reservation AS r
+        WHERE r.id = ?
+        JOIN reservation_time AS rt ON r.time_id = rt.id
+    """;
 
     private static final String SELECT_ALL_SQL = """
         SELECT\s
@@ -83,15 +93,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                     AND date = ?\s
             )
             """;
-    private static final RowMapper<Reservation> RESERVATION_MAPPER = (rs, rowNumber) -> new Reservation(
+    private static final RowMapper<ReservationWithTime> RESERVATION_WITH_TIME_MAPPER = (rs, rowNumber) -> new ReservationWithTime(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
-            rs.getLong(COLUMN_TIME_ID),
+            new ReservationTime(
+                    rs.getLong(COLUMN_TIME_ID),
+                    rs.getTime(ALIAS_START_AT).toLocalTime()
+            ),
             rs.getLong(COLUMN_THEME_ID)
     );
 
-    private static final RowMapper<ReservationDataWithTimeAndTheme> MAPPER = (rs, rowNumber) -> new ReservationDataWithTimeAndTheme(
+    private static final RowMapper<ReservationWithTimeAndTheme> MAPPER = (rs, rowNumber) -> new ReservationWithTimeAndTheme(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
@@ -119,29 +132,33 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationDataWithTimeAndTheme> getAllReservation(String name) {
+    public List<ReservationWithTimeAndTheme> getAllReservation(String name) {
         QueryWithParams queryWithParams = getReservationsQuery(name);
         return Collections.unmodifiableList(jdbcTemplate.query(queryWithParams.query(), MAPPER, queryWithParams.params().toArray()));
     }
 
     @Override
-    public Optional<Reservation> getReservation(long id) {
-        return jdbcTemplate.query(SELECT_BY_ID_SQL, RESERVATION_MAPPER, id)
+    public Optional<ReservationWithTimeAndTheme> getReservationWithTimeAndTheme(long id) {
+        return jdbcTemplate.query(SELECT_WITH_TIME_BY_ID_SQL, MAPPER, id)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public ReservationDataWithTimeAndTheme addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
-        long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+    public Optional<ReservationWithTime> getReservationWithTime(long id) {
+        return jdbcTemplate.query(SELECT_WITH_TIME_BY_ID_SQL, RESERVATION_WITH_TIME_MAPPER, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public long addReservation(ReservationCommand reservationCommand) {
+        return simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationCommand.name(),
                 COLUMN_DATE, reservationCommand.date(),
                 COLUMN_TIME_ID, reservationCommand.timeId(),
                 COLUMN_THEME_ID, reservationCommand.themeId()
         )).longValue();
-
-        return new ReservationDataWithTimeAndTheme(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
-                theme);
     }
 
     @Override

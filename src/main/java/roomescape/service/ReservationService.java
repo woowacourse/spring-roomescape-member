@@ -3,15 +3,12 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
-import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.theme.Theme;
+import roomescape.domain.reservation.ReservationWithTime;
 import roomescape.exception.DuplicatedRequestException;
-import roomescape.exception.InvalidRequestValueException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.repository.theme.ThemeRepository;
@@ -24,13 +21,8 @@ public class ReservationService {
     private static final String INVALID_THEME_ID = "존재하지 않은 테마 id입니다.";
     private static final String INVALID_RESERVATION_TIME_ID = "존재하지 않은 시간 id입니다.";
     private static final String INVALID_RESERVATION_ID = "존재하지 않는 예약 id입니다.";
-    private static final String CANNOT_DELETE_PAST_RESERVATION = "이미 지난 예약은 삭제할 수 없습니다.";
-    private static final String CANNOT_UPDATE_PAST_RESERVATION = "이미 지난 예약은 수정할 수 없습니다.";
-    private static final String UNAUTHORIZED_DELETE_RESERVATION_REQUEST = "해당 예약을 삭제할 권한이 없습니다.";
     private static final String UNAUTHORIZED_UPDATE_RESERVATION_REQUEST = "해당 예약을 수정할 권한이 없습니다.";
-    private static final String CANNOT_UPDATE_SAME_VALUE = "기존 정보와 동일하여 수정할 내용이 없습니다.";
     private static final String CANNOT_UPDATE_RESERVATION = "수정하려는 예약이 존재하지 않아서 수정할 수 없습니다.";
-    private static final String CANNOT_UPDATE_DUPLICATED_TIME = "해당 날짜, 테마, 시간으로 이미 존재하는 예약이 있습니다.";
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -42,58 +34,31 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationDataWithTimeAndTheme> getAllReservation(String name) {
+    public List<ReservationWithTimeAndTheme> getAllReservation(String name) {
         return reservationRepository.getAllReservation(name);
     }
 
-    @Transactional
-    public ReservationDataWithTimeAndTheme addReservation(ReservationCommand reservationCommand) {
-        ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
-                .orElseThrow(() -> new NotFoundResourceException(INVALID_RESERVATION_TIME_ID));
-
-        Theme theme = themeRepository.getTheme(reservationCommand.themeId())
-                .orElseThrow(() -> new NotFoundResourceException(INVALID_THEME_ID));
-
-        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date())) {
-            throw new DuplicatedRequestException(DUPLICATED_RESERVATION_REQUEST);
-        }
-
-        return reservationRepository.addReservation(reservationCommand, reservationTime, theme);
+    public ReservationWithTimeAndTheme addReservation(ReservationCommand reservationCommand) {
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
+        long id = reservationRepository.addReservation(reservationCommand);
+        return getReservationWithTimeAndData(id);
     }
 
     public void deleteReservation(long id, String name) {
-        Reservation reservation = getReservation(id);
+        ReservationWithTime reservationWithTime = getReservationWithTime(id);
 
-        if(!reservation.name().equals(name)) {
-            throw new UnauthorizedException(UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
-        }
-
-        if(reservation.date().isBefore(LocalDate.now())) {
-            throw new InvalidRequestValueException(CANNOT_DELETE_PAST_RESERVATION);
-        }
+        validateUserAuthority(name, reservationWithTime.name());
+        reservationWithTime.validDateReservationDateTime();
 
         reservationRepository.deleteReservation(id);
     }
 
     public void updateReservation(long id, String name, ReservationCommand reservationCommand) {
-        Reservation reservation = getReservation(id);
+        ReservationWithTime reservationWithTime = getReservationWithTime(id);
 
-        if (!reservation.name().equals(name)) {
-            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
-        }
-
-        if (reservation.isEqualValue(reservationCommand)) {
-            throw new InvalidRequestValueException(CANNOT_UPDATE_SAME_VALUE);
-        }
-
-        if(reservation.date().isBefore(LocalDate.now())) {
-            throw new InvalidRequestValueException(CANNOT_UPDATE_PAST_RESERVATION);
-        }
-
-        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand.timeId(),
-                reservationCommand.themeId(), reservationCommand.date())) {
-            throw new InvalidRequestValueException(CANNOT_UPDATE_DUPLICATED_TIME);
-        }
+        validateUserAuthority(name, reservationWithTime.name());
+        reservationWithTime.validateUpdateValue(reservationCommand);
+        validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
 
         int updatedRow = reservationRepository.updateAll(id, reservationCommand);
 
@@ -102,13 +67,41 @@ public class ReservationService {
         }
     }
 
-    private Reservation getReservation(long id) {
-        Optional<Reservation> optionalReservation = reservationRepository.getReservation(id);
+    private ReservationWithTime getReservationWithTime(long id) {
+        return getData(() -> reservationRepository.getReservationWithTime(id), INVALID_RESERVATION_ID);
+    }
 
-        if(optionalReservation.isEmpty()) {
-            throw new NotFoundResourceException(INVALID_RESERVATION_ID);
+    private ReservationWithTimeAndTheme getReservationWithTimeAndData(long id) {
+        return getData(() -> reservationRepository.getReservationWithTimeAndTheme(id), INVALID_RESERVATION_ID);
+    }
+
+    private <T> T getData(Supplier<Optional<T>> supplier, String errorMessage) {
+        Optional<T> optionalData = supplier.get();
+
+        if(optionalData.isEmpty()) {
+            throw new NotFoundResourceException(errorMessage);
         }
 
-        return optionalReservation.get();
+        return optionalData.get();
+    }
+
+    private void validateUserAuthority(String name, String reservationOwnerName) {
+        if (!reservationOwnerName.equals(name)) {
+            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
+        }
+    }
+
+    private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
+        if(reservationTimeRepository.isExistsById(timeId)) {
+            throw new NotFoundResourceException(INVALID_RESERVATION_TIME_ID);
+        }
+
+        if(themeRepository.isExistsById(themeId)) {
+            throw new NotFoundResourceException(INVALID_THEME_ID);
+        }
+
+        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(timeId, themeId, date)) {
+            throw new DuplicatedRequestException(DUPLICATED_RESERVATION_REQUEST);
+        }
     }
 }

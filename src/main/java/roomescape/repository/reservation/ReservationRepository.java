@@ -3,16 +3,15 @@ package roomescape.repository.reservation;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
-import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.theme.Theme;
+import roomescape.domain.reservation.ReservationWithTime;
 
 public interface ReservationRepository {
-    Optional<Reservation> getReservation(long id);
-    List<ReservationDataWithTimeAndTheme> getAllReservation(String name);
-    ReservationDataWithTimeAndTheme addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme);
+    Optional<ReservationWithTimeAndTheme> getReservationWithTimeAndTheme(long id);
+    Optional<ReservationWithTime> getReservationWithTime(long id);
+    List<ReservationWithTimeAndTheme> getAllReservation(String name);
+    long addReservation(ReservationCommand reservationCommand);
     void deleteReservation(long id);
     int updateAll(long id, ReservationCommand reservationCommand);
     boolean existsByTimeId(long timeId);

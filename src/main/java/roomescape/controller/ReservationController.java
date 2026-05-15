@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.dto.Response;
 import roomescape.dto.reservation.AddReservationRequest;
@@ -26,7 +26,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<Response> getReservations(@RequestParam(required = false) String name) {
-        List<ReservationDataWithTimeAndTheme> reservations = reservationService.getAllReservation(name);
+        List<ReservationWithTimeAndTheme> reservations = reservationService.getAllReservation(name);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -37,7 +37,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Response> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
-        ReservationDataWithTimeAndTheme addedReservation = reservationService.addReservation(reservationCommand);
+        ReservationWithTimeAndTheme addedReservation = reservationService.addReservation(reservationCommand);
 
         return new ResponseEntity<>(Response.from(HttpStatus.CREATED.value(), ReservationResponse.from(addedReservation)), HttpStatus.CREATED);
     }
