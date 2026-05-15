@@ -8,8 +8,8 @@ import roomescape.exception.InvalidRequestValueException;
 public record ReservationWithTime(long id, String name, LocalDate date, ReservationTime reservationTime, long themeId) {
     private static final String CANNOT_UPDATE_SAME_VALUE = "기존 정보와 동일하여 수정할 내용이 없습니다.";
 
-    public void validateEqualValue(ReservationCommand reservationCommand) {
-        if(isEqualValue(reservationCommand)) {
+    public void validateEqualValue(String name, LocalDate date, long timeId, long themeId) {
+        if(isEqualValue(name, date, timeId, themeId)) {
             throw new InvalidRequestValueException(CANNOT_UPDATE_SAME_VALUE);
         }
     }
@@ -23,12 +23,9 @@ public record ReservationWithTime(long id, String name, LocalDate date, Reservat
         }
     }
 
-    private boolean isEqualValue(ReservationCommand reservationCommand) {
+    private boolean isEqualValue(String name, LocalDate date, long timeId, long themeId) {
         return (
-                reservationCommand.name().equals(name) &&
-                        reservationCommand.date().equals(date) &&
-                        reservationCommand.timeId() == reservationTime().id() &&
-                        reservationCommand.themeId() == themeId
+                this.name.equals(name) && this.date.equals(date) && reservationTime().id() == timeId && this.themeId == themeId
         );
     }
 }

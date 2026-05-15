@@ -115,7 +115,7 @@ public class ReservationService {
         reservationCommand.validatePastDateTime(reservationTime);
 
         reservationWithTime.validDateReservationPastDateTime(CANNOT_UPDATE_PAST_RESERVATION);
-        reservationWithTime.validateEqualValue(reservationCommand);
+        reservationWithTime.validateEqualValue(reservationCommand.name(), reservationCommand.date(), reservationCommand.timeId(), reservationCommand.themeId());
     }
 
     private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
