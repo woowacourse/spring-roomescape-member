@@ -28,3 +28,140 @@
 - [x] 지나간 날짜·시간에 대한 예약 생성 불가
 - [x] 예약이 존재하는 시간 삭제 불가
 - [x] 유효하지 않은 입력값 거부 (빈 이름, 잘못된 날짜 형식 등)
+
+---
+
+## API 명세
+
+### 예약 시간 (관리자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| GET | /admin/times | 전체 시간 목록 조회 | 200 |
+| POST | /admin/times | 시간 생성 | 201 |
+| DELETE | /admin/times/{id} | 시간 삭제 | 204 |
+
+**POST /admin/times 요청**
+```json
+{ "startAt": "10:00" }
+```
+
+**응답**
+```json
+{ "id": 1, "startAt": "10:00" }
+```
+
+---
+
+### 테마 (관리자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| GET | /admin/themes | 전체 테마 목록 조회 | 200 |
+| POST | /admin/themes | 테마 생성 | 201 |
+| DELETE | /admin/themes/{id} | 테마 삭제 | 204 |
+
+**POST /admin/themes 요청**
+```json
+{
+  "name": "공포의 저택",
+  "thumbnailUrl": "https://example.com/image.jpg",
+  "description": "어둠 속에 숨겨진 공포를 체험하세요"
+}
+```
+
+**응답**
+```json
+{
+  "id": 1,
+  "name": "공포의 저택",
+  "thumbnailUrl": "https://example.com/image.jpg",
+  "description": "어둠 속에 숨겨진 공포를 체험하세요"
+}
+```
+
+---
+
+### 예약 (관리자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| GET | /admin/reservations | 전체 예약 목록 조회 | 200 |
+| POST | /admin/reservations | 예약 생성 | 201 |
+| DELETE | /admin/reservations/{id} | 예약 삭제 | 204 |
+
+**POST /admin/reservations 요청**
+```json
+{ "name": "홍길동", "date": "2026-06-01", "timeId": 1, "themeId": 1 }
+```
+
+---
+
+### 예약 가능 시간 (사용자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| GET | /times?date=&themeId= | 날짜·테마 기준 예약 가능한 시간 조회 | 200 |
+
+---
+
+### 테마 (사용자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| GET | /themes | 전체 테마 목록 조회 | 200 |
+| GET | /themes/popular?startAt=&endAt=&limit= | 기간 내 인기 테마 상위 N개 조회 | 200 |
+
+---
+
+### 예약 (사용자)
+
+| 메서드 | 경로 | 설명 | 상태 코드 |
+|--------|------|------|-----------|
+| POST | /reservations | 예약 생성 | 201 |
+| GET | /reservations?name= | 이름으로 예약 목록 조회 | 200 |
+| GET | /reservations/{id} | 예약 단건 조회 | 200 |
+| PATCH | /reservations/{id} | 예약 날짜·시간 수정 | 200 |
+| DELETE | /reservations/{id} | 예약 취소 | 204 |
+
+**POST /reservations 요청**
+```json
+{ "name": "홍길동", "date": "2026-06-01", "timeId": 1, "themeId": 1 }
+```
+
+**PATCH /reservations/{id} 요청**
+```json
+{ "date": "2026-06-02", "timeId": 2 }
+```
+
+**예약 응답 형식 (공통)**
+```json
+{
+  "id": 1,
+  "name": "홍길동",
+  "date": "2026-06-01",
+  "time": { "id": 1, "startAt": "10:00" },
+  "theme": {
+    "id": 1,
+    "name": "공포의 저택",
+    "thumbnailUrl": "https://example.com/image.jpg",
+    "description": "어둠 속에 숨겨진 공포를 체험하세요"
+  }
+}
+```
+
+---
+
+## 에러 응답 명세
+
+모든 에러 응답은 아래 형식을 따릅니다.
+
+```json
+{ "message": "에러 메시지" }
+```
+
+| 상태 코드 | 발생 상황 |
+|-----------|-----------|
+| 400 | 필수 입력값 누락, 잘못된 데이터 형식, 지나간 날짜·시간으로 예약 |
+| 404 | 존재하지 않는 예약 ID 조회·수정 |
+| 409 | 중복 예약 / 중복 시간 등록 / 중복 테마 등록 / 예약이 존재하는 시간 삭제 시도 |
