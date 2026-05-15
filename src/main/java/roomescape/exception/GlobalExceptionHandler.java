@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import roomescape.exception.code.CommonErrorCode;
 import roomescape.exception.code.ErrorCode;
+import roomescape.exception.custom.BusinessException;
 import roomescape.exception.response.ErrorResponse;
 
 @Slf4j
@@ -25,6 +26,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("handleAllExceptions", e);
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        log.warn("BusinessException code={}, message={}",
+                e.getErrorCode().name(),
+                e.getMessage(),
+                e);
+        return handleExceptionInternal(e.getErrorCode());
     }
 
     /**

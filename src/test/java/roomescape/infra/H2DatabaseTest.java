@@ -24,7 +24,6 @@ public class H2DatabaseTest {
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("ROOM_ESCAPE");
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -1,8 +1,14 @@
 package roomescape.reservation.application;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.custom.BusinessException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -23,12 +29,18 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
+    private final Clock clock;
+
     @Transactional
     public ReservationSaveResponse save(ReservationSaveRequest body) {
         ReservationTime time = reservationTimeRepository.findById(body.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
+
         Theme theme = themeRepository.findById(body.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 테마는 존재하지 않습니다."));
+
+        validateReservationDateTime(body.date(), time.getStartAt());
+
         Reservation reservation = reservationRepository.save(body.toDomain(time, theme));
 
         return ReservationSaveResponse.of(time, theme, reservation);
@@ -57,4 +69,14 @@ public class ReservationService {
          */
         reservationRepository.deleteById(id);
     }
+
+    private void validateReservationDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        if (reservationDateTime.isBefore(now)) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_DATE_TIME_EXPIRED);
+        }
+    }
+
 }
