@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -31,6 +32,8 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeService themeService;
+    @Autowired
+    private ReservationDao reservationDao;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +50,7 @@ class ReservationServiceTest {
         Long fakeId = 999L;
 
         //when&then
-        assertThatThrownBy(() -> reservationService.deleteById(fakeId))
+        assertThatThrownBy(() -> reservationService.deleteByIdFromAdmin(fakeId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 예약");
     }
@@ -76,7 +79,7 @@ class ReservationServiceTest {
                 savedTheme.getId());
 
         //when
-        reservationService.deleteById(savedReservation.getId());
+        reservationService.deleteByIdFromAdmin(savedReservation.getId());
 
         //then
         assertThat(reservationService.findAll()).hasSize(0);
@@ -115,5 +118,83 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservations).hasSize(2);
+    }
+
+    @Test
+    void 과거는_삭제_불가() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2026, 5, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+
+        //when && then
+        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("과거");
+    }
+
+    @Test
+    void 예약_날짜_시간_수정_성공() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2030, 1, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+        LocalDate newDate = LocalDate.of(2031, 1, 1);
+
+        //when
+        reservationService.update(savedReservation.getId(), newDate, reservationTimeTen.getId(), theme.getId());
+
+        //then
+        assertThat(reservationService.findByName(pobi).getFirst().getDate())
+                .isEqualTo(LocalDate.of(2031, 1, 1));
+    }
+
+    @Test
+    void 과거_예약은_수정_실패() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2000, 12, 16);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+        LocalDate newDate = LocalDate.of(2031, 1, 1);
+
+        //when && then
+        assertThatThrownBy(
+                () -> reservationService.update(savedReservation.getId(), newDate, reservationTimeTen.getId(),
+                        theme.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("과거 예약");
+    }
+
+    @Test
+    void 중복된_예약이_있어서_수정_실패() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2030, 1, 1);
+        LocalDate duplicatedDate = LocalDate.of(2031, 1, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+        Reservation duplicatedReservation = reservationDao.save(
+                new Reservation(pobi, duplicatedDate, reservationTimeTen, theme));
+        LocalDate newDate = LocalDate.of(2031, 1, 1);
+
+        //when && then
+        assertThatThrownBy(() -> reservationService.update(
+                savedReservation.getId(),
+                newDate,
+                reservationTimeTen.getId(),
+                theme.getId()))
+                .isInstanceOf(DuplicatedResourceException.class)
+                .hasMessageContaining("이미 존재");
     }
 }

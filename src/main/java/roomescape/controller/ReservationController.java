@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
@@ -25,15 +27,15 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> findAllReservations() {
-        return reservationService.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
+    public List<ReservationResponse> findAllReservations(@RequestParam(required = false) String name) {
 
-    @GetMapping("/reservations?name={name}")
-    public List<ReservationResponse> findReservationByName(@PathVariable String name) {
-        return reservationService.findByName(name).stream()
+        if (name != null && !name.isBlank()) {
+            return reservationService.findByName(name).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+
+        return reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -50,9 +52,21 @@ public class ReservationController {
         return ReservationResponse.from(reservation);
     }
 
+    @PutMapping("/reservations/{id}")
+    public void updateReservation(@PathVariable Long id, @RequestBody ReservationRequest request) {
+        reservationService.update(id, request.date(), request.timeId(), request.themeId());
+    }
+
+
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public void deleteReservationFromAdmin(@PathVariable Long id) {
+        reservationService.deleteByIdFromAdmin(id);
+    }
+
+    @DeleteMapping("/reservations/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReservationFromMember(@PathVariable Long id) {
+        reservationService.deleteByIdFromMember(id);
     }
 }

@@ -133,6 +133,49 @@ public class ReservationDao {
                 ), name);
     }
 
+    public Reservation findById(Long id) {
+        String sql = """
+                 SELECT 
+                     r.id as reservation_id, 
+                     r.name as member_name, 
+                     r.date, 
+                     rt.id as time_id, 
+                     rt.start_at as time_value, 
+                     th.id as theme_id, 
+                     th.name as theme_name,
+                     th.description,
+                     th.thumbnail
+                 FROM reservation r 
+                 INNER JOIN reservation_time rt 
+                 ON r.time_id = rt.id 
+                 INNER JOIN theme th 
+                 ON r.theme_id = th.id 
+                 WHERE r.id = ?
+                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC
+                """;
+
+        return jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNum) -> new Reservation(
+                        resultSet.getLong("reservation_id"),
+                        resultSet.getString("member_name"),
+                        LocalDate.parse(resultSet.getString("date")),
+                        new ReservationTime(
+                                resultSet.getLong("time_id"),
+                                LocalTime.parse(resultSet.getString("time_value"))),
+                        new Theme(
+                                resultSet.getLong("theme_id"),
+                                resultSet.getString("theme_name"),
+                                resultSet.getString("description"),
+                                resultSet.getString(("thumbnail"))
+                        )
+                ), id);
+    }
+
+    public void updateReservation(Long id, LocalDate localDate, Long timeId, Long themeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ?, theme_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, localDate, timeId, themeId, id);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);

@@ -309,21 +309,21 @@ erDiagram
 <summary>3단계 - 내 예약 조회/변경/취소</summary>
 
 - **사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다**
-- [x] 사용자가 이름으로 예약을 조회하는 API명세 `Get /reservations?name={이름}`
+- [x] 사용자가 이름으로 예약을 조회하는 API명세 `Get /reservations?name={name}`
 - [x] ReservationDao 에서 이름과 같은 List<Reservation>반환 구현
 - [x] ReservationService 예약 목록을 반환 구현
 - [x] ReservationController 에서 예약 목록 조회 구현
 - [x] 만약 해당 이름이 없으면 빈 리스트 반환(200)
 
 - **사용자가 본인의 예약을 취소 가능**
-- [ ] 본인의 예약을 취소하는 API명세 `Delete /reservations/{id}`
-- [ ] ReservationDao 에서 이름에 해당하는 id 제거 구현
-- [ ] ReservationService 에서 예약 취소 구현
+- [x] 본인의 예약을 취소하는 API명세 `Delete /reservations/{id}`
+- [x] ReservationDao 에서 이름에 해당하는 id 제거 구현
+- [x] ReservationService 에서 예약 취소 구현
 
 - **사용자가 본인의 예약의 날짜·시간을 변경 가능**
-- [ ] 본인의 예약 변경 API명세 `Put /reservations/{id}`
-- [ ] ReservationDao 에서 해당 예약 날짜/시간을 변경할 수 있도록 구현
-- [ ] ReservationService 에서 변경 구현
+- [x] 본인의 예약 변경 API명세 `Put /reservations/{id}`
+- [x] ReservationDao 에서 해당 예약 날짜/시간을 변경할 수 있도록 구현
+- [x] ReservationService 에서 변경 구현
 
 </details>
 
@@ -411,10 +411,11 @@ erDiagram
       프론트에 넘겨준다고 정의했다. 따라서 행동 가이드는 제거했다.
 
 - **변경/최소에서 발견한 엣지 케이스와 처리 방향**
-    - ㅇ
+    - 변경 시 이미 예약이 존재하는 예외 케이스를 발견했다.
+    - DuplicatedResourceException을 적용하였다.
 
 - **지금까지의 규칙 중 유지/수정/폐기한 항목**
-    - ㅇ
+    - 모든 규칙을 유지하며 구현을 하려 노력했다.
 
 </details>
 
