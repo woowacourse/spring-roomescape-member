@@ -25,14 +25,21 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
+        validateReservationTimeExists(id);
+        validateReservationTimeNotInUse(id);
+
+        reservationTimeRepository.deleteTime(id);
+    }
+
+    private void validateReservationTimeExists(Long id) {
         if (!reservationTimeRepository.existsById(id)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
         }
+    }
 
+    private void validateReservationTimeNotInUse(Long id) {
         if (reservationTimeRepository.existsReservationByTimeId(id)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
-
-        reservationTimeRepository.deleteTime(id);
     }
 }

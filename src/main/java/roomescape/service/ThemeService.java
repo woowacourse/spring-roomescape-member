@@ -36,10 +36,7 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         findById(id);
-
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new RoomescapeException(ErrorCode.THEME_IN_USE);
-        }
+        validateThemeNotInUse(id);
 
         themeRepository.delete(id);
     }
@@ -54,5 +51,11 @@ public class ThemeService {
         LocalDate endInclusive = currentDate.minusDays(1);
 
         return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);
+    }
+
+    private void validateThemeNotInUse(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new RoomescapeException(ErrorCode.THEME_IN_USE);
+        }
     }
 }
