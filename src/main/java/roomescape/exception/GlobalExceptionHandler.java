@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RoomescapeException.class)
-    public ResponseEntity<?> handle(RoomescapeException exception) {
+    public ResponseEntity<ErrorResponse> handle(RoomescapeException exception) {
         ErrorCode code = exception.getErrorCode();
         return ResponseEntity
             .status(code.getStatus())
@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException exception){
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception){
         String message = exception.getBindingResult()
             .getFieldErrors()
             .getFirst()
