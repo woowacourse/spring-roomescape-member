@@ -1,10 +1,16 @@
 package roomescape.global.exception.advice;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.DeleteFailedException;
+import roomescape.global.exception.DuplicateException;
+import roomescape.global.exception.InvalidRequestValueException;
+import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.exception.ForbiddenException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,8 +33,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        if (e instanceof DuplicateException || e instanceof DeleteFailedException) {
+            status = HttpStatus.CONFLICT;
+        }
+        if (e instanceof InvalidRequestValueException) {
+            status = HttpStatus.UNPROCESSABLE_ENTITY;
+        }
+        if (e instanceof NotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
+        if (e instanceof ForbiddenException) {
+            status = HttpStatus.FORBIDDEN;
+        }
+
         return ResponseEntity
-                .status(e.getStatus())
+                .status(status)
                 .body(ErrorResponse.of(e));
     }
 }

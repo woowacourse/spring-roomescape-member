@@ -1,10 +1,10 @@
 package roomescape.time.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.InvalidRequestValueException;
 
-public class InvalidTimeRequestValueException extends BusinessException {
+public class InvalidTimeRequestValueException extends InvalidRequestValueException {
 
     public InvalidTimeRequestValueException() {
-        super(TimeErrorPolicy.INVALID_TIME_REQUEST_VALUE);
+        super("예약 시간 요청 값이 유효하지 않습니다.");
     }
 }

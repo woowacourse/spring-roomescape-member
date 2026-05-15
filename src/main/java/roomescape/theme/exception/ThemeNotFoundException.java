@@ -1,10 +1,10 @@
 package roomescape.theme.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.NotFoundException;
 
-public class ThemeNotFoundException extends BusinessException {
+public class ThemeNotFoundException extends NotFoundException {
 
     public ThemeNotFoundException() {
-        super(ThemeErrorPolicy.THEME_NOT_FOUND);
+        super("테마가 존재하지 않습니다.");
     }
 }

@@ -1,10 +1,10 @@
 package roomescape.reservation.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.InvalidRequestValueException;
 
-public class InvalidReservationRequestValueException extends BusinessException {
+public class InvalidReservationRequestValueException extends InvalidRequestValueException {
 
     public InvalidReservationRequestValueException() {
-        super(ReservationErrorPolicy.INVALID_RESERVATION_REQUEST_VALUE);
+        super("예약 요청 값이 유효하지 않습니다.");
     }
 }

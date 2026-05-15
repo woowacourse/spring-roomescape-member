@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.BusinessException;
 import roomescape.integration.support.DatabaseHelper;
 import roomescape.integration.support.SpringWebTest;
 import roomescape.reservation.exception.DuplicateReservationException;

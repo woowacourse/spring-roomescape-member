@@ -1,10 +1,10 @@
 package roomescape.reservation.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.DuplicateException;
 
-public class DuplicateReservationException extends BusinessException {
+public class DuplicateReservationException extends DuplicateException {
 
     public DuplicateReservationException() {
-        super(ReservationErrorPolicy.DUPLICATE_RESERVATION);
+        super("예약이 이미 존재합니다.");
     }
 }

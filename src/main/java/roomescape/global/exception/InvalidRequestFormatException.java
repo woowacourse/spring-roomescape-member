@@ -1,10 +1,8 @@
 package roomescape.global.exception;
 
-import roomescape.global.exception.base.BusinessException;
-
 public class InvalidRequestFormatException extends BusinessException {
 
     public InvalidRequestFormatException() {
-        super(CommonErrorPolicy.INVALID_REQUEST_FORMAT);
+        super("요청 본문 형식이 유효하지 않습니다.");
     }
 }

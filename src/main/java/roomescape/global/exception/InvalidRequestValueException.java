@@ -1,10 +1,12 @@
 package roomescape.global.exception;
 
-import roomescape.global.exception.base.BusinessException;
+public class InvalidRequestValueException extends BusinessException{
 
-public class InvalidRequestValueException extends BusinessException {
+    public InvalidRequestValueException(String message) {
+        super(message);
+    }
 
     public InvalidRequestValueException() {
-        super(CommonErrorPolicy.INVALID_REQUEST_VALUE);
+        this("값이 유효하지 않습니다.");
     }
 }

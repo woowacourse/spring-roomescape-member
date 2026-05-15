@@ -1,10 +1,10 @@
 package roomescape.theme.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.InvalidRequestValueException;
 
-public class InvalidThemeRequestValueException extends BusinessException {
+public class InvalidThemeRequestValueException extends InvalidRequestValueException {
 
     public InvalidThemeRequestValueException() {
-        super(ThemeErrorPolicy.INVALID_THEME_REQUEST_VALUE);
+        super("테마 요청 값이 유효하지 않습니다.");
     }
 }

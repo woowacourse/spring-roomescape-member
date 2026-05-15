@@ -1,10 +1,10 @@
 package roomescape.reservation.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.NotFoundException;
 
-public class ReservationNotFoundException extends BusinessException {
+public class ReservationNotFoundException extends NotFoundException {
 
     public ReservationNotFoundException() {
-        super(ReservationErrorPolicy.RESERVATION_NOT_FOUND);
+        super("예약이 존재하지 않습니다.");
     }
 }

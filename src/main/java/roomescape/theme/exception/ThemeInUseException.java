@@ -1,10 +1,10 @@
 package roomescape.theme.exception;
 
-import roomescape.global.exception.base.BusinessException;
+import roomescape.global.exception.DeleteFailedException;
 
-public class ThemeInUseException extends BusinessException {
+public class ThemeInUseException extends DeleteFailedException {
 
     public ThemeInUseException() {
-        super(ThemeErrorPolicy.THEME_IN_USE);
+        super("해당 테마의 예약이 존재합니다.");
     }
 }
