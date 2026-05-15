@@ -14,15 +14,19 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationStatus;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.JdbcReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.theme.dto.response.ReservationThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.time.dto.response.ReservationTimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.JdbcTimeRepository;
@@ -93,6 +97,95 @@ class ReservationServiceTest {
 
             // then
             assertThat(actual).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetReservationsByNameTest {
+
+        @Test
+        void 성공() {
+            // given
+            LocalDate date = LocalDate.now().plusDays(1);
+            Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
+            Time time3 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            Theme theme = themeRepository.save(
+                Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+            Reservation savedReservation1 = reservationRepository.save(
+                Reservation.create("브라운", date, time1, theme));
+            Reservation savedReservation2 = reservationRepository.save(
+                Reservation.create("브라운", date.plusDays(1), time2, theme));
+            reservationRepository.save(Reservation.create("제이슨", date.plusDays(2), time3, theme));
+
+            // when
+            List<ReservationByNameResponseDto> actual = reservationService.getReservationsByName("브라운");
+
+            // then
+            assertThat(actual).containsExactly(
+                new ReservationByNameResponseDto(savedReservation1.getId(), "브라운", date,
+                    new ReservationTimeResponseDto(time1.getId(), time1.getStartAt(), false),
+                    new ReservationThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(),
+                        theme.getImageUrl(), false), ReservationStatus.EDITABLE, ""),
+                new ReservationByNameResponseDto(savedReservation2.getId(), "브라운", date.plusDays(1),
+                    new ReservationTimeResponseDto(time2.getId(), time2.getStartAt(), false),
+                    new ReservationThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(),
+                        theme.getImageUrl(), false), ReservationStatus.EDITABLE, "")
+            );
+        }
+
+        @Test
+        void 이름으로_조회된_예약이_없으면_빈_목록을_반환한다() {
+            // when
+            List<ReservationByNameResponseDto> actual = reservationService.getReservationsByName("브라운");
+
+            // then
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        void 삭제된_예약_시간과_테마에_연결된_예약은_수정을_권장한다() {
+            // given
+            LocalDate date = LocalDate.now().plusDays(1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(
+                Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+            Reservation savedReservation = reservationRepository.save(Reservation.create("브라운", date, time, theme));
+            timeRepository.deleteTimeById(time.getId());
+            themeRepository.deleteThemeById(theme.getId());
+
+            // when
+            List<ReservationByNameResponseDto> actual = reservationService.getReservationsByName("브라운");
+
+            // then
+            assertThat(actual).containsExactly(
+                new ReservationByNameResponseDto(savedReservation.getId(), "브라운", date,
+                    new ReservationTimeResponseDto(time.getId(), time.getStartAt(), true),
+                    new ReservationThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(),
+                        theme.getImageUrl(), true), ReservationStatus.EDIT_RECOMMENDED,
+                    "현재 예약의 시간 또는 테마가 더 이상 제공되지 않습니다. 다른 예약 정보로 수정해주세요.")
+            );
+        }
+
+        @Test
+        void 지난_예약은_수정하거나_삭제할_수_없다() {
+            // given
+            LocalDate date = LocalDate.now().minusDays(1);
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(
+                Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
+            Reservation savedReservation = reservationRepository.save(Reservation.create("브라운", date, time, theme));
+
+            // when
+            List<ReservationByNameResponseDto> actual = reservationService.getReservationsByName("브라운");
+
+            // then
+            assertThat(actual).containsExactly(
+                new ReservationByNameResponseDto(savedReservation.getId(), "브라운", date,
+                    new ReservationTimeResponseDto(time.getId(), time.getStartAt(), false),
+                    new ReservationThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(),
+                        theme.getImageUrl(), false), ReservationStatus.LOCKED, "지난 예약은 수정하거나 삭제할 수 없습니다.")
+            );
         }
     }
 

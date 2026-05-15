@@ -143,6 +143,87 @@ class JdbcReservationRepositoryTest {
     }
 
     @Nested
+    class FindReservationsByNameTest {
+
+        @Test
+        void 이름이_일치하는_삭제되지_않은_예약만_조회한다() {
+            // given
+            Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
+            Time time3 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation1 = reservationRepository.save(
+                Reservation.create("브라운", LocalDate.of(2026, 5, 1), time1, theme));
+            Reservation deletedReservation = reservationRepository.save(
+                Reservation.create("브라운", LocalDate.of(2026, 5, 2), time2, theme));
+            reservationRepository.save(Reservation.create("제이슨", LocalDate.of(2026, 5, 3), time3, theme));
+            reservationRepository.deleteReservationById(deletedReservation.getId());
+
+            // when
+            List<Reservation> actual = reservationRepository.findReservationsByNameAndDeletedAtIsNull("브라운");
+
+            // then
+            assertThat(actual)
+                .extracting(Reservation::getId, Reservation::getName, Reservation::getDate)
+                .containsExactly(tuple(reservation1.getId(), "브라운", LocalDate.of(2026, 5, 1)));
+        }
+
+        @Test
+        void 이름이_일치하는_예약이_없으면_빈_목록을_반환한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            reservationRepository.save(Reservation.create("브라운", LocalDate.of(2026, 5, 1), time, theme));
+
+            // when
+            List<Reservation> actual = reservationRepository.findReservationsByNameAndDeletedAtIsNull("제이슨");
+
+            // then
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        void 삭제된_시간과_테마에_연결된_예약의_삭제_시각도_조회한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            reservationRepository.save(Reservation.create("브라운", LocalDate.of(2026, 5, 1), time, theme));
+            timeRepository.deleteTimeById(time.getId());
+            themeRepository.deleteThemeById(theme.getId());
+
+            // when
+            List<Reservation> actual = reservationRepository.findReservationsByNameAndDeletedAtIsNull("브라운");
+
+            // then
+            assertThat(actual).hasSize(1);
+            assertThat(actual.get(0).getTime().getDeletedAt()).isNotNull();
+            assertThat(actual.get(0).getTheme().getDeletedAt()).isNotNull();
+        }
+
+        @Test
+        void 날짜순_시간순으로_조회한다() {
+            // given
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
+            Time time3 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation1 = reservationRepository.save(Reservation.create("브라운", date, time2, theme));
+            Reservation reservation2 = reservationRepository.save(Reservation.create("브라운", date, time1, theme));
+            Reservation reservation3 = reservationRepository.save(
+                Reservation.create("브라운", date.minusDays(1), time3, theme));
+
+            // when
+            List<Reservation> actual = reservationRepository.findReservationsByNameAndDeletedAtIsNull("브라운");
+
+            // then
+            assertThat(actual)
+                .extracting(Reservation::getId)
+                .containsExactly(reservation3.getId(), reservation2.getId(), reservation1.getId());
+        }
+    }
+
+    @Nested
     class FindTimeIdsByDateAndThemeIdTest {
 
         @Test
