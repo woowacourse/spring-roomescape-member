@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
@@ -17,14 +18,18 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ReservationControllerTest {
+    @LocalServerPort
+    private int port;
+
     @MockitoBean(enforceOverride = true)
     Clock clock;
 
     @BeforeEach
     void setUpClock() {
+        RestAssured.port = port;
         given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
         given(clock.instant()).willReturn(Instant.parse("2026-05-01T14:00:00Z"));
     }
