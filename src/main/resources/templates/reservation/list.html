@@ -320,7 +320,7 @@
             <div class="stack">
                 <section>
                     <h2>예약 가능 시간 조회</h2>
-                    <form method="get" th:action="@{/pages/user/reservations}">
+                    <form id="available-times-form" method="get" th:action="@{/pages/user/reservations}">
                         <label>
                             테마
                             <select name="themeId" required>
@@ -373,7 +373,7 @@
 
         <article class="card" id="reservation-form-card">
             <h2>예약 생성</h2>
-            <form method="post" th:action="@{/pages/user/reservations}">
+            <form id="reservation-create-form" method="post" th:action="@{/pages/user/reservations}">
                 <label>
                     예약자 이름
                     <input type="text" id="reservation-name" name="name" maxlength="9" required>
@@ -406,7 +406,7 @@
     <section class="bottom-grid">
         <article class="card">
             <h2>내 예약 조회</h2>
-            <form method="get" th:action="@{/pages/user/reservations}">
+            <form id="my-reservations-form" method="get" th:action="@{/pages/user/reservations}">
                 <input type="hidden" name="themeId" th:value="${selectedThemeId}">
                 <input type="hidden" name="date" th:value="${selectedDate}">
                 <input type="hidden" name="period" th:value="${period}">
@@ -467,7 +467,7 @@
 
         <article class="card">
             <h2>최근 인기 테마</h2>
-            <form method="get" th:action="@{/pages/user/reservations}">
+            <form id="popular-themes-form" method="get" th:action="@{/pages/user/reservations}">
                 <input type="hidden" name="themeId" th:value="${selectedThemeId}">
                 <input type="hidden" name="date" th:value="${selectedDate}">
                 <label>
@@ -494,52 +494,7 @@
     </section>
 </div>
 <script>
-    const reservationMessages = {
-        RESERVATION_NAME_REQUIRED: {
-            title: "이름을 먼저 입력해 주세요",
-            message: "예약자 이름이 비어 있으면 누구의 예약인지 확인할 수 없어요.",
-            hint: "이름 칸에 예약자 이름을 입력하면 바로 다시 저장할 수 있어요."
-        },
-        RESERVATION_NAME_TOO_LONG: {
-            title: "이름을 조금만 짧게 적어볼까요?",
-            message: "예약자 이름은 10자 미만으로 입력하면 목록에서 더 보기 쉽게 관리할 수 있어요.",
-            hint: "조금만 줄여서 입력하면 바로 같은 화면에서 다시 예약할 수 있어요."
-        },
-        INVALID_RESERVATION_NAME: {
-            title: "이름부터 다시 확인해볼게요",
-            message: "예약자 이름 형식이 맞지 않아 저장을 잠시 멈췄어요.",
-            hint: "이름 칸을 다시 확인한 뒤 한 번 더 시도해보세요."
-        },
-        RESERVATION_DATE_REQUIRED: {
-            title: "날짜를 먼저 골라주세요",
-            message: "예약 날짜가 없으면 가능한 시간을 확인할 수 없어요.",
-            hint: "원하는 날짜를 선택한 뒤 다시 진행해보세요."
-        },
-        THEME_ID_REQUIRED: {
-            title: "테마를 먼저 선택해볼까요?",
-            message: "어떤 테마를 예약할지 정해져야 가능한 시간을 찾아드릴 수 있어요.",
-            hint: "조회 카드에서 테마를 선택한 뒤 다시 예약하면 돼요."
-        },
-        RESERVATION_TIME_ID_REQUIRED: {
-            title: "시간을 하나 선택해 주세요",
-            message: "예약 가능한 시간 카드에서 원하는 슬롯을 먼저 골라야 저장할 수 있어요.",
-            hint: "왼쪽 조회 결과에서 시간을 누르면 예약 폼이 자동으로 채워져요."
-        },
-        INVALID_DATE_FORMAT: {
-            title: "날짜 형식을 다시 맞춰주세요",
-            message: "날짜는 달력에서 고르거나 yyyy-MM-dd 형식으로 맞춰야 정확하게 예약할 수 있어요.",
-            hint: "직접 입력했다면 날짜 형식을 다시 확인해보세요."
-        },
-        INVALID_TIME_FORMAT: {
-            title: "시간 형식을 다시 확인해 주세요",
-            message: "시간은 준비된 형식에 맞아야 가능한 시간 조회와 예약이 자연스럽게 이어져요.",
-            hint: "가능한 시간 카드를 눌러 자동으로 채우는 방법이 가장 안전해요."
-        },
-        INVALID_TYPE_VALUE: {
-            title: "선택 값을 다시 확인해 주세요",
-            message: "예약에 필요한 값 중 일부가 올바른 형식으로 전달되지 않았어요.",
-            hint: "테마와 시간을 다시 선택한 뒤 같은 화면에서 바로 시도할 수 있어요."
-        },
+    const reservationServerMessages = {
         RESERVATION_DATE_TIME_IN_PAST: {
             title: "이미 지난 시간은 예약할 수 없어요",
             message: "지금보다 앞선 날짜나 시간은 선택할 수 없어서, 더 늦은 시간으로 안내해드릴게요.",
@@ -575,17 +530,25 @@
             message: "이미 시작된 예약은 시간을 바꾸지 않고 기록으로 남겨두고, 앞으로의 예약만 변경할 수 있어요.",
             hint: "필요하면 새 예약을 만들거나, 아직 시작 전인 예약을 선택해 변경할 수 있어요."
         },
-        INVALID_INPUT: {
-            title: "입력 내용을 한 번만 더 볼게요",
-            message: "예약에 필요한 정보 중 일부가 비어 있거나 형식이 맞지 않았어요.",
-            hint: "폼을 다시 확인한 뒤 같은 화면에서 바로 재시도할 수 있어요."
-        },
         INTERNAL_SERVER_ERROR: {
             title: "지금은 저장을 잠시 멈출게요",
             message: "입력 문제라기보다 시스템 쪽에서 바로 처리하지 못한 상황이에요.",
             hint: "잠시 후 다시 시도하거나, 같은 문제가 반복되면 데이터를 새로고침한 뒤 다시 진행해보세요."
+        },
+        INVALID_INPUT: {
+            title: "요청을 처리하지 못했어요",
+            message: "브라우저에서 먼저 걸러지지 않은 요청 흐름 문제가 있었어요.",
+            hint: "같은 문제가 반복되면 입력값과 서버 검증 로직을 함께 확인해보세요."
         }
     };
+
+    function showReservationFeedback(title, message, hint) {
+        const feedback = document.getElementById("page-feedback");
+        document.getElementById("feedback-title").textContent = title;
+        document.getElementById("feedback-message").textContent = message;
+        document.getElementById("feedback-hint").textContent = hint;
+        feedback.classList.remove("hidden");
+    }
 
     function applyPageFeedback() {
         const feedback = document.getElementById("page-feedback");
@@ -595,11 +558,163 @@
             return;
         }
 
-        const message = reservationMessages[errorCode] || reservationMessages.INVALID_INPUT;
-        document.getElementById("feedback-title").textContent = message.title;
-        document.getElementById("feedback-message").textContent = message.message;
-        document.getElementById("feedback-hint").textContent = message.hint;
-        feedback.classList.remove("hidden");
+        const message = reservationServerMessages[errorCode] || reservationServerMessages.INVALID_INPUT;
+        showReservationFeedback(message.title, message.message, message.hint);
+    }
+
+    function isBlank(value) {
+        return !value || !value.trim();
+    }
+
+    function validateAvailableTimesForm(event) {
+        const themeId = document.querySelector("#available-times-form select[name='themeId']").value;
+        const date = document.querySelector("#available-times-form input[name='date']").value;
+
+        if (!themeId) {
+            event.preventDefault();
+            showReservationFeedback(
+                "테마를 먼저 선택해 주세요",
+                "가능 시간 조회에 필요한 값이라 서버 요청 전에 바로 확인했어요.",
+                "테마를 고른 뒤 다시 조회해 주세요."
+            );
+            return;
+        }
+
+        if (!date) {
+            event.preventDefault();
+            showReservationFeedback(
+                "날짜를 먼저 골라주세요",
+                "날짜가 없으면 가능한 시간을 계산할 수 없어요.",
+                "달력에서 날짜를 고른 뒤 다시 조회해 주세요."
+            );
+        }
+    }
+
+    function validateReservationCreateForm(event) {
+        const name = document.getElementById("reservation-name").value;
+        const date = document.getElementById("reservation-date").value;
+        const timeId = document.getElementById("reservation-time").value;
+        const themeId = document.querySelector("#reservation-create-form input[name='themeId']").value;
+
+        if (isBlank(name)) {
+            event.preventDefault();
+            showReservationFeedback(
+                "예약자 이름을 입력해 주세요",
+                "이름이 비어 있는지는 브라우저에서 바로 확인할 수 있어서 서버 요청 전에 막았어요.",
+                "이름을 입력한 뒤 다시 예약해 주세요."
+            );
+            return;
+        }
+
+        if (name.trim().length >= 10) {
+            event.preventDefault();
+            showReservationFeedback(
+                "이름을 조금만 짧게 적어주세요",
+                "예약자 이름은 10자 미만이어야 해서 프론트에서 먼저 안내드렸어요.",
+                "9자 이하로 줄인 뒤 다시 예약해 주세요."
+            );
+            return;
+        }
+
+        if (!themeId) {
+            event.preventDefault();
+            showReservationFeedback(
+                "테마를 먼저 선택해 주세요",
+                "어떤 테마인지 알아야 예약 저장을 진행할 수 있어요.",
+                "가능 시간 조회에서 테마를 먼저 고른 뒤 다시 예약해 주세요."
+            );
+            return;
+        }
+
+        if (!date) {
+            event.preventDefault();
+            showReservationFeedback(
+                "날짜를 먼저 골라주세요",
+                "날짜가 없으면 예약을 저장할 수 없어요.",
+                "날짜를 선택한 뒤 다시 예약해 주세요."
+            );
+            return;
+        }
+
+        if (!timeId) {
+            event.preventDefault();
+            showReservationFeedback(
+                "시간을 하나 선택해 주세요",
+                "예약 가능한 시간 슬롯을 골라야 저장할 수 있어요.",
+                "조회된 가능 시간에서 원하는 시간을 선택해 주세요."
+            );
+        }
+    }
+
+    function validateMyReservationsForm(event) {
+        const name = document.querySelector("#my-reservations-form input[name='reservationName']").value;
+
+        if (isBlank(name)) {
+            event.preventDefault();
+            showReservationFeedback(
+                "조회할 이름을 입력해 주세요",
+                "내 예약 조회는 이름 값이 꼭 필요해서 서버로 보내기 전에 확인했어요.",
+                "예약자 이름을 입력한 뒤 다시 조회해 주세요."
+            );
+            return;
+        }
+
+        if (name.trim().length >= 10) {
+            event.preventDefault();
+            showReservationFeedback(
+                "조회할 이름을 조금만 짧게 적어주세요",
+                "예약자 이름은 10자 미만이어야 해서 조회 전에 바로 안내드렸어요.",
+                "9자 이하 이름으로 다시 조회해 주세요."
+            );
+        }
+    }
+
+    function validateReservationEditForm(event) {
+        const date = document.getElementById("reservation-edit-date").value;
+        const timeId = document.getElementById("reservation-edit-time").value;
+
+        if (!date) {
+            event.preventDefault();
+            showReservationFeedback(
+                "변경 날짜를 선택해 주세요",
+                "날짜가 있어야 예약 변경 요청을 만들 수 있어요.",
+                "새 날짜를 고른 뒤 다시 저장해 주세요."
+            );
+            return;
+        }
+
+        if (!timeId) {
+            event.preventDefault();
+            showReservationFeedback(
+                "변경 시간을 선택해 주세요",
+                "시간이 있어야 예약 변경을 완료할 수 있어요.",
+                "새 시간을 고른 뒤 다시 저장해 주세요."
+            );
+        }
+    }
+
+    function validatePopularThemesForm(event) {
+        const period = document.querySelector("#popular-themes-form input[name='period']").value;
+        const limit = document.querySelector("#popular-themes-form input[name='limit']").value;
+
+        if (!period || Number(period) < 1) {
+            event.preventDefault();
+            showReservationFeedback(
+                "최근 기간을 다시 확인해 주세요",
+                "인기 테마 집계 기간은 1일 이상이어야 해요.",
+                "1 이상의 숫자로 다시 입력해 주세요."
+            );
+            return;
+        }
+
+        if (!limit || Number(limit) < 1) {
+            event.preventDefault();
+            showReservationFeedback(
+                "노출 개수를 다시 확인해 주세요",
+                "표시할 개수는 1개 이상이어야 해요.",
+                "1 이상의 숫자로 다시 입력해 주세요."
+            );
+        }
     }
 
     function selectTimeSlot(button) {
@@ -654,6 +769,11 @@
         panel.classList.add("hidden");
     }
 
+    document.getElementById("available-times-form").addEventListener("submit", validateAvailableTimesForm);
+    document.getElementById("reservation-create-form").addEventListener("submit", validateReservationCreateForm);
+    document.getElementById("my-reservations-form").addEventListener("submit", validateMyReservationsForm);
+    document.getElementById("reservation-edit-form").addEventListener("submit", validateReservationEditForm);
+    document.getElementById("popular-themes-form").addEventListener("submit", validatePopularThemesForm);
     applyPageFeedback();
 </script>
 </body>

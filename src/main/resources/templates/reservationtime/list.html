@@ -155,10 +155,10 @@
     <section class="layout">
         <article class="card">
             <h2>시간 슬롯 추가</h2>
-            <form method="post" th:action="@{/pages/admin/reservation-times}">
+            <form id="reservation-time-create-form" method="post" th:action="@{/pages/admin/reservation-times}">
                 <label>
                     시작 시간
-                    <input type="time" name="startAt" required>
+                    <input type="time" id="reservation-time-start-at" name="startAt" required>
                 </label>
                 <button type="submit">시간 추가</button>
             </form>
@@ -183,22 +183,7 @@
     </section>
 </div>
 <script>
-    const reservationTimeMessages = {
-        RESERVATION_TIME_REQUIRED: {
-            title: "시간부터 선택해 주세요",
-            message: "비어 있는 시간은 저장할 수 없어서, 사용할 시작 시간을 먼저 골라야 해요.",
-            hint: "입력 칸에서 시간을 하나 고르면 바로 추가할 수 있어요."
-        },
-        INVALID_TIME_FORMAT: {
-            title: "시간 형식을 다시 확인해 주세요",
-            message: "시간은 시스템이 읽을 수 있는 형식이어야 공통 슬롯으로 정확하게 저장할 수 있어요.",
-            hint: "입력 칸에서 시간을 다시 선택하면 형식을 맞추기 쉬워요."
-        },
-        INVALID_TYPE_VALUE: {
-            title: "입력 값을 다시 확인해 주세요",
-            message: "시간 관리에 필요한 값 중 일부가 올바른 형식으로 전달되지 않았어요.",
-            hint: "입력 칸을 다시 선택하거나 목록을 새로고침한 뒤 다시 시도해보세요."
-        },
+    const reservationTimeServerMessages = {
         RESERVATION_TIME_DUPLICATED: {
             title: "같은 시간 슬롯이 이미 있어요",
             message: "모든 테마가 공통으로 쓰는 시간이기 때문에, 같은 시작 시간을 두 번 만들 필요는 없어요.",
@@ -209,17 +194,25 @@
             message: "이미 예약에 연결된 시간은 바로 삭제하지 않고, 예약을 먼저 정리한 뒤 삭제하는 편이 안전해요.",
             hint: "예약 현황을 먼저 보고 정리한 다음 다시 삭제를 시도할 수 있어요."
         },
-        INVALID_INPUT: {
-            title: "입력 내용을 조금만 다시 볼게요",
-            message: "시간 슬롯을 추가하거나 정리하는 데 필요한 정보가 맞지 않았어요.",
-            hint: "같은 화면에서 바로 수정하고 다시 시도할 수 있어요."
-        },
         INTERNAL_SERVER_ERROR: {
             title: "지금은 시간 관리 작업을 바로 끝내지 못했어요",
             message: "입력값보다는 시스템 상태 때문에 요청을 즉시 처리하지 못한 상황이에요.",
             hint: "잠시 후 다시 시도하거나, 같은 현상이 반복되면 서버 상태를 먼저 확인해보세요."
+        },
+        INVALID_INPUT: {
+            title: "요청을 처리하지 못했어요",
+            message: "브라우저에서 미리 확인하기 어려운 흐름 문제가 있었어요.",
+            hint: "같은 문제가 반복되면 입력값과 서버 검증 로직을 함께 확인해보세요."
         }
     };
+
+    function showReservationTimeFeedback(title, message, hint) {
+        const feedback = document.getElementById("page-feedback");
+        document.getElementById("feedback-title").textContent = title;
+        document.getElementById("feedback-message").textContent = message;
+        document.getElementById("feedback-hint").textContent = hint;
+        feedback.classList.remove("hidden");
+    }
 
     function applyReservationTimeFeedback() {
         const feedback = document.getElementById("page-feedback");
@@ -229,13 +222,24 @@
             return;
         }
 
-        const message = reservationTimeMessages[errorCode] || reservationTimeMessages.INVALID_INPUT;
-        document.getElementById("feedback-title").textContent = message.title;
-        document.getElementById("feedback-message").textContent = message.message;
-        document.getElementById("feedback-hint").textContent = message.hint;
-        feedback.classList.remove("hidden");
+        const message = reservationTimeServerMessages[errorCode] || reservationTimeServerMessages.INVALID_INPUT;
+        showReservationTimeFeedback(message.title, message.message, message.hint);
     }
 
+    function validateReservationTimeCreateForm(event) {
+        const startAt = document.getElementById("reservation-time-start-at").value.trim();
+
+        if (!startAt) {
+            event.preventDefault();
+            showReservationTimeFeedback(
+                "시간을 먼저 선택해 주세요",
+                "비어 있는 시간 값은 브라우저에서 바로 확인할 수 있어서 서버 요청 전에 막았어요.",
+                "입력 칸에서 시작 시간을 선택한 뒤 다시 추가해 주세요."
+            );
+        }
+    }
+
+    document.getElementById("reservation-time-create-form").addEventListener("submit", validateReservationTimeCreateForm);
     applyReservationTimeFeedback();
 </script>
 </body>

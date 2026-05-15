@@ -160,18 +160,18 @@
     <section class="layout">
         <article class="card">
             <h2>새 테마 추가</h2>
-            <form method="post" th:action="@{/pages/admin/themes}">
+            <form id="theme-create-form" method="post" th:action="@{/pages/admin/themes}">
                 <label>
                     테마 이름
-                    <input type="text" name="name" required>
+                    <input type="text" id="theme-name" name="name" maxlength="255" required>
                 </label>
                 <label>
                     설명
-                    <textarea name="description" required></textarea>
+                    <textarea id="theme-description" name="description" required></textarea>
                 </label>
                 <label>
                     썸네일 URL
-                    <input type="url" name="thumbnailUrl" required>
+                    <input type="url" id="theme-thumbnail-url" name="thumbnailUrl" required>
                 </label>
                 <button type="submit">테마 저장</button>
             </form>
@@ -199,12 +199,7 @@
     </section>
 </div>
 <script>
-    const themeMessages = {
-        INVALID_THEME_NAME: {
-            title: "테마 이름을 먼저 다듬어볼게요",
-            message: "테마 이름은 비어 있을 수 없어서, 사용자가 바로 구분할 수 있는 이름이 필요해요.",
-            hint: "짧고 분명한 이름으로 저장하면 다음 작업까지 바로 이어갈 수 있어요."
-        },
+    const themeServerMessages = {
         THEME_NAME_DUPLICATED: {
             title: "같은 이름의 테마가 이미 있어요",
             message: "운영 중인 테마와 이름이 겹치면 목록에서 헷갈릴 수 있어 다른 이름으로 저장하는 편이 좋아요.",
@@ -215,17 +210,25 @@
             message: "이미 예약이 연결된 테마는 바로 지우지 않고, 예약 정리 후에 삭제하는 편이 안전해요.",
             hint: "현재 예약을 먼저 확인한 뒤, 더 이상 쓰지 않을 때 삭제할 수 있어요."
         },
-        INVALID_INPUT: {
-            title: "입력 내용을 한 번만 더 볼게요",
-            message: "테마를 저장하거나 정리하는 데 필요한 정보가 일부 비어 있거나 형식이 맞지 않았어요.",
-            hint: "폼을 다시 확인하면 같은 화면에서 바로 이어서 처리할 수 있어요."
-        },
         INTERNAL_SERVER_ERROR: {
             title: "지금은 관리자 작업을 잠시 멈출게요",
             message: "입력 문제보다는 시스템 상태 때문에 요청을 바로 반영하지 못했어요.",
             hint: "잠시 후 다시 시도해보고, 계속 반복되면 서버 상태를 함께 확인하는 편이 좋아요."
+        },
+        INVALID_INPUT: {
+            title: "요청을 처리하지 못했어요",
+            message: "입력값 자체보다는 요청 흐름에서 예상하지 못한 문제가 있었어요.",
+            hint: "같은 문제가 반복되면 입력값과 서버 검증 로직을 함께 확인해보는 편이 좋아요."
         }
     };
+
+    function showFeedback(title, message, hint) {
+        const feedback = document.getElementById("page-feedback");
+        document.getElementById("feedback-title").textContent = title;
+        document.getElementById("feedback-message").textContent = message;
+        document.getElementById("feedback-hint").textContent = hint;
+        feedback.classList.remove("hidden");
+    }
 
     function applyThemeFeedback() {
         const feedback = document.getElementById("page-feedback");
@@ -235,13 +238,58 @@
             return;
         }
 
-        const message = themeMessages[errorCode] || themeMessages.INVALID_INPUT;
-        document.getElementById("feedback-title").textContent = message.title;
-        document.getElementById("feedback-message").textContent = message.message;
-        document.getElementById("feedback-hint").textContent = message.hint;
-        feedback.classList.remove("hidden");
+        const message = themeServerMessages[errorCode] || themeServerMessages.INVALID_INPUT;
+        showFeedback(message.title, message.message, message.hint);
     }
 
+    function validateThemeCreateForm(event) {
+        const name = document.getElementById("theme-name").value.trim();
+        const description = document.getElementById("theme-description").value.trim();
+        const thumbnailUrl = document.getElementById("theme-thumbnail-url").value.trim();
+
+        if (!name) {
+            event.preventDefault();
+            showFeedback(
+                "테마 이름을 입력해 주세요",
+                "이 화면에서 바로 확인할 수 있는 값이라 서버 요청 전에 먼저 체크했어요.",
+                "테마를 구분할 수 있는 이름을 입력한 뒤 다시 저장해 주세요."
+            );
+            return;
+        }
+
+        if (!description) {
+            event.preventDefault();
+            showFeedback(
+                "테마 설명을 입력해 주세요",
+                "설명이 비어 있으면 목록에서 테마를 구분하기 어려워요.",
+                "사용자가 이해하기 쉬운 한두 문장으로 설명을 적어 주세요."
+            );
+            return;
+        }
+
+        if (!thumbnailUrl) {
+            event.preventDefault();
+            showFeedback(
+                "썸네일 주소를 입력해 주세요",
+                "이미지 주소가 없으면 테마 정보를 완성할 수 없어요.",
+                "브라우저가 인식할 수 있는 URL 형식으로 입력해 주세요."
+            );
+            return;
+        }
+
+        try {
+            new URL(thumbnailUrl);
+        } catch (error) {
+            event.preventDefault();
+            showFeedback(
+                "썸네일 주소 형식을 확인해 주세요",
+                "이 값은 브라우저에서 바로 확인 가능한 URL 형식이라 먼저 안내드렸어요.",
+                "예: https://example.com/thumbnail.png"
+            );
+        }
+    }
+
+    document.getElementById("theme-create-form").addEventListener("submit", validateThemeCreateForm);
     applyThemeFeedback();
 </script>
 </body>
