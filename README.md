@@ -415,7 +415,7 @@ erDiagram
     - DuplicatedResourceException을 적용하였다.
 
 - **지금까지의 규칙 중 유지/수정/폐기한 항목**
-    - 모든 규칙을 유지하며 구현을 하려 노력했다.
+    - 모든 규칙을 유지하며 구현을 하려 노력했다
 
 </details>
 
