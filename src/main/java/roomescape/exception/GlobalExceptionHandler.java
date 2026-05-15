@@ -5,6 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,6 +21,7 @@ public class GlobalExceptionHandler {
     private static final String TYPE_CONFLICT = "conflict";
     private static final String TYPE_BUSINESS_RULE_VIOLATION = "business-rule-violation";
     private static final String TYPE_VALIDATION_ERROR = "validation-error";
+    private static final String TYPE_MISSING_PARAMETER = "missing-parameter";
     private static final String TYPE_MALFORMED_REQUEST_BODY = "malformed-request-body";
     private static final String TYPE_INTERNAL_ERROR = "internal-error";
 
@@ -27,10 +29,12 @@ public class GlobalExceptionHandler {
     private static final String TITLE_CONFLICT = "요청이 현재 상태와 충돌함";
     private static final String TITLE_BUSINESS_RULE_VIOLATION = "비즈니스 정책 위반";
     private static final String TITLE_VALIDATION_ERROR = "요청 본문 검증 실패";
+    private static final String TITLE_MISSING_PARAMETER = "필수 요청 파라미터 누락";
     private static final String TITLE_MALFORMED_REQUEST_BODY = "요청 본문을 해석할 수 없음";
     private static final String TITLE_INTERNAL_ERROR = "서버 내부 오류";
 
     private static final String DETAIL_VALIDATION_ERROR = "요청 본문의 일부 필드가 유효하지 않습니다.";
+    private static final String DETAIL_MISSING_PARAMETER_FORMAT = "필수 요청 파라미터 '%s'가 누락되었습니다.";
     private static final String DETAIL_MALFORMED_REQUEST_BODY = "요청 본문의 형식이 올바르지 않습니다.";
     private static final String DETAIL_INTERNAL_ERROR = "요청을 처리하는 중 알 수 없는 오류가 발생했습니다.";
 
@@ -65,6 +69,16 @@ public class GlobalExceptionHandler {
                 .toList();
         problem.setProperty(ERRORS_PROPERTY, errors);
         return problem;
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingParameter(MissingServletRequestParameterException e) {
+        return problemDetail(
+                HttpStatus.BAD_REQUEST,
+                TITLE_MISSING_PARAMETER,
+                TYPE_MISSING_PARAMETER,
+                DETAIL_MISSING_PARAMETER_FORMAT.formatted(e.getParameterName())
+        );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
