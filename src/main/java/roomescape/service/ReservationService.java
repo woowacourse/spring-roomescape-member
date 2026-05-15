@@ -45,14 +45,10 @@ public class ReservationService {
 
     @Transactional
     public Reservation addReservation(AddReservationRequest addReservationRequest) {
-        validateDate(addReservationRequest.date());
-
-        ReservationTime reservationTime = reservationTimeRepository.getReservationTime(addReservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
-
-        if (addReservationRequest.date().isEqual(LocalDate.now())) {
-            validateTime(reservationTime.startAt());
-        }
+        ReservationTime reservationTime = validateDateTimeAndGetReservationTime(
+                addReservationRequest.date(),
+                addReservationRequest.timeId()
+        );
 
         Theme theme = themeRepository.getTheme(addReservationRequest.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_THEME));
@@ -90,14 +86,10 @@ public class ReservationService {
             throw new InvalidRequestException(UNAUTHORIZED_RESERVATION_ACCESS);
         }
 
-        validateDate(updateReservationRequest.date());
-
-        ReservationTime reservationTime = reservationTimeRepository.getReservationTime(updateReservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
-
-        if (updateReservationRequest.date().isEqual(LocalDate.now())) {
-            validateTime(reservationTime.startAt());
-        }
+        ReservationTime reservationTime = validateDateTimeAndGetReservationTime(
+                updateReservationRequest.date(),
+                updateReservationRequest.timeId()
+        );
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(
                 updateReservationRequest.timeId(),
@@ -108,6 +100,18 @@ public class ReservationService {
         }
 
         return reservationRepository.updateReservation(id, updateReservationRequest.date(), reservationTime.id());
+    }
+
+    private ReservationTime validateDateTimeAndGetReservationTime(LocalDate reservationDate, long reservationTimeId) {
+        validateDate(reservationDate);
+
+        ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationTimeId)
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
+
+        if (reservationDate.isEqual(LocalDate.now())) {
+            validateTime(reservationTime.startAt());
+        }
+        return reservationTime;
     }
 
     private void validateDate(LocalDate reservationDate) {
