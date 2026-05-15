@@ -34,11 +34,11 @@ public class TestDataInitializer {
         return themeRepository.save(Theme.createNew(name, description, imagePath));
     }
 
-    public void createReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
-        reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
+        return reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
     }
 }
