@@ -48,7 +48,7 @@ public class ReservationPageController {
             @RequestParam Long themeId,
             RedirectAttributes redirectAttributes
     ) {
-        reservationService.addReservation(name, date, timeId, themeId);
+        reservationService.addReservation(name, date, timeId, themeId, LocalDateTime.now());
         redirectAttributes.addFlashAttribute("message", "예약이 등록되었습니다.");
         return "redirect:/";
     }

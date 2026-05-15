@@ -47,7 +47,8 @@ public class ReservationController {
                     request.name(),
                     request.date(),
                     request.timeId(),
-                    request.themeId()
+                    request.themeId(),
+                    LocalDateTime.now()
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));

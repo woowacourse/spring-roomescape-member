@@ -79,16 +79,59 @@
     </section>
 </main>
 
+<div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
 <script>
     const statusEl = document.querySelector('#status');
+    const toastEl = document.querySelector('#toast');
     const themeForm = document.querySelector('#theme-form');
     const themeGrid = document.querySelector('#theme-grid');
     const timeForm = document.querySelector('#time-form');
     const timeRows = document.querySelector('#time-rows');
+    let toastTimer = null;
 
     function setStatus(message, isError = false) {
         statusEl.textContent = message;
         statusEl.classList.toggle('error', isError);
+    }
+
+    function showToast(message, isError = false) {
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+        }
+
+        toastEl.textContent = message;
+        toastEl.classList.toggle('error', isError);
+        toastEl.classList.add('show');
+
+        toastTimer = window.setTimeout(() => {
+            toastEl.classList.remove('show');
+        }, 3200);
+    }
+
+    function friendlyErrorMessage(code) {
+        const messages = {
+            THEME_CONFLICT: '이미 같은 이름의 테마가 있습니다.',
+            THEME_NOT_FOUND: '테마를 찾을 수 없습니다.',
+            RESERVATION_TIME_CONFLICT: '이미 같은 시간이 있습니다.',
+            RESERVATION_TIME_IN_USE: '예약이 있는 시간은 삭제할 수 없습니다.',
+            RESERVATION_TIME_NOT_FOUND: '예약 시간을 찾을 수 없습니다.',
+            INVALID_REQUEST: '입력값을 확인해 주세요.',
+        };
+
+        return messages[code] ?? '요청을 처리하지 못했습니다.';
+    }
+
+    async function readErrorMessage(response) {
+        const contentType = response.headers.get('content-type') ?? '';
+        if (contentType.includes('application/json')) {
+            const errorBody = await response.json().catch(() => null);
+            if (errorBody && typeof errorBody === 'object') {
+                return friendlyErrorMessage(errorBody.code);
+            }
+        }
+
+        return '요청을 처리하지 못했습니다.';
     }
 
     async function requestJson(url, options = {}) {
@@ -98,8 +141,7 @@
         });
 
         if (!response.ok) {
-            const message = await response.text();
-            throw new Error(message || `요청 실패: ${response.status}`);
+            throw new Error(await readErrorMessage(response));
         }
 
         if (response.status === 204) {
@@ -189,7 +231,7 @@
     }
 
     async function loadTimes() {
-        const response = await requestJson('/user/times');
+        const response = await requestJson('/api/times');
         renderTimes(response.reservationTimes);
     }
 
@@ -206,9 +248,11 @@
             });
             themeForm.reset();
             setStatus('테마를 등록했습니다.');
+            showToast('테마를 등록했습니다.');
             await loadThemes();
         } catch (error) {
-            setStatus(error.message, true);
+            setStatus('테마 등록에 실패했습니다.', true);
+            showToast(error.message, true);
         }
     });
 
@@ -221,9 +265,11 @@
         try {
             await requestJson(`/admin/themes/${button.dataset.themeId}`, {method: 'DELETE'});
             setStatus('테마를 삭제했습니다.');
+            showToast('테마를 삭제했습니다.');
             await loadThemes();
         } catch (error) {
-            setStatus(error.message, true);
+            setStatus('테마 삭제에 실패했습니다.', true);
+            showToast(error.message, true);
         }
     });
 
@@ -236,9 +282,11 @@
             });
             timeForm.reset();
             setStatus('예약 시간을 추가했습니다.');
+            showToast('예약 시간을 추가했습니다.');
             await loadTimes();
         } catch (error) {
-            setStatus(error.message, true);
+            setStatus('예약 시간 추가에 실패했습니다.', true);
+            showToast(error.message, true);
         }
     });
 
@@ -251,9 +299,11 @@
         try {
             await requestJson(`/admin/times/${button.dataset.timeId}`, {method: 'DELETE'});
             setStatus('예약 시간을 삭제했습니다.');
+            showToast('예약 시간을 삭제했습니다.');
             await loadTimes();
         } catch (error) {
-            setStatus(error.message, true);
+            setStatus('예약 시간 삭제에 실패했습니다.', true);
+            showToast(error.message, true);
         }
     });
 
@@ -263,7 +313,8 @@
         try {
             await Promise.all([loadThemes(), loadTimes()]);
         } catch (error) {
-            setStatus(error.message, true);
+            setStatus('초기 화면을 불러오지 못했습니다.', true);
+            showToast('화면을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
         }
     })();
 </script>

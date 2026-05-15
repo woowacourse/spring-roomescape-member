@@ -35,7 +35,7 @@ public class ReservationService {
         return reservationDao.selectByName(name);
     }
 
-    public Reservation addReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation addReservation(String name, LocalDate date, Long timeId, Long themeId, LocalDateTime now) {
 
         if (!reservationTimeDao.existsById(timeId)) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
@@ -48,6 +48,9 @@ public class ReservationService {
         ReservationTime time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);
 
+        if (reservation.isPast(now)) {
+            throw new BusinessException(ErrorCode.RESERVATION_CREATE_TO_PAST);
+        }
 
         boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);
 
