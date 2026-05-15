@@ -152,8 +152,8 @@
     editSaveBtn.addEventListener('click', async () => {
         if (!editing) return;
         const date = editDate.value;
-        if (!date) return showToast('날짜를 선택해주세요.', null, 'error');
-        if (!selectedTimeId) return showToast('변경할 시간을 선택해주세요.', null, 'error');
+        if (!date) return showToast('날짜를 선택해주세요.', 'error');
+        if (!selectedTimeId) return showToast('변경할 시간을 선택해주세요.', 'error');
 
         try {
             const res = await apiFetch(`/reservations/${editing.id}`, {

@@ -38,8 +38,7 @@ public class GlobalExceptionHandler {
         ErrorResponse body = new ErrorResponse(
                 code.name(),
                 request.getRequestURI(),
-                message,
-                code.getAction()
+                message
         );
         return ResponseEntity.status(code.getStatus()).body(body);
     }

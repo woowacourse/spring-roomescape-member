@@ -9,7 +9,7 @@
 
     addBtn.addEventListener('click', async () => {
         const startAt = startAtEl.value;
-        if (!startAt) return showToast('시간을 입력해주세요.', null, 'error');
+        if (!startAt) return showToast('시간을 입력해주세요.', 'error');
         try {
             const res = await apiFetch('/admin/times', {
                 method: 'POST',

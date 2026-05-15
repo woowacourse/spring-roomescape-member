@@ -1,6 +1,5 @@
 package roomescape.exception;
 
-import org.springframework.http.HttpStatus;
 import roomescape.exception.code.ErrorCode;
 
 public class BaseException extends RuntimeException {
@@ -8,10 +7,6 @@ public class BaseException extends RuntimeException {
 
     public BaseException(ErrorCode code) {
         this.code = code;
-    }
-
-    public String getAction() {
-        return code.getAction();
     }
 
     public ErrorCode getCode() {
@@ -23,7 +18,4 @@ public class BaseException extends RuntimeException {
         return code.getMessage();
     }
 
-    public HttpStatus getStatus() {
-        return code.getStatus();
-    }
 }

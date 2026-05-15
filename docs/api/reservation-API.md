@@ -8,8 +8,7 @@
 {
   "code": "RESERVATION_PAST_DATE",
   "path": "/reservations",
-  "message": "지난 날짜는 예약할 수 없습니다.",
-  "action": "오늘 이후의 날짜로 예약해주세요."
+  "message": "지난 날짜는 예약할 수 없습니다. 오늘 이후의 날짜로 예약해주세요."
 }
 ```
 
@@ -17,8 +16,7 @@
 |-----------|-------------------------------------------------|
 | `code`    | 프론트가 분기 처리하기 위한 에러 식별자 (`ErrorCode` enum 상수 이름) |
 | `path`    | 에러가 발생한 요청 URI                                  |
-| `message` | 사용자에게 보일 수 있는 자연어 설명                            |
-| `action`  | 해결을 위한 다음 행동 안내 (없을 수 있음)                       |
+| `message` | 어떤 값이 왜 문제이고 어떻게 해결해야 하는지까지 포함한 상세 설명           |
 
 ### 전역 핸들러가 일률 처리하는 경우
 
@@ -37,8 +35,7 @@
 {
   "code": "INTERNAL_SERVER_ERROR",
   "path": "/reservations",
-  "message": "요청 처리에 문제가 발생했습니다.",
-  "action": null
+  "message": "요청 처리에 문제가 발생했습니다."
 }
 ```
 
@@ -136,7 +133,7 @@ DELETE /admin/reservations/{reservationId}
 
 > 행을 물리적으로 제거하는 **hard delete**다. 사용자의 `DELETE /reservations/{id}`(soft cancel: `canceled_reservation` 으로 행 이동)와는 의도가
 > 다르다.
-> 운영상 잘못 들어간 예약을 정정하기 위한 용도이므로 이력 보존이 필요 없을 때 사용한다. 삭제된 예약은 조회·집계 어디에도 남지 않는다.
+> 운영상 잘못 들어간 예약을 정정하기 위한 용도이므로 이력 보존이 필요 없을 때 사용한다. 삭제된 예약은 조회와 집계 어디에도 남지 않는다.
 
 Response `204 No Content`
 
@@ -262,8 +259,7 @@ Error Response
 {
   "code": "RESERVATION_PAST_DATE",
   "path": "/reservations",
-  "message": "지난 날짜는 예약할 수 없습니다.",
-  "action": "오늘 이후의 날짜로 예약해주세요."
+  "message": "지난 날짜는 예약할 수 없습니다. 오늘 이후의 날짜로 예약해주세요."
 }
 ```
 
@@ -273,8 +269,7 @@ Error Response
 {
   "code": "RESERVATION_DUPLICATED",
   "path": "/reservations",
-  "message": "이미 존재하는 예약입니다.",
-  "action": "다른 테마, 날짜, 시간으로 예약을 시도해주세요."
+  "message": "이미 해당 날짜/시간/테마로 예약이 존재합니다. 다른 날짜, 시간, 테마로 예약을 시도해주세요."
 }
 ```
 
@@ -304,7 +299,7 @@ Request Body
 
 - 이미 시작된 예약(예약 시점이 현재 이전)은 변경 불가
 - 변경하려는 (date, timeId, themeId) 자리에 이미 예약이 있으면 거부
-- 변경 후 시점이 과거가 되는 변경도 거부 — 변경 전·후 어느 쪽이든 시작된 예약은 변경 불가로 보고 `RESERVATION_ALREADY_STARTED`로 응답한다
+- 변경 후 시점이 과거가 되는 변경도 거부 — 변경 전/후 어느 쪽이든 시작된 예약은 변경 불가로 보고 `RESERVATION_ALREADY_STARTED`로 응답한다
 
 Response `200 OK`
 
@@ -342,7 +337,8 @@ Error Response
 DELETE /reservations/{reservationId}
 ```
 
-> reservation 테이블에서 행을 제거하고 `canceled_reservation` 으로 옮긴다(soft cancel). 본인 예약 조회·중복 검사·가능한 시간 조회에는 더 이상 노출되지 않으며, 취소 이력은
+> reservation 테이블에서 행을 제거하고 `canceled_reservation` 으로 옮긴다(soft cancel). 본인 예약 조회, 중복 검사, 가능한 시간 조회에는 더 이상 노출되지 않으며, 
+> 취소 이력은
 `canceled_reservation` 에만 남는다.
 
 Response `204 No Content`

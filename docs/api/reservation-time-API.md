@@ -77,8 +77,7 @@ Error Response
 {
   "code": "RESERVATION_TIME_IN_USE",
   "path": "/admin/times/3",
-  "message": "예약이 존재하는 시간은 삭제할 수 없습니다.",
-  "action": "해당 시간의 예약을 먼저 취소해주세요."
+  "message": "예약이 존재하는 시간은 삭제할 수 없습니다. 해당 시간의 예약을 먼저 취소해주세요."
 }
 ```
 

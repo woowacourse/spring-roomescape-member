@@ -85,8 +85,7 @@ Error Response
 {
   "code": "THEME_IN_USE",
   "path": "/admin/themes/1",
-  "message": "예약이 존재하는 테마는 삭제할 수 없습니다.",
-  "action": "해당 테마의 예약을 먼저 취소해주세요."
+  "message": "예약이 존재하는 테마는 삭제할 수 없습니다. 해당 테마의 예약을 먼저 취소해주세요."
 }
 ```
 

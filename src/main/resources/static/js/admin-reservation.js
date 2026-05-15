@@ -22,7 +22,7 @@
             themeId: Number(themeEl.value)
         };
         if (!body.name || !body.date || !body.timeId || !body.themeId) {
-            return showToast('모든 항목을 입력해주세요.', null, 'error');
+            return showToast('모든 항목을 입력해주세요.', 'error');
         }
         try {
             const res = await apiFetch('/admin/reservations', {

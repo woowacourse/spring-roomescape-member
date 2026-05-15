@@ -15,7 +15,7 @@
             description: descEl.value.trim(),
             thumbnailUrl: thumbEl.value.trim()
         };
-        if (!body.name) return showToast('이름을 입력해주세요.', null, 'error');
+        if (!body.name) return showToast('이름을 입력해주세요.', 'error');
         try {
             const res = await apiFetch('/admin/themes', {
                 method: 'POST',

@@ -57,9 +57,9 @@
     submitBtn.addEventListener('click', async () => {
         const name = nameInput.value.trim();
         const date = dateInput.value;
-        if (!name) return showToast('이름을 입력해주세요.', null, 'error');
-        if (!date) return showToast('날짜를 선택해주세요.', null, 'error');
-        if (!selectedTimeId) return showToast('시간을 선택해주세요.', null, 'error');
+        if (!name) return showToast('이름을 입력해주세요.', 'error');
+        if (!date) return showToast('날짜를 선택해주세요.', 'error');
+        if (!selectedTimeId) return showToast('시간을 선택해주세요.', 'error');
 
         try {
             const res = await apiFetch('/reservations', {
