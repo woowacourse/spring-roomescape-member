@@ -30,7 +30,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/{id}")
-    public ResponseEntity<ThemeResponse> readById(@PathVariable Long id) {
+    public ResponseEntity<ThemeResponse> readById(@Valid @PathVariable Long id) {
         Theme theme = themeService.findById(id);
         ThemeResponse themeResponse = ThemeResponse.from(theme);
         return ResponseEntity.ok(themeResponse);

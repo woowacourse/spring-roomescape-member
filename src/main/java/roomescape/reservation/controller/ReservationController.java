@@ -37,7 +37,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> readById(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> readById(@Valid @PathVariable Long id) {
         Reservation reservation = reservationService.findById(id);
         return ResponseEntity.ok().body(ReservationResponse.from(reservation));
     }
@@ -65,7 +65,7 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> updateDateTimeByName(@PathVariable Long id,
+    public ResponseEntity<ReservationResponse> updateDateTimeByName(@Valid @PathVariable Long id,
                                                                     @Valid @RequestBody ReservationChangeRequest request) {
         Reservation reservation = reservationService.modifyDateTimeByName(
                 id,
@@ -85,7 +85,7 @@ public class ReservationController {
     }
 
     @DeleteMapping(value = "/reservations/my/{id}", params = "name")
-    public ResponseEntity<Void> deleteIdByName(@PathVariable Long id, @Valid @RequestParam String name) {
+    public ResponseEntity<Void> deleteIdByName(@Valid @PathVariable Long id, @Valid @RequestParam String name) {
         reservationService.deleteIdByName(id, name);
         return ResponseEntity.noContent().build();
     }

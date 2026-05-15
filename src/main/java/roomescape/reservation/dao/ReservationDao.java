@@ -52,7 +52,7 @@ public class ReservationDao {
                         where r.id = ?
                         """;
         List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper, id);
-        return reservations.stream().findAny();
+        return reservations.stream().findFirst();
     }
 
     public List<Reservation> selectByThemeIdAndDate(Long themeId, LocalDate date) {

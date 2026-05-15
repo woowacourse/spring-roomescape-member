@@ -30,7 +30,7 @@ public class TimeController {
     }
 
     @GetMapping(value = "/times/available-time", params = {"themeId", "date"})
-    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
+    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@Valid @RequestParam Long themeId,
                                                                             @Valid @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date).stream()
                 .map(AvailableTimeResponse::from)
