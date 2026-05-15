@@ -81,4 +81,9 @@ public class ThemeDao {
         String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
+
+    public Boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
 }

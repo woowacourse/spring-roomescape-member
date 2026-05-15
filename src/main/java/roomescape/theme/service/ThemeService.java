@@ -3,6 +3,8 @@ package roomescape.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 
@@ -28,6 +30,9 @@ public class ThemeService {
     }
 
     public Theme addTheme(String name, String description, String image) {
+        if (themeDao.existsByName(name)) {
+            throw new BusinessException(ErrorCode.THEME_CONFLICT);
+        }
         Theme theme = new Theme(name, description, image);
         return themeDao.insert(theme);
     }

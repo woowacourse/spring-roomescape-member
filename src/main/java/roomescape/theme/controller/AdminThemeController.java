@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class AdminThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<AdminThemeResponse> createTheme(@RequestBody AdminThemeRequest request) {
+    public ResponseEntity<AdminThemeResponse> createTheme(@Valid @RequestBody AdminThemeRequest request) {
         Theme theme = themeService.addTheme(
                 request.name(),
                 request.description(),
