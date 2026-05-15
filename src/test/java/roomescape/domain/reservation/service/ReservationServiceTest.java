@@ -139,18 +139,6 @@ class ReservationServiceTest {
                     actual.get(0))
             );
         }
-
-        @Test
-        @DisplayName("사용자 이름이 빈 문자열이면 예외가 발생한다.")
-        void 실패() {
-            String wrongName = "";
-
-            ExceptionAssertions.assertErrorCode(
-                () -> reservationService.getReservationsByName(wrongName),
-                BadRequestException.class,
-                ErrorCode.COMMON_INVALID_REQUEST
-            );
-        }
     }
 
     @Nested

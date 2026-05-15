@@ -2,10 +2,13 @@ package roomescape.domain.reservation.controller;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URLDecoder;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +26,7 @@ import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
 @RequestMapping("/api/reservations")
+@Validated
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -33,30 +37,31 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> getReservations(
-        @RequestHeader("Reservation-Name") String name) {
+        @NotNull @RequestHeader("Reservation-Name") String name) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(reservationService.getReservationsByName(URLDecoder.decode(name, UTF_8)));
     }
 
     @PostMapping()
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
-        @RequestBody ReservationCreateRequestDto requestDto) {
+        @Valid @RequestBody ReservationCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reservationService.saveReservation(requestDto));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReservation(
-        @RequestHeader("Reservation-Name") String name,
-        @PathVariable Long id,
-        @RequestBody ReservationUpdateRequestDto requestDto) {
+        @NotNull @RequestHeader("Reservation-Name") String name,
+        @NotNull @PathVariable Long id,
+        @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
         reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@RequestHeader("Reservation-Name") String name,
-        @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(
+        @NotNull @RequestHeader("Reservation-Name") String name,
+        @NotNull @PathVariable Long id) {
         reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

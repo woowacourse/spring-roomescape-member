@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,48 +28,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e) {
+        String requiredType = Optional.ofNullable(e.getRequiredType())
+            .map(Class::getSimpleName)
+            .orElse("Unknown");
+        List<ErrorDetail> errors = List.of(
+            ErrorDetail.of(e.getName(), e.getValue(), requiredType + " 타입이어야 합니다."));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_PARAMETER_TYPE));
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_PARAMETER_TYPE, errors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-        HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         Throwable cause = e.getCause();
-        Optional<BadRequestException> badRequestException = ThrowableFinder.find(cause,
-            BadRequestException.class);
-        if (badRequestException.isPresent()) {
-            return handleBadRequestExceptionInHttpMessageNotReaedableException(
-                badRequestException.get());
+        List<ErrorDetail> errors = new ArrayList<>();
+        if (cause instanceof InvalidFormatException invalidFormatException) {
+            String field = invalidFormatException.getPath()
+                .getFirst()
+                .getFieldName();
+            errors.add(ErrorDetail.of(
+                field,
+                invalidFormatException.getValue(),
+                "형식이 올바르지 않습니다."
+            ));
         }
 
-        Optional<InvalidFormatException> invalidFormatException = ThrowableFinder.find(cause,
-            InvalidFormatException.class);
-        if (invalidFormatException.isPresent()) {
-            return handleInvalidFormatExceptionInHttpMessageNotReadableException(
-                invalidFormatException.get());
-        }
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST_BODY, List.of()));
-    }
-
-    private static ResponseEntity<ErrorResponse> handleInvalidFormatExceptionInHttpMessageNotReadableException(
-        InvalidFormatException invalidFormatException) {
-        String field = invalidFormatException.getPath()
-            .getFirst()
-            .getFieldName();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST_BODY, List.of(
-                ErrorDetail.of(field, invalidFormatException.getValue(), "형식이 올바르지 않습니다."))));
-    }
-
-    private static ResponseEntity<ErrorResponse> handleBadRequestExceptionInHttpMessageNotReaedableException(
-        BadRequestException badRequestException) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(badRequestException.getErrorCode(),
-                badRequestException.getErrors()));
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST_BODY, errors));
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
@@ -86,6 +71,22 @@ public class GlobalExceptionHandler {
         MissingServletRequestParameterException e) {
         List<ErrorDetail> errors = new ArrayList<>();
         errors.add(ErrorDetail.of(e.getParameterName(), "필수 필드가 누락되었습니다."));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+        MethodArgumentNotValidException e) {
+        List<ErrorDetail> errors = e.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(fieldError -> ErrorDetail.of(
+                fieldError.getField(),
+                fieldError.getRejectedValue(),
+                fieldError.getDefaultMessage()
+            )).toList();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
