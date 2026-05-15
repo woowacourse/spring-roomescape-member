@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,11 +72,17 @@ public class ReservationRepository {
     }
 
     public void deleteById(Long id) {
-        String sql = "delete from reservation where id = ?";
+        String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public List<Reservation> findByTimeAndTheme(Long timeId, Long themeId) {
         return jdbcTemplate.query(SELECT_BY_TIME_AND_THEME, RESERVATION_ROW_MAPPER, timeId, themeId);
+    }
+
+    public boolean existsByTimeId(long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count != null && count > 0;
     }
 }

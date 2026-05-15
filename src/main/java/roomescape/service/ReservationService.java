@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
@@ -13,6 +14,7 @@ import roomescape.repository.ReservationRepository;
 public class ReservationService {
     private static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
     private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
+    private static final String PAST_RESERVATION = "지나간 날짜·시간에는 예약할 수 없습니다.";
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
@@ -35,22 +37,33 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
 
-        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(), request.getThemeId())
-                .stream()
-                .anyMatch(r -> r.getDate().equals(reservationDate));
-
-        if (isExists) {
-            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
-        }
+        validateFutureDateTime(reservationDate, reservationTime);
+        validateNoDuplicate(request, reservationDate);
 
         Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
-
         return reservationRepository.save(reservation);
     }
 
     public void cancel(long reservationId) {
-        reservationRepository.findById(reservationId).orElseThrow(() -> new IllegalArgumentException(
-                INVALID_RESERVATION_ID));
+        reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_RESERVATION_ID));
         reservationRepository.deleteById(reservationId);
+    }
+
+    private void validateFutureDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(
+                reservationDate.getDate(), reservationTime.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(PAST_RESERVATION);
+        }
+    }
+
+    private void validateNoDuplicate(ReservationCreateRequest request, ReservationDate reservationDate) {
+        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(), request.getThemeId())
+                .stream()
+                .anyMatch(r -> r.getDate().equals(reservationDate));
+        if (isExists) {
+            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+        }
     }
 }
