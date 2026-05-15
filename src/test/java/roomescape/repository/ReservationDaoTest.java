@@ -23,6 +23,7 @@ class ReservationDaoTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation_history");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -43,22 +44,11 @@ class ReservationDaoTest {
     }
 
     @Test
-    @DisplayName("예약 삭제 시 상태가 DELETED로 변경된다")
+    @DisplayName("예약 삭제 시 DB에서 행이 제거된다")
     void deleteReservation() {
         Reservation reservation = Reservation.pending("user_a", LocalDate.of(2026, 5, 1));
         Reservation saved = reservationDao.save(reservation, 1L, 1L);
 
-        reservationDao.delete(saved.id());
-
-        List<Reservation> reservations = reservationDao.findAllReservations();
-        assertThat(reservations.size()).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("DELETED 상태 예약은 전체 조회에서 제외된다")
-    void findAllExcludesDeleted() {
-        Reservation reservation = Reservation.pending("user_a", LocalDate.of(2026, 5, 1));
-        Reservation saved = reservationDao.save(reservation, 1L, 1L);
         reservationDao.delete(saved.id());
 
         List<Reservation> reservations = reservationDao.findAllReservations();

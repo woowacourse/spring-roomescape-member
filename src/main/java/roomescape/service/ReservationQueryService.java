@@ -17,4 +17,14 @@ public class ReservationQueryService {
                 .map(ReservationResponse::from)
                 .toList();
     }
+
+    public List<ReservationResponse> getReservationsByName(String name) {
+        return reservationDao.findReservationsByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public ReservationResponse getReservationById(Long id) {
+        return ReservationResponse.from(reservationDao.findById(id));
+    }
 }

@@ -205,6 +205,44 @@
 
         .hidden { display: none; }
         .empty-text { color: #94a3b8; font-size: 0.88rem; padding: 8px 0; }
+
+        /* ── Sort bar ── */
+        .sort-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .sort-label { font-size: 0.8rem; font-weight: 500; color: #94a3b8; margin-right: 2px; }
+        .sort-btn {
+            padding: 5px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; font-family: inherit;
+            background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-weight: 500; transition: all 0.15s;
+        }
+        .sort-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .sort-btn.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+        /* ── Reservation list (single column) ── */
+        .reservation-list { display: flex; flex-direction: column; gap: 10px; }
+        .reservation-card {
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px;
+            background: white; transition: box-shadow 0.15s;
+        }
+        .reservation-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .reservation-card-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .reservation-card-info { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0; }
+        .reservation-card-theme {
+            font-size: 0.82rem; font-weight: 700; color: #4f46e5;
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .reservation-card-meta { display: flex; gap: 14px; font-size: 0.88rem; color: #475569; }
+        .reservation-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: 6px; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-danger:hover { background: #fee2e2; }
+
+        /* ── Inline edit form ── */
+        .edit-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+        .edit-form label { font-size: 0.8rem; font-weight: 500; color: #475569; margin-bottom: 4px; }
+        .edit-form input[type="date"] { margin-bottom: 10px; font-size: 0.88rem; padding: 8px 12px; }
+        .edit-form .time-list { margin-bottom: 10px; }
+        .edit-form .time-list .time-btn { padding: 7px 14px; font-size: 0.82rem; }
     </style>
 </head>
 <body>
@@ -215,6 +253,7 @@
 
 <nav class="nav">
     <div class="nav-item active" onclick="showTab('reservation')">예약하기</div>
+    <div class="nav-item" onclick="showTab('myreservation')">내 예약 조회</div>
     <div class="nav-item" onclick="showTab('popular')">인기 테마</div>
 </nav>
 
@@ -255,10 +294,44 @@
         </div>
     </div>
 
+    <!-- 내 예약 조회 -->
+    <div class="section" id="section-myreservation">
+        <div class="card">
+            <div class="card-title">이름으로 예약 조회</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                <input type="text" id="search-name" placeholder="예약자 이름을 입력하세요" style="margin-bottom: 0;">
+                <button class="btn-primary" style="white-space: nowrap;" onclick="searchReservations()">조회</button>
+            </div>
+            <div class="sort-bar hidden" id="sort-bar">
+                <span class="sort-label">정렬</span>
+                <button class="sort-btn active" onclick="setSort('date-asc')">날짜 오름차순</button>
+                <button class="sort-btn" onclick="setSort('date-desc')">날짜 내림차순</button>
+                <button class="sort-btn" onclick="setSort('theme')">테마명순</button>
+            </div>
+            <div id="search-result"></div>
+        </div>
+    </div>
+
     <!-- 인기 테마 -->
     <div class="section" id="section-popular">
         <div class="card">
-            <div class="card-title">최근 1주 인기 테마 TOP 10</div>
+            <div class="card-title">인기 테마 TOP 10</div>
+            <div style="margin-bottom: 16px;">
+                <div class="sort-bar" style="margin-bottom: 10px;">
+                    <span class="sort-label">기간</span>
+                    <button class="sort-btn active" id="preset-7"   onclick="setPopularPreset(7, this)">최근 1주</button>
+                    <button class="sort-btn"         id="preset-30"  onclick="setPopularPreset(30, this)">최근 1개월</button>
+                    <button class="sort-btn"         id="preset-90"  onclick="setPopularPreset(90, this)">최근 3개월</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <input type="date" id="popular-start" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <span style="color: #94a3b8; font-size: 0.9rem;">~</span>
+                    <input type="date" id="popular-end" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <button class="btn-primary btn-sm" onclick="loadPopularThemes()">조회</button>
+                </div>
+            </div>
             <div class="popular-grid" id="popularGrid"></div>
         </div>
     </div>
@@ -268,14 +341,170 @@
 <script>
     let selectedTimeId = null;
     let selectedThemeId = null;
+    let lastSearchName = '';
+    let currentSort = 'date-asc';
+    const editSelectedTimes = {};
+
+    function setSort(key) {
+        currentSort = key;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderReservations(lastSearchName);
+    }
+
+    function sortReservations(list) {
+        return [...list].sort((a, b) => {
+            if (currentSort === 'date-asc')  return a.date.localeCompare(b.date) || a.time.startAt.localeCompare(b.time.startAt);
+            if (currentSort === 'date-desc') return b.date.localeCompare(a.date) || a.time.startAt.localeCompare(b.time.startAt);
+            if (currentSort === 'theme')     return a.theme.name.localeCompare(b.theme.name, 'ko');
+            return 0;
+        });
+    }
 
     function showTab(name) {
         document.querySelectorAll('.nav-item').forEach((t, i) => {
-            t.classList.toggle('active', ['reservation', 'popular'][i] === name);
+            t.classList.toggle('active', ['reservation', 'myreservation', 'popular'][i] === name);
         });
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('section-' + name).classList.add('active');
-        if (name === 'popular') loadPopularThemes();
+        if (name === 'popular') { initPopularDates(); loadPopularThemes(); }
+    }
+
+    async function searchReservations() {
+        const name = document.getElementById('search-name').value.trim();
+        if (!name) {
+            document.getElementById('search-result').innerHTML =
+                '<div class="alert alert-error"><span>✕</span>이름을 입력해주세요.</div>';
+            return;
+        }
+        lastSearchName = name;
+        await renderReservations(name);
+    }
+
+    async function renderReservations(name) {
+        const resultEl = document.getElementById('search-result');
+        const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            resultEl.innerHTML = `<div class="alert alert-error"><span>✕</span>${err?.message ?? '조회에 실패했습니다.'}</div>`;
+            document.getElementById('sort-bar').classList.add('hidden');
+            return;
+        }
+        const list = await res.json();
+        if (list.length === 0) {
+            resultEl.innerHTML = '<p class="empty-text">예약 내역이 없습니다.</p>';
+            document.getElementById('sort-bar').classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('sort-bar').classList.remove('hidden');
+        const sorted = sortReservations(list);
+
+        resultEl.innerHTML = `
+            <div class="reservation-list">
+                ${sorted.map(r => `
+                    <div class="reservation-card" id="card-${r.id}">
+                        <div class="reservation-card-row">
+                            <div class="reservation-card-info">
+                                <span class="reservation-card-theme">${r.theme.name}</span>
+                                <div class="reservation-card-meta">
+                                    <span>📅 ${r.date}</span>
+                                    <span>🕐 ${r.time.startAt}</span>
+                                </div>
+                            </div>
+                            <div class="reservation-card-actions">
+                                <button class="btn-sm btn-secondary" onclick="toggleEditForm(${r.id}, ${r.theme.id}, '${r.date}')">수정</button>
+                                <button class="btn-sm btn-danger" onclick="cancelReservation(${r.id})">취소</button>
+                            </div>
+                        </div>
+                        <div class="edit-form hidden" id="edit-form-${r.id}">
+                            <label>새 날짜</label>
+                            <input type="date" id="edit-date-${r.id}" value="${r.date}"
+                                   onchange="loadEditTimes(${r.id}, ${r.theme.id})">
+                            <label>새 시간</label>
+                            <div class="time-list" id="edit-times-${r.id}">
+                                <p class="empty-text">날짜를 선택하면 가능한 시간이 표시됩니다.</p>
+                            </div>
+                            <div id="edit-alert-${r.id}"></div>
+                            <button class="btn-sm btn-primary" onclick="submitEdit(${r.id})">수정 완료</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    async function cancelReservation(id) {
+        if (!confirm('예약을 취소하시겠습니까?')) return;
+        const res = await fetch(`/reservations/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            await renderReservations(lastSearchName);
+        } else {
+            const err = await res.json().catch(() => null);
+            alert(err?.message ?? '취소에 실패했습니다.');
+        }
+    }
+
+    async function toggleEditForm(id, themeId, currentDate) {
+        const form = document.getElementById(`edit-form-${id}`);
+        const isHidden = form.classList.contains('hidden');
+        form.classList.toggle('hidden', !isHidden);
+        if (isHidden) {
+            await loadEditTimes(id, themeId, currentDate);
+        }
+    }
+
+    async function loadEditTimes(id, themeId, dateOverride) {
+        const dateInput = document.getElementById(`edit-date-${id}`);
+        const date = dateOverride ?? dateInput.value;
+        if (dateOverride) dateInput.value = date;
+        if (!date) return;
+
+        const timesEl = document.getElementById(`edit-times-${id}`);
+        timesEl.innerHTML = '<p class="empty-text">불러오는 중...</p>';
+        editSelectedTimes[id] = null;
+
+        const res = await fetch(`/times?date=${date}&themeId=${themeId}`);
+        const times = await res.json();
+
+        if (times.length === 0) {
+            timesEl.innerHTML = '<p class="empty-text">예약 가능한 시간이 없습니다.</p>';
+            return;
+        }
+        timesEl.innerHTML = '';
+        times.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'time-btn';
+            btn.textContent = t.startAt;
+            btn.onclick = () => {
+                timesEl.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                editSelectedTimes[id] = t.id;
+            };
+            timesEl.appendChild(btn);
+        });
+    }
+
+    async function submitEdit(id) {
+        const date = document.getElementById(`edit-date-${id}`).value;
+        const timeId = editSelectedTimes[id];
+        const alertEl = document.getElementById(`edit-alert-${id}`);
+
+        if (!date) { alertEl.innerHTML = '<div class="alert alert-error"><span>✕</span>날짜를 선택해주세요.</div>'; return; }
+        if (!timeId) { alertEl.innerHTML = '<div class="alert alert-error"><span>✕</span>시간을 선택해주세요.</div>'; return; }
+
+        const res = await fetch(`/reservations/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, timeId })
+        });
+
+        if (res.ok) {
+            await renderReservations(lastSearchName);
+        } else {
+            const err = await res.json().catch(() => null);
+            alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span>${err?.message ?? '수정에 실패했습니다.'}</div>`;
+        }
     }
 
     async function loadThemes() {
@@ -357,18 +586,48 @@
         }
     }
 
-    async function loadPopularThemes() {
-        const today = new Date();
-        const endDate = new Date(today);
-        endDate.setDate(today.getDate() - 1);
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 7);
-        const endAt = endDate.toISOString().slice(0, 10);
-        const startAt = startDate.toISOString().slice(0, 10);
+    function toDateStr(date) {
+        return date.toISOString().slice(0, 10);
+    }
 
+    function setPopularPreset(days, btn) {
+        const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - days);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadPopularThemes();
+    }
+
+    function clearPopularPreset() {
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+    }
+
+    async function loadPopularThemes() {
+        const startAt = document.getElementById('popular-start').value;
+        const endAt   = document.getElementById('popular-end').value;
+        const grid    = document.getElementById('popularGrid');
+
+        if (!startAt || !endAt) {
+            grid.innerHTML = '<p class="empty-text">기간을 선택해주세요.</p>';
+            return;
+        }
+        if (startAt > endAt) {
+            grid.innerHTML = '<p class="empty-text">시작일이 종료일보다 늦을 수 없습니다.</p>';
+            return;
+        }
+
+        grid.innerHTML = '<p class="empty-text">불러오는 중...</p>';
         const res = await fetch(`/themes/popular?startAt=${startAt}&endAt=${endAt}&limit=10`);
         const themes = await res.json();
-        const grid = document.getElementById('popularGrid');
+
+        if (themes.length === 0) {
+            grid.innerHTML = '<p class="empty-text">해당 기간에 예약된 테마가 없습니다.</p>';
+            return;
+        }
+
         grid.innerHTML = themes.map((t, i) => `
             <div class="popular-card">
                 <img src="${t.thumbnailUrl}" alt="${t.name}">
@@ -379,6 +638,14 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    function initPopularDates() {
+        const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - 7);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
     }
 
     function showAlert(msg, type) {

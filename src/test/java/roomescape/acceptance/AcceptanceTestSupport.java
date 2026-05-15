@@ -9,12 +9,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public abstract class AcceptanceTestSupport {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_history");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 }

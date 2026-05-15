@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ErrorMessage;
@@ -40,8 +40,7 @@ public class ReservationDao {
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
                 reservationTime,
-                theme,
-                ReservationStatus.from(rs.getString("status"))
+                theme
         );
     };
 
@@ -50,8 +49,7 @@ public class ReservationDao {
                 .addValue("name", reservation.username())
                 .addValue("date", reservation.reservationDate())
                 .addValue("time_id", timeId)
-                .addValue("theme_id", themeId)
-                .addValue("status", ReservationStatus.AVAILABLE.name());
+                .addValue("theme_id", themeId);
 
         SimpleJdbcInsert reservationInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -60,17 +58,16 @@ public class ReservationDao {
         Number reservationId = reservationInsertExecutor.executeAndReturnKey(params);
 
         String sql = """
-                SELECT 
+                SELECT
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
-                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
                     theme.name as theme_name,
                     theme.thumbnail_url as thumbnail_url,
-                    theme.description as theme_description 
+                    theme.description as theme_description
                 FROM reservation as reservation
                 INNER JOIN reservation_time as time
                 ON reservation.time_id = time.id
@@ -82,9 +79,42 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, reservationId.longValue());
     }
 
+    public Reservation findById(long reservationId) {
+        String sql = """
+                SELECT
+                    reservation.id as reservation_id,
+                    reservation.name,
+                    reservation.date,
+                    time.id as time_id,
+                    time.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.thumbnail_url as thumbnail_url,
+                    theme.description as theme_description
+                FROM reservation as reservation
+                INNER JOIN reservation_time as time
+                ON reservation.time_id = time.id
+                INNER JOIN theme as theme
+                ON reservation.theme_id = theme.id
+                WHERE reservation.id = ?
+                """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, reservationId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(ErrorMessage.RESERVATION_NOT_FOUND);
+        }
+    }
+
+    public Reservation update(long reservationId, LocalDate date, long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, reservationId);
+        return findById(reservationId);
+    }
+
     public void delete(long reservationId) {
-        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, ReservationStatus.DELETED.name(), reservationId);
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        int affected = jdbcTemplate.update(sql, reservationId);
 
         if (affected == 0) {
             throw new NotFoundException(ErrorMessage.RESERVATION_NOT_FOUND);
@@ -97,33 +127,54 @@ public class ReservationDao {
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
-                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
                     theme.name as theme_name,
                     theme.thumbnail_url as thumbnail_url,
-                    theme.description as theme_description 
+                    theme.description as theme_description
                 FROM reservation as reservation
                 INNER JOIN reservation_time as time
                 ON reservation.time_id = time.id
                 INNER JOIN theme as theme
                 ON reservation.theme_id = theme.id
-                WHERE reservation.status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, ReservationStatus.AVAILABLE.name());
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Reservation> findReservationsByName(String name) {
+        String sql = """
+                SELECT
+                    reservation.id as reservation_id,
+                    reservation.name,
+                    reservation.date,
+                    time.id as time_id,
+                    time.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.thumbnail_url as thumbnail_url,
+                    theme.description as theme_description
+                FROM reservation as reservation
+                INNER JOIN reservation_time as time
+                ON reservation.time_id = time.id
+                INNER JOIN theme as theme
+                ON reservation.theme_id = theme.id
+                WHERE reservation.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, name);
     }
 
     public boolean existsByTimeId(long timeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1 FROM reservation
-                    WHERE status = ? AND time_id = ?
+                    WHERE time_id = ?
                 )
                 """;
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, ReservationStatus.AVAILABLE.name(), timeId)
+                jdbcTemplate.queryForObject(sql, Boolean.class, timeId)
         );
     }
 
@@ -131,12 +182,11 @@ public class ReservationDao {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1 FROM reservation
-                    WHERE status = ?
-                        AND date = ? AND time_id = ? AND theme_id = ?
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
                 )
                 """;
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, ReservationStatus.AVAILABLE.name(), date, timeId, themeId)
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
         );
     }
 }

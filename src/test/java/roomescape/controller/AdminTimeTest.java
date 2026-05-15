@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +21,10 @@ class AdminTimeTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
@@ -31,12 +33,13 @@ class AdminTimeTest {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "11:00");
 
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -45,7 +48,7 @@ class AdminTimeTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
+                .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }

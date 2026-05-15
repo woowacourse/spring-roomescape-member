@@ -1,36 +1,37 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationCommandService;
 import roomescape.service.ReservationQueryService;
 
+@Validated
 @RestController
-@RequestMapping("/admin/reservations")
 @RequiredArgsConstructor
-public class AdminReservationController {
+@RequestMapping("/reservations")
+public class UserReservationController {
 
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
-
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        return ResponseEntity.ok(reservationQueryService.getAllReservations());
-    }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
@@ -43,6 +44,29 @@ public class AdminReservationController {
                 .toUri();
 
         return ResponseEntity.created(location).body(reservationResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> findReservationsByName(
+            @NotBlank(message = "예약자 이름은 필수입니다.")
+            @RequestParam
+            String name
+    ) {
+        return ResponseEntity.ok(reservationQueryService.getReservationsByName(name));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ReservationResponse> findReservationById(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationQueryService.getReservationById(id));
+    }
+
+    @PatchMapping("{id}")
+    public ResponseEntity<ReservationResponse> updateReservationById(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        LocalDateTime requestDateTime = LocalDateTime.now();
+        return ResponseEntity.ok(reservationCommandService.update(id, request.date(), request.timeId(), requestDateTime));
     }
 
     @DeleteMapping("/{id}")

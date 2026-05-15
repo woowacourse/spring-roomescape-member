@@ -1,6 +1,9 @@
 package roomescape.exception.handler;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,8 +22,23 @@ public class ValidationExceptionHandler {
 
         String errorMessage = exception.getBindingResult()
                 .getAllErrors()
-                .getFirst()
-                .getDefaultMessage();
+                .stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse(ErrorMessage.INVALID_DATA_FORMAT.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
+        log.error(exception.getMessage());
+
+        String errorMessage = exception.getConstraintViolations()
+                .stream()
+                .findFirst()
+                .map(ConstraintViolation::getMessage)
+                .orElse(ErrorMessage.INVALID_DATA_FORMAT.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
     }
