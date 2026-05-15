@@ -92,4 +92,14 @@ public class ReservationTimeControllerTest {
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST_BODY"));
     }
+
+    @Test
+    public void 시작시간_없이_예약시간_생성시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
 }

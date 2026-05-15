@@ -37,23 +37,6 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void 이름이_빈_예약을_추가할_경우_예외가_발생한다() {
-        LocalDate date = LocalDate.now(clock).plusDays(1);
-        ReservationRequest reservationRequest = new ReservationRequest(null, date, 4L, 6L);
-
-        Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
-    }
-
-    @Test
-    void 날짜가_빈_예약을_추가할_경우_예외가_발생한다() {
-        ReservationRequest reservationRequest = new ReservationRequest("포비", null, 4L, 6L);
-
-        Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
-    }
-
-    @Test
     void 시간_아이디가_빈_예약을_추가할_경우_예외가_발생한다() {
         LocalDate date = LocalDate.now(clock).plusDays(1);
         ReservationRequest reservationRequest = new ReservationRequest("포비", date, null, 6L);
@@ -103,7 +86,7 @@ public class ReservationServiceTest {
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
-    
+
     @TestConfiguration
     static class TestConfig {
         @Bean

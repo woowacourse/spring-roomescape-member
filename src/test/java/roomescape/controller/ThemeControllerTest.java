@@ -98,4 +98,15 @@ public class ThemeControllerTest {
                 .statusCode(400)
                 .body("code", is("INVALID_QUERY_STRING"));
     }
+
+    @Test
+    public void 이름_없이_테마_생성시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"description\": \"설명\", \"url\": \"http://example.com\"}")
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
 }

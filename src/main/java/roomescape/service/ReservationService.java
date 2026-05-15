@@ -50,7 +50,6 @@ public class ReservationService {
     }
 
     public ReservationResponse register(ReservationRequest reservationRequest) {
-        validateNullFields(reservationRequest);
         ReservationTime time = timeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
         reservationRequestDayCheck(reservationRequest.date(), time);
@@ -76,21 +75,6 @@ public class ReservationService {
         }
         if (date.isEqual(now.toLocalDate()) && time.startAt().getHour() <= now.getHour()) {
             throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_TIME);
-        }
-    }
-
-    private void validateNullFields(ReservationRequest reservationRequest) {
-        if (reservationRequest.name() == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_NAME);
-        }
-        if (reservationRequest.date() == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_DATE);
-        }
-        if (reservationRequest.themeId() == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_THEMEID);
-        }
-        if (reservationRequest.timeId() == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_TIMEID);
         }
     }
 

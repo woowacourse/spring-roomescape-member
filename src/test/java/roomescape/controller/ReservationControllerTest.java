@@ -133,4 +133,15 @@ public class ReservationControllerTest {
                 .statusCode(400)
                 .body("code", is("RESERVATION_WRONG_DATE"));
     }
+
+    @Test
+    public void 이름을_제와한_예약_생성시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2027-06-25\", \"timeId\": 2, \"themeId\": 2}")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
 }
