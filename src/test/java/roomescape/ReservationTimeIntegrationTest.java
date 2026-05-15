@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -32,6 +34,9 @@ public class ReservationTimeIntegrationTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -95,5 +100,20 @@ public class ReservationTimeIntegrationTest {
 
         assertThat(reservations).hasSize(1);
         assertThat(reservations.get(0).get("name")).isEqualTo("브라운");
+    }
+
+    @Test
+    void 예약이_존재하는_시간_삭제시_409를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/times/" + time.getId())
+                .then().log().all()
+                .statusCode(409)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

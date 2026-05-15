@@ -208,4 +208,24 @@ class ReservationIntegrationTest {
 
         assertThat(reservationRepository.findAll()).isEmpty();
     }
+
+    @Test
+    void 존재하지_않는_예약_변경시_404를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+
+        Map<String, Object> updateParams = Map.of(
+                "date", FUTURE_DATE,
+                "timeId", time.getId()
+        );
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/999")
+                .then().log().all()
+                .statusCode(404)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("요청한 예약을 찾을 수 없습니다.");
+    }
 }
