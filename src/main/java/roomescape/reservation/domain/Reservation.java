@@ -20,21 +20,28 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final LocalDateTime deletedAt;
 
-    public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, guestName, date, time, theme);
-    }
-
-    public Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme) {
-        validateGuestName(guestName);
-        validateDate(date);
-        validateTime(time);
-        validateTheme(theme);
+    private Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme, LocalDateTime deletedAt) {
+        validateReservation(guestName, date, time, theme);
         this.id = id;
         this.guestName = guestName;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.deletedAt = deletedAt;
+    }
+
+    public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        this(guestName, date, time, theme, null);
+    }
+
+    public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme, LocalDateTime deletedAt) {
+        this(null, guestName, date, time, theme, deletedAt);
+    }
+
+    public Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        this(id, guestName, date, time, theme, null);
     }
 
     public Reservation withId(Long id) {
@@ -43,7 +50,14 @@ public class Reservation {
             throw new DomainException(RESERVATION_ALREADY_HAS_ID);
         }
 
-        return new Reservation(id, guestName, date, time, theme);
+        return new Reservation(id, guestName, date, time, theme, deletedAt);
+    }
+
+    private void validateReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        validateGuestName(guestName);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
     }
 
     private void validateId(Long id) {

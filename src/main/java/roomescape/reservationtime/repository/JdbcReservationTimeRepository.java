@@ -80,6 +80,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                      ON r.time_id = rt.id
                     AND r.date = ?
                     AND r.theme_id = ?
+                    AND r.deleted_at IS NULL
                 ORDER BY rt.start_at
                 """;
 

@@ -110,7 +110,7 @@ class ReservationServiceTest {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE id = ?
+                WHERE id = ? AND deleted_at IS NULL
                 """, Integer.class, reservation.getId());
         assertThat(count).isZero();
     }

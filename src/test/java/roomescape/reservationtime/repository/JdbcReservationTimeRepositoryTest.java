@@ -15,7 +15,9 @@ import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -111,6 +113,26 @@ class JdbcReservationTimeRepositoryTest {
                 .containsExactly(Tuple.tuple(time, false), Tuple.tuple(time2, true));
     }
 
+    @Test
+    @DisplayName("삭제된 예약은 이용 가능한 시간 조회에서 제외한다.")
+    public void findAllByDateAndThemeIdWithAvailability_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        LocalDate date = LocalDate.of(2023, 8, 5);
+        insertDeletedReservation("브라운", date, time, theme);
+
+        // when
+        List<ReservationTimeAvailability> availableTimes =
+                reservationTimeRepository.findAllByDateAndThemeIdWithAvailability(date, theme.getId());
+
+        // then
+        assertThat(availableTimes).hasSize(1)
+                .extracting(ReservationTimeAvailability::getReservationTime,
+                        ReservationTimeAvailability::isAvailable)
+                .containsExactly(Tuple.tuple(time, true));
+    }
+
     private ReservationTime insertReservationTime(LocalTime startAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -153,6 +175,21 @@ class JdbcReservationTimeRepositoryTest {
             preparedStatement.setDate(2, Date.valueOf(date));
             preparedStatement.setLong(3, time.getId());
             preparedStatement.setLong(4, theme.getId());
+            return preparedStatement;
+        });
+    }
+
+    private void insertDeletedReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id, deleted_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """);
+            preparedStatement.setString(1, guestName);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, time.getId());
+            preparedStatement.setLong(4, theme.getId());
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             return preparedStatement;
         });
     }

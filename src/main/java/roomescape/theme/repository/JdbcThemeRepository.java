@@ -56,6 +56,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                         INNER JOIN reservation r
                             ON r.theme_id = t.id
                         WHERE r.date BETWEEN ? AND ?
+                            AND r.deleted_at IS NULL
                         GROUP BY t.id, t.name, t.description, t.thumbnail
                         ORDER BY COUNT(r.id) DESC
                         LIMIT ?

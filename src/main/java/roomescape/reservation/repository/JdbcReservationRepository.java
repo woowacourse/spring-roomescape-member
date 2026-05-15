@@ -44,7 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
-                WHERE r.id = ?
+                WHERE r.id = ? AND r.deleted_at IS NULL
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
@@ -69,6 +69,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
+                WHERE r.deleted_at IS NULL
                 ORDER BY r.id
                 LIMIT ? OFFSET ?
                 """, reservationRowMapper, size, (page - 1) * size);
@@ -92,7 +93,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
-                WHERE r.guest_name = ?
+                WHERE r.guest_name = ? AND r.deleted_at IS NULL
                 """, reservationRowMapper, guestName);
     }
 
@@ -159,7 +160,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
+                WHERE date = ? AND time_id = ? AND theme_id = ? AND deleted_at IS NULL
                 """, Integer.class, date, timeId, themeId);
         return count != null && count > 0;
     }
@@ -170,7 +171,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+                WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ? AND deleted_at IS NULL
                 """, Integer.class, date, timeId, themeId, id);
         return count != null && count > 0;
     }
@@ -180,7 +181,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE time_id = ?
+                WHERE time_id = ? AND deleted_at IS NULL
                 """, Integer.class, timeId);
         return count != null && count > 0;
     }
@@ -190,7 +191,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE theme_id = ?
+                WHERE theme_id = ? AND deleted_at IS NULL
                 """, Integer.class, themeId);
         return count != null && count > 0;
     }

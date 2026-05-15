@@ -68,6 +68,22 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("id로 특정 예약을 조회는 deleted_at이 null인 정보만 조회할 수 있다.")
+    public void findById_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        // 삭제처리된 데이터
+        Reservation reservation = insertDeletedReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservation.getId());
+
+        // then
+        assertThat(optionalReservation).isEmpty();
+    }
+
+    @Test
     @DisplayName("예약의 목록을 페이지 단위로 조회한다")
     void findAllWithPaging() {
         // given
@@ -89,7 +105,64 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약을 저장한다..")
+    @DisplayName("예약 목록은 deletedAt이 null인 정보만 조회할 수 있다.")
+    void findAllWithPaging_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation deletedReservation = insertDeletedReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+        Reservation notDeletedReservation1 = insertReservation("포비", LocalDate.of(2023, 8, 6), time, theme);
+        Reservation notDeletedReservation2 = insertReservation("조이", LocalDate.of(2023, 8, 7), time, theme);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAll(1, 3);
+
+        // then
+        assertThat(reservations).hasSize(2)
+                .contains(notDeletedReservation1, notDeletedReservation2)
+                .doesNotContain(deletedReservation);
+    }
+
+    @Test
+    @DisplayName("예약자 이름으로 예약 정보를 조회한다.")
+    public void findByGuest() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByGuestName(reservation.getGuestName());
+
+        // then
+        assertThat(reservations)
+                .extracting(
+                        Reservation::getId, Reservation::getGuestName, Reservation::getDate,
+                        Reservation::getTime, Reservation::getTheme
+                ).containsExactly(
+                        tuple(reservation.getId(), reservation.getGuestName(), reservation.getDate(),
+                        reservation.getTime(), reservation.getTheme())
+                );
+    }
+
+    @Test
+    @DisplayName("예약자 이름으로 예약 정보를 조회할 때, deletedAt이 null인 정보만 조회할 수 있다.")
+    public void findByGuest_softdelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertDeletedReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByGuestName(reservation.getGuestName());
+
+        // then
+        assertThat(reservations)
+                .extracting(Reservation::getId).doesNotContain(reservation.getId());
+    }
+
+    @Test
+    @DisplayName("예약을 저장한다.")
     public void save() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
@@ -155,6 +228,23 @@ class JdbcReservationRepositoryTest {
         assertThat(notExists).isFalse();
     }
 
+    @Test
+    @DisplayName("특정 날짜, 시간, 테마를 가진 예약이 삭제된 예약이면 존재하지 않는 것으로 확인한다.")
+    public void existsByDateAndTimeIdAndThemeId_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        LocalDate targetDate = LocalDate.of(2023, 8, 5);
+        insertDeletedReservation("브라운", targetDate, time, theme);
+
+        // when
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                targetDate, time.getId(), theme.getId());
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
 
     @ParameterizedTest
     @CsvSource({
@@ -186,6 +276,23 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(exists).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("특정 예약이 아닌 예약 중에서 겹치는 예약이 삭제된 예약이면 존재하지 않는 것으로 확인한다.")
+    public void existsByDateAndTimeIdAndThemeIdAndIdNot_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        LocalDate targetDate = LocalDate.of(2023, 8, 5);
+        Reservation deletedReservation = insertDeletedReservation("브라운", targetDate, time, theme);
+
+        // when
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
+                targetDate, time.getId(), theme.getId(), deletedReservation.getId() + 1);
+
+        // then
+        assertThat(exists).isFalse();
     }
 
     @Test
@@ -267,6 +374,21 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 예약 시간 id를 가진 예약이 삭제된 예약이면 존재하지 않는 것으로 확인한다.")
+    public void existByTimeId_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        insertDeletedReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        boolean exists = reservationRepository.existByTimeId(time.getId());
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
     @DisplayName("특정 테마 id를 가진 예약이 존재하는지 확인한다.")
     public void existByThemeId() {
         // given
@@ -282,6 +404,21 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("특정 테마 id를 가진 예약이 삭제된 예약이면 존재하지 않는 것으로 확인한다.")
+    public void existByThemeId_softDelete() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        insertDeletedReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        boolean exists = reservationRepository.existByThemeId(theme.getId());
+
+        // then
+        assertThat(exists).isFalse();
     }
 
     private ReservationTime insertReservationTime(LocalTime startAt) {
@@ -328,6 +465,25 @@ class JdbcReservationRepositoryTest {
             preparedStatement.setDate(2, Date.valueOf(date));
             preparedStatement.setLong(3, time.getId());
             preparedStatement.setLong(4, theme.getId());
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Reservation(getGeneratedId(keyHolder), guestName, date, time, theme);
+    }
+
+    private Reservation insertDeletedReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id, deleted_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, guestName);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, time.getId());
+            preparedStatement.setLong(4, theme.getId());
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             return preparedStatement;
         }, keyHolder);
 

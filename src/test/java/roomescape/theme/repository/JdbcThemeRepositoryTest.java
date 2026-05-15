@@ -11,8 +11,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.theme.domain.Theme;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,6 +101,33 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("인기 테마 조회는 삭제된 예약을 집계에서 제외한다.")
+    public void findTopThemesByReservationCount_softDelete() {
+        // given
+        Theme activeTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme deletedTheme = insertTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Long timeId = insertReservationTime(LocalTime.of(10, 0));
+        Long otherTimeId = insertReservationTime(LocalTime.of(12, 0));
+        LocalDate targetDate = LocalDate.of(2026, 5, 1);
+
+        insertReservation("브라운", targetDate, timeId, activeTheme);
+        insertDeletedReservation("포비", targetDate, otherTimeId, deletedTheme);
+
+        // when
+        List<Theme> topThemes = jdbcThemeRepository.findTopThemesByReservationCount(
+                LocalDate.of(2026, 4, 29),
+                LocalDate.of(2026, 5, 5),
+                10
+        );
+
+        // then
+        assertThat(topThemes)
+                .extracting(Theme::getId)
+                .containsExactly(activeTheme.getId())
+                .doesNotContain(deletedTheme.getId());
+    }
+
+    @Test
     @DisplayName("Theme를 삭제한다.")
     public void deleteById() {
         Theme theme = insertTheme("kim", "desc1", "thumb1");
@@ -135,6 +166,50 @@ class JdbcThemeRepositoryTest {
         }, keyHolder);
 
         return new Theme(getGeneratedId(keyHolder), name, description, thumbnail);
+    }
+
+    private Long insertReservationTime(LocalTime startAt) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation_time (start_at)
+                    VALUES (?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, startAt.toString());
+            return preparedStatement;
+        }, keyHolder);
+
+        return getGeneratedId(keyHolder);
+    }
+
+    private void insertReservation(String guestName, LocalDate date, Long timeId, Theme theme) {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id)
+                    VALUES (?, ?, ?, ?)
+                    """);
+            preparedStatement.setString(1, guestName);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, timeId);
+            preparedStatement.setLong(4, theme.getId());
+            return preparedStatement;
+        });
+    }
+
+    private void insertDeletedReservation(String guestName, LocalDate date, Long timeId, Theme theme) {
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id, deleted_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """);
+            preparedStatement.setString(1, guestName);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, timeId);
+            preparedStatement.setLong(4, theme.getId());
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            return preparedStatement;
+        });
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {

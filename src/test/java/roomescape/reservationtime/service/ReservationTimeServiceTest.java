@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.test_config.TestClockConfig;
 import roomescape.theme.domain.Theme;
 import roomescape.common.exception.DomainException;
 import roomescape.reservation.repository.JdbcReservationRepository;
@@ -27,6 +28,7 @@ import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @JdbcTest
 @Import({
+        TestClockConfig.class,
         ReservationTimeService.class,
         JdbcReservationRepository.class,
         JdbcReservationTimeRepository.class,
