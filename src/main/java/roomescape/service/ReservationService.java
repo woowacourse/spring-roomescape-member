@@ -16,6 +16,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.command.ReservationSaveCommand;
+import roomescape.service.command.ReservationUpdateCommand;
 
 @Service
 public class ReservationService {
@@ -37,8 +38,9 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationSaveCommand command) {
-        ReservationTime reservationTime = findReservationTime(command);
+        ReservationTime reservationTime = findReservationTime(command.timeId());
         validateReservableDateTime(command.date(), reservationTime.startAt());
+
         Theme theme = findTheme(command);
         validateDuplicatedReservation(command.date(), command.timeId(), command.themeId());
 
@@ -66,8 +68,8 @@ public class ReservationService {
     }
 
     @NonNull
-    private ReservationTime findReservationTime(ReservationSaveCommand command) {
-        return reservationTimeRepository.findById(command.timeId())
+    private ReservationTime findReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
@@ -101,7 +103,7 @@ public class ReservationService {
     public void cancelReservation(Long id) {
         Reservation reservation = findReservation(id);
 
-        validateCancelableReservation(reservation);
+        validateNotPastReservation(reservation);
         reservationRepository.deleteById(reservation.id());
     }
 
@@ -110,11 +112,38 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
-    private void validateCancelableReservation(Reservation reservation) {
+    private void validateNotPastReservation(Reservation reservation) {
         LocalDateTime reservationDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
+    }
+
+    public Reservation changeReservationDateTime(Long id, ReservationUpdateCommand command) {
+        Reservation reservation = findReservation(id);
+        validateNotPastReservation(reservation);
+
+        ReservationTime reservationTime = findReservationTime(command.timeId());
+
+        validateReservableDateTime(command.date(), reservationTime.startAt());
+        validateConflictingReservation(command.date(), command.timeId(), reservation.themeId(),
+                reservation.id());
+
+        reservationRepository.updateDateTime(reservation.id(), command.date(), command.timeId());
+
+        return new Reservation(
+                reservation.id(),
+                reservation.name(),
+                command.date(),
+                reservationTime,
+                reservation.theme()
+        );
+    }
+
+    private void validateConflictingReservation(LocalDate date, Long timeId, Long themeId, Long reservationId) {
+        if (reservationRepository.existsConflictingReservation(date, timeId, themeId, reservationId)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
 }

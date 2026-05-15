@@ -83,6 +83,16 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
+    public void updateDateTime(Long id, LocalDate date, Long timeId) {
+        jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                date,
+                timeId,
+                id
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
@@ -136,6 +146,25 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 date,
                 timeId,
                 themeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsConflictingReservation(LocalDate date, Long timeId, Long themeId, Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) "
+                        + "FROM reservation "
+                        + "WHERE date = ? "
+                        + "AND time_id = ? "
+                        + "AND theme_id = ? "
+                        + "AND id != ?",
+                Integer.class,
+                date,
+                timeId,
+                themeId,
+                id
         );
 
         return Objects.nonNull(count) && count > 0;

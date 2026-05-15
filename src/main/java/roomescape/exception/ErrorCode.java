@@ -15,6 +15,24 @@ public enum ErrorCode {
             "요청 형식이 올바르지 않습니다.",
             "형식을 올바르게 입력해주세요."
     ),
+    UNSUPPORTED_MEDIA_TYPE(
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            "UNSUPPORTED_MEDIA_TYPE",
+            "지원하지 않는 요청 형식입니다.",
+            "Content-Type을 확인해주세요."
+    ),
+    METHOD_NOT_ALLOWED(
+            HttpStatus.METHOD_NOT_ALLOWED,
+            "METHOD_NOT_ALLOWED",
+            "지원하지 않는 요청 메서드입니다.",
+            "요청 메서드를 확인해주세요."
+    ),
+    API_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "API_NOT_FOUND",
+            "요청한 API를 찾을 수 없습니다.",
+            "요청 경로를 확인해주세요."
+    ),
     RESERVATION_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "RESERVATION_NOT_FOUND",

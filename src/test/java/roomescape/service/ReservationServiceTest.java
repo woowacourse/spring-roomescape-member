@@ -28,6 +28,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.command.ReservationSaveCommand;
+import roomescape.service.command.ReservationUpdateCommand;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -287,6 +288,115 @@ class ReservationServiceTest {
         Reservation saved = reservationService.saveReservation(saveCommand);
 
         assertThat(saved).isEqualTo(savedReseravtion);
+    }
+
+    @Test
+    @DisplayName("사용자는 예약 날짜와 시간을 변경할 수 있다")
+    void changeReservationDateTime() {
+        long reservationId = 1L;
+        LocalDate changedDate = LocalDate.now().plusDays(2);
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        ReservationTime changedTime = new ReservationTime(2L, LocalTime.of(11, 0));
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(changedDate, 2L);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+        given(reservationTimeRepository.findById(2L)).willReturn(Optional.of(changedTime));
+        given(reservationRepository.existsConflictingReservation(changedDate, 2L, THEME_ID, reservationId))
+                .willReturn(false);
+
+        Reservation changedReservation = reservationService.changeReservationDateTime(reservationId, updateCommand);
+
+        verify(reservationRepository).updateDateTime(reservationId, changedDate, 2L);
+        assertThat(changedReservation.id()).isEqualTo(reservationId);
+        assertThat(changedReservation.name()).isEqualTo("브라운");
+        assertThat(changedReservation.date()).isEqualTo(changedDate);
+        assertThat(changedReservation.time()).isEqualTo(changedTime);
+        assertThat(changedReservation.theme()).isEqualTo(reservation.theme());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약은 변경할 수 없다")
+    void throwException_WhenChangeReservationNotFound() {
+        long reservationId = 1L;
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(LocalDate.now().plusDays(1), TIME_ID);
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
+
+        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("지난 예약은 변경할 수 없다")
+    void throwException_WhenChangePastReservation() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().minusDays(1));
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(LocalDate.now().plusDays(1), TIME_ID);
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_ALREADY_PAST));
+
+        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간으로 예약을 변경할 수 없다")
+    void throwException_WhenChangeReservationTimeNotFound() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(LocalDate.now().plusDays(2), 999L);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+        given(reservationTimeRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("지난 날짜와 시간으로 예약을 변경할 수 없다")
+    void throwException_WhenChangeReservationToPastDateTime() {
+        long reservationId = 1L;
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        ReservationTime pastTime = new ReservationTime(TIME_ID, LocalTime.now().minusMinutes(1));
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(LocalDate.now(), TIME_ID);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(pastTime));
+
+        assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_PAST_TIME));
+
+        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("변경하려는 날짜, 시간, 테마의 예약이 이미 있으면 변경할 수 없다")
+    void throwException_WhenChangeReservationDuplicated() {
+        long reservationId = 1L;
+        LocalDate changedDate = LocalDate.now().plusDays(2);
+        Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
+        ReservationTime changedTime = new ReservationTime(2L, LocalTime.of(11, 0));
+        ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(changedDate, 2L);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
+        given(reservationTimeRepository.findById(2L)).willReturn(Optional.of(changedTime));
+        given(reservationRepository.existsConflictingReservation(changedDate, 2L, THEME_ID, reservationId))
+                .willReturn(true);
+
+        assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_DUPLICATED));
+
+        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     private Reservation createReservation(Long id, String name, LocalDate date) {

@@ -10,6 +10,8 @@ public interface ReservationRepository {
 
     Reservation addReservation(Reservation reservation);
 
+    void updateDateTime(Long id, LocalDate date, Long timeId);
+
     void deleteById(Long id);
 
     List<Reservation> findReservationsByName(String name);
@@ -17,6 +19,8 @@ public interface ReservationRepository {
     Optional<Reservation> findById(Long id);
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    boolean existsConflictingReservation(LocalDate date, Long timeId, Long themeId, Long id);
 
     boolean existsById(Long id);
 

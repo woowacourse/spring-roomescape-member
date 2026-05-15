@@ -110,6 +110,21 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약 날짜와 시간을 수정한다")
+    void updateDateTime() {
+        Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        reservationRepository.updateDateTime(saved.id(), LocalDate.of(2026, 5, 4), OTHER_TIME_ID);
+        Reservation updated = reservationRepository.findById(saved.id()).get();
+
+        assertThat(updated.id()).isEqualTo(saved.id());
+        assertThat(updated.name()).isEqualTo("브라운");
+        assertThat(updated.date()).isEqualTo(LocalDate.of(2026, 5, 4));
+        assertThat(updated.time().id()).isEqualTo(OTHER_TIME_ID);
+        assertThat(updated.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
     @DisplayName("id에 해당하는 예약이 존재하는지 확인한다")
     void existsById() {
         long reservationId = addReservation("브라운", LocalDate.of(2026, 5, 3)).id();
@@ -199,6 +214,38 @@ class JdbcTemplateReservationRepositoryTest {
         );
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 변경 중복 검사에서는 자기 자신을 제외한다")
+    void notExistsReservation_WhenSameReservation() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        Reservation reservation = addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsConflictingReservation(
+                date,
+                TIME_ID,
+                THEME_ID,
+                reservation.id()
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 변경 중복 검사에서 다른 예약이 있으면 중복으로 판단한다")
+    void existsReservation_WhenOtherReservationExists() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsConflictingReservation(
+                date,
+                TIME_ID,
+                THEME_ID,
+                -1L
+        );
+
+        assertThat(exists).isTrue();
     }
 
     private Reservation addReservation(String name, LocalDate date) {
