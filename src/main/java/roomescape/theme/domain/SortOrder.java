@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme.domain;
 
 public enum SortOrder {
     ASC("ASC"),

@@ -8,9 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
-import roomescape.theme.controller.SortColumn;
-import roomescape.theme.controller.SortOrder;
+import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.UserThemeService;
 
 class UserThemeServiceTest extends ServiceIntegrationTest {
 

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.InvalidInputException;
-import roomescape.theme.controller.SortColumn;
-import roomescape.theme.controller.SortOrder;
+import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 

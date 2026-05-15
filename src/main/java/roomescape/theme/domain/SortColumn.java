@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme.domain;
 
 public enum SortColumn {
     RESERVATION_COUNT("reservationCount"),

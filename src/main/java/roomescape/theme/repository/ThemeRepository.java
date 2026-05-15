@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.controller.SortColumn;
-import roomescape.theme.controller.SortOrder;
+import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -84,6 +84,14 @@ public class ThemeRepository {
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY %s %s
                 %s
-                """.formatted(sortColumn.getValue(), sortOrder.getValue(), limitClause);
+                """.formatted(toColumnName(sortColumn), sortOrder.name(), limitClause);
+    }
+
+    private String toColumnName(SortColumn column) {
+        return switch (column) {
+            case RESERVATION_COUNT -> "reservationCount";
+            case ID -> "id";
+            case NAME -> "name";
+        };
     }
 }
