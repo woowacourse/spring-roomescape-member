@@ -2,6 +2,7 @@ package roomescape.service.support;
 
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.exception.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FakeReservationRepository implements ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository  {
 
     private final List<Reservation> reservations = new ArrayList<>();
     private Reservation savedReservation;
@@ -39,6 +40,18 @@ public class FakeReservationRepository implements ReservationRepository {
         );
         reservations.add(savedReservationWithId);
         return savedReservationWithId;
+    }
+
+    @Override
+    public Reservation update(final Reservation updatedReservation) {
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations.get(i).getId().equals(updatedReservation.getId())) {
+                reservations.set(i, updatedReservation);
+                return updatedReservation;
+            }
+        }
+
+        throw new ReservationNotFoundException();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.exception.ReservationAlreadyExistsException;
+import roomescape.domain.exception.ReservationNotFoundException;
+import roomescape.domain.exception.ReservationOptionChangedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.repository.entity.ReservationEntity;
@@ -125,6 +128,34 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(final Reservation reservation) {
+        final String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        try {
+            final int updatedCount = jdbcTemplate.update(
+                    sql,
+                    Date.valueOf(reservation.getDate()),
+                    reservation.getTime().getId(),
+                    reservation.getId()
+            );
+
+            if (updatedCount == 0) {
+                throw new ReservationNotFoundException();
+            }
+
+            return reservation;
+        } catch (DuplicateKeyException exception) {
+            throw new ReservationAlreadyExistsException(exception);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ReservationOptionChangedException(exception);
+        }
+    }
+
+    @Override
     public void deleteById(final Long reservationId) {
         final String sql = """
                 DELETE FROM reservation
@@ -186,6 +217,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             }, keyHolder);
         } catch (DuplicateKeyException exception) {
             throw new ReservationAlreadyExistsException(exception);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ReservationOptionChangedException(exception);
         }
 
         return generatedIdFrom(keyHolder);

@@ -70,6 +70,20 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
+    public ReservationResponse update(final Long reservationId, final ReservationUpdateRequest data) {
+        final Reservation originReservation = getReservation(reservationId);
+        final ReservationTime newReservationTime = getReservationTime(data.timeId());
+
+        final Reservation updatedReservation = originReservation.changeSchedule(
+                data.date(),
+                newReservationTime,
+                LocalDateTime.now(clock)
+        );
+        final Reservation reservation = reservationRepository.update(updatedReservation);
+
+        return ReservationResponse.from(reservation);
+    }
+
     public void cancel(final Long reservationId) {
         final Reservation reservation = getReservation(reservationId);
 

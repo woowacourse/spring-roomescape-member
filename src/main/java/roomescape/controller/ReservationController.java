@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.request.ReservationUpdateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -51,6 +52,15 @@ public class ReservationController {
         final ReservationResponse result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations"))
                 .body(result);
+    }
+
+    @PutMapping("/{reservation-id}")
+    public ResponseEntity<ReservationResponse> update(
+            @PathVariable("reservation-id") Long reservationId,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        final ReservationResponse result = reservationService.update(reservationId, request);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{reservation-id}")

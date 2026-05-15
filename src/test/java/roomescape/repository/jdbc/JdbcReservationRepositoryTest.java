@@ -10,6 +10,9 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ReservationAlreadyExistsException;
+import roomescape.domain.exception.ReservationNotFoundException;
+import roomescape.domain.exception.ReservationOptionChangedException;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 
 import java.time.LocalDate;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("/clear.sql")
@@ -57,6 +61,21 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 존재하지_않는_예약_시간으로_예약을_저장하면_예외가_발생한다() {
+        insertTheme("링", "공포 테마", "http:~");
+        Reservation reservation = Reservation.create(
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(999L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~"),
+                LocalDateTime.of(2026, 8, 5, 9, 0)
+        );
+
+        assertThatThrownBy(() -> reservationRepository.save(reservation))
+                .isInstanceOf(ReservationOptionChangedException.class);
+    }
+
+    @Test
     void 예약을_id로_조회한다() {
         insertReservationTime("10:00", "10:30");
         insertTheme("링", "공포 테마", "http:~");
@@ -66,6 +85,74 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservation).isPresent();
         assertThat(reservation.get().getCustomerName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 예약을_수정한다() {
+        insertReservationTime("10:00", "10:30");
+        insertReservationTime("11:00", "11:30");
+        insertTheme("링", "공포 테마", "http:~");
+        insertReservation("브라운", "2026-08-05", 1L, 1L);
+
+        Reservation updatedReservation = reservationRepository.update(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 6),
+                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+
+        Optional<Reservation> reservation = reservationRepository.findById(1L);
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2026, 8, 6));
+        assertThat(reservation).isPresent();
+        assertThat(reservation.get().getDate()).isEqualTo(LocalDate.of(2026, 8, 6));
+        assertThat(reservation.get().getTime().getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
+        insertReservationTime("10:00", "10:30");
+        insertTheme("링", "공포 테마", "http:~");
+
+        assertThatThrownBy(() -> reservationRepository.update(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ))).isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 이미_존재하는_예약으로_수정하면_예외가_발생한다() {
+        insertReservationTime("10:00", "10:30");
+        insertReservationTime("11:00", "11:30");
+        insertTheme("링", "공포 테마", "http:~");
+        insertReservation("브라운", "2026-08-05", 1L, 1L);
+        insertReservation("제임스", "2026-08-05", 2L, 1L);
+
+        assertThatThrownBy(() -> reservationRepository.update(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ))).isInstanceOf(ReservationAlreadyExistsException.class);
+    }
+
+    @Test
+    void 존재하지_않는_예약_시간으로_수정하면_예외가_발생한다() {
+        insertReservationTime("10:00", "10:30");
+        insertTheme("링", "공포 테마", "http:~");
+        insertReservation("브라운", "2026-08-05", 1L, 1L);
+
+        assertThatThrownBy(() -> reservationRepository.update(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(999L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ))).isInstanceOf(ReservationOptionChangedException.class);
     }
 
     @Test

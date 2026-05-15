@@ -184,6 +184,128 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
+    void 예약_일정을_수정한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-08-06",
+                        "timeId", 2
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", org.hamcrest.Matchers.is(1))
+                .body("name", org.hamcrest.Matchers.is("브라운"))
+                .body("date", org.hamcrest.Matchers.is("2026-08-06"))
+                .body("time.id", org.hamcrest.Matchers.is(2))
+                .body("theme.id", org.hamcrest.Matchers.is(1));
+
+        Map<String, Object> updatedReservation = jdbcTemplate.queryForMap(
+                "SELECT date, time_id FROM reservation WHERE id = ?",
+                1L
+        );
+        assertThat(updatedReservation.get("DATE").toString()).isEqualTo("2026-08-06");
+        assertThat(updatedReservation.get("TIME_ID")).isEqualTo(2L);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_예약을_수정하면_404를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-08-06",
+                        "timeId", 1
+                ))
+                .when().put("/reservations/999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", org.hamcrest.Matchers.is("존재하지 않는 예약입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_예약_시간으로_수정하면_404를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-08-06",
+                        "timeId", 999
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", org.hamcrest.Matchers.is("존재하지 않는 예약 시간입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약_수정시_예약일을_입력하지_않으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "timeId", 1
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("예약일을 입력해야 합니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 과거_시간으로_예약을_수정하면_400을_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-04-30",
+                        "timeId", 2
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("과거 시간으로는 예약할 수 없습니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 이미_예약된_시간으로_수정하면_409를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "재키", "2026-08-05", "2", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "date", "2026-08-05",
+                        "timeId", 2
+                ))
+                .when().put("/reservations/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", org.hamcrest.Matchers.is("이미 예약된 시간입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
     void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");

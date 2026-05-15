@@ -56,6 +56,47 @@ class ReservationTest {
     }
 
     @Test
+    void 예약_일정을_변경한다() {
+        Reservation reservation = Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                FUTURE_TIME,
+                THEME
+        );
+        ReservationTime newTime = ReservationTime.of(3L, LocalTime.of(12, 0), LocalTime.of(12, 30));
+
+        Reservation changed = reservation.changeSchedule(
+                LocalDate.of(2026, 5, 9),
+                newTime,
+                NOW
+        );
+
+        assertThat(changed.getId()).isEqualTo(1L);
+        assertThat(changed.getCustomerName()).isEqualTo("브라운");
+        assertThat(changed.getDate()).isEqualTo(LocalDate.of(2026, 5, 9));
+        assertThat(changed.getTime()).isEqualTo(newTime);
+        assertThat(changed.getTheme()).isEqualTo(THEME);
+    }
+
+    @Test
+    void 과거_시간으로_예약_일정을_변경할_수_없다() {
+        Reservation reservation = Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 9),
+                FUTURE_TIME,
+                THEME
+        );
+
+        assertThatThrownBy(() -> reservation.changeSchedule(
+                LocalDate.of(2026, 5, 8),
+                PAST_TIME,
+                NOW
+        )).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
         Reservation reservation = Reservation.of(
                 1L,

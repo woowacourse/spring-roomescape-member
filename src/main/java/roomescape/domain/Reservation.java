@@ -61,6 +61,22 @@ public class Reservation {
         );
     }
 
+    public Reservation changeSchedule(
+            final LocalDate date,
+            final ReservationTime time,
+            final LocalDateTime now
+    ) {
+        final Reservation changed = new Reservation(
+                id,
+                customerName,
+                date,
+                time,
+                theme
+        );
+
+        changed.validateNotPast(now);
+        return changed;
+    }
 
     public String getCustomerName() {
         return customerName.getName();
