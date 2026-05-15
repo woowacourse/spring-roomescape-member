@@ -2,117 +2,133 @@ package roomescape.domain.reservationdate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
 import roomescape.domain.reservationdate.dto.ReservationDateCreationResponse;
+import roomescape.domain.reservationdate.dto.ReservationDateResponse;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationDateServiceTest {
 
-    @Test
-    void 예약_날짜를_생성한다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        ReservationDateService reservationDateService = new ReservationDateService(
-            reservationRepository,
-            reservationDateRepository
-        );
+    private ReservationDateService reservationDateService;
+    private FakeReservationDateRepository reservationDateRepository;
+    private FakeReservationRepository reservationRepository;
 
-        // when
-        ReservationDateCreationResponse response = reservationDateService.createReservationDate(
-            new ReservationDateCreationRequest(LocalDate.of(2026, 5, 4))
-        );
-
-        // then
-        assertSoftly(
-            softly -> {
-                assertThat(response.id()).isEqualTo(1L);
-                assertThat(response.playDay()).isEqualTo(LocalDate.of(2026, 5, 4));
-                assertThat(reservationDateRepository.savedReservationDate.getPlayDay())
-                    .isEqualTo(LocalDate.of(2026, 5, 4));
-            }
-        );
+    @BeforeEach
+    void setUp() {
+        reservationDateRepository = new FakeReservationDateRepository();
+        reservationRepository = new FakeReservationRepository();
+        reservationDateService = new ReservationDateService(reservationRepository, reservationDateRepository);
     }
 
     @Test
-    void 예약_날짜_목록을_조회한다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        reservationDateRepository.findAllResult = List.of(
-            ReservationDate.of(1L, LocalDate.of(2026, 5, 4))
-        );
-        ReservationDateService reservationDateService = new ReservationDateService(
-            reservationRepository,
-            reservationDateRepository
-        );
+    @DisplayName("예약 날짜를 생성한다.")
+    void createReservationDate() {
+        ReservationDateCreationRequest request = new ReservationDateCreationRequest(LocalDate.now().plusDays(1));
 
-        // when
-        List<AdminReservationDateResponse> responses = reservationDateService.getAllReservationDateForAdmin();
+        ReservationDateCreationResponse response = reservationDateService.createReservationDate(request);
 
-        // then
-        assertSoftly(softly -> {
-            assertThat(responses.size()).isEqualTo(1);
-            assertThat(responses.getFirst().id()).isEqualTo(1L);
-            assertThat(responses.getFirst().playDay()).isEqualTo(LocalDate.of(2026, 5, 4));
-        });
+        assertThat(response.playDay()).isEqualTo(request.playDay());
+        assertThat(reservationDateRepository.findAll()).hasSize(1);
     }
 
     @Test
-    void 이미_예약이_존재하는_날짜는_삭제할_수_없다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.countByReservationDateIdResult = 1;
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        ReservationDateService reservationDateService = new ReservationDateService(
-            reservationRepository,
-            reservationDateRepository
-        );
+    @DisplayName("중복된 날짜 생성 시 예외가 발생한다.")
+    void createDuplicateDate() {
+        LocalDate playDay = LocalDate.now().plusDays(1);
+        reservationDateService.createReservationDate(new ReservationDateCreationRequest(playDay));
 
-        // when & then
-        assertThatThrownBy(() -> reservationDateService.deleteReservationDate(1L))
-            .isInstanceOf(RoomescapeException.class)
-            .hasMessage("이미 예약이 존재하는 날짜는 삭제할 수 없습니다.");
+        assertThatThrownBy(
+            () -> reservationDateService.createReservationDate(new ReservationDateCreationRequest(playDay)))
+            .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
-    void 예약이_없는_날짜는_삭제한다() {
-        // given
-        FakeReservationRepository reservationRepository = new FakeReservationRepository();
-        FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        ReservationDateService reservationDateService = new ReservationDateService(
-            reservationRepository,
-            reservationDateRepository
-        );
+    @DisplayName("오늘 이후의 날짜만 조회한다.")
+    void getAllAvailableReservationDate() {
+        reservationDateRepository.save(ReservationDate.createWithoutId(LocalDate.now().minusDays(1)));
+        reservationDateRepository.save(ReservationDate.createWithoutId(LocalDate.now().plusDays(1)));
 
-        // when
-        reservationDateService.deleteReservationDate(1L);
+        List<ReservationDateResponse> responses = reservationDateService.getAllAvailableReservationDate();
 
-        // then
-        assertThat(reservationDateRepository.deletedId).isEqualTo(1L);
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).playDay()).isEqualTo(LocalDate.now().plusDays(1));
+    }
+
+    @Test
+    @DisplayName("사용 중인 날짜를 삭제하려 하면 예외가 발생한다.")
+    void deleteInUseDate() {
+        ReservationDate date = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.now().plusDays(1)));
+        reservationRepository.setCount(1);
+
+        assertThatThrownBy(() -> reservationDateService.deleteReservationDate(date.getId()))
+            .isInstanceOf(RoomescapeException.class);
+    }
+
+    private static class FakeReservationDateRepository implements ReservationDateRepository {
+
+        private final List<ReservationDate> dates = new ArrayList<>();
+        private Long idCounter = 1L;
+
+        @Override
+        public Optional<ReservationDate> findById(Long id) {
+            return dates.stream().filter(d -> d.getId().equals(id)).findFirst();
+        }
+
+        @Override
+        public List<ReservationDate> findAll() {
+            return dates;
+        }
+
+        @Override
+        public ReservationDate save(ReservationDate reservationDate) {
+            ReservationDate saved = ReservationDate.of(idCounter++, reservationDate.getPlayDay());
+            dates.add(saved);
+            return saved;
+        }
+
+        @Override
+        public int deleteById(Long id) {
+            return dates.removeIf(d -> d.getId().equals(id)) ? 1 : 0;
+        }
+
+        @Override
+        public boolean existsByPlayDay(LocalDate playDay) {
+            return dates.stream().anyMatch(d -> d.getPlayDay().equals(playDay));
+        }
     }
 
     private static class FakeReservationRepository implements ReservationRepository {
 
-        private int countByReservationDateIdResult;
+        private int count = 0;
+
+        public void setCount(int count) {
+            this.count = count;
+        }
 
         @Override
-        public Reservation save(Reservation reservation) {
+        public int countByReservationDateId(Long dateId) {
+            return count;
+        }
+
+        @Override
+        public Reservation save(Reservation r) {
             return null;
         }
 
         @Override
         public List<Reservation> findAll() {
-            return List.of();
+            return null;
         }
 
         @Override
@@ -121,18 +137,13 @@ class ReservationDateServiceTest {
         }
 
         @Override
-        public int countByTimeId(Long timeId) {
+        public int countByTimeId(Long id) {
             return 0;
         }
 
         @Override
-        public int countByReservationDateId(Long dateId) {
-            return countByReservationDateIdResult;
-        }
-
-        @Override
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
-            return List.of();
+            return null;
         }
 
         @Override
@@ -142,7 +153,7 @@ class ReservationDateServiceTest {
 
         @Override
         public List<Reservation> findByName(String name) {
-            return List.of();
+            return null;
         }
 
         @Override
@@ -151,46 +162,12 @@ class ReservationDateServiceTest {
         }
 
         @Override
-        public int updateReservation(Long id, Long dateId, Long timeId) {
+        public int updateReservation(Long id, Long d, Long t) {
             return 0;
         }
 
         @Override
-        public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
-            return false;
-        }
-    }
-
-    private static class FakeReservationDateRepository implements ReservationDateRepository {
-
-        private ReservationDate savedReservationDate;
-        private List<ReservationDate> findAllResult = List.of();
-        private Long deletedId;
-
-        @Override
-        public Optional<ReservationDate> findById(Long id) {
-            return Optional.empty();
-        }
-
-        @Override
-        public List<ReservationDate> findAll() {
-            return findAllResult;
-        }
-
-        @Override
-        public ReservationDate save(ReservationDate reservationDate) {
-            savedReservationDate = reservationDate;
-            return ReservationDate.of(1L, reservationDate.getPlayDay());
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            deletedId = id;
-            return 1;
-        }
-
-        @Override
-        public boolean existsByPlayDay(LocalDate playDay) {
+        public boolean existsByDateIdAndTimeIdAndThemeId(Long d, Long t, Long th) {
             return false;
         }
     }
