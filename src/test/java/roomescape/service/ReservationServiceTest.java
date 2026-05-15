@@ -9,6 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.PastReservationTimeException;
@@ -196,5 +197,34 @@ public class ReservationServiceTest {
                 .isInstanceOf(PastReservationTimeException.class)
                 .hasMessage("이전 날짜는 선택하실 수 없습니다.");
 
+    }
+
+    @Test
+    void 사용자_이름으로_예약_수정_테스트() {
+        Long reservationId = 1L;
+        String name = "브라운";
+        LocalDate date = LocalDate.of(2026, 12, 31);
+        Long timeId = 2L;
+        Long themeId = 1L;
+
+        ReservationUpdateRequest request = new ReservationUpdateRequest(name, date, timeId, themeId);
+        
+        when(reservationDao.update(reservationId, date, timeId, themeId)).thenReturn(1);
+
+        reservationService.updateUserReservation(reservationId, request);
+
+        verify(reservationDao).update(reservationId, date, timeId, themeId);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_수정하려하면_예외가_발생한다() {
+        Long reservationId = 999L;
+        ReservationUpdateRequest request = new ReservationUpdateRequest("브라운", LocalDate.of(2026, 12, 31), 2L, 1L);
+
+        when(reservationDao.update(reservationId, request.date(), request.timeId(), request.themeId())).thenReturn(0);
+
+        assertThatThrownBy(() -> reservationService.updateUserReservation(reservationId, request))
+                .isInstanceOf(ReservationNotFoundException.class)
+                .hasMessage("해당 예약을 찾을 수 없습니다.");
     }
 }

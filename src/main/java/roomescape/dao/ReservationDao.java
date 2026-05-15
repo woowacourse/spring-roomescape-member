@@ -59,7 +59,7 @@ public class ReservationDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다.");
+            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("해당 시간, 테마를 찾을 수 없습니다.");
         }
@@ -83,5 +83,14 @@ public class ReservationDao {
     public List<Reservation> findUserReservations(String name) {
         String sql = "SELECT * FROM reservation WHERE name = ?";
         return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    public int update(Long id, LocalDate date, Long timeId, Long themeId) {
+        try {
+            String sql = "UPDATE reservation SET date = ?, time_id = ?, theme_id = ? WHERE id = ?";
+            return jdbcTemplate.update(sql, date, timeId, themeId, id);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
+        }
     }
 }

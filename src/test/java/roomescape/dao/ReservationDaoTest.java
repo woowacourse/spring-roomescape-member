@@ -47,7 +47,7 @@ public class ReservationDaoTest {
 
         assertThatThrownBy(() -> reservationDao.insertReservation("이든", date, timeId, themeId))
                 .isInstanceOf(ReservationAlreadyExistsException.class)
-                .hasMessage("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다.");
+                .hasMessage("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
     }
 
     @Test
@@ -85,5 +85,21 @@ public class ReservationDaoTest {
         assertThat(reservation.getTimeId()).isEqualTo(timeId);
         assertThat(reservation.getThemeId()).isEqualTo(themeId);
         assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
+    }
+
+    @Test
+    void 변경하려는_예약이_다른_예약과_중복되면_예외가_발생한다() {
+        Long themeId = themeDao.insertTheme("테마", "설명", "url");
+        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(15, 30));
+
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        Long id = reservationDao.insertReservation("이든", date, timeId, themeId);
+
+        LocalDate newDate = LocalDate.of(2026, 5, 7);
+        reservationDao.insertReservation("브라운", newDate, timeId, themeId);
+
+        assertThatThrownBy(() -> reservationDao.update(id, newDate, timeId, themeId))
+                .isInstanceOf(ReservationAlreadyExistsException.class)
+                .hasMessage("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
     }
 }

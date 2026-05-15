@@ -10,6 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.PastReservationTimeException;
@@ -65,7 +66,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.delete(id);
-        validateDelete(deleteCount);
+        validateChanged(deleteCount);
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
@@ -101,7 +102,13 @@ public class ReservationService {
         validateNotPastDate(dateTime);
 
         int deleteCount = reservationDao.deleteUserReservation(id, name);
-        validateDelete(deleteCount);
+        validateChanged(deleteCount);
+    }
+
+    @Transactional
+    public void updateUserReservation(Long id, ReservationUpdateRequest request) {
+        int updateCount = reservationDao.update(id, request.date(), request.timeId(), request.themeId());
+        validateChanged(updateCount);
     }
 
     private void validateNotPastDate(LocalDateTime dateTime) {
@@ -110,8 +117,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDelete(int deleteCount) {
-        if (deleteCount == 0) {
+    private void validateChanged(int count) {
+        if (count == 0) {
             throw new ReservationNotFoundException("해당 예약을 찾을 수 없습니다.");
         }
     }

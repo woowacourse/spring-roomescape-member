@@ -228,6 +228,33 @@ public class ReservationControllerTest {
                 .body("errorCode", is("INVALID_INPUT_VALUE"));
     }
 
+    @Test
+    void 사용자_이름으로_예약_수정() {
+        createReservation(reservationParams());
+        createTime("11:00");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("name", "브라운");
+        updateParams.put("date", "2026-12-31");
+        updateParams.put("timeId", 2);
+        updateParams.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().put("/api/v1/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].time.id", is(2))
+                .body("[0].time.startAt", is("11:00"));
+    }
+
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
