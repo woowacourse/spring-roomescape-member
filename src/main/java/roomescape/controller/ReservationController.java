@@ -65,7 +65,7 @@ public class ReservationController {
             @PathVariable("id") long id,
             @ModelAttribute @Valid ReservationCondition reservationCondition
     ) {
-        reservationService.deleteReservation(id);
+        reservationService.deleteReservationByName(id, reservationCondition.name());
 
         return ResponseEntity.noContent().build();
     }
