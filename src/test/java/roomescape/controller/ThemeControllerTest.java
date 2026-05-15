@@ -29,9 +29,9 @@ class ThemeControllerTest {
     @DisplayName("새로운 테마를 생성하면 201 상태코드와 생성된 데이터를 반환한다")
     void addTheme() throws Exception {
         Map<String, String> params = Map.of(
-                "name", "공포의 방",
-                "description", "아주 무서운 방입니다.",
-                "imageUrl", "https://example.com/image.png"
+                "name", "테마",
+                "description", "설명",
+                "imageUrl", "image"
         );
 
         mockMvc.perform(post("/themes")
@@ -39,7 +39,7 @@ class ThemeControllerTest {
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value(201))
-                .andExpect(jsonPath("$.data.name").value("공포의 방"));
+                .andExpect(jsonPath("$.data.name").value("테마"));
     }
 
     @Test

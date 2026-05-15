@@ -9,14 +9,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationCommand;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTime;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
-import roomescape.domain.theme.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.reservation.ReservationRepository;
@@ -25,14 +24,15 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 public class ReservationTimeServiceTest {
     private ReservationRepository createReservationRepository(boolean isUsedInReservation) {
         return new ReservationRepository() {
-            @Override public Optional<Reservation> getReservation(long id) { return Optional.empty(); }
-            @Override public ReservationDataWithTimeAndTheme addReservation(ReservationCommand command, ReservationTime rt, Theme t) { return null; }
+            @Override public Optional<ReservationWithTimeAndTheme> getReservationWithTimeAndTheme(long id) { return Optional.empty(); }
+            @Override public Optional<ReservationWithTime> getReservationWithTime(long id) { return Optional.empty(); };
+            @Override public List<ReservationWithTimeAndTheme> getAllReservation(String name) { return List.of(); }
+            @Override public long addReservation(ReservationCommand reservationCommand) { return 0; }
             @Override public void deleteReservation(long id) {}
             @Override public int updateAll(long id, ReservationCommand cmd) { return 0; }
             @Override public boolean existsByTimeId(long timeId) { return isUsedInReservation; }
             @Override public boolean existsByThemeId(long themeId) { return false; }
-            @Override public boolean existsByTimeIdAndThemeIdAndDate(long tid, long thid, LocalDate d) { return false; }
-            @Override public List<ReservationDataWithTimeAndTheme> getAllReservation(String name) { return List.of(); }
+            @Override public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate d) { return false; }
         };
     }
 

@@ -10,7 +10,7 @@ public record ReservationWithTime(long id, String name, LocalDate date, Reservat
     private static final String CANNOT_UPDATE_PAST_RESERVATION = "이미 지난 예약은 수정할 수 없습니다.";
 
     public void validateUpdateValue(ReservationCommand reservationCommand) {
-        validDateReservationDateTime();
+        validDateReservationDateTime(CANNOT_UPDATE_PAST_RESERVATION );
         validateEqualValue(reservationCommand);
     }
 
@@ -20,12 +20,12 @@ public record ReservationWithTime(long id, String name, LocalDate date, Reservat
         }
     }
 
-    public void validDateReservationDateTime() {
+    public void validDateReservationDateTime(String errorMessage) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationTime = LocalDateTime.of(date, reservationTime().startAt());
 
         if(reservationTime.isBefore(now)) {
-            throw new InvalidRequestValueException(CANNOT_UPDATE_PAST_RESERVATION);
+            throw new InvalidRequestValueException(errorMessage);
         }
     }
 

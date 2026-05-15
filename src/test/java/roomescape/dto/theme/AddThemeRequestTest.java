@@ -25,7 +25,7 @@ class AddThemeRequestTest {
     @Test
     @DisplayName("모든 필드가 입력되면 검증 통과")
     void success() {
-        AddThemeRequest request = new AddThemeRequest("공포의 테마", "정말 무서워요", "https://image.com/1.png");
+        AddThemeRequest request = new AddThemeRequest("테마", "설명", "url");
         Set<ConstraintViolation<AddThemeRequest>> violations = validator.validate(request);
 
         assertThat(violations).isEmpty();

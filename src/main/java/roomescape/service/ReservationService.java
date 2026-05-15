@@ -22,7 +22,12 @@ public class ReservationService {
     private static final String INVALID_RESERVATION_TIME_ID = "존재하지 않은 시간 id입니다.";
     private static final String INVALID_RESERVATION_ID = "존재하지 않는 예약 id입니다.";
     private static final String UNAUTHORIZED_UPDATE_RESERVATION_REQUEST = "해당 예약을 수정할 권한이 없습니다.";
+    private static final String UNAUTHORIZED_DELETE_RESERVATION_REQUEST = "해당 예약을 삭제할 권한이 없습니다.";
     private static final String CANNOT_UPDATE_RESERVATION = "수정하려는 예약이 존재하지 않아서 수정할 수 없습니다.";
+    private static final String CANNOT_UPDATE_PAST_RESERVATION = "이미 지난 예약은 수정할 수 없습니다.";
+    private static final String CANNOT_DELETE_PAST_RESERVATION = "이미 지난 예약은 삭제할 수 없습니다.";
+
+
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -47,8 +52,10 @@ public class ReservationService {
     public void deleteReservation(long id, String name) {
         ReservationWithTime reservationWithTime = getReservationWithTime(id);
 
-        validateUserAuthority(name, reservationWithTime.name());
-        reservationWithTime.validDateReservationDateTime();
+        if (!reservationWithTime.name().equals(name)) {
+            throw new UnauthorizedException(UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
+        }
+        reservationWithTime.validDateReservationDateTime(CANNOT_DELETE_PAST_RESERVATION);
 
         reservationRepository.deleteReservation(id);
     }
@@ -56,7 +63,10 @@ public class ReservationService {
     public void updateReservation(long id, String name, ReservationCommand reservationCommand) {
         ReservationWithTime reservationWithTime = getReservationWithTime(id);
 
-        validateUserAuthority(name, reservationWithTime.name());
+        if (!reservationWithTime.name().equals(name)) {
+            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
+        }
+
         reservationWithTime.validateUpdateValue(reservationCommand);
         validateAvailableReservation(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date());
 
@@ -85,18 +95,12 @@ public class ReservationService {
         return optionalData.get();
     }
 
-    private void validateUserAuthority(String name, String reservationOwnerName) {
-        if (!reservationOwnerName.equals(name)) {
-            throw new UnauthorizedException(UNAUTHORIZED_UPDATE_RESERVATION_REQUEST);
-        }
-    }
-
     private void validateAvailableReservation(long timeId, long themeId, LocalDate date) {
-        if(reservationTimeRepository.isExistsById(timeId)) {
+        if(!reservationTimeRepository.isExistsById(timeId)) {
             throw new NotFoundResourceException(INVALID_RESERVATION_TIME_ID);
         }
 
-        if(themeRepository.isExistsById(themeId)) {
+        if(!themeRepository.isExistsById(themeId)) {
             throw new NotFoundResourceException(INVALID_THEME_ID);
         }
 

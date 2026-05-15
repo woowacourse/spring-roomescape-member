@@ -11,8 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDataWithTimeAndTheme;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -22,7 +21,7 @@ import roomescape.repository.reservation.ReservationRepository;
 public class ReservationRepositoryTest extends BaseRepositoryTest {
     private ReservationRepository reservationRepository;
 
-    private final ReservationDataWithTimeAndTheme INIT_RESERVATION = new ReservationDataWithTimeAndTheme(
+    private final ReservationWithTimeAndTheme INIT_RESERVATION = new ReservationWithTimeAndTheme(
             1,
             "브라운",
             "2023-08-05",
@@ -51,7 +50,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("존재하는 ID로 조회 시 해당 예약을 반환한다")
     void getReservationTest() {
-        Optional<Reservation> reservation = reservationRepository.getReservation(1);
+        Optional<ReservationWithTimeAndTheme> reservation = reservationRepository.getReservationWithTimeAndTheme(1);
 
         assertThat(reservation).isPresent();
         assertThat(reservation.get().name()).isEqualTo("브라운");
@@ -60,7 +59,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("존재하지 않는 ID로 조회 시 empty를 반환한다")
     void getReservationEmptyTest() {
-        Optional<Reservation> reservation = reservationRepository.getReservation(999L);
+        Optional<ReservationWithTimeAndTheme> reservation = reservationRepository.getReservationWithTimeAndTheme(999L);
 
         assertThat(reservation).isEmpty();
     }
@@ -68,7 +67,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("전체 예약 테스트 정상적으로 가져오는 지 테스트")
     void getAllReservationTest() {
-        List<ReservationDataWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
+        List<ReservationWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
 
         assertThat(reservations).containsExactly(INIT_RESERVATION);
     }
@@ -77,7 +76,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @DisplayName("예약 삭제 정상적으로 작동하는 지 테스트")
     void deleteReservationTest() {
         reservationRepository.deleteReservation(1);
-        List<ReservationDataWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
+        List<ReservationWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
 
         assertThat(reservations).isNotIn(INIT_RESERVATION);
     }
@@ -86,11 +85,11 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @DisplayName("예약 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
         LocalDate date = LocalDate.now();
-        reservationRepository.addReservation(new ReservationCommand("테스트", date, 1, 1), new ReservationTime(1, LocalTime.parse("15:14")), new Theme(1, "theme", "description", "imageUrl"));
+        reservationRepository.addReservation(new ReservationCommand("테스트", date, 1, 1));
 
-        List<ReservationDataWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
+        List<ReservationWithTimeAndTheme> reservations = reservationRepository.getAllReservation(null);
 
-        ReservationDataWithTimeAndTheme expectedReservation = new ReservationDataWithTimeAndTheme(2, "테스트", date, new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"));
+        ReservationWithTimeAndTheme expectedReservation = new ReservationWithTimeAndTheme(2, "테스트", date, new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"));
 
         assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
@@ -105,11 +104,11 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
         insertReservation("테스트2", "2023-12-15", 1, 1);
 
 
-        List<ReservationDataWithTimeAndTheme> reservations = reservationRepository.getAllReservation("테스트");
+        List<ReservationWithTimeAndTheme> reservations = reservationRepository.getAllReservation("테스트");
 
-        List<ReservationDataWithTimeAndTheme> expectedReservation = List.of(
-                new ReservationDataWithTimeAndTheme(2, "테스트", "2023-09-15", new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url")),
-                new ReservationDataWithTimeAndTheme(4, "테스트", "2023-11-15", new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"))
+        List<ReservationWithTimeAndTheme> expectedReservation = List.of(
+                new ReservationWithTimeAndTheme(2, "테스트", "2023-09-15", new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url")),
+                new ReservationWithTimeAndTheme(4, "테스트", "2023-11-15", new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"))
         );
 
         assertThat(reservations.size()).isEqualTo(2);
@@ -121,8 +120,8 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     void getAllReservationWithBlankNameTest() {
         insertReservation("테스트", "2023-09-15", 1, 1);
 
-        List<ReservationDataWithTimeAndTheme> resultWithEmpty = reservationRepository.getAllReservation("");
-        List<ReservationDataWithTimeAndTheme> resultWithBlank = reservationRepository.getAllReservation("   ");
+        List<ReservationWithTimeAndTheme> resultWithEmpty = reservationRepository.getAllReservation("");
+        List<ReservationWithTimeAndTheme> resultWithBlank = reservationRepository.getAllReservation("   ");
 
         assertThat(resultWithEmpty).hasSize(2);
         assertThat(resultWithBlank).hasSize(2);
@@ -172,12 +171,12 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
 
         assertThat(updatedCount).isEqualTo(1);
 
-        Reservation updatedInfo = reservationRepository.getReservation(1L).get();
+        ReservationWithTimeAndTheme updatedInfo = reservationRepository.getReservationWithTimeAndTheme(1L).get();
         assertAll(
                 () -> assertThat(updatedInfo.name()).isEqualTo("테스트"),
                 () -> assertThat(updatedInfo.date()).isEqualTo(date),
-                () -> assertThat(updatedInfo.timeId()).isEqualTo(2L),
-                () -> assertThat(updatedInfo.themeId()).isEqualTo(2L)
+                () -> assertThat(updatedInfo.time().id()).isEqualTo(2L),
+                () -> assertThat(updatedInfo.reservationTheme().id()).isEqualTo(2L)
         );
     }
 }
