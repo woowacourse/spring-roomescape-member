@@ -1,14 +1,28 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.*;
-import roomescape.domain.Reservation;
-import roomescape.service.ReservationService;
-
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.ReservationPatchRequest;
+import roomescape.controller.dto.ReservationPutRequest;
+import roomescape.controller.dto.ReservationRequest;
+import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.TimeResponse;
+import roomescape.domain.Reservation;
+import roomescape.exception.InvalidOwnershipException;
+import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
@@ -45,6 +59,11 @@ public class ReservationController {
                 .body(toResponse(reservation));
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReservationWithoutUserName(@PathVariable(required = false) Long id) {
+        throw new InvalidOwnershipException();
+    }
+
     @DeleteMapping(value = "/{id}", params = {"userName"})
     public ResponseEntity<Void> deleteReservation(@PathVariable long id, @RequestParam String userName) {
         reservationService.removeReservation(id, userName);
@@ -57,7 +76,8 @@ public class ReservationController {
             @RequestBody @Valid ReservationPutRequest request,
             @RequestParam String userName
     ) {
-        reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(), request.themeId());
+        reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(),
+                request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
@@ -67,7 +87,8 @@ public class ReservationController {
             @RequestBody ReservationPatchRequest request,
             @RequestParam String userName
     ) {
-        reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(), request.themeId());
+        reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(),
+                request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
