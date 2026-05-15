@@ -17,9 +17,7 @@ public class Reservation {
     private final Theme theme;
 
     private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Clock clock) {
-        if (clock != null) {
-            validateDateTime(date, time, clock);
-        }
+        validateDateTime(date, time, clock);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -27,12 +25,21 @@ public class Reservation {
         this.theme = theme;
     }
 
+    private Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+
     public static Reservation create(String name, LocalDate date, Time time, Theme theme, Clock clock) {
         return new Reservation(null, name, date, time, theme, clock);
     }
 
     public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(id, name, date, time, theme, null);
+        return new Reservation(id, name, date, time, theme);
     }
 
     private void validateDateTime(LocalDate date, Time time, Clock clock) {
