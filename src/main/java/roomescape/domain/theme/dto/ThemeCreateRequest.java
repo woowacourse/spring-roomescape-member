@@ -1,9 +1,14 @@
 package roomescape.domain.theme.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ThemeCreateRequest {
 
+    @NotBlank(message = "이름은 필수입니다.")
     private final String name;
+
     private final String description;
+
     private final String url;
 
     public ThemeCreateRequest(String name, String description, String url) {

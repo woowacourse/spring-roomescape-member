@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class ReservationTimeRestController {
     }
 
     @PostMapping("/admin/times")
-    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeCreateRequest reservationTimeReq) {
+    public ResponseEntity<ReservationTimeResponse> create(@Valid  @RequestBody ReservationTimeCreateRequest reservationTimeReq) {
         ReservationTimeResponse newReservationTime = reservationTimeService.create(reservationTimeReq);
         URI uri = URI.create("/times/" + newReservationTime.getId());
         return ResponseEntity.created(uri).body(newReservationTime);
@@ -44,7 +45,7 @@ public class ReservationTimeRestController {
     }
 
     @PutMapping("/admin/times/{id}")
-    public ResponseEntity<ReservationTimeResponse> update(@RequestBody ReservationTimeUpdateRequest newReservationTimeReq, @PathVariable Long id) {
+    public ResponseEntity<ReservationTimeResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationTimeUpdateRequest newReservationTimeReq) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.update(id, newReservationTimeReq);
         return ResponseEntity.ok(reservationTimeResponse);
     }

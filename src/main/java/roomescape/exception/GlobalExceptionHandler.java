@@ -1,14 +1,23 @@
 package roomescape.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.dto.ExceptionResponse;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
+
+        return ResponseEntity.badRequest()
+                .body(new ExceptionResponse(message));
+    }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(CustomException e) {
@@ -18,13 +27,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+        return ResponseEntity.internalServerError()
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(Exception e) {
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+        return ResponseEntity.internalServerError()
                 .body(new ExceptionResponse(e.getMessage()));
     }
 }
