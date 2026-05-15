@@ -36,7 +36,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, themeEntityRowMapper);
     }
 
-    public Long insert(String name, String description, String imageUrl) {
+    public Long save(String name, String description, String imageUrl) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)

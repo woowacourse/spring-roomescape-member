@@ -31,7 +31,7 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody CreateReservationTimeRequest createReservationTimeRequest) {
-        ReservationTimeResponse createdReservationTime = reservationTimeService.addReservationTime(
+        ReservationTimeResponse createdReservationTime = reservationTimeService.createReservationTime(
                 createReservationTimeRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdReservationTime);
@@ -39,7 +39,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeService.removeRegisteredReservationTime(id);
+        reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 }
