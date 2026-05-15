@@ -65,6 +65,7 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
+<<<<<<< cycle2
     public int update(Time time) {
         String sql = """
                 UPDATE times
@@ -78,6 +79,8 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
+=======
+>>>>>>> bee9827
     public int delete(Long id) {
         String sql = """
                 DELETE FROM times

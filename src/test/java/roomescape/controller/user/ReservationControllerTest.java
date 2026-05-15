@@ -3,9 +3,12 @@ package roomescape.controller.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+<<<<<<< cycle2
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+=======
+>>>>>>> bee9827
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
@@ -20,7 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+<<<<<<< cycle2
 import roomescape.common.exception.NotFoundException;
+=======
+>>>>>>> bee9827
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -47,6 +53,7 @@ class ReservationControllerTest {
     }
 
     @Nested
+<<<<<<< cycle2
     class Get {
 
         @Test
@@ -95,6 +102,8 @@ class ReservationControllerTest {
     }
 
     @Nested
+=======
+>>>>>>> bee9827
     class Post {
 
         @Test
@@ -109,7 +118,11 @@ class ReservationControllerTest {
                     .body(requestDto)
                     .when().post("/reservations")
                     .then()
+<<<<<<< cycle2
                     .status(HttpStatus.CREATED)
+=======
+                    .status(HttpStatus.OK)
+>>>>>>> bee9827
                     .extract().as(ReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);

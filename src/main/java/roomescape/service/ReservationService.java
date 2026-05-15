@@ -1,6 +1,9 @@
 package roomescape.service;
 
+<<<<<<< cycle2
 import java.time.LocalDateTime;
+=======
+>>>>>>> bee9827
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +15,13 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
+<<<<<<< cycle2
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.PageResponse;
+=======
+import roomescape.dto.request.ReservationRequestDto;
+>>>>>>> bee9827
 
 @Service
 @Transactional(readOnly = true)
@@ -29,12 +36,17 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+<<<<<<< cycle2
     public PageResponse<Reservation> findAll(int page, int size) {
         int offset = page * size;
         List<Reservation> content = reservationDao.findAll(size, offset);
         long totalElements = reservationDao.count();
         int totalPages = (int) Math.ceil((double) totalElements / size);
         return new PageResponse<>(content, totalElements, totalPages, page, size);
+=======
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
+>>>>>>> bee9827
     }
 
     public Reservation findById(Long id) {
@@ -42,6 +54,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 
+<<<<<<< cycle2
     public Reservation findActiveById(Long id) {
         Reservation reservation = findById(id);
         if (!reservation.isActive()) {
@@ -64,6 +77,10 @@ public class ReservationService {
     }
 
     private Reservation buildReservation(ReservationRequestDto reservationRequest) {
+=======
+    @Transactional
+    public Reservation create(ReservationRequestDto reservationRequest) {
+>>>>>>> bee9827
         Time timeById = timeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
         Theme themeById = themeDao.findById(reservationRequest.themeId())
@@ -71,6 +88,7 @@ public class ReservationService {
 
         if (reservationDao.existsByThemeIdAndTimeIdAndDate(reservationRequest.themeId(), reservationRequest.timeId(),
                 reservationRequest.date())) {
+<<<<<<< cycle2
             throw new ConflictException("이미 존재하는 예약이 있습니다.");
         }
         return new Reservation(reservationRequest.name(), reservationRequest.date(), timeById, themeById);
@@ -93,6 +111,13 @@ public class ReservationService {
         Reservation reservation = findById(id);
         reservation.validateCancel(LocalDateTime.now());
         reservationDao.update(reservation);
+=======
+            throw new ConflictException("이미 존재하는 예약이 있습니다. ");
+        }
+        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeById,
+                themeById);
+        return reservationDao.insert(reservation);
+>>>>>>> bee9827
     }
 
     @Transactional
