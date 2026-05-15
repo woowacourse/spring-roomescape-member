@@ -82,7 +82,7 @@ class ReservationTest {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
 
-        assertThat(reservation.isPastAt(now)).isTrue();
+        assertThat(reservation.isPast(now)).isTrue();
     }
 
     @Test
@@ -91,7 +91,7 @@ class ReservationTest {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
 
-        assertThat(reservation.isPastAt(now)).isFalse();
+        assertThat(reservation.isPast(now)).isFalse();
     }
 
     @Test
@@ -100,7 +100,7 @@ class ReservationTest {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
 
-        assertThat(reservation.isPastAt(now)).isFalse();
+        assertThat(reservation.isPast(now)).isFalse();
     }
 
     private void assertInvalidRequestException(Runnable runnable, String message) {

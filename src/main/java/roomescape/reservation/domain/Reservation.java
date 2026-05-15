@@ -86,7 +86,7 @@ public class Reservation {
         }
     }
 
-    public boolean isPastAt(LocalDateTime now) {
+    public boolean isPast(LocalDateTime now) {
         return time.atDate(date).isBefore(now);
     }
 

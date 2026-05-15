@@ -100,7 +100,7 @@ public class ReservationService {
     }
 
     private void validateNotPast(Reservation reservation, String message) {
-        if (reservation.isPastAt(LocalDateTime.now())) {
+        if (reservation.isPast(LocalDateTime.now())) {
             throw new InvalidRequestException(message);
         }
     }
