@@ -37,6 +37,11 @@ public class ReservationService {
         return convertReservationsToDto(reservations);
     }
 
+    public List<ReservationResponseDto> getReservationsByName(String name) {
+        List<Reservation> reservations = reservationRepository.findReservationsByNameAndDeletedAtIsNull(name);
+        return convertReservationsToDto(reservations);
+    }
+
     private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
         return reservations.stream()
             .map(ReservationMapper::toResponseDto)

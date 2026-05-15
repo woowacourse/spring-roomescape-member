@@ -10,6 +10,8 @@ public interface ReservationRepository {
 
     List<Reservation> findReservationsByDeletedAtIsNull();
 
+    List<Reservation> findReservationsByNameAndDeletedAtIsNull(String name);
+
     List<Long> findTimeIdsByDateAndThemeIdAndDeletedAtIsNull(LocalDate localDate, Long themeId);
 
     Reservation save(Reservation reservation);
