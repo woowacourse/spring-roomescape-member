@@ -10,6 +10,7 @@ import roomescape.domain.vo.MemberName;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationUpdateRequestDto;
 import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
@@ -67,5 +68,18 @@ public class ReservationController {
         }
 
         reservationService.deleteReservation(id, name);
+    }
+
+    @PutMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public void updateReservation(
+            @RequestParam(value = "name") MemberName name,
+            @Valid @RequestBody ReservationUpdateRequestDto requestDto
+    ) {
+        if (name == null) {
+            throw new BusinessException(ErrorCode.MISSING_CREDENTIALS);
+        }
+
+        reservationService.update(requestDto, name);
     }
 }

@@ -11,7 +11,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationUpdateRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
@@ -75,8 +77,10 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservation(Long id, MemberName memberName) {
-        Reservation reservation = reservationRepository.findById(id);
-        if (reservation.getName() != memberName) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!reservation.getName().equals(memberName)) {
             throw new BusinessException(ErrorCode.RESERVATION_ACCESS_DENIED);
         }
 
@@ -114,5 +118,23 @@ public class ReservationService {
 
     public List<Reservation> findReservationsByName(MemberName name) {
         return reservationRepository.findReservationsByName(name);
+    }
+
+    public void update(ReservationUpdateRequestDto requestDto, MemberName name) {
+        Reservation reservation = new Reservation(
+                requestDto.id(),
+                requestDto.name(),
+                new ReservationDate(requestDto.date()),
+                reservationTimeRepository.findById(requestDto.timeId()).orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND)),
+                themeRepository.findById(requestDto.themeId()).orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND)));
+
+        Reservation oldReservation = reservationRepository.findById(reservation.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!oldReservation.getName().equals(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_ACCESS_DENIED);
+        }
+
+        reservationRepository.update(reservation);
     }
 }

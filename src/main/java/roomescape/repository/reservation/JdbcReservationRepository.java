@@ -13,6 +13,8 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -104,8 +106,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
-        return template.queryForObject(
+    public Optional<Reservation> findById(Long id) {
+        return Optional.ofNullable(template.queryForObject(
                 """
                         SELECT
                         r.id as reservation_id, 
@@ -125,7 +127,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         WHERE r.id = ?
                         """,
                 RESERVATION_ROW_MAPPER,
-                id);
+                id));
     }
 
     @Override
@@ -167,5 +169,22 @@ public class JdbcReservationRepository implements ReservationRepository {
                 RESERVATION_ROW_MAPPER,
                 memberName.value()
         );
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        String sql = "UPDATE reservation SET name = ?, res_date = ?, time_id = ?, theme_id = ? WHERE id = ?;";
+
+        int affectedRows = template.update(sql,
+                reservation.getName().value(),
+                Date.valueOf(reservation.getDateValue()),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+
+        if (affectedRows == 0) {
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 }

@@ -1,9 +1,12 @@
 package roomescape.domain.vo;
 
-public record MemberName(
-        String value
-) {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
+public record MemberName(
+        @JsonValue String value
+) {
+    @JsonCreator
     public MemberName {
         validateNotBlank(value);
     }
