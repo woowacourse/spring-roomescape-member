@@ -29,12 +29,13 @@ class AdminReservationTimeControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @org.springframework.beans.factory.annotation.Value("${token}")
+    @org.springframework.beans.factory.annotation.Value("${token:boyesumin2sanchaerin}")
     private String adminToken;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.execute("DELETE FROM reservation_time WHERE start_at IN ('23:00', '23:30')");
     }
 
     @Test
@@ -71,8 +72,7 @@ class AdminReservationTimeControllerTest {
     void deleteReservationTime() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                "insert into reservation_time(start_at) values (?)",
+            PreparedStatement ps = connection.prepareStatement("insert into reservation_time(start_at) values (?)",
                 Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, "23:30");
             return ps;

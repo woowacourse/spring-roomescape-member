@@ -25,6 +25,7 @@ class ReservationTimeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.execute("DELETE FROM reservation_time WHERE start_at = '23:00'");
     }
 
     @Test
