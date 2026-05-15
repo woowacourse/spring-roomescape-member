@@ -10,15 +10,20 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.dao.ThemeDao;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
     private final ReservationTimeDao timeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao timeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,ThemeDao themeDao, ReservationTimeDao timeDao) {
         this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
         this.timeDao = timeDao;
     }
 
@@ -31,13 +36,23 @@ public class ReservationService {
     }
 
     public Reservation addReservation(String name, LocalDate date, Long timeId, Long themeId) {
+
+        if (!reservationTimeDao.existsById(timeId)) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
+        }
+
+        if (!themeDao.existsById(themeId)) {
+            throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
+        }
+
         ReservationTime time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);
+
 
         boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);
 
         if (!isAvailable) {
-            throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
+            throw new BusinessException(ErrorCode.RESERVATION_CONFLICT);
         }
 
         return reservationDao.insert(reservation);

@@ -76,4 +76,9 @@ public class ThemeDao {
         String sql = "DELETE FROM theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public Boolean existsById(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }

@@ -57,7 +57,7 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> updateReservation(@PathVariable Long id, @RequestParam String name, @RequestBody UpdateReservationRequest request) {
+    public ResponseEntity<ReservationResponse> updateReservation(@Valid @PathVariable Long id, @RequestParam String name, @RequestBody UpdateReservationRequest request) {
         reservationService.update(id, name, request.date(), request.timeId(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
