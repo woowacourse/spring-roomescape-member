@@ -14,10 +14,12 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationUpdateRequestDto;
 import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
@@ -188,7 +190,32 @@ class ReservationControllerTest {
         assertThat(responseDto).isEqualTo(expected);
     }
 
+    @Test
+    void 사용자가_이름으로_자신의_예약을_수정한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        Reservation reservation = new Reservation(1L, testName, new ReservationDate(LocalDate.now()), TIME, THEME);
+        ReservationUpdateRequestDto request = updateRequestDtoFrom(reservation);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .queryParam("name", "브라운")
+                .when().put("/reservations");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
         return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
+    }
+
+    private ReservationUpdateRequestDto updateRequestDtoFrom(Reservation reservation) {
+        return new ReservationUpdateRequestDto(reservation.getId(), reservation.getName(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }

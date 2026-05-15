@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.repository.time.JdbcReservationTimeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -107,7 +108,7 @@ class JdbcReservationRepositoryTest {
         Reservation saved = reservationRepository.createReservation(Reservation.create("브라운",  tomorrow, savedTime, savedTheme));
 
         // when
-        Reservation target = reservationRepository.findById(saved.getId());
+        Reservation target = reservationRepository.findById(saved.getId()).get();
 
         // then
         assertThat(target.getId()).isEqualTo(saved.getId());
@@ -168,5 +169,23 @@ class JdbcReservationRepositoryTest {
         assertThat(reservations).hasSize(2);
         assertThat(reservations).extracting(Reservation::getName)
                 .allSatisfy(name -> assertThat(name.value().equals(testName)));
+    }
+
+    @Test
+    void 사용자의_예약을_업데이트한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
+        ReservationTime updatedTime = timeRepository.createReservationTime(new ReservationTime("17:00"));
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        Reservation oldReservation = reservationRepository.createReservation(Reservation.create(testName.value(), tomorrow, time, savedTheme));
+        Reservation updatedReservation = new Reservation(oldReservation.getId(), testName, new ReservationDate(tomorrow), updatedTime, savedTheme);;
+
+        // when
+        reservationRepository.update(updatedReservation);
+
+        // then
+        assertThat(reservationRepository.findById(oldReservation.getId()).get()).isEqualTo(updatedReservation);
     }
 }

@@ -25,6 +25,7 @@ import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationUpdateRequestDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
@@ -167,7 +168,7 @@ class ReservationServiceTest {
 
         Reservation reservation = new Reservation(reservationId, name, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
         when(reservationRepository.findById(reservationId))
-                .thenReturn(reservation);
+                .thenReturn(Optional.of(reservation));
 
         // when
         reservationService.deleteReservation(reservationId, name);
@@ -185,11 +186,40 @@ class ReservationServiceTest {
 
         Reservation reservation = new Reservation(reservationId, otherName, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
         when(reservationRepository.findById(reservationId))
-                .thenReturn(reservation);
+                .thenReturn(Optional.of(reservation));
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteReservation(reservationId, name))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.RESERVATION_ACCESS_DENIED.getMessage());
+    }
+
+    @Test
+    void 사용자가_이름으로_자신의_예약을_수정한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        Long reservationId = 1L;
+
+        when(timeRepository.findById(anyLong())).thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong())).thenReturn(Optional.of(SAVED_THEME));
+
+        Reservation oldReservation = new Reservation(reservationId, name, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(oldReservation));
+
+        ReservationUpdateRequestDto updateRequestDto = new ReservationUpdateRequestDto(reservationId, name, LocalDate.now().plusDays(2), SAVED_TIME.getId(), SAVED_THEME.getId());
+
+        // when
+        reservationService.update(updateRequestDto, name);
+
+        // then
+        Reservation updatedReservation = new Reservation(
+                updateRequestDto.id(),
+                updateRequestDto.name(),
+                new ReservationDate(updateRequestDto.date()),
+                SAVED_TIME,
+                SAVED_THEME);
+
+        verify(reservationRepository, times(1)).update(updatedReservation);
     }
 }
