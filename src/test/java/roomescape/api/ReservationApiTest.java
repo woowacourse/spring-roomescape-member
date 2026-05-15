@@ -18,7 +18,9 @@ import roomescape.util.TestDataInitializer;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationApiTest {
+class ReservationApiTest extends ApiTestSupport {
+
+    private static final LocalDate TODAY = LocalDate.now();
 
     @Autowired
     private TestDataInitializer dataInitializer;
@@ -39,7 +41,7 @@ class ReservationApiTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -71,10 +73,10 @@ class ReservationApiTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "NULL, 2023-08-05",
-            "'', 2023-08-05",
-            "'   ', 2023-08-05",
-            "123456789012345678901234567890123456789012345678901, 2023-08-05",
+            "NULL, 2026-05-16",
+            "'', 2026-05-16",
+            "'   ', 2026-05-16",
+            "123456789012345678901234567890123456789012345678901, 2026-05-16",
             "브라운, NULL"
     }, nullValues = "NULL")
     void 예약_생성_요청값이_유효하지_않으면_400을_반환한다(String name, String date) {
@@ -101,7 +103,7 @@ class ReservationApiTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 999);
         params.put("themeId", 1);
 
@@ -119,7 +121,7 @@ class ReservationApiTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 999);
 
@@ -135,11 +137,11 @@ class ReservationApiTest {
     void 같은_날짜_시간_테마로_중복_예약하면_409를_반환한다() {
         dataInitializer.createReservationTime(LocalTime.of(10, 0));
         dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
-        dataInitializer.createReservation("브라운", LocalDate.of(2023, 8, 5), 1L, 1L);
+        dataInitializer.createReservation("브라운", TODAY.plusDays(1), 1L, 1L);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "라텔");
-        params.put("date", "2023-08-05");
+        params.put("date", TODAY.plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -149,6 +151,36 @@ class ReservationApiTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @Test
+    void 지나간_날짜와_시간으로_예약하면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(15, 0));
+
+        createReservationRequest(TODAY.minusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_날짜가_오늘이고_현재_서버_시간_이전의_예약_시간이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.MIN);
+
+        createReservationRequest(TODAY, 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 오늘_기준_30일을_초과한_날짜로_예약하면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(15, 0));
+
+        createReservationRequest(TODAY.plusDays(31), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @ParameterizedTest
@@ -167,4 +199,26 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(statusCode);
     }
+
+    private void createReservationPrerequisites(LocalTime startAt) {
+        dataInitializer.createReservationTime(startAt);
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
+    }
+
+    private io.restassured.specification.RequestSpecification createReservationRequest(
+            LocalDate date,
+            Long timeId,
+            Long themeId
+    ) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", date.toString());
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params);
+    }
+
 }

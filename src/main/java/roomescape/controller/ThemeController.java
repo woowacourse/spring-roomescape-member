@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,7 +43,7 @@ public class ThemeController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         ThemeRankingQuery query = new ThemeRankingQuery(days, limit);
-        List<ThemeRankResponse> themeRankings = themeService.getThemeRankings(query.toCondition(), LocalDate.now())
+        List<ThemeRankResponse> themeRankings = themeService.getThemeRankings(query.toCondition())
                 .stream()
                 .map(ThemeRankResponse::from)
                 .toList();

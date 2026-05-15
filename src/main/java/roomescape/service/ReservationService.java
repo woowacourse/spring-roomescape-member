@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -10,6 +13,7 @@ import roomescape.service.dto.reservation.CreateReservationCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -26,6 +30,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public List<ReservationResult> getReservations(ReservationPagingCondition condition) {
         return reservationRepository.findAll(condition.size(), condition.offset()).stream()
@@ -37,6 +42,7 @@ public class ReservationService {
     public ReservationResult createReservation(CreateReservationCommand command) {
         ReservationTime time = getReservationTime(command);
         Theme theme = getTheme(command);
+        validateReservableDateTime(command.date(), time);
         ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
                 theme.getId(),
                 command.date()
@@ -69,5 +75,17 @@ public class ReservationService {
     private Theme getTheme(CreateReservationCommand command) {
         return themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
+    }
+
+    private void validateReservableDateTime(LocalDate date, ReservationTime time) {
+        LocalDate today = LocalDate.now(clock);
+        LocalTime now = LocalTime.now(clock);
+
+        if (date.isBefore(today) || date.isEqual(today) && time.getStartAt().isBefore(now)) {
+            throw new InvalidReservationException("과거 날짜/시간으로는 예약할 수 없습니다.");
+        }
+        if (date.isAfter(today.plusDays(30))) {
+            throw new InvalidReservationException("30일을 초과한 날짜로는 예약할 수 없습니다.");
+        }
     }
 }

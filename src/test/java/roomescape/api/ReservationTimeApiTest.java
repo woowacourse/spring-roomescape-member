@@ -93,7 +93,7 @@ class ReservationTimeApiTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

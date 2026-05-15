@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -19,6 +20,7 @@ import roomescape.service.dto.theme.ThemeResult;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     @Transactional
     public ThemeResult createTheme(CreateThemeCommand command) {
@@ -43,7 +45,8 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeRankResult> getThemeRankings(ThemeRankingCondition condition, LocalDate today) {
+    public List<ThemeRankResult> getThemeRankings(ThemeRankingCondition condition) {
+        LocalDate today = LocalDate.now(clock);
         LocalDate fromDate = today.minusDays(condition.days());
         LocalDate toDate = today.minusDays(1L);
         List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, toDate, condition.limit());
