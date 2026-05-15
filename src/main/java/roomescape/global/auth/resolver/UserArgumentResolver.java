@@ -53,7 +53,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     private void validateName(final String name) {
-        if (name == null || name.isBlank()) {
+        if (name.isBlank()) {
             throw new AuthenticationFailedException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
         }
     }

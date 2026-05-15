@@ -52,12 +52,6 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResult> findAll() {
-        return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResult::from)
-                .toList();
-    }
-
     public List<ReservationTimeResult> findAvailableTimes(final LocalDate date, final long themeId) {
         return reservationTimeRepository.findAvailableTimes(date, themeId).stream()
                 .map(ReservationTimeResult::from)
