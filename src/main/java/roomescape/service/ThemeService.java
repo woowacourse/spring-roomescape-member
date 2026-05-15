@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -22,9 +23,8 @@ public class ThemeService {
     }
 
     public Theme find(long themeId) {
-        return themeRepository.findById(themeId).orElseThrow(
-                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS)
-        );
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NotFoundException(THEME_DOES_NOT_EXISTS));
     }
 
     public List<Theme> findAll() {

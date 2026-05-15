@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.AvailableTimeFindRequest;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -34,14 +36,14 @@ public class ReservationTimeService {
 
     public ReservationTime find(long reservationTimeId) {
         return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+                .orElseThrow(() -> new NotFoundException(TIME_SLOT_DOES_NOT_EXIST));
     }
 
     public void delete(long reservationTimeId) {
         reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID));
+                .orElseThrow(() -> new NotFoundException(INVALID_TIME_ID));
         if (reservationRepository.existsByTimeId(reservationTimeId)) {
-            throw new IllegalArgumentException(TIME_HAS_RESERVATION);
+            throw new ConflictException(TIME_HAS_RESERVATION);
         }
         reservationTimeRepository.delete(reservationTimeId);
     }

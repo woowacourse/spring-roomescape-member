@@ -9,12 +9,15 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
 @Service
 public class ReservationService {
     private static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
-    private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
+    private static final String DUPLICATED_RESERVATION = "해당 날짜, 테마, 시간에 이미 중복된 예약이 존재합니다.";
     private static final String PAST_RESERVATION = "지나간 날짜·시간에는 예약할 수 없습니다.";
 
     private final ReservationRepository reservationRepository;
@@ -51,7 +54,7 @@ public class ReservationService {
 
     public Reservation update(long reservationId, ReservationUpdateRequest request) {
         Reservation existing = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+                .orElseThrow(() -> new NotFoundException(INVALID_RESERVATION_ID));
 
         ReservationDate newDate = ReservationDate.from(request.getDate());
         ReservationTime newTime = reservationTimeService.find(request.getTimeId());
@@ -66,7 +69,7 @@ public class ReservationService {
 
     public void cancel(long reservationId) {
         reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+                .orElseThrow(() -> new NotFoundException(INVALID_RESERVATION_ID));
         reservationRepository.deleteById(reservationId);
     }
 
@@ -74,7 +77,7 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(
                 reservationDate.getDate(), reservationTime.getStartAt());
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(PAST_RESERVATION);
+            throw new BusinessRuleViolationException(PAST_RESERVATION);
         }
     }
 
@@ -83,17 +86,18 @@ public class ReservationService {
                 .stream()
                 .anyMatch(r -> r.getDate().equals(reservationDate));
         if (isExists) {
-            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+            throw new ConflictException(DUPLICATED_RESERVATION);
         }
     }
 
-    private void validateNoDuplicateForUpdate(long excludeId, Long timeId, Long themeId, ReservationDate reservationDate) {
+    private void validateNoDuplicateForUpdate(long excludeId, Long timeId, Long themeId,
+            ReservationDate reservationDate) {
         boolean isExists = reservationRepository.findByTimeAndTheme(timeId, themeId)
                 .stream()
                 .filter(r -> r.getId() != excludeId)
                 .anyMatch(r -> r.getDate().equals(reservationDate));
         if (isExists) {
-            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+            throw new ConflictException(DUPLICATED_RESERVATION);
         }
     }
 }
