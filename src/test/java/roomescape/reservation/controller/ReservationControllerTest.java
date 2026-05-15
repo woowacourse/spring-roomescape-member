@@ -26,7 +26,7 @@ public class ReservationControllerTest {
     void 예약추가_예약존재_성공() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
-        params.put("date", "2026-05-05");
+        params.put("date", "2026-05-20");
         params.put("timeId", 7L);
         params.put("themeId", 2L);
 
@@ -42,7 +42,7 @@ public class ReservationControllerTest {
     void 예약_추가_시간없음_실패() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
-        params.put("date", "2026-05-05");
+        params.put("date", "2026-05-20");
         params.put("timeId", 15L);
         params.put("themeId", 2L);
 
@@ -51,7 +51,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/api/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(404);
     }
 
     @Test
