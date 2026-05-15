@@ -19,16 +19,16 @@
         const date = dateInput.value;
         if (!date) return;
         try {
-            const res = await fetch(`/themes/${themeId}/times?date=${date}`);
-            if (!res.ok) throw new Error('시간 조회 실패');
+            const res = await apiFetch(`/themes/${themeId}/times?date=${date}`);
             const times = await res.json();
-            renderTimes(times);
+            renderTimes(times, date);
         } catch (e) {
-            timeList.innerHTML = `<span style="color:#a00;">${e.message}</span>`;
+            timeList.innerHTML = '';
+            toastError(e);
         }
     }
 
-    function renderTimes(times) {
+    function renderTimes(times, date) {
         if (times.length === 0) {
             timeList.innerHTML = '<span style="color:#888;">예약 가능한 시간이 없습니다.</span>';
             return;
@@ -40,11 +40,16 @@
             btn.className = 'time-button';
             btn.textContent = t.startAt;
             btn.dataset.timeId = t.id;
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.time-button').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedTimeId = t.id;
-            });
+            if (isPastSlot(date, t.startAt)) {
+                btn.disabled = true;
+                btn.title = '이미 지난 시간입니다.';
+            } else {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.time-button').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedTimeId = t.id;
+                });
+            }
             timeList.appendChild(btn);
         });
     }
@@ -52,12 +57,12 @@
     submitBtn.addEventListener('click', async () => {
         const name = nameInput.value.trim();
         const date = dateInput.value;
-        if (!name) return alert('이름을 입력해주세요.');
-        if (!date) return alert('날짜를 선택해주세요.');
-        if (!selectedTimeId) return alert('시간을 선택해주세요.');
+        if (!name) return showToast('이름을 입력해주세요.', null, 'error');
+        if (!date) return showToast('날짜를 선택해주세요.', null, 'error');
+        if (!selectedTimeId) return showToast('시간을 선택해주세요.', null, 'error');
 
         try {
-            const res = await fetch('/reservations', {
+            const res = await apiFetch('/reservations', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -67,12 +72,11 @@
                     themeId: Number(themeId)
                 })
             });
-            if (!res.ok) throw new Error('예약에 실패했습니다.');
             const reservation = await res.json();
             sessionStorage.setItem('lastReservation', JSON.stringify(reservation));
             location.href = '/reservation/success';
         } catch (e) {
-            alert(e.message);
+            toastError(e);
         }
     });
 })();

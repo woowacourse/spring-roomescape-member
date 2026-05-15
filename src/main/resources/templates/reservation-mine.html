@@ -34,6 +34,31 @@
     </table>
 </main>
 
+<div class="modal-overlay" hidden id="edit-modal">
+    <div class="modal">
+        <h2>예약 변경</h2>
+        <p class="modal-current" id="edit-current"></p>
+
+        <div class="form-row">
+            <label for="edit-date">날짜 선택</label>
+            <input id="edit-date" type="date"/>
+        </div>
+
+        <div class="form-row">
+            <label>변경할 시간</label>
+            <div class="time-list" id="edit-time-list">
+                <span style="color:#888; font-size:13px;">날짜를 먼저 선택하세요.</span>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="edit-close" type="button">닫기</button>
+            <button class="btn" id="edit-save" type="button">변경 저장</button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: toast}"></div>
 <script th:src="@{/js/reservation-mine.js}"></script>
 </body>
 </html>

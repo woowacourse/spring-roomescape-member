@@ -17,5 +17,12 @@
         </nav>
     </div>
 </header>
+
+<th:block th:fragment="toast">
+    <div class="toast-container" id="toast-container"></div>
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/util.js}"></script>
+</th:block>
 </body>
 </html>

@@ -22,20 +22,24 @@
             themeId: Number(themeEl.value)
         };
         if (!body.name || !body.date || !body.timeId || !body.themeId) {
-            return alert('모든 항목을 입력해주세요.');
+            return showToast('모든 항목을 입력해주세요.', null, 'error');
         }
-        const res = await fetch('/admin/reservations', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) return alert('추가 실패');
-        const r = await res.json();
-        appendRow(r);
-        nameEl.value = '';
-        dateEl.value = '';
-        timeEl.value = '';
-        themeEl.value = '';
+        try {
+            const res = await apiFetch('/admin/reservations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const r = await res.json();
+            appendRow(r);
+            nameEl.value = '';
+            dateEl.value = '';
+            timeEl.value = '';
+            themeEl.value = '';
+            toastSuccess('예약이 추가되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     });
 
     function appendRow(r) {
@@ -55,8 +59,12 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await apiFetch(`/admin/reservations/${id}`, {method: 'DELETE'});
+            tr.remove();
+            toastSuccess('예약이 삭제되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     }
 })();
