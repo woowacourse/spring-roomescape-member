@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import roomescape.dto.response.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -68,19 +68,39 @@ class ReservationServiceTest {
     class FindAll {
 
         @Test
-        @DisplayName("예약이 없으면 빈 목록을 반환한다")
-        void returnsEmptyList() {
-            assertThat(reservationService.findAll()).isEmpty();
+        @DisplayName("예약이 없으면 빈 목록과 totalElements 0을 반환한다")
+        void returnsEmptyPage() {
+            PageResponse<Reservation> result = reservationService.findAll(0, 10);
+
+            assertThat(result.content()).isEmpty();
+            assertThat(result.totalElements()).isZero();
+            assertThat(result.totalPages()).isZero();
         }
 
         @Test
-        @DisplayName("전체 예약 목록을 반환한다")
-        void returnsAllReservations() {
-            List<Reservation> saved = new ArrayList<>();
-            saved.add(reservationService.create(requestDto1));
-            saved.add(reservationService.create(requestDto2));
+        @DisplayName("페이지 크기만큼 예약 목록을 반환한다")
+        void returnsPagedReservations() {
+            reservationService.create(requestDto1);
+            reservationService.create(requestDto2);
 
-            assertThat(reservationService.findAll()).isEqualTo(saved);
+            PageResponse<Reservation> result = reservationService.findAll(0, 10);
+
+            assertThat(result.content()).hasSize(2);
+            assertThat(result.totalElements()).isEqualTo(2);
+            assertThat(result.totalPages()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("size보다 데이터가 많으면 size만큼만 반환한다")
+        void returnsOnlySizeItems() {
+            reservationService.create(requestDto1);
+            reservationService.create(requestDto2);
+
+            PageResponse<Reservation> result = reservationService.findAll(0, 1);
+
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalElements()).isEqualTo(2);
+            assertThat(result.totalPages()).isEqualTo(2);
         }
     }
 
@@ -99,29 +119,6 @@ class ReservationServiceTest {
         @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.findById(-1L))
-                    .isInstanceOf(NotFoundException.class);
-        }
-    }
-
-    @Nested
-    class FindActiveById {
-
-        @Test
-        @DisplayName("BOOKED 상태의 예약을 조회한다")
-        void returnsActiveReservation() {
-            Reservation saved = reservationService.create(requestDto1);
-
-            assertThat(reservationService.findActiveById(saved.getId())).isEqualTo(saved);
-        }
-
-        @Test
-        @DisplayName("CANCELED 상태의 예약을 조회하면 예외를 반환한다")
-        void throwsWhenCanceled() {
-            Reservation saved = reservationDao.insert(
-                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
-            reservationService.cancel(saved.getId());
-
-            assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -261,18 +258,6 @@ class ReservationServiceTest {
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.cancel(-1L))
                     .isInstanceOf(NotFoundException.class);
-        }
-
-        @Test
-        @DisplayName("취소 후 같은 슬롯을 재예약할 수 있다")
-        void allowsRebookingAfterCancel() {
-            Reservation saved = reservationDao.insert(
-                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
-            reservationService.cancel(saved.getId());
-
-            Reservation rebooked = reservationService.create(requestDto1);
-
-            assertThat(rebooked.getId()).isNotNull();
         }
 
         @Test

@@ -29,10 +29,6 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> findAll() {
-        return reservationDao.findAll();
-    }
-
     public PageResponse<Reservation> findAll(int page, int size) {
         int offset = page * size;
         List<Reservation> content = reservationDao.findAll(size, offset);
