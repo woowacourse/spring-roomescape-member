@@ -120,7 +120,7 @@ class ReservationDateAdminControllerTest {
                 .when().post("/admin/dates")
                 .then().log().all()
                 .statusCode(DATE_IS_NULL.getHttpStatus().value())
-                .body("message", is(DATE_IS_NULL.getMessage()));
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test

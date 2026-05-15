@@ -92,7 +92,7 @@ class ReservationTimeAdminControllerTest {
                 .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(START_AT_IS_NULL.getHttpStatus().value())
-                .body("message", is(START_AT_IS_NULL.getMessage()));
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test

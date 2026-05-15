@@ -1,14 +1,11 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.reservation.exception.ReservaitonErrorInformation.*;
 import static roomescape.reservation.fixture.ReservationApiFixture.cancelReservation;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
-import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
-import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 import io.restassured.RestAssured;
@@ -25,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -133,8 +131,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(DATE_NOT_FOUND.getHttpStatus().value())
-                .body("message", is(DATE_NOT_FOUND.getMessage()));
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -154,8 +152,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(TIME_NOT_FOUND.getHttpStatus().value())
-                .body("message", is(TIME_NOT_FOUND.getMessage()));
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -175,8 +173,8 @@ class ReservationAdminControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(THEME_NOT_FOUND.getHttpStatus().value())
-                .body("message", is(THEME_NOT_FOUND.getMessage()));
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     private Integer createReservationByAdmin(String name, Integer dateId, Integer timeId, Integer themeId) {

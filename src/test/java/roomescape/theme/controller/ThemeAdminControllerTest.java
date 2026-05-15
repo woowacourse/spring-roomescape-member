@@ -90,7 +90,7 @@ class ThemeAdminControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(NAME_IS_NULL.getHttpStatus().value())
-                .body("message", is(NAME_IS_NULL.getMessage()));
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -107,7 +107,7 @@ class ThemeAdminControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(DESCRIPTION_IS_NULL.getHttpStatus().value())
-                .body("message", is(DESCRIPTION_IS_NULL.getMessage()));
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -124,7 +124,7 @@ class ThemeAdminControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(THUMBNAIL_URL_IS_NULL.getHttpStatus().value())
-                .body("message", is(THUMBNAIL_URL_IS_NULL.getMessage()));
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
