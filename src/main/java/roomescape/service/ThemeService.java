@@ -11,18 +11,21 @@ import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
 import roomescape.exception.RoomEscapeException;
 import roomescape.exception.ThemeErrorCode;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
-    private final ThemeRepository themeRepository;
-
     private final Clock clock;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository, Clock clock) {
-        this.themeRepository = themeRepository;
+
+    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.clock = clock;
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -67,6 +70,13 @@ public class ThemeService {
 
     @Transactional
     public void deleteTheme(Long id) {
+        validateRemovableTheme(id);
         themeRepository.delete(id);
+    }
+
+    private void validateRemovableTheme(Long id) {
+        if (reservationRepository.existByThemeId(id)) {
+            throw new RoomEscapeException(ThemeErrorCode.RESERVATION_EXIST_ON_THEME);
+        }
     }
 }

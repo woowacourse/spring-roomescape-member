@@ -140,6 +140,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existByThemeId(Long themeId) {
+        String sql = "select count(*) from reservation where theme_id = :theme_id";
+        Map<String, Object> params = Map.of("theme_id", themeId);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
+    }
+
+    @Override
     public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
         String sql = "select count(*) from reservation where date = :date AND time_id = :time_id AND theme_id = :theme_id";
         SqlParameterSource params = new MapSqlParameterSource()
