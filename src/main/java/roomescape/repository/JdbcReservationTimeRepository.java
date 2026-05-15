@@ -102,6 +102,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = "select count(*) from reservation_time where start_at = :startAt";
+        Map<String, Object> params = Map.of("start_at", startAt);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "delete from reservation_time where id = :id";
         Map<String, Object> params = Map.of("id", id);

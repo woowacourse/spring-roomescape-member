@@ -33,9 +33,16 @@ public class ReservationTimeService {
                 reservationTimeRequest.startAt()
         );
 
+        validateDuplicateReservationTime(reservationTime);
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
         return ReservationTimeResponseDTO.from(savedTime);
+    }
+
+    private void validateDuplicateReservationTime(ReservationTime reservationTime) {
+        if(reservationTimeRepository.existByStartAt(reservationTime.getStartAt())) {
+            throw new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_DUPLICATE);
+        }
     }
 
     @Transactional(readOnly = true)
