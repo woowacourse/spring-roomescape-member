@@ -276,6 +276,86 @@ class ReservationApiTest {
                 .statusCode(400);
     }
 
+    @Test
+    void 같은_날짜_시간_테마로_중복_예약하면_409() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", "2026-08-05");
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 지난_날짜로_예약하면_422() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", "2020-01-01");
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 존재하지_않는_시간_ID로_예약하면_404() {
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", "2026-08-05");
+        params.put("timeId", 9999);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 존재하지_않는_테마_ID로_예약하면_404() {
+        Integer timeId = createTime("11:00");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", "2026-08-05");
+        params.put("timeId", timeId);
+        params.put("themeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
     private Integer createTime(String startAt) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);
