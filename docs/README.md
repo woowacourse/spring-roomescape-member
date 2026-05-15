@@ -9,19 +9,32 @@
 
 ---
 
+## 한눈에 보기
+
+| 구분 | 요약 | 자세히 보기 |
+| --- | --- | --- |
+| 기능 | 테마, 예약 시간, 사용자 예약, 관리자 예약 기능을 관리합니다. | [기능 목록](#기능-목록) |
+| 테스트 | Domain, Service, Repository, API 테스트의 책임을 구분합니다. | [테스트 체크리스트](#테스트-체크리스트) |
+| API | 테마, 예약 시간, 사용자 예약, 관리자 예약의 요청과 응답을 정리합니다. | [API 명세](#api-application-programming-interface-명세) |
+| 에러 응답 | 상태 코드와 메시지 기준, 예외 매핑을 정리합니다. | [예외 및 에러 응답 명세](#예외-및-에러-응답-명세) |
+| 고민 기록 | 테스트 분류, 상태 코드, 시간 제어에 대한 메모를 남깁니다. | [고민 키워드 메모](#고민-키워드-메모) |
+
+---
+
 ## 목차
 
 1. [기능 목록](#기능-목록)
 2. [테스트 체크리스트](#테스트-체크리스트)
    - [Domain Test](#1-domain-test)
-   - [API Test](#2-api-test)
+   - [Service Test](#2-service-test)
    - [Repository Test](#3-repository-test)
-   - [Service Test 기준](#4-service-test-기준)
+   - [API Test](#4-api-test)
 3. [API 명세](#api-application-programming-interface-명세)
    - [테마](#1-테마-theme)
    - [예약 시간](#2-예약-시간-reservation-time)
    - [예약](#3-예약-reservation)
 4. [예외 및 에러 응답 명세](#예외-및-에러-응답-명세)
+5. [고민 키워드 메모](#고민-키워드-메모)
 
 ---
 
@@ -565,43 +578,3 @@ GET /themes/rank?days=7&limit=10
 | `409 Conflict`              | `ConflictException`                   | 예약이 존재하는 시간을 삭제하는 경우               | `"예약이 존재하는 시간은 삭제할 수 없습니다."`    |
 | `500 Internal Server Error` | `Exception`                           | 서버 내부 오류                           | `"서버에 일시적인 문제가 발생했습니다."`        |
 * * *
-
-# 고민 키워드 메모
-
-## 테스트 분류
-API, 서비스 어디서 테스트하는 것이 맞고, 누가 우선적인지 고민된다.
-
-## 상태 코드
-### 컨트롤러
-
-**Spring 컨트롤러 파라미터/데이터 바인딩 예외 정리** 
-해당 예외들은 클라이언트의 잘못된 요청으로 인해 발생하므로, 모두 기본적으로 HTTP 상태 코드 400 Bad Request를 반환한다.
-
-| 예외 클래스 | 상황 요약 | 주로 연관된 어노테이션 |
-| --- | --- | --- |
-| **`HttpMessageNotReadableException`** | **데이터 구조/문법 오류** (파싱 불가능) | `@RequestBody` |
-| **`MissingServletRequestParameterException`** | **필수 파라미터 누락** (값 자체가 없음) | `@RequestParam` |
-| **`MethodArgumentTypeMismatchException`** | 값은 존재하나 **데이터 타입 변환 실패** | `@RequestParam`, `@PathVariable` |
-| **`MethodArgumentNotValidException`** | 객체 변환은 성공했으나 **유효성 검사 실패** | `@RequestBody` + `@Valid` |
-* * *
-
-### 1. HttpMessageNotReadableException (형식부터 틀림)
--   **발생 시점**: `HttpMessageConverter`가 요청 본문(Body)을 읽어 Java 객체로 변환하려는 초기 단계.
--   **상세 원인**: 클라이언트가 보낸 JSON 데이터 등의 문법이 틀렸거나(예: 중괄호 `{` 누락, 쉼표 `,` 오타), 형식이 완전히 깨져서 파싱 자체가 불가능할 때 발생합니다.
-
-### 2. MissingServletRequestParameterException (형식은 맞는데 없음)
--   **발생 시점**: 요청 URL의 쿼리 스트링이나 폼(Form) 데이터에서 값을 추출하는 단계.
--   **상세 원인**: `@RequestParam`의 `required` 속성은 기본값이 `true`입니다. 클라이언트가 이 필수 파라미터를 요청에 아예 포함하지 않고 보냈을 때 발생합니다.
-
-### 3. MethodArgumentTypeMismatchException (형식은 맞고 있는데 타입 변환 잘못됨)
--   **발생 시점**: 추출한 문자열 데이터를 컨트롤러가 요구하는 특정 Java 타입(Integer, Long, Enum 등)으로 변환(Binding)하는 단계.
--   **상세 원인**: 파라미터 값은 전달되었으나 타입이 맞지 않을 때 발생합니다.
--   **예시**: `/api/items?id=abc` 요청을 보냈으나, 컨트롤러에서는 `@RequestParam Long id`로 선언되어 있어 문자열 `"abc"`를 숫자로 바꿀 수 없는 경우.
-
-### 4. MethodArgumentNotValidException (유효성 검증 실패)
--   **발생 시점**: 데이터 파싱 및 객체 변환이 모두 성공한 직후, Bean Validation(`@Valid` 또는 `@Validated`)이 작동하는 단계.
--   **상세 원인**: 클라이언트가 보낸 데이터가 문법적으로도 맞고 타입도 맞아서 객체로 잘 만들어졌지만, 개발자가 설정한 **비즈니스 제약 조건(Validation)을 위반**했을 때 발생합니다.
--   **예시**: 객체 내부에 `@Min(10) int age` 조건이 있는데 `age` 값으로 `5`가 들어오거나, `@NotBlank String name` 조건에 빈 문자열 `""`이 들어온 경우.
-
-## 제어할 수 없는 시간
-컨트롤러 vs 서비스(클락)
