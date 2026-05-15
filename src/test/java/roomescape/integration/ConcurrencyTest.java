@@ -4,24 +4,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.global.exception.base.BusinessException;
 import roomescape.integration.support.DatabaseHelper;
 import roomescape.integration.support.SpringWebTest;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.service.dto.ReservationCommand;
+import roomescape.reservation.service.dto.ReservationUpdateCommand;
+import roomescape.theme.exception.DuplicateThemeException;
+import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.service.ThemeService;
+import roomescape.theme.service.dto.ThemeCommand;
+import roomescape.time.exception.DuplicateTimeException;
+import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.service.ReservationTimeCommand;
+import roomescape.time.service.ReservationTimeService;
 
 @SpringWebTest
 class ConcurrencyTest {
@@ -30,7 +41,13 @@ class ConcurrencyTest {
     DatabaseHelper databaseHelper;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    ReservationService reservationService;
+
+    @Autowired
+    ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ThemeService themeService;
 
     @BeforeEach
     void setup() {
@@ -39,175 +56,170 @@ class ConcurrencyTest {
 
     @DisplayName("동일한 예약 요청이 동시에 들어오면 하나만 성공하고 나머지는 중복 예외가 발생한다")
     @Test
-    void makeReservation_concurrent_duplicate() throws InterruptedException {
+    void makeReservation() throws InterruptedException {
         //given
         createReservationTime("10:00");
-        createTheme("동시성 테마", "설명", "thumbnailUrl");
-
-        int threadCount = 20;
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch readyLatch = new CountDownLatch(threadCount);
-        CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch doneLatch = new CountDownLatch(threadCount);
-
-        AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger duplicateCount = new AtomicInteger();
+        createTheme("테마", "설명", "thumbnailUrl");
 
         //when
-        for (int i = 0; i < threadCount; i++) {
-            int index = i;
-            executor.submit(() -> {
-                readyLatch.countDown();
-                try {
-                    startLatch.await();
-
-                    Map<String, Object> request = new HashMap<>();
-                    request.put("name", "user-" + index);
-                    request.put("date", LocalDate.of(2026, 5, 10).toString());
-                    request.put("timeId", 1L);
-                    request.put("themeId", 1L);
-
-                    Response response = RestAssured.given()
-                            .contentType(ContentType.JSON)
-                            .body(request)
-                            .when().post("/reservations");
-
-                    if (response.statusCode() == 201) {
-                        successCount.incrementAndGet();
-                    } else if (response.statusCode() == 409) {
-                        duplicateCount.incrementAndGet();
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } finally {
-                    doneLatch.countDown();
-                }
-            });
-        }
-
-        readyLatch.await();
-        startLatch.countDown();
-        doneLatch.await(10, TimeUnit.SECONDS);
-        executor.shutdown();
-
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> reservationService.makeReservation(new ReservationCommand(
+                                "name",
+                                LocalDate.of(2026, 5, 15),
+                                1L,
+                                1L
+                        )
+                ),
+                100,
+                DuplicateReservationException.class
+        );
 
         //then
-        Integer savedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
-
-        assertThat(successCount.get()).isEqualTo(1);
-        assertThat(duplicateCount.get()).isEqualTo(threadCount - 1);
-        assertThat(savedCount).isEqualTo(1);
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
     }
 
     @DisplayName("동일한 예약 시간을 동시에 생성하면 하나만 성공하고 나머지는 중복 예외가 발생한다")
     @Test
-    void registerTime_concurrent_duplicate() throws InterruptedException {
-        //given
-        int threadCount = 20;
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch readyLatch = new CountDownLatch(threadCount);
-        CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch doneLatch = new CountDownLatch(threadCount);
-
-        AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger duplicateCount = new AtomicInteger();
-
+    void registerTime() throws InterruptedException {
         //when
-        for (int i = 0; i < threadCount; i++) {
-            executor.submit(() -> {
-                readyLatch.countDown();
-                try {
-                    startLatch.await();
-
-                    Map<String, Object> request = new HashMap<>();
-                    request.put("startAt", "10:00");
-
-                    Response response = RestAssured.given()
-                            .contentType(ContentType.JSON)
-                            .body(request)
-                            .when().post("/admin/times");
-
-                    if (response.statusCode() == 201) {
-                        successCount.incrementAndGet();
-                    } else if (response.statusCode() == 409) {
-                        duplicateCount.incrementAndGet();
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } finally {
-                    doneLatch.countDown();
-                }
-            });
-        }
-
-        readyLatch.await();
-        startLatch.countDown();
-        doneLatch.await(10, TimeUnit.SECONDS);
-        executor.shutdown();
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> reservationTimeService.registerReservationTime(
+                        new ReservationTimeCommand(LocalTime.of(10, 0))
+                ),
+                100,
+                DuplicateTimeException.class
+        );
 
         //then
-        Integer savedCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
-
-        assertThat(successCount.get()).isEqualTo(1);
-        assertThat(duplicateCount.get()).isEqualTo(threadCount - 1);
-        assertThat(savedCount).isEqualTo(1);
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
     }
 
-    @DisplayName("서로 다른 예약을 같은 슬롯으로 동시에 수정하면 하나만 성공하고 하나는 중복 예외가 발생한다")
+    @DisplayName("동일한 테마를 동시에 생성하면 하나만 성공하고 나머지는 중복 예외가 발생한다")
     @Test
-    void updateReservation_concurrent_duplicate() throws InterruptedException {
+    void registerTheme() throws InterruptedException {
+        //when
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> themeService.registerTheme(
+                        new ThemeCommand("테마", "설명", "thumbnailUrl")
+                ),
+                100,
+                DuplicateThemeException.class
+        );
+
+        //then
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
+    }
+
+    @DisplayName("예약 삭제 요청이 동시에 들어오면 하나만 성공하고 나머지는 예외가 발생한다")
+    @Test
+    void deleteReservationById() throws InterruptedException {
+        //given
+        createReservationTime("10:00");
+        createTheme("테마", "설명", "thumbnailUrl");
+
+        createReservation("브라운", LocalDate.of(2026, 5, 15), 1L, 1L);
+
+        //when
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> reservationService.deleteReservationById(1L),
+                100,
+                ReservationNotFoundException.class
+        );
+
+        //then
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
+    }
+
+    @DisplayName("테마 삭제 요청이 동시에 들어오면 하나만 성공하고 나머지는 예외가 발생한다")
+    @Test
+    void removeThemeById() throws InterruptedException {
+        //given
+        createTheme("테마", "설명", "thumbnailUrl");
+
+        //when
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> themeService.removeThemeById(1L),
+                100,
+                ThemeNotFoundException.class
+        );
+
+        //then
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
+    }
+
+    @DisplayName("예약 시간 삭제 요청이 동시에 들어오면 하나만 성공하고 나머지는 예외가 발생한다")
+    @Test
+    void removeReservationTimeById() throws InterruptedException {
+        //given
+        createReservationTime("10:00");
+
+        //when
+        List<Integer> result = runConcurrentlyAndCountResults(
+                () -> reservationTimeService.removeReservationTimeById(1L),
+                100,
+                TimeNotFoundException.class
+        );
+
+        //then
+        assertThat(result.get(0)).isEqualTo(1);
+        assertThat(result.get(1)).isEqualTo(99);
+        assertThat(result.get(2)).isEqualTo(0);
+    }
+
+    @DisplayName("서로 다른 본인 예약을 같은 슬롯으로 동시에 수정하면 하나만 성공하고 하나는 중복 예외가 발생한다")
+    @Test
+    void updateMyReservation() throws InterruptedException {
         //given
         createReservationTime("10:00");
         createReservationTime("11:00");
         createReservationTime("12:00");
-        createTheme("동시성 테마", "설명", "thumbnailUrl");
+        createTheme("테마", "설명", "thumbnailUrl");
 
-        Long reservationId1 = createReservation("user-a", LocalDate.of(2026, 5, 10), 1L, 1L);
-        Long reservationId2 = createReservation("user-b", LocalDate.of(2026, 5, 10), 2L, 1L);
+        Long reservationId1 = createReservation("브라운", LocalDate.of(2026, 5, 15), 1L, 1L);
+        Long reservationId2 = createReservation("코니", LocalDate.of(2026, 5, 15), 2L, 1L);
 
-        List<UpdateTask> tasks = List.of(
-                new UpdateTask(reservationId1, "user-a"),
-                new UpdateTask(reservationId2, "user-b")
-        );
-
-        ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
-        CountDownLatch readyLatch = new CountDownLatch(tasks.size());
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        CountDownLatch readyLatch = new CountDownLatch(2);
         CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch doneLatch = new CountDownLatch(tasks.size());
+        CountDownLatch doneLatch = new CountDownLatch(2);
 
         AtomicInteger successCount = new AtomicInteger();
         AtomicInteger duplicateCount = new AtomicInteger();
-        List<Integer> unexpectedStatuses = new ArrayList<>();
+        AtomicInteger unexpectedErrorCount = new AtomicInteger();
 
         //when
-        for (UpdateTask task : tasks) {
-            executor.submit(() -> {
+        List<Runnable> tasks = List.of(
+                () -> reservationService.updateReservation(
+                        new ReservationUpdateCommand(LocalDate.of(2026, 5, 16), 3L),
+                        reservationId1
+                ),
+                () -> reservationService.updateReservation(
+                        new ReservationUpdateCommand(LocalDate.of(2026, 5, 16), 3L),
+                        reservationId2
+                )
+        );
+
+        for (Runnable task : tasks) {
+            executorService.submit(() -> {
                 readyLatch.countDown();
                 try {
                     startLatch.await();
-
-                    Map<String, Object> request = new HashMap<>();
-                    request.put("date", LocalDate.of(2026, 5, 10).toString());
-                    request.put("timeId", 3L);
-
-                    Response response = RestAssured.given()
-                            .header("Authorization", task.authorizationName())
-                            .contentType(ContentType.JSON)
-                            .body(request)
-                            .when().patch("/reservations/" + task.reservationId());
-
-                    int statusCode = response.statusCode();
-                    if (statusCode == 204) {
-                        successCount.incrementAndGet();
-                    } else if (statusCode == 409) {
-                        duplicateCount.incrementAndGet();
-                    } else {
-                        synchronized (unexpectedStatuses) {
-                            unexpectedStatuses.add(statusCode);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                    task.run();
+                    successCount.incrementAndGet();
+                } catch (DuplicateReservationException e) {
+                    duplicateCount.incrementAndGet();
+                } catch (Throwable throwable) {
+                    unexpectedErrorCount.incrementAndGet();
                 } finally {
                     doneLatch.countDown();
                 }
@@ -216,22 +228,13 @@ class ConcurrencyTest {
 
         readyLatch.await();
         startLatch.countDown();
-        doneLatch.await(10, TimeUnit.SECONDS);
-        executor.shutdown();
+        doneLatch.await();
+        executorService.shutdown();
 
         //then
-        Integer targetSlotCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation WHERE reservation_date = ? AND time_id = ? AND theme_id = ?",
-                Integer.class,
-                LocalDate.of(2026, 5, 10),
-                3L,
-                1L
-        );
-
-        assertThat(unexpectedStatuses).isEmpty();
         assertThat(successCount.get()).isEqualTo(1);
         assertThat(duplicateCount.get()).isEqualTo(1);
-        assertThat(targetSlotCount).isEqualTo(1);
+        assertThat(unexpectedErrorCount.get()).isEqualTo(0);
     }
 
     private void createReservationTime(String startAt) {
@@ -275,6 +278,43 @@ class ConcurrencyTest {
                 .getLong("id");
     }
 
-    private record UpdateTask(Long reservationId, String authorizationName) {
+    private List<Integer> runConcurrentlyAndCountResults(
+            Runnable runnable,
+            int numberOfThread,
+            Class<? extends BusinessException> expectedExceptionType
+    ) throws InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThread);
+
+        CountDownLatch latch = new CountDownLatch(numberOfThread);
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger duplicateCount = new AtomicInteger();
+        AtomicInteger unexpectedErrorCount = new AtomicInteger();
+
+        for (int i = 0; i < numberOfThread; i++) {
+            executorService.submit(() -> {
+                try {
+                    runnable.run();
+                    successCount.incrementAndGet();
+                } catch (Throwable throwable) {
+                    if (expectedExceptionType.isInstance(throwable)) {
+                        duplicateCount.incrementAndGet();
+                    } else {
+                        unexpectedErrorCount.incrementAndGet();
+                    }
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executorService.shutdown();
+
+        return List.of(
+                successCount.get(),
+                duplicateCount.get(),
+                unexpectedErrorCount.get()
+        );
     }
 }
