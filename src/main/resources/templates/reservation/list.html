@@ -136,6 +136,7 @@
             <ul>
                 <li><code>GET /reservations</code>: 지정한 사용자 이름으로 내 예약 현황 조회</li>
                 <li><code>POST /reservations</code>: 지정한 사용자 이름·날짜·시간 ID로 예약 생성</li>
+                <li><code>PATCH /reservations/{id}</code>: 지정한 사용자 이름으로 예약 날짜·시간 변경</li>
                 <li><code>DELETE /reservations/{id}</code>: 지정한 사용자 이름으로 본인 예약 취소</li>
             </ul>
         </div>
@@ -173,6 +174,7 @@
     const selectionCard = document.querySelector('#selection-card');
     const selectionTitle = document.querySelector('#selection-title');
     const selectionHelper = document.querySelector('#selection-helper');
+    let editingReservationId = null;
 
     const showMessage = (text, error = false) => {
         message.textContent = text;
@@ -271,7 +273,10 @@
                     <strong>${reservation.name}</strong>
                     <span>${reservation.date} ${reservation.startAt} · ${reservation.themeName}</span>
                 </div>
-                <button class="delete" type="button" data-id="${reservation.id}" data-name="${reservation.name}">삭제</button>`;
+                <div style="display:flex;gap:8px;">
+                    <button class="edit" type="button" data-id="${reservation.id}" data-date="${reservation.date}" data-time-id="${reservation.timeId}" data-time="${reservation.startAt}" data-theme="${reservation.themeName}">수정</button>
+                    <button class="delete" type="button" data-id="${reservation.id}" data-name="${reservation.name}">삭제</button>
+                </div>`;
             reservationList.appendChild(item);
         });
     };
@@ -329,19 +334,32 @@
                 throw new Error('예약 가능 시간에서 시간을 먼저 선택해주세요. [400]');
             }
             const reserverName = syncCurrentUserName();
-            await request('/reservations', {
-                method: 'POST',
-                body: JSON.stringify({
-                    name: reserverName,
-                    date: document.querySelector('#selected-date').value,
-                    timeId: Number(document.querySelector('#timeId').value)
-                })
-            });
+            const payload = {
+                date: document.querySelector('#selected-date').value,
+                timeId: Number(document.querySelector('#timeId').value)
+            };
+
+            if (editingReservationId) {
+                await request(`/reservations/${editingReservationId}`, {
+                    method: 'PATCH',
+                    headers: buildAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                await request('/reservations', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: reserverName,
+                        ...payload
+                    })
+                });
+            }
             reservationNameInput.value = reserverName;
             document.querySelector('#selected-time-label').value = '';
             document.querySelector('#timeId').value = '';
             selectionCard.classList.add('hidden');
-            showMessage('예약이 완료되었습니다.');
+            showMessage(editingReservationId ? '예약이 변경되었습니다.' : '예약이 완료되었습니다.');
+            editingReservationId = null;
             await Promise.all([loadReservations(), document.querySelector('#date').value && themeSelect.value
                     ? request(`/themes/${themeSelect.value}/available-times?date=${document.querySelector('#date').value}`).then(renderAvailableTimes)
                     : Promise.resolve()]);
@@ -351,10 +369,28 @@
     });
 
     reservationList.addEventListener('click', async (event) => {
-        if (!event.target.matches('button.delete')) return;
+        const editButton = event.target.closest('button.edit');
+        if (editButton) {
+            editingReservationId = editButton.dataset.id;
+            document.querySelector('#selected-date').value = editButton.dataset.date;
+            document.querySelector('#date').value = editButton.dataset.date;
+            document.querySelector('#selected-time-label').value = `${editButton.dataset.time} (${editButton.dataset.theme})`;
+            document.querySelector('#timeId').value = editButton.dataset.timeId;
+            selectionTitle.textContent = `${editButton.dataset.theme} · ${editButton.dataset.time}`;
+            selectionHelper.textContent = '선택한 날짜·시간으로 내 예약을 수정합니다. 아래 예약하기 버튼을 누르면 변경됩니다.';
+            selectionCard.classList.remove('hidden');
+            showMessage('수정할 예약을 불러왔습니다. 날짜/시간을 다시 선택한 뒤 예약하기를 누르세요.');
+            return;
+        }
+
+        const deleteButton = event.target.closest('button.delete');
+        if (!deleteButton) return;
         try {
-            await request(`/reservations/${event.target.dataset.id}`, { method: 'DELETE', headers: buildAuthHeaders() });
+            await request(`/reservations/${deleteButton.dataset.id}`, { method: 'DELETE', headers: buildAuthHeaders() });
             showMessage('예약이 삭제되었습니다.');
+            if (editingReservationId === deleteButton.dataset.id) {
+                editingReservationId = null;
+            }
             await loadReservations();
         } catch (error) {
             showMessage(error.message, true);
