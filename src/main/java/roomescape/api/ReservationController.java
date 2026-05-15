@@ -57,4 +57,11 @@ public class ReservationController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/me/{id}")
+    public ResponseEntity<Void> cancelMine(@PathVariable Long id, @RequestParam String name) {
+        reservationService.cancelMyReservation(id, name);
+
+        return ResponseEntity.noContent().build();
+    }
 }

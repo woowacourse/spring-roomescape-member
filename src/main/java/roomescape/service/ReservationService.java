@@ -5,14 +5,20 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.dto.ReservationResponses;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
+
+    private static final String RESERVATION_NOT_FOUND_FORMAT = "ID %d번 예약을 찾을 수 없습니다.";
+    private static final String PAST_RESERVATION_CANCEL_REJECTED = "이미 지난 예약은 취소할 수 없습니다.";
 
     private final ReservationRepository reservationRepository;
 
@@ -42,6 +48,19 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void cancelMyReservation(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .filter(r -> r.getName().equals(name))
+                .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_FOUND_FORMAT.formatted(id)));
+
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new BusinessRuleViolationException(PAST_RESERVATION_CANCEL_REJECTED);
+        }
+
         reservationRepository.deleteById(id);
     }
 

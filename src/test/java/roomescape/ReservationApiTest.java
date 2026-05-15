@@ -3,9 +3,12 @@ package roomescape;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +18,9 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationApiTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 예약_조회_빈목록() {
@@ -388,6 +394,79 @@ class ReservationApiTest {
                 .when().get("/reservations/me")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    void 본인_예약_취소는_204를_반환한다() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given()
+                .when().get("/reservations/me?name=민욱")
+                .then()
+                .statusCode(200)
+                .body("reservations.size()", is(0));
+    }
+
+    @Test
+    void 다른_사람_이름으로_취소하면_404() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/me/" + reservationId + "?name=티뉴")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하면_404() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/me/9999?name=민욱")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 지난_예약을_취소하면_422() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Long reservationId = insertPastReservation("민욱", "2020-01-01", timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/me/" + reservationId + "?name=민욱")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 취소_요청에_이름_파라미터가_없으면_400() {
+        Integer timeId = createTime("13:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer reservationId = createReservation("민욱", "2026-08-05", timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/me/" + reservationId)
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    private Long insertPastReservation(String name, String date, Integer timeId, Integer themeId) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name, LocalDate.parse(date), timeId, themeId
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation WHERE name = ? AND date = ?",
+                Long.class, name, LocalDate.parse(date)
+        );
     }
 
     private Integer createReservation(String name, String date, Integer timeId, Integer themeId) {
