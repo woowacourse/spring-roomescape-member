@@ -41,4 +41,22 @@ class UserThemeControllerTest {
                 eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
                 eq(sixDaysAgo), eq(today), eq(10L));
     }
+
+    @Test
+    void endDate만_주어지면_startDate는_endDate_기준_6일_전으로_계산된다() throws Exception {
+        LocalDate endDate = LocalDate.of(2099, 12, 31);
+        LocalDate expectedStartDate = endDate.minusDays(6);
+
+        when(userThemeService.getThemes(
+                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(expectedStartDate), eq(endDate), eq(10L)))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/themes/rank").param("endDate", "2099-12-31"))
+                .andExpect(status().isOk());
+
+        verify(userThemeService).getThemes(
+                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(expectedStartDate), eq(endDate), eq(10L));
+    }
 }
