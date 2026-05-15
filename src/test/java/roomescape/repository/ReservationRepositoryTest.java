@@ -15,7 +15,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.util.TestDataInitializer;
 
-@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:reservation-repository-test")
+@SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationRepositoryTest {
 

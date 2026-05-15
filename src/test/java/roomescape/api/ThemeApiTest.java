@@ -22,14 +22,15 @@ import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Theme;
 import roomescape.domain.ReservationTime;
+import roomescape.util.ApiTestSupport;
 import roomescape.util.TestDataInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("테마 API 요구사항 테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeApiTest {
+class ThemeApiTest extends ApiTestSupport {
 
     @Autowired
     private TestDataInitializer dataInitializer;
