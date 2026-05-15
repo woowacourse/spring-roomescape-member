@@ -1,10 +1,11 @@
 package roomescape.model;
 
 import java.time.LocalDate;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class Reservation {
-    
-    private static final int MIN_RESERVATION_NAME_LENGTH = 2;
+
     private static final int MAX_RESERVATION_NAME_LENGTH = 20;
 
     private final Long id;
@@ -19,12 +20,40 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+        validateAll();
+    }
+
+    private void validateAll() {
         validateName();
+        validateDate();
+        validateTime();
+        validateTheme();
     }
 
     private void validateName() {
-        if (name.length() < MIN_RESERVATION_NAME_LENGTH || name.length() > MAX_RESERVATION_NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
+        if (name == null || name.isBlank()) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_BLANK);
+        }
+        if (name.length() > MAX_RESERVATION_NAME_LENGTH) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_TOO_LONG);
+        }
+    }
+
+    private void validateDate() {
+        if (date == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DATE_NULL);
+        }
+    }
+
+    private void validateTime() {
+        if (time == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_NULL);
+        }
+    }
+
+    private void validateTheme() {
+        if (theme == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_THEME_NULL);
         }
     }
 

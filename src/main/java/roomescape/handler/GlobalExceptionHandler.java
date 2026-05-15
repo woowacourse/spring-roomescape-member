@@ -20,8 +20,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
                                                                                      HttpServletRequest request) {
         List<ErrorResponse> errors = e.getBindingResult().getFieldErrors().stream()
-                .map(fe -> new ErrorResponse("INVALID_CONSTRAINT", request.getRequestURI(), fe.getDefaultMessage(),
-                        null))
+                .map(fe -> new ErrorResponse("INVALID_CONSTRAINT", request.getRequestURI(), fe.getDefaultMessage()))
                 .toList();
         return ResponseEntity.badRequest().body(errors);
     }
@@ -30,7 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
                                                                                HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse("INVALID_REQUEST", request.getRequestURI(),
-                "요청 본문의 형식이 올바르지 않습니다.", "JSON 형식과 필드 타입을 확인해주세요.");
+                "요청 본문의 형식이 올바르지 않습니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException e, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 "INVALID_PARAMETER", request.getRequestURI(),
-                "필수 요청 파라미터가 누락되었습니다.", "요청 파라미터를 확인해주세요."
+                "필수 요청 파라미터가 누락되었습니다."
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -48,7 +47,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException e, HttpServletRequest request) {
         ErrorCode error = e.getErrorCode();
         ErrorResponse errorResponse = new ErrorResponse(
-                error.getCode(), request.getRequestURI(), error.getMessage(), error.getAction()
+                error.getCode(), request.getRequestURI(), error.getMessage()
         );
         return ResponseEntity.status(error.getStatus()).body(errorResponse);
     }
