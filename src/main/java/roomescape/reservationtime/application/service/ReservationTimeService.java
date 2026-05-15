@@ -7,12 +7,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.RoomEscapeException;
 import roomescape.reservation.application.service.ReservationQueryService;
-import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
-import roomescape.reservationtime.application.exception.ReservationTimeException;
+import roomescape.reservationtime.application.exception.ReservationTimeErrorCode;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.AvailableReservationTime;
 import roomescape.reservationtime.domain.repository.AvailableReservationTimeRepository;
@@ -30,7 +30,7 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public ReservationTimeQueryResult findById(Long timeId) {
         return ReservationTimeQueryResult.from(timeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 시간 입니다.")));
+                .orElseThrow(() -> new RoomEscapeException(ReservationTimeErrorCode.TIME_NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
@@ -65,15 +65,17 @@ public class ReservationTimeService {
     }
 
     private void validateNoReservationExists(Long id) {
-        if (queryService.existsByTImeId(id)) {
-            throw new ReservationTimeException("예약이 존재하는 시간대는 삭제할 수 없습니다");
+        if (queryService.existsByTimeId(id)) {
+            throw new RoomEscapeException(ReservationTimeErrorCode.TIME_DELETE_NOT_ALLOWED);
         }
     }
 
     private void validateDuplicateTime(LocalTime startAt) {
         if (timeRepository.existsByStartAt(startAt)) {
-            throw new ReservationTimeException(String.format("시간 %s이(가) 이미 존재합니다.",
-                    startAt.format(DateTimeFormatter.ofPattern("HH:mm"))));
+            throw new RoomEscapeException(
+                    ReservationTimeErrorCode.DUPLICATE_TIME,
+                    startAt.format(DateTimeFormatter.ofPattern("HH:mm"))
+            );
         }
     }
 }
