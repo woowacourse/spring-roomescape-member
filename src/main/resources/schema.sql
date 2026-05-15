@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS reservation CASCADE;
+DROP TABLE IF EXISTS theme CASCADE;
+DROP TABLE IF EXISTS time_slot CASCADE;
+
 CREATE TABLE theme
 (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
@@ -12,8 +16,7 @@ CREATE TABLE time_slot
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT uk_time_slot_start_at
-        UNIQUE (start_at)
+    CONSTRAINT uk_time_slot_start_at UNIQUE (start_at)
 );
 
 CREATE TABLE reservation
@@ -26,6 +29,5 @@ CREATE TABLE reservation
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES time_slot (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    CONSTRAINT uk_reservation_date_time_theme
-        UNIQUE (date, time_id, theme_id)
+    CONSTRAINT uk_reservation_date_time_theme UNIQUE (date, time_id, theme_id)
 );
