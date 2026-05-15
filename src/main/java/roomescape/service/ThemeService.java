@@ -3,7 +3,6 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ReservationThemeCommand;

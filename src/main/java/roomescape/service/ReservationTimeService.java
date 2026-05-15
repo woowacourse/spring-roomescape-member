@@ -3,7 +3,6 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
@@ -35,7 +34,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.addReservationTime(reservationTimeCommand);
     }
 
-    @Transactional
     public void deleteReservationTime(long id) {
         boolean isExistTimeId = reservationTimeRepository.isExistsById(id);
 
