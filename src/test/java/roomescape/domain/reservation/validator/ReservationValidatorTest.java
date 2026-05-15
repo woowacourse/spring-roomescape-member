@@ -11,8 +11,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.global.exception.custom.ForbiddenException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.theme.entity.Theme;
@@ -46,7 +45,7 @@ class ReservationValidatorTest {
                 LocalTime.of(13, 0));
 
             assertThatThrownBy(() -> ReservationValidator.validateOwner("다른 이름", reservation))
-                .isInstanceOf(ForbiddenException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
         }
@@ -77,7 +76,7 @@ class ReservationValidatorTest {
 
             assertThatThrownBy(
                 () -> ReservationValidator.validateDateAccessable(reservation, fixedClock))
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
@@ -105,7 +104,7 @@ class ReservationValidatorTest {
                 Time.reconstruct(1L, LocalTime.of(13, 0)),
                 fixedClock)
             )
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }
@@ -118,7 +117,7 @@ class ReservationValidatorTest {
                 Time.reconstruct(1L, LocalTime.of(9, 0)),
                 fixedClock)
             )
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
         }

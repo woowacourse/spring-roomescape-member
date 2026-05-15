@@ -5,17 +5,21 @@ import java.util.List;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 
-public class BadRequestException extends RuntimeException implements BaseException {
+public class BusinessException extends RuntimeException {
 
     private final ErrorCode errorCode;
     private final List<ErrorDetail> errors;
 
-    public BadRequestException(ErrorCode errorCode, List<ErrorDetail> errors) {
+    public BusinessException(ErrorCode errorCode, List<ErrorDetail> errors) {
         this.errorCode = errorCode;
         this.errors = errors;
     }
 
-    @Override
+    public BusinessException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+        this.errors = Collections.emptyList();
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }
@@ -23,5 +27,4 @@ public class BadRequestException extends RuntimeException implements BaseExcepti
     public List<ErrorDetail> getErrors() {
         return Collections.unmodifiableList(errors);
     }
-
 }

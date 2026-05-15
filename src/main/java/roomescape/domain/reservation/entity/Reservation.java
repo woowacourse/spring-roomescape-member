@@ -3,8 +3,8 @@ package roomescape.domain.reservation.entity;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
@@ -39,7 +39,7 @@ public class Reservation {
         LocalDate nowDate = LocalDate.now(clock);
 
         if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock))) {
-            throw new UnprocessableEntityException(ErrorCode.RESERVATION_ALREADY_PASSED);
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 

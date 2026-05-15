@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
@@ -52,7 +52,7 @@ class ReservationTest {
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
             assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
@@ -65,7 +65,7 @@ class ReservationTest {
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
             assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
         }

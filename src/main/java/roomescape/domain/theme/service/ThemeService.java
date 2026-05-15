@@ -3,10 +3,8 @@ package roomescape.domain.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.global.exception.custom.ConflictException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
@@ -35,7 +33,7 @@ public class ThemeService {
 
     private void validateDate(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-            throw new UnprocessableEntityException(ErrorCode.THEME_INVALID_DATE);
+            throw new BusinessException(ErrorCode.THEME_INVALID_DATE);
         }
     }
 
@@ -54,16 +52,16 @@ public class ThemeService {
 
     public void deleteThemeById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new ConflictException(ErrorCode.THEME_REFERENCED_BY_RESERVATION);
+            throw new BusinessException(ErrorCode.THEME_REFERENCED_BY_RESERVATION);
         }
         if (themeRepository.deleteThemeById(id) == 0) {
-            throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
         }
     }
 
     private void validateDuplicates(String name) {
         if (themeRepository.existsByName(name)) {
-            throw new ConflictException(ErrorCode.THEME_DUPLICATE);
+            throw new BusinessException(ErrorCode.THEME_DUPLICATE);
         }
     }
 }

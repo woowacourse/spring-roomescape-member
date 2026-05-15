@@ -5,9 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.domain.global.exception.custom.BadRequestException;
-import roomescape.domain.global.exception.custom.ConflictException;
-import roomescape.domain.global.exception.custom.NotFoundException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
@@ -63,15 +61,15 @@ public class ReservationService {
 
     private void validateDuplicates(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateTimeAndThemeId(date, timeId, themeId)) {
-            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
         Time time = timeRepository.findTimeById(requestDto.timeId())
-            .orElseThrow(() -> new BadRequestException(ErrorCode.TIME_NOT_FOUND, List.of()));
+            .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
-            .orElseThrow(() -> new BadRequestException(ErrorCode.THEME_NOT_FOUND, List.of()));
+            .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND, List.of()));
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme, clock);
     }
 
@@ -90,26 +88,26 @@ public class ReservationService {
     private Reservation getReservationById(Long id) {
         Optional<Reservation> reservation = reservationRepository.findReservationById(id);
         if (reservation.isEmpty()) {
-            throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
         return reservation.get();
     }
 
     private Time getTimeById(Long timeId) {
         return timeRepository.findTimeById(timeId)
-            .orElseThrow(() -> new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
+            .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
                 List.of(ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다."))));
     }
 
     private void validateDuplicatesExceptMe(Long id, LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateTimeAndThemeIdExceptId(id, date, timeId, themeId)) {
-            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
     }
 
     public void deleteReservationById(Long id) {
         if (reservationRepository.deleteReservationById(id) == 0) {
-            throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 

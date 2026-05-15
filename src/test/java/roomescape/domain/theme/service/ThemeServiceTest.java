@@ -17,9 +17,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.global.exception.custom.ConflictException;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
@@ -133,7 +131,7 @@ class ThemeServiceTest {
                     LocalDate.of(2026, 5, 1),
                     10
                 ))
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.THEME_INVALID_DATE);
         }
@@ -184,7 +182,7 @@ class ThemeServiceTest {
 
             // when & then
             assertThatThrownBy(() -> themeService.saveTheme(request))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.THEME_DUPLICATE);
         }
@@ -218,7 +216,7 @@ class ThemeServiceTest {
             Long wrongId = 1000L;
 
             assertThatThrownBy(() -> themeService.deleteThemeById(wrongId))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.THEME_NOT_FOUND);
         }
@@ -234,7 +232,7 @@ class ThemeServiceTest {
             Long referencedId = theme.getId();
 
             assertThatThrownBy(() -> themeService.deleteThemeById(referencedId))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.THEME_REFERENCED_BY_RESERVATION);
         }

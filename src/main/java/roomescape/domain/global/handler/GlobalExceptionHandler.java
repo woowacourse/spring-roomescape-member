@@ -15,11 +15,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.domain.global.exception.custom.BadRequestException;
-import roomescape.domain.global.exception.custom.ConflictException;
-import roomescape.domain.global.exception.custom.ForbiddenException;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
 import roomescape.domain.global.exception.error.ErrorResponse;
@@ -119,34 +115,10 @@ public class GlobalExceptionHandler {
         return path.substring(lastDotIndex + 1);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(e.getErrorCode(), e.getErrors()));
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(ErrorResponse.of(e.getErrorCode()));
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ErrorResponse.of(e.getErrorCode()));
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(ErrorResponse.of(e.getErrorCode()));
-    }
-
-    @ExceptionHandler(UnprocessableEntityException.class)
-    public ResponseEntity<ErrorResponse> handleUnprocessableEntityException(
-        UnprocessableEntityException e) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body(ErrorResponse.of(e.getErrorCode()));
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
+            .body(ErrorResponse.of(errorCode, e.getErrors()));
     }
 }

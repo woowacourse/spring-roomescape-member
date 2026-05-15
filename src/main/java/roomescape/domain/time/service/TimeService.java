@@ -4,12 +4,9 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.global.exception.custom.BadRequestException;
-import roomescape.domain.global.exception.custom.ConflictException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.error.ErrorDetail;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
@@ -57,13 +54,13 @@ public class TimeService {
     private void validateDate(LocalDate date) {
         LocalDate now = LocalDate.now(clock);
         if (date.isBefore(now)) {
-            throw new UnprocessableEntityException(ErrorCode.TIME_INVALID_DATE);
+            throw new BusinessException(ErrorCode.TIME_INVALID_DATE);
         }
     }
 
     private void validateThemeId(Long themeId) {
         if (!themeRepository.existsById(themeId)) {
-            throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST,
+            throw new BusinessException(ErrorCode.COMMON_INVALID_REQUEST,
                 List.of(ErrorDetail.of("themeId", themeId, "요청한 테마 id가 존재하지 않습니다.")));
         }
     }
@@ -71,7 +68,7 @@ public class TimeService {
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
         Time time = Time.create(requestDto.startAt());
         if (timeRepository.existsByStartAt(time.getStartAt())) {
-            throw new ConflictException(ErrorCode.TIME_DUPLICATE);
+            throw new BusinessException(ErrorCode.TIME_DUPLICATE);
         }
 
         return TimeResponseDto.from(timeRepository.save(time));
@@ -79,10 +76,10 @@ public class TimeService {
 
     public void deleteTimeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new ConflictException(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
+            throw new BusinessException(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
         }
         if (timeRepository.deleteTimeById(id) == 0) {
-            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.TIME_NOT_FOUND);
         }
     }
 }

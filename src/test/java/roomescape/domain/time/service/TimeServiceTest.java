@@ -14,11 +14,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.global.exception.custom.BadRequestException;
-import roomescape.domain.global.exception.custom.ConflictException;
+import roomescape.domain.global.exception.custom.BusinessException;
 import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.custom.NotFoundException;
-import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -141,7 +138,7 @@ class TimeServiceTest {
             Long wrongThemeId = 1L;
 
             assertThatThrownBy(() -> timeService.getAvailableTimes(date, wrongThemeId))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST);
         }
@@ -154,7 +151,7 @@ class TimeServiceTest {
             Long themeId = theme.getId();
 
             assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId))
-                .isInstanceOf(UnprocessableEntityException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.TIME_INVALID_DATE);
         }
@@ -189,7 +186,7 @@ class TimeServiceTest {
             TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
 
             assertThatThrownBy(() -> timeService.saveTime(request))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.TIME_DUPLICATE);
         }
@@ -227,7 +224,7 @@ class TimeServiceTest {
                 Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
 
             assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
         }
@@ -238,7 +235,7 @@ class TimeServiceTest {
             Long wrongId = 99999L;
 
             assertThatThrownBy(() -> timeService.deleteTimeById(wrongId))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.TIME_NOT_FOUND);
         }
