@@ -21,7 +21,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final String FIND_RESERVATION_BY_ID = """
                 SELECT
-                    r.id AS reservation_id, 
+                    r.id AS reservation_id,
                     r.name, r.date, 
                     t.id AS reservation_time_id,
                     t.start_at AS time_value,
@@ -41,7 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
     private static final String FIND_ALL_RESERVATIONS = """
                 SELECT r.id AS reservation_id,
-                r.name, r.date, 
+                r.name, r.date,
                 t.id AS reservation_time_id,
                 t.start_at AS time_value,
                 th.id AS reservation_theme_id,

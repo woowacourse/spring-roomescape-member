@@ -82,11 +82,17 @@ public class ReservationService {
 
     public int update(Long reservationId, ReservationUpdateDtoDateAndTimeIdOnly updateDto) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationNotFoundException("수정 대상을 찾을 수 없음. ID: " + reservationId));
+                .orElseThrow(() ->
+                        new ReservationNotFoundException("수정 대상을 찾을 수 없음. ID: " + reservationId)
+                );
         Theme theme = themeRepository.findById(reservation.getThemeId())
-                .orElseThrow(() -> new ThemeNotFoundException("테마를 찾을 수 없음. ID: " + reservation.getThemeId()));
+                .orElseThrow(() ->
+                        new ThemeNotFoundException("테마를 찾을 수 없음. ID: " + reservation.getThemeId())
+                );
         ReservationTime reservationTimeForUpdate = reservationTimeRepository.findById(updateDto.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException("수정할 예약 시간을 찾을 수 없음. ID: " + updateDto.timeId()));
+                .orElseThrow(() ->
+                        new ReservationTimeNotFoundException("수정할 예약 시간을 찾을 수 없음. ID: " + updateDto.timeId())
+                );
 
         // 현재 예약이 이미 지난 것인지 체크 (수정 불가 사유)
         validateModificationDate(LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()));
@@ -100,7 +106,6 @@ public class ReservationService {
         return reservationRepository.update(reservation);
     }
 
-    // TODO: 도메인 맞게 cancel로 바꾸고, 예약도 booking 고려
     public void deleteReservationById(Long id) {
         reservationRepository.deleteById(id);
     }

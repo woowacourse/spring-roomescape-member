@@ -1,7 +1,5 @@
 package roomescape.domain;
 
-import java.util.Objects;
-
 public class Theme {
 
     private static final long DEFAULT_RUNNING_TIME = 60L;

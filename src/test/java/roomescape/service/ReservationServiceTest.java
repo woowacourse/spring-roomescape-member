@@ -241,7 +241,6 @@ class ReservationServiceTest {
         ));
 
         // when and then
-        // TODO: 1일만 빼면 새벽 시간(가장 빠른 예약 시간인 오전 10시 전)에 테스트 돌리면 예외가 발생하지 않는다. 일단 2일 빼서 임시 해결.
         LocalDate dateForUpdate = added.date().minusDays(2);
         assertThatThrownBy(() -> reservationService.update(
                 added.id(),
