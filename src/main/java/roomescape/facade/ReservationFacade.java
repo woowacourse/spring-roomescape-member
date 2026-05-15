@@ -8,6 +8,8 @@ import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.TimeWithStatusResponse;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.ConflictException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
@@ -41,7 +43,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationService.hasReservationsByTimeId(id)) {
-            throw new IllegalArgumentException(String.format(CANNOT_DELETE_TIME_IN_USE, id));
+            throw new ConflictException(String.format(CANNOT_DELETE_TIME_IN_USE, id));
         }
         reservationTimeService.deleteTime(id);
     }
@@ -49,7 +51,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTheme(Long id) {
         if (reservationService.hasReservationsByThemeId(id)) {
-            throw new IllegalArgumentException(String.format(CANNOT_DELETE_THEME_IN_USE, id));
+            throw new ConflictException(String.format(CANNOT_DELETE_THEME_IN_USE, id));
         }
         themeService.deleteTheme(id);
     }
@@ -67,12 +69,12 @@ public class ReservationFacade {
         );
 
         if (reservation.isPast(LocalDateTime.now())) {
-            throw new IllegalArgumentException(PAST_RESERVATION_REJECTED);
+            throw new BusinessRuleViolationException(PAST_RESERVATION_REJECTED);
         }
 
         Reservations existing = reservationService.findByDateAndThemeId(request.date(), theme.getId());
         if (existing.isOccupied(reservationTime)) {
-            throw new IllegalArgumentException(ALREADY_EXISTS_ADD_RESERVATION);
+            throw new ConflictException(ALREADY_EXISTS_ADD_RESERVATION);
         }
 
         return reservationService.addReservation(reservation);
