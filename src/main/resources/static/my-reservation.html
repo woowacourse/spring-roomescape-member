@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>내 예약 조회</title>
+    <link href="/style.css?v=3" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <header>
+        <a class="logo" href="/">RoomEscape</a>
+        <nav class="nav-links">
+            <a href="/">홈</a>
+            <a href="/reservation.html">예약하기</a>
+            <a class="active" href="/my-reservation.html">내 예약 조회</a>
+            <a href="/admin.html">관리자 모드</a>
+        </nav>
+    </header>
+
+    <section class="glass-card" style="max-width: 800px; margin: 0 auto;">
+        <h2 class="section-title" style="text-align:center;">🔍 내 예약 조회</h2>
+        <form class="flex-row" id="search-form" style="margin-bottom: 2rem; justify-content: center;">
+            <input class="form-control" id="search-name" placeholder="예약자명을 입력하세요" required style="max-width: 300px;"
+                   type="text">
+            <button class="btn-primary" style="width: auto; padding: 1rem 2rem;" type="submit">조회</button>
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>예약 번호</th>
+                    <th>예약 날짜</th>
+                    <th>예약 시간</th>
+                    <th>테마</th>
+                    <th style="width:160px; text-align:center;">관리</th>
+                </tr>
+                </thead>
+                <tbody id="my-reservation-list">
+                <tr>
+                    <td colspan="5" style="text-align:center; padding: 2rem;">이름을 입력하여 예약을 조회해보세요.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal for modification -->
+<div class="modal-overlay" id="modify-modal" style="display: none;">
+    <div class="modal-content glass-card" style="max-width: 500px; width: 100%;">
+        <h3 style="margin-bottom: 1.5rem; text-align: center;">예약 변경</h3>
+        <form id="modify-form">
+            <input id="mod-id" type="hidden">
+            <div class="form-group">
+                <label class="form-label">테마 선택</label>
+                <select class="form-control" id="mod-theme" required></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">예약 날짜</label>
+                <input class="form-control" id="mod-date" required type="date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">예약 시간</label>
+                <select class="form-control" disabled id="mod-time" required>
+                    <option value="">날짜와 테마를 먼저 선택하세요</option>
+                </select>
+            </div>
+            <div class="flex-row" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+                <button class="btn-danger" id="mod-cancel-btn" style="padding: 1rem 2rem;" type="button">닫기</button>
+                <button class="btn-primary" style="width: auto;" type="submit">변경 완료</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/my-reservation.js?v=3"></script>
+</body>
+</html>
