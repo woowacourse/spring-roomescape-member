@@ -96,10 +96,30 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 예약_이름이_2자_미만이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        createReservationRequest("고", TODAY.plusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 예약_이름이_20자를_초과하면_400을_반환한다() {
         createReservationPrerequisites(LocalTime.of(10, 0));
 
         createReservationRequest("가".repeat(21), TODAY.plusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_이름에_허용되지_않는_문자가_포함되면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        createReservationRequest("고래1", TODAY.plusDays(1), 1L, 1L)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -114,6 +134,60 @@ class ReservationApiTest extends ApiTestSupport {
         params.put("date", null);
         params.put("timeId", 1);
         params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_날짜가_yyyy_MM_dd_형식이_아니면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", "2026/05/20");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약_시간_식별자가_null이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", null);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 테마_식별자가_null이면_400을_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", 1);
+        params.put("themeId", null);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
