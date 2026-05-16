@@ -44,13 +44,6 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponseDTO> findAllThemes() {
-        return themeRepository.findAll().stream()
-                .map(ThemeResponseDTO::from)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public ThemeResponseDTO findById(Long id) {
         Theme result = themeRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND));
@@ -58,15 +51,15 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
+    public List<ThemeResponseDTO> findAllThemes() {
+        return themeRepository.findAll().stream().map(ThemeResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ThemeResponseDTO> getPopularThemes(Long weeks, Long limit) {
-        return themeRepository.findPopularThemes(
-                        LocalDate.now(clock).minusWeeks(weeks),
-                        LocalDate.now(clock),
-                        limit
-                )
-                .stream()
-                .map(ThemeResponseDTO::from)
-                .toList();
+        return themeRepository.findPopularThemes(LocalDate.now(clock).minusWeeks(weeks),
+                LocalDate.now(clock), limit).stream().map(ThemeResponseDTO::from).toList();
     }
 
     @Transactional

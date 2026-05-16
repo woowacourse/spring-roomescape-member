@@ -55,29 +55,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
-                    select r.id as reservation_id,   
-                    r.name, r.date, 
-                    t.id as reservation_time_id,
-                    t.start_at as time_value,
-                    th.id as reservation_theme_id,
-                    th.name as reservation_theme_name,
-                    th.description as reservation_theme_description,
-                    th.image_url as reservation_theme_image_url
-                    
-                    from reservation as r 
-                    inner join reservation_time as t
-                    on r.time_id = t.id 
-                    
-                    inner join theme as th
-                    on r.theme_id = th.id
-                """;
-
-        return jdbcTemplate.query(sql, getReservationRowMapper());
-    }
-
-    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
                     select r.id as reservation_id,   
@@ -103,6 +80,29 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAll() {
+        String sql = """
+                    select r.id as reservation_id,   
+                    r.name, r.date, 
+                    t.id as reservation_time_id,
+                    t.start_at as time_value,
+                    th.id as reservation_theme_id,
+                    th.name as reservation_theme_name,
+                    th.description as reservation_theme_description,
+                    th.image_url as reservation_theme_image_url
+                    
+                    from reservation as r 
+                    inner join reservation_time as t
+                    on r.time_id = t.id 
+                    
+                    inner join theme as th
+                    on r.theme_id = th.id
+                """;
+
+        return jdbcTemplate.query(sql, getReservationRowMapper());
+    }
+
+    @Override
     public List<Reservation> findByName(String name) {
         String sql = """
                     select r.id as reservation_id,   
@@ -125,6 +125,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         List<Reservation> results = jdbcTemplate.query(sql, params, getReservationRowMapper());
         return results;
+    }
+
+    @Override
+    public Reservation update(Long id, LocalDate date, ReservationTime time) {
+        String sql = "update reservation set date = :date, time_id = :time_id where id = :id";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("date", date)
+                .addValue("time_id", time.getId()).addValue("id", id);
+        jdbcTemplate.update(sql, params);
+        return findById(id).orElseThrow(
+                () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 
     @Override
@@ -157,16 +167,5 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("time_id", time.getId()).addValue("theme_id", theme.getId());
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count > 0;
-    }
-
-    @Override
-    public Reservation update(Long id, LocalDate date, ReservationTime time) {
-        String sql = "update reservation set date = :date, time_id = :time_id where id = :id";
-        SqlParameterSource params = new MapSqlParameterSource().addValue("date", date)
-                .addValue("time_id", time.getId()).addValue("id", id);
-        jdbcTemplate.update(sql, params);
-        return findById(id)
-                .orElseThrow(
-                        () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 }

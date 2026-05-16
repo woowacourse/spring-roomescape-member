@@ -9,13 +9,13 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    List<Theme> findAll();
-
     Optional<Theme> findById(Long id);
+
+    List<Theme> findAll();
 
     List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Long limit);
 
-    boolean existByThemeName(String name);
-
     void delete(Long id);
+
+    boolean existByThemeName(String name);
 }

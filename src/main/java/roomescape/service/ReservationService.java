@@ -66,13 +66,6 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponseDTO> readAllReservation() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponseDTO::from)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public ReservationResponseDTO readReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(
@@ -86,6 +79,13 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponseDTO::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDTO> readAllReservation() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
