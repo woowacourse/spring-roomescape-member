@@ -9,11 +9,13 @@ public class BusinessException extends RuntimeException {
     private final ErrorDetail error;
 
     public BusinessException(ErrorCode errorCode, ErrorDetail error) {
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
         this.error = error;
     }
 
     public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
         this.error = null;
     }
