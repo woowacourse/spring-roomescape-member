@@ -63,11 +63,11 @@ public class ReservationService {
         }
 
         ReservationTime time = findTime(timeId);
-        Reservation changedReservation = reservation.changeDateTime(date, time);
-
-        if (changedReservation.isPast(LocalDateTime.now())) {
+        if (time.toLocalDateTime(date).isBefore(LocalDateTime.now())) {
             throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
         }
+        Reservation changedReservation = reservation.changeDateTime(date, time);
+
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 changedReservation.getDate(),
                 changedReservation.getTime().getId(),
