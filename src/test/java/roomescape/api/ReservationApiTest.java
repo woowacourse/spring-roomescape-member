@@ -366,6 +366,45 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 이미_예약된_슬롯으로_예약을_변경하면_409를_반환한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/images/themes/reservation.webp");
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+        dataInitializer.createReservation("라텔", TODAY.plusDays(1), 2L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 이미_같은_일정으로_예약되어_있으면_409를_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     void 이미_취소된_예약을_변경하면_409를_반환한다() {
         createCancelledReservation();
 

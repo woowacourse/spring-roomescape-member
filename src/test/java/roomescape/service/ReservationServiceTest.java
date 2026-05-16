@@ -20,6 +20,7 @@ import roomescape.domain.Theme;
 import roomescape.global.exception.reservation.DuplicateReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
+import roomescape.global.exception.reservation.SameReservationScheduleException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -115,6 +116,44 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(command))
                 .isInstanceOf(DuplicateReservationException.class);
+    }
+
+    @Test
+    void 이미_예약된_슬롯으로_예약을_변경할_수_없다() {
+        Reservation reservation = reservation();
+        ReservationTime targetTime = ReservationTime.from(2L, LocalTime.of(11, 0));
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(targetTime));
+        when(reservationTimeRepository.findReservedTimeIds(1L, LocalDate.of(2026, 5, 16)))
+                .thenReturn(List.of(1L, 2L));
+
+        ChangeReservationScheduleCommand command = new ChangeReservationScheduleCommand(
+                1L,
+                "고래",
+                LocalDate.of(2026, 5, 16),
+                2L
+        );
+
+        assertThatThrownBy(() -> reservationService.changeReservationSchedule(command))
+                .isInstanceOf(DuplicateReservationException.class);
+    }
+
+    @Test
+    void 이미_같은_일정으로_예약되어_있으면_변경할_수_없다() {
+        Reservation reservation = reservation();
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(reservation.getTime()));
+
+        ChangeReservationScheduleCommand command = new ChangeReservationScheduleCommand(
+                1L,
+                "고래",
+                LocalDate.of(2026, 5, 16),
+                1L
+        );
+
+        assertThatThrownBy(() -> reservationService.changeReservationSchedule(command))
+                .isInstanceOf(SameReservationScheduleException.class)
+                .hasMessage("이미 같은 일정으로 예약되어 있습니다.");
     }
 
     @Test

@@ -15,6 +15,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
+import roomescape.global.exception.reservation.SameReservationScheduleException;
 import roomescape.global.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -80,6 +81,16 @@ public class ReservationService {
         ReservationTime time = getReservationTime(command.timeId());
         validateReservableDateTime(command.date(), time);
 
+        if (isSameSchedule(reservation, command.date(), time)) {
+            throw new SameReservationScheduleException("이미 같은 일정으로 예약되어 있습니다.");
+        }
+
+        ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
+                reservation.getTheme().getId(),
+                command.date()
+        ));
+        reservedTimes.validateAvailable(time.getId());
+
         Reservation changedReservation = reservation.changeSchedule(command.date(), time);
         return ReservationResult.from(reservationRepository.updateSchedule(changedReservation));
     }
@@ -128,5 +139,10 @@ public class ReservationService {
         if (date.isAfter(today.plusDays(30))) {
             throw new InvalidReservationException("30일을 초과한 날짜로는 예약할 수 없습니다.");
         }
+    }
+
+    private boolean isSameSchedule(Reservation reservation, LocalDate date, ReservationTime time) {
+        return reservation.getDate().equals(date)
+                && reservation.getTime().getId().equals(time.getId());
     }
 }
