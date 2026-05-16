@@ -1,11 +1,16 @@
 package roomescape.apitest.users;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static roomescape.config.FixedClockConfig.FUTURE_DATE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,24 +32,38 @@ class ReservationApiTest {
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
-        RestAssured.given().log().all()
+        Long generatedId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        List<Long> allIds = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(26));
+                .extract().jsonPath().getList("id", Long.class);
 
-        RestAssured.given().log().all()
+        assertThat(allIds)
+                .hasSize(26)
+                .contains(generatedId);
+
+        JsonPath jsonPath = RestAssured.given().log().all()
                 .when().get("/reservations?userName=" + userName)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(26));
+                .extract().jsonPath();
+
+        List<Long> idsByUserName = jsonPath.getList("id", Long.class);
+        List<String> names = jsonPath.getList("name", String.class);
+
+        assertThat(idsByUserName)
+                .hasSize(26)
+                .contains(generatedId);
+
+        assertThat(names).containsOnly(userName);
     }
 
     @Test
