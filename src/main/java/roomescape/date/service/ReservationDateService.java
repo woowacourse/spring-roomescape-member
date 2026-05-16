@@ -1,5 +1,6 @@
 package roomescape.date.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.date.domain.ReservationDate;
@@ -13,13 +14,10 @@ import static roomescape.date.exception.ReservationDateErrorInformation.*;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationDateService {
 
     private final ReservationDateRepository reservationDateRepository;
-
-    public ReservationDateService(ReservationDateRepository reservationDateRepository) {
-        this.reservationDateRepository = reservationDateRepository;
-    }
 
     public ReservationDate readDate(Long id) {
         return getReservationDate(id);

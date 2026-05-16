@@ -9,6 +9,7 @@ import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.date.domain.ReservationDate;
@@ -28,19 +29,13 @@ import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationDateRepository reservationDateRepository;
     private final ThemeRepository themeRepository;
-
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ReservationDateRepository reservationDateRepository, ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationDateRepository = reservationDateRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public List<Reservation> readAll() {
         return reservationRepository.findAll();

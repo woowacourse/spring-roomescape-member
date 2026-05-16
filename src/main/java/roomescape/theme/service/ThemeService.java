@@ -3,6 +3,7 @@ package roomescape.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
@@ -15,16 +16,13 @@ import static roomescape.theme.exception.ThemeErrorInformation.THEME_STATUS_UPDA
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ThemeService {
 
     private static final int POPULAR_STATISTICS_DURATION = 7;
     private static final int PREVIOUS_DAYS = 1;
 
     private final ThemeRepository themeRepository;
-
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
 
     public Theme readTheme(Long id) {
         return getTheme(id);

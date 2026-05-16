@@ -3,6 +3,7 @@ package roomescape.time.service;
 import java.time.LocalTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.time.domain.ReservationTime;
@@ -14,13 +15,10 @@ import static roomescape.time.exception.ReservationTimeErrorInformation.*;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
-    }
 
     public List<ReservationTime> readAll() {
         return reservationTimeRepository.findAll();
