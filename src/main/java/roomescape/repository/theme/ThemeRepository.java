@@ -13,4 +13,5 @@ public interface ThemeRepository {
     Optional<Theme> getTheme(long id);
     void deleteTheme(long id);
     List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition);
+    boolean isExistsById(long id);
 }

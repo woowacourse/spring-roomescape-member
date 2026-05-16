@@ -1,28 +1,31 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.service.RoomReservationService;
+import roomescape.dto.reservation.UpdateReservationRequest;
+import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final RoomReservationService roomReservationService;
+    private final ReservationService reservationService;
 
-    public ReservationController(RoomReservationService roomReservationService) {
-        this.roomReservationService = roomReservationService;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam(required = false) String name) {
-        List<Reservation> reservations = roomReservationService.getAllReservation(name);
+        List<ReservationWithTimeAndTheme> reservations = reservationService.getAllReservation(name);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -33,14 +36,23 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
-        Reservation addedReservation = roomReservationService.addReservation(reservationCommand);
+        ReservationWithTimeAndTheme addedReservation = reservationService.addReservation(reservationCommand);
 
         return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
-        roomReservationService.deleteReservation(id);
+    public ResponseEntity<Void> deleteReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id) {
+        reservationService.deleteReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8));
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
+                                                      @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
+        ReservationCommand reservationCommand = updateReservationRequest.to();
+        reservationService.updateReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8), reservationCommand);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

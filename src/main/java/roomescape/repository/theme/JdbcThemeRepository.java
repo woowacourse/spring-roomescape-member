@@ -22,10 +22,19 @@ public class JdbcThemeRepository implements ThemeRepository {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_IMAGE_URL = "image_url";
+    private static final String COLUMN_COUNT = "count";
 
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM theme WHERE id = ?";
+
+    private static final String EXIST_BY_ID_SQL = """
+            SELECT EXISTS (\s
+                SELECT 1 \s
+                    FROM theme \s
+                    WHERE id = ?\s
+            )
+    """;
 
     private static final RowMapper<Theme> MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong(COLUMN_ID),
@@ -72,9 +81,20 @@ public class JdbcThemeRepository implements ThemeRepository {
         QueryWithParams queryWithParams = getPopularThemQuery(popularThemeCondition);
         return jdbcTemplate.query(
                 queryWithParams.query(),
-                (rs, i) -> ReservationThemeWithCount.from(rs),
+                (rs, i) -> new ReservationThemeWithCount(
+                        rs.getLong(COLUMN_ID),
+                        rs.getString(COLUMN_NAME),
+                        rs.getString(COLUMN_DESCRIPTION),
+                        rs.getString(COLUMN_IMAGE_URL),
+                        rs.getLong(COLUMN_COUNT)
+                ),
                 queryWithParams.params().toArray()
         );
+    }
+
+    @Override
+    public boolean isExistsById(long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_ID_SQL, Boolean.class, id));
     }
 
     private QueryWithParams getPopularThemQuery(PopularThemeCondition popularThemeCondition) {

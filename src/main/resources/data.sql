@@ -17,10 +17,10 @@ INSERT INTO theme (name, description, image_url) VALUES ('테마10', '설명10',
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 4);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 5);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 6);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 7);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 8);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 9);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 10);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 4);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 5);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 6);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 7);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 8);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 9);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-06-06', 1, 10);

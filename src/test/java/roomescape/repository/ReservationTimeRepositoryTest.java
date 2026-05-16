@@ -104,4 +104,17 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
                 new ReservationTimeWithAvailable(2, "11:00", true)
         ));
     }
+
+    @Test
+    @DisplayName("예약 테이블에 특정 시간 ID가 존재하는지 확인한다")
+    void isExistsByIdTest() {
+        insertReservationTheme("테마1", "설명", "url");
+        insertReservation("브라운", "2023-08-03", 1, 1);
+
+        boolean exists = reservationTimeRepository.isExistsById(1);
+        boolean notExists = reservationTimeRepository.isExistsById(99);
+
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
 }

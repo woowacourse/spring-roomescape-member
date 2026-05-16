@@ -3,18 +3,21 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
-import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
+    private static final String INVALID_TIME_ID = "존재하지 않은 시간 id입니다.";
+    private static final String CANNOT_DELETE_RESERVATION_TIME_IN_USE = "해당 시간을 참조하는 예약 데이터가 존재하기 때문에 삭제할 수 없습니다.";
+    private static final String INTEGRITY_VIOLATION_ON_DELETE = "데이터 무결성 위반으로 삭제에 실패했습니다.";
+
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -27,23 +30,27 @@ public class ReservationTimeService {
         return reservationTimeRepository.getAllReservationTime();
     }
 
-    @Transactional
     public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
         return reservationTimeRepository.addReservationTime(reservationTimeCommand);
     }
 
-    @Transactional
     public void deleteReservationTime(long id) {
+        boolean isExistTimeId = reservationTimeRepository.isExistsById(id);
+
+        if(!isExistTimeId) {
+            throw new NotFoundResourceException(INVALID_TIME_ID);
+        }
+
         boolean hasTimeId = reservationRepository.existsByTimeId(id);
 
         if(hasTimeId) {
-            throw new DataReferencedException(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE);
+            throw new ConflictException(CANNOT_DELETE_RESERVATION_TIME_IN_USE);
         }
 
         try {
             reservationTimeRepository.deleteReservationTime(id);
         }  catch(DataIntegrityViolationException e) {
-            throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
+            throw new ConflictException(INTEGRITY_VIOLATION_ON_DELETE);
         }
     }
 

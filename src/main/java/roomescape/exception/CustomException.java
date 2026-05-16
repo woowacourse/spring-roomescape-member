@@ -1,6 +1,7 @@
 package roomescape.exception;
 
-public interface CustomException {
-    String getMessage();
-    ErrorMessage getErrorMessage();
+public class CustomException extends RuntimeException {
+    public CustomException(String message) {
+        super(message);
+    }
 }
