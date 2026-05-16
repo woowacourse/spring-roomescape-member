@@ -47,7 +47,8 @@ class AdminReservationControllerTest {
                 .andExpect(jsonPath("$[0].name").value("브라운"))
                 .andExpect(jsonPath("$[0].date").value("2099-01-01"))
                 .andExpect(jsonPath("$[0].time.id").value(1))
-                .andExpect(jsonPath("$[0].theme.id").value(1));
+                .andExpect(jsonPath("$[0].theme.id").value(1))
+                .andExpect(jsonPath("$[0].theme.name").value("테마"));
     }
 
     @Test
