@@ -169,8 +169,11 @@ public class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
 
         reservationRepository.create(new Reservation("fizz", futureDateTime.toLocalDate(), reservationTime, theme));
+        reservationRepository.create(
+                new Reservation("fizz2", futureDateTime.plusDays(1).toLocalDate(), reservationTime, theme));
 
-        ServiceReservationUpdateRequest request = new ServiceReservationUpdateRequest(futureDateTime.toLocalDate(),
+        ServiceReservationUpdateRequest request = new ServiceReservationUpdateRequest(
+                futureDateTime.plusDays(1).toLocalDate(),
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
