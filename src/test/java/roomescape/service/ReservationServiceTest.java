@@ -160,4 +160,16 @@ public class ReservationServiceTest {
                 .isInstanceOf(RoomescapeException.class);
     }
 
+    @Test
+    public void 같은_값으로_예약을_변경_해도_본인_예약은_중복으로_막히지_않는다() {
+        // given
+        String username = "토리";
+        ReservationRequest registerRequest = new ReservationRequest(username, LocalDate.now().plusDays(1L), 1L, 1L);
+        Long id = reservationService.register(registerRequest).id();
+        ReservationUpdateRequest sameValueRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
+
+        // when & then
+        Assertions.assertThatCode(() -> reservationService.update(id, username, sameValueRequest))
+                .doesNotThrowAnyException();
+    }
 }

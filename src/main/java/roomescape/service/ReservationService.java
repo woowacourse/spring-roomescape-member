@@ -84,8 +84,8 @@ public class ReservationService {
 
         ReservationTime reservationTime = getReservationTime(reservationUpdateRequest.timeId());
         validatePastUpdate(reservationUpdateRequest.date(), reservationTime);
-        validateDuplicate(reservationUpdateRequest.date(), reservationUpdateRequest.timeId(),
-                reservation.getTheme().getId());
+        validateDuplicateExceptSelf(reservationUpdateRequest.date(), reservationUpdateRequest.timeId(),
+                reservation.getTheme().getId(), reservation.getId());
 
         Reservation updated = reservationRepository.update(id, reservationUpdateRequest.date(),
                 reservationUpdateRequest.timeId());
@@ -131,6 +131,13 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date,
                 timeId,
                 themeId)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
+    private void validateDuplicateExceptSelf(LocalDate date, Long timeId, Long themeId, Long reservationId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndReservationIdNot(date, timeId, themeId,
+                reservationId)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
         }
     }
