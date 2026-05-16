@@ -1,239 +1,101 @@
 # 방탈출 예약 관리
 
-## 📋 목차
-- [개요](#-개요)
-- [실행 방법](#-실행-방법)
-- [프론트엔드 접근](#-프론트엔드-접근)
-- [구현 기능 목록](#-구현-기능-목록)
-- [API 명세](#-api-명세)
-- [커밋 컨벤션](#-커밋-컨벤션)
+방탈출 테마, 예약 시간, 사용자 예약을 관리하는 Spring Boot 기반 예약 서비스입니다.
 
----
+## 기능 목록
 
-## 1️⃣ 개요
+### 사용자
+- 이름으로 로그인하고 세션 기반으로 본인 예약을 관리한다.
+- 테마 목록과 최근 7일 기준 인기 테마를 조회한다.
+- 테마와 날짜를 선택해 예약 가능한 시간을 조회한다.
+- 예약을 생성한다.
+- 본인의 예약 목록을 조회한다.
+- 본인의 예약 날짜와 시간을 변경한다.
+- 본인의 예약을 취소한다.
 
-방탈출 카페 관리자가 전화·현장 예약을 직접 등록·관리할 수 있는 예약 관리 시스템이다.
-총 4단계에 걸쳐 메모리 저장 → DB 연동 → 시간 관리 → 계층 분리 순서로 구현한다.
+### 관리자
+- 전체 예약 목록을 조회한다.
+- 예약을 삭제한다.
+- 테마를 추가하고 삭제한다.
+- 예약 시간을 조회, 추가, 삭제한다.
 
----
+### 공통
+- API 에러 응답은 `{code, details, message}` 형식으로 통일한다.
+- 예약 생성/변경 시 과거 날짜, 과거 시간, 중복 예약, 존재하지 않는 테마/시간을 검증한다.
 
-## 2️⃣ 실행 방법
+## API 명세
 
-### 요구 사항
+### 인증
 
-| 항목        | 버전               |
-|-------------|-------------------|
-| Java        | 21                |
-| Gradle      | 8.x (Wrapper 포함) |
-| Spring Boot | 3.4.4             |
+| 기능 | Method | URL | Request | Response |
+|:---|:---|:---|:---|:---|
+| 로그인 | `POST` | `/login` | `{username}` | `204` |
 
-### 실행
+로그인 성공 시 서버 세션에 로그인 사용자 정보가 저장됩니다.
 
-```bash
-./gradlew bootRun
+### 테마
+
+| 기능 | Method | URL | Request | Response |
+|:---|:---|:---|:---|:---|
+| 테마 목록 조회 | `GET` | `/themes` | - | `200 [{id, name, description, thumbnailUrl}]` |
+| 인기 테마 조회 | `GET` | `/themes/popular?limit={n}` | - | `200 [{id, name, description, thumbnailUrl}]` |
+| 테마별 예약 가능 시간 조회 | `GET` | `/themes/{id}/times?date={yyyy-MM-dd}` | - | `200 [{id, startAt, isAvailable}]` |
+
+### 예약
+
+| 기능 | Method | URL | Request | Response |
+|:---|:---|:---|:---|:---|
+| 내 예약 조회 | `GET` | `/reservations/me` | 로그인 세션 | `200 [Reservation]` |
+| 예약 생성 | `POST` | `/reservations` | `{name, date, timeId, themeId}` | `201 Reservation` |
+| 내 예약 날짜/시간 변경 | `PATCH` | `/reservations/{id}` | 로그인 세션, `{date, timeId}` | `200 Reservation` |
+| 내 예약 취소 | `DELETE` | `/reservations/{id}` | 로그인 세션 | `204` |
+
+`Reservation`
+
+```json
+{
+  "id": 1,
+  "date": "2026-05-20",
+  "themeId": 1,
+  "themeName": "공포의 저택",
+  "themeDescription": "버려진 저택에서 탈출하라!",
+  "themeThumbnailUrl": "https://example.com/theme.jpg",
+  "timeId": 1,
+  "time": "10:00"
+}
 ```
 
-서버 시작 시 `schema.sql`(테이블 생성)과 `data.sql`(목업 데이터 삽입)이 자동으로 실행된다.
+### 예약 시간
 
-### 테스트 실행
+| 기능 | Method | URL | Request | Response |
+|:---|:---|:---|:---|:---|
+| 시간 목록 조회 | `GET` | `/times` | - | `200 [{id, startAt}]` |
+| 시간 추가 | `POST` | `/times` | `{startAt}` | `201 {id, startAt}` |
+| 시간 삭제 | `DELETE` | `/times/{id}` | - | `204` |
 
-```bash
-./gradlew test
+### 관리자
+
+| 기능 | Method | URL | Request | Response |
+|:---|:---|:---|:---|:---|
+| 전체 예약 조회 | `GET` | `/admin/reservations` | - | `200 [{id, name, date, themeName, time}]` |
+| 예약 삭제 | `DELETE` | `/admin/reservations/{id}` | - | `204` |
+| 테마 추가 | `POST` | `/admin/themes` | `{name, description, thumbnailUrl}` | `201 {id, name, description, thumbnailUrl}` |
+| 테마 삭제 | `DELETE` | `/admin/themes/{id}` | - | `204` |
+
+## 에러 응답
+
+```json
+{
+  "code": "RESERVATION_ALREADY_RESERVED",
+  "details": null,
+  "message": "누군가 이미 예약한 시간입니다."
+}
 ```
 
----
-
-## 3️⃣ 프론트엔드 접근
-
-서버(`./gradlew bootRun`) 실행 후 브라우저에서 아래 URL로 접근한다.
-
-| 페이지 | URL | 설명 |
-|:------|:----|:-----|
-| **메인 (이름 입력)** | `http://localhost:8080/` | 이름을 입력하면 localStorage에 저장되어 사용자 식별자로 사용된다 |
-| **사용자 페이지** | `http://localhost:8080/user.html` | 인기 테마 조회, 예약하기(테마→날짜→시간 선택), 내 예약 조회·삭제 |
-| **관리자 페이지** | `http://localhost:8080/admin.html` | 전체 예약 조회·삭제, 테마 추가·삭제, 시간 추가·삭제 |
-| **H2 콘솔** | `http://localhost:8080/h2-console` | JDBC URL: `jdbc:h2:mem:database` / 계정: `SA` / 비밀번호: 없음 |
-
-### 사용자 페이지 흐름
-
-```
-메인(이름 입력) → 사용자 페이지
-                    ├── 🔥 인기 테마   : 최근 7일 예약 기준 상위 5개 표시
-                    ├── 🎭 예약하기    : 테마 선택 → 날짜 선택 → 시간 선택(예약 불가 슬롯 비활성) → 확인
-                    └── 📋 내 예약    : 본인 예약 목록 조회 및 삭제
-```
-
-### 관리자 페이지 흐름
-
-```
-관리자 페이지
-    ├── 📋 전체 예약  : 모든 사용자 예약 목록 조회 및 삭제
-    ├── 🎭 테마 관리  : 테마 추가(생성 시 10:00~22:00 시간 자동 보장) / 삭제
-    └── ⏰ 시간 관리  : 시간 추가 / 삭제
-```
-
-### 목업 데이터 (서버 시작마다 자동 삽입)
-
-| 항목 | 내용 |
-|:----|:----|
-| 예약 시간 | 10:00 ~ 22:00 (1시간 단위, 13개) |
-| 테마 | 공포의 저택, 우주 정거장, 마법사의 연구실, 탐정 사무소 |
-| 예약자 예시 | `김철수`, `이영희`, `박민준`, `최수진` 등 |
-| 인기 테마 순위 | 공포의 저택(1위) > 탐정 사무소(2위) > 마법사의 연구실(3위) > 우주 정거장(4위) |
-
-> 테스트 시 `김철수`로 이름 입력하면 기존 예약 3건(미래 날짜)을 바로 확인할 수 있다.
-
----
-
-## 방탈출 예약 관리 : 구현 기능 목록
-
-### ✅ 1단계: 웹 요청-응답
-
-> 별도의 데이터베이스 없이 메모리(List + AtomicLong)로 예약 상태를 관리한다.
-
-- [x] **예약 조회 API** (`GET /reservations`)
-    - [x] 전체 예약 목록을 반환한다.
-- [x] **예약 추가 API** (`POST /reservations`)
-    - [x] 이름, 날짜, 시간을 입력받아 예약을 생성한다.
-    - [x] 생성된 예약의 id(AtomicLong 자동 증가)를 응답에 포함한다.
-- [x] **예약 삭제 API** (`DELETE /reservations/{id}`)
-    - [x] id에 해당하는 예약을 삭제한다.
-
-### ✅ 2단계: 데이터베이스 연동
-
-> H2 인메모리 데이터베이스로 전환하여 서버 재시작 전까지 데이터를 유지한다.
-
-- [x] **환경 설정**
-    - [x] `spring-boot-starter-jdbc`, `h2` 의존성을 추가한다.
-    - [x] `application.properties`에 H2 콘솔 및 datasource URL을 설정한다.
-- [x] **스키마 정의** (`resources/schema.sql`)
-    - [x] `reservation` 테이블을 정의한다.
-- [ ] **API 전환**
-    - [x] 예약 조회를 JdbcTemplate 기반으로 전환한다.
-    - [x] 예약 추가를 JdbcTemplate 기반으로 전환하고, DB가 생성한 id를 응답에 담는다.
-    - [x] 예약 삭제를 JdbcTemplate 기반으로 전환한다.
-    - [x] 기존의 `List<Reservation>`, `AtomicLong`을 제거한다.
-
-### ✅ 3단계: 시간 관리
-
-> 정해진 시간 슬롯을 관리하고, 예약과 시간을 연결한다.
-
-- [x] **시간 관리 API**
-    - [x] 시간 추가 (`POST /times`): `startAt`을 입력받아 시간 슬롯을 생성한다.
-    - [x] 시간 조회 (`GET /times`): 전체 시간 슬롯 목록을 반환한다.
-    - [x] 시간 삭제 (`DELETE /times/{id}`): id에 해당하는 시간 슬롯을 삭제한다.
-- [x] **스키마 추가** (`resources/schema.sql`)
-    - [x] `reservation_time` 테이블을 추가한다.
-- [x] **예약과 시간 연결**
-    - [x] `reservation` 테이블의 `time` 컬럼을 `time_id (FK → reservation_time.id)`로 변경한다.
-    - [x] `Reservation` 클래스의 `time` 필드를 `String → ReservationTime` 객체로 변경한다.
-    - [x] 예약 추가 요청 본문을 `time → timeId`로 변경한다.
-    - [x] 예약 조회 응답의 `time` 필드를 객체(`{id, startAt}`)로 변경한다.
-    - [x] 예약 조회 쿼리에 INNER JOIN을 적용한다.
-
-### ✅ 4단계: 계층 분리
-
-> 레이어드 아키텍처로 레이어별 책임에 따라 코드를 분리한다.
-
-| 레이어 | 책임 |
-| :--- | :--- |
-| Controller | 웹 요청·응답 |
-| Service | 비즈니스 플로우 |
-| DAO (Repository) | DB 접근 |
-| Domain | 비즈니스 규칙 |
-
-- [x] **레이어 분리**
-    - [x] `ReservationController`에서 비즈니스 로직과 DB 접근 코드를 분리한다.
-    - [x] DB 접근 책임을 DAO(repository)에 위임한다.
-    - [x] 비즈니스 플로우 책임을 Service에 위임한다.
-    - [x] 비즈니스 규칙 책임을 Domain에 위임한다.
-    - [x] `ReservationController`에 `JdbcTemplate` 필드가 남아있지 않아야 한다.
-- [x] **Spring Bean 등록**
-    - [x] 분리한 클래스를 `@Component` · `@Service` · `@Repository` 등으로 등록한다.
-
----
-
-## 테마 + 사용자 예약 cycle 1 : 구현 기능 목록
-
-### 관리자 기능
-- [x] 테마 정보 추가 기능 (관리자)
-  - 테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
-  - 모든 테마의 시작 시간과 소요 시간은 동일하다고 가정한다.
-- [x] 테마 삭제 기능 (관리자)
-- [x] 관리자 예약 조회 기능
-  - [x] response에 테마 추가할 것. 
-
-
-### 사용자 기능
-- [x] 테마 조회 기능
-- [x] 사용자 테마 시간 조회 기능
-- [x] 사용자 예약 조회 기능
-  - 사용자의 예약 목록을 보여준다.
-  - 예약 id, 테마 이름, 테마 썸네일 url, 날짜, 시간
-- [x] 사용자 예약 추가/수정 기능
-  - 이름, 날짜, 시간 id, 테마 id를 사용하여 예약을 추가한다.
-  - 예약 변경은 날짜, 시간 변경만 지원하고, 테마는 변경할 수 없다.
-- [x] 인기 테마 조회 기능
-  - 최근 1주 동안 예약이 많았던 테마 상위 10개를 조회한다.
-    - ex) 오늘이 5월 8일이면, 게임 날짜가 5월 1일~5월 7일인 예약을 집계해 인기 순서대로 10개를 응답한다.
-
----
-
-## 5️⃣ API 명세
-
-### 관리자 API (`/admin`)
-
-| 기능               | 메서드 / URL                     | 요청 본문                               | 응답                                                                    |
-|:-----------------|:-------------------------------|:------------------------------------|:----------------------------------------------------------------------|
-| **관리자 테마 추가**    | `POST /admin/themes`           | `{name, description, thumbnailUrl}` | `201 Location: /themes/{id}`                                          |
-| **관리자 테마 삭제**    | `DELETE /admin/themes/{id}`    | —                                   | `204`                                                                 |
-| **관리자 예약 조회**    | `GET /admin/reservations`      | —                                   | `200 [{id, name, date, themeName, time}]`                             |
-
-### 공통 API (시간)
-
-| 기능            | 메서드 / URL          | 요청 본문       | 응답                    |
-|:--------------|:--------------------|:------------|:----------------------|
-| **시간 조회**     | `GET /times`        | —           | `200 [{id, startAt}]` |
-| **시간 추가**     | `POST /times`       | `{startAt}` | `201 {id, startAt}`   |
-| **시간 삭제**     | `DELETE /times/{id}` | —          | `204`                 |
-
-### 사용자 API
-
-| 기능                  | 메서드 / URL                          | 요청 본문 / 쿼리 파라미터                     | 응답                                                                       |
-|:--------------------|:------------------------------------|:---------------------------------------|:-------------------------------------------------------------------------|
-| **테마 전체 조회**        | `GET /themes`                       | —                                      | `200 [{id, name, description, thumbnailUrl}]`                            |
-| **인기 테마 조회**        | `GET /themes?condition=popular&size={n}` | —                                 | `200 [{id, name, description, thumbnailUrl}]`                            |
-| **테마별 예약 가능 시간 조회** | `GET /themes/{id}/times?date={date}` | —                                     | `200 [{id, startAt, isAvailable}]`                                       |
-| **예약 조회**           | `GET /reservations?username={name}` | —                                      | `200 [{id, date, themeName, themeDescription, themeThumbnailUrl, time}]` |
-| **예약 추가**           | `POST /reservations`                | `{name, date, timeId, themeId}`        | `201 {id, date, themeName, themeDescription, themeThumbnailUrl, time}`   |
-| **예약 삭제**           | `DELETE /reservations/{id}`         | —                                      | `204`                                                                    |
-
----
-
-## 6️⃣ 커밋 컨벤션
-
-Following convention : https://gist.github.com/stephenparish/9941e89d80e2bc58a153
-
-```markdown
-# basic structure
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
-
-# <type>
-feat (feature)
-fix (bug fix)
-docs (documentation)
-style (formatting, missing semi colons, …)
-refactor
-test (when adding missing tests)
-chore (maintain)
-
-# <scope>
-console - I/O
-domain - 핵심 로직
-validation - 유효성검사
-test - 테스트코드 추가
-```
+| 상태 코드 | 주요 코드 |
+|:---|:---|
+| `400` | `VALIDATION_ERROR`, `INVALID_REQUEST`, `NOT_READABLE_MESSAGE` |
+| `404` | `RESERVATION_NOT_FOUND`, `RESERVATION_TIME_NOT_FOUND`, `THEME_NOT_FOUND` |
+| `409` | `RESERVATION_ALREADY_RESERVED`, `RESERVATION_TIME_ALREADY_USED`, `RESERVATION_TIME_ALREADY_EXISTS` |
+| `422` | `RESERVATION_DATE_IN_PAST`, `RESERVATION_TIME_IN_PAST`, `RESERVATION_NOT_CHANGED` |
+| `500` | `UNKNOWN_ERROR` |
