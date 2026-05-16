@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.reservation.ReservationWithTimeAndTheme;
 import roomescape.domain.reservation.ReservationCommand;
-import roomescape.dto.Response;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.UpdateReservationRequest;
@@ -25,21 +24,21 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<Response> getReservations(@RequestParam(required = false) String name) {
+    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam(required = false) String name) {
         List<ReservationWithTimeAndTheme> reservations = reservationService.getAllReservation(name);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(Response.from(HttpStatus.OK.value(), reservationResponses));
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping
-    public ResponseEntity<Response> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
         ReservationWithTimeAndTheme addedReservation = reservationService.addReservation(reservationCommand);
 
-        return new ResponseEntity<>(Response.from(HttpStatus.CREATED.value(), ReservationResponse.from(addedReservation)), HttpStatus.CREATED);
+        return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +49,7 @@ public class ReservationController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Response> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
+    public ResponseEntity<Void> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
                                                       @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
         ReservationCommand reservationCommand = updateReservationRequest.to();
         reservationService.updateReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8), reservationCommand);
