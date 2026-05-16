@@ -2,7 +2,6 @@ package roomescape.domain.time.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,13 +36,13 @@ public class AdminTimeController {
 
     @PostMapping()
     public ResponseEntity<TimeResponseDto> saveTime(
-        @NotNull @Valid @RequestBody TimeCreateRequestDto requestDto) {
+        @Valid @RequestBody TimeCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(timeService.saveTime(requestDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@NotNull @PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable @Min(1) Long id) {
         timeService.deleteTimeById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();

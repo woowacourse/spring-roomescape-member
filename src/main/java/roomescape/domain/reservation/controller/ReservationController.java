@@ -3,7 +3,7 @@ package roomescape.domain.reservation.controller;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> getReservations(
-        @NotNull @RequestHeader(NAME_HEADER) String name) {
+        @RequestHeader(NAME_HEADER) String name) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(reservationService.getReservationsByName(URLDecoder.decode(name, UTF_8)));
     }
@@ -54,8 +54,8 @@ public class ReservationController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReservation(
-        @NotNull @RequestHeader(NAME_HEADER) String name,
-        @NotNull @PathVariable Long id,
+        @RequestHeader(NAME_HEADER) String name,
+        @PathVariable Long id,
         @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
         reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto,
             LocalDateTime.now());
@@ -64,8 +64,8 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
-        @NotNull @RequestHeader(NAME_HEADER) String name,
-        @NotNull @PathVariable Long id) {
+        @RequestHeader(NAME_HEADER) String name,
+        @PathVariable @Min(1) Long id) {
         reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id,
             LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

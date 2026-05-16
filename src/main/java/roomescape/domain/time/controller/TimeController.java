@@ -1,7 +1,6 @@
 package roomescape.domain.time.controller;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +28,8 @@ public class TimeController {
 
     @GetMapping("/times")
     public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
-        @NotNull @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-        @NotNull @RequestParam @Min(1) Long themeId
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        @RequestParam @Min(1) Long themeId
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(timeService.getAvailableTimes(date, themeId, LocalDateTime.now()));

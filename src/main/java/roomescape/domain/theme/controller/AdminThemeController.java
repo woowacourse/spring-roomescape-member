@@ -1,7 +1,7 @@
 package roomescape.domain.theme.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +33,7 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable @Min(1) Long id) {
         themeService.deleteThemeById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();

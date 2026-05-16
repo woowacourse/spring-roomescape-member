@@ -1,7 +1,7 @@
 package roomescape.domain.reservation.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -44,7 +44,7 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable @Min(1) Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
