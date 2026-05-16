@@ -96,7 +96,10 @@ public class ReservationService {
         ReservationTime reservationTime = readReservationTime(request.timeId());
 
         Reservation newReservation = request.toEntity(beforeReservation, reservationTime);
-        validateCreateReservation(newReservation);
+        if (!beforeReservation.equals(newReservation)) {
+            validateDuplicatedReservation(newReservation);
+        }
+        validatePastReservation(newReservation, ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_CREATE);
 
         reservationRepository.update(id, request.date(), request.timeId());
 
