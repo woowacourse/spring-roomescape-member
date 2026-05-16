@@ -21,12 +21,12 @@ class ReservationTimeRepositoryTest {
     @Autowired
     private ReservationTimeRepository timeRepository;
 
-    private static final LocalTime ten = LocalTime.of(10, 0);
-    private static final LocalTime twelve = LocalTime.of(12, 0);
+    private static final LocalTime TEN = LocalTime.of(10, 0);
+    private static final LocalTime TWELVE = LocalTime.of(12, 0);
 
     @Test
     void 예약시간을_저장한다() {
-        ReservationTime tenClock = new ReservationTime(ten);
+        ReservationTime tenClock = new ReservationTime(TEN);
         Long saveId = timeRepository.save(tenClock);
 
         Optional<ReservationTime> reservationTime = timeRepository.findById(saveId);
@@ -34,15 +34,15 @@ class ReservationTimeRepositoryTest {
         assertThat(reservationTime).isPresent();
 
         assertThat(reservationTime.get().getId()).isNotNull();
-        assertThat(reservationTime.get().getStartAt()).isEqualTo(ten);
+        assertThat(reservationTime.get().getStartAt()).isEqualTo(TEN);
     }
 
     @Test
     void 모든_시간을_오름차순으로_조회한다() {
-        ReservationTime twelveClock = new ReservationTime(twelve);
+        ReservationTime twelveClock = new ReservationTime(TWELVE);
         timeRepository.save(twelveClock);
 
-        ReservationTime tenClock = new ReservationTime(ten);
+        ReservationTime tenClock = new ReservationTime(TEN);
         Long tenClockSaveId = timeRepository.save(tenClock);
 
         List<ReservationTime> reservationTimes = timeRepository.findAll();
@@ -51,12 +51,12 @@ class ReservationTimeRepositoryTest {
 
         ReservationTime firstResult = reservationTimes.getFirst();
         assertThat(firstResult.getId()).isEqualTo(tenClockSaveId);
-        assertThat(firstResult.getStartAt()).isEqualTo(ten);
+        assertThat(firstResult.getStartAt()).isEqualTo(TEN);
     }
 
     @Test
     void 예약시간_id_존재여부() {
-        ReservationTime twelveClock = new ReservationTime(twelve);
+        ReservationTime twelveClock = new ReservationTime(TWELVE);
         Long saveId = timeRepository.save(twelveClock);
 
         assertThat(timeRepository.existsById(saveId)).isTrue();
@@ -65,7 +65,7 @@ class ReservationTimeRepositoryTest {
 
     @Test
     void 예약시간을_삭제한다() {
-        ReservationTime twelveClock = new ReservationTime(twelve);
+        ReservationTime twelveClock = new ReservationTime(TWELVE);
         Long saveId = timeRepository.save(twelveClock);
 
         timeRepository.deleteById(saveId);

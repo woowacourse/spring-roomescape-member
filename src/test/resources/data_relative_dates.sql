@@ -1,56 +1,65 @@
 -- reservation_time
-INSERT INTO reservation_time (start_at)
-VALUES ('10:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('11:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('12:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('13:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('14:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('15:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('16:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('17:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('18:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('19:00');
+INSERT INTO reservation_time (id, start_at)
+VALUES (1, '10:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (2, '11:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (3, '12:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (4, '13:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (5, '14:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (6, '15:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (7, '16:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (8, '17:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (9, '18:00');
+
+INSERT INTO reservation_time (id, start_at)
+VALUES (10, '19:00');
+
 
 -- theme
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('미스터리 저택', '빅토리아 시대 영국의 의문스러운 저택을 탐험하세요', 'https://loremflickr.com/800/600/mansion,dark');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (1, '미스터리 저택', '빅토리아 시대 영국의 의문스러운 저택을 탐험하세요', 'https://loremflickr.com/800/600/mansion,dark');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('우주 정거장', '고장난 우주 정거장에서 살아남으세요', 'https://loremflickr.com/800/600/spacestation,space');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (2, '우주 정거장', '고장난 우주 정거장에서 살아남으세요', 'https://loremflickr.com/800/600/spacestation,space');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('좀비 아포칼립스', '좀비가 점령한 도시에서 탈출하세요', 'https://loremflickr.com/800/600/zombie,apocalypse');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (3, '좀비 아포칼립스', '좀비가 점령한 도시에서 탈출하세요', 'https://loremflickr.com/800/600/zombie,apocalypse');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('고대 이집트', '파라오의 무덤에 숨겨진 비밀을 풀어내세요', 'https://loremflickr.com/800/600/egypt,pyramid');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (4, '고대 이집트', '파라오의 무덤에 숨겨진 비밀을 풀어내세요', 'https://loremflickr.com/800/600/egypt,pyramid');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('해적선의 보물', '카리브해 해적선에서 보물을 찾아 탈출하세요', 'https://loremflickr.com/800/600/pirate');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (5, '해적선의 보물', '카리브해 해적선에서 보물을 찾아 탈출하세요', 'https://loremflickr.com/800/600/pirate');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('폐쇄 병동', '버려진 병동의 어두운 비밀을 파헤치세요', 'https://loremflickr.com/800/600/abandoned,asylum');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (6, '폐쇄 병동', '버려진 병동의 어두운 비밀을 파헤치세요', 'https://loremflickr.com/800/600/abandoned,asylum');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('시간 여행자의 실험실', '시간 여행 실험에 갇힌 당신을 구하세요', 'https://loremflickr.com/800/600/laboratory,steampunk');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (7, '시간 여행자의 실험실', '시간 여행 실험에 갇힌 당신을 구하세요', 'https://loremflickr.com/800/600/laboratory,steampunk');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('마법사의 탑', '사라진 마법사의 탑에서 주문을 풀어내세요', 'https://loremflickr.com/800/600/wizard,tower');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (8, '마법사의 탑', '사라진 마법사의 탑에서 주문을 풀어내세요', 'https://loremflickr.com/800/600/wizard,tower');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('침몰하는 잠수함', '가라앉는 잠수함에서 탈출하세요', 'https://loremflickr.com/800/600/submarine,ocean');
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (9, '침몰하는 잠수함', '가라앉는 잠수함에서 탈출하세요', 'https://loremflickr.com/800/600/submarine,ocean');
 
-INSERT INTO theme (name, description, thumbnail_image_url)
-VALUES ('은행 금고', '삼엄한 경비를 뚫고 금고에서 탈출하세요', 'https://loremflickr.com/800/600/bank,vault');
-
+INSERT INTO theme (id, name, description, thumbnail_image_url)
+VALUES (10, '은행 금고', '삼엄한 경비를 뚫고 금고에서 탈출하세요', 'https://loremflickr.com/800/600/bank,vault');
 -- reservation
 -- 인기 테마 윈도우 (오늘=CURRENT_DATE 기준, 어제부터 7일 = CURRENT_DATE - 7일 ~ CURRENT_DATE - 1일)
 -- 윈도우 내 카운트 목표:

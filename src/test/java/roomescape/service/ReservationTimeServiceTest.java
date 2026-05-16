@@ -31,43 +31,43 @@ class ReservationTimeServiceTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    private static final LocalTime ten = LocalTime.of(10, 0);
+    private static final LocalTime TEN = LocalTime.of(10, 0);
 
     @Test
     void 예약시간을_추가한다() {
-        ReservationTimeRequest request = new ReservationTimeRequest(ten);
+        ReservationTimeRequest request = new ReservationTimeRequest(TEN);
 
         ReservationTime reservationTime = reservationTimeService.addReservationTime(request);
 
         assertThat(reservationTime.getId()).isNotNull();
-        assertThat(reservationTime.getStartAt()).isEqualTo(ten);
+        assertThat(reservationTime.getStartAt()).isEqualTo(TEN);
     }
 
     @Test
     void 모든_예약시간을_조회한다() {
-        ReservationTimeRequest request = new ReservationTimeRequest(ten);
+        ReservationTimeRequest request = new ReservationTimeRequest(TEN);
         reservationTimeService.addReservationTime(request);
 
         List<ReservationTime> reservationTimes = reservationTimeService.getReservationTimes();
 
         assertThat(reservationTimes).hasSize(1);
-        assertThat(reservationTimes.getFirst().getStartAt()).isEqualTo(ten);
+        assertThat(reservationTimes.getFirst().getStartAt()).isEqualTo(TEN);
     }
 
     @Test
     void id에_맞는_예약시간을_조회한다() {
-        ReservationTimeRequest request = new ReservationTimeRequest(ten);
+        ReservationTimeRequest request = new ReservationTimeRequest(TEN);
         Long saveId = reservationTimeService.addReservationTime(request).getId();
 
         ReservationTime reservationTime = reservationTimeService.getReservationTime(saveId);
 
         assertThat(reservationTime.getId()).isEqualTo(saveId);
-        assertThat(reservationTime.getStartAt()).isEqualTo(ten);
+        assertThat(reservationTime.getStartAt()).isEqualTo(TEN);
     }
 
     @Test
     void 예약시간을_삭제한다() {
-        ReservationTimeRequest request = new ReservationTimeRequest(ten);
+        ReservationTimeRequest request = new ReservationTimeRequest(TEN);
         Long saveId = reservationTimeService.addReservationTime(request).getId();
 
         reservationTimeService.deleteReservationTime(saveId);
@@ -79,7 +79,7 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약_목록에_삭제할_시간이_존재한다면_예약시간을_삭제할_수_없다() {
-        ReservationTimeRequest request = new ReservationTimeRequest(ten);
+        ReservationTimeRequest request = new ReservationTimeRequest(TEN);
         ReservationTime reservationTime = reservationTimeService.addReservationTime(request);
 
         Long themeId = themeRepository.save(new Theme("방탈출 제목", "방탈출 설명", "thumbnail.png"));
