@@ -1,7 +1,6 @@
 package roomescape.application;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +37,7 @@ public class ReservationService {
                 name,
                 date,
                 findTargetTimeById(timeId),
-                findTargetThemeById(themeId),
-                LocalDateTime.now()
+                findTargetThemeById(themeId)
         );
 
         reservation.validateUniqueness(
@@ -63,7 +61,7 @@ public class ReservationService {
         LocalDate newDate = decideNewLocalDateValue(date, target.date());
         ReservationTime newTime = decideNewReservationTimeValue(timeId, target.time());
 
-        return target.update(newDate, newTime, LocalDateTime.now());
+        return target.update(newDate, newTime);
     }
 
     private ReservationTime decideNewReservationTimeValue(Long timeId, ReservationTime originReservationTime) {
@@ -119,7 +117,7 @@ public class ReservationService {
         );
 
         deleteTarget.checkOwnership(name);
-        deleteTarget.validateFuture(LocalDateTime.now());
+        deleteTarget.validateFuture();
 
         reservationRepository.deleteById(id);
     }

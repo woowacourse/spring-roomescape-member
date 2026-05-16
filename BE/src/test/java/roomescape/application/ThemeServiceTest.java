@@ -81,11 +81,7 @@ class ThemeServiceTest {
     void deleteById_fail_when_referenced_by_reservation() {
         // given
         LocalTime testReservationTime = LocalTime.of(10, 0);
-        LocalDate testReservationDate = LocalDate.of(2026, 5, 5);
-        LocalDateTime fixedNowTimeValue = LocalDateTime.of(
-                testReservationDate.minusDays(1),
-                testReservationTime
-        );
+        LocalDate testReservationDate = LocalDate.now().plusDays(1);
 
         Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
         ReservationTime time = ReservationTime.createWithId(1L, testReservationTime);
@@ -93,8 +89,7 @@ class ThemeServiceTest {
                 "라티",
                 testReservationDate,
                 time,
-                saved,
-                fixedNowTimeValue
+                saved
         ));
 
         // when & then

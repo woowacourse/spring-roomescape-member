@@ -15,10 +15,9 @@ public record Reservation(
         ReservationTime time,
         Theme theme
 ) {
-    public static Reservation createWithNullId(String name, LocalDate date, ReservationTime time, Theme theme,
-                                               LocalDateTime now) {
+    public static Reservation createWithNullId(String name, LocalDate date, ReservationTime time, Theme theme) {
         Reservation newReservation = new Reservation(null, name, date, time, theme);
-        newReservation.validateFuture(now);
+        newReservation.validateFuture();
         return newReservation;
     }
 
@@ -42,7 +41,8 @@ public record Reservation(
         return isSameTime && !isSameReservation;
     }
 
-    public void validateFuture(LocalDateTime now) {
+    public void validateFuture() {
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.startAt());
         if (reservationDateTime.isBefore(now)) {
             throw new DomainRuleViolationException(ErrorCode.ILLEGAL_PAST_DATE);
@@ -58,7 +58,7 @@ public record Reservation(
         }
     }
 
-    public Reservation update(LocalDate date, ReservationTime time, LocalDateTime now) {
+    public Reservation update(LocalDate date, ReservationTime time) {
         Reservation updatedReservation = new Reservation(
                 this.id,
                 this.name,
@@ -66,7 +66,7 @@ public record Reservation(
                 time,
                 this.theme
         );
-        updatedReservation.validateFuture(now);
+        updatedReservation.validateFuture();
         return updatedReservation;
     }
 }

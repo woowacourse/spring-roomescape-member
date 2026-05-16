@@ -3,7 +3,6 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,10 +87,9 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
     void deleteTimeWithReferencedReservationById() {
         // given
-        LocalDateTime saveNowTimeValue = LocalDateTime.now().minusDays(1);
         ReservationTime savedReservationTime = reservationTimeService.save(LocalTime.now());
         reservationRepository.save(
-                Reservation.createWithNullId("테스터", LocalDate.now(), savedReservationTime, null, saveNowTimeValue));
+                Reservation.createWithNullId("테스터", LocalDate.now(), savedReservationTime, null));
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedReservationTime.id()))

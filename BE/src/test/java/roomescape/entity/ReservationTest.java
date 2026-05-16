@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,17 +17,17 @@ import roomescape.global.exception.customException.ForbiddenException;
 
 class ReservationTest {
 
-    private ReservationTime reservationTime;
+    private ReservationTime tenOClock;
     private Theme theme;
     private Reservation reservation;
-    private LocalDate today;
+    private LocalDate tomorrow;
 
     @BeforeEach
     void setUp() {
-        today = LocalDate.of(2026, 5, 12);
-        reservationTime = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+        tomorrow = LocalDate.now().plusDays(1);
+        tenOClock = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
         theme = Theme.createWithId(1L, "테마", "설명", "thumb");
-        reservation = Reservation.createWithId(1L, "홍길동", today, reservationTime, theme);
+        reservation = Reservation.createWithId(1L, "홍길동", tomorrow, tenOClock, theme);
     }
 
     @Test
@@ -67,16 +66,16 @@ class ReservationTest {
     @Test
     @DisplayName("미래 시간의 예약인지 검증한다.")
     void validateFuture_success() {
-        LocalDateTime now = LocalDateTime.of(2026, 5, 12, 9, 0);
-        assertThatCode(() -> reservation.validateFuture(now))
+        assertThatCode(() -> reservation.validateFuture())
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("지나간 시간의 예약일 경우 예외가 발생한다.")
     void validateFuture_fail() {
-        LocalDateTime now = LocalDateTime.of(2026, 5, 12, 11, 0);
-        assertThatThrownBy(() -> reservation.validateFuture(now))
+        Reservation pastReservation = Reservation.createWithId(2L, "홍길동", LocalDate.now().minusDays(1), tenOClock,
+                theme);
+        assertThatThrownBy(pastReservation::validateFuture)
                 .isInstanceOf(DomainRuleViolationException.class)
                 .hasMessage(ErrorCode.ILLEGAL_PAST_DATE.getMessage());
     }
@@ -84,7 +83,7 @@ class ReservationTest {
     @Test
     @DisplayName("목록 내에 충돌하는 예약이 없으면 검증을 통과한다.")
     void validateUniqueness_success() {
-        Reservation other = Reservation.createWithId(2L, "다른사람", today,
+        Reservation other = Reservation.createWithId(2L, "다른사람", tomorrow,
                 ReservationTime.createWithId(2L, LocalTime.of(11, 0)), theme);
         assertThatCode(() -> reservation.validateUniqueness(List.of(other)))
                 .doesNotThrowAnyException();
@@ -93,7 +92,7 @@ class ReservationTest {
     @Test
     @DisplayName("목록 내에 충돌하는 예약이 있으면 예외가 발생한다.")
     void validateUniqueness_fail() {
-        Reservation other = Reservation.createWithId(2L, "다른사람", today, reservationTime, theme);
+        Reservation other = Reservation.createWithId(2L, "다른사람", tomorrow, tenOClock, theme);
         assertThatThrownBy(() -> reservation.validateUniqueness(List.of(other)))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.RESERVATION_DUPLICATED.getMessage());
@@ -103,15 +102,14 @@ class ReservationTest {
     @DisplayName("날짜와 시간을 업데이트한다.")
     void update_success() {
 
-        LocalDate newDate = LocalDate.of(2026, 5, 13);
-        LocalTime newTime = LocalTime.of(11, 0);
-        LocalDateTime updateAt = LocalDateTime.of(newDate, newTime).minusDays(1);
+        LocalDate dayOfTomorrow = tomorrow.plusDays(1);
+        LocalTime elevenOClock = LocalTime.of(11, 0);
 
-        ReservationTime newReservationTime = ReservationTime.createWithId(2L, newTime);
+        ReservationTime newReservationTime = ReservationTime.createWithId(2L, elevenOClock);
 
-        Reservation updated = reservation.update(newDate, newReservationTime, updateAt);
+        Reservation updated = reservation.update(dayOfTomorrow, newReservationTime);
 
-        assertThat(updated.date()).isEqualTo(newDate);
+        assertThat(updated.date()).isEqualTo(dayOfTomorrow);
         assertThat(updated.time()).isEqualTo(newReservationTime);
         assertThat(updated.name()).isEqualTo(reservation.name());
         assertThat(updated.theme()).isEqualTo(reservation.theme());

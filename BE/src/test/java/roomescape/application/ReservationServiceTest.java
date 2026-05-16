@@ -141,9 +141,8 @@ class ReservationServiceTest {
     @DisplayName("과거 기록 삭제 시도하면 DomainRuleViolationException이 전파된다")
     void deleteById_fail_due_to_delete_past_reservation() {
         // given
-        LocalDateTime saveNowTimeValue = LocalDateTime.of(yesterday.minusDays(1), savedTime.startAt());
-        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
-                TESTER_NAME, yesterday, savedTime, savedTheme, saveNowTimeValue
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithId(
+                100L, TESTER_NAME, yesterday, savedTime, savedTheme
         ));
 
         // when & then
@@ -154,12 +153,11 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("나의 것이 아닌 예약을 삭제 시도하면 ForbiddenException이 전파된다")
-    void deleteById_fail_due_to_domain_rule_propagation() {
+    void deleteById_fail_due_to_ownership_violation() {
         // given
-        LocalDateTime saveNowTimeValue = LocalDateTime.of(today, savedTime.startAt());
-        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
-                TESTER_NAME, tomorrow, savedTime, savedTheme, saveNowTimeValue
-        ));
+        Reservation savedReservation = reservationService.save(
+                TESTER_NAME, tomorrow, savedTime.id(), savedTheme.id()
+        );
 
         // when & then
         assertThatThrownBy(
