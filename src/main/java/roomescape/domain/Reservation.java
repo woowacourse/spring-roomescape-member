@@ -16,7 +16,6 @@ public class Reservation {
 
     private Reservation(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
         validateFields(name, date, time, theme);
-        validateNotPast(date, time, createdAt);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -29,8 +28,14 @@ public class Reservation {
         return new Reservation(id, name, date, createdAt, time, theme);
     }
 
+    public static Reservation create(String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        validateNotPast(date, time, createdAt);
+        return new Reservation(null, name, date, createdAt, time, theme);
+    }
+
     public Reservation withUpdated(LocalDate date, ReservationTime newTime, LocalDateTime now) {
-        return new Reservation(id, name, date, now, newTime, theme);
+        validateNotPast(date, newTime, now);
+        return new Reservation(id, name, date, this.createdAt, newTime, theme);
     }
 
     public void validateCancellable(LocalDateTime now) {
@@ -97,8 +102,8 @@ public class Reservation {
         }
     }
 
-    private void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime createdAt) {
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(createdAt)) {
+    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
             throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
     }

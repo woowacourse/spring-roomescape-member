@@ -13,7 +13,7 @@
   - `ReservationDao.java:94` — `existsByDateAndTimeIdAndThemeId`
   - `ReservationTimeDao.java:41` — `existsByStartAt`
 
-- [ ] **3. `Reservation.withUpdated` — `createdAt` 덮어쓰기 버그 수정**
+- [x] **3. `Reservation.withUpdated` — `createdAt` 덮어쓰기 버그 수정**
   - 생성자에서 `validateNotPast` 제거
   - `create`에서 명시적으로 호출 (기존 동작 유지)
   - `withUpdated`는 `now`로 검증하고 `this.createdAt` 보존
@@ -31,7 +31,7 @@
   - `ReservationTimeService.java:38` — 예약에 사용 중인 시간 삭제
   - `ThemeService.java:46` — 예약에 사용 중인 테마 삭제
 
-- [ ] **5. `Reservation.create` — id 없는 팩토리 메서드 추가**
+- [x] **5. `Reservation.create` — id 없는 팩토리 메서드 추가**
   - `ReservationService.java:41` — `null`을 직접 전달하는 대신 id 파라미터 없는 `create` 오버로드 추가
   - 기존 `create(Long id, ...)` 는 DAO 복원용으로 유지
 

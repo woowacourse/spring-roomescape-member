@@ -63,7 +63,7 @@ class ReservationDaoTest {
     void save_예약_저장() {
         ReservationTime time = new ReservationTime(1L, java.time.LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포의 저택", "설명", "https://example.com/img.jpg");
-        Reservation reservation = Reservation.create(null, "브라운", LocalDate.of(2026, 12, 31), LocalDateTime.now(), time, theme);
+        Reservation reservation = Reservation.create("브라운", LocalDate.of(2026, 12, 31), LocalDateTime.now(), time, theme);
 
         Reservation saved = reservationDao.save(reservation);
 

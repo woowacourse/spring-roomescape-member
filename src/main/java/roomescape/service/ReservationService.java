@@ -38,7 +38,7 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
-        Reservation reservation = Reservation.create(null, name, date, LocalDateTime.now(clock), time, theme);
+        Reservation reservation = Reservation.create(name, date, LocalDateTime.now(clock), time, theme);
         return reservationDao.save(reservation);
     }
 

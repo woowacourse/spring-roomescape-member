@@ -61,7 +61,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
         LocalDate yesterday = now.toLocalDate().minusDays(1);
 
-        assertThatThrownBy(() -> Reservation.create(null, "브라운", yesterday, now, time, theme))
+        assertThatThrownBy(() -> Reservation.create("브라운", yesterday, now, time, theme))
                 .isInstanceOf(PastReservationException.class)
                 .hasMessage("과거 날짜로는 예약할 수 없습니다.");
     }
