@@ -27,7 +27,7 @@ class ReservationFlowTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "user_b");
@@ -48,6 +48,6 @@ class ReservationFlowTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 }

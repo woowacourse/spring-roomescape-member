@@ -106,4 +106,21 @@ class AdminReservationValidationTest {
                 .statusCode(400)
                 .body(containsString("themeId"));
     }
+
+    @Test
+    @DisplayName("관리자 예약 생성 시 존재하지 않는 timeId면 404를 반환한다.")
+    void createReservationWithNonExistentTimeId() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", "2026-06-05");
+        params.put("timeId", 999L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
 }

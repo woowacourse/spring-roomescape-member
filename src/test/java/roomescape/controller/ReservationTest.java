@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 public class ReservationTest {
 
     @Test
-    @DisplayName("예약이 성공적으로 테스트가 되는지 확인한다.")
+    @DisplayName("예약이 성공적으로 되는지 확인한다.")
     void createReservationTest() {
 
         Map<String, Object> params = new HashMap<>();
@@ -41,16 +41,16 @@ public class ReservationTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("[1].id", is(2))
-                .body("[1].name", is("녀녕"))
-                .body("[1].date", is("2026-06-05"))
-                .body("[1].time.id", is(1))
-                .body("[1].time.startAt", is("10:00"))
-                .body("[1].theme.id", is(2))
-                .body("[1].theme.name", is("예약없는테마"))
-                .body("[1].theme.thumbnailUrl", is("https://picsum.photos/seed/empty/400/300"))
-                .body("[1].theme.description", is("예약이 없는 테마"));
+                .body("size()", is(4))
+                .body("[3].id", is(4))
+                .body("[3].name", is("녀녕"))
+                .body("[3].date", is("2026-06-05"))
+                .body("[3].time.id", is(1))
+                .body("[3].time.startAt", is("10:00"))
+                .body("[3].theme.id", is(2))
+                .body("[3].theme.name", is("예약없는테마"))
+                .body("[3].theme.thumbnailUrl", is("https://picsum.photos/seed/empty/400/300"))
+                .body("[3].theme.description", is("예약이 없는 테마"));
     }
 
     @Test
@@ -85,6 +85,6 @@ public class ReservationTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(2));
     }
 }

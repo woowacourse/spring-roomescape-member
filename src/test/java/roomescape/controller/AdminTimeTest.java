@@ -39,7 +39,7 @@ class AdminTimeTest {
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
 
@@ -47,7 +47,7 @@ class AdminTimeTest {
     @DisplayName("예약 없는 시간 삭제 성공")
     void deleteThemeWithoutReservation() {
         RestAssured.given().log().all()
-                .when().delete("/admin/times/2")
+                .when().delete("/admin/times/3")
                 .then().log().all()
                 .statusCode(204);
     }

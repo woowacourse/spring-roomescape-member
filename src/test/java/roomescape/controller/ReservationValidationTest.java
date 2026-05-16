@@ -142,4 +142,21 @@ public class ReservationValidationTest {
                 .statusCode(400)
                 .body(containsString("themeId"));
     }
+
+    @Test
+    @DisplayName("존재하지 않는 timeId로 예약 시 404를 반환한다.")
+    void nonExistentTimeIdReservationTest() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", "2026-06-05");
+        params.put("timeId", 999L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
 }
