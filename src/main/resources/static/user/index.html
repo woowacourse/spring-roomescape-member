@@ -409,7 +409,8 @@
             loadAvailableTimes();
             document.getElementById('name').value = '';
         } else {
-            showAlert('예약에 실패했습니다.', 'error');
+            const err = await res.json().catch(() => ({message: '예약에 실패했습니다.'}));
+            showAlert(err.message, 'error');
         }
     }
 
