@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableEntityException;
 
@@ -47,10 +48,10 @@ public class GlobalExceptionHandler {
                 .body(GlobalErrorResponse.from(e.getMessage()));
     }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<GlobalErrorResponse> handleConflictException(ConflictException e) {
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<GlobalErrorResponse> handleForbiddenException(ForbiddenException e) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(GlobalErrorResponse.from(e.getMessage()));
     }
 
@@ -58,6 +59,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalErrorResponse> handleNotFoundException(NotFoundException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(GlobalErrorResponse.from(e.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<GlobalErrorResponse> handleConflictException(ConflictException e) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(GlobalErrorResponse.from(e.getMessage()));
     }
 
