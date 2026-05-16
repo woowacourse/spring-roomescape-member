@@ -20,8 +20,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ThemeServiceTest {
@@ -44,7 +45,8 @@ class ThemeServiceTest {
 
         // then
         assertThat(result).isEqualTo(themes);
-        verify(themeRepository).findAll();
+        verify(themeRepository, times(1)).findAll();
+        verifyNoMoreInteractions(themeRepository, reservationRepository);
     }
 
     @Test
@@ -73,7 +75,7 @@ class ThemeServiceTest {
                 () -> assertThat(result.getDescription()).isEqualTo(description),
                 () -> assertThat(result.getThumbnail()).isEqualTo(thumbnail));
 
-        verify(themeRepository).insert(captor.capture());
+        verify(themeRepository, times(1)).insert(captor.capture());
         Theme captured = captor.getValue();
 
         assertAll(
@@ -82,8 +84,8 @@ class ThemeServiceTest {
                 () -> assertThat(captured.getDescription()).isEqualTo(description),
                 () -> assertThat(captured.getThumbnail()).isEqualTo(thumbnail));
 
-        verify(themeRepository).findBy(id);
-        verifyNoInteractions(reservationRepository);
+        verify(themeRepository, times(1)).findBy(id);
+        verifyNoMoreInteractions(themeRepository, reservationRepository);
     }
 
     @Test
@@ -97,8 +99,9 @@ class ThemeServiceTest {
         service.delete(id);
 
         // then
-        verify(reservationRepository).existsByThemeId(id);
-        verify(themeRepository).delete(id);
+        verify(reservationRepository, times(1)).existsByThemeId(id);
+        verify(themeRepository, times(1)).delete(id);
+        verifyNoMoreInteractions(themeRepository, reservationRepository);
     }
 
     @Test
@@ -113,8 +116,9 @@ class ThemeServiceTest {
                 .isInstanceOf(ResourceInUseException.class)
                 .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
 
-        verify(reservationRepository).existsByThemeId(id);
+        verify(reservationRepository, times(1)).existsByThemeId(id);
         verify(themeRepository, never()).delete(anyLong());
+        verifyNoMoreInteractions(themeRepository, reservationRepository);
     }
 
     @Test
@@ -131,6 +135,7 @@ class ThemeServiceTest {
 
         // then
         assertThat(result).isEqualTo(popularThemes);
-        verify(themeRepository).findPopular(any(LocalDate.class), any(LocalDate.class), eq(10));
+        verify(themeRepository, times(1)).findPopular(any(LocalDate.class), any(LocalDate.class), eq(10));
+        verifyNoMoreInteractions(themeRepository, reservationRepository);
     }
 }

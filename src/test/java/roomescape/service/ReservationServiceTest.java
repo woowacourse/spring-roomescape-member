@@ -23,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ReservationServiceTest {
@@ -58,7 +59,8 @@ class ReservationServiceTest {
 
         // then
         assertThat(result).isEqualTo(reservations);
-        verify(reservationRepository).findByName(name);
+        verify(reservationRepository, times(1)).findByName(name);
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -77,7 +79,8 @@ class ReservationServiceTest {
 
         // then
         assertThat(result).isEqualTo(reservations);
-        verify(reservationRepository).findAll();
+        verify(reservationRepository, times(1)).findAll();
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -107,10 +110,11 @@ class ReservationServiceTest {
         // then
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
         assertThat(result).isEqualTo(savedReservation);
-        verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existsWith(date, timeId, themeId);
-        verify(themeRepository).findBy(themeId);
-        verify(reservationRepository).insert(captor.capture());
+        verify(reservationTimeRepository, times(1)).findBy(timeId);
+        verify(reservationRepository, times(1)).existsWith(date, timeId, themeId);
+        verify(themeRepository, times(1)).findBy(themeId);
+        verify(reservationRepository, times(1)).insert(captor.capture());
+        verify(reservationRepository, times(1)).findById(id);
         Reservation captured = captor.getValue();
         assertAll(
                 () -> assertThat(captured.getId()).isNull(),
@@ -118,6 +122,7 @@ class ReservationServiceTest {
                 () -> assertThat(captured.getDate()).isEqualTo(date),
                 () -> assertThat(captured.getTime()).isEqualTo(time),
                 () -> assertThat(captured.getTheme()).isEqualTo(theme));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -147,10 +152,12 @@ class ReservationServiceTest {
 
         // then
         assertThat(result).isEqualTo(savedReservation);
-        verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existsWith(pastDate, timeId, themeId);
-        verify(themeRepository).findBy(themeId);
-        verify(reservationRepository).insert(any(Reservation.class));
+        verify(reservationTimeRepository, times(1)).findBy(timeId);
+        verify(reservationRepository, times(1)).existsWith(pastDate, timeId, themeId);
+        verify(themeRepository, times(1)).findBy(themeId);
+        verify(reservationRepository, times(1)).insert(any(Reservation.class));
+        verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -168,10 +175,10 @@ class ReservationServiceTest {
                 .isInstanceOf(PastReservationException.class)
                 .hasMessage("이미 지난 시간으로는 예약할 수 없습니다.");
 
-        verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationTimeRepository, times(1)).findBy(timeId);
         verify(reservationRepository, never()).existsWith(pastDate, timeId, themeId);
-        verifyNoInteractions(themeRepository);
         verify(reservationRepository, never()).insert(any(Reservation.class));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -187,8 +194,9 @@ class ReservationServiceTest {
         service.delete(id, name);
 
         // then
-        verify(reservationRepository).findById(id);
-        verify(reservationRepository).delete(id);
+        verify(reservationRepository, times(1)).findById(id);
+        verify(reservationRepository, times(1)).delete(id);
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -200,7 +208,8 @@ class ReservationServiceTest {
         service.deleteByAdmin(id);
 
         // then
-        verify(reservationRepository).delete(id);
+        verify(reservationRepository, times(1)).delete(id);
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -227,7 +236,10 @@ class ReservationServiceTest {
         // then
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
         assertThat(result).isEqualTo(updatedReservation);
-        verify(reservationRepository).update(captor.capture());
+        verify(reservationRepository, times(2)).findById(id);
+        verify(reservationTimeRepository, times(1)).findBy(timeId);
+        verify(reservationRepository, times(1)).existsWith(updateDate, timeId, reservation.getTheme().getId());
+        verify(reservationRepository, times(1)).update(captor.capture());
         Reservation captured = captor.getValue();
         assertAll(
                 () -> assertThat(captured.getId()).isEqualTo(id),
@@ -235,6 +247,7 @@ class ReservationServiceTest {
                 () -> assertThat(captured.getDate()).isEqualTo(updateDate),
                 () -> assertThat(captured.getTime()).isEqualTo(updateTime),
                 () -> assertThat(captured.getTheme()).isEqualTo(reservation.getTheme()));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -258,8 +271,10 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(result.getDate()).isEqualTo(updateDate),
                 () -> assertThat(result.getTime()).isEqualTo(time));
-        verifyNoInteractions(reservationTimeRepository);
-        verify(reservationRepository).update(any(Reservation.class));
+        verify(reservationRepository, times(2)).findById(id);
+        verify(reservationRepository, times(1)).existsWith(updateDate, time.getId(), reservation.getTheme().getId());
+        verify(reservationRepository, times(1)).update(any(Reservation.class));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -276,9 +291,9 @@ class ReservationServiceTest {
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("변경할 날짜 또는 시간이 필요합니다.");
 
-        verify(reservationRepository).findById(id);
-        verifyNoInteractions(reservationTimeRepository);
+        verify(reservationRepository, times(1)).findById(id);
         verify(reservationRepository, never()).update(any(Reservation.class));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -293,9 +308,9 @@ class ReservationServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
 
-        verify(reservationRepository).findById(id);
-        verifyNoInteractions(reservationTimeRepository);
+        verify(reservationRepository, times(1)).findById(id);
         verify(reservationRepository, never()).update(any(Reservation.class));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -315,9 +330,10 @@ class ReservationServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
 
-        verify(reservationRepository).findById(id);
-        verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository, times(1)).findById(id);
+        verify(reservationTimeRepository, times(1)).findBy(timeId);
         verify(reservationRepository, never()).update(any(Reservation.class));
+        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     private Reservation createReservation(Long id, String name, LocalDate date, ReservationTime time) {

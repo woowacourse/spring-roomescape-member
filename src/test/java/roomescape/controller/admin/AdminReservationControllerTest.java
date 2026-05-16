@@ -17,7 +17,9 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +51,9 @@ class AdminReservationControllerTest {
                 .andExpect(jsonPath("$[0].time.id").value(1))
                 .andExpect(jsonPath("$[0].theme.id").value(1))
                 .andExpect(jsonPath("$[0].theme.name").value("테마"));
+
+        verify(reservationService, times(1)).findAll();
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -69,6 +74,13 @@ class AdminReservationControllerTest {
                 .andExpect(header().string("Location", "/admin/reservations/1"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("브라운"));
+
+        verify(reservationService, times(1)).createByAdmin(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -77,7 +89,8 @@ class AdminReservationControllerTest {
         mockMvc.perform(delete("/admin/reservations/1"))
                 .andExpect(status().isNoContent());
 
-        verify(reservationService).deleteByAdmin(1L);
+        verify(reservationService, times(1)).deleteByAdmin(1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -87,6 +100,8 @@ class AdminReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     private String validRequest() {

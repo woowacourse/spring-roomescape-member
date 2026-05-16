@@ -18,7 +18,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ReservationTimeServiceTest {
@@ -41,7 +43,8 @@ class ReservationTimeServiceTest {
 
         // then
         assertThat(result).isEqualTo(times);
-        verify(reservationTimeRepository).findAll();
+        verify(reservationTimeRepository, times(1)).findAll();
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -66,14 +69,15 @@ class ReservationTimeServiceTest {
                 () -> assertThat(result.getId()).isEqualTo(id),
                 () -> assertThat(result.getStartAt()).isEqualTo(startAt));
 
-        verify(reservationTimeRepository).insert(captor.capture());
+        verify(reservationTimeRepository, times(1)).insert(captor.capture());
         ReservationTime captured = captor.getValue();
 
         assertAll(
                 () -> assertThat(captured.getId()).isNull(),
                 () -> assertThat(captured.getStartAt()).isEqualTo(startAt));
 
-        verify(reservationTimeRepository).findBy(id);
+        verify(reservationTimeRepository, times(1)).findBy(id);
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -87,8 +91,9 @@ class ReservationTimeServiceTest {
         service.delete(id);
 
         // then
-        verify(reservationRepository).existsByTimeId(id);
-        verify(reservationTimeRepository).delete(id);
+        verify(reservationRepository, times(1)).existsByTimeId(id);
+        verify(reservationTimeRepository, times(1)).delete(id);
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -103,7 +108,8 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(ResourceInUseException.class)
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
 
-        verify(reservationRepository).existsByTimeId(id);
+        verify(reservationRepository, times(1)).existsByTimeId(id);
         verify(reservationTimeRepository, never()).delete(anyLong());
+        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
     }
 }

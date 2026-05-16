@@ -15,7 +15,9 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -43,6 +45,9 @@ class AdminReservationTimeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].startAt").value("10:00:00"));
+
+        verify(reservationTimeService, times(1)).findAll();
+        verifyNoMoreInteractions(reservationTimeService);
     }
 
     @Test
@@ -63,6 +68,9 @@ class AdminReservationTimeControllerTest {
                 .andExpect(header().string("Location", "/admin/times/1"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00:00"));
+
+        verify(reservationTimeService, times(1)).create(LocalTime.of(10, 0));
+        verifyNoMoreInteractions(reservationTimeService);
     }
 
     @Test
@@ -78,6 +86,8 @@ class AdminReservationTimeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("startAt은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(reservationTimeService);
     }
 
     @Test
@@ -86,7 +96,8 @@ class AdminReservationTimeControllerTest {
         mockMvc.perform(delete("/admin/times/1"))
                 .andExpect(status().isNoContent());
 
-        verify(reservationTimeService).delete(1L);
+        verify(reservationTimeService, times(1)).delete(1L);
+        verifyNoMoreInteractions(reservationTimeService);
     }
 
     @Test
@@ -96,6 +107,8 @@ class AdminReservationTimeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+
+        verifyNoMoreInteractions(reservationTimeService);
     }
 
     @Test
@@ -110,5 +123,8 @@ class AdminReservationTimeControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("RESOURCE_IN_USE"))
                 .andExpect(jsonPath("$.detail").value("예약이 존재하는 시간은 삭제할 수 없습니다."));
+
+        verify(reservationTimeService, times(1)).delete(1L);
+        verifyNoMoreInteractions(reservationTimeService);
     }
 }

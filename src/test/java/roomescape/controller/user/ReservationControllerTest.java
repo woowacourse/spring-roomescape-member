@@ -25,7 +25,9 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -66,6 +68,13 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테마"));
+
+        verify(reservationService, times(1)).create(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -85,6 +94,9 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$[0].time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$[0].theme.id").value(1))
                 .andExpect(jsonPath("$[0].theme.name").value("테마"));
+
+        verify(reservationService, times(1)).findByName("브라운");
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -94,6 +106,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name는 필수입니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -104,6 +118,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -117,7 +133,8 @@ class ReservationControllerTest {
                         .param("name", name))
                 .andExpect(status().isNoContent());
 
-        verify(reservationService).delete(id, name);
+        verify(reservationService, times(1)).delete(id, name);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -127,6 +144,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name는 필수입니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -137,6 +156,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -147,6 +168,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -157,6 +180,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id 형식이 올바르지 않습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -173,6 +198,9 @@ class ReservationControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.detail").value("존재하지 않는 예약입니다."));
+
+        verify(reservationService, times(1)).delete(id, name);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -189,6 +217,9 @@ class ReservationControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("FORBIDDEN_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("본인의 예약만 변경하거나 취소할 수 있습니다."));
+
+        verify(reservationService, times(1)).delete(id, name);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -205,6 +236,9 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("PAST_RESERVATION_LOCKED"))
                 .andExpect(jsonPath("$.detail").value("이미 지난 예약은 변경하거나 취소할 수 없습니다."));
+
+        verify(reservationService, times(1)).delete(id, name);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -230,6 +264,13 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.time.startAt").value("12:00:00"))
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테마"));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -250,6 +291,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -261,6 +304,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -272,6 +317,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id 형식이 올바르지 않습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -292,6 +339,13 @@ class ReservationControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.detail").value("존재하지 않는 예약입니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -312,6 +366,13 @@ class ReservationControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("FORBIDDEN_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("본인의 예약만 변경하거나 취소할 수 있습니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -332,6 +393,13 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("PAST_RESERVATION_LOCKED"))
                 .andExpect(jsonPath("$.detail").value("이미 지난 예약은 변경하거나 취소할 수 없습니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -358,6 +426,13 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("PAST_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("이미 지난 시간으로는 예약할 수 없습니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2000, 1, 1),
+                null);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -378,6 +453,13 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("DUPLICATE_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("이미 예약된 시간입니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -398,6 +480,13 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("UNCHANGED_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                LocalDate.of(2099, 1, 2),
+                2L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -423,6 +512,13 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("변경할 날짜 또는 시간이 필요합니다."));
+
+        verify(reservationService, times(1)).update(
+                id,
+                "브라운",
+                null,
+                null);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -444,6 +540,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -465,6 +563,8 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("요청 본문 형식이 올바르지 않습니다."));
+
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -484,6 +584,13 @@ class ReservationControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("PAST_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("이미 지난 시간으로는 예약할 수 없습니다."));
+
+        verify(reservationService, times(1)).create(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -503,6 +610,13 @@ class ReservationControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.detail").value("존재하지 않는 테마입니다."));
+
+        verify(reservationService, times(1)).create(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -522,6 +636,13 @@ class ReservationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("DUPLICATE_RESERVATION"))
                 .andExpect(jsonPath("$.detail").value("이미 예약된 시간입니다."));
+
+        verify(reservationService, times(1)).create(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -541,6 +662,13 @@ class ReservationControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
                 .andExpect(jsonPath("$.detail").value("서버에 문제가 발생했습니다."));
+
+        verify(reservationService, times(1)).create(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     private String validRequest() {

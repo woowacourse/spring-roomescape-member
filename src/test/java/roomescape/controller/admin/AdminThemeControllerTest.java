@@ -14,7 +14,9 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,6 +46,9 @@ class AdminThemeControllerTest {
                 .andExpect(jsonPath("$[0].name").value("테마"))
                 .andExpect(jsonPath("$[0].description").value("설명"))
                 .andExpect(jsonPath("$[0].thumbnail").value("썸네일"));
+
+        verify(themeService, times(1)).findAll();
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -66,6 +71,9 @@ class AdminThemeControllerTest {
                 .andExpect(header().string("Location", "/admin/themes/1"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("테마"));
+
+        verify(themeService, times(1)).create("테마", "설명", "썸네일");
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -83,6 +91,8 @@ class AdminThemeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
+
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -91,7 +101,8 @@ class AdminThemeControllerTest {
         mockMvc.perform(delete("/admin/themes/1"))
                 .andExpect(status().isNoContent());
 
-        verify(themeService).delete(1L);
+        verify(themeService, times(1)).delete(1L);
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -101,6 +112,8 @@ class AdminThemeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.detail").value("id는 양수이어야 합니다."));
+
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -115,6 +128,9 @@ class AdminThemeControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("RESOURCE_IN_USE"))
                 .andExpect(jsonPath("$.detail").value("예약이 존재하는 테마는 삭제할 수 없습니다."));
+
+        verify(themeService, times(1)).delete(1L);
+        verifyNoMoreInteractions(themeService);
     }
 
     private Theme theme() {
