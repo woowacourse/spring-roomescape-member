@@ -48,6 +48,9 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDTO> findAllByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("사용자 이름은 비어있거나 공백일 수 없습니다.");
+        }
         return reservationRepository.findAllByUsername(username)
                 .stream()
                 .map(ReservationResponseDTO::from)
@@ -62,9 +65,13 @@ public class ReservationService {
 
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException("ID로 예약 시간 조회 실패: " + reservationRequestDTO.timeId()));
+                .orElseThrow(() ->
+                        new ReservationTimeNotFoundException("ID로 예약 시간 조회 실패: " + reservationRequestDTO.timeId())
+                );
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException("ID로 테마 조회 실패: " + reservationRequestDTO.themeId()));
+                .orElseThrow(() ->
+                        new ThemeNotFoundException("ID로 테마 조회 실패: " + reservationRequestDTO.themeId())
+                );
 
         validateBookingDate(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
         validateNotDuplicated(reservationRequestDTO.date(), time, theme);

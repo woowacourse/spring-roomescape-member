@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -199,6 +200,15 @@ class ReservationServiceTest {
         assertThat(reservationService.findAllByUsername("루드비코"))
                 .hasSize(1)
                 .containsExactlyInAnyOrder(rudevicoReservation);
+    }
+
+    @DisplayName("비어 있는 이름으로 예약 조회 시 예외를 던진다")
+    @ParameterizedTest(name = "이름이 {0}이면 예외를 던진다")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  "})
+    void 비어_있는_이름으로_예약_조회_시_IllegalArgumentException_예외를_던진다(String invalidName) {
+        assertThatThrownBy(() -> reservationService.findAllByUsername(invalidName))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("사용자가 본인의 예약의 날짜나 시간을 변경한다")
