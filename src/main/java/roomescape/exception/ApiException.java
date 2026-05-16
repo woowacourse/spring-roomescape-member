@@ -1,14 +1,14 @@
 package roomescape.exception;
 
 public abstract class ApiException extends RuntimeException {
-    private final String code;
+    private final ErrorCode code;
 
-    public ApiException(String code, String message) {
+    public ApiException(ErrorCode code, String message) {
         super(message);
         this.code = code;
     }
 
-    public String getCode() {
+    public ErrorCode getCode() {
         return code;
     }
 }

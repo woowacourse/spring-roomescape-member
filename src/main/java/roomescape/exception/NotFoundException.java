@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public class NotFoundException extends ApiException {
-    public NotFoundException(String code, String message) {
+    public NotFoundException(ErrorCode code, String message) {
         super(code, message);
     }
 }

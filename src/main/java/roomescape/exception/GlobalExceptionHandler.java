@@ -21,19 +21,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private static final Map<Class<?>, String> STANDARD_CODES = Map.of(
-            MissingRequestHeaderException.class, "MISSING_HEADER",
-            MethodArgumentTypeMismatchException.class, "INVALID_PARAMETER_TYPE",
-            HttpMessageNotReadableException.class, "INVALID_REQUEST_BODY",
-            MethodArgumentNotValidException.class, "VALIDATION_FAILED"
+    private static final Map<Class<?>, ErrorCode> STANDARD_CODES = Map.of(
+            MissingRequestHeaderException.class, ErrorCode.MISSING_HEADER,
+            MethodArgumentTypeMismatchException.class, ErrorCode.INVALID_PARAMETER_TYPE,
+            HttpMessageNotReadableException.class, ErrorCode.INVALID_REQUEST_BODY,
+            MethodArgumentNotValidException.class, ErrorCode.VALIDATION_FAILED
     );
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         if (body instanceof ProblemDetail pd) {
-            String code = STANDARD_CODES.getOrDefault(ex.getClass(), "INTERNAL_ERROR");
-            pd.setProperty("code", code);
+            ErrorCode code = STANDARD_CODES.getOrDefault(ex.getClass(), ErrorCode.INTERNAL_ERROR);
+            pd.setProperty("code", code.name());
         }
         return super.handleExceptionInternal(ex, body, headers, status, request);
     }
@@ -41,42 +41,42 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFoundException(NotFoundException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.NOT_FOUND, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 
     @ExceptionHandler(EntityInUseException.class)
     public ProblemDetail handleEntityInUseException(EntityInUseException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.CONFLICT, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 
     @ExceptionHandler(OwnershipViolationException.class)
     public ProblemDetail handleOwnershipViolationException(OwnershipViolationException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.FORBIDDEN, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 
     @ExceptionHandler(DuplicateException.class)
     public ProblemDetail handleDuplicateException(DuplicateException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.CONFLICT, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 
     @ExceptionHandler(InvalidInputException.class)
     public ProblemDetail handleInvalidInputException(InvalidInputException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.BAD_REQUEST, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 
     @ExceptionHandler(BusinessRuleException.class)
     public ProblemDetail handleBusinessRuleException(BusinessRuleException e) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-        pd.setProperty("code", e.getCode());
+        pd.setProperty("code", e.getCode().name());
         return pd;
     }
 

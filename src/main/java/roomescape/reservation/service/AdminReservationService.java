@@ -5,6 +5,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -30,15 +31,15 @@ public class AdminReservationService {
     @Transactional
     public Reservation forceCreateReservation(Long themeId, String name, LocalDate date, Long timeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("TIME_NOT_FOUND", "해당 시간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND, "해당 시간을 찾을 수 없습니다."));
 
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("THEME_NOT_FOUND", "해당 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND, "해당 테마를 찾을 수 없습니다."));
 
         try {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("DUPLICATE_RESERVATION", "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
     }
 

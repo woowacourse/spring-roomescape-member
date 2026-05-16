@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public class EntityInUseException extends ApiException {
-    public EntityInUseException(String code, String message) {
+    public EntityInUseException(ErrorCode code, String message) {
         super(code, message);
     }
 }

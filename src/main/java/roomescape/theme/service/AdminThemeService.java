@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.EntityInUseException;
+import roomescape.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -23,7 +24,7 @@ public class AdminThemeService {
         try {
             return themeRepository.save(name, description, thumbnail);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("DUPLICATE_THEME", "같은 이름의 테마가 존재합니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_THEME, "같은 이름의 테마가 존재합니다.");
         }
     }
 
@@ -32,7 +33,7 @@ public class AdminThemeService {
         try {
             themeRepository.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new EntityInUseException("THEME_IN_USE", "예약이 있어 삭제할 수 없습니다.");
+            throw new EntityInUseException(ErrorCode.THEME_IN_USE, "예약이 있어 삭제할 수 없습니다.");
         }
     }
 }

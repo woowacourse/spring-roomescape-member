@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -32,25 +33,25 @@ public class UserReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
         if (date.isBefore(LocalDate.now())) {
-            throw new BusinessRuleException("PAST_DATE_RESERVATION", "지나간 날짜·시간에는 예약할 수 없습니다.");
+            throw new BusinessRuleException(ErrorCode.PAST_DATE_RESERVATION, "지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("TIME_NOT_FOUND", "예약 시간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND, "예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("THEME_NOT_FOUND", "해당 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND, "해당 테마를 찾을 수 없습니다."));
 
         reservationTime.validateFutureDate(date);
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(date, themeId);
         if (takenTimeIds.contains(timeId)) {
-            throw new DuplicateException("DUPLICATE_RESERVATION", "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 
         try {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("DUPLICATE_RESERVATION", "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
     }
 
@@ -75,27 +76,27 @@ public class UserReservationService {
     @Transactional
     public Reservation updateReservation(long id, String name, LocalDate newDate, long newTimeId) {
         if (newDate.isBefore(LocalDate.now())) {
-            throw new BusinessRuleException("PAST_DATE_RESERVATION", "지나간 날짜·시간에는 예약할 수 없습니다.");
+            throw new BusinessRuleException(ErrorCode.PAST_DATE_RESERVATION, "지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("RESERVATION_NOT_FOUND", "해당 예약을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND, "해당 예약을 찾을 수 없습니다."));
         validateOwnerAndActive(reservation, name);
 
         ReservationTime newTime = reservationTimeRepository.findById(newTimeId)
-                .orElseThrow(() -> new NotFoundException("TIME_NOT_FOUND", "예약 시간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND, "예약 시간을 찾을 수 없습니다."));
 
         newTime.validateFutureDate(newDate);
 
         List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
         if (!reservation.hasSameDateAndTime(newDate, newTimeId) && takenTimeIds.contains(newTimeId)) {
-            throw new DuplicateException("DUPLICATE_RESERVATION", "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
 
         try {
             reservationRepository.update(id, newDate, newTimeId);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("DUPLICATE_RESERVATION", "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
         return new Reservation(id, reservation.getName(), newDate, newTime, reservation.getTheme());
     }
