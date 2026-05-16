@@ -1,16 +1,22 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,10 +24,14 @@ import static org.mockito.Mockito.when;
 class AdminReservationServiceTest {
 
     private final ReservationRepository reservationRepository = mock();
-    private final ReservationCreator reservationCreator = mock();
+    private final ReservationTimeRepository reservationTimeRepository = mock();
+    private final ThemeRepository themeRepository = mock();
+    private final ReservationValidator reservationValidator = new ReservationValidator(reservationRepository);
     private final AdminReservationService service = new AdminReservationService(
             reservationRepository,
-            reservationCreator);
+            reservationTimeRepository,
+            themeRepository,
+            reservationValidator);
 
     private final LocalDate date = LocalDate.now().plusDays(1);
 
@@ -47,22 +57,38 @@ class AdminReservationServiceTest {
     @Test
     void 관리자_예약_생성_테스트() {
         // given
+        Long id = 1L;
         Long timeId = 1L;
         Long themeId = 1L;
         String name = "브라운";
         ReservationTime time = new ReservationTime(timeId, LocalTime.parse("08:00"));
         Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
-        Reservation reservation = new Reservation(1L, name, date, time, theme);
-
-        when(reservationCreator.create(name, date, timeId, themeId))
-                .thenReturn(reservation);
+        Reservation savedReservation = new Reservation(id, name, date, time, theme);
+        when(reservationTimeRepository.findBy(timeId))
+                .thenReturn(Optional.of(time));
+        when(reservationRepository.existsWith(date, timeId, themeId))
+                .thenReturn(false);
+        when(themeRepository.findBy(themeId))
+                .thenReturn(Optional.of(theme));
+        when(reservationRepository.insert(any(Reservation.class)))
+                .thenReturn(id);
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(savedReservation));
 
         // when
         Reservation result = service.create(name, date, timeId, themeId);
 
         // then
-        assertThat(result).isEqualTo(reservation);
-        verify(reservationCreator).create(name, date, timeId, themeId);
+        ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
+        assertThat(result).isEqualTo(savedReservation);
+        verify(reservationRepository).insert(captor.capture());
+        Reservation captured = captor.getValue();
+        assertAll(
+                () -> assertThat(captured.getId()).isNull(),
+                () -> assertThat(captured.getName()).isEqualTo(name),
+                () -> assertThat(captured.getDate()).isEqualTo(date),
+                () -> assertThat(captured.getTime()).isEqualTo(time),
+                () -> assertThat(captured.getTheme()).isEqualTo(theme));
     }
 
     @Test
