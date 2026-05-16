@@ -99,9 +99,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void cancel(Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
-        reservationRepository.deleteById(id);
+        boolean deleted = reservationRepository.deleteById(id);
+        if (!deleted) {
+            throw new ReservationNotFoundException(id);
+        }
     }
 
     @Override
