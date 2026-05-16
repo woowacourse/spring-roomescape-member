@@ -195,7 +195,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count != null && count > 0;
     }
 
-    public boolean updateStatus(Reservation reservation) {
+    public Reservation updateStatus(Reservation reservation) {
         String sql = """
                 UPDATE reservation
                 SET status = :status
@@ -204,23 +204,25 @@ public class JdbcReservationRepository implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", reservation.id())
                 .addValue("status", reservation.status().name());
-        int updatedCount = jdbcTemplate.update(sql, params);
-        return updatedCount > 0;
+
+        jdbcTemplate.update(sql, params);
+        return reservation;
     }
 
     @Override
-    public boolean updateDateAndTime(Long id, LocalDate date, LocalTime time) {
+    public Reservation updateDateAndTime(Reservation reservation) {
         String sql = """
                 UPDATE reservation
                 SET date = :date, start_at = :start_at
                 WHERE id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id)
-                .addValue("date", date)
-                .addValue("start_at", time);
-        int updatedCount = jdbcTemplate.update(sql, params);
-        return updatedCount > 0;
+                .addValue("id", reservation.id())
+                .addValue("date", reservation.date())
+                .addValue("start_at", reservation.time());
+
+        jdbcTemplate.update(sql, params);
+        return reservation;
     }
 
 }

@@ -104,7 +104,7 @@ class ThemeRepositoryTest {
         savedTheme.updateStatus(true);
 
         // when
-        jdbcThemeRepository.update(savedTheme);
+        jdbcThemeRepository.updateStatus(savedTheme);
 
         // then
         assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())
@@ -122,7 +122,7 @@ class ThemeRepositoryTest {
         savedTheme.updateStatus(false);
 
         // when
-        jdbcThemeRepository.update(savedTheme);
+        jdbcThemeRepository.updateStatus(savedTheme);
 
         // then
         assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())

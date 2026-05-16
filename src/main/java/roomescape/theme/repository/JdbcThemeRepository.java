@@ -75,25 +75,19 @@ public class JdbcThemeRepository implements ThemeRepository{
     }
 
     @Override
-    public boolean update(Theme theme) {
+    public Theme updateStatus(Theme theme) {
         String sql = """
-                UPDATE theme 
-                SET name = :name, 
-                    description = :description, 
-                    thumbnail_url = :thumbnail_url, 
-                    is_active = :is_active
+                UPDATE theme
+                SET is_active = :is_active
                 WHERE id = :id
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", theme.id())
-                .addValue("name", theme.name())
-                .addValue("description", theme.description())
-                .addValue("thumbnail_url", theme.thumbnailUrl())
                 .addValue("is_active", theme.isActive());
 
-        int updateCount = jdbcTemplate.update(sql, params);
-        return updateCount > 0;
+        jdbcTemplate.update(sql, params);
+        return theme;
     }
 
     @Override

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.DomainValidationException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -56,12 +55,9 @@ public class ThemeService {
     public Theme updateStatus(Long id, boolean isActive) {
         Theme theme = getTheme(id);
         theme.updateStatus(isActive);
-        if (!themeRepository.update(theme)) {
-            log.warn("Theme status update failed: id={}, name={}", theme.id(), theme.name());
-            throw new DomainValidationException("테마 상태 변경에 실패했습니다.");
-        }
-        log.info("Theme status updated: id={}, name={}, isActive={}", theme.id(), theme.name(), theme.isActive());
-        return theme;
+        Theme updatedTheme = themeRepository.updateStatus(theme);
+        log.info("Theme status updated: id={}, name={}, isActive={}", updatedTheme.id(), updatedTheme.name(), updatedTheme.isActive());
+        return updatedTheme;
     }
 
     @NonNull

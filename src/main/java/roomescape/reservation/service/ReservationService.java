@@ -70,9 +70,9 @@ public class ReservationService {
         validateNotPastReservation(reservation, "취소");
 
         reservation.updateStatus(CANCELED);
-        reservationRepository.updateStatus(reservation);
-        log.info("Reservation canceled: id={}", id);
-        return reservation;
+        Reservation canceledReservation =  reservationRepository.updateStatus(reservation);
+        log.info("Reservation canceled: id={}", canceledReservation.id());
+        return canceledReservation;
     }
 
     @Transactional
@@ -85,9 +85,10 @@ public class ReservationService {
         validateNotPastDateTime(newDate, newTime.startAt());
         validateNotAlreadyBookedByOthers(newDate, newTime.startAt(), reservation.theme(), id);
 
-        reservationRepository.updateDateAndTime(id, newDate, newTime.startAt());
-        log.info("Reservation changed: id={}, date={}, time={}", id, newDate, newTime.startAt());
-        return getReservation(id);
+        reservation.updateDateAndTime(newDate, newTime.startAt());
+        Reservation changedReservation = reservationRepository.updateDateAndTime(reservation);
+        log.info("Reservation changed: id={}, date={}, time={}", changedReservation.id(), changedReservation.theme(), changedReservation.time());
+        return changedReservation;
     }
 
     @NonNull

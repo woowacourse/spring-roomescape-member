@@ -207,14 +207,15 @@ class ReservationRepositoryTest {
     @DisplayName("예약 날짜/시간을 변경한다.")
     void updateDateAndTime() {
         // given
-        Reservation saved = jdbcReservationRepository.save(
+        Reservation reservation = jdbcReservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme));
 
         // when
-        jdbcReservationRepository.updateDateAndTime(saved.id(), date2, reservationTime2.startAt());
+        reservation.updateDateAndTime(date2, reservationTime2.startAt());
+        jdbcReservationRepository.updateDateAndTime(reservation);
 
         // then
-        Reservation updated = jdbcReservationRepository.findById(saved.id()).get();
+        Reservation updated = jdbcReservationRepository.findById(reservation.id()).get();
         assertThat(updated.date()).isEqualTo(date2);
         assertThat(updated.time()).isEqualTo(reservationTime2.startAt());
     }

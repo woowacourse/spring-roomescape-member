@@ -97,4 +97,9 @@ public class Reservation {
     public void updateStatus(ReservationStatus status) {
         this.status = status;
     }
+
+    public void updateDateAndTime(LocalDate date, LocalTime time) {
+        this.date = date;
+        this.time = time;
+    }
 }

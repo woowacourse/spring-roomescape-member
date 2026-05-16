@@ -15,7 +15,7 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    boolean update(Theme theme);
+    Theme updateStatus(Theme theme);
 
     List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
 
