@@ -95,11 +95,11 @@ public class ThemeServiceTest {
         String name = "피즈의 모험";
         String description = "모험 이야기";
         String thumbnailUrl = "url.jpg";
-        ServiceThemeCreateRequest requestDto = new ServiceThemeCreateRequest(name, description, thumbnailUrl);
+        ServiceThemeCreateRequest request = new ServiceThemeCreateRequest(name, description, thumbnailUrl);
 
-        ServiceThemeResponse responseDto = themeService.create(requestDto);
+        ServiceThemeResponse response = themeService.create(request);
 
-        assertThat(responseDto).isEqualTo(
+        assertThat(response).isEqualTo(
                 new ServiceThemeResponse(
                         1L,
                         name,
@@ -122,16 +122,16 @@ public class ThemeServiceTest {
                 "url.jpg"
         ));
 
-        List<ServiceThemeResponse> responseDtos = themeService.readAll();
+        List<ServiceThemeResponse> responses = themeService.readAll();
 
-        assertThat(responseDtos.size()).isEqualTo(2);
-        assertThat(responseDtos.get(0)).isEqualTo(new ServiceThemeResponse(
+        assertThat(responses.size()).isEqualTo(2);
+        assertThat(responses.get(0)).isEqualTo(new ServiceThemeResponse(
                 1L,
                 "피즈의 모험",
                 "모험 이야기",
                 "url.jpg"
         ));
-        assertThat(responseDtos.get(1)).isEqualTo(new ServiceThemeResponse(
+        assertThat(responses.get(1)).isEqualTo(new ServiceThemeResponse(
                 2L,
                 "나무의 일대기",
                 "모험 이야기",
@@ -149,8 +149,8 @@ public class ThemeServiceTest {
 
         themeService.delete(1L);
 
-        List<ServiceThemeResponse> responseDtos = themeService.readAll();
-        assertThat(responseDtos.size()).isEqualTo(0);
+        List<ServiceThemeResponse> responses = themeService.readAll();
+        assertThat(responses.size()).isEqualTo(0);
     }
 
     @Test
@@ -163,10 +163,10 @@ public class ThemeServiceTest {
         reservationRepository.create(new Reservation("fizz", LocalDate.of(2026, 5, 4), reservationTime, theme1));
         reservationRepository.create(new Reservation("fizz2", LocalDate.of(2026, 5, 4), reservationTime, theme2));
 
-        List<ServiceThemeResponse> responseDtos = themeService.readRanking(LocalDate.of(2026, 5, 1),
+        List<ServiceThemeResponse> responses = themeService.readRanking(LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 7));
 
-        assertThat(responseDtos.get(0).name()).isEqualTo("피즈의 모험");
-        assertThat(responseDtos.get(1).name()).isEqualTo("피즈의 모험2");
+        assertThat(responses.get(0).name()).isEqualTo("피즈의 모험");
+        assertThat(responses.get(1).name()).isEqualTo("피즈의 모험2");
     }
 }

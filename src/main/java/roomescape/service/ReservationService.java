@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -60,7 +64,7 @@ public class ReservationService {
     }
 
     private void validatePastReservation(Reservation reservation, ErrorCode errorCode) {
-        if (reservation.isPast(LocalDateTime.now())) {
+        if (reservation.isPast(LocalDateTime.now(clock))) {
             throw new CustomInvalidRequestException(errorCode);
         }
     }
@@ -117,7 +121,7 @@ public class ReservationService {
     @Transactional
     public void delete(Long id) {
         Reservation reservation = readReservation(id);
-        if (reservation.isPast(LocalDateTime.now())) {
+        if (reservation.isPast(LocalDateTime.now(clock))) {
             throw new CustomInvalidRequestException(ErrorCode.NOT_ALLOW_PAST_TIME_RESERVATION_DELETE);
         }
 

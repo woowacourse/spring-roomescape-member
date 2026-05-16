@@ -5,31 +5,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ThemeRepositoryTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
+public class ThemeRepositoryTest extends RepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
-    }
 
     @Test
     void createTest() {

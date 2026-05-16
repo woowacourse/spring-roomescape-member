@@ -7,8 +7,11 @@ import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
 import static roomescape.exception.ErrorCode.PAST_RESERVATION_TIME_READ;
 import static roomescape.exception.ErrorCode.REFERENCED_TIME;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,7 @@ public class ReservationTimeServiceTest {
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
+    private Clock clock;
 
     @BeforeEach
     void beforeEach() {
@@ -42,9 +46,10 @@ public class ReservationTimeServiceTest {
         reservationRepository = new FakeReservationRepository(fakeDatabase);
         reservationTimeRepository = new FakeReservationTimeRepository(fakeDatabase);
         themeRepository = new FakeThemeRepository(fakeDatabase);
+        clock = Clock.fixed(Instant.parse("2026-05-02T00:00:00Z"), ZoneId.of("Asia/Seoul"));
 
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, themeRepository,
-                reservationRepository);
+                reservationRepository, clock);
     }
 
     @Test
@@ -59,7 +64,7 @@ public class ReservationTimeServiceTest {
 
     @Test
     void readAvailabilityNotFoundThemeExceptionTest() {
-        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(LocalDate.now().plusDays(1), 1L))
+        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(LocalDate.of(2026, 5, 3), 1L))
                 .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_THEME.getMessage());
     }
@@ -69,9 +74,9 @@ public class ReservationTimeServiceTest {
         reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
 
-        LocalDate date = LocalDate.now().minusDays(1);
+        LocalDate beforeDate = LocalDate.of(2026, 5, 1);
 
-        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(date, theme.getId()))
+        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(beforeDate, theme.getId()))
                 .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(PAST_RESERVATION_TIME_READ.getMessage());
     }
@@ -81,7 +86,7 @@ public class ReservationTimeServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
 
-        reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
+        reservationRepository.create(new Reservation("fizz", LocalDate.of(2026, 5, 3), reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(CustomInvalidRequestException.class)
@@ -113,10 +118,10 @@ public class ReservationTimeServiceTest {
         reservationTimeRepository.create(reservationTime);
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
 
-        reservationRepository.create(new Reservation("fizz", LocalDate.now(), reservationTime, theme));
+        reservationRepository.create(new Reservation("fizz", LocalDate.now(clock), reservationTime, theme));
 
         List<ServiceReservationTimeAvailabilityResponse> responses = reservationTimeService.readAvailabilityByDateAndTheme(
-                LocalDate.now(), theme.getId());
+                LocalDate.now(clock), theme.getId());
 
         assertThat(responses.get(0).available()).isFalse();
         assertThat(responses.get(1).available()).isTrue();

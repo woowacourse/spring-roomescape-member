@@ -6,27 +6,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ReservationRepositoryTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
+public class ReservationRepositoryTest extends RepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -192,10 +180,5 @@ public class ReservationRepositoryTest {
 
         exist = reservationRepository.existByThemeId(1L);
         assertThat(exist).isTrue();
-    }
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,12 +23,14 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                                  ReservationRepository reservationRepository) {
+                                  ReservationRepository reservationRepository, Clock clock) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -75,7 +78,7 @@ public class ReservationTimeService {
     }
 
     private void validateNotPastDate(LocalDate date) {
-        if (date.isBefore(LocalDate.now())) {
+        if (date.isBefore(LocalDate.now(clock))) {
             throw new CustomInvalidRequestException(ErrorCode.PAST_RESERVATION_TIME_READ);
         }
     }

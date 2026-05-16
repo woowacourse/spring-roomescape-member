@@ -6,23 +6,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ReservationTimeRepositoryTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
+public class ReservationTimeRepositoryTest extends RepositoryTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -87,10 +75,5 @@ public class ReservationTimeRepositoryTest {
         int count = jdbcTemplate.queryForObject(readAllReservationTimeCountSql, Integer.class);
 
         assertThat(count).isEqualTo(0);
-    }
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
     }
 }

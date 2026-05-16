@@ -1,29 +1,11 @@
 package roomescape.acceptance;
 
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.acceptance.step.ReservationSteps;
 import roomescape.acceptance.step.ReservationTimeSteps;
 import roomescape.acceptance.step.ThemeSteps;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ThemeAcceptanceTest {
-
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
-
-    private LocalDateTime futureDateTime;
-
-    @BeforeEach
-    void beforeEach() {
-        futureDateTime = LocalDateTime.now().plusHours(10);
-    }
+public class ThemeAcceptanceTest extends AcceptanceTest {
 
     @Test
     void reservationTimeApiSuccessTest() {
@@ -34,10 +16,10 @@ public class ThemeAcceptanceTest {
         ThemeSteps.checkAllThemeSize(1);
 
         // 3. 시간 추가
-        ReservationTimeSteps.createReservationTime(futureDateTime.toLocalTime().toString());
+        ReservationTimeSteps.createReservationTime(FUTURE_TIME);
 
         // 4. 예약 추가
-        ReservationSteps.createReservation("예약자", futureDateTime.toLocalDate().toString(), 1L, 1L);
+        ReservationSteps.createReservation("예약자", NOW_DATE, 1L, 1L);
 
         // 5. 특정 기간 내의 테마 랭킹 조회
         ThemeSteps.checkThemeRanking("2026-05-01", "2026-05-07", 1);
@@ -50,10 +32,5 @@ public class ThemeAcceptanceTest {
 
         // 7. 전체 테마 조회 사이즈로 테마 삭제 확인
         ThemeSteps.checkAllThemeSize(0);
-    }
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
     }
 }
