@@ -52,15 +52,23 @@ public class PopularThemeStepTest extends IntegrationTest {
     @Autowired
     private ReservationTestHelper helper;
 
-    private Long timeId;
     private Long islandThemeId;
     private Long cityThemeId;
     private Long balloonThemeId;
 
     @BeforeEach
     void setUp() {
-        // 모든 테스트 공통: 시간 1개, 핵심 테마 3개
-        timeId = helper.insertTime(LocalTime.of(10, 0));
+        // 시간 슬롯 8개
+        Long time1 = helper.insertTime(LocalTime.of(10, 0));
+        Long time2 = helper.insertTime(LocalTime.of(11, 0));
+        Long time3 = helper.insertTime(LocalTime.of(12, 0));
+        Long time4 = helper.insertTime(LocalTime.of(13, 0));
+        Long time5 = helper.insertTime(LocalTime.of(14, 0));
+        Long time6 = helper.insertTime(LocalTime.of(15, 0));
+        Long time7 = helper.insertTime(LocalTime.of(16, 0));
+        Long time8 = helper.insertTime(LocalTime.of(17, 0));
+
+        //핵심테마 3개
         islandThemeId = helper.insertTheme("무인도 탈출", "...", "https://example.com/island.jpg");
         cityThemeId = helper.insertTheme("도시 탈출", "...", "https://example.com/city.jpg");
         balloonThemeId = helper.insertTheme("열기구 탈출", "...", "https://example.com/balloon.jpg");
@@ -70,29 +78,29 @@ public class PopularThemeStepTest extends IntegrationTest {
         LocalDate eightDaysAgo = TODAY.minusDays(8);
 
         // 무인도: 어제 3건 + 5일 전 2건 = 5건 (1등)
-        helper.insertReservation("user1", yesterday, timeId, islandThemeId);
-        helper.insertReservation("user2", yesterday, timeId, islandThemeId);
-        helper.insertReservation("user3", yesterday, timeId, islandThemeId);
-        helper.insertReservation("user4", fiveDaysAgo, timeId, islandThemeId);
-        helper.insertReservation("user5", fiveDaysAgo, timeId, islandThemeId);
+        helper.insertReservation("user1", yesterday, time1, islandThemeId);
+        helper.insertReservation("user2", yesterday, time2, islandThemeId);
+        helper.insertReservation("user3", yesterday, time3, islandThemeId);
+        helper.insertReservation("user4", fiveDaysAgo, time1, islandThemeId);
+        helper.insertReservation("user5", fiveDaysAgo, time2, islandThemeId);
 
         // 도시: 5일 전 4건 + 8일 전 2건 = 집계상 4건 (2등)
-        helper.insertReservation("user6", fiveDaysAgo, timeId, cityThemeId);
-        helper.insertReservation("user7", fiveDaysAgo, timeId, cityThemeId);
-        helper.insertReservation("user8", fiveDaysAgo, timeId, cityThemeId);
-        helper.insertReservation("user9", fiveDaysAgo, timeId, cityThemeId);
-        helper.insertReservation("user10", eightDaysAgo, timeId, cityThemeId);
-        helper.insertReservation("user11", eightDaysAgo, timeId, cityThemeId);
+        helper.insertReservation("user6", fiveDaysAgo, time3, cityThemeId);
+        helper.insertReservation("user7", fiveDaysAgo, time4, cityThemeId);
+        helper.insertReservation("user8", fiveDaysAgo, time5, cityThemeId);
+        helper.insertReservation("user9", fiveDaysAgo, time6, cityThemeId);
+        helper.insertReservation("user10", eightDaysAgo, time1, cityThemeId);
+        helper.insertReservation("user11", eightDaysAgo, time2, cityThemeId);
 
         // 열기구: 어제 1건
-        helper.insertReservation("user12", yesterday, timeId, balloonThemeId);
+        helper.insertReservation("user12", yesterday, time4, balloonThemeId);
 
         // 무인도 오늘 5건 (오늘이라 집계 제외 검증용)
-        helper.insertReservation("user13", TODAY, timeId, islandThemeId);
-        helper.insertReservation("user14", TODAY, timeId, islandThemeId);
-        helper.insertReservation("user15", TODAY, timeId, islandThemeId);
-        helper.insertReservation("user16", TODAY, timeId, islandThemeId);
-        helper.insertReservation("user17", TODAY, timeId, islandThemeId);
+        helper.insertReservation("user13", TODAY, time1, islandThemeId);
+        helper.insertReservation("user14", TODAY, time2, islandThemeId);
+        helper.insertReservation("user15", TODAY, time3, islandThemeId);
+        helper.insertReservation("user16", TODAY, time4, islandThemeId);
+        helper.insertReservation("user17", TODAY, time5, islandThemeId);
     }
 
 
