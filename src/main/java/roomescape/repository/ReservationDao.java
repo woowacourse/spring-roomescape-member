@@ -112,6 +112,55 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Reservation findById(long reservationId) {
+        String sql = """
+                SELECT
+                    reservation.id as reservation_id,
+                    reservation.name,
+                    reservation.date,
+                    time.id as time_id,
+                    time.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.thumbnail_url as thumbnail_url,
+                    theme.description as theme_description
+                FROM reservation as reservation
+                INNER JOIN reservation_time as time ON reservation.time_id = time.id
+                INNER JOIN theme as theme ON reservation.theme_id = theme.id
+                WHERE reservation.id = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, reservationId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
+    }
+
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT
+                    reservation.id as reservation_id,
+                    reservation.name,
+                    reservation.date,
+                    time.id as time_id,
+                    time.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.thumbnail_url as thumbnail_url,
+                    theme.description as theme_description
+                FROM reservation as reservation
+                INNER JOIN reservation_time as time ON reservation.time_id = time.id
+                INNER JOIN theme as theme ON reservation.theme_id = theme.id
+                WHERE reservation.name = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, name);
+    }
+
+    public Reservation updateDateAndTime(long reservationId, LocalDate date, long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, reservationId);
+        return findById(reservationId);
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
         SELECT EXISTS (
@@ -121,6 +170,18 @@ public class ReservationDao {
         """;
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
+        );
+    }
+
+    public boolean existsByDateAndTimeIdAndThemeIdExcluding(LocalDate date, long timeId, long themeId, long excludeId) {
+        String sql = """
+        SELECT EXISTS (
+            SELECT 1 FROM reservation
+            WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+        )
+        """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, excludeId)
         );
     }
 }

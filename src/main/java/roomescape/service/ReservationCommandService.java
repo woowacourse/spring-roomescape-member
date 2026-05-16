@@ -41,4 +41,22 @@ public class ReservationCommandService {
     public void delete(long reservationId) {
         reservationDao.delete(reservationId);
     }
+
+    public void cancel(long reservationId) {
+        Reservation reservation = reservationDao.findById(reservationId);
+        if (reservation.reservationDate().atTime(reservation.reservationTime().startAt()).isBefore(LocalDateTime.now())) {
+            throw new PastReservationException();
+        }
+        reservationDao.delete(reservationId);
+    }
+
+    public Reservation update(long reservationId, LocalDate newDate, long newTimeId) {
+        validatePastDateTime(newDate, newTimeId);
+        Reservation current = reservationDao.findById(reservationId);
+        long themeId = current.reservationTheme().id();
+        if (reservationDao.existsByDateAndTimeIdAndThemeIdExcluding(newDate, newTimeId, themeId, reservationId)) {
+            throw new DuplicateReservationException();
+        }
+        return reservationDao.updateDateAndTime(reservationId, newDate, newTimeId);
+    }
 }
