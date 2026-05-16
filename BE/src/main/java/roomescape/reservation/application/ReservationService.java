@@ -97,7 +97,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteReservationByName(Long id, String name) {
+    public void cancelReservation(Long id, String name) {
         Reservation targetReservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, id));
         reservationValidator.validateOwner(targetReservation, name);

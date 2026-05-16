@@ -93,7 +93,7 @@ public class ReservationController {
             @PathVariable Long id,
             @RequestParam String name
     ) {
-        service.deleteReservationByName(id, name);
+        service.cancelReservation(id, name);
         return ResponseEntity.noContent().build();
     }
 
