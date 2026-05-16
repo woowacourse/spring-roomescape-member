@@ -23,30 +23,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private static final String TYPE_BASE = "https://roomescape.example/problems/";
-
-    private static final String TYPE_NOT_FOUND = "not-found";
-    private static final String TYPE_CONFLICT = "conflict";
-    private static final String TYPE_BUSINESS_RULE_VIOLATION = "business-rule-violation";
-    private static final String TYPE_VALIDATION_ERROR = "validation-error";
-    private static final String TYPE_BAD_REQUEST = "bad-request";
-    private static final String TYPE_METHOD_NOT_SUPPORTED = "method-not-supported";
-    private static final String TYPE_MEDIA_TYPE_NOT_SUPPORTED = "media-type-not-supported";
-    private static final String TYPE_NOT_ACCEPTABLE = "not-acceptable";
-    private static final String TYPE_NO_RESOURCE = "no-resource";
-    private static final String TYPE_INTERNAL_ERROR = "internal-error";
-
-    private static final String TITLE_NOT_FOUND = "리소스를 찾을 수 없음";
-    private static final String TITLE_CONFLICT = "요청이 현재 상태와 충돌함";
-    private static final String TITLE_BUSINESS_RULE_VIOLATION = "비즈니스 정책 위반";
-    private static final String TITLE_VALIDATION_ERROR = "요청 본문 검증 실패";
-    private static final String TITLE_BAD_REQUEST = "잘못된 요청";
-    private static final String TITLE_METHOD_NOT_SUPPORTED = "지원하지 않는 HTTP 메서드";
-    private static final String TITLE_MEDIA_TYPE_NOT_SUPPORTED = "지원하지 않는 미디어 타입";
-    private static final String TITLE_NOT_ACCEPTABLE = "응답 가능한 미디어 타입 없음";
-    private static final String TITLE_NO_RESOURCE = "리소스를 찾을 수 없음";
-    private static final String TITLE_INTERNAL_ERROR = "서버 내부 오류";
-
     private static final String DETAIL_VALIDATION_ERROR = "요청 본문의 일부 필드가 유효하지 않습니다.";
     private static final String DETAIL_INTERNAL_ERROR = "요청을 처리하는 중 알 수 없는 오류가 발생했습니다.";
 
@@ -55,22 +31,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, WebRequest request) {
-        return build(HttpStatus.NOT_FOUND, TYPE_NOT_FOUND, TITLE_NOT_FOUND, ex.getMessage(), ex, request);
+        return build(HttpStatus.NOT_FOUND, ProblemType.NOT_FOUND, ex.getMessage(), ex, request);
     }
 
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex, WebRequest request) {
-        return build(HttpStatus.CONFLICT, TYPE_CONFLICT, TITLE_CONFLICT, ex.getMessage(), ex, request);
+        return build(HttpStatus.CONFLICT, ProblemType.CONFLICT, ex.getMessage(), ex, request);
     }
 
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ProblemDetail handleBusinessRuleViolation(BusinessRuleViolationException ex, WebRequest request) {
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, TYPE_BUSINESS_RULE_VIOLATION, TITLE_BUSINESS_RULE_VIOLATION, ex.getMessage(), ex, request);
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ProblemType.BUSINESS_RULE_VIOLATION, ex.getMessage(), ex, request);
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception ex, WebRequest request) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, TYPE_INTERNAL_ERROR, TITLE_INTERNAL_ERROR, DETAIL_INTERNAL_ERROR, ex, request);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR, DETAIL_INTERNAL_ERROR, ex, request);
     }
 
     @Override
@@ -97,33 +73,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return response;
     }
 
-    private ProblemDetail build(HttpStatus status, String typeSlug, String title, String detail, Exception ex, WebRequest request) {
+    private ProblemDetail build(HttpStatus status, ProblemType type, String detail, Exception ex, WebRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
-        problem.setType(URI.create(TYPE_BASE + typeSlug));
-        problem.setTitle(title);
+        problem.setType(type.uri());
+        problem.setTitle(type.title());
         problem.setInstance(URI.create(extractUri(request)));
         logException(ex, status, request);
         return problem;
     }
 
     private void decorate(ProblemDetail problem, Exception ex, HttpStatusCode status, WebRequest request) {
-        SlugAndTitle mapping = mappingFor(ex, status);
-        problem.setType(URI.create(TYPE_BASE + mapping.slug()));
-        problem.setTitle(mapping.title());
+        ProblemType type = mappingFor(ex, status);
+        problem.setType(type.uri());
+        problem.setTitle(type.title());
         problem.setInstance(URI.create(extractUri(request)));
     }
 
-    private SlugAndTitle mappingFor(Exception ex, HttpStatusCode status) {
+    private ProblemType mappingFor(Exception ex, HttpStatusCode status) {
         if (ex instanceof MethodArgumentNotValidException) {
-            return new SlugAndTitle(TYPE_VALIDATION_ERROR, TITLE_VALIDATION_ERROR);
+            return ProblemType.VALIDATION_ERROR;
         }
         return switch (status.value()) {
-            case 400 -> new SlugAndTitle(TYPE_BAD_REQUEST, TITLE_BAD_REQUEST);
-            case 404 -> new SlugAndTitle(TYPE_NO_RESOURCE, TITLE_NO_RESOURCE);
-            case 405 -> new SlugAndTitle(TYPE_METHOD_NOT_SUPPORTED, TITLE_METHOD_NOT_SUPPORTED);
-            case 406 -> new SlugAndTitle(TYPE_NOT_ACCEPTABLE, TITLE_NOT_ACCEPTABLE);
-            case 415 -> new SlugAndTitle(TYPE_MEDIA_TYPE_NOT_SUPPORTED, TITLE_MEDIA_TYPE_NOT_SUPPORTED);
-            default -> new SlugAndTitle(TYPE_INTERNAL_ERROR, TITLE_INTERNAL_ERROR);
+            case 400 -> ProblemType.BAD_REQUEST;
+            case 404 -> ProblemType.NO_RESOURCE;
+            case 405 -> ProblemType.METHOD_NOT_SUPPORTED;
+            case 406 -> ProblemType.NOT_ACCEPTABLE;
+            case 415 -> ProblemType.MEDIA_TYPE_NOT_SUPPORTED;
+            default -> ProblemType.INTERNAL_ERROR;
         };
     }
 
@@ -150,9 +126,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             return servletRequest.getRequest().getMethod();
         }
         return "";
-    }
-
-    private record SlugAndTitle(String slug, String title) {
     }
 
     public record FieldErrorDetail(String pointer, String reason) {
