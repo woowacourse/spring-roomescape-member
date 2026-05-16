@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.FieldError;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception e, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.warn("Spring MVC 예외: {}", e.getMessage());
-        return ResponseEntity.status(status).body(new ErrorResponse(status.toString(), e.getMessage()));
+        return ResponseEntity.status(status).body(new ErrorResponse(HttpStatus.valueOf(status.value()).name(), e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
