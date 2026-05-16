@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,20 @@ import roomescape.domain.Theme;
 @Repository
 public class ReservationDao {
 
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("reservation_id"),
+            resultSet.getString("member_name"),
+            LocalDate.parse(resultSet.getString("date")),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    LocalTime.parse(resultSet.getString("time_value"))),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("description"),
+                    resultSet.getString(("thumbnail"))
+            )
+    );
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -43,22 +58,7 @@ public class ReservationDao {
                  ORDER BY r.date ASC, rt.start_at ASC, th.name ASC
                 """;
 
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("member_name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("description"),
-                                resultSet.getString(("thumbnail"))
-                        )
-
-                ));
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {
@@ -116,21 +116,7 @@ public class ReservationDao {
                  ORDER BY r.date ASC, rt.start_at ASC, th.name ASC
                 """;
 
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("member_name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("description"),
-                                resultSet.getString(("thumbnail"))
-                        )
-                ), name);
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     public Reservation findById(Long id) {
@@ -154,21 +140,7 @@ public class ReservationDao {
                  ORDER BY r.date ASC, rt.start_at ASC, th.name ASC
                 """;
 
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("member_name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("description"),
-                                resultSet.getString(("thumbnail"))
-                        )
-                ), id);
+        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 
     public void updateReservation(Long id, LocalDate localDate, Long timeId, Long themeId) {
