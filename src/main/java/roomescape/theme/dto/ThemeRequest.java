@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;

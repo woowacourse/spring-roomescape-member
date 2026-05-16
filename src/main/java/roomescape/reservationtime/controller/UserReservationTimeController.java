@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
+import roomescape.reservationtime.dto.ScheduleResponse;
 import roomescape.reservationtime.service.UserReservationTimeService;
 
 @RestController

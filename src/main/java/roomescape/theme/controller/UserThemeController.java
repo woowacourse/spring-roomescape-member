@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.domain.SortColumn;
 import roomescape.theme.domain.SortOrder;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.UserThemeService;
 
 @RestController
