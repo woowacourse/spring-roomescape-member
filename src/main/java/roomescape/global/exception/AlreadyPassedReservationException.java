@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 public class AlreadyPassedReservationException extends CustomException {
 
     public AlreadyPassedReservationException(String message) {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+        super("ALREADY_PASSED_RESERVATION", HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 }

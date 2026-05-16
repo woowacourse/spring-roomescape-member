@@ -72,7 +72,7 @@ public class DummyController {
     private static class BusinessException extends CustomException {
 
         public BusinessException() {
-            super(HttpStatus.BAD_REQUEST, "비즈니스 예외");
+            super("BUSINESS_ERROR", HttpStatus.BAD_REQUEST, "비즈니스 예외");
         }
     }
 }

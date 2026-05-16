@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 public class PastReservationTimeException extends CustomException {
 
     public PastReservationTimeException(String message) {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+        super("PAST_RESERVATION_TIME", HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 }

@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 public class EntityNotFoundException extends CustomException {
 
     public EntityNotFoundException(String message) {
-        super(HttpStatus.NOT_FOUND, message);
+        super("ENTITY_NOT_FOUND", HttpStatus.NOT_FOUND, message);
     }
 }

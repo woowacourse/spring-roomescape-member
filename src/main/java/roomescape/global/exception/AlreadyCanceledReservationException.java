@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 public class AlreadyCanceledReservationException extends CustomException {
 
     public AlreadyCanceledReservationException(String message) {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+        super("ALREADY_CANCELED_RESERVATION", HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 }
