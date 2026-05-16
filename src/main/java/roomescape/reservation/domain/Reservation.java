@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.DomainNotValidValueException;
 import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -64,25 +63,25 @@ public class Reservation {
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new DomainNotValidValueException("예약 테마는 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 테마는 비어있을 수 없습니다.");
         }
     }
 
     private void validateReservationTime(ReservationTime time) {
         if (time == null) {
-            throw new DomainNotValidValueException("예약 시간은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
         }
     }
 
     private void validateReservationDate(LocalDate date) {
         if (date == null) {
-            throw new DomainNotValidValueException("예약 날짜는 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
         }
     }
 
     private static void validateReservationName(String name) {
         if (name == null || name.isBlank()) {
-            throw new DomainNotValidValueException("예약자 이름은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
         }
     }
 }

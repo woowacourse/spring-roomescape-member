@@ -2,7 +2,6 @@ package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.DomainNotValidValueException;
 import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -33,7 +32,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "", LocalDate.of(2026, 5, 1), time, theme))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 이름은 비어있을 수 없습니다.");
     }
 
@@ -43,7 +42,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, null, LocalDate.of(2026, 5, 1), time, theme))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 이름은 비어있을 수 없습니다.");
     }
 
@@ -53,7 +52,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", null, time, theme))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜는 비어있을 수 없습니다.");
     }
 
@@ -62,7 +61,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2026, 5, 1), null, theme))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간은 비어있을 수 없습니다.");
     }
 
@@ -71,7 +70,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2026, 5, 1), time, null))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 테마는 비어있을 수 없습니다.");
     }
 

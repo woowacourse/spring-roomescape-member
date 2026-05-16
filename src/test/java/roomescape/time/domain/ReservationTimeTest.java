@@ -1,7 +1,6 @@
 package roomescape.time.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.global.exception.DomainNotValidValueException;
 
 import java.time.LocalTime;
 
@@ -20,7 +19,7 @@ class ReservationTimeTest {
     @Test
     void 시작_시간이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(DomainNotValidValueException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시작 시간은 비어있을 수 없습니다.");
     }
 
