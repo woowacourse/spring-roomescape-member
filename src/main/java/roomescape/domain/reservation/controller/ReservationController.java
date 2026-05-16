@@ -30,6 +30,8 @@ import roomescape.domain.reservation.service.ReservationService;
 @Validated
 public class ReservationController {
 
+    private static final String NAME_HEADER = "Reservation-Name";
+
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
@@ -38,7 +40,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> getReservations(
-        @NotNull @RequestHeader("Reservation-Name") String name) {
+        @NotNull @RequestHeader(NAME_HEADER) String name) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(reservationService.getReservationsByName(URLDecoder.decode(name, UTF_8)));
     }
@@ -52,7 +54,7 @@ public class ReservationController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReservation(
-        @NotNull @RequestHeader("Reservation-Name") String name,
+        @NotNull @RequestHeader(NAME_HEADER) String name,
         @NotNull @PathVariable Long id,
         @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
         reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto,
@@ -62,7 +64,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
-        @NotNull @RequestHeader("Reservation-Name") String name,
+        @NotNull @RequestHeader(NAME_HEADER) String name,
         @NotNull @PathVariable Long id) {
         reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id,
             LocalDateTime.now());
