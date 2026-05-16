@@ -92,10 +92,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void update(final Reservation reservation) {
+    public int update(final Reservation reservation) {
         final String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
 
-        jdbcTemplate.update(
+        return jdbcTemplate.update(
                 sql,
                 Date.valueOf(reservation.getDate()),
                 reservation.getTimeId(),

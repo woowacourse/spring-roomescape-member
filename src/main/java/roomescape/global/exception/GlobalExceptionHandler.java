@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -19,6 +20,7 @@ import roomescape.global.exception.exception.InvalidUserInputException;
 import roomescape.global.exception.exception.PermissionDeniedException;
 import roomescape.global.exception.exception.ResourceInUseException;
 import roomescape.global.exception.exception.ResourceNotFoundException;
+import roomescape.global.exception.exception.UnexpectedUpdateCountException;
 import roomescape.global.exception.exception.ValidationException;
 import roomescape.global.exception.response.ErrorResponse;
 
@@ -156,6 +158,15 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(
                 GlobalErrorCode.AUTHENTICATION_FAILED.getMessage()
         );
+    }
+
+    @ExceptionHandler(UnexpectedUpdateCountException.class)
+    public ErrorResponse handleUnexpectedUpdateCount(
+            UnexpectedUpdateCountException e
+    ) {
+        log.error("UnexpectedUpdateCountException 발생: {}", e.getMessage(), e);
+
+        return ErrorResponse.of(e.getMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void update(Reservation reservation);
+    int update(Reservation reservation);
 
     boolean existsByDateAndTimeId(LocalDate date, long timeId);
 

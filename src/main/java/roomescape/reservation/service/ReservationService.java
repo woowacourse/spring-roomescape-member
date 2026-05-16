@@ -9,6 +9,7 @@ import roomescape.global.time.TimeManager;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationResourceNotFoundException;
+import roomescape.reservation.exception.ReservationUnexpectedUpdateCountException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -69,7 +70,8 @@ public class ReservationService {
         reservation = reservation.modify(date, reservationTime.getId());
         reservation.validateNotPast(reservationTime.getStartAt(), timeManager.nowDateTime());
 
-        reservationRepository.update(reservation);
+        int updateRowCount = reservationRepository.update(reservation);
+        validateSingleRowUpdate(updateRowCount);
     }
 
     private Reservation findReservation(final long id) {
@@ -85,6 +87,12 @@ public class ReservationService {
     private void validateDuplicate(final LocalDate date, final Long timeId) {
         if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
             throw new ReservationAlreadyExistsException();
+        }
+    }
+
+    private void validateSingleRowUpdate(final int updateRowCount) {
+        if (updateRowCount != 1) {
+            throw new ReservationUnexpectedUpdateCountException(updateRowCount);
         }
     }
 
