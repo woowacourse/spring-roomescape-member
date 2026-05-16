@@ -27,6 +27,19 @@ class UserReservationTimeControllerTest {
     private UserReservationTimeService userReservationTimeService;
 
     @Test
+    void 스케줄_조회시_date가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(get("/times/1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 스케줄_조회시_date_형식이_잘못되면_400을_반환한다() throws Exception {
+        mockMvc.perform(get("/times/1")
+                        .param("date", "20260508"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void 예약_가능한_시간을_반환한다() throws Exception {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 8);
