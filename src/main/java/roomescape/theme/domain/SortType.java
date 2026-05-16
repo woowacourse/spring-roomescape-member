@@ -1,13 +1,13 @@
 package roomescape.theme.domain;
 
-public enum SortColumn {
+public enum SortType {
     RESERVATION_COUNT("reservationCount"),
     ID("id"),
     NAME("name");
 
     private final String value;
 
-    SortColumn(String value) {
+    SortType(String value) {
         this.value = value;
     }
 
@@ -15,8 +15,8 @@ public enum SortColumn {
         return value;
     }
 
-    public static SortColumn fromString(String input) {
-        for (SortColumn column : values()) {
+    public static SortType fromString(String input) {
+        for (SortType column : values()) {
             if (column.value.equalsIgnoreCase(input)) {
                 return column;
             }

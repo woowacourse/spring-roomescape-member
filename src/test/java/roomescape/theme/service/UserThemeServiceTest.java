@@ -8,10 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
-import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortType;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.UserThemeService;
 
 class UserThemeServiceTest extends ServiceIntegrationTest {
 
@@ -67,7 +66,7 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void 테마_랭킹을_조회할_수_있다() {
         List<Theme> ranked = userThemeService.getThemes(
-                SortColumn.RESERVATION_COUNT, SortOrder.DESC,
+                SortType.RESERVATION_COUNT, SortOrder.DESC,
                 LocalDate.of(2026, 5, 6), LocalDate.of(2026, 5, 12), 10L);
 
         assertThat(ranked).hasSize(4);
@@ -80,7 +79,7 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void limit_파라미터로_결과_수를_제한할_수_있다() {
         List<Theme> ranked = userThemeService.getThemes(
-                SortColumn.RESERVATION_COUNT, SortOrder.DESC,
+                SortType.RESERVATION_COUNT, SortOrder.DESC,
                 LocalDate.of(2026, 5, 6), LocalDate.of(2026, 5, 12), 2L);
 
         assertThat(ranked).hasSize(2);
@@ -91,7 +90,7 @@ class UserThemeServiceTest extends ServiceIntegrationTest {
     @Test
     void 날짜_범위_밖의_예약은_랭킹에서_제외된다() {
         List<Theme> ranked = userThemeService.getThemes(
-                SortColumn.RESERVATION_COUNT, SortOrder.DESC,
+                SortType.RESERVATION_COUNT, SortOrder.DESC,
                 LocalDate.of(2026, 5, 8), LocalDate.of(2026, 5, 9), 10L);
 
         assertThat(ranked).hasSize(2);

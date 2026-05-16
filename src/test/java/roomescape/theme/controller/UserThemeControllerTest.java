@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortType;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.service.UserThemeService;
 
@@ -32,7 +32,7 @@ class UserThemeControllerTest {
         LocalDate sixDaysAgo = today.minusDays(6);
 
         when(userThemeService.getThemes(
-                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(SortType.RESERVATION_COUNT), eq(SortOrder.DESC),
                 eq(sixDaysAgo), eq(today), eq(10L)))
                 .thenReturn(List.of());
 
@@ -40,7 +40,7 @@ class UserThemeControllerTest {
                 .andExpect(status().isOk());
 
         verify(userThemeService).getThemes(
-                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(SortType.RESERVATION_COUNT), eq(SortOrder.DESC),
                 eq(sixDaysAgo), eq(today), eq(10L));
     }
 
@@ -50,7 +50,7 @@ class UserThemeControllerTest {
         LocalDate expectedStartDate = endDate.minusDays(6);
 
         when(userThemeService.getThemes(
-                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(SortType.RESERVATION_COUNT), eq(SortOrder.DESC),
                 eq(expectedStartDate), eq(endDate), eq(10L)))
                 .thenReturn(List.of());
 
@@ -58,7 +58,7 @@ class UserThemeControllerTest {
                 .andExpect(status().isOk());
 
         verify(userThemeService).getThemes(
-                eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC),
+                eq(SortType.RESERVATION_COUNT), eq(SortOrder.DESC),
                 eq(expectedStartDate), eq(endDate), eq(10L));
     }
 }

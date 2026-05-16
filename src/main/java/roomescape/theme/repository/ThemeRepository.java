@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortType;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 
@@ -57,9 +57,9 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate,
+    public List<Theme> findRanked(SortType sortType, SortOrder sortOrder, LocalDate startDate, LocalDate endDate,
                                   Long limit) {
-        String sql = getReservationSortSql(sortColumn, sortOrder, limit);
+        String sql = getReservationSortSql(sortType, sortOrder, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
@@ -74,7 +74,7 @@ public class ThemeRepository {
         }
     }
 
-    private String getReservationSortSql(SortColumn sortColumn, SortOrder sortOrder, Long limit) {
+    private String getReservationSortSql(SortType sortType, SortOrder sortOrder, Long limit) {
         String limitClause = limit != null ? "LIMIT " + limit : "";
         return """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount
@@ -84,10 +84,10 @@ public class ThemeRepository {
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY %s %s
                 %s
-                """.formatted(toColumnName(sortColumn), sortOrder.name(), limitClause);
+                """.formatted(toColumnName(sortType), sortOrder.name(), limitClause);
     }
 
-    private String toColumnName(SortColumn column) {
+    private String toColumnName(SortType column) {
         return switch (column) {
             case RESERVATION_COUNT -> "reservationCount";
             case ID -> "id";

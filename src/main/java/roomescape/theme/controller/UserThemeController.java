@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.domain.SortColumn;
+import roomescape.theme.domain.SortType;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.UserThemeService;
@@ -36,7 +36,7 @@ public class UserThemeController {
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeResponse>> getRankedThemes(
-            @RequestParam(defaultValue = "reservationCount") SortColumn sort,
+            @RequestParam(defaultValue = "reservationCount") SortType sort,
             @RequestParam(defaultValue = "DESC") SortOrder order,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
