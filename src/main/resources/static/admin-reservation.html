@@ -485,10 +485,7 @@
                     <td><span class="badge theme-badge" style="${isCancelled ? 'background: rgba(255,255,255,0.1); color: #94a3b8; border-color: #333;' : ''}">${r.theme ? r.theme.name : '알수없음'}</span></td>
                     <td><span class="badge" style="${isCancelled ? 'background: rgba(255,255,255,0.1); color: #94a3b8; border-color: #333;' : ''}">${r.time ? r.time.startAt : '알수없음'}</span></td>
                     <td style="text-align: center;">
-                        ${isCancelled 
-                            ? '<span style="color: var(--danger); font-size: 0.85rem; font-weight: bold;">취소됨</span>' 
-                            : `<button class="btn-danger" onclick="deleteRes(${r.id})">취소</button>`
-                        }
+                        <button class="btn-danger" onclick="deleteRes(${r.id})">삭제</button>
                     </td>
                 `;
             resList.appendChild(tr);
