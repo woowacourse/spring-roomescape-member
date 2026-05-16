@@ -15,7 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,15 +184,18 @@ class ReservationControllerTest {
     @DisplayName("POST /reservations - 예약 시간이 누락된 경우 400 에러와 명확한 메시지를 반환한다.")
     void createReservation_fail_when_timeId_is_null() throws Exception {
         // given
-        String body = "{\"name\":\"브라운\", \"date\":\"" + TEST_DATE_STR + "\", \"themeId\":1}";
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", TEST_DATE_STR);
+        body.put("themeId", 1);
 
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                        .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType").value("BUSINESS"))
-                .andExpect(jsonPath("$.message").value("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."));
+                .andExpect(jsonPath("$.message").value("예약 시간이 선택되지 않았습니다. 시간을 선택해주세요."));
     }
 
     @Test
@@ -222,13 +227,83 @@ class ReservationControllerTest {
     @Test
     @DisplayName("PATCH /reservations/{id} - 이름(name) 파라미터가 비어있으면 400 에러를 반환한다.")
     void updateReservation_fail_when_name_is_blank() throws Exception {
+        Map<String, Object> requestInfo = new HashMap<>();
+        requestInfo.put("timeId", 1L);
+        requestInfo.put("date", TEST_DATE_STR);
+
         // when & then
         mockMvc.perform(patch("/reservations/1")
                         .param("name", " ")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                        .content(objectMapper.writeValueAsString(requestInfo)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("이름이 비어있습니다. 이름을 입력해주세요"));
+    }
+
+    @Test
+    @DisplayName("POST /reservations - 날짜 형식이 yyyy-MM-dd가 아닌 경우 INVALID_HTTP_MESSAGE 에러를 반환한다.")
+    void createReservation_fail_invalid_date_format() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026/08/16");
+        body.put("timeId", 1);
+        body.put("themeId", 1);
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType").value("BUSINESS"))
                 .andExpect(jsonPath("$.message").value("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."));
+    }
+
+    @Test
+    @DisplayName("POST /reservations - themeId가 숫자가 아닌 문자열로 오면 INVALID_HTTP_MESSAGE 에러를 반환한다.")
+    void createReservation_fail_invalid_themeId_type() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", TEST_DATE_STR);
+        body.put("timeId", 1);
+        body.put("themeId", "공포 테마");
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."));
+    }
+
+    @Test
+    @DisplayName("PATCH /reservations/{id} - 수정 시 날짜(date)가 누락되면 RESERVATION_UPDATE_DATE_EMPTY 에러를 반환한다.")
+    void updateReservation_fail_missing_date() throws Exception {
+        Map<String, Object> requestInfo = new HashMap<>();
+        requestInfo.put("timeId", 1);
+        requestInfo.put("date", null);
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "브라운")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestInfo)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("변경할 예약 날짜가 누락되었습니다. 날짜를 선택해주세요."));
+    }
+
+    @Test
+    @DisplayName("PATCH /reservations/{id} - 수정 시 시간(timeId)이 누락되면 RESERVATION_UPDATE_TIME_ID_EMPTY 에러를 반환한다.")
+    void updateReservation_fail_missing_timeId() throws Exception {
+        Map<String, Object> requestInfo = new HashMap<>();
+        requestInfo.put("timeId", null);
+        requestInfo.put("date", TEST_DATE_STR);
+
+        mockMvc.perform(patch("/reservations/1")
+                        .param("name", "브라운")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestInfo)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("변경할 예약 시간이 누락되었습니다. 시간을 선택해주세요."));
     }
 }

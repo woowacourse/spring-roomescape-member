@@ -141,4 +141,52 @@ class ThemeControllerTest {
 
         then(themeService).should().deleteById(1L);
     }
+
+    @Test
+    @DisplayName("POST /themes - 테마 이름이 누락된 경우 THEME_NAME_EMPTY 에러를 반환한다.")
+    void addNewTheme_fail_missing_name() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("description", "테마 설명");
+        body.put("thumbnail", "https://image");
+
+        mockMvc.perform(post("/themes")
+                        .header("Authorization", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("테마 이름이 비어있습니다. 이름을 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("POST /themes - 테마 설명이 누락된 경우 THEME_DESCRIPTION_EMPTY 에러를 반환한다.")
+    void addNewTheme_fail_missing_description() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "테마");
+        body.put("thumbnail", "https://image");
+
+        mockMvc.perform(post("/themes")
+                        .header("Authorization", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("테마 설명이 비어있습니다. 설명을 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("POST /themes - 썸네일이 누락된 경우 THEME_THUMBNAIL_EMPTY 에러를 반환한다.")
+    void addNewTheme_fail_missing_thumbnail() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "테마");
+        body.put("description", "테마 설명");
+
+        mockMvc.perform(post("/themes")
+                        .header("Authorization", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType").value("BUSINESS"))
+                .andExpect(jsonPath("$.message").value("테마 썸네일 주소가 비어있습니다. 주소를 입력해주세요."));
+    }
 }
