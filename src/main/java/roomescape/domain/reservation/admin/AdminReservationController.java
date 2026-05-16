@@ -34,7 +34,7 @@ public class AdminReservationController {
         if (validator.isUnauthorized(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        reservationService.deleteReservationByAdmin(id);
+        reservationService.cancelReservationByAdmin(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

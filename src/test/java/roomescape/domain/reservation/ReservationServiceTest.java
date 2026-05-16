@@ -426,7 +426,7 @@ class ReservationServiceTest {
         );
 
         // when
-        reservationService.deleteUserReservation(savedReservation.getId());
+        reservationService.cancelUserReservation(savedReservation.getId());
 
         // then
         assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
@@ -455,7 +455,7 @@ class ReservationServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.deleteUserReservation(savedReservation.getId()))
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(savedReservation.getId()))
             .isInstanceOf(BadRequestException.class)
             .hasMessage("현재보다 이전 시간 예약을 삭제할 수 없습니다. 현재 시각:" + LocalTime.of(13, 0));
     }
@@ -483,7 +483,7 @@ class ReservationServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.deleteUserReservation(savedReservation.getId()))
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(savedReservation.getId()))
             .isInstanceOf(BadRequestException.class)
             .hasMessage("예전 예약은 삭제할 수 없습니다. 오늘 날짜:" + LocalDate.of(2026, 5, 12));
     }
@@ -501,7 +501,7 @@ class ReservationServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.deleteUserReservation(1L))
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L))
             .isInstanceOf(RoomescapeException.class)
             .hasMessage("존재하지 않는 예약건 입니다");
     }

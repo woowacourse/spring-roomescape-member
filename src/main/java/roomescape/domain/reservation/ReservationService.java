@@ -59,11 +59,11 @@ public class ReservationService {
         return UserReservationResponse.of(name, reservations);
     }
 
-    public void deleteReservationByAdmin(Long id) {
+    public void cancelReservationByAdmin(Long id) {
         reservationRepository.deleteById(id);
     }
 
-    public void deleteUserReservation(Long id) {
+    public void cancelUserReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
         validateUserCanDeleteReservation(reservation);
