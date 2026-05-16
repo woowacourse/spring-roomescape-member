@@ -12,29 +12,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
+import roomescape.domain.exception.InvalidDomainException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-
-    @ExceptionHandler(BusinessRuleViolationException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessRuleViolation(BusinessRuleViolationException e) {
+    // 커스텀 예외 통합 처리 - 예외가 추가돼도 핸들러이제 더 추가 안해도 됨.
+    @ExceptionHandler(RoomeScapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomeScapeException(RoomeScapeException e) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(e.getStatus())
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage()));
-    }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+    // 도메인 불변식 위반 (null, 빈 값, 형식 오류 등)
+    @ExceptionHandler(InvalidDomainException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDomain(InvalidDomainException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));

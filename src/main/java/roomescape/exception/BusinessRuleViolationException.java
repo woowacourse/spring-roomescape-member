@@ -1,7 +1,9 @@
 package roomescape.exception;
 
-public class BusinessRuleViolationException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class BusinessRuleViolationException extends RoomeScapeClientException {
     public BusinessRuleViolationException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

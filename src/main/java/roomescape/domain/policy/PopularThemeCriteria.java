@@ -1,6 +1,7 @@
 package roomescape.domain.policy;
 
 import java.time.LocalDate;
+import roomescape.domain.exception.InvalidDomainException;
 
 public class PopularThemeCriteria {
 
@@ -9,10 +10,10 @@ public class PopularThemeCriteria {
 
     public PopularThemeCriteria(int periodDays, int limit) {
         if (periodDays <= 0) {
-            throw new IllegalArgumentException("집계 기간은 1일 이상이어야 합니다: " + periodDays);
+            throw new InvalidDomainException("집계 기간은 1일 이상이어야 합니다: " + periodDays);
         }
         if (limit <= 0) {
-            throw new IllegalArgumentException("조회 개수는 1개 이상이어야 합니다: " + limit);
+            throw new InvalidDomainException("조회 개수는 1개 이상이어야 합니다: " + limit);
         }
         this.periodDays = periodDays;
         this.limit = limit;

@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import roomescape.domain.exception.InvalidDomainException;
 
 public class ReservationTime {
     private final LocalTime startAt;
@@ -16,10 +17,10 @@ public class ReservationTime {
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
+            throw new InvalidDomainException("예약 시간은 비어 있을 수 없습니다.");
         }
     }
-    
+
     public LocalTime getStartAt() {
         return startAt;
     }
