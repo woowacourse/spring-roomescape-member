@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +34,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(
-            @RequestBody ReservationCreateRequest request
+            @RequestBody @Valid ReservationCreateRequest request
     ) {
         ReservationCreateCommand createCommand = new ReservationCreateCommand(
                 request.name(),
@@ -67,7 +68,7 @@ public class ReservationController {
     @PatchMapping("/me/{id}")
     public ResponseEntity<Void> updateUserReservation(
             @PathVariable Long id,
-            @RequestBody ReservationUpdateRequest request
+            @RequestBody @Valid ReservationUpdateRequest request
     ) {
         ReservationUpdateCommand updateCommand = new ReservationUpdateCommand(
                 id,

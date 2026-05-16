@@ -1,19 +1,20 @@
 package roomescape.reservation.presentation.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.global.exception.ReservationErrorCode;
-import roomescape.global.validation.RequestValidator;
 
 public record ReservationCreateRequest(
+        @NotBlank(message = "예약자 이름을 입력해 주세요.")
         String name,
+
+        @NotNull(message = "예약 날짜를 선택해 주세요.")
         LocalDate date,
+
+        @NotNull(message = "예약 시간을 선택해 주세요.")
         Long timeId,
+
+        @NotNull(message = "예약 테마를 선택해 주세요.")
         Long themeId
 ) {
-    public ReservationCreateRequest{
-        RequestValidator.requireNotBlank(name, ReservationErrorCode.RESERVATION_NAME_REQUIRED);
-        RequestValidator.requireNotNull(date, ReservationErrorCode.RESERVATION_DATE_REQUIRED);
-        RequestValidator.requireNotNull(timeId, ReservationErrorCode.RESERVATION_TIME_REQUIRED);
-        RequestValidator.requireNotNull(themeId, ReservationErrorCode.RESERVATION_THEME_REQUIRED);
-    }
 }
