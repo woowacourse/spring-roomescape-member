@@ -30,6 +30,8 @@ public class ReservationService {
     isAfterDate(request);
     isAfterTimeAtSameDate(request, reservationTime);
 
+    isReservationExists(request);
+
     Reservation reservation = reservationDAO.insert(request.name(), LocalDate.parse(request.date()),
         request.timeId(), request.themeId());
 
@@ -72,6 +74,13 @@ public class ReservationService {
     if (LocalDate.parse(request.date()).isEqual(LocalDate.now())
         && reservationTime.getStartAt().isBefore(LocalTime.now())) {
       throw new IllegalArgumentException("당일 지나간 시간에 대한 예약 생성은 불가능합니다.");
+    }
+  }
+
+  private void isReservationExists(ReservationRequest request) {
+    boolean reservationExist = reservationDAO.existsByTimeIdAndThemeId(request.timeId(), request.themeId());
+    if (reservationExist) {
+      throw new IllegalStateException("해당 시간대는 이미 예약이 완료되었습니다.");
     }
   }
 }
