@@ -11,10 +11,6 @@ public enum SortType {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static SortType fromString(String input) {
         for (SortType column : values()) {
             if (column.value.equalsIgnoreCase(input)) {
