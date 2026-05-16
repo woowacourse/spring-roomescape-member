@@ -19,7 +19,6 @@ import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.global.exception.RoomEscapeException;
 import roomescape.theme.application.service.ThemeCommandService;
 import roomescape.theme.infra.JdbcThemeRepository;
 
@@ -88,7 +87,7 @@ public class ThemeCommandServiceTest {
         testHelper.insertReservation("스타크", date, themeId, timeId);
 
         assertThatThrownBy(() -> themeCommandService.delete(themeId))
-                .isInstanceOf(RoomEscapeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }
