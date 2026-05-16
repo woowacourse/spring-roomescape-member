@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -47,7 +47,7 @@ public class ThemeService {
         int count = themeUpdatingDao.delete(id);
 
         if (count == 0) {
-            throw new CustomException(CustomExceptionCode.THEME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
         }
     }
 }

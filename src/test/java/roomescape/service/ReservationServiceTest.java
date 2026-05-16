@@ -13,7 +13,7 @@ import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.CustomException;
+import roomescape.exception.BusinessException;
 import roomescape.repository.*;
 
 import java.time.LocalDate;
@@ -99,7 +99,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
         verify(themeQueryingDao, never()).findThemeById(themeId);
     }
@@ -117,7 +117,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
         verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId));
     }
@@ -135,7 +135,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(theme));
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
         verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId));
     }
@@ -156,7 +156,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
         verify(reservationUpdatingDao, never()).save(any());
     }
@@ -191,7 +191,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation2));
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
     }
 
@@ -225,7 +225,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation2));
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.create(request));
     }
 
@@ -253,7 +253,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.read(reservationId));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.read(reservationId));
     }
 
     @Test
@@ -320,7 +320,7 @@ class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.update(reservationId, updateRequest));
         verify(reservationQueryingDao, never()).existsById(reservationId);
     }
@@ -335,7 +335,7 @@ class ReservationServiceTest {
                 .thenReturn(false);
 
         // when & then
-        Assertions.assertThrows(CustomException.class,
+        Assertions.assertThrows(BusinessException.class,
                 () -> reservationService.update(reservationId, updateRequest));
         verify(reservationUpdatingDao, never()).update(reservationId, updateRequest);
     }
@@ -353,7 +353,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
         verify(themeQueryingDao, never()).findThemeById(themeId);
     }
 
@@ -373,7 +373,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
         verify(reservationQueryingDao, never()).findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId);
     }
 
@@ -396,7 +396,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
         verify(reservationUpdatingDao, never()).update(reservationTimeId, updateRequest);
     }
 
@@ -422,7 +422,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
     }
 
     @Test
@@ -458,7 +458,7 @@ class ReservationServiceTest {
 
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.update(reservationId, updateRequest));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
     }
 
     @Test
@@ -483,6 +483,6 @@ class ReservationServiceTest {
                 .thenReturn(false);
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationService.delete(reservationTimeId));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.delete(reservationTimeId));
     }
 }

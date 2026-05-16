@@ -6,8 +6,8 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
@@ -50,13 +50,13 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse update(Long id, ReservationTimeUpdateRequest newReservationTimeReq) {
         if (!reservationTimeQueryingDao.existsById(id)) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
         }
 
         reservationTimeUpdatingDao.update(id, newReservationTimeReq);
 
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(id)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         return ReservationTimeResponse.from(findReservationTime);
     }
@@ -64,11 +64,11 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         if (!reservationTimeQueryingDao.existsById(id)) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
         }
 
         if (reservationQueryingDao.existsReservationByTimeId(id)) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_TIME_DELETE_CONFLICT);
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_DELETE_CONFLICT);
         }
         reservationTimeUpdatingDao.delete(id);
     }

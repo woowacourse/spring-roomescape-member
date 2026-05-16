@@ -2,8 +2,8 @@ package roomescape.domain.reservation;
 
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,13 +32,13 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_NAME);
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_NAME);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_DATE);
         }
     }
 

@@ -2,7 +2,7 @@ package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 
-public enum CustomExceptionCode {
+public enum ErrorCode {
 
     // 400
     INVALID_RESERVATION_NAME(HttpStatus.BAD_REQUEST, "예약자명이 존재하지 않습니다."),
@@ -25,7 +25,7 @@ public enum CustomExceptionCode {
     private final HttpStatus status;
     private final String message;
 
-    CustomExceptionCode(HttpStatus status, String message) {
+    ErrorCode(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }

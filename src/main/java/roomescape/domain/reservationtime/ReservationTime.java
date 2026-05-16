@@ -1,7 +1,7 @@
 package roomescape.domain.reservationtime;
 
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalTime;
 
@@ -18,7 +18,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new CustomException(CustomExceptionCode.INVALID_RESERVATION_TIME);
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_TIME);
         }
     }
 

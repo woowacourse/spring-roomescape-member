@@ -9,8 +9,8 @@ import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationUpdatingDao;
@@ -40,28 +40,28 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationCreateRequest reservationReq) {
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme findTheme = themeQueryingDao.findThemeById(reservationReq.getThemeId())
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
         if (reservationReq.getDate().isBefore(LocalDate.now())) {
-            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
         }
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), reservationReq.getDate(), findReservationTime.getId());
         if (savedReservation.isPresent()) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
 
         Long generatedId;
         try {
             generatedId = reservationUpdatingDao.save(reservationReq);
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
 
         Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         LocalDateTime standard = LocalDateTime.of(
                 findReservation.getDate(),
@@ -69,7 +69,7 @@ public class ReservationService {
         );
 
         if (!standard.isAfter(findReservation.getCreatedAt())) {
-            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
         }
 
         return ReservationResponse.from(findReservation);
@@ -77,7 +77,7 @@ public class ReservationService {
 
     public ReservationResponse read(Long id) {
         Reservation reservationById = reservationQueryingDao.findReservationById(id)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         return ReservationResponse.from(reservationById);
     }
 
@@ -98,31 +98,31 @@ public class ReservationService {
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
         if (newReservationReq.getDate().isBefore(LocalDate.now())) {
-            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
         }
 
         if (!reservationQueryingDao.existsById(id)) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(newReservationReq.getTimeId())
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme findTheme = themeQueryingDao.findThemeById(newReservationReq.getThemeId())
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), newReservationReq.getDate(), findReservationTime.getId());
         if (savedReservation.isPresent()) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
 
         try {
             reservationUpdatingDao.update(id, newReservationReq);
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_ALREADY_EXISTS);
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_EXISTS);
         }
 
         Reservation findReservation = reservationQueryingDao.findReservationById(id)
-                .orElseThrow(() -> new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         LocalDateTime standard = LocalDateTime.of(
                 findReservation.getDate(),
@@ -130,7 +130,7 @@ public class ReservationService {
         );
 
         if (!standard.isAfter(findReservation.getUpdatedAt())) {
-            throw new CustomException(CustomExceptionCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
         }
         return ReservationResponse.from(findReservation);
     }
@@ -138,7 +138,7 @@ public class ReservationService {
     @Transactional
     public void delete(Long id) {
         if (!reservationQueryingDao.existsById(id)) {
-            throw new CustomException(CustomExceptionCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         reservationUpdatingDao.delete(id);

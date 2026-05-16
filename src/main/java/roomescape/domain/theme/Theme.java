@@ -1,7 +1,7 @@
 package roomescape.domain.theme;
 
-import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 public class Theme {
 
@@ -20,7 +20,7 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new CustomException(CustomExceptionCode.INVALID_THEME_NAME);
+            throw new BusinessException(ErrorCode.INVALID_THEME_NAME);
         }
     }
 

@@ -10,7 +10,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
-import roomescape.exception.CustomException;
+import roomescape.exception.BusinessException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
@@ -95,7 +95,7 @@ class ReservationTimeServiceTest {
                 .thenReturn(false);
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.update(reservationTimeId, request));
+        Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.update(reservationTimeId, request));
         verify(reservationTimeQueryingDao, never()).findReservationTimeById(reservationTimeId);
     }
 
@@ -126,7 +126,7 @@ class ReservationTimeServiceTest {
                 .thenReturn(false);
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.delete(reservationTimeId));
+        Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.delete(reservationTimeId));
         verify(reservationQueryingDao, never()).existsReservationByTimeId(reservationTimeId);
     }
 
@@ -142,7 +142,7 @@ class ReservationTimeServiceTest {
                 .thenReturn(true);
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> reservationTimeService.delete(reservationTimeId));
+        Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.delete(reservationTimeId));
     }
 
 }

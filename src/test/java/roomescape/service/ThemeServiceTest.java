@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
-import roomescape.exception.CustomException;
+import roomescape.exception.BusinessException;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -92,6 +92,6 @@ class ThemeServiceTest {
                 .thenReturn(0);
 
         // when && then
-        Assertions.assertThrows(CustomException.class, () -> themeService.delete(themeId));
+        Assertions.assertThrows(BusinessException.class, () -> themeService.delete(themeId));
     }
 }
