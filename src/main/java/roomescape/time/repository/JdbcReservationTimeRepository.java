@@ -38,7 +38,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id=:id";
+        String sql = """
+                SELECT * FROM reservation_time 
+                WHERE id=:id
+                """;
 
         SqlParameterSource params = new MapSqlParameterSource("id", id);
 
@@ -59,21 +62,27 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id=:id";
+        String sql = """
+                DELETE FROM reservation_time 
+                WHERE id=:id
+                """;
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, params);
     }
 
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = :start_at";
+        String sql = """
+                SELECT COUNT(*) FROM reservation_time 
+                WHERE start_at = :start_at
+                """;
         MapSqlParameterSource params = new MapSqlParameterSource("start_at", startAt);
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
 
     @Override
-    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, long themeId) {
         String sql = """
                 SELECT * FROM reservation_time
                 WHERE start_at NOT IN (
