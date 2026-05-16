@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -66,10 +67,12 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
+        SessionFilter sessionFilter = loginAs("브라운");
+
         RestAssured.given().log().all()
+                .filter(sessionFilter)
                 .contentType(ContentType.JSON)
-                .queryParam("username", "브라운")
-                .when().get("/reservations")
+                .when().get("/reservations/me")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -90,6 +93,22 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    private SessionFilter loginAs(String username) {
+        SessionFilter sessionFilter = new SessionFilter();
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200);
+
+        return sessionFilter;
     }
 
 }

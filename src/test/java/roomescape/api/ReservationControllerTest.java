@@ -1,6 +1,7 @@
 package roomescape.api;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -51,10 +52,12 @@ class ReservationControllerTest {
     @DisplayName("사용자 예약 조회")
     @Test
     void userReservationRetrieve(){
+        SessionFilter sessionFilter = loginAs("김철수");
+
         RestAssured.given().log().all()
+                .filter(sessionFilter)
                 .contentType(ContentType.JSON)
-                .queryParam("username","김철수")
-                .when().get("/reservations")
+                .when().get("/reservations/me")
                 .then().log().all()
                 .statusCode(200);
 
@@ -142,6 +145,22 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    private SessionFilter loginAs(String username) {
+        SessionFilter sessionFilter = new SessionFilter();
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200);
+
+        return sessionFilter;
     }
 
 }
