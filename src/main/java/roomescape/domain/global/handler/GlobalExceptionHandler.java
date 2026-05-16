@@ -119,6 +119,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-            .body(ErrorResponse.of(errorCode, e.getErrors()));
+            .body(ErrorResponse.of(errorCode, e.getError()));
     }
 }

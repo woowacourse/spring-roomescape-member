@@ -324,15 +324,14 @@ class ReservationServiceTest {
             Long wrongId = 99999L;
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
                 changeDate, wrongId);
-            List<ErrorDetail> expectedErrors = List.of(
-                ErrorDetail.of("timeId", wrongId, "요청한 시간 id가 존재하지 않습니다."));
+            ErrorDetail expectedErrors = new ErrorDetail("timeId", wrongId.toString(), "요청한 시간 id가 존재하지 않습니다.");
 
             assertThatThrownBy(() -> reservationService.updateReservation(name, id, request,
                 LocalDateTime.of(2026, 1, 1, 0, 0)))
                 .isInstanceOfSatisfying(BusinessException.class, exception -> assertAll(
                     () -> assertThat(exception.getErrorCode())
                         .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST_BODY),
-                    () -> assertThat(exception.getErrors()).isEqualTo(expectedErrors)
+                    () -> assertThat(exception.getError()).isEqualTo(expectedErrors)
                 ));
         }
 

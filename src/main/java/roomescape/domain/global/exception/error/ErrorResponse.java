@@ -12,6 +12,9 @@ public record ErrorResponse(@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Local
         return new ErrorResponse(LocalDateTime.now(), errorCode.getMessage(), null);
     }
 
+    public static ErrorResponse of(ErrorCode errorCode, ErrorDetail errorDetail) {
+        return new ErrorResponse(LocalDateTime.now(), errorCode.getMessage(), List.of(errorDetail));
+    }
     public static ErrorResponse of(ErrorCode errorCode, List<ErrorDetail> errors) {
         return new ErrorResponse(LocalDateTime.now(), errorCode.getMessage(), errors);
     }

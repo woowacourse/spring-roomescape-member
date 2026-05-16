@@ -55,7 +55,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto, LocalDateTime now) {
+    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto,
+        LocalDateTime now) {
         Reservation reservation = createReservation(requestDto, now);
         validateDuplicates(requestDto.date(), requestDto.timeId(), requestDto.themeId());
         return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
@@ -70,9 +71,9 @@ public class ReservationService {
     private Reservation createReservation(ReservationCreateRequestDto requestDto,
         LocalDateTime now) {
         Time time = timeRepository.findTimeById(requestDto.timeId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND, List.of()));
+            .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND, List.of()));
+            .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme, now);
     }
 
@@ -100,8 +101,9 @@ public class ReservationService {
 
     private Time getTimeById(Long timeId) {
         return timeRepository.findTimeById(timeId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
-                List.of(ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다."))));
+            .orElseThrow(
+                () -> new BusinessException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
+                    ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다.")));
     }
 
     private void validateDuplicatesExceptMe(Long id, LocalDate date, Long timeId, Long themeId) {

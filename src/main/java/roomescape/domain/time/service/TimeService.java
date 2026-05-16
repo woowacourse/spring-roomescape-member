@@ -61,7 +61,7 @@ public class TimeService {
     private void validateThemeId(Long themeId) {
         if (!themeRepository.existsById(themeId)) {
             throw new BusinessException(ErrorCode.COMMON_INVALID_REQUEST,
-                List.of(ErrorDetail.of("themeId", themeId, "요청한 테마 id가 존재하지 않습니다.")));
+                ErrorDetail.of("themeId", themeId, "요청한 테마 id가 존재하지 않습니다."));
         }
     }
 
