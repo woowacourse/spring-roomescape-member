@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableEntityException;
 import roomescape.dto.request.ReservationRequest;
@@ -103,5 +104,22 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("이미 존재하는 예약 건입니다.");
+    }
+
+    @Test
+    @DisplayName("다른 사람의 예약을 변경하려하면 예외가 발생한다.")
+    void 타인_예약_변경_예외_테스트() {
+        Long id = 24L;
+        String otherName = "브리";
+        ReservationRequest request = new ReservationRequest(
+                otherName,
+                futureDate,
+                timeId,
+                themeId
+        );
+
+        assertThatThrownBy(() -> reservationService.updateDateTime(id, request))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("다른 사람의 예약은 변경할 수 없습니다.");
     }
 }
