@@ -78,7 +78,10 @@ class ThemeRepositoryTest {
 
     @Test
     void 지난_7일간_인기_테마_10개를_조회한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        for (int t = 1; t <= 12; t++) {
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
+                    String.format("%02d:00", 8 + t));
+        }
         String recentDate = LocalDate.now().minusDays(3).toString();
 
         for (int i = 1; i <= 12; i++) {
@@ -88,7 +91,7 @@ class ThemeRepositoryTest {
             int reservationCount = 13 - i;
             for (int j = 0; j < reservationCount; j++) {
                 jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                        "예약자" + i + "_" + j, recentDate, 1L, (long) i);
+                        "예약자" + i + "_" + j, recentDate, (long) (j + 1), (long) i);
             }
         }
 

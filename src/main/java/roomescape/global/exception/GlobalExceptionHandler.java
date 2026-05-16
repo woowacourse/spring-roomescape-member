@@ -2,6 +2,7 @@ package roomescape.global.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -45,14 +46,6 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(errorCode));
     }
 
-    @ExceptionHandler(DomainNotValidValueException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(DomainNotValidValueException e) {
-        String message = e.getMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
-        return ResponseEntity.status(errorCode.status())
-                .body(ErrorResponse.of(errorCode, message));
-    }
-
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingQueryParameter(MissingServletRequestParameterException e) {
         log.warn("Type mismatch on parameter: {}", e.getMessage());
@@ -74,6 +67,14 @@ public class GlobalExceptionHandler {
         String message = String.format("'%s' 파라미터의 값이 적절하지 않습니다.", e.getName());
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode, message));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        log.warn("DataIntegrityViolationException occurred", e);
+        ErrorCode errorCode = ErrorCode.RESERVATION_DUPLICATE;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode));
     }
 
     @ExceptionHandler(Exception.class)
