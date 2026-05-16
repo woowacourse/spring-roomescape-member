@@ -108,12 +108,12 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요."));
     }
 
-    private Theme findTheme(Long themeId){
+    private Theme findTheme(Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요."));
     }
 
-    private Reservation findByIdAndName(Long id, String name){
+    private Reservation findByIdAndName(Long id, String name) {
         return reservationRepository.findByIdAndName(id, name)
                 .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
     }

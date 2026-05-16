@@ -32,12 +32,12 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> list(){
+    public List<Theme> list() {
         return themeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findPopularThemes(int days, LocalDate now, int size){
+    public List<Theme> findPopularThemes(int days, LocalDate now, int size) {
         LocalDate startDate = now.minusDays(days);
         LocalDate endDate = now.minusDays(1);
 
