@@ -75,7 +75,7 @@ public class ThemeControllerTest {
                 .when().get("/themes/ranks")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("THEME_RANK_INVALID_LIMIT"));
+                .body("code", is("INVALID_INPUT"));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ThemeControllerTest {
                 .when().get("/themes/ranks")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("THEME_RANK_INVALID_LIMIT"));
+                .body("code", is("INVALID_INPUT"));
     }
 
     @Test

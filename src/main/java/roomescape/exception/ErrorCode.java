@@ -14,7 +14,6 @@ public enum ErrorCode {
     TIME_CANNOT_DELETE(409, "해당 시간의 예약이 존재하기에 삭제할 수 없습니다. 해당 시간의 모든 예약을 삭제한 후 재시도 해주세요."),
     THEME_WRONG_NAME(400, "이름은 2자 이상 20자 이하 입니다."),
     THEME_NOT_FOUND(404, "해당 테마가 존재하지 않아서 삭제할 수 없습니다. 테마 아이디를 확인해주세요."),
-    THEME_RANK_INVALID_LIMIT(400, "limit는 0 이하일 수 없습니다."),
     INTERNAL_ERROR(500, "요청 처리에 문제가 발생했습니다.");
 
     private final int status;
