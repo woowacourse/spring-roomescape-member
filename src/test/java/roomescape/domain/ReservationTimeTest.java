@@ -11,6 +11,7 @@ class ReservationTimeTest {
 
     @Test
     void 시간이_null이면_예외가_발생한다() {
+        // when & then
         assertThatThrownBy(() -> ReservationTime.create(null))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -19,6 +20,7 @@ class ReservationTimeTest {
 
     @Test
     void 정각이_아니면_예외가_발생한다() {
+        // when & then
         assertThatThrownBy(() -> ReservationTime.create(LocalTime.parse("10:30")))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")

@@ -36,12 +36,14 @@ class ReservationTimeServiceTest {
 
     @Test
     void 중복된_예약시간을_추가하면_예외가_발생한다() {
+        // given
         ReservationTimeRequestDTO request = new ReservationTimeRequestDTO(
                 LocalTime.parse("10:00")
         );
 
         reservationTimeService.addReservationTime(request);
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(request))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -50,6 +52,7 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약이_존재하는_시간을_삭제하면_예외가_발생한다() {
+        // given
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.create(LocalTime.parse("10:00"))
         );
@@ -60,6 +63,7 @@ class ReservationTimeServiceTest {
                 Reservation.create("브라운", LocalDate.parse("2026-08-05"), time, theme)
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(time.getId()))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")

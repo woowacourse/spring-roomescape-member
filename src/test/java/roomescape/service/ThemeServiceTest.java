@@ -54,7 +54,10 @@ class ThemeServiceTest {
     @Test
     @Sql(scripts = "/data.sql")
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
+        // when
         List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes(1L, 10L);
+
+        // then
         assertThat(popularThemes)
                 .map(ThemeResponseDTO::id)
                 .containsExactly(
@@ -64,9 +67,9 @@ class ThemeServiceTest {
                 );
     }
 
-    // 중복되는 테마는 추가할 수 없다.
     @Test
     void 중복된_테마를_추가하면_예외가_발생한다() {
+        // given
         ThemeRequestDTO request = new ThemeRequestDTO(
                 "귀신찾기",
                 "귀신을 찾는다",
@@ -74,6 +77,7 @@ class ThemeServiceTest {
         );
         themeService.addTheme(request);
 
+        // when & then
         assertThatThrownBy(() -> themeService.addTheme(request))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -81,9 +85,9 @@ class ThemeServiceTest {
     }
 
 
-    // 존재하지 않는 테마를 조회하면 예외 발생한다.
     @Test
     void 존재하지_않는_테마를_조회하면_예외가_발생한다() {
+        // when & then
         assertThatThrownBy(() -> themeService.findById(1L))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -91,9 +95,9 @@ class ThemeServiceTest {
     }
 
 
-    // 예약이 있는 테마는 삭제할 수 없다.
     @Test
     void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
+        // given
         ReservationTime time = reservationTimeRepository.save(
                 ReservationTime.create(LocalTime.parse("10:00"))
         );
@@ -104,6 +108,7 @@ class ThemeServiceTest {
                 Reservation.create("브라운", LocalDate.parse("2026-08-05"), time, theme)
         );
 
+        // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(time.getId()))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")

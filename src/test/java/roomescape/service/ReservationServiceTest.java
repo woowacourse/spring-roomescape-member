@@ -155,7 +155,7 @@ class ReservationServiceTest {
                 saved.date(), saved.time().id()
         );
 
-        // then
+        // when & then
         assertThatThrownBy(() -> reservationService.updateReservation(saved.id(), updateRequest))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -185,7 +185,7 @@ class ReservationServiceTest {
                 saved.date().minusYears(1), saved.time().id()
         );
 
-        // then
+        // when & then
         assertThatThrownBy(() -> reservationService.updateReservation(saved.id(), updateRequest))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -194,6 +194,7 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+        // when & then
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
@@ -219,7 +220,7 @@ class ReservationServiceTest {
 
         Reservation saved = reservationRepository.save(pastReservation);
 
-        // then
+        // when & then
         assertThatThrownBy(() -> reservationService.deleteReservation(saved.getId()))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
