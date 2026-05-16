@@ -205,9 +205,7 @@ class ReservationServiceImplTest {
     @Test
     void cancel_정상_취소() {
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
-        Reservation existing = new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L).withId(1L);
-        when(reservationRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(reservationRepository.deleteById(1L)).thenReturn(true);
 
         // when
         reservationService.cancel(1L);
