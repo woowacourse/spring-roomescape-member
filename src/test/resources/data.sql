@@ -35,7 +35,7 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DAT
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DATEADD(DAY, -5, CURRENT_DATE), 3, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DATEADD(DAY, -5, CURRENT_DATE), 4, 2);
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DATEADD(DAY, -4, CURRENT_DATE), 1, 3);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('아나키', DATEADD(DAY, -4, CURRENT_DATE), 1, 3);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DATEADD(DAY, -4, CURRENT_DATE), 2, 3);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', DATEADD(DAY, -4, CURRENT_DATE), 3, 3);
 
