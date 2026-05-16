@@ -794,7 +794,7 @@
     document.getElementById('popular-empty').style.display = 'none';
 
     try {
-      const themes = await apiFetch(`${API}/themes?sort=popular&limit=5`, {}, '인기 테마를 불러올 수 없습니다.');
+      const themes = await apiFetch(`${API}/themes/popular?limit=5`, {}, '인기 테마를 불러올 수 없습니다.');
 
       document.getElementById('popular-loading').style.display = 'none';
 
