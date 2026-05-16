@@ -24,6 +24,14 @@ public class ReservationTime {
         return new ReservationTime(id, startAt);
     }
 
+    public boolean isBefore(LocalTime time) {
+        return this.startAt.isBefore(time);
+    }
+
+    public boolean hasSameStartAt(ReservationTime time) {
+        return this.startAt.equals(time.startAt);
+    }
+
     private void validateNotNull(LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidReservationTimeException("예약 시간은 비어있을 수 없습니다.");

@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.global.exception.reservation.CancelledReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
+import roomescape.global.exception.reservation.SameReservationScheduleException;
 
 class ReservationTest {
 
@@ -137,6 +138,21 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.createNew("Brown", date, time, null))
                     .isInstanceOf(InvalidReservationException.class)
                     .hasMessageContaining("예약 날짜");
+        }
+    }
+
+    @Nested
+    @DisplayName("일정 변경 검증")
+    class ScheduleChange {
+
+        @Test
+        @DisplayName("이미 같은 일정이면 변경할 수 없다.")
+        void cannotChangeToSameSchedule() {
+            Reservation reservation = Reservation.createNew("Brown", date, time, theme);
+
+            assertThatThrownBy(() -> reservation.changeSchedule(date, time))
+                    .isInstanceOf(SameReservationScheduleException.class)
+                    .hasMessage("이미 같은 일정으로 예약되어 있습니다.");
         }
     }
 

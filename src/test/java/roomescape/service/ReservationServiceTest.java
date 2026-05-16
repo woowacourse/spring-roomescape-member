@@ -18,7 +18,8 @@ import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.reservation.DuplicateReservationException;
-import roomescape.global.exception.reservation.ExpiredReservationException;
+import roomescape.global.exception.reservation.ExpiredReservationCancelException;
+import roomescape.global.exception.reservation.ExpiredReservationChangeException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
 import roomescape.global.exception.reservation.SameReservationScheduleException;
@@ -172,7 +173,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.changeReservationSchedule(command))
-                .isInstanceOf(ExpiredReservationException.class)
+                .isInstanceOf(ExpiredReservationChangeException.class)
                 .hasMessage("지난 예약은 변경할 수 없습니다.");
     }
 
@@ -210,7 +211,7 @@ class ReservationServiceTest {
         CancelReservationCommand command = new CancelReservationCommand(1L, "고래");
 
         assertThatThrownBy(() -> reservationService.cancelReservation(command))
-                .isInstanceOf(ExpiredReservationException.class)
+                .isInstanceOf(ExpiredReservationCancelException.class)
                 .hasMessage("지난 예약은 취소할 수 없습니다.");
     }
 

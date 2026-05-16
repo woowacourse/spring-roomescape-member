@@ -2,9 +2,9 @@ package roomescape.global.exception.reservation;
 
 import roomescape.global.exception.status.ConflictException;
 
-public class ExpiredReservationException extends ConflictException {
+public class ExpiredReservationChangeException extends ConflictException {
 
-    public ExpiredReservationException(String message) {
+    public ExpiredReservationChangeException(String message) {
         super(message);
     }
 }

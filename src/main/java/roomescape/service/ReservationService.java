@@ -13,10 +13,10 @@ import roomescape.service.dto.reservation.CreateReservationCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.global.exception.reservation.ExpiredReservationException;
+import roomescape.global.exception.reservation.ExpiredReservationCancelException;
+import roomescape.global.exception.reservation.ExpiredReservationChangeException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
-import roomescape.global.exception.reservation.SameReservationScheduleException;
 import roomescape.global.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -75,13 +75,9 @@ public class ReservationService {
     @Transactional
     public ReservationResult changeReservationSchedule(ChangeReservationScheduleCommand command) {
         Reservation reservation = getReservation(command.reservationId(), command.name());
-        validateNotExpiredReservation(reservation, "지난 예약은 변경할 수 없습니다.");
+        validateChangeableReservation(reservation);
         ReservationTime time = getReservationTime(command.timeId());
         validateReservableDateTime(command.date(), time);
-
-        if (isSameSchedule(reservation, command.date(), time)) {
-            throw new SameReservationScheduleException("이미 같은 일정으로 예약되어 있습니다.");
-        }
 
         validateAvailableSlot(reservation.getTheme().getId(), command.date(), time.getId());
 
@@ -92,7 +88,7 @@ public class ReservationService {
     @Transactional
     public ReservationResult cancelReservation(CancelReservationCommand command) {
         Reservation reservation = getReservation(command.reservationId(), command.name());
-        validateNotExpiredReservation(reservation, "지난 예약은 취소할 수 없습니다.");
+        validateCancellableReservation(reservation);
         Reservation cancelledReservation = reservation.cancel();
         return ReservationResult.from(reservationRepository.updateStatus(cancelledReservation));
     }
@@ -136,23 +132,26 @@ public class ReservationService {
         }
     }
 
-    private boolean isSameSchedule(Reservation reservation, LocalDate date, ReservationTime time) {
-        return reservation.getDate().equals(date)
-                && reservation.getTime().getId().equals(time.getId());
-    }
-
     private void validateAvailableSlot(Long themeId, LocalDate date, Long timeId) {
         ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(themeId, date));
         reservedTimes.validateAvailable(timeId);
     }
 
-    private void validateNotExpiredReservation(Reservation reservation, String message) {
+    private void validateChangeableReservation(Reservation reservation) {
         LocalDate today = LocalDate.now(clock);
         LocalTime now = LocalTime.now(clock);
 
-        if (reservation.getDate().isBefore(today)
-                || reservation.getDate().isEqual(today) && reservation.getTime().getStartAt().isBefore(now)) {
-            throw new ExpiredReservationException(message);
+        if (reservation.isExpired(today, now)) {
+            throw new ExpiredReservationChangeException("지난 예약은 변경할 수 없습니다.");
+        }
+    }
+
+    private void validateCancellableReservation(Reservation reservation) {
+        LocalDate today = LocalDate.now(clock);
+        LocalTime now = LocalTime.now(clock);
+
+        if (reservation.isExpired(today, now)) {
+            throw new ExpiredReservationCancelException("지난 예약은 취소할 수 없습니다.");
         }
     }
 }

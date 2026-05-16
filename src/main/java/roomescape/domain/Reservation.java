@@ -1,9 +1,11 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.Getter;
 import roomescape.global.exception.reservation.CancelledReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
+import roomescape.global.exception.reservation.SameReservationScheduleException;
 
 @Getter
 public class Reservation {
@@ -42,12 +44,27 @@ public class Reservation {
 
     public Reservation changeSchedule(LocalDate date, ReservationTime time) {
         validateReserved();
+        validateDifferentSchedule(date, time);
         return new Reservation(id, name, date, time, theme, status);
     }
 
     public Reservation cancel() {
         validateReserved();
         return new Reservation(id, name, date, time, theme, ReservationStatus.CANCELLED);
+    }
+
+    public boolean hasSameSchedule(LocalDate date, ReservationTime time) {
+        return this.date.equals(date) && this.time.hasSameStartAt(time);
+    }
+
+    public boolean isExpired(LocalDate today, LocalTime now) {
+        return this.date.isBefore(today) || this.date.equals(today) && this.time.isBefore(now);
+    }
+
+    private void validateDifferentSchedule(LocalDate date, ReservationTime time) {
+        if (hasSameSchedule(date, time)) {
+            throw new SameReservationScheduleException("이미 같은 일정으로 예약되어 있습니다.");
+        }
     }
 
     private void validateName(String name) {
