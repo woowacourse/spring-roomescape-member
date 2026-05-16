@@ -82,15 +82,26 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 특정_시간이_존재하는지_확인한다() {
+    void 활성화된_특정_시간이_존재하는지_확인한다() {
         // given
         LocalTime targetTime = LocalTime.of(10, 0);
         reservationTimeRepository.save(ReservationTime.create(targetTime));
 
         // when & then
         LocalTime otherTime = LocalTime.of(11, 0);
-        assertThat(reservationTimeRepository.existsByStartAt(targetTime)).isTrue();
-        assertThat(reservationTimeRepository.existsByStartAt(otherTime)).isFalse();
+        assertThat(reservationTimeRepository.existsActiveByStartAt(targetTime)).isTrue();
+        assertThat(reservationTimeRepository.existsActiveByStartAt(otherTime)).isFalse();
+    }
+
+    @Test
+    void 비활성화된_시간은_활성화된_특정_시간_존재_여부에서_제외한다() {
+        // given
+        LocalTime targetTime = LocalTime.of(10, 0);
+        ReservationTime saved = reservationTimeRepository.save(ReservationTime.create(targetTime));
+        reservationTimeRepository.update(saved.deactivate());
+
+        // when & then
+        assertThat(reservationTimeRepository.existsActiveByStartAt(targetTime)).isFalse();
     }
 
     @Test

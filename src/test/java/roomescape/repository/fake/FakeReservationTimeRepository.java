@@ -45,10 +45,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAt(LocalTime time) {
+    public boolean existsActiveByStartAt(LocalTime time) {
         return reservationTimes.stream()
                 .anyMatch(reservationTime
-                        -> reservationTime.getStartAt().equals(time));
+                        -> reservationTime.getStartAt().equals(time) && reservationTime.isActive());
     }
 
     @Override

@@ -63,6 +63,22 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void 비활성화된_시간과_같은_시간으로_다시_등록할_수_있다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        ReservationTime saved = reservationTimeRepository.save(ReservationTime.create(startAt));
+        reservationTimeRepository.update(saved.deactivate());
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
+
+        // when
+        ReservationTimeResponse response = reservationTimeService.register(request);
+
+        // then
+        assertThat(response).extracting(ReservationTimeResponse::id, ReservationTimeResponse::startAt)
+                .containsExactly(2L, startAt);
+    }
+
+    @Test
     void 모든_예약_시간_목록을_조회한다() {
         // given
         reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());

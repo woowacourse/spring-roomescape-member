@@ -50,7 +50,7 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicateTime(LocalTime startAt) {
-        if (reservationTimeRepository.existsByStartAt(startAt)) {
+        if (reservationTimeRepository.existsActiveByStartAt(startAt)) {
             throw new DuplicateEntityException("이미 등록된 예약 시간 입니다. %s", startAt);
         }
     }
