@@ -15,6 +15,7 @@ import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.exception.ErrorCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -51,33 +52,16 @@ public class ScheduleService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
     }
 
-    // TODO: 메서드가 너무 길다. (2026. 5. 12.)
     @Transactional
     public Long create(AdminScheduleRequest request) {
-        Theme theme = themeService.findById(request.themeId());
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
+        validateOpeningTime(newStartAt);
 
-        if (newStartAt.isBefore(LocalDateTime.now())) {
-            throw new BadRequestException(ErrorCode.PAST_SCHEDULE_CREATION);
-        }
+        Theme theme = themeService.findById(request.themeId());
+        LocalDateTime newEndAt = calculateEndAt(newStartAt, theme.getRequiredTime());
 
-        if (newStartAt.toLocalTime().isBefore(OPENING_TIME)) {
-            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
-        }
-
-        LocalTime requiredTime = theme.getRequiredTime();
-        LocalDateTime newEndAt = newStartAt.plusHours(requiredTime.getHour())
-                .plusMinutes(requiredTime.getMinute());
-        if (newEndAt.toLocalTime().isAfter(CLOSE_TIME)) {
-            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
-        }
-
-        List<Schedule> existingSchedules = scheduleRepository.findDailySchedules(request.themeId(), request.date());
-        for (Schedule existingSchedule : existingSchedules) {
-            if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
-                throw new ConflictException(ErrorCode.DUPLICATE_SCHEDULE_TIME);
-            }
-        }
+        validateCloseTime(newEndAt);
+        validateDuplicateSchedule(request.themeId(), request.date(), newStartAt, newEndAt);
 
         Schedule newSchedule = new Schedule(newStartAt, theme);
         return scheduleRepository.create(newSchedule);
@@ -89,5 +73,34 @@ public class ScheduleService {
             throw new BadRequestException(ErrorCode.SCHEDULE_IN_USE);
         }
         scheduleRepository.delete(scheduleId);
+    }
+
+    private void validateOpeningTime(LocalDateTime startAt) {
+        if (startAt.isBefore(LocalDateTime.now())) {
+            throw new BadRequestException(ErrorCode.PAST_SCHEDULE_CREATION);
+        }
+        if (startAt.toLocalTime().isBefore(OPENING_TIME)) {
+            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
+        }
+    }
+
+    private LocalDateTime calculateEndAt(LocalDateTime startAt, LocalTime requiredTime) {
+        return startAt.plusHours(requiredTime.getHour())
+                .plusMinutes(requiredTime.getMinute());
+    }
+
+    private void validateCloseTime(LocalDateTime endAt) {
+        if (endAt.toLocalTime().isAfter(CLOSE_TIME)) {
+            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
+        }
+    }
+
+    private void validateDuplicateSchedule(Long themeId, LocalDate date, LocalDateTime startAt, LocalDateTime endAt) {
+        List<Schedule> existingSchedules = scheduleRepository.findDailySchedules(themeId, date);
+        for (Schedule existingSchedule : existingSchedules) {
+            if (existingSchedule.getStartAt().isBefore(endAt) && existingSchedule.getEndAt().isAfter(startAt)) {
+                throw new ConflictException(ErrorCode.DUPLICATE_SCHEDULE_TIME);
+            }
+        }
     }
 }
