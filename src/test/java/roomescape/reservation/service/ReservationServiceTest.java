@@ -83,7 +83,7 @@ class ReservationServiceTest {
         // test-data.sql 기준:
         // 김철수 / CURRENT_DATE + 7 / time_id=3 / theme_id=1
         List<Reservation> reservations =
-                reservationService.getReservationsByUsername("김철수");
+                reservationService.getMyReservations("김철수");
 
         Reservation targetReservation = reservations.stream()
                 .filter(reservation -> reservation.getDate()
@@ -106,9 +106,9 @@ class ReservationServiceTest {
 
     @DisplayName("사용자 이름으로 예약 목록을 조회한다.")
     @Test
-    void getReservationsByUsername() {
+    void getMyReservations() {
         List<Reservation> result =
-                reservationService.getReservationsByUsername("김철수");
+                reservationService.getMyReservations("김철수");
 
         // test-data.sql 기준:
         // 과거 2건 + 미래 2건

@@ -52,7 +52,7 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public List<Reservation> getReservationsByUsername(String username) {
+    public List<Reservation> getMyReservations(String username) {
         return reservationRepository.findAllByName(username);
     }
 
