@@ -110,7 +110,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean existByStartAt(LocalTime startAt) {
-        String sql = "select count(*) from reservation_time where start_at = :startAt";
+        String sql = "select count(*) from reservation_time where start_at = :start_at";
         Map<String, Object> params = Map.of("start_at", startAt);
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count > 0;
