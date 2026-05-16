@@ -150,37 +150,6 @@ class JdbcReservationRepositoryTest {
         assertThat(updated.getTimeId()).isEqualTo(newReservationTime.getId());
     }
 
-    @Test
-    @DisplayName("날짜 테마 예약 시간 ID 조회")
-    void findAllByDateAndThemeId_success() {
-        // given
-        LocalDate date = LocalDate.parse("2026-08-06");
-        Theme firstTheme = createTheme("우테코의 밤");
-        Theme secondTheme = createTheme("우테코 연구소");
-
-        ReservationTime firstThemeFirstTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("10:00"), firstTheme)
-        );
-        ReservationTime firstThemeSecondTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("11:00"), firstTheme)
-        );
-        ReservationTime secondThemeTime = jdbcReservationTimeRepository.save(
-                ReservationTime.createNew(LocalTime.parse("10:00"), secondTheme)
-        );
-
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstThemeFirstTime.getId()));
-        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstThemeSecondTime.getId()));
-        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstThemeFirstTime.getId()));
-        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondThemeTime.getId()));
-
-        // when
-        List<Long> reservedTimeIds = jdbcReservationRepository.findAllByDateAndThemeId(date, firstTheme.getId());
-
-        // then
-        assertThat(reservedTimeIds)
-                .containsExactlyInAnyOrder(firstThemeFirstTime.getId(), firstThemeSecondTime.getId());
-    }
-
     private Theme createTheme(final String name) {
         return jdbcThemeRepository.save(
                 Theme.createNew(name, "추리 테마", "https://example.com/theme.png")

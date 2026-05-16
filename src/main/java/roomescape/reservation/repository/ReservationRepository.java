@@ -20,8 +20,6 @@ public interface ReservationRepository {
 
     boolean existsByThemeId(long themeId);
 
-    List<Long> findAllByDateAndThemeId(LocalDate date, long themeId);
-
     List<ReservationResult> findAll();
 
     List<ReservationResult> findAllByName(final String name);

@@ -70,13 +70,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = RESERVATION_TIME_BASE_SELECT + " ORDER BY t.id, rt.start_at";
-
-        return jdbcTemplate.query(sql, reservationTimeRowMapper);
-    }
-
-    @Override
     public List<ReservationTime> findAllByThemeId(final long themeId) {
         String sql = RESERVATION_TIME_BASE_SELECT + " WHERE rt.theme_id = ? ORDER BY rt.start_at";
 

@@ -8,8 +8,6 @@ import roomescape.reservationtime.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    List<ReservationTime> findAll();
-
     List<ReservationTime> findAllByThemeId(long themeId);
 
     Optional<ReservationTime> findById(long timeId);

@@ -38,23 +38,6 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 시간 전체 조회")
-    void reservationTime_findAll_success() {
-        //given & when
-        LocalTime time = LocalTime.parse("11:00");
-        Theme theme = createTheme("미술관의 밤");
-
-        ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
-        jdbcReservationTimeRepository.save(nonIdReservationTime);
-
-        Optional<ReservationTime> reservationTime = jdbcReservationTimeRepository.findAll()
-                .stream()
-                .findFirst();
-        //then
-        assertThat(reservationTime).isNotEmpty();
-    }
-
-    @Test
     @DisplayName("예약 시간 저장")
     void reservationTime_save_success() {
         //given
@@ -134,13 +117,13 @@ class JdbcReservationTimeRepositoryTest {
         Theme theme = createTheme("미술관의 밤");
         ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(nonIdReservationTime);
-        int beforeSize = jdbcReservationTimeRepository.findAll().size();
+        int beforeSize = jdbcReservationTimeRepository.findAllByThemeId(theme.getId()).size();
 
         // when
         jdbcReservationTimeRepository.deleteById(reservationTime.getId());
 
         // then
-        int afterSize = jdbcReservationTimeRepository.findAll().size();
+        int afterSize = jdbcReservationTimeRepository.findAllByThemeId(theme.getId()).size();
 
         assertThat(afterSize).isEqualTo(beforeSize - 1);
     }
