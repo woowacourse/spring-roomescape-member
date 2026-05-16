@@ -54,11 +54,7 @@ public class ReservationService {
         ReservationTime time = getReservationTime(command);
         Theme theme = getTheme(command);
         validateReservableDateTime(command.date(), time);
-        ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
-                theme.getId(),
-                command.date()
-        ));
-        reservedTimes.validateAvailable(time.getId());
+        validateAvailableSlot(theme.getId(), command.date(), time.getId());
 
         Reservation reservation = reservationRepository.save(
                 Reservation.createNew(
@@ -72,7 +68,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(Long id) {
+    public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
 
@@ -87,11 +83,7 @@ public class ReservationService {
             throw new SameReservationScheduleException("이미 같은 일정으로 예약되어 있습니다.");
         }
 
-        ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
-                reservation.getTheme().getId(),
-                command.date()
-        ));
-        reservedTimes.validateAvailable(time.getId());
+        validateAvailableSlot(reservation.getTheme().getId(), command.date(), time.getId());
 
         Reservation changedReservation = reservation.changeSchedule(command.date(), time);
         return ReservationResult.from(reservationRepository.updateSchedule(changedReservation));
@@ -147,6 +139,11 @@ public class ReservationService {
     private boolean isSameSchedule(Reservation reservation, LocalDate date, ReservationTime time) {
         return reservation.getDate().equals(date)
                 && reservation.getTime().getId().equals(time.getId());
+    }
+
+    private void validateAvailableSlot(Long themeId, LocalDate date, Long timeId) {
+        ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(themeId, date));
+        reservedTimes.validateAvailable(timeId);
     }
 
     private void validateNotExpiredReservation(Reservation reservation, String message) {
