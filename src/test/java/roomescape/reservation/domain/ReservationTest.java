@@ -1,6 +1,5 @@
 package roomescape.reservation.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -12,10 +11,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.RoomEscapeException;
-import roomescape.reservationtime.application.dto.ReservationTimeResult;
 
 class ReservationTest {
 
@@ -86,13 +83,15 @@ class ReservationTest {
                 .date(LocalDate.of(2026, 5, 6))
                 .themeId(1L)
                 .timeId(1L)
+                .startAt(LocalTime.of(10, 0))
                 .build();
 
-        Reservation updated = reservation.updateDateAndTime(LocalDate.of(2028, 6, 1), 2L);
+        Reservation updated = reservation.updateDateAndTime(LocalDate.of(2028, 6, 1), 2L, LocalTime.of(11, 0));
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(updated.getDate()).isEqualTo(LocalDate.of(2028, 6, 1));
             softly.assertThat(updated.getTimeId()).isEqualTo(2L);
+            softly.assertThat(updated.getStartAt()).isEqualTo(LocalTime.of(11, 0));
         });
     }
 
@@ -105,9 +104,10 @@ class ReservationTest {
                 .date(LocalDate.of(2026, 5, 6))
                 .themeId(1L)
                 .timeId(1L)
+                .startAt(LocalTime.of(10, 0))
                 .build();
 
-        assertThatThrownBy(() -> reservation.updateDateAndTime(LocalDate.of(2026, 5, 6), 1L))
+        assertThatThrownBy(() -> reservation.updateDateAndTime(LocalDate.of(2026, 5, 6), 1L, LocalTime.of(10, 0)))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("동일한 날짜와 시간으로 변경할 수 없습니다.");
     }

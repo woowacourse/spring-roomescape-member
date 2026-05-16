@@ -1,5 +1,6 @@
 package roomescape.reservation.infra;
 
+import java.time.LocalTime;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,9 +26,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         return jdbcTemplate.query("""
-                    SELECT * 
-                    FROM reservation
-                    WHERE id = ?
+                    SELECT r.id, r.name, r.date, r.theme_id, r.time_id, rt.start_at
+                    FROM reservation r
+                    JOIN reservation_time rt ON r.time_id = rt.id
+                    WHERE r.id = ?
                 """,
                 (rs, rowNum) -> Reservation.builder()
                         .id(rs.getLong("id"))
@@ -35,6 +37,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         .date(rs.getDate("date").toLocalDate())
                         .themeId(rs.getLong("theme_id"))
                         .timeId(rs.getLong("time_id"))
+                        .startAt(rs.getObject("start_at", LocalTime.class))
                         .build()
                 , id).stream().findFirst();
     }

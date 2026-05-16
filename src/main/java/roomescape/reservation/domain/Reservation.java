@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,14 +18,16 @@ public class Reservation {
     private final LocalDate date;
     private final Long themeId;
     private final Long timeId;
+    private final LocalTime startAt;
 
     @Builder
-    public Reservation(Long id, String name, LocalDate date, Long themeId, Long timeId) {
+    public Reservation(Long id, String name, LocalDate date, Long themeId, Long timeId, LocalTime startAt) {
         this.id = id;
         this.name = requireName(name);
         this.date = requireDate(date);
         this.themeId = requireTheme(themeId);
         this.timeId = requireTime(timeId);
+        this.startAt = startAt;
     }
 
     public Reservation withId(Long generatedId) {
@@ -33,10 +37,11 @@ public class Reservation {
                 .date(this.date)
                 .themeId(this.themeId)
                 .timeId(this.timeId)
+                .startAt(this.startAt)
                 .build();
     }
 
-    public Reservation updateDateAndTime(LocalDate date, Long timeId) {
+    public Reservation updateDateAndTime(LocalDate date, Long timeId, LocalTime startAt) {
         if (this.date.equals(date) && this.timeId.equals(timeId)) {
             throw new ConflictException("동일한 날짜와 시간으로 변경할 수 없습니다.");
         }
@@ -46,7 +51,20 @@ public class Reservation {
                 .date(date)
                 .themeId(this.themeId)
                 .timeId(timeId)
+                .startAt(startAt)
                 .build();
+    }
+
+    public void validateReservable(LocalDateTime now) {
+        if (LocalDateTime.of(date, startAt).isBefore(now)) {
+            throw new RoomEscapeException("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+        }
+    }
+
+    public void validateDeletable(LocalDateTime now) {
+        if (LocalDateTime.of(date, startAt).isBefore(now)) {
+            throw new RoomEscapeException("이미 지나간 예약은 삭제할 수 없습니다.");
+        }
     }
 
     private static String requireName(String name) {
