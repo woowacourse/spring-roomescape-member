@@ -14,8 +14,18 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException illegalArgumentException) {
-        return ResponseEntity.badRequest().body(illegalArgumentException.getMessage());
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException illegalArgumentException, HttpServletRequest httpServletRequest
+    ) {
+        ErrorResponse errorResponse = new ErrorResponseBuilder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .errorMessage(illegalArgumentException.getMessage())
+                .apiUrl(httpServletRequest.getRequestURI())
+                .timeStamp(LocalDateTime.now())
+                .traceId(MDC.get("traceId"))
+                .build();
+
+        return ResponseEntity.status(errorResponse.httpStatus()).body(errorResponse);
     }
 
     @ExceptionHandler

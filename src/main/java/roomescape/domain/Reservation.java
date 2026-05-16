@@ -37,7 +37,7 @@ public class Reservation {
         this.reservationStatus = reservationStatus;
     }
 
-    public Reservation of(Long id, Reservation reservation) {
+    public static Reservation of(Long id, Reservation reservation) {
         return new Reservation(
                 id,
                 reservation.getName(),
