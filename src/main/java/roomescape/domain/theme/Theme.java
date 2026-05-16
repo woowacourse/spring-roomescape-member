@@ -1,8 +1,5 @@
 package roomescape.domain.theme;
 
-import roomescape.exception.BusinessException;
-import roomescape.exception.ErrorCode;
-
 public class Theme {
 
     private final Long id;
@@ -11,17 +8,10 @@ public class Theme {
     private final String url;
 
     public Theme(Long id, String name, String description, String url) {
-        validateName(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.THEME_NAME_INVALID);
-        }
     }
 
     public Long getId() {

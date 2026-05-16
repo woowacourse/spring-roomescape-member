@@ -20,7 +20,6 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt, LocalDateTime updatedAt) {
         validateName(name);
-        validateDate(date);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -31,14 +30,8 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank()) {
+        if (!name.matches("^[a-zA-Z0-9가-힣]+$")) {
             throw new BusinessException(ErrorCode.RESERVATION_NAME_INVALID);
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new BusinessException(ErrorCode.RESERVATION_DATE_INVALID);
         }
     }
 
