@@ -470,6 +470,33 @@ erDiagram
 ## Cycle2 리팩토링
 
 <details>
-<summary>첫번째 리팩토링</summary>
+<summary>첫번째 리뷰 후 리팩토링</summary>
+
+- **ReservationDao**
+- [x] `EmptyResultDataAccessException`이 `Exception.class` 핸들러에 잡혀 500을 반환문제 해결
+- [ ] RowMapper 중복 해결
+
+
+- **GlobalExceptionHandler**
+- [ ] `e.printStackTrace()` 대신 로거 활용
+
+
+- **ReservationService**
+- [ ] DB 이중조회 해결
+- [ ] 도메인 커스텀 예외 생성
+- [ ] 자기 자신이 중복으로 검증되는지 테스트 생성
+
+
+- **ReservationServiceTest**
+- [ ] 현재 날짜 기준 테스트 수정
+- [ ] 에러코드와 에러메시지 차이 공부해보기
+
+
+- **ReservationController**
+- [ ] 수정 성공된 ReservationResponse 반환
+
+
+- **행동가이드**
+- [ ] 행동 가이드를 왜 프론트에 위임했나 생각해보기
 
 </details>
