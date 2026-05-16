@@ -35,15 +35,11 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime create(LocalTime startAt) {
         ReservationTime reservationTime = new ReservationTime(startAt);
-        validateNotDuplicated(reservationTime);
-
-        return reservationTimeRepository.save(reservationTime);
-    }
-
-    private void validateNotDuplicated(ReservationTime reservationTime) {
         if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
             throw new ConflictException("이미 등록된 예약 시간입니다. 다른 시간을 입력해주세요.");
         }
+
+        return reservationTimeRepository.save(reservationTime);
     }
 
     @Transactional(readOnly = true)
@@ -53,21 +49,19 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        validateNoReservation(id);
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+        }
         if (!reservationTimeRepository.deleteById(id)) {
             throw new NotFoundException("삭제할 예약 시간이 존재하지 않습니다. 예약 시간 목록을 확인해주세요.");
         }
     }
 
-    private void validateNoReservation(Long timeId) {
-        if (reservationRepository.existsByTimeId(timeId)) {
-            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
-        validateThemeExists(themeId);
+        if (!themeRepository.existsById(themeId)) {
+            throw new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
+        }
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         Set<ReservationTime> reservedTimes = reservations.stream()
@@ -82,11 +76,5 @@ public class ReservationTimeService {
                         !reservedTimes.contains(reservationTime)
                 ))
                 .toList();
-    }
-
-    private void validateThemeExists(Long themeId) {
-        if (!themeRepository.existsById(themeId)) {
-            throw new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
-        }
     }
 }

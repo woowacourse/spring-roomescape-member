@@ -41,8 +41,16 @@ public class ReservationService {
         Theme theme = findTheme(themeId);
 
         Reservation reservation = new Reservation(name, date, time, theme);
-        validateNotPast(reservation, "현재 시각 이후의 날짜와 시간을 선택해주세요.");
-        validateNotDuplicated(reservation);
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+        }
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        )) {
+            throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+        }
 
         return reservationRepository.save(reservation);
     }
@@ -50,13 +58,23 @@ public class ReservationService {
     @Transactional
     public Reservation updateDateTime(Long id, String name, LocalDate date, Long timeId) {
         Reservation reservation = findReservationByIdAndName(id, name);
-        validateNotPast(reservation, "이미 지난 예약은 변경할 수 없습니다.");
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new InvalidRequestException("이미 지난 예약은 변경할 수 없습니다.");
+        }
 
         ReservationTime time = findTime(timeId);
         Reservation changedReservation = reservation.changeDateTime(date, time);
 
-        validateNotPast(changedReservation, "현재 시각 이후의 날짜와 시간을 선택해주세요.");
-        validateNotDuplicated(changedReservation);
+        if (changedReservation.isPast(LocalDateTime.now())) {
+            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+        }
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                changedReservation.getDate(),
+                changedReservation.getTime().getId(),
+                changedReservation.getTheme().getId()
+        )) {
+            throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+        }
 
         return reservationRepository.update(changedReservation)
                 .orElseThrow(() -> new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요."));
@@ -70,13 +88,19 @@ public class ReservationService {
     @Transactional
     public void cancel(Long id, String name) {
         Reservation reservation = findByIdAndName(id, name);
-        validateNotPast(reservation, "이미 지난 예약은 취소할 수 없습니다.");
-        deleteReservation(id);
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new InvalidRequestException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+        if (!reservationRepository.deleteById(id)) {
+            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+        }
     }
 
     @Transactional
     public void delete(Long id) {
-        deleteReservation(id);
+        if (!reservationRepository.deleteById(id)) {
+            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+        }
     }
 
     private ReservationTime findTime(Long timeId) {
@@ -97,27 +121,5 @@ public class ReservationService {
     private Reservation findReservationByIdAndName(Long id, String name) {
         return reservationRepository.findByIdAndName(id, name)
                 .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
-    }
-
-    private void validateNotPast(Reservation reservation, String message) {
-        if (reservation.isPast(LocalDateTime.now())) {
-            throw new InvalidRequestException(message);
-        }
-    }
-
-    private void validateNotDuplicated(Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
-                reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId()
-        )) {
-            throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
-        }
-    }
-
-    private void deleteReservation(Long id){
-        if (!reservationRepository.deleteById(id)) {
-            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
-        }
     }
 }

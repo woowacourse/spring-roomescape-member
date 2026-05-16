@@ -23,16 +23,12 @@ public class ThemeService {
 
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
-        validateNotDuplicated(name);
-        Theme theme = new Theme(name, description, thumbnail);
-
-        return themeRepository.save(theme);
-    }
-
-    private void validateNotDuplicated(String name) {
         if (themeRepository.existsByName(name)) {
             throw new ConflictException("이미 등록된 테마 이름입니다. 다른 이름을 입력해주세요.");
         }
+        Theme theme = new Theme(name, description, thumbnail);
+
+        return themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
@@ -50,16 +46,12 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        validateNoReservation(id);
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+        }
 
         if (!themeRepository.deleteById(id)) {
             throw new NotFoundException("삭제할 테마가 존재하지 않습니다. 테마 목록을 확인해주세요.");
-        }
-    }
-
-    private void validateNoReservation(Long timeId) {
-        if (reservationRepository.existsByTimeId(timeId)) {
-            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
         }
     }
 }
