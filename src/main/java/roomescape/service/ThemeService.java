@@ -23,7 +23,7 @@ public class ThemeService {
     public ThemeResponse register(ThemeRequest request) {
         validateDuplicateName(request.name());
 
-        Theme theme = new Theme(request.name(), request.description(), request.thumbnailImageUrl());
+        Theme theme = Theme.create(request.name(), request.description(), request.thumbnailImageUrl());
         return ThemeResponse.from(themeRepository.save(theme));
     }
 
@@ -31,8 +31,8 @@ public class ThemeService {
     public void remove(Long id) {
         Theme theme = themeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
 
-        theme.deactivate();
-        themeRepository.update(theme);
+        Theme inactiveTheme = theme.deactivate();
+        themeRepository.update(inactiveTheme);
     }
 
     public List<ThemeResponse> getAllActiveThemesByPaging(int page, int size) {

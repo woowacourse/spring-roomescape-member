@@ -66,7 +66,7 @@ public class ReservationService {
         Reservation reservation = findReservationOrThrow(id);
         ReservationTime time = findTimeOrThrow(request.timeId());
         LocalDate date = request.date();
-        Theme theme = reservation.getTheme();
+        Theme theme = findThemeOrThrow(reservation.getTheme().getId());
 
         theme.validateInactive();
         time.validateInactiveTime();

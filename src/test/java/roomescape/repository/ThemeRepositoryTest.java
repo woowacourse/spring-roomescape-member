@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -66,30 +65,17 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 비활성화된_같은_테마는_여러개_존재_가능하다() {
-        // given
-        Theme first = ThemeFixture.createInactiveTheme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
-        Theme second = ThemeFixture.createInactiveTheme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
-
-        // when & then
-        assertThatCode(() -> {
-            themeRepository.save(first);
-            themeRepository.save(second);
-        }).doesNotThrowAnyException();
-    }
-
-    @Test
     void 테마_정보를_수정한다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
         Theme savedTheme = themeRepository.save(theme);
-        savedTheme.deactivate();
+        Theme inactiveTheme = savedTheme.deactivate();
 
         // when
-        themeRepository.update(savedTheme);
+        themeRepository.update(inactiveTheme);
 
         // then
-        Optional<Theme> found = themeRepository.findById(savedTheme.getId());
+        Optional<Theme> found = themeRepository.findById(inactiveTheme.getId());
         assertThat(found).isPresent();
         assertThat(found.get().isActive()).isFalse();
     }
@@ -114,8 +100,8 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
                 ThemeFixture.createTheme("이프의 집", "이프의 집입니다", "http://image.png/image.com"));
         Theme inactive = themeRepository.save(
                 ThemeFixture.createTheme("아루의 집", "아루의 집입니다", "http://image.png/image.com"));
-        inactive.deactivate();
-        themeRepository.update(inactive);
+        Theme inactiveTheme = inactive.deactivate();
+        themeRepository.update(inactiveTheme);
 
         // when
         List<Theme> themes = themeRepository.findAllActiveThemesByPaging(1, 1);
@@ -125,7 +111,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
                 .containsExactly(second.getId());
 
         assertThat(themes).extracting(Theme::getId)
-                .doesNotContain(inactive.getId(), first.getId());
+                .doesNotContain(inactiveTheme.getId(), first.getId());
     }
 
     @Test

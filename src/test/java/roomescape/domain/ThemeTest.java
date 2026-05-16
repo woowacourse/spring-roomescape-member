@@ -20,7 +20,7 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/horror.png";
 
         // when
-        Theme theme = new Theme(name, description, thumbnailImageUrl);
+        Theme theme = Theme.create(name, description, thumbnailImageUrl);
 
         // then
         assertThat(theme)
@@ -37,7 +37,7 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/test.png";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(invalidName, description, thumbnailImageUrl))
+        assertThatThrownBy(() -> Theme.create(invalidName, description, thumbnailImageUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 필수 값입니다.");
     }
@@ -51,7 +51,7 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/test.png";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, invalidDescription, thumbnailImageUrl))
+        assertThatThrownBy(() -> Theme.create(name, invalidDescription, thumbnailImageUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("설명은 필수 값입니다.");
     }
@@ -71,7 +71,7 @@ class ThemeTest {
         String description = "설명";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, description, invalidUrl))
+        assertThatThrownBy(() -> Theme.create(name, description, invalidUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("올바른 이미지 주소 형식이 아닙니다. url=" + invalidUrl);
     }
@@ -82,21 +82,9 @@ class ThemeTest {
         Theme theme = ThemeFixture.createDefaultTheme();
 
         // when
-        theme.deactivate();
+        Theme inactiveTheme = theme.deactivate();
 
         // then
-        assertThat(theme.isActive()).isFalse();
-    }
-
-    @Test
-    void 이미_삭제된_테마를_비활성화하면_예외가_발생한다() {
-        // given
-        Theme theme = ThemeFixture.createDefaultTheme();
-        theme.deactivate();
-
-        // when & then
-        assertThatThrownBy(theme::deactivate)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 비활성화 된 테마입니다.");
+        assertThat(inactiveTheme.isActive()).isFalse();
     }
 }

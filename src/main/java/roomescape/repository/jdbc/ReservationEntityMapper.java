@@ -14,7 +14,7 @@ public final class ReservationEntityMapper {
                 rs.getTime("time_start").toLocalTime(),
                 rs.getBoolean("time_active")
         );
-        Theme theme = new Theme(
+        Theme theme = Theme.restore(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("description"),

@@ -43,7 +43,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Theme(id,
+        return Theme.restore(id,
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailImageUrl(),

@@ -121,8 +121,7 @@ class ReservationServiceTest {
     @Test
     void 비활성화된_테마로_예약하면_예외가_발생한다() {
         // given
-        Theme inactiveTheme = ThemeFixture.createDefaultTheme();
-        inactiveTheme.deactivate();
+        Theme inactiveTheme = ThemeFixture.createDefaultTheme().deactivate();
         Theme savedTheme = themeRepository.save(inactiveTheme);
         ReservationTime time = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
         ReservationRequest request = new ReservationRequest("웨지", LocalDate.now().plusDays(1), savedTheme.getId(),
@@ -331,8 +330,8 @@ class ReservationServiceTest {
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
 
-        theme.deactivate();
-        themeRepository.update(theme);
+        Theme inactiveTheme = theme.deactivate();
+        themeRepository.update(inactiveTheme);
         ReservationModifyRequest request = new ReservationModifyRequest("바니", LocalDate.now().plusDays(2),
                 modifiedTime.getId());
 

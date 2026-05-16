@@ -1,23 +1,18 @@
 package roomescape.domain;
 
 import java.net.URI;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import roomescape.global.exception.InactiveException;
 
 @Getter
-@EqualsAndHashCode(of = "id")
-@ToString
 public class Theme {
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnailImageUrl;
-    private boolean isActive;
+    private final boolean isActive;
 
-    public Theme(Long id, String name, String description, String thumbnailImageUrl, boolean isActive) {
-        validate(name, description, thumbnailImageUrl);
+    private Theme(Long id, String name, String description, String thumbnailImageUrl, boolean isActive) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -25,8 +20,13 @@ public class Theme {
         this.isActive = isActive;
     }
 
-    public Theme(String name, String description, String thumbnailImageUrl) {
-        this(null, name, description, thumbnailImageUrl, true);
+    public static Theme create(String name, String description, String thumbnailImageUrl) {
+        validate(name, description, thumbnailImageUrl);
+        return new Theme(null, name, description, thumbnailImageUrl, true);
+    }
+
+    public static Theme restore(Long id, String name, String description, String thumbnailImageUrl, boolean isActive) {
+        return new Theme(id, name, description, thumbnailImageUrl, isActive);
     }
 
     private static void validate(String name, String description, String thumbnailImageUrl) {
@@ -59,11 +59,8 @@ public class Theme {
         }
     }
 
-    public void deactivate() {
-        if (!isActive) {
-            throw new IllegalArgumentException("이미 비활성화 된 테마입니다.");
-        }
-        this.isActive = false;
+    public Theme deactivate() {
+        return restore(id, name, description, thumbnailImageUrl, false);
     }
 
     public void validateInactive() {
