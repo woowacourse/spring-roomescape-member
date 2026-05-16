@@ -24,6 +24,8 @@ public enum ErrorCode {
 
     INVALID_METHOD_REQUEST("[ERROR] 지원하지 않는 메서드입니다. 메서드를 다시 한 번 확인해 주세요."),
     INVALID_URL_REQUEST("[ERROR] 잘못된 경로입니다. URL을 다시 한 번 확인해 주세요."),
+    INVALID_JSON_REQUEST("[ERROR] 요청 본문(JSON)의 형식이 올바르지 않거나 읽을 수 없습니다. 데이터를 다시 확인해 주세요."),
+    TYPE_MISMATCH_REQUEST("[ERROR] 요청 파라미터 또는 경로 변수의 타입이 올바르지 않습니다. 입력된 값을 다시 확인해 주세요."),
 
     INTERNAL_SERVER_ERROR("[ERROR] 서버 내부에서 에러가 발생했습니다."),
 
