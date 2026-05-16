@@ -36,4 +36,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(new GlobalErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GlobalErrorResponse> handleUnhandledException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new GlobalErrorResponse("서버 내부에서 예상치 못한 오류가 발생했습니다. 다시 시도 해주세요."));
+    }
 }
