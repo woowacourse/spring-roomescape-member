@@ -1,13 +1,17 @@
 package roomescape.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -22,17 +26,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        log.warn("읽을 수 없는 요청: {}", e.getMessage());
+        log.warn("[WARN] 읽을 수 없는 요청 (JSON 파싱 실패): {}", e.getMessage());
         return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_INPUT_FORM", "요청 본문을 읽을 수 없습니다."));
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
-            Exception e, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        log.warn("Spring MVC 예외: {}", e.getMessage());
-
-        String errorCodeName = HttpStatus.valueOf(status.value()).name();
-        return ResponseEntity.status(status).body(new ErrorResponse(errorCodeName, e.getMessage()));
     }
 
     @Override
@@ -44,9 +39,54 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        log.warn("검증 실패 발생: {}", errorMessage);
-
+        log.warn("[WARN] @Valid 검증 실패: {}", errorMessage);
         return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_INPUT_VALUE", errorMessage));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("[WARN] 필수 파라미터 누락: {}", ex.getMessage());
+        String message = String.format("필수 요청 파라미터('%s')가 누락되었습니다.", ex.getParameterName());
+        return ResponseEntity.badRequest().body(new ErrorResponse("MISSING_PARAMETER", message));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+            TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("[WARN] 데이터 타입 불일치: {}", ex.getMessage());
+        String message = String.format("요청 값('%s')의 데이터 형식이 올바르지 않습니다.", ex.getValue());
+        return ResponseEntity.badRequest().body(new ErrorResponse("TYPE_MISMATCH", message));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("[WARN] 지원하지 않는 HTTP 메서드 요청: {}", e.getMethod());
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ErrorResponse("METHOD_NOT_ALLOWED", "지원하지 않는 요청 방식입니다. GET/POST 등을 확인해주세요."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("[WARN] 지원하지 않는 미디어 타입 (JSON이 아님): {}", e.getContentType());
+        return ResponseEntity
+                .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(new ErrorResponse("UNSUPPORTED_MEDIA_TYPE", "요청 데이터 형식이 잘못되었습니다. JSON 포맷인지 확인해주세요."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            Exception e, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("[WARN] Spring MVC 내부 예외 발생 : {}", e.getMessage());
+        String errorCodeName = HttpStatus.valueOf(status.value()).name();
+        String friendlyMessage = "요청 형식이 올바르지 않습니다. 시스템 관리자에게 문의해주세요.";
+
+        return ResponseEntity
+                .status(status)
+                .body(new ErrorResponse(errorCodeName, friendlyMessage));
     }
 
     @ExceptionHandler(NotFoundException.class)
