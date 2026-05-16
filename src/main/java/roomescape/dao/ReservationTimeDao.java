@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -38,9 +39,8 @@ public class ReservationTimeDao {
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?", Integer.class, startAt);
-        return count > 0;
+        return Objects.requireNonNullElse(jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?", Integer.class, startAt), 0) > 0;
     }
 
     public ReservationTime save(LocalTime startAt) {

@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,8 +50,8 @@ public class ReservationDao {
     }
 
     public long count() {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
-        return count;
+        return Objects.requireNonNullElse(
+                jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class), 0);
     }
 
     public Optional<Reservation> findById(long id) {
@@ -79,22 +80,19 @@ public class ReservationDao {
     }
 
     public boolean existsByTimeId(long timeId) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation WHERE time_id = ?", Integer.class, timeId);
-        return count > 0;
+        return Objects.requireNonNullElse(jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE time_id = ?", Integer.class, timeId), 0) > 0;
     }
 
     public boolean existsByThemeId(long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId);
-        return count > 0;
+        return Objects.requireNonNullElse(jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId), 0) > 0;
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
+        return Objects.requireNonNullElse(jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
-                Integer.class, date, timeId, themeId);
-        return count > 0;
+                Integer.class, date, timeId, themeId), 0) > 0;
     }
 
     public Reservation update(long id, LocalDate date, long timeId) {
