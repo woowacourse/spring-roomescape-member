@@ -17,16 +17,16 @@ import roomescape.theme.domain.ThemeSortType;
 @Transactional(readOnly = true)
 public class ThemeService {
 
-    private final ReferenceChecker referenceChecker;
+    private final ThemeReference reservationReference;
     private final ThemeRepository themeRepository;
     private final PopularThemeRepository popularThemeRepository;
 
     public ThemeService(
-            ReferenceChecker referenceChecker,
+            ThemeReference reservationReference,
             ThemeRepository themeRepository,
             PopularThemeRepository popularThemeRepository
     ) {
-        this.referenceChecker = referenceChecker;
+        this.reservationReference = reservationReference;
         this.themeRepository = themeRepository;
         this.popularThemeRepository = popularThemeRepository;
     }
@@ -56,7 +56,7 @@ public class ThemeService {
     public void deleteById(Long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND, id));
-        referenceChecker.validateThemeNotReferenced(id);
+        reservationReference.validateThemeNotReferenced(id);
         themeRepository.deleteById(id);
     }
 }

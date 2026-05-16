@@ -1,5 +1,5 @@
 package roomescape.theme.application;
 
-public interface ReferenceChecker {
+public interface ThemeReference {
     void validateThemeNotReferenced(Long themeId);
 }

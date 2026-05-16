@@ -4,14 +4,14 @@ import org.springframework.stereotype.Component;
 import roomescape.global.exception.ThemeErrorCode;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.theme.application.ReferenceChecker;
+import roomescape.theme.application.ThemeReference;
 
 @Component
-public class ThemeReferenceChecker implements ReferenceChecker {
+public class ThemeReferenceAdapter implements ThemeReference {
 
     private final ReservationRepository reservationRepository;
 
-    public ThemeReferenceChecker(ReservationRepository reservationRepository) {
+    public ThemeReferenceAdapter(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
