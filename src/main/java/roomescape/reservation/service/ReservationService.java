@@ -49,6 +49,17 @@ public class ReservationService {
         )).toList();
   }
 
+  public List<ReservationResponse> findByName(String name) {
+    return reservationDAO.findByName(name).stream()
+        .map(reservation -> ReservationResponse.of(
+            reservation.getId(),
+            reservation.getName(),
+            reservation.getDate(),
+            TimeResponse.from(reservation.getTime()),
+            ThemeSimpleResponse.from(reservation.getTheme())
+        )).toList();
+  }
+
   public ReservationResponse findById(Long id) {
     Reservation reservation = reservationDAO.findById(id);
     return ReservationResponse.of(reservation.getId(), reservation.getName(), reservation.getDate(),
@@ -78,7 +89,8 @@ public class ReservationService {
   }
 
   private void isReservationExists(ReservationRequest request) {
-    boolean reservationExist = reservationDAO.existsByTimeIdAndThemeId(request.timeId(), request.themeId());
+    boolean reservationExist = reservationDAO.existsByTimeIdAndThemeId(request.timeId(),
+        request.themeId());
     if (reservationExist) {
       throw new IllegalStateException("해당 시간대는 이미 예약이 완료되었습니다.");
     }

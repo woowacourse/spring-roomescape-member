@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationCreateResponse;
@@ -42,6 +43,12 @@ public class ReservationController {
     @GetMapping("/reservations/{id}")
     public ResponseEntity<ReservationResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationFacade.findReservationById(id));
+    }
+
+    @ResponseBody
+    @GetMapping("/reservations/my")
+    public ResponseEntity<List<ReservationResponse>> findByName(@RequestParam String name) {
+        return ResponseEntity.ok(reservationFacade.findReservationByName(name));
     }
 
     @DeleteMapping("/reservations/{id}")

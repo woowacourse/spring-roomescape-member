@@ -54,4 +54,8 @@ public class ReservationFacade {
     public ReservationResponse findReservationById(Long id) {
         return reservationService.findById(id);
     }
+
+  public List<ReservationResponse> findReservationByName(String name) {
+    return reservationService.findByName(name);
+  }
 }
