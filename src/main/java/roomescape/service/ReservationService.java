@@ -41,7 +41,8 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
-                .orElseThrow(() -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new RoomEscapeException(
+                        ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
                 .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND));
 
@@ -57,6 +58,7 @@ public class ReservationService {
 
         return ReservationResponseDTO.from(savedReservation);
     }
+
     private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, time, theme)) {
             throw new RoomEscapeException(ReservationErrorCode.RESERVATION_DUPLICATE);

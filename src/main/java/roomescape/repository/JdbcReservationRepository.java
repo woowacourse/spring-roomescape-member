@@ -16,55 +16,42 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ReservationErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
     private static RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> {
-            ReservationTime time = ReservationTime.of(
-                    resultSet.getLong("reservation_time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
-            );
+            ReservationTime time = ReservationTime.of(resultSet.getLong("reservation_time_id"),
+                    LocalTime.parse(resultSet.getString("time_value")));
 
-            Theme theme = Theme.of(
-                    resultSet.getLong("reservation_theme_id"),
+            Theme theme = Theme.of(resultSet.getLong("reservation_theme_id"),
                     resultSet.getString("reservation_theme_name"),
                     resultSet.getString("reservation_theme_description"),
-                    resultSet.getString("reservation_theme_image_url")
-            );
-            return Reservation.of(
-                    resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
-                    time,
-                    theme
-            );
+                    resultSet.getString("reservation_theme_image_url"));
+            return Reservation.of(resultSet.getLong("reservation_id"), resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")), time, theme);
         };
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(
-                new BeanPropertySqlParameterSource(reservation))
-                .longValue();
+                new BeanPropertySqlParameterSource(reservation)).longValue();
 
-        return Reservation.of(
-                generatedKey,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
-        );
+        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -87,10 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     on r.theme_id = th.id
                 """;
 
-        return jdbcTemplate.query(
-                sql,
-                getReservationRowMapper()
-        );
+        return jdbcTemplate.query(sql, getReservationRowMapper());
     }
 
     @Override
@@ -114,14 +98,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Map<String, Object> params = Map.of("id", id);
 
-        List<Reservation> results = jdbcTemplate.query(
-                sql,
-                params,
-                getReservationRowMapper()
-        );
-        return results
-                .stream()
-                .findFirst();
+        List<Reservation> results = jdbcTemplate.query(sql, params, getReservationRowMapper());
+        return results.stream().findFirst();
     }
 
     @Override
@@ -145,11 +123,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Map<String, Object> params = Map.of("name", name);
 
-        List<Reservation> results = jdbcTemplate.query(
-                sql,
-                params,
-                getReservationRowMapper()
-        );
+        List<Reservation> results = jdbcTemplate.query(sql, params, getReservationRowMapper());
         return results;
     }
 
@@ -187,11 +161,12 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation update(Long id, LocalDate date, ReservationTime time) {
-        String sql = "update reservation SET date = :date, time_id = :time_id where id = :id";
+        String sql = "update reservation set date = :date, time_id = :time_id where id = :id";
         SqlParameterSource params = new MapSqlParameterSource().addValue("date", date)
                 .addValue("time_id", time.getId()).addValue("id", id);
         jdbcTemplate.update(sql, params);
         return findById(id)
-                .orElseThrow(() -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(
+                        () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 }

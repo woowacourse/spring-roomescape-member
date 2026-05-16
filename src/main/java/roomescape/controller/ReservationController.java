@@ -35,11 +35,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> add(
-            @Valid @RequestBody ReservationRequestDTO request) {
+    public ResponseEntity<Void> add(@Valid @RequestBody ReservationRequestDTO request) {
         ReservationResponseDTO saved = reservationService.addReservation(request);
-        return ResponseEntity.created(
-                URI.create("/reservations/" + saved.id())).build();
+        return ResponseEntity.created(URI.create("/reservations/" + saved.id())).build();
     }
 
     @GetMapping("/{id}")
@@ -50,30 +48,27 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDTO>> findReservationsByName(
-            @RequestParam @NotBlank(message = "이름은 한 글자 이상이어야 합니다.") String name
-    ) {
+            @RequestParam @NotBlank(message = "이름은 한 글자 이상이어야 합니다.") String name) {
         return ResponseEntity.ok(reservationService.findReservationsByName(name));
     }
 
     @GetMapping("/booked-times")
     public ResponseEntity<List<ReservedTimeResponseDTO>> findReservedTimes(
-            @RequestParam LocalDate selectedDate,
-            @RequestParam Long themeId
-    ) {
-        return ResponseEntity.ok(reservationService.findReservedTimes(
-                selectedDate, themeId));
+            @RequestParam LocalDate selectedDate, @RequestParam Long themeId) {
+        return ResponseEntity.ok(reservationService.findReservedTimes(selectedDate, themeId));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponseDTO> updateReservation(
-            @Positive(message = "예약 아이디는 1 이상이어야 합니다.") @PathVariable Long id,
+            @PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id,
             @Valid @RequestBody ReservationUpdateRequest request) {
         ReservationResponseDTO updated = reservationService.updateReservation(id, request);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }

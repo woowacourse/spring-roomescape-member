@@ -18,10 +18,8 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(
-            ReservationTimeRepository reservationTimeRepository,
-            ReservationRepository reservationRepository
-    ) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -29,9 +27,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponseDTO addReservationTime(
             ReservationTimeRequestDTO reservationTimeRequest) {
-        ReservationTime reservationTime = ReservationTime.create(
-                reservationTimeRequest.startAt()
-        );
+        ReservationTime reservationTime = ReservationTime.create(reservationTimeRequest.startAt());
 
         validateDuplicateReservationTime(reservationTime);
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
@@ -40,15 +36,15 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicateReservationTime(ReservationTime reservationTime) {
-        if(reservationTimeRepository.existByStartAt(reservationTime.getStartAt())) {
+        if (reservationTimeRepository.existByStartAt(reservationTime.getStartAt())) {
             throw new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_DUPLICATE);
         }
     }
 
     @Transactional(readOnly = true)
     public List<ReservationTimeResponseDTO> findAllReservationTime() {
-        return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponseDTO::from).collect(Collectors.toList());
+        return reservationTimeRepository.findAll().stream().map(ReservationTimeResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional

@@ -27,14 +27,14 @@ public class AdminReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Void> add(
-            @Valid @RequestBody ReservationTimeRequestDTO request) {
+    public ResponseEntity<Void> add(@Valid @RequestBody ReservationTimeRequestDTO request) {
         ReservationTimeResponseDTO saved = reservationTimeService.addReservationTime(request);
         return ResponseEntity.created(URI.create("/times/" + saved.id())).build();
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable @Positive(message = "시간 ID는 1 이상의 숫자여야 합니다.") Long id) {
+    public ResponseEntity<Void> deleteReservationTime(
+            @PathVariable @Positive(message = "시간 ID는 1 이상의 숫자여야 합니다.") Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }

@@ -22,7 +22,8 @@ public class ThemeService {
     private final ReservationRepository reservationRepository;
 
 
-    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(Clock clock, ThemeRepository themeRepository,
+            ReservationRepository reservationRepository) {
         this.clock = clock;
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
@@ -37,7 +38,7 @@ public class ThemeService {
     }
 
     private void validateDuplicateTheme(Theme theme) {
-        if(themeRepository.existByThemeName(theme.getName())) {
+        if (themeRepository.existByThemeName(theme.getName())) {
             throw new RoomEscapeException(ThemeErrorCode.THEME_DUPLICATE);
         }
     }
@@ -59,10 +60,10 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ThemeResponseDTO> getPopularThemes(Long weeks, Long limit) {
         return themeRepository.findPopularThemes(
-                LocalDate.now(clock).minusWeeks(weeks),
-                LocalDate.now(clock),
-                limit
-        )
+                        LocalDate.now(clock).minusWeeks(weeks),
+                        LocalDate.now(clock),
+                        limit
+                )
                 .stream()
                 .map(ThemeResponseDTO::from)
                 .toList();
