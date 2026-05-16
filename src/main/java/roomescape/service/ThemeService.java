@@ -28,7 +28,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void deactivate(Long id) {
         Theme theme = themeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
 
         Theme inactiveTheme = theme.deactivate();

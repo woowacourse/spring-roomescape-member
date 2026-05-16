@@ -51,13 +51,13 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마_식별자로_테마를_삭제할_수_있다() {
+    void 테마_식별자로_테마를_비활성화할_수_있다() {
         // given
         ThemeRequest request = new ThemeRequest("공포테마", "설명", "http://image.png");
         ThemeResponse response = themeService.register(request);
 
         // when
-        themeService.remove(response.id());
+        themeService.deactivate(response.id());
 
         // then
         assertThatCode(() -> themeService.register(request)).doesNotThrowAnyException();
@@ -69,7 +69,7 @@ class ThemeServiceTest {
         ThemeResponse first = themeService.register(new ThemeRequest("첫번째", "첫번째 설명", "http://image1.png"));
         ThemeResponse second = themeService.register(new ThemeRequest("두번째", "두번째 설명", "http://image2.png"));
         ThemeResponse inactive = themeService.register(new ThemeRequest("세번째", "세번째 설명", "http://image3.png"));
-        themeService.remove(inactive.id());
+        themeService.deactivate(inactive.id());
 
         // when
         List<ThemeResponse> responses = themeService.getAllActiveThemesByPaging(0, 10);
@@ -84,7 +84,7 @@ class ThemeServiceTest {
         ThemeResponse first = themeService.register(new ThemeRequest("첫번째", "첫번째 설명", "http://image1.png"));
         ThemeResponse second = themeService.register(new ThemeRequest("두번째", "두번째 설명", "http://image2.png"));
         ThemeResponse inactive = themeService.register(new ThemeRequest("세번째", "세번째 설명", "http://image3.png"));
-        themeService.remove(inactive.id());
+        themeService.deactivate(inactive.id());
 
         // when
         List<ThemeResponse> responses = themeService.getPopularThemes(LocalDate.now().minusDays(7), LocalDate.now(), 1);

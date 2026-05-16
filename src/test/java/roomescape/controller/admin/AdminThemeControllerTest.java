@@ -74,26 +74,26 @@ class AdminThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 관리자가_특정_테마_삭제_요청_시_204_NO_CONTENT를_응답한다() {
+    void 관리자가_특정_테마_비활성화_요청_시_204_NO_CONTENT를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")
-                .when().delete("/api/admin/themes/1")
+                .when().patch("/api/admin/themes/1")
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
 
-        verify(themeService, times(1)).remove(anyLong());
+        verify(themeService, times(1)).deactivate(anyLong());
     }
 
     @ParameterizedTest
     @ValueSource(longs = {0, -1})
-    void 관리자가_잘못된_테마_식별자로_삭제_요청_시_예외가_발생한다(Long invalidId) {
+    void 관리자가_잘못된_테마_식별자로_비활성화_요청_시_예외가_발생한다(Long invalidId) {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("role", "ADMIN")
-                .when().delete("/api/admin/themes/" + invalidId)
+                .when().patch("/api/admin/themes/" + invalidId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("테마 식별자는 양수여야 합니다."));

@@ -43,7 +43,7 @@ public class ReservationTime {
         return !toReservationDateTime(date).isBefore(LocalDateTime.now());
     }
 
-    public void validateInactiveTime() {
+    public void validateInactive() {
         if (!isActive()) {
             throw new InactiveException("비활성화 된 시간대는 예약할 수 없습니다.");
         }

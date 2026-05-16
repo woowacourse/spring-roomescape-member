@@ -82,10 +82,10 @@ class ReservationTimeServiceTest {
 
         // when
         reservationTimeService.deactivate(time.getId());
-        ReservationTime deactivateTime = reservationTimeRepository.findById(time.getId()).get();
+        ReservationTime inactiveTime = reservationTimeRepository.findById(time.getId()).get();
 
         // then
-        assertThat(deactivateTime.isActive()).isFalse();
+        assertThat(inactiveTime.isActive()).isFalse();
     }
 
     @Test

@@ -36,7 +36,7 @@ public class ReservationService {
         ReservationTime time = findTimeOrThrow(request.timeId());
 
         theme.validateInactive();
-        time.validateInactiveTime();
+        time.validateInactive();
 
         validateDuplicateReservation(request.date(), time, theme);
 
@@ -69,7 +69,7 @@ public class ReservationService {
         Theme theme = findThemeOrThrow(reservation.getTheme().getId());
 
         theme.validateInactive();
-        time.validateInactiveTime();
+        time.validateInactive();
 
         reservation.validateOwner(request.name());
         validateDuplicateReservation(date, time, theme);

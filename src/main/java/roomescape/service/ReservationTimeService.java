@@ -38,7 +38,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
 
         if (reservationRepository.existsByTimeId(id)) {
-            throw new ForbiddenException("예약이 존재하는 시간대는 삭제할 수 없습니다.");
+            throw new ForbiddenException("예약이 존재하는 시간대는 비활성화할 수 없습니다.");
         }
         ReservationTime deactivatedTime = time.deactivate();
         reservationTimeRepository.update(deactivatedTime);
