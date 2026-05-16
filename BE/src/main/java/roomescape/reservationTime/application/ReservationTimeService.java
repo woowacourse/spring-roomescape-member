@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ReservationTimeErrorCode;
 import roomescape.global.exception.customException.EntityNotFoundException;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
@@ -18,17 +16,14 @@ import roomescape.reservationTime.domain.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
-    private final ReferenceChecker referenceChecker;
+    private final ReservationTimeReference reservationReference;
 
     public ReservationTimeService(
             ReservationTimeRepository reservationTimeRepository,
-            ReservationRepository reservationRepository,
-            ReferenceChecker referenceChecker
+            ReservationTimeReference reservationReference
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationRepository = reservationRepository;
-        this.referenceChecker = referenceChecker;
+        this.reservationReference = reservationReference;
     }
 
     @Transactional
@@ -45,11 +40,7 @@ public class ReservationTimeService {
         if (date == null || themeId == null) {
             return Set.of();
         }
-        List<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
-                .stream()
-                .map(Reservation::getTime)
-                .toList();
-
+        List<ReservationTime> bookedTimes = reservationReference.getBookedTimes(date, themeId);
         return bookedTimes.stream()
                 .map(ReservationTime::getId)
                 .collect(Collectors.toSet());
@@ -59,7 +50,7 @@ public class ReservationTimeService {
     public void deleteTime(Long id) {
         reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND, id));
-        referenceChecker.validateReservationTimeNotReferenced(id);
+        reservationReference.validateReservationTimeNotReferenced(id);
         reservationTimeRepository.deleteById(id);
     }
 }

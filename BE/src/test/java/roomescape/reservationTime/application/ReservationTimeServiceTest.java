@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
-import roomescape.reservation.application.ReservationTimeReferenceChecker;
+import roomescape.reservation.application.ReservationTimeReferenceAdapter;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
@@ -27,18 +27,17 @@ class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
-    private ReferenceChecker referenceChecker;
+    private ReservationTimeReference reservationReference;
 
 
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
-        referenceChecker = new ReservationTimeReferenceChecker(reservationRepository);
+        reservationReference = new ReservationTimeReferenceAdapter(reservationRepository);
         reservationTimeService = new ReservationTimeService(
                 reservationTimeRepository,
-                reservationRepository,
-                referenceChecker
+                reservationReference
         );
     }
 
