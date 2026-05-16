@@ -131,45 +131,45 @@
 
 ```json
 {
-  "code": "INVALID_REQUEST",
-  "message": "예약자 이름은 비어 있을 수 없습니다."
+  "code": "C001",
+  "message": "name: 공백일 수 없습니다"
 }
 ```
 
 | 필드 | 설명 | 예시 |
 |---|---|---|
-| `code` | 클라이언트가 분기할 수 있는 에러 코드 | `DUPLICATE_RESERVATION` |
+| `code` | 클라이언트가 분기할 수 있는 에러 코드 | `R002` |
 | `message` | 사용자가 이해할 수 있는 한국어 메시지 | `이미 예약된 시간입니다.` |
 
 ### 에러 코드 목록
 
 | code | HTTP 상태 | 기본 message |
 |---|---:|---|
-| `RESERVATION_NOT_FOUND` | `404 Not Found` | `예약이 존재하지 않습니다.` |
-| `DUPLICATE_RESERVATION` | `409 Conflict` | `이미 예약된 시간입니다.` |
-| `PAST_RESERVATION_NOT_ALLOWED` | `400 Bad Request` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
-| `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `400 Bad Request` | `이미 지난 예약은 취소할 수 없습니다.` |
-| `RESERVATION_OWNER_MISMATCH` | `403 Forbidden` | `본인의 예약만 취소·변경할 수 있습니다.` |
-| `TIME_NOT_FOUND` | `404 Not Found` | `예약 시간이 존재하지 않습니다.` |
-| `RESERVED_TIME_DELETE_NOT_ALLOWED` | `409 Conflict` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
-| `THEME_NOT_FOUND` | `404 Not Found` | `테마가 존재하지 않습니다.` |
-| `HOLIDAY_NOT_FOUND` | `404 Not Found` | `휴일이 존재하지 않습니다.` |
-| `INVALID_REQUEST` | `400 Bad Request` | `요청이 올바르지 않습니다.` |
-| `INTERNAL_SERVER_ERROR` | `500 Internal Server Error` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
+| `R001` | `404 Not Found` | `예약이 존재하지 않습니다.` |
+| `R002` | `409 Conflict` | `이미 예약된 시간입니다.` |
+| `R003` | `400 Bad Request` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
+| `R004` | `400 Bad Request` | `이미 지난 예약은 취소할 수 없습니다.` |
+| `R005` | `403 Forbidden` | `본인의 예약만 취소·변경할 수 있습니다.` |
+| `T001` | `404 Not Found` | `예약 시간이 존재하지 않습니다.` |
+| `T002` | `409 Conflict` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
+| `TH001` | `404 Not Found` | `테마가 존재하지 않습니다.` |
+| `H001` | `404 Not Found` | `휴일이 존재하지 않습니다.` |
+| `C001` | `400 Bad Request` | `요청이 올바르지 않습니다.` |
+| `S001` | `500 Internal Server Error` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
 
 ### 상태 코드 결정
 
 | 상황 | HTTP 상태 | code | message 예시 |
 |---|---:|---|---|
-| 빈 이름, 필수 값 누락, 잘못된 날짜·시간 형식 | `400 Bad Request` | `INVALID_REQUEST` | `요청이 올바르지 않습니다.` |
-| 과거 날짜·시간 예약 생성 | `400 Bad Request` | `PAST_RESERVATION_NOT_ALLOWED` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
-| 같은 날짜·시간·테마 중복 예약 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
-| 예약이 존재하는 시간 삭제 | `409 Conflict` | `RESERVED_TIME_DELETE_NOT_ALLOWED` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
-| 지난 예약 취소 | `400 Bad Request` | `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `이미 지난 예약은 취소할 수 없습니다.` |
-| 변경하려는 날짜·시간·테마가 이미 예약됨 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
-| 본인 예약이 아닌 예약 취소·변경 | `403 Forbidden` | `RESERVATION_OWNER_MISMATCH` | `본인의 예약만 취소·변경할 수 있습니다.` |
-| 존재하지 않는 예약, 시간, 테마, 휴일 | `404 Not Found` | `*_NOT_FOUND` | `예약이 존재하지 않습니다.` |
-| 예상하지 못한 서버 오류 | `500 Internal Server Error` | `INTERNAL_SERVER_ERROR` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
+| 빈 이름, 필수 값 누락, 잘못된 날짜·시간 형식 | `400 Bad Request` | `C001` | `요청이 올바르지 않습니다.` |
+| 과거 날짜·시간 예약 생성 | `400 Bad Request` | `R003` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
+| 같은 날짜·시간·테마 중복 예약 | `409 Conflict` | `R002` | `이미 예약된 시간입니다.` |
+| 예약이 존재하는 시간 삭제 | `409 Conflict` | `T002` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
+| 지난 예약 취소 | `400 Bad Request` | `R004` | `이미 지난 예약은 취소할 수 없습니다.` |
+| 변경하려는 날짜·시간·테마가 이미 예약됨 | `409 Conflict` | `R002` | `이미 예약된 시간입니다.` |
+| 본인 예약이 아닌 예약 취소·변경 | `403 Forbidden` | `R005` | `본인의 예약만 취소·변경할 수 있습니다.` |
+| 존재하지 않는 예약, 시간, 테마, 휴일 | `404 Not Found` | `R001`, `T001`, `TH001`, `H001` | `예약이 존재하지 않습니다.` |
+| 예상하지 못한 서버 오류 | `500 Internal Server Error` | `S001` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
 
 ### 클라이언트 표시 규칙
 
