@@ -20,9 +20,9 @@ export default class ThemeSectionView extends View {
       });
     });
 
-    delegate(this.tableBody, "click", ".btn-delete", (event) => {
-      const button = event.target.closest(".btn-delete");
-      emit(this.element, "@delete-theme", {
+    delegate(this.tableBody, "click", ".btn-deactivate", (event) => {
+      const button = event.target.closest(".btn-deactivate");
+      emit(this.element, "@deactivate-theme", {
         id: Number(button.dataset.id)
       });
     });
@@ -46,7 +46,7 @@ export default class ThemeSectionView extends View {
         <td><span class="badge badge-gray">${theme.id}</span></td>
         <td class="td-name">${theme.name}</td>
         <td class="td-description">${theme.description}</td>
-        <td><button class="btn-delete" type="button" data-id="${theme.id}">삭제</button></td>
+        <td><button class="btn-deactivate" type="button" data-id="${theme.id}">비활성화</button></td>
       `;
       this.tableBody.appendChild(row);
     });

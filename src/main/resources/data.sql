@@ -28,21 +28,17 @@ VALUES ('화이트노이즈', '실험실에 남겨진 단서를 수집해 기묘
         1),
        ('화이트노이즈', '리뉴얼 준비 중인 비활성 테마 데이터', 'https://picsum.photos/seed/whitenoise-archived/800/600', 0);
 
-
-INSERT INTO reservation_time (start_at)
-VALUES ('10:00:00'),
-       ('11:30:00'),
-       ('13:00:00'),
-       ('14:30:00'),
-       ('16:00:00'),
-       ('18:00:00'),
-       ('19:30:00');
-
 INSERT INTO reservation_time (start_at, is_active)
 VALUES ('09:00:00', 1),
+       ('11:30:00', 1),
+       ('13:00:00', 1),
+       ('14:30:00', 1),
        ('20:30:00', 1),
+       ('16:00:00', 1),
+       ('18:00:00', 1),
+       ('19:30:00', 1),
        ('21:30:00', 1),
-       ('10:00:00', 0);
+       ('10:00:00', 1);
 
 INSERT INTO reservation (name, date, theme_id, time_id, status)
 VALUES ('민서', DATEADD('DAY', 1, CURRENT_DATE), 1, 1, 'RESERVED'),
@@ -78,19 +74,9 @@ VALUES ('민서', DATEADD('DAY', 1, CURRENT_DATE), 1, 1, 'RESERVED'),
 
 INSERT INTO reservation (name, date, theme_id, time_id, status)
 VALUES ('로건', DATEADD('DAY', 1, CURRENT_DATE), 6, 8, 'RESERVED'),
-       ('해린', DATEADD('DAY', 1, CURRENT_DATE), 7, 9, 'RESERVED'),
        ('리아', DATEADD('DAY', 2, CURRENT_DATE), 8, 8, 'RESERVED'),
-       ('연우', DATEADD('DAY', 2, CURRENT_DATE), 9, 9, 'RESERVED'),
-       ('준서', DATEADD('DAY', 3, CURRENT_DATE), 10, 10, 'RESERVED'),
-       ('소율', DATEADD('DAY', 4, CURRENT_DATE), 11, 8, 'RESERVED'),
-       ('태오', DATEADD('DAY', 5, CURRENT_DATE), 12, 9, 'RESERVED'),
-       ('나은', DATEADD('DAY', 6, CURRENT_DATE), 13, 10, 'RESERVED'),
        ('민재', DATEADD('DAY', 7, CURRENT_DATE), 14, 8, 'RESERVED'),
-       ('서진', DATEADD('DAY', 8, CURRENT_DATE), 15, 9, 'RESERVED'),
-       ('유하', DATEADD('DAY', 9, CURRENT_DATE), 16, 10, 'RESERVED'),
        ('도현', DATEADD('DAY', 10, CURRENT_DATE), 17, 8, 'RESERVED'),
-       ('이안', DATEADD('DAY', 11, CURRENT_DATE), 18, 9, 'RESERVED'),
-       ('채아', DATEADD('DAY', 12, CURRENT_DATE), 19, 10, 'RESERVED'),
        ('민서', DATEADD('DAY', 1, CURRENT_DATE), 1, 1, 'CANCELED'),
        ('도윤', DATEADD('DAY', 1, CURRENT_DATE), 2, 2, 'CANCELED'),
        ('하준', DATEADD('DAY', 2, CURRENT_DATE), 1, 2, 'CANCELED'),

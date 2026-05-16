@@ -192,7 +192,7 @@ tbody td {
   white-space: nowrap;
 }
 
-.btn-delete {
+.btn-deactivate {
   border: 0;
   border-radius: 7px;
   background: #fff5f5;
@@ -205,7 +205,7 @@ tbody td {
   font-weight: 600;
 }
 
-.btn-delete:hover {
+.btn-deactivate:hover {
   background: #ffe0e0;
 }
 

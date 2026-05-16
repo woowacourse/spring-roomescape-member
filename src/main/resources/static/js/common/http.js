@@ -4,7 +4,9 @@ async function parseError(response) {
   if (text) {
     try {
       const body = JSON.parse(text);
-      throw new Error(body.message || text);
+      const error = new Error(body.message || text);
+      error.code = body.code;
+      throw error;
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new Error(text);
