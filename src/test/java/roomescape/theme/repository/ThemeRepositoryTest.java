@@ -9,9 +9,12 @@ import roomescape.theme.model.Theme;
 
 import org.junit.jupiter.api.BeforeEach;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,13 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ThemeRepositoryTest {
 
     private ThemeRepository themeRepository;
+    private Clock clock;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        themeRepository = new ThemeRepository(jdbcTemplate);
+        clock = Clock.fixed(Instant.parse("2026-05-16T10:00:00Z"), ZoneId.of("Asia/Seoul"));
+
+        themeRepository = new ThemeRepository(jdbcTemplate, clock);
 
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM schedule");
@@ -87,7 +93,7 @@ class ThemeRepositoryTest {
         Long themeId1 = themeRepository.create(new Theme("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
         Long themeId2 = themeRepository.create(new Theme("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
 
-        LocalDateTime yesterday = LocalDate.now().minusDays(1).atTime(10, 0);
+        LocalDateTime yesterday = LocalDate.now(clock).minusDays(1).atTime(10, 0);
 
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 1L, themeId1, yesterday, yesterday.plusHours(2));

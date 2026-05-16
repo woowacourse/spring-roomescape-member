@@ -16,6 +16,8 @@ import roomescape.schedule.service.ScheduleService;
 import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,11 +27,13 @@ public class ReservationService {
     private final UserService userService;
     private final ScheduleService scheduleService;
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
 
-    public ReservationService(UserService userService, ScheduleService scheduleService, ReservationRepository reservationRepository) { // 생성자 주입
+    public ReservationService(UserService userService, ScheduleService scheduleService, ReservationRepository reservationRepository, Clock clock) {
         this.userService = userService;
         this.scheduleService = scheduleService;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -81,7 +85,7 @@ public class ReservationService {
     }
 
     private void ensureScheduleIsBookable(Schedule Schedule) {
-        if (Schedule.isBefore()) {
+        if (Schedule.isBefore(LocalDateTime.now(clock))) {
             throw new BadRequestException(ErrorCode.RESERVATION_PAST_TIME);
         }
         if (reservationRepository.existsByScheduleId(Schedule.getId())) {
@@ -96,7 +100,7 @@ public class ReservationService {
         if (!reservationToUpdate.getUser().getId().equals(currentUser.getId())) {
             throw new ForbiddenException(ErrorCode.RESERVATION_NOT_OWNER);
         }
-        if (reservationToUpdate.getSchedule().isBefore()) {
+        if (reservationToUpdate.getSchedule().isBefore(LocalDateTime.now(clock))) {
             throw new BadRequestException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }

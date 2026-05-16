@@ -15,6 +15,7 @@ import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.exception.ErrorCode;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,11 +31,13 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeService themeService;
+    private final Clock clock;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, ReservationRepository reservationRepository, ThemeService themeService) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ReservationRepository reservationRepository, ThemeService themeService, Clock clock) {
         this.scheduleRepository = scheduleRepository;
         this.reservationRepository = reservationRepository;
         this.themeService = themeService;
+        this.clock = clock;
     }
 
     public SchedulesResponse findAvailableSchedules(ScheduleRequest request) {
@@ -76,7 +79,7 @@ public class ScheduleService {
     }
 
     private void validateOpeningTime(LocalDateTime startAt) {
-        if (startAt.isBefore(LocalDateTime.now())) {
+        if (startAt.isBefore(LocalDateTime.now(clock))) {
             throw new BadRequestException(ErrorCode.PAST_SCHEDULE_CREATION);
         }
         if (startAt.toLocalTime().isBefore(OPENING_TIME)) {

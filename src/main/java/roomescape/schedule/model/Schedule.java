@@ -62,7 +62,7 @@ public class Schedule {
                 .plusMinutes(requiredTime.getMinute());
     }
 
-    public boolean isBefore() {
-        return startAt.isBefore(LocalDateTime.now());
+    public boolean isBefore(LocalDateTime now) {
+        return startAt.isBefore(now);
     }
 }

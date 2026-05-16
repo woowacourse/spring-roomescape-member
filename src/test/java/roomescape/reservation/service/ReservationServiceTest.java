@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.model.Reservation;
@@ -16,8 +16,11 @@ import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,7 +32,7 @@ class ReservationServiceTest {
 
     private final User user = new User(1L, "user1", Role.USER);
     private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
-    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0), theme);
+    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2024, 12, 10, 12, 0), theme);
 
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
@@ -41,8 +44,9 @@ class ReservationServiceTest {
         reservationRepository = Mockito.mock(ReservationRepository.class);
         userService = Mockito.mock(UserService.class);
         scheduleService = Mockito.mock(ScheduleService.class);
+        Clock fixedClock = Clock.fixed(Instant.parse("2024-05-16T10:00:00Z"), ZoneId.of("Asia/Seoul"));
 
-        reservationService = new ReservationService(userService, scheduleService, reservationRepository);
+        reservationService = new ReservationService(userService, scheduleService, reservationRepository, fixedClock);
     }
 
     @Test
@@ -50,7 +54,7 @@ class ReservationServiceTest {
     void createReservationSuccessfully() {
         // given
         CreateReservationRequest request = new CreateReservationRequest(2L, "user1");
-        Schedule availableSchedule = new Schedule(2L, LocalDateTime.of(2026, 12, 10, 15, 0), theme);
+        Schedule availableSchedule = new Schedule(2L, LocalDateTime.of(2024, 12, 10, 15, 0), theme);
 
         when(userService.findByName("user1")).thenReturn(user);
         when(scheduleService.findById(2L)).thenReturn(availableSchedule);
@@ -77,7 +81,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(CustomBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.ALREADY_RESERVED_SCHEDULE.getMessage());
     }
 }

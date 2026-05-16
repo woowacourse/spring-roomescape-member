@@ -9,6 +9,7 @@ import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.model.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,9 +20,11 @@ import java.util.Optional;
 public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
-    public ThemeRepository(JdbcTemplate jdbcTemplate) {
+    public ThemeRepository(JdbcTemplate jdbcTemplate, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
+        this.clock = clock;
     }
 
     public List<Theme> findAll() {
@@ -95,7 +98,7 @@ public class ThemeRepository {
                 LIMIT ? 
                 """.formatted(orderByColumn);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         LocalDateTime startAt = today.minusDays(days).atStartOfDay();
         LocalDateTime endAt = today.atStartOfDay();
 

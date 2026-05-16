@@ -3,6 +3,7 @@ package roomescape.schedule.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.exception.ConflictException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.model.Schedule;
@@ -12,9 +13,12 @@ import roomescape.theme.service.ThemeService;
 import roomescape.exception.CustomBusinessException;
 import roomescape.exception.ErrorCode;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +33,7 @@ class ScheduleServiceTest {
     private ReservationRepository reservationRepository;
     private ScheduleRepository scheduleRepository;
     private ThemeService themeService;
+    private Clock clock;
 
     private final Theme theme = new Theme(1L, "테마", "설명", "경로", LocalTime.of(2, 0));
 
@@ -37,14 +42,15 @@ class ScheduleServiceTest {
         scheduleRepository = Mockito.mock(ScheduleRepository.class);
         themeService = Mockito.mock(ThemeService.class);
         reservationRepository = Mockito.mock(ReservationRepository.class);
+        clock = Clock.fixed(Instant.parse("2024-05-16T10:00:00Z"), ZoneId.of("Asia/Seoul"));
 
-        scheduleService = new ScheduleService(scheduleRepository, reservationRepository, themeService);
+        scheduleService = new ScheduleService(scheduleRepository, reservationRepository, themeService, clock);
     }
 
     @Test
     void 새로운_스케줄을_성공적으로_생성한다() {
         // given
-        LocalDate futureDate = LocalDate.now().plusDays(1);
+        LocalDate futureDate = LocalDate.now(clock).plusDays(1);
         LocalTime time = LocalTime.of(15, 0);
         AdminScheduleRequest request = new AdminScheduleRequest(theme.getId(), futureDate, time);
 
@@ -65,7 +71,7 @@ class ScheduleServiceTest {
     @Test
     void 이미_있는_예약_시간과_겹치는_스케줄을_생성하면_예외가_발생한다() {
         // given
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = LocalDate.now(clock).plusDays(1);
         LocalTime overlappingTime = LocalTime.of(15, 0);
         AdminScheduleRequest request = new AdminScheduleRequest(theme.getId(), date, overlappingTime);
 
@@ -78,7 +84,7 @@ class ScheduleServiceTest {
 
         // when & then
         assertThatThrownBy(() -> scheduleService.create(request))
-                .isInstanceOf(CustomBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.DUPLICATE_SCHEDULE_TIME.getMessage());
     }
 }
