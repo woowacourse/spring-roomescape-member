@@ -1,9 +1,6 @@
 package roomescape.apitest.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
 import static roomescape.config.FixedClockConfig.FUTURE_DATE;
 
 import io.restassured.RestAssured;
@@ -69,35 +66,43 @@ class ReservationApiTest {
     @Test
     void 예약_사용자_시간_변경_API() {
         long id = 24L;
+        Long timeId = 2L;
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", userName);
         reservation.put("date", FUTURE_DATE);
-        reservation.put("timeId", 2L);
+        reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
-        RestAssured.given().log().all()
+        Long updatedTimeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().put("/reservations/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .extract().jsonPath().getLong("timeResponse.id");
+
+        assertThat(updatedTimeId).isEqualTo(timeId);
     }
 
     @Test
     void 예약_사용자_날짜_변경_API() {
         long id = 24L;
+        String date = "2026-05-13";
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", userName);
-        reservation.put("date", "2026-05-13");
+        reservation.put("date", date);
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
-        RestAssured.given().log().all()
+        String updatedDate = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().put("/reservations/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .extract().jsonPath().getString("date");
+
+        assertThat(updatedDate).isEqualTo(date);
     }
 
     @Test
