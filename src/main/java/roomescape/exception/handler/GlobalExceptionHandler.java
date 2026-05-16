@@ -30,9 +30,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException 발생: ", e);
-        return getResponse(HttpStatus.BAD_REQUEST, "올바르지 않은 요청 파라미터 형식입니다.");
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception) {
+        String errorMessage = exception.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+
+        return getResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
