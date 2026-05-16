@@ -21,6 +21,7 @@ public class ReservationTime {
     }
 
     public ReservationTime(Long id, LocalTime startAt, LocalTime endAt) {
+        validateTimeRange(startAt, endAt);
         this.id = id;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -47,6 +48,15 @@ public class ReservationTime {
             return LocalTime.parse(time);
         } catch (DateTimeParseException | NullPointerException e) {
             throw new IllegalArgumentException("예약 시간 형식이 올바르지 않습니다. time=" + time);
+        }
+    }
+
+    private void validateTimeRange(LocalTime startAt, LocalTime endAt) {
+        if (startAt == null || endAt == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        if (!endAt.isAfter(startAt)) {
+            throw new IllegalArgumentException("예약 종료 시간은 시작 시간보다 늦어야 합니다.");
         }
     }
 }
