@@ -27,6 +27,7 @@ public class ReservationFacade {
     private static final String ALREADY_EXISTS_ADD_RESERVATION = "해당 날짜와 시간, 테마에 이미 예약이 존재합니다.";
     private static final String PAST_RESERVATION_REJECTED = "지난 시각에는 예약할 수 없습니다.";
     private static final String PAST_RESERVATION_UPDATE_REJECTED = "지난 시각으로 예약을 변경할 수 없습니다.";
+    private static final String EXPIRED_RESERVATION_UPDATE_REJECTED = "이미 지난 예약은 변경할 수 없습니다.";
 
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
@@ -85,6 +86,12 @@ public class ReservationFacade {
     @Transactional
     public Reservation updateMyReservation(Long id, String name, ReservationUpdateRequest request) {
         Reservation existing = reservationService.findMyReservation(id, name);
+        LocalDateTime now = LocalDateTime.now();
+
+        if (existing.isPast(now)) {
+            throw new BusinessRuleViolationException(EXPIRED_RESERVATION_UPDATE_REJECTED);
+        }
+
         ReservationTime newTime = reservationTimeService.findById(request.timeId());
 
         Reservation updated = new Reservation(
@@ -95,7 +102,7 @@ public class ReservationFacade {
                 existing.getTheme()
         );
 
-        if (updated.isPast(LocalDateTime.now())) {
+        if (updated.isPast(now)) {
             throw new BusinessRuleViolationException(PAST_RESERVATION_UPDATE_REJECTED);
         }
 
