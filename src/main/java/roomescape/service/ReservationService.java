@@ -46,13 +46,13 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
 
         if (time == null) {
-            throw new IdNotFoundException("요청하신 시간 ID가 존재하지 않습니다.");
+            throw new IdNotFoundException("요청하신 시간 정보를 찾을 수 없습니다. 선택하신 시간이 정확한지 다시 한번 확인해 주세요.");
         }
 
         Theme theme = themeDao.findThemeById(request.themeId());
 
         if (theme == null) {
-            throw new IdNotFoundException("요청하신 테마 ID가 존재하지 않습니다.");
+            throw new IdNotFoundException("요청하신 테마를 찾을 수 없습니다. 선택하신 테마가 정확한지 다시 한번 확인해 주세요.");
         }
 
         if (time.getStartAt().isBefore(LocalTime.now()) && request.date().isBefore(LocalDate.now())) {
