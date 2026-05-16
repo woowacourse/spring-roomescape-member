@@ -197,6 +197,6 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
                 Reservation.create("바니", date, theme, reservationTime));
 
         // when & then
-        assertThat(reservationRepository.existsByTimeId(reservationTime.getId())).isTrue();
+        assertThat(reservationRepository.existsReservedReservationByTimeId(reservationTime.getId())).isTrue();
     }
 }

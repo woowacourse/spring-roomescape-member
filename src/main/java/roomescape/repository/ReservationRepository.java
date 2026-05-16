@@ -20,7 +20,7 @@ public interface ReservationRepository {
 
     Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsReservedReservationByTimeId(Long timeId);
 
     List<Reservation> findAllByUserName(String name);
 }
