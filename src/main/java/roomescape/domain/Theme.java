@@ -28,7 +28,7 @@ public class Theme {
     }
 
     public static Theme create(String name, String description, String imageUrl) {
-       return new Theme(null, name, description, imageUrl);
+        return new Theme(null, name, description, imageUrl);
     }
 
     public static Theme of(Long id, String name, String description, String imageUrl) {
@@ -54,14 +54,15 @@ public class Theme {
     }
 
     private static void validateDescription(String description) {
-        if (description == null || description.isBlank() || description.length() < DESCRIPTION_MIN_LENGTH) {
+        if (description == null || description.isBlank()
+                || description.length() < DESCRIPTION_MIN_LENGTH) {
             throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_DESCRIPTION);
         }
     }
 
     private static void validateImageUrl(String imageUrl) {
         if (imageUrl == null || imageUrl.isBlank() || !imageUrl.contains(".")) {
-            throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_DESCRIPTION);
+            throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_URL);
         }
     }
 
