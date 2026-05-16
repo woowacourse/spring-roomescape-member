@@ -20,6 +20,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.fixture.ReservationFixture;
 import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.AlreadyCanceledReservationException;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
 import roomescape.global.exception.ForbiddenException;
@@ -319,6 +320,22 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.modify(reservation.getId(), request)).isInstanceOf(
                 ForbiddenException.class).hasMessage("예약자 명이 일치하지 않습니다.");
+    }
+
+    @Test
+    void 취소된_예약은_수정할_수_없다() {
+        // given
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime modifiedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
+        Reservation canceledReservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime).cancel());
+        ReservationModifyRequest request = new ReservationModifyRequest("바니", LocalDate.now().plusDays(2),
+                modifiedTime.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.modify(canceledReservation.getId(), request)).isInstanceOf(
+                AlreadyCanceledReservationException.class).hasMessage("취소된 예약은 수정할 수 없습니다.");
     }
 
     @Test

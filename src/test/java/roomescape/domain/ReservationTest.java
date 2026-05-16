@@ -80,6 +80,29 @@ class ReservationTest {
     }
 
     @Test
+    void 취소된_예약인지_확인한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Reservation reservation = Reservation.create("바니", date, theme, reservationTime);
+
+        // when
+        Reservation canceledReservation = reservation.cancel();
+
+        // then
+        assertThat(canceledReservation.isCancel()).isTrue();
+    }
+
+    @Test
+    void 취소되지_않은_예약인지_확인한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Reservation reservation = Reservation.create("바니", date, theme, reservationTime);
+
+        // when & then
+        assertThat(reservation.isCancel()).isFalse();
+    }
+
+    @Test
     void 이미_지난_예약을_취소하면_예외가_발생한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1);

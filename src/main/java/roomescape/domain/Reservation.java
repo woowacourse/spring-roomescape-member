@@ -90,4 +90,8 @@ public class Reservation {
             throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
         }
     }
+
+    public boolean isCancel() {
+        return this.status.equals(ReservationStatus.CANCELED);
+    }
 }

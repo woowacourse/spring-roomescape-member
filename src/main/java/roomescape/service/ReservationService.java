@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.global.exception.AlreadyCanceledReservationException;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -64,6 +65,10 @@ public class ReservationService {
     @Transactional
     public void modify(Long id, ReservationModifyRequest request) {
         Reservation reservation = findReservationOrThrow(id);
+        if (reservation.isCancel()) {
+            throw new AlreadyCanceledReservationException("취소된 예약은 수정할 수 없습니다.");
+        }
+
         ReservationTime time = findTimeOrThrow(request.timeId());
         LocalDate date = request.date();
         Theme theme = findThemeOrThrow(reservation.getTheme().getId());
