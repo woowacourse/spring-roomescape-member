@@ -1,6 +1,6 @@
 package roomescape.theme.domain;
 
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 
 public class Theme {
     private Long id;
@@ -34,19 +34,19 @@ public class Theme {
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new InternalServerException("테마 이름은 필수입니다.");
+            throw new DomainValidationException("테마 이름은 필수입니다.");
         }
     }
 
     private static void validateThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
-            throw new InternalServerException("테마 썸네일 URL은 필수입니다.");
+            throw new DomainValidationException("테마 썸네일 URL은 필수입니다.");
         }
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new InternalServerException("테마 설명은 필수입니다.");
+            throw new DomainValidationException("테마 설명은 필수입니다.");
         }
     }
 

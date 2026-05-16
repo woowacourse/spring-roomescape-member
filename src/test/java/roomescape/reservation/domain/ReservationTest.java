@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
@@ -113,11 +113,11 @@ class ReservationTest {
         String emptyName = "";
 
         assertThatThrownBy(() -> Reservation.create(nullName, date, startAt, theme))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(DomainValidationException.class)
                 .hasMessage("예약자 이름은 필수입니다.");
 
         assertThatThrownBy(() -> Reservation.create(emptyName, date, startAt, theme))
-                .isInstanceOf(InternalServerException.class)
+                .isInstanceOf(DomainValidationException.class)
                 .hasMessage("예약자 이름은 필수입니다.");
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.dto.ErrorDetailDto;
 import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 import roomescape.common.exception.NotFoundException;
 
 @Slf4j
@@ -61,10 +61,10 @@ public class GlobalExceptionHandler {
                 .body(ErrorDetailDto.of(HttpStatus.CONFLICT.value(), "중복된 데이터가 존재합니다."));
     }
 
-    @ExceptionHandler(InternalServerException.class)
-    public ResponseEntity<ErrorDetailDto> handleInternalServer(InternalServerException e) {
+    @ExceptionHandler(DomainValidationException.class)
+    public ResponseEntity<ErrorDetailDto> handleInternalServer(DomainValidationException e) {
         log.error("Internal Server Exception: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ErrorDetailDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
 

@@ -1,7 +1,7 @@
 package roomescape.closeddate.domain;
 
 import java.time.LocalDate;
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 
 public class ClosedDate {
     private Long id;
@@ -32,7 +32,7 @@ public class ClosedDate {
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new InternalServerException("휴일 날짜는 필수입니다.");
+            throw new DomainValidationException("휴일 날짜는 필수입니다.");
         }
     }
 

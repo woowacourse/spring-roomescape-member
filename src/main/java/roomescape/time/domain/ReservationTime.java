@@ -2,7 +2,7 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 
 public class ReservationTime {
     private final Long id;
@@ -24,7 +24,7 @@ public class ReservationTime {
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InternalServerException("예약 시작 시간은 필수입니다.");
+            throw new DomainValidationException("예약 시작 시간은 필수입니다.");
         }
     }
 

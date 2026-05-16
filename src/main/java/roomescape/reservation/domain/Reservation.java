@@ -3,7 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import roomescape.common.exception.InternalServerException;
+import roomescape.common.exception.DomainValidationException;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
@@ -48,25 +48,25 @@ public class Reservation {
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new InternalServerException("예약자 이름은 필수입니다.");
+            throw new DomainValidationException("예약자 이름은 필수입니다.");
         }
     }
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new InternalServerException("예약 날짜는 필수입니다.");
+            throw new DomainValidationException("예약 날짜는 필수입니다.");
         }
     }
 
     private static void validateTime(LocalTime time) {
         if (time == null) {
-            throw new InternalServerException("예약 시간은 필수입니다.");
+            throw new DomainValidationException("예약 시간은 필수입니다.");
         }
     }
 
     private static void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new InternalServerException("테마는 필수입니다.");
+            throw new DomainValidationException("테마는 필수입니다.");
         }
     }
 
