@@ -105,22 +105,23 @@
 
 | 기능        | 메서드 / URL                                     | 요청 본문                           | 응답                               |
 |-----------|-----------------------------------------------|---------------------------------|----------------------------------|
-| 예약 전체 조회  | `GET /reservations`                           | —                               | `[{id, name, date, time}, ...]`  |
-| 예약 추가     | `POST /reservations`                          | `{name, date, timeId}`          | `{id, name, date, time}`         |
+| 예약 전체 조회  | `GET /reservations`                           | —                               | `[{id, name, date, time, theme}, ...]`  |
+| 이름별 예약 조회 | `GET /reservations?name={name}`               | —                               | `[{id, name, date, time, theme}, ...]`  |
+| 예약 추가     | `POST /reservations`                          | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}`  |
+| 예약 변경     | `PATCH /reservations/{id}`                    | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}`  |
 | 예약 삭제     | `DELETE /reservations/{id}`                   | —                               | `204 No Content`                 |
-| 시간 전체 조회  | `GET /times`                                  | —                               | `[{id, startAt}, ...]`           |
-| 시간 추가     | `POST /times`                                 | `{startAt}`                     | `{id, startAt}`                  |
+| 본인 예약 취소 | `DELETE /reservations/{id}?name={name}`        | —                               | `204 No Content`                 |
+| 시간 전체 조회  | `GET /times`                                  | —                               | `[{id, startAt, endAt}, ...]`    |
+| 시간 추가     | `POST /times`                                 | `{startAt, endAt}`              | `{id, startAt, endAt}`           |
 | 시간 삭제     | `DELETE /times/{id}`                          | —                               | `204 No Content`                 |
-| 테마 전체 조회  | `GET /themes`                                 | —                               | `[{id, name, description}, ...]` |
-| 테마 추가     | `POST /themes`                                | `{name, description}`           | `{id, name, description}`        |
+| 테마 전체 조회  | `GET /themes`                                 | —                               | `[{id, name, description, imageUrl}, ...]` |
+| 테마 추가     | `POST /themes`                                | `{name, description, imageUrl}` | `{id, name, description, imageUrl}` |
 | 테마 삭제     | `DELETE /themes/{id}`                         | —                               | `204 No Content`                 |
-| 사용 가능 날짜  | `GET /available-dates?month=YYYY-MM`          | —                               | `["yyyy-MM-dd", ...]`            |
 | 테마별 가능 시간 | `GET /themes/{themeId}/times?date=yyyy-MM-dd` | —                               | `[{id, startAt}, ...]`           |
-| 사용자 예약 목록 조회 | `GET /users/reservations?name={name}`         | —                               | `[{id, name, date, time, theme}, ...]` |
-| 사용자 예약 추가 | `POST /users/reservations`                    | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}`  |
-| 사용자 예약 변경 | `PATCH /users/reservations/{id}`              | `{date, timeId}`                | `{id, name, date, time, theme}`  |
-| 사용자 예약 취소 | `DELETE /users/reservations/{id}`             | —                               | `204 No Content`                 |
-| 인기 테마 조회  | `GET /themes/best?date=yyyy-MM-dd`            | —                               | `[{id, name}, ...]`              |
+| 인기 테마 조회  | `GET /themes/best`                            | —                               | `[{id, name, description, imageUrl}, ...]` |
+| 휴일 전체 조회  | `GET /holidays`                               | —                               | `[{id, date}, ...]`              |
+| 휴일 추가     | `POST /holidays`                              | `{date}`                        | `{id, date}`                     |
+| 휴일 삭제     | `DELETE /holidays/{id}`                       | —                               | `204 No Content`                 |
 
 ---
 
@@ -140,18 +141,34 @@
 | `code` | 클라이언트가 분기할 수 있는 에러 코드 | `DUPLICATE_RESERVATION` |
 | `message` | 사용자가 이해할 수 있는 한국어 메시지 | `이미 예약된 시간입니다.` |
 
+### 에러 코드 목록
+
+| code | HTTP 상태 | 기본 message |
+|---|---:|---|
+| `RESERVATION_NOT_FOUND` | `404 Not Found` | `예약이 존재하지 않습니다.` |
+| `DUPLICATE_RESERVATION` | `409 Conflict` | `이미 예약된 시간입니다.` |
+| `PAST_RESERVATION_NOT_ALLOWED` | `400 Bad Request` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
+| `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `400 Bad Request` | `이미 지난 예약은 취소할 수 없습니다.` |
+| `RESERVATION_OWNER_MISMATCH` | `403 Forbidden` | `본인의 예약만 취소·변경할 수 있습니다.` |
+| `TIME_NOT_FOUND` | `404 Not Found` | `예약 시간이 존재하지 않습니다.` |
+| `RESERVED_TIME_DELETE_NOT_ALLOWED` | `409 Conflict` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
+| `THEME_NOT_FOUND` | `404 Not Found` | `테마가 존재하지 않습니다.` |
+| `HOLIDAY_NOT_FOUND` | `404 Not Found` | `휴일이 존재하지 않습니다.` |
+| `INVALID_REQUEST` | `400 Bad Request` | `요청이 올바르지 않습니다.` |
+| `INTERNAL_SERVER_ERROR` | `500 Internal Server Error` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
+
 ### 상태 코드 결정
 
 | 상황 | HTTP 상태 | code | message 예시 |
 |---|---:|---|---|
-| 빈 이름, 필수 값 누락, 잘못된 날짜·시간 형식 | `400 Bad Request` | `INVALID_REQUEST` | `요청 형식이 올바르지 않습니다.` |
+| 빈 이름, 필수 값 누락, 잘못된 날짜·시간 형식 | `400 Bad Request` | `INVALID_REQUEST` | `요청이 올바르지 않습니다.` |
 | 과거 날짜·시간 예약 생성 | `400 Bad Request` | `PAST_RESERVATION_NOT_ALLOWED` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
 | 같은 날짜·시간·테마 중복 예약 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
 | 예약이 존재하는 시간 삭제 | `409 Conflict` | `RESERVED_TIME_DELETE_NOT_ALLOWED` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
-| 지난 예약 취소 | `400 Bad Request` | `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `지난 예약은 취소할 수 없습니다.` |
-| 지난 예약 변경 | `400 Bad Request` | `PAST_RESERVATION_CHANGE_NOT_ALLOWED` | `지난 예약은 변경할 수 없습니다.` |
+| 지난 예약 취소 | `400 Bad Request` | `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `이미 지난 예약은 취소할 수 없습니다.` |
 | 변경하려는 날짜·시간·테마가 이미 예약됨 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
-| 존재하지 않는 예약, 시간, 테마, 휴일 | `404 Not Found` | `*_NOT_FOUND` | `예약을 찾을 수 없습니다.` |
+| 본인 예약이 아닌 예약 취소·변경 | `403 Forbidden` | `RESERVATION_OWNER_MISMATCH` | `본인의 예약만 취소·변경할 수 있습니다.` |
+| 존재하지 않는 예약, 시간, 테마, 휴일 | `404 Not Found` | `*_NOT_FOUND` | `예약이 존재하지 않습니다.` |
 | 예상하지 못한 서버 오류 | `500 Internal Server Error` | `INTERNAL_SERVER_ERROR` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
 
 ### 클라이언트 표시 규칙
@@ -166,6 +183,8 @@
 
 ### GET /reservations — 예약 전체 조회
 
+`name` 쿼리 파라미터를 전달하면 해당 이름의 예약만 조회한다.
+
 **응답 예시**
 
 ```http
@@ -179,7 +198,14 @@ Content-Type: application/json
         "date": "2023-08-05",
         "time": {
             "id": 1,
-            "startAt": "10:00"
+            "startAt": "10:00",
+            "endAt": "11:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "테마명",
+            "description": "테마 설명",
+            "imageUrl": "https://example.com/theme.jpg"
         }
     }
 ]
@@ -198,6 +224,7 @@ Content-Type: application/json
 {
     "name": "브라운",
     "date": "2023-08-05",
+    "themeId": 1,
     "timeId": 1
 }
 ```
@@ -214,7 +241,56 @@ Content-Type: application/json
     "date": "2023-08-05",
     "time": {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "10:00",
+        "endAt": "11:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "테마명",
+        "description": "테마 설명",
+        "imageUrl": "https://example.com/theme.jpg"
+    }
+}
+```
+
+---
+
+### PATCH /reservations/{id} — 예약 변경
+
+**요청 예시**
+
+```http
+PATCH /reservations/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "브라운",
+    "date": "2023-08-06",
+    "themeId": 1,
+    "timeId": 2
+}
+```
+
+**응답 예시**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-06",
+    "time": {
+        "id": 2,
+        "startAt": "12:00",
+        "endAt": "13:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "테마명",
+        "description": "테마 설명",
+        "imageUrl": "https://example.com/theme.jpg"
     }
 }
 ```
@@ -222,6 +298,8 @@ Content-Type: application/json
 ---
 
 ### DELETE /reservations/{id} — 예약 삭제
+
+`name` 쿼리 파라미터를 전달하면 예약자 이름이 일치하는 경우에만 취소한다.
 
 **응답 예시**
 
@@ -242,7 +320,8 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "10:00",
+        "endAt": "11:00"
     }
 ]
 ```
@@ -258,7 +337,8 @@ POST /times HTTP/1.1
 Content-Type: application/json
 
 {
-    "startAt": "10:00"
+    "startAt": "10:00",
+    "endAt": "11:00"
 }
 ```
 
@@ -270,7 +350,8 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "startAt": "10:00"
+    "startAt": "10:00",
+    "endAt": "11:00"
 }
 ```
 
@@ -300,7 +381,8 @@ Content-Type: application/json
     {
         "id": 1,
         "name": "테마명",
-        "description": "테마 설명"
+        "description": "테마 설명",
+        "imageUrl": "https://example.com/theme.jpg"
     }
 ]
 ```
@@ -317,7 +399,8 @@ Content-Type: application/json
 
 {
     "name": "테마명",
-    "description": "테마 설명"
+    "description": "테마 설명",
+    "imageUrl": "https://example.com/theme.jpg"
 }
 ```
 
@@ -330,7 +413,8 @@ Content-Type: application/json
 {
     "id": 1,
     "name": "테마명",
-    "description": "테마 설명"
+    "description": "테마 설명",
+    "imageUrl": "https://example.com/theme.jpg"
 }
 ```
 
@@ -342,29 +426,6 @@ Content-Type: application/json
 
 ```http
 HTTP/1.1 204 No Content
-```
-
----
-
-### GET /available-dates — 사용 가능 날짜
-
-**요청 예시** (쿼리 생략 시 전체 기간 등 구현에 따름)
-
-```http
-GET /available-dates?month=2026-05 HTTP/1.1
-```
-
-**응답 예시**
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-[
-    "2026-05-04",
-    "2026-05-05",
-    "2026-05-06"
-]
 ```
 
 ---
@@ -397,61 +458,12 @@ Content-Type: application/json
 
 ---
 
-### POST /users/reservations — 사용자 예약 추가
-
-**요청 예시**
-
-```http
-POST /users/reservations HTTP/1.1
-Content-Type: application/json
-
-{
-    "name": "브라운",
-    "date": "2025-05-10",
-    "themeId": 1,
-    "timeId": 1
-}
-```
-
-**응답 예시**
-
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "브라운",
-    "date": "2025-05-10",
-    "time": {
-        "id": 1,
-        "startAt": "10:00"
-    },
-    "theme": {
-        "id": 1,
-        "name": "테마명"
-    }
-}
-```
-
----
-
-### DELETE /users/reservations/{id} — 사용자 예약 취소
-
-**응답 예시**
-
-```http
-HTTP/1.1 204 No Content
-```
-
----
-
 ### GET /themes/best — 인기 테마 조회
 
 **요청 예시**
 
 ```http
-GET /themes/best?date=2025-05-10 HTTP/1.1
+GET /themes/best HTTP/1.1
 ```
 
 **응답 예시**
@@ -463,9 +475,66 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "name": "테마명"
+        "name": "테마명",
+        "description": "테마 설명",
+        "imageUrl": "https://example.com/theme.jpg"
     }
 ]
+```
+
+---
+
+### GET /holidays — 휴일 전체 조회
+
+**응답 예시**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "date": "2026-05-05"
+    }
+]
+```
+
+---
+
+### POST /holidays — 휴일 추가
+
+**요청 예시**
+
+```http
+POST /holidays HTTP/1.1
+Content-Type: application/json
+
+{
+    "date": "2026-05-05"
+}
+```
+
+**응답 예시**
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+    "id": 1,
+    "date": "2026-05-05"
+}
+```
+
+---
+
+### DELETE /holidays/{id} — 휴일 삭제
+
+**응답 예시**
+
+```http
+HTTP/1.1 204 No Content
 ```
 
 ---
