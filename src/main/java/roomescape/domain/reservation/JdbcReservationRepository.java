@@ -86,17 +86,21 @@ public class JdbcReservationRepository implements ReservationRepository {
             from reservation
             where theme_id = ?
             """;
-    private static final String COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
+    private static final String EXISTS_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
         """
-            select count(*)
-            from reservation r
-            where time_id = ? and date_id = ? and theme_id = ?
+            select exists(
+                select 1
+                from reservation r
+                where time_id = ? and date_id = ? and theme_id = ?
+            )
             """;
-    private static final String COUNT_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
+    private static final String EXISTS_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
         """
-            select count(*)
-            from reservation r
-            where r.id <> ? and time_id = ? and date_id = ? and theme_id = ?
+            select exists(
+                select 1
+                from reservation r
+                where r.id <> ? and time_id = ? and date_id = ? and theme_id = ?
+            )
             """;
     private static final String FIND_BY_NAME_SQL =
         """
@@ -196,27 +200,27 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsReservation(Long timeId, Long dateId, Long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
-            COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
-            Integer.class,
+        Boolean exists = jdbcTemplate.queryForObject(
+            EXISTS_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
+            Boolean.class,
             timeId,
             dateId,
             themeId
         );
-        return count != null && count > 0;
+        return exists != null && exists;
     }
 
     @Override
     public boolean existsOtherReservation(Long id, Long timeId, Long dateId, Long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
-            COUNT_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
-            Integer.class,
+        Boolean exists = jdbcTemplate.queryForObject(
+            EXISTS_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
+            Boolean.class,
             id,
             timeId,
             dateId,
             themeId
         );
-        return count != null && count > 0;
+        return exists != null && exists;
     }
 
     @Override
