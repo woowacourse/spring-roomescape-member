@@ -35,17 +35,8 @@ public class Reservation {
         return new Reservation(id, name, date, time, theme);
     }
 
-    public void validateOwner(String name) {
-        if (!this.getName().equals(name)) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH);
-        }
-    }
-
-    public void validatePast() {
-        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_MODIFY_IN_PAST);
-        }
+    public boolean isOwner(String name) {
+        return this.name.equals(name);
     }
 
     public Long getId() {

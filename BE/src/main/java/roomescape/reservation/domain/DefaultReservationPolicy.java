@@ -10,10 +10,18 @@ import roomescape.reservationTime.domain.ReservationTime;
 @Component public class DefaultReservationPolicy implements ReservationPolicy {
 
     @Override
-    public void pastDateTime(LocalDate date, ReservationTime time) {
+    public void validateCreatableDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
         if (dateTime.isBefore(LocalDateTime.now())) {
             throw new BusinessException(ReservationErrorCode.RESERVATION_CREATE_IN_PAST);
+        }
+    }
+
+    @Override
+    public void validateModifiableDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_MODIFY_IN_PAST);
         }
     }
 }

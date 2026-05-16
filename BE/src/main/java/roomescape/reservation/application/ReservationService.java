@@ -48,8 +48,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(createCommand.themeId())
                 .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_THEME_INVALID));
 
+        reservationPolicy.validateCreatableDateTime(createCommand.date(), time);
         reservationValidator.validateAlreadyReservation(createCommand);
-        reservationPolicy.pastDateTime(createCommand.date(), time);
         Reservation reservation = Reservation.create(
                 createCommand.name(),
                 createCommand.date(),
@@ -73,13 +73,13 @@ public class ReservationService {
 
     @Transactional
     public void updateReservationSchedule(ReservationUpdateCommand updateCommand) {
-        reservationTimeRepository.findById(updateCommand.timeId())
+        ReservationTime time = reservationTimeRepository.findById(updateCommand.timeId())
                 .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_TIME_INVALID));
         Reservation targetReservation = reservationRepository.findById(updateCommand.id())
                 .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, updateCommand.id()));
 
-        targetReservation.validateOwner(updateCommand.name());
-        targetReservation.validatePast();
+        reservationValidator.validateOwner(targetReservation, updateCommand.name());
+        reservationPolicy.validateModifiableDateTime(updateCommand.date(), time);
         reservationValidator.validateAlreadyReservationExcludingSelf(updateCommand, targetReservation);
         reservationRepository.updateScheduleByIdAndName(
                 updateCommand.date(),
@@ -100,8 +100,8 @@ public class ReservationService {
     public void deleteReservationByName(Long id, String name) {
         Reservation targetReservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND, id));
-        targetReservation.validateOwner(name);
-        targetReservation.validatePast();
+        reservationValidator.validateOwner(targetReservation, name);
+        reservationPolicy.validateModifiableDateTime(targetReservation.getDate(), targetReservation.getTime());
         reservationRepository.deleteByIdAndName(id, name);
     }
 }

@@ -4,5 +4,6 @@ import java.time.LocalDate;
 import roomescape.reservationTime.domain.ReservationTime;
 
 public interface ReservationPolicy {
-    void pastDateTime(LocalDate date, ReservationTime time);
+    void validateCreatableDateTime(LocalDate date, ReservationTime time);
+    void validateModifiableDateTime(LocalDate date, ReservationTime time);
 }
