@@ -131,7 +131,7 @@ public class AdminE2ETest {
                 .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(400)
-                .body("errorCode", is("INVALID_REQUEST_FORMAT"));
+                .body("errorCode", is("INVALID_REQUEST"));
     }
 
     @Test

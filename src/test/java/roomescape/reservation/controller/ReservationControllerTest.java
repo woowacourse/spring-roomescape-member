@@ -332,7 +332,7 @@ class ReservationControllerTest {
                               }
                             """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value(ErrorCode.MISSING_PARAMETER.errorCode()));
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_REQUEST.errorCode()));
     }
 
     @Test

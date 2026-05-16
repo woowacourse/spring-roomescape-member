@@ -112,7 +112,7 @@ class ReservationE2ETest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("errorCode", is("MISSING_PARAMETER"));
+                .body("errorCode", is("INVALID_REQUEST"));
     }
 
     @Test

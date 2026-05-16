@@ -32,7 +32,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleNotReadableMessage(HttpMessageNotReadableException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_REQUEST_FORMAT;
+        log.warn("INVALID request body format: ", e);
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode));
     }
@@ -46,16 +47,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DomainNotValidValueException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(DomainNotValidValueException e) {
-        log.error("Unexpected Domain error occurred", e);
         String message = e.getMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_VALUE;
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode, message));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingQueryParameter(MissingServletRequestParameterException e) {
-        ErrorCode errorCode = ErrorCode.MISSING_PARAMETER;
+        log.warn("Type mismatch on parameter: {}", e.getMessage());
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode));
     }
@@ -69,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_PATH_VARIABLE;
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
         String message = String.format("'%s' 파라미터의 값이 적절하지 않습니다.", e.getName());
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode, message));
