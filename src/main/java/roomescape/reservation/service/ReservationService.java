@@ -88,10 +88,23 @@ public class ReservationService {
     @Transactional
     public void deleteByUser(long id, String userName) {
         Reservation reservation = findById(id);
+
         if (!reservation.getName().equals(userName)) {
             throw new UnauthorizedActionException("예약자 이름이 일치하지 않아 삭제할 수 없습니다.");
         }
+
+        validateNotPastReservationForDeletion(reservation.getDate(), reservation.getTime().startAt());
+
         reservationRepository.delete(reservation.getId());
+    }
+
+    private void validateNotPastReservationForDeletion(LocalDate date, LocalTime time) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        if (date.isBefore(today) || (date.equals(today) && time.isBefore(now))) {
+            throw new BadRequestException("지난 예약은 삭제할 수 없습니다.");
+        }
     }
 
     public List<Reservation> findAllByName(String name) {
