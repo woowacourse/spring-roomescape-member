@@ -71,6 +71,21 @@ public class Reservation {
         }
     }
 
+    public void validateNotPastTime(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+
+        if (reservationDateTime.isBefore(now)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
+        }
+    }
+
+    public void validateUpdateAvailability(LocalDate date, ReservationTime time,
+            LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -97,21 +112,6 @@ public class Reservation {
 
     public Long getThemeId() {
         return theme.getId();
-    }
-
-    public void validateNotPastTime(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-
-        if (reservationDateTime.isBefore(now)) {
-            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
-        }
-    }
-
-    public void validateUpdateAvailability(LocalDate date, ReservationTime time,
-            LocalDateTime now) {
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
-            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
-        }
     }
 
     @Override
