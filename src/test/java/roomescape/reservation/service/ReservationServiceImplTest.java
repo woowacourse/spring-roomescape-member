@@ -323,6 +323,20 @@ class ReservationServiceImplTest {
                 .isInstanceOf(PastReservationException.class);
     }
 
+    @DisplayName("변경을 원하는 기존 예약이 과거인 경우, PastReservationException이 발생한다.")
+    @Test
+    void update_기존_예약이_과거이면_예외() {
+        // given
+        ReservationTime oldTime = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+
+        Reservation existing = new Reservation("라이", LocalDate.of(2025, 5, 20), oldTime, 1L).withId(1L);
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(existing));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(1L, LocalDate.of(2030, 1, 1), 2L))
+                .isInstanceOf(PastReservationException.class);
+    }
+
     @DisplayName("변경하려는 시간이 이미 차 있는 경우, DuplicateReservationException이 발생한다.")
     @Test
     void update_중복_시간으로_변경하면_예외() {
