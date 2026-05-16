@@ -15,7 +15,8 @@ INSERT INTO reservation_time (start_at) VALUES
 ('15:00:00'),
 ('16:00:00'),
 ('17:00:00'),
-('18:00:00');
+('18:00:00'),
+('19:00:00');
 
 INSERT INTO theme (name, description, thumbnail_url) VALUES
 ('우주선 탈출',        '고장 난 우주선에서 제한 시간 안에 탈출하세요.',             'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600'),
@@ -63,6 +64,7 @@ INSERT INTO reservation (name, reservation_date, time_id, theme_id, status) VALU
 ('박지훈', '2026-05-05', 3, 3,  'COMPLETED'),
 ('최유진', '2026-05-05', 4, 4,  'COMPLETED'),
 ('정하늘', '2026-05-05', 5, 5,  'COMPLETED'),
+('정하늘', '2026-05-05', 10, 5,  'COMPLETED'),
 
 ('한지민', '2026-05-04', 1, 6,  'COMPLETED'),
 ('오세훈', '2026-05-04', 2, 7,  'CANCELED'),
