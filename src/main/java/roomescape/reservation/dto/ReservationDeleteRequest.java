@@ -3,6 +3,6 @@ package roomescape.reservation.dto;
 import jakarta.validation.constraints.NotNull;
 
 public record ReservationDeleteRequest(
-        @NotNull(message = "이름을 입력해야 합니다.")
+        @NotNull(message = "이름은 비어있을 수 없습니다.")
         String name) {
 }
