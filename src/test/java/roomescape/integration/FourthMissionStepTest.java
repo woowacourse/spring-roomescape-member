@@ -1,15 +1,15 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.integration.support.SpringWebTest;
 import roomescape.reservation.controller.ReservationController;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringWebTest
 public class FourthMissionStepTest {
 
     @Autowired

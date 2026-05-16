@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.hamcrest.Matchers.is;
 
@@ -9,25 +9,18 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.integration.support.DatabaseHelper;
+import roomescape.integration.support.SpringWebTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringWebTest
 public class ThirdMissionStepTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseHelper databaseHelper;
 
     @BeforeEach
     void setup() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseHelper.clear();
     }
 
     @Test
@@ -58,7 +51,7 @@ public class ThirdMissionStepTest {
     void 예약과_시간_연결() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2026-05-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -97,6 +90,21 @@ public class ThirdMissionStepTest {
     void 이름이_비어있으면_예약_생성_실패() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "");
+        params.put("date", "2026-04-29");
+        params.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 이름이_공백이면_예약_생성_실패() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", " ");
         params.put("date", "2026-04-29");
         params.put("timeId", 1L);
 
@@ -171,7 +179,7 @@ public class ThirdMissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2026-05-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -186,6 +194,6 @@ public class ThirdMissionStepTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,26 +13,19 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.integration.support.DatabaseHelper;
+import roomescape.integration.support.SpringWebTest;
 import roomescape.time.domain.ReservationTime;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringWebTest
 public class UserReservationTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseHelper databaseHelper;
 
     @BeforeEach
     void setup() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseHelper.clear();
     }
 
     @Test
@@ -41,10 +34,11 @@ public class UserReservationTest {
         createReservationTime("11:00");
         createReservationTime("12:00");
         createReservationTime("13:00");
+
         createTheme("우아한 테마", "우아한테크코스 전용 테마입니다.", "https://example.com/image.png");
         createTheme("페어 테마", "페어 전용 테마입니다.", "https://example.com/pair.png");
 
-        List<ReservationTime> beforeReservationResults = getAvailableTimes(LocalDate.of(2026, 5, 1), 1L);
+        List<ReservationTime> beforeReservationResults = getAvailableTimes(LocalDate.of(2026, 5, 5), 1L);
 
         assertThat(beforeReservationResults).hasSize(4);
         assertThat(beforeReservationResults.stream().map(ReservationTime::getId).toList())
@@ -57,13 +51,13 @@ public class UserReservationTest {
                 LocalTime.of(13, 0)
         );
 
-        createReservation("브라운", LocalDate.of(2026, 5, 1), 1L, 1L);
-        createReservation("포비", LocalDate.of(2026, 5, 2), 2L, 2L);
+        createReservation("브라운", LocalDate.of(2026, 5, 5), 1L, 1L);
+        createReservation("포비", LocalDate.of(2026, 5, 6), 2L, 2L);
 
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 1), 1L)).hasSize(3);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 2), 1L)).hasSize(4);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 1), 2L)).hasSize(4);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 2), 2L)).hasSize(3);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 5), 1L)).hasSize(3);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 6), 1L)).hasSize(4);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 5), 2L)).hasSize(4);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 6), 2L)).hasSize(3);
     }
 
     private void createReservationTime(String startAt) {

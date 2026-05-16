@@ -43,19 +43,17 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("기존에 이미 존재하는 시간을 추가하면 예외가 발생한다.")
+    @DisplayName("기존에 이미 해당 시간이 있으면 예외가 발생한다.")
     void saveTest_duplicate() {
         // given
-        reservationTimeRepository.save(
-                new ReservationTime(null, LocalTime.of(10, 0))
-        );
+        LocalTime startTime = LocalTime.of(10, 0);
+        ReservationTime time = new ReservationTime(null, startTime);
+
+        reservationTimeRepository.save(time);
 
         // when & then
-        assertThatThrownBy(
-                () ->   reservationTimeRepository.save(
-                        new ReservationTime(null, LocalTime.of(10, 0))
-                )
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() ->  reservationTimeRepository.save(time))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -73,15 +71,6 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("ID가 없으면 예외가 발생한다.")
-    void deleteByIdTest_id_not_exist() {
-        assertThatThrownBy(
-                () -> reservationTimeRepository.deleteById(999L)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 id의 시간이 존재하지 않습니다.");
-    }
-
-    @Test
     @DisplayName("ID가 사용되고 있으면 예외가 발생한다.")
     void deleteByIdTest_used() {
         //given
@@ -93,8 +82,7 @@ class JdbcReservationTimeRepositoryTest {
         //when & then
         assertThatThrownBy(
                 () -> reservationTimeRepository.deleteById(time.getId())
-        ).isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessage("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -109,6 +97,20 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(foundTime).isEqualTo(savedTime);
+    }
+
+    @DisplayName("해당 시간이 저장돼 있는지 조회한다.")
+    @Test
+    void existByStartAt() {
+        //given
+        createTime(LocalTime.of(11, 0));
+
+        //when & then
+        assertThat(reservationTimeRepository.existByStartAt(LocalTime.of(11, 0)))
+                .isTrue();
+
+        assertThat(reservationTimeRepository.existByStartAt(LocalTime.of(12, 0)))
+                .isFalse();
     }
 
     @Test

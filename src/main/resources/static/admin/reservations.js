@@ -5,9 +5,13 @@ function setMessage(message) {
 }
 
 async function api(path, options = {}) {
+  const { headers = {}, ...restOptions } = options;
   const response = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
-    ...options
+    headers: {
+      "Content-Type": "application/json",
+      ...headers
+    },
+    ...restOptions
   });
   if (!response.ok) {
     throw new Error((await response.text()) || "요청 처리에 실패했습니다.");
@@ -55,7 +59,7 @@ $("#reservations").addEventListener("click", async (event) => {
   if (!button) return;
 
   try {
-    await api(`/reservations/${button.dataset.id}`, { method: "DELETE" });
+    await api(`/admin/reservations/${button.dataset.id}`, { method: "DELETE" });
     await refresh();
     setMessage("예약을 삭제했습니다.");
   } catch (error) {

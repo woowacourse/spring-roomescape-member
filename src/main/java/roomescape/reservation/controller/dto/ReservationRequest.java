@@ -1,13 +1,16 @@
 package roomescape.reservation.controller.dto;
 
-import roomescape.reservation.service.dto.ReservationCommand;
-
 import java.time.LocalDate;
+import roomescape.reservation.exception.InvalidReservationRequestValueException;
+import roomescape.reservation.service.dto.ReservationCommand;
 
 public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
     public ReservationRequest {
-        validateEmptyName(name);
+        if (name == null || name.isBlank() ||
+                date == null || timeId == null || themeId == null) {
+            throw new InvalidReservationRequestValueException();
+        }
     }
 
     public ReservationCommand toCommand() {
@@ -17,11 +20,5 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
                 timeId,
                 themeId
         );
-    }
-
-    private void validateEmptyName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
-        }
     }
 }

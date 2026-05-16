@@ -6,9 +6,15 @@ const state = {
 };
 
 async function api(path, options = {}) {
+  const { headers = {}, ...restOptions } = options;
+  const mergedHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
+
   const response = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
-    ...options
+    headers: mergedHeaders,
+    ...restOptions
   });
 
   if (!response.ok) {
@@ -62,9 +68,20 @@ function renderReservations(reservations) {
     return;
   }
 
-  root.innerHTML = reservations
-    .map((r) => `${r.id}. [${r.theme?.name ?? "테마 없음"}] ${r.date} ${r.time.startAt} - ${r.name}`)
-    .join("<br>");
+  root.innerHTML = "";
+
+  reservations.forEach((reservation) => {
+    const row = document.createElement("div");
+    row.className = "reservation-row";
+    row.innerHTML = `
+      <span class="reservation-text">${reservation.id}. [${reservation.theme?.name ?? "테마 없음"}] ${reservation.date} ${reservation.time.startAt} - ${reservation.name}</span>
+      <div class="reservation-actions">
+        <button class="ghost reservation-update" data-id="${reservation.id}" data-theme-id="${reservation.theme?.id ?? ""}" type="button">변경</button>
+        <button class="danger reservation-delete" data-id="${reservation.id}" type="button">삭제</button>
+      </div>
+    `;
+    root.appendChild(row);
+  });
 }
 
 function renderPopularThemes(popularThemes) {
@@ -180,6 +197,20 @@ $("#loadPopular").addEventListener("click", async () => {
   } catch (error) {
     setMessage(error.message);
   }
+});
+
+$("#reservations").addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-id]");
+  if (!button) return;
+
+  const reservationId = button.dataset.id;
+  if (button.classList.contains("reservation-update")) {
+    const themeId = button.dataset.themeId;
+    window.location.href = `/reservation-update.html?id=${encodeURIComponent(reservationId)}&themeId=${encodeURIComponent(themeId)}`;
+    return;
+  }
+
+  window.location.href = `/reservation-cancel.html?id=${encodeURIComponent(reservationId)}`;
 });
 
 async function init() {

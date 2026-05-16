@@ -3,9 +3,9 @@ package roomescape.time.repository;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,7 +16,7 @@ import roomescape.time.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()
@@ -34,39 +34,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                INSERT INTO reservation_time (start_at)
                VALUES (?)
                """;
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-                return ps;
-            }, keyHolder);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            Long id = keyHolder.getKey().longValue();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            return ps;
+        }, keyHolder);
 
-            return new ReservationTime(id, reservationTime.getStartAt());
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("해당 시간이 이미 DB에 존재합니다.");
-        }
-    }
+        Long id = keyHolder.getKey().longValue();
 
-    @Override
-    public void deleteById(Long id) {
-        String sql = """
-               DELETE FROM reservation_time
-               WHERE id = ?
-               """;
-
-        try {
-            int affectedRow = jdbcTemplate.update(sql, id);
-
-            if(affectedRow == 0) {
-                throw new IllegalArgumentException("해당 id의 시간이 존재하지 않습니다.");
-            }
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
-        }
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
@@ -82,6 +61,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 reservationTimeRowMapper,
                 id
         ).stream().findFirst();
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime localTime) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE start_at = ?
+            )
+            """;
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override
@@ -113,5 +106,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 );
 
         return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
+    }
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = """
+               DELETE FROM reservation_time
+               WHERE id = ?
+               """;
+
+        return jdbcTemplate.update(sql, id);
     }
 }
