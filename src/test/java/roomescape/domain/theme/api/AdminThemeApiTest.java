@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.global.error.TypeMismatchMessage;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -117,7 +118,7 @@ class AdminThemeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("id"))
                 .body("errors.find { it.field == 'id' }.value", equalTo(wrongId))
-                .body("errors.find { it.field == 'id' }.message", equalTo("Long 타입이어야 합니다."));
+                .body("errors.find { it.field == 'id' }.message", equalTo(TypeMismatchMessage.from(Long.class)));
         }
     }
 

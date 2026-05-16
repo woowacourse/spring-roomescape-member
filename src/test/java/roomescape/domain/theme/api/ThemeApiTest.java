@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.global.error.TypeMismatchMessage;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -113,7 +115,8 @@ class ThemeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("startDate"))
                 .body("errors.find { it.field == 'startDate' }.value", equalTo(wrongDate))
-                .body("errors.find { it.field == 'startDate' }.message", equalTo("LocalDate 타입이어야 합니다."));
+                .body("errors.find { it.field == 'startDate' }.message", equalTo(
+                    TypeMismatchMessage.from(LocalDate.class)));
         }
     }
 }

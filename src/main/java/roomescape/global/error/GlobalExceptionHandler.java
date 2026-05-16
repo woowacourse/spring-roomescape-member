@@ -5,7 +5,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,13 +22,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e) {
-        String requiredType = Optional.ofNullable(e.getRequiredType())
-            .map(Class::getSimpleName)
-            .orElse("Unknown");
-        List<ErrorDetail> errors = List.of(
-            ErrorDetail.of(e.getName(), e.getValue(), requiredType + " 타입이어야 합니다."));
+        String message = TypeMismatchMessage.from(e.getRequiredType());
+        ErrorDetail error = ErrorDetail.of(e.getName(), e.getValue(), message);
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_PARAMETER_TYPE, errors));
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_PARAMETER_TYPE, error));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -55,11 +52,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(
         MissingRequestHeaderException e) {
-        List<ErrorDetail> errors = new ArrayList<>();
-        errors.add(ErrorDetail.of(e.getHeaderName(), "필수 헤더가 누락되었습니다."));
+        ErrorDetail error = ErrorDetail.of(e.getHeaderName(), "필수 헤더가 누락되었습니다.");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, error));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

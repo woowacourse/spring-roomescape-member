@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.global.error.TypeMismatchMessage;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -99,7 +100,7 @@ class TimeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("date"))
                 .body("errors.find { it.field == 'date' }.value", equalTo(wrongDate))
-                .body("errors.find { it.field == 'date' }.message", equalTo("LocalDate 타입이어야 합니다."));
+                .body("errors.find { it.field == 'date' }.message", equalTo(TypeMismatchMessage.from(LocalDate.class)));
         }
     }
 }
