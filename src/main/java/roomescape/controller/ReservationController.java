@@ -48,7 +48,7 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
                                                       @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
         ReservationCommand reservationCommand = updateReservationRequest.to();

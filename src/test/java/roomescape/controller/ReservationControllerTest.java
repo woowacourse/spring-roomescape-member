@@ -136,7 +136,7 @@ class ReservationControllerTest {
 
         String encodedName = URLEncoder.encode("홍길동", StandardCharsets.UTF_8);
 
-        mockMvc.perform(post("/reservations/2")
+        mockMvc.perform(put("/reservations/2")
                         .header("name", encodedName)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateParams)))
@@ -154,7 +154,7 @@ class ReservationControllerTest {
                 "themeId", 1L
         );
 
-        mockMvc.perform(post("/reservations/2")
+        mockMvc.perform(put("/reservations/2")
                         .header("name", "홍길동")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateParams)))
@@ -173,7 +173,7 @@ class ReservationControllerTest {
                 "themeId", 1L
         );
 
-        mockMvc.perform(post("/reservations/2")
+        mockMvc.perform(put("/reservations/2")
                         .header("name", "임꺽정")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateParams)))
