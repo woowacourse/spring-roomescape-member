@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.domain.Reservation;
-import roomescape.service.AdminReservationService;
+import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.util.List;
@@ -18,9 +18,9 @@ import java.util.List;
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
 
-    private final AdminReservationService service;
+    private final ReservationService service;
 
-    public AdminReservationController(AdminReservationService service) {
+    public AdminReservationController(ReservationService service) {
         this.service = service;
     }
 
@@ -34,7 +34,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        Reservation reservation = service.create(
+        Reservation reservation = service.createByAdmin(
                 request.name(),
                 request.date(),
                 request.timeId(),
@@ -45,7 +45,7 @@ public class AdminReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id) {
-        service.delete(id);
+        service.deleteByAdmin(id);
         return ResponseEntity.noContent().build();
     }
 }

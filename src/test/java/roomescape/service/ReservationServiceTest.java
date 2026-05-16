@@ -62,6 +62,25 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 전체_예약_목록을_조회한다() {
+        // given
+        ReservationTime time = new ReservationTime(1L, LocalTime.parse("08:00"));
+        Theme theme = new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소");
+        List<Reservation> reservations = List.of(
+                new Reservation(1L, "브라운", date, time, theme),
+                new Reservation(2L, "구구", date, time, theme));
+        when(reservationRepository.findAll())
+                .thenReturn(reservations);
+
+        // when
+        List<Reservation> result = service.findAll();
+
+        // then
+        assertThat(result).isEqualTo(reservations);
+        verify(reservationRepository).findAll();
+    }
+
+    @Test
     void 사용자_예약을_생성한다() {
         // given
         Long id = 1L;
@@ -102,6 +121,39 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 관리자_예약을_생성한다() {
+        // given
+        Long id = 1L;
+        String name = "브라운";
+        Long timeId = 1L;
+        Long themeId = 1L;
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        ReservationTime time = new ReservationTime(timeId, LocalTime.parse("08:00"));
+        Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
+        Reservation savedReservation = new Reservation(id, name, pastDate, time, theme);
+        when(reservationTimeRepository.findBy(timeId))
+                .thenReturn(Optional.of(time));
+        when(reservationRepository.existsWith(pastDate, timeId, themeId))
+                .thenReturn(false);
+        when(themeRepository.findBy(themeId))
+                .thenReturn(Optional.of(theme));
+        when(reservationRepository.insert(any(Reservation.class)))
+                .thenReturn(id);
+        when(reservationRepository.findById(id))
+                .thenReturn(Optional.of(savedReservation));
+
+        // when
+        Reservation result = service.createByAdmin(name, pastDate, timeId, themeId);
+
+        // then
+        assertThat(result).isEqualTo(savedReservation);
+        verify(reservationTimeRepository).findBy(timeId);
+        verify(reservationRepository).existsWith(pastDate, timeId, themeId);
+        verify(themeRepository).findBy(themeId);
+        verify(reservationRepository).insert(any(Reservation.class));
+    }
+
+    @Test
     void 사용자는_지난_날짜나_시간으로_예약_생성시_예외_발생() {
         // given
         Long timeId = 1L;
@@ -136,6 +188,18 @@ class ReservationServiceTest {
 
         // then
         verify(reservationRepository).findById(id);
+        verify(reservationRepository).delete(id);
+    }
+
+    @Test
+    void 관리자_예약을_삭제한다() {
+        // given
+        Long id = 1L;
+
+        // when
+        service.deleteByAdmin(id);
+
+        // then
         verify(reservationRepository).delete(id);
     }
 

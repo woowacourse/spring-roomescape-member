@@ -22,7 +22,11 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final ReservationValidator reservationValidator;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, ReservationValidator reservationValidator) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            ReservationValidator reservationValidator) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -33,21 +37,32 @@ public class ReservationService {
         return reservationRepository.findByName(name);
     }
 
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
+    }
+
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
         reservationValidator.validateNotPast(date, time);
-        reservationValidator.validateAlreadyReserved(date, timeId, themeId);
-        Theme theme = findTheme(themeId);
+        return createReservation(name, date, timeId, themeId, time);
+    }
 
-        Reservation reservation = new Reservation(null, name, date, time, theme);
-        return save(reservation);
+    @Transactional
+    public Reservation createByAdmin(String name, LocalDate date, Long timeId, Long themeId) {
+        ReservationTime time = findReservationTime(timeId);
+        return createReservation(name, date, timeId, themeId, time);
     }
 
     @Transactional
     public void delete(Long id, String name) {
         Reservation reservation = findReservation(id);
         reservationValidator.validateUpdatableReservation(reservation, name);
+        reservationRepository.delete(id);
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long id) {
         reservationRepository.delete(id);
     }
 
@@ -82,6 +97,14 @@ public class ReservationService {
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findBy(timeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+    }
+
+    private Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
+        reservationValidator.validateAlreadyReserved(date, timeId, themeId);
+        Theme theme = findTheme(themeId);
+
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        return save(reservation);
     }
 
     private Theme findTheme(Long themeId) {
