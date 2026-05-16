@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationUpdateRequest;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 
 @SpringBootTest
@@ -76,33 +78,40 @@ public class ReservationServiceTest {
     @Test
     public void 사용자는_자신의_예약을_취소할_수_있다() {
         // given
-        Long reservationId = 1L;
         String username = "토리";
+        ReservationRequest registerRequest = new ReservationRequest(username, LocalDate.now().plusDays(1L), 3L, 3L);
+        Long reservationId = reservationService.register(registerRequest).id();
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
-                .isInstanceOf(RoomescapeException.class);
+        Assertions.assertThatCode(() -> reservationService.cancelByIdAndName(reservationId, username))
+                .doesNotThrowAnyException();
     }
 
     @Test
-    public void 다른_사용자가_예약을_취소에_대한_요청은_예외가_발생한다() {
+    public void 일반_사용자는_다른_사용자의_예약은_취소할_경우_예외가_발생한다() {
         // given
-        Long reservationId = 1L;
-        String username = "수라";
+        String username = "토리";
+        ReservationRequest registerRequest = new ReservationRequest(username, LocalDate.now().plusDays(1L), 3L, 3L);
+        Long reservationId = reservationService.register(registerRequest).id();
+        String otherName = "윤기";
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
-                .isInstanceOf(RoomescapeException.class);
+        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, otherName))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_OWNER.getMessage());
     }
 
     @Test
-    public void 이미_지난_예약을_취소하면_예외가_발생한다() {
+    public void 사용자는_이미_지난_예약을_취소하면_예외가_발생한다() {
         // given
-        Long reservationId = 1L;
+        ReservationResponse response = reservationService.read().getFirst();
+        Long reservationId = response.id();
+        String username = response.name();
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.removeById(reservationId))
-                .isInstanceOf(RoomescapeException.class);
+        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_PAST_UPDATE.getMessage());
     }
 
     @Test
