@@ -1,7 +1,7 @@
 package roomescape.exception;
 
-public class ResourceInUseException extends RuntimeException{
-    public ResourceInUseException(String message){
+public class ResourceInUseException extends RuntimeException {
+    public ResourceInUseException(String message) {
         super(message);
     }
 }

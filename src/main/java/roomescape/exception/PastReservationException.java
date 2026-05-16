@@ -1,7 +1,7 @@
 package roomescape.exception;
 
-public class PastReservationException extends RuntimeException{
-    public PastReservationException(String message){
+public class PastReservationException extends RuntimeException {
+    public PastReservationException(String message) {
         super(message);
     }
 }

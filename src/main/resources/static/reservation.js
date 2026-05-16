@@ -8,6 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date().toISOString().split('T')[0];
   resDateInput.min = today;
 
+  async function getErrorMessage(res) {
+    const fallbackMessage = '요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.';
+
+    try {
+      const error = await res.clone().json();
+      return error.message || fallbackMessage;
+    } catch (e) {
+      try {
+        const text = await res.text();
+        return text || fallbackMessage;
+      } catch (e) {
+        return fallbackMessage;
+      }
+    }
+  }
+
   // Get themeId from URL
   const urlParams = new URLSearchParams(window.location.search);
   const initialThemeId = urlParams.get('themeId');
@@ -80,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Optional: redirect to home
         window.location.href = '/';
       } else {
-        const msg = await res.text();
+        const msg = await getErrorMessage(res);
         alert(msg);
       }
     });

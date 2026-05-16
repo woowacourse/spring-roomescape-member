@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,10 +20,12 @@ public class ThemeService {
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
+    private final Clock clock;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao, Clock clock) {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
+        this.clock = clock;
     }
 
     public List<Theme> findAll() {
@@ -30,7 +33,7 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> findPopularThemes() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         return findPopularThemes(
                 today.minusDays(POPULAR_THEME_PERIOD_DAYS),
                 today.minusDays(1),

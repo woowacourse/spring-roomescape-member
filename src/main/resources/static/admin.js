@@ -7,6 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let allReservations = []; // To store reservations for filtering
 
+  async function getErrorMessage(res) {
+    const fallbackMessage = '요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.';
+
+    try {
+      const error = await res.clone().json();
+      return error.message || fallbackMessage;
+    } catch (e) {
+      try {
+        const text = await res.text();
+        return text || fallbackMessage;
+      } catch (e) {
+        return fallbackMessage;
+      }
+    }
+  }
+
   loadThemes();
   loadTimes();
   loadReservations();
@@ -90,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbnail: document.getElementById('theme-thumb').value
       })
     });
-    if(!res.ok) alert(await res.text());
+    if(!res.ok) alert(await getErrorMessage(res));
     else { e.target.reset(); loadThemes(); }
   };
 
@@ -100,28 +116,28 @@ document.addEventListener('DOMContentLoaded', () => {
       method: 'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({startAt: document.getElementById('time-val').value})
     });
-    if(!res.ok) alert(await res.text());
+    if(!res.ok) alert(await getErrorMessage(res));
     else { e.target.reset(); loadTimes(); }
   };
 
   window.deleteTheme = async (id) => {
     if(!confirm('해당 테마를 삭제하시겠습니까?')) return;
     const res = await fetch(`/admin/themes/${id}`, {method: 'DELETE'});
-    if(!res.ok) alert(await res.text());
+    if(!res.ok) alert(await getErrorMessage(res));
     else loadThemes();
   };
 
   window.deleteTime = async (id) => {
     if(!confirm('해당 시간을 삭제하시겠습니까?')) return;
     const res = await fetch(`/admin/times/${id}`, {method: 'DELETE'});
-    if(!res.ok) alert(await res.text());
+    if(!res.ok) alert(await getErrorMessage(res));
     else loadTimes();
   };
 
   window.deleteRes = async (id) => {
     if(!confirm('해당 예약을 취소하시겠습니까?')) return;
     const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
-    if(!res.ok) alert(await res.text());
+    if(!res.ok) alert(await getErrorMessage(res));
     else loadReservations();
   };
 });
