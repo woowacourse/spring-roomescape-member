@@ -1,11 +1,11 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.config.ClockProvider;
 import roomescape.common.exception.AlreadyExistException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableException;
@@ -22,12 +22,12 @@ public class ThemeService {
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
-    private final Clock clock;
+    private final ClockProvider clockProvider;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao, Clock clock) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao, ClockProvider clockProvider) {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
-        this.clock = clock;
+        this.clockProvider = clockProvider;
     }
 
     public ThemeResponse addTheme(ThemeRequest request) {
@@ -45,7 +45,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> getPopularThemes() {
-        LocalDate endDate = LocalDate.now(clock);
+        LocalDate endDate = LocalDate.now(clockProvider.getClock());
         LocalDate startDate = endDate.minusDays(POPULAR_THEME_PERIOD_DAYS);
 
         List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate.minusDays(1));

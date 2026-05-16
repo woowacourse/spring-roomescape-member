@@ -3,21 +3,24 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.DatabaseInitializer;
+import roomescape.common.config.ClockProvider;
 import roomescape.common.exception.AlreadyExistException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableException;
-import roomescape.config.TestConfig;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -28,11 +31,10 @@ import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Import(TestConfig.class)
 class ThemeServiceTest {
 
-    @Autowired
-    private Clock clock;
+    @MockitoBean
+    private ClockProvider clockProvider;
 
     @Autowired
     private DatabaseInitializer databaseInitializer;
@@ -52,6 +54,11 @@ class ThemeServiceTest {
     @BeforeEach
     void setUp() {
         databaseInitializer.clear();
+        given(clockProvider.getClock())
+                .willReturn(Clock.fixed(
+                        Instant.parse("2026-04-28T09:00:00Z"),
+                        ZoneOffset.UTC
+                ));
     }
 
     @Test
@@ -94,7 +101,7 @@ class ThemeServiceTest {
         Theme popularTheme = saveTheme("공포의 저택", "설명", "https://thumb.com");
         Theme normalTheme = saveTheme("사라진 연구소", "설명", "https://thumb.com");
 
-        LocalDate today = LocalDate.now(clock); // 2026-05-06
+        LocalDate today = LocalDate.now(clockProvider.getClock()); // 2026-05-06
         ReservationTime time = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         // 공포의 저택: 3건

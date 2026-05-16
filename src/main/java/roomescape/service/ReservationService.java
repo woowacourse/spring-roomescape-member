@@ -1,11 +1,11 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.config.ClockProvider;
 import roomescape.common.exception.AlreadyExistException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableException;
@@ -25,14 +25,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final Clock clock;
+    private final ClockProvider clockProvider;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
-                              Clock clock) {
+                              ClockProvider clockProvider) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.clock = clock;
+        this.clockProvider = clockProvider;
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
@@ -98,7 +98,7 @@ public class ReservationService {
     }
 
     private void validatePastDatetime(LocalDate date, ReservationTime reservationTime) {
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = LocalDateTime.now(clockProvider.getClock());
         LocalDateTime reservationDateAndTime = LocalDateTime.of(date, reservationTime.getStartAt());
 
         if (reservationDateAndTime.isBefore(now)) {

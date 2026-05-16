@@ -1,20 +1,37 @@
 package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.common.config.ClockProvider;
 
-@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeControllerTest {
+
+    @MockitoBean
+    private ClockProvider clockProvider;
+
+    @BeforeEach
+    void setUp() {
+        given(clockProvider.getClock())
+                .willReturn(Clock.fixed(
+                        Instant.parse("2026-04-28T09:00:00Z"),
+                        ZoneOffset.UTC
+                ));
+    }
 
     @Test
     void 전체_테마를_조회한다() {
