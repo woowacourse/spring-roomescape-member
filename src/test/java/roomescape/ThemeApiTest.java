@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -90,5 +92,28 @@ class ThemeApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    @Sql("/data_relative_dates.sql")
+    void 인기_테마_탑10_조회() {
+        RestAssured.given().log().all()
+                .queryParam("days", 7)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10))
+                .body("name", contains(
+                        "미스터리 저택",
+                        "해적선의 보물",
+                        "마법사의 탑",
+                        "좀비 아포칼립스",
+                        "고대 이집트",
+                        "우주 정거장",
+                        "시간 여행자의 실험실",
+                        "폐쇄 병동",
+                        "침몰하는 잠수함",
+                        "은행 금고"
+                ));
     }
 }

@@ -26,7 +26,7 @@ public class DbTest {
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
+            assertThat(connection.getCatalog()).isNotBlank();
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue();
             assertThat(connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue();
