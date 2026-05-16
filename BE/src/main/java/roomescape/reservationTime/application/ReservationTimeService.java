@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ReservationTimeErrorCode;
 import roomescape.global.exception.customException.EntityNotFoundException;
-import roomescape.reservation.application.ReservationReferenceChecker;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservationTime.application.dto.ReservationTimeCreateCommand;
@@ -20,12 +19,12 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-    private final ReservationReferenceChecker referenceChecker;
+    private final ReferenceChecker referenceChecker;
 
     public ReservationTimeService(
             ReservationTimeRepository reservationTimeRepository,
             ReservationRepository reservationRepository,
-            ReservationReferenceChecker referenceChecker
+            ReferenceChecker referenceChecker
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
