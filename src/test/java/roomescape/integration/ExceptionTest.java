@@ -170,7 +170,7 @@ public class ExceptionTest {
         //given
         Map<String, Object> valid = Map.of(
                 "name", "브라운",
-                "date", "2026-04-29",
+                "date", "2026-05-01",
                 "timeId", 1L,
                 "themeId", 1L
         );
