@@ -3,6 +3,7 @@ package roomescape.domain.reservation.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,9 @@ public class ReservationService {
     }
 
     private void validateDuplicates(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateTimeAndThemeId(date, timeId, themeId)) {
+        Optional<Reservation> reservation = reservationRepository.findReservationByDateTimeAndThemeId(
+            date, timeId, themeId);
+        if (reservation.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
     }
@@ -107,7 +110,10 @@ public class ReservationService {
     }
 
     private void validateDuplicatesExceptMe(Long id, LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateTimeAndThemeIdExceptId(id, date, timeId, themeId)) {
+        Optional<Reservation> reservation = reservationRepository.findReservationByDateTimeAndThemeId(
+                date, timeId, themeId)
+            .filter(foundReservation -> !Objects.equals(foundReservation.getId(), id));
+        if (reservation.isPresent()) {
             throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
     }

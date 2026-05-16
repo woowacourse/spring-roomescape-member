@@ -77,6 +77,30 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
+        Long themeId) {
+        String sql = """
+            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.date = :date AND rt.id = :timeId AND t.id = :themeId
+            """;
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "date", date,
+            "timeId", timeId,
+            "themeId", themeId
+        ));
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, parameters,
+                this::mapReservation);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
         SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
@@ -106,32 +130,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId)";
-        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
-            "date", date,
-            "timeId", timeId,
-            "themeId", themeId
-        ));
-
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
-    }
-
-    @Override
-    public boolean existsByDateTimeAndThemeIdExceptId(Long id, LocalDate date, Long timeId,
-        Long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id != :id AND date = :date AND time_id = :timeId AND theme_id = :themeId)";
-        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
-            "id", id,
-            "date", date,
-            "timeId", timeId,
-            "themeId", themeId
-        ));
-
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
-    }
-
-    @Override
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = :timeId)";
         SqlParameterSource parameters = new MapSqlParameterSource("timeId", timeId);
@@ -150,7 +148,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void updateReservationById(Long id, LocalDate date, Long timeId) {
         String sql = "UPDATE reservation SET date = :date, time_id = :timeId WHERE id = :id";
-        MapSqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
             "date", date,
             "timeId", timeId,
             "id", id

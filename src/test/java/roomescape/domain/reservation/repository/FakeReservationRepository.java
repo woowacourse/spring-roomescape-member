@@ -35,6 +35,16 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
+        Long themeId) {
+        return reservations.stream()
+            .filter(reservation -> Objects.equals(reservation.getDate(), date))
+            .filter(reservation -> Objects.equals(reservation.getTime().getId(), timeId))
+            .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId))
+            .findFirst();
+    }
+
+    @Override
     public List<Long> findTimeIdsByDateAndThemeId(LocalDate localDate, Long themeId) {
         return reservations.stream()
             .filter(reservation -> reservation.getDate().equals(localDate))
@@ -52,24 +62,6 @@ public class FakeReservationRepository implements ReservationRepository {
             reservation.getTheme());
         reservations.add(savedReservation);
         return savedReservation;
-    }
-
-    @Override
-    public boolean existsByDateTimeAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        return reservations.stream()
-            .filter(reservation -> reservation.getDate().equals(date))
-            .filter(reservation -> reservation.getTime().getId().equals(timeId))
-            .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
-    }
-
-    @Override
-    public boolean existsByDateTimeAndThemeIdExceptId(Long id, LocalDate date, Long timeId,
-        Long themeId) {
-        return reservations.stream()
-            .filter(reservation -> !Objects.equals(reservation.getId(), id))
-            .filter(reservation -> reservation.getDate().equals(date))
-            .filter(reservation -> reservation.getTime().getId().equals(timeId))
-            .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
     }
 
     @Override
