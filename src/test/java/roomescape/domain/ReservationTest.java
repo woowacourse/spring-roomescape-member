@@ -92,4 +92,55 @@ class ReservationTest {
         // then
         assertThat(result.getName()).isEqualTo(name);
     }
+
+    @Test
+    void 예약자_이름이_같은지_확인한다() {
+        // given
+        Reservation reservation = reservation("브라운", date, new ReservationTime(1L, startAt));
+
+        // when & then
+        assertThat(reservation.isOwnedBy("브라운")).isTrue();
+        assertThat(reservation.isOwnedBy("구구")).isFalse();
+    }
+
+    @Test
+    void 지난_예약인지_확인한다() {
+        // given
+        Reservation reservation = reservation(
+                "브라운",
+                LocalDate.now().minusDays(1),
+                new ReservationTime(1L, startAt));
+
+        // when & then
+        assertThat(reservation.isPast()).isTrue();
+    }
+
+    @Test
+    void 예약_일정이_같은지_확인한다() {
+        // given
+        ReservationTime time = new ReservationTime(1L, startAt);
+        Reservation reservation = reservation("브라운", date, time);
+        Reservation sameSchedule = reservation("구구", date, time);
+        Reservation differentSchedule = reservation("브라운", date.plusDays(1), time);
+
+        // when & then
+        assertThat(reservation.hasSameSchedule(sameSchedule)).isTrue();
+        assertThat(reservation.hasSameSchedule(differentSchedule)).isFalse();
+    }
+
+    @Test
+    void 예약_시간이_같은지_확인한다() {
+        // given
+        ReservationTime time = new ReservationTime(1L, startAt);
+        Reservation reservation = reservation("브라운", date, time);
+
+        // when & then
+        assertThat(reservation.hasTime(time)).isTrue();
+        assertThat(reservation.hasTime(new ReservationTime(2L, LocalTime.parse("11:00")))).isFalse();
+    }
+
+    private Reservation reservation(String name, LocalDate date, ReservationTime time) {
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
+        return new Reservation(null, name, date, time, theme);
+    }
 }

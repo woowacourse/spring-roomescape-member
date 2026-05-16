@@ -46,7 +46,7 @@ class ReservationControllerTest {
     @Test
     void 사용자_예약을_생성한다() throws Exception {
         // given
-        given(reservationService.createUserReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),
@@ -117,7 +117,7 @@ class ReservationControllerTest {
                         .param("name", name))
                 .andExpect(status().isNoContent());
 
-        verify(reservationService).deleteUserReservation(id, name);
+        verify(reservationService).delete(id, name);
     }
 
     @Test
@@ -165,7 +165,7 @@ class ReservationControllerTest {
         Long id = 999L;
         String name = "브라운";
         willThrow(new NotFoundException("존재하지 않는 예약입니다."))
-                .given(reservationService).deleteUserReservation(id, name);
+                .given(reservationService).delete(id, name);
 
         // when & then
         mockMvc.perform(delete("/reservations/{id}", id)
@@ -181,7 +181,7 @@ class ReservationControllerTest {
         Long id = 1L;
         String name = "브라운";
         willThrow(new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다."))
-                .given(reservationService).deleteUserReservation(id, name);
+                .given(reservationService).delete(id, name);
 
         // when & then
         mockMvc.perform(delete("/reservations/{id}", id)
@@ -197,7 +197,7 @@ class ReservationControllerTest {
         Long id = 1L;
         String name = "브라운";
         willThrow(new PastReservationLockedException("이미 지난 예약은 변경하거나 취소할 수 없습니다."))
-                .given(reservationService).deleteUserReservation(id, name);
+                .given(reservationService).delete(id, name);
 
         // when & then
         mockMvc.perform(delete("/reservations/{id}", id)
@@ -211,7 +211,7 @@ class ReservationControllerTest {
     void 사용자_본인_예약을_변경한다() throws Exception {
         // given
         Long id = 1L;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 2)),
@@ -278,7 +278,7 @@ class ReservationControllerTest {
     void 사용자_본인_예약_변경시_존재하지_않는_예약이면_에러_응답() throws Exception {
         // given
         Long id = 999L;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 2)),
@@ -299,7 +299,7 @@ class ReservationControllerTest {
         // given
         Long id = 1L;
         willThrow(new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다."))
-                .given(reservationService).updateUserReservation(
+                .given(reservationService).update(
                         id,
                         "브라운",
                         LocalDate.of(2099, 1, 2),
@@ -318,7 +318,7 @@ class ReservationControllerTest {
     void 사용자_본인_예약_변경시_이미_지난_예약이면_에러_응답() throws Exception {
         // given
         Long id = 1L;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 2)),
@@ -344,7 +344,7 @@ class ReservationControllerTest {
                   "date": "2000-01-01"
                 }
                 """;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2000, 1, 1)),
@@ -364,7 +364,7 @@ class ReservationControllerTest {
     void 사용자_본인_예약_변경시_이미_예약된_시간이면_에러_응답() throws Exception {
         // given
         Long id = 1L;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 2)),
@@ -384,7 +384,7 @@ class ReservationControllerTest {
     void 사용자_본인_예약_변경시_기존_날짜와_시간이면_에러_응답() throws Exception {
         // given
         Long id = 1L;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 2)),
@@ -409,7 +409,7 @@ class ReservationControllerTest {
                   "name": "브라운"
                 }
                 """;
-        given(reservationService.updateUserReservation(
+        given(reservationService.update(
                 eq(id),
                 eq("브라운"),
                 eq(null),
@@ -470,7 +470,7 @@ class ReservationControllerTest {
     @Test
     void 지난_예약이면_에러_응답() throws Exception {
         // given
-        given(reservationService.createUserReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),
@@ -489,7 +489,7 @@ class ReservationControllerTest {
     @Test
     void 존재하지_않는_리소스이면_에러_응답() throws Exception {
         // given
-        given(reservationService.createUserReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),
@@ -508,7 +508,7 @@ class ReservationControllerTest {
     @Test
     void 중복_예약이면_에러_응답() throws Exception {
         // given
-        given(reservationService.createUserReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),
@@ -527,7 +527,7 @@ class ReservationControllerTest {
     @Test
     void 예상하지_못한_예외면_서버_에러_응답() throws Exception {
         // given
-        given(reservationService.createUserReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),

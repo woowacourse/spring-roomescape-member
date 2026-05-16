@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,7 +32,7 @@ class AdminReservationControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ReservationService reservationService;
+    private AdminReservationService reservationService;
 
     @Test
     void 예약_목록을_조회한다() throws Exception {
@@ -54,7 +54,7 @@ class AdminReservationControllerTest {
     @Test
     void 관리자_예약을_생성한다() throws Exception {
         // given
-        given(reservationService.createAdminReservation(
+        given(reservationService.create(
                 eq("브라운"),
                 eq(LocalDate.of(2099, 1, 1)),
                 eq(1L),

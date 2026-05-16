@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.domain.Reservation;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 import java.net.URI;
 import java.util.List;
@@ -18,9 +18,9 @@ import java.util.List;
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
 
-    private final ReservationService service;
+    private final AdminReservationService service;
 
-    public AdminReservationController(ReservationService service) {
+    public AdminReservationController(AdminReservationService service) {
         this.service = service;
     }
 
@@ -34,7 +34,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        Reservation reservation = service.createAdminReservation(
+        Reservation reservation = service.create(
                 request.name(),
                 request.date(),
                 request.timeId(),

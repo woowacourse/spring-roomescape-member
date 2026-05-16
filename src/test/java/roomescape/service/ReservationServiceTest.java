@@ -51,25 +51,6 @@ class ReservationServiceTest {
     private final LocalDate date = LocalDate.now().plusDays(1);
 
     @Test
-    void 전체_예약_조회_테스트() {
-        // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.parse("08:00"));
-        Theme theme = new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소");
-        List<Reservation> reservations = List.of(
-                new Reservation(1L, "브라운", date, time, theme),
-                new Reservation(2L, "구구", date, time, theme));
-        when(reservationRepository.findAll())
-                .thenReturn(reservations);
-
-        // when
-        List<Reservation> result = service.findAll();
-
-        // then
-        assertThat(result).isEqualTo(reservations);
-        verify(reservationRepository).findAll();
-    }
-
-    @Test
     void 이름으로_예약_목록을_조회한다() {
         // given
         String name = "브라운";
@@ -112,7 +93,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when
-        Reservation result = service.createUserReservation(name, date, timeId, themeId);
+        Reservation result = service.create(name, date, timeId, themeId);
 
         // then
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
@@ -141,55 +122,6 @@ class ReservationServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("adminReservationDateTimes")
-    void 관리자_예약_생성_테스트(LocalDate date, LocalTime startAt) {
-        // given
-        Long id = 1L;
-        Long timeId = 1L;
-        Long themeId = 1L;
-        String name = "브라운";
-        ReservationTime time = new ReservationTime(timeId, startAt);
-        Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
-        Reservation reservation = new Reservation(id, name, date, time, theme);
-
-        when(reservationTimeRepository.findBy(timeId))
-                .thenReturn(Optional.of(time));
-        when(reservationRepository.existsWith(date, timeId, themeId))
-                .thenReturn(false);
-        when(themeRepository.findBy(themeId))
-                .thenReturn(Optional.of(theme));
-        when(reservationRepository.insert(any(Reservation.class)))
-                .thenReturn(id);
-        when(reservationRepository.findById(id))
-                .thenReturn(Optional.of(reservation));
-
-        // when
-        Reservation result = service.createAdminReservation(name, date, timeId, themeId);
-
-        // then
-        assertAll(
-                () -> assertThat(result.getId()).isEqualTo(id),
-                () -> assertThat(result.getName()).isEqualTo(name),
-                () -> assertThat(result.getDate()).isEqualTo(date),
-                () -> assertThat(result.getTime()).isEqualTo(time),
-                () -> assertThat(result.getTheme()).isEqualTo(theme));
-
-        verify(reservationTimeRepository).findBy(timeId);
-        verify(reservationRepository).existsWith(date, timeId, themeId);
-        verify(themeRepository).findBy(themeId);
-        verify(reservationRepository).insert(any(Reservation.class));
-        verify(reservationRepository).findById(id);
-    }
-
-    private static Stream<Arguments> adminReservationDateTimes() {
-        return Stream.of(
-                Arguments.of(LocalDate.now().minusDays(1), LocalTime.parse("08:00")),
-                Arguments.of(LocalDate.now(), LocalTime.MIDNIGHT),
-                Arguments.of(LocalDate.now().plusDays(1), LocalTime.parse("08:00"))
-        );
-    }
-
-    @ParameterizedTest
     @MethodSource("pastReservationDateTimes")
     void 사용자는_지난_날짜나_시간으로_예약_생성시_예외_발생(LocalDate date, LocalTime startAt) {
         // given
@@ -200,7 +132,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(time));
 
         // when & then
-        assertThatThrownBy(() -> service.createUserReservation("브라운", date, timeId, themeId))
+        assertThatThrownBy(() -> service.create("브라운", date, timeId, themeId))
                 .isInstanceOf(PastReservationException.class)
                 .hasMessage("이미 지난 시간으로는 예약할 수 없습니다.");
 
@@ -228,7 +160,7 @@ class ReservationServiceTest {
                 .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> service.createUserReservation("브라운", date, timeId, themeId))
+        assertThatThrownBy(() -> service.create("브라운", date, timeId, themeId))
                 .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("이미 예약된 시간입니다.");
 
@@ -249,7 +181,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> service.createUserReservation("홍길동", date, timeId, themeId))
+        assertThatThrownBy(() -> service.create("홍길동", date, timeId, themeId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
 
@@ -273,7 +205,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> service.createUserReservation("홍길동", date, timeId, themeId))
+        assertThatThrownBy(() -> service.create("홍길동", date, timeId, themeId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
 
@@ -281,18 +213,6 @@ class ReservationServiceTest {
         verify(reservationRepository).existsWith(date, timeId, themeId);
         verify(themeRepository).findBy(themeId);
         verify(reservationRepository, never()).insert(any(Reservation.class));
-    }
-
-    @Test
-    void 예약_삭제_테스트() {
-        // given
-        Long id = 1L;
-
-        // when
-        service.delete(id);
-
-        // then
-        verify(reservationRepository).delete(id);
     }
 
     @Test
@@ -310,7 +230,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when
-        service.deleteUserReservation(id, name);
+        service.delete(id, name);
 
         // then
         verify(reservationRepository).findById(id);
@@ -326,7 +246,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> service.deleteUserReservation(id, name))
+        assertThatThrownBy(() -> service.delete(id, name))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
 
@@ -349,7 +269,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        assertThatThrownBy(() -> service.deleteUserReservation(id, name))
+        assertThatThrownBy(() -> service.delete(id, name))
                 .isInstanceOf(ForbiddenReservationException.class)
                 .hasMessage("본인의 예약만 변경하거나 취소할 수 있습니다.");
 
@@ -372,7 +292,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        assertThatThrownBy(() -> service.deleteUserReservation(id, name))
+        assertThatThrownBy(() -> service.delete(id, name))
                 .isInstanceOf(PastReservationLockedException.class)
                 .hasMessage("이미 지난 예약은 변경하거나 취소할 수 없습니다.");
 
@@ -398,7 +318,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(updateTime));
 
         // when
-        Reservation result = service.updateUserReservation(id, name, updateDate, timeId);
+        Reservation result = service.update(id, name, updateDate, timeId);
 
         // then
         assertAll(
@@ -434,7 +354,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation), Optional.of(updatedReservation));
 
         // when
-        Reservation result = service.updateUserReservation(id, name, updateDate, null);
+        Reservation result = service.update(id, name, updateDate, null);
 
         // then
         assertAll(
@@ -467,7 +387,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(updateTime));
 
         // when
-        Reservation result = service.updateUserReservation(id, name, null, timeId);
+        Reservation result = service.update(id, name, null, timeId);
 
         // then
         assertAll(
@@ -498,7 +418,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, null, null))
+        assertThatThrownBy(() -> service.update(id, name, null, null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("변경할 날짜 또는 시간이 필요합니다.");
 
@@ -522,7 +442,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(time));
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, date, timeId))
+        assertThatThrownBy(() -> service.update(id, name, date, timeId))
                 .isInstanceOf(UnchangedReservationException.class)
                 .hasMessage("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다.");
 
@@ -551,7 +471,7 @@ class ReservationServiceTest {
                 .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("이미 예약된 시간입니다.");
 
@@ -572,7 +492,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
 
@@ -598,7 +518,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(ForbiddenReservationException.class)
                 .hasMessage("본인의 예약만 변경하거나 취소할 수 있습니다.");
 
@@ -626,7 +546,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
 
@@ -652,7 +572,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation));
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(PastReservationLockedException.class)
                 .hasMessage("이미 지난 예약은 변경하거나 취소할 수 없습니다.");
 
@@ -681,7 +601,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(updateTime));
 
         // when & then
-        assertThatThrownBy(() -> service.updateUserReservation(id, name, updateDate, timeId))
+        assertThatThrownBy(() -> service.update(id, name, updateDate, timeId))
                 .isInstanceOf(PastReservationException.class)
                 .hasMessage("이미 지난 시간으로는 예약할 수 없습니다.");
 

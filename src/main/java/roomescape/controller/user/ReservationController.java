@@ -36,7 +36,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        Reservation reservation = service.createUserReservation(
+        Reservation reservation = service.create(
                 request.name(),
                 request.date(),
                 request.timeId(),
@@ -58,7 +58,7 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(
             @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id,
             @RequestParam("name") @NotBlank(message = "name은 비어 있을 수 없습니다.") String name) {
-        service.deleteUserReservation(id, name);
+        service.delete(id, name);
         return ResponseEntity.noContent().build();
     }
 
@@ -66,7 +66,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id,
             @Valid @RequestBody ReservationUpdateRequest request) {
-        Reservation reservation = service.updateUserReservation(
+        Reservation reservation = service.update(
                 id,
                 request.name(),
                 request.date(),

@@ -35,34 +35,24 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
-    }
-
     public List<Reservation> findByName(String name) {
         return reservationRepository.findByName(name);
     }
 
     @Transactional
-    public Reservation createUserReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
         validateNotPast(date, time);
-        return create(name, date, timeId, themeId, time);
+        validateAlreadyReserved(date, timeId, themeId);
+        Theme theme = findTheme(themeId);
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Long id = reservationRepository.insert(reservation);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("생성된 예약을 찾을 수 없습니다."));
     }
 
     @Transactional
-    public Reservation createAdminReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = findReservationTime(timeId);
-        return create(name, date, timeId, themeId, time);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        reservationRepository.delete(id);
-    }
-
-    @Transactional
-    public void deleteUserReservation(Long id, String name) {
+    public void delete(Long id, String name) {
         Reservation reservation = findReservation(id);
         validateOwner(reservation, name);
         validateReservationNotLocked(reservation);
@@ -70,7 +60,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
+    public Reservation update(Long id, String name, LocalDate date, Long timeId) {
         Reservation reservation = findReservation(id);
         validateUpdatableReservation(reservation, name);
 
@@ -117,7 +107,7 @@ public class ReservationService {
     }
 
     private void validateReservationNotLocked(Reservation reservation) {
-        if (isPast(reservation.getDate(), reservation.getTime())) {
+        if (reservation.isPast()) {
             throw new PastReservationLockedException("이미 지난 예약은 변경하거나 취소할 수 없습니다.");
         }
     }
@@ -127,18 +117,9 @@ public class ReservationService {
         return reservationDateTime.isBefore(LocalDateTime.now());
     }
 
-    private Reservation create(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
-        validateAlreadyReserved(date, timeId, themeId);
-        Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("생성된 예약을 찾을 수 없습니다."));
-    }
-
     private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
         return reservations.stream()
-                .noneMatch(reservation -> time.equals(reservation.getTime()));
+                .noneMatch(reservation -> reservation.hasTime(time));
     }
 
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
@@ -162,14 +143,13 @@ public class ReservationService {
     }
 
     private void validateScheduleChanged(Reservation reservation, Reservation updatedReservation) {
-        if (reservation.getDate().equals(updatedReservation.getDate())
-                && reservation.getTime().equals(updatedReservation.getTime())) {
+        if (reservation.hasSameSchedule(updatedReservation)) {
             throw new UnchangedReservationException("기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다.");
         }
     }
 
     private void validateOwner(Reservation reservation, String name) {
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.isOwnedBy(name)) {
             throw new ForbiddenReservationException("본인의 예약만 변경하거나 취소할 수 있습니다.");
         }
     }
