@@ -139,6 +139,16 @@ public class ReservationControllerTest {
     }
 
     @Test
+    public void 사용자_예약_취소_시_경로_변수가_숫자가_아니면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .delete("/reservations/abc?username=토리")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_PARAMETER_TYPE"));
+    }
+
+    @Test
     public void 사용자_예약_취소_시_존재하지_않는_예약이면_404를_반환한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

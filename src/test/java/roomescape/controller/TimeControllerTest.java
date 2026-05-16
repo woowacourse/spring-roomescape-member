@@ -37,6 +37,16 @@ public class TimeControllerTest {
     }
 
     @Test
+    public void 테마_별_예약가능한_시간_조회_시_themeId_가_숫자가_아니면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/times?themeId=abc&date=2026-05-04")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_PARAMETER_TYPE"));
+    }
+
+    @Test
     public void 예약_가능한_시간_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
