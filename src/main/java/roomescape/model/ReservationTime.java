@@ -1,7 +1,8 @@
 package roomescape.model;
 
 import java.time.LocalTime;
-import roomescape.dto.TimeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class ReservationTime {
     private final Long id;
@@ -12,8 +13,15 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTime from(TimeResponse timeResponse) {
-        return new ReservationTime(timeResponse.id(), timeResponse.startAt());
+    public static ReservationTime withValidate(Long id, LocalTime startAt) {
+        validateStartAt(startAt);
+        return new ReservationTime(id, startAt);
+    }
+
+    private static void validateStartAt(LocalTime startAt) {
+        if (startAt.getMinute() != 0) {
+            throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
+        }
     }
 
     public Long id() {

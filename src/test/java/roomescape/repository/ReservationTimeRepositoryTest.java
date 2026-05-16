@@ -38,8 +38,8 @@ public class ReservationTimeRepositoryTest {
 
     @Test
     void 얘약_가능한_시간을_저장할_수_있다() {
-        LocalTime localTime = LocalTime.of(9, 0);
-        timeRepository.save(localTime);
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(9, 0));
+        timeRepository.save(reservationTime);
         Assertions.assertEquals(15, timeRepository.findAll().size());
     }
 

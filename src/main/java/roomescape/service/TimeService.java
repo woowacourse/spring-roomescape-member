@@ -64,10 +64,8 @@ public class TimeService {
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
             throw new RoomescapeException(ErrorCode.TIME_DUPLICATE);
         }
-        if (timeRequest.startAt().getMinute() != 0) {
-            throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
-        }
-        ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
+        ReservationTime reservationTime = timeRepository.save(
+                ReservationTime.withValidate(null, timeRequest.startAt()));
         return TimeResponse.from(reservationTime);
     }
 }

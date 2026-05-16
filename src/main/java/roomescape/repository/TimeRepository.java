@@ -45,18 +45,18 @@ public class TimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public ReservationTime save(LocalTime startAt) {
+    public ReservationTime save(ReservationTime reservationTime) {
         String sql = "insert into reservation_time(start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setObject(1, startAt);
+            ps.setObject(1, reservationTime.startAt());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     public Optional<ReservationTime> findById(Long id) {
