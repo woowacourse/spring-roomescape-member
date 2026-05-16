@@ -116,4 +116,31 @@ class ReservationValidatorTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
     }
+
+    @Test
+    @DisplayName("예약자가 본인이면 예외가 발생하지 않는다")
+    void validateOwner_success() {
+        // given
+        ReservationTime time = ReservationTime.createRow(1L, LocalTime.of(10, 0));
+        Theme theme = Theme.createRow(1L, "공포", "설명", "https://good.com");
+        Reservation reservation = Reservation.create("인직", LocalDate.now().plusDays(1), time, theme);
+
+        // when & then
+        assertThatCode(() -> reservationValidator.validateOwner(reservation, "인직"))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("예약자가 본인이 아니면 예외가 발생한다")
+    void validateOwner_fail_with_invalid_owner() {
+        // given
+        ReservationTime time = ReservationTime.createRow(1L, LocalTime.of(10, 0));
+        Theme theme = Theme.createRow(1L, "공포", "설명", "https://good.com");
+        Reservation reservation = Reservation.create("인직", LocalDate.now().plusDays(1), time, theme);
+
+        // when & then
+        assertThatThrownBy(() -> reservationValidator.validateOwner(reservation, "포비"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("수정할 수 있는 권한이 없습니다.");
+    }
 }
