@@ -1,20 +1,19 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.error.ErrorCode;
@@ -135,6 +134,42 @@ class ReservationServiceImplTest {
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_OWNER_MISMATCH);
+    }
+
+    @Test
+    void 휴일_날짜로_변경하면_INVALID_REQUEST_예외가_발생한다() {
+        ReservationTime existingTime = new ReservationTime(1L, "10:00", "11:00");
+        ReservationTime newTime = new ReservationTime(1L, "14:00", "15:00");
+        Theme theme = new Theme("테마", "설명", "url").withId(1L);
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), existingTime, theme).withId(1L);
+
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+        when(timeService.findById(1L)).thenReturn(newTime);
+        when(themeRepository.findById(1L)).thenReturn(theme);
+        when(holidayService.isHoliday(LocalDate.of(2099, 9, 1))).thenReturn(true);
+
+        ReservationUpdateServiceDto dto = new ReservationUpdateServiceDto(1L, "브라운", LocalDate.of(2099, 9, 1), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.update(dto))
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_REQUEST);
+    }
+
+    @Test
+    void 빈_문자열_요청자로_변경하면_INVALID_REQUEST_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
+        Theme theme = new Theme("테마", "설명", "url").withId(1L);
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), time, theme).withId(1L);
+
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+
+        ReservationUpdateServiceDto dto = new ReservationUpdateServiceDto(1L, "", LocalDate.of(2099, 9, 1), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.update(dto))
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_REQUEST);
     }
 
     @Test

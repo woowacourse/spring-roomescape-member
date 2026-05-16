@@ -136,6 +136,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateOwner(Reservation reservation, String requesterName) {
+        if (requesterName == null || requesterName.isBlank()) {
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+        }
         if (!reservation.getName().equals(requesterName)) {
             throw new ReservationException(ErrorCode.RESERVATION_OWNER_MISMATCH);
         }
