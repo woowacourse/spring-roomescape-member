@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예약 조회 - Roomescape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --danger: #ef4444;
+            --bg-dark: #09090b;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .nav-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(9,9,11,0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-header a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 1.2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .reservation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .reservation-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reservation-card.inactive {
+            opacity: 0.7;
+        }
+
+        .info h3 { margin-bottom: 0.5rem; font-size: 1.3rem; }
+        .info p { color: var(--text-muted); font-size: 1rem; margin-bottom: 0.2rem; }
+
+        .actions { display: flex; gap: 0.5rem; }
+
+        .status-badge {
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .status-completed {
+            color: var(--text-muted);
+            background: rgba(148, 163, 184, 0.12);
+        }
+
+        .status-cancelled {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.12);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--bg-dark);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            width: 100%; max-width: 500px;
+        }
+        .modal-content h2 { margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
+        .form-group select {
+            width: 100%; padding: 1rem; background: rgba(0,0,0,0.3); color: white;
+            border: 1px solid var(--border-glass); border-radius: 8px;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <a href="/">&larr; 메인으로 돌아가기</a>
+    </div>
+
+    <div class="container">
+        <h1>MY RESERVATIONS</h1>
+        <p class="subtitle">예약하신 내역을 조회하고 일정을 변경하거나 취소할 수 있습니다.</p>
+
+        <form class="search-box" id="searchForm">
+            <input type="text" id="nameInput" placeholder="예약자 성함 입력" required>
+            <button type="submit">조회하기</button>
+        </form>
+
+        <div class="reservation-list" id="resList">
+            <!-- Items -->
+        </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2>일정 변경</h2>
+            <form id="editForm">
+                <input type="hidden" id="editResId">
+                <div class="form-group">
+                    <label>새로운 테마</label>
+                    <select id="editTheme" required></select>
+                </div>
+                <div class="form-group">
+                    <label>새로운 날짜</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label>새로운 시간</label>
+                    <select id="editTime" required></select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" style="background: #333; color: white;" onclick="closeModal()">취소</button>
+                    <button type="submit">변경 저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script type="module">
+    import { fetchMyReservations, cancelMyReservation, updateReservationSchedule, fetchThemes, fetchAvailableTimes } from '/js/api.js';
+    import { showToast } from '/js/utils.js';
+
+    const searchForm = document.getElementById('searchForm');
+    const nameInput = document.getElementById('nameInput');
+    const resList = document.getElementById('resList');
+
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+    const editTheme = document.getElementById('editTheme');
+    const editDate = document.getElementById('editDate');
+    const editTime = document.getElementById('editTime');
+
+    // Make functions globally available for inline onclick
+    window.closeModal = () => editModal.style.display = 'none';
+    window.openEditModal = async (id, currentThemeId, currentDate, currentTimeId) => {
+        document.getElementById('editResId').value = id;
+        editDate.value = currentDate;
+        
+        // Load themes
+        try {
+            const themes = await fetchThemes();
+            editTheme.innerHTML = '<option value="">테마 선택</option>';
+            themes.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                if(t.id == currentThemeId) opt.selected = true;
+                editTheme.appendChild(opt);
+            });
+            await loadEditTimes();
+            editModal.style.display = 'flex';
+        } catch (e) {
+            showToast('데이터 로드 실패', 'error');
+        }
+    };
+
+    window.cancelRes = async (id) => {
+        if(!confirm('정말로 이 예약을 취소하시겠습니까?')) return;
+        const name = nameInput.value.trim();
+        try {
+            await cancelMyReservation(id, { name });
+            showToast('예약이 성공적으로 취소되었습니다.', 'success');
+            searchForm.dispatchEvent(new Event('submit'));
+        } catch(e) {
+            showToast(e.message, 'error');
+        }
+    };
+
+    async function loadEditTimes() {
+        const tId = editTheme.value;
+        const d = editDate.value;
+        editTime.innerHTML = '<option value="">시간 선택</option>';
+        if(!tId || !d) return;
+        
+        try {
+            const times = await fetchAvailableTimes(tId, d);
+            times.forEach(t => {
+                if(t.available) {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.startAt;
+                    editTime.appendChild(opt);
+                }
+            });
+        } catch(e) {
+            // Ignore error
+        }
+    }
+
+    editTheme.addEventListener('change', loadEditTimes);
+    editDate.addEventListener('change', loadEditTimes);
+
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        if(!name) return;
+
+        resList.innerHTML = '<p style="text-align:center; color:#94a3b8;">조회 중...</p>';
+        try {
+            const data = await fetchMyReservations(name);
+            resList.innerHTML = '';
+            if(data.length === 0) {
+                resList.innerHTML = '<p style="text-align:center; color:#94a3b8;">해당 이름으로 된 예약이 없습니다.</p>';
+                return;
+            }
+
+            const now = new Date();
+
+            data.forEach(r => {
+                // 날짜/시간 비교 (과거 예약인지 확인)
+                const resDateTimeStr = r.date + 'T' + (r.time ? r.time.startAt : '00:00:00');
+                const isPast = new Date(resDateTimeStr) < now;
+                const isCancelled = r.status === 'CANCELLED';
+                const isEditable = !isPast && !isCancelled;
+
+                const div = document.createElement('div');
+                div.className = 'reservation-card';
+                if (!isEditable) {
+                    div.classList.add('inactive');
+                }
+
+                div.innerHTML = `
+                    <div class="info">
+                        <h3>${r.theme ? r.theme.name : '알수없음'}</h3>
+                        <p>${r.date} | ${r.time ? r.time.startAt : '알수없음'}</p>
+                    </div>
+                    <div class="actions">
+                        ${isCancelled
+                            ? '<span class="status-badge status-cancelled">취소됨</span>'
+                            : isPast
+                                ? '<span class="status-badge status-completed">이용 완료</span>'
+                            : `<button type="button" onclick="openEditModal(${r.id}, ${r.theme?.id}, '${r.date}', ${r.time?.id})">변경</button>
+                               <button type="button" class="btn-danger" onclick="cancelRes(${r.id})">취소</button>`
+                        }
+                    </div>
+                `;
+                resList.appendChild(div);
+            });
+        } catch(e) {
+            resList.innerHTML = '<p style="text-align:center; color:#ef4444;">조회 중 오류가 발생했습니다.</p>';
+        }
+    });
+
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editResId').value;
+        const name = nameInput.value.trim();
+        const payload = {
+            name: name,
+            date: editDate.value,
+            timeId: parseInt(editTime.value)
+        };
+        try {
+            await updateReservationSchedule(id, payload);
+            showToast('예약이 변경되었습니다.', 'success');
+            closeModal();
+            searchForm.dispatchEvent(new Event('submit'));
+        } catch(e) {
+            showToast(e.message, 'error');
+        }
+    });
+
+</script>
+</body>
+</html>

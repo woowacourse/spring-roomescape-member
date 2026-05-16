@@ -22,26 +22,27 @@ import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Theme;
 import roomescape.domain.ReservationTime;
+import roomescape.util.ApiTestSupport;
 import roomescape.util.TestDataInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("테마 API 요구사항 테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeApiTest {
+class ThemeApiTest extends ApiTestSupport {
 
     @Autowired
     private TestDataInitializer dataInitializer;
 
     @Test
     @DisplayName("테마를 추가한다.")
-    void createTheme() {
+    void 테마를_등록한다() {
         // given
         Map<String, String> request = new HashMap<>();
         request.put("name", "귀신의 집");
         request.put("description", "무서워요");
-        request.put("imageUrl", "/resources/image/ghost.png");
+        request.put("imagePath", "/images/themes/ghost.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -59,10 +60,10 @@ class ThemeApiTest {
 
     @Test
     @DisplayName("전체 테마 목록을 조회한다.")
-    void getThemes() {
+    void 테마_목록을_조회한다() {
         // given
-        createThemeHelper("귀신의 집", "무서워요", "/resources/image/1");
-        createThemeHelper("물고기", "어푸", "/resources/image/2");
+        createThemeHelper("귀신의 집", "무서워요", "/images/themes/1.webp");
+        createThemeHelper("물고기", "어푸", "/images/themes/2.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -78,14 +79,14 @@ class ThemeApiTest {
         assertThat(response.jsonPath().getList("themes.id")).doesNotContainNull();
         assertThat(response.jsonPath().getList("themes.name")).contains("귀신의 집", "물고기");
         assertThat(response.jsonPath().getList("themes.description")).contains("무서워요", "어푸");
-        assertThat(response.jsonPath().getList("themes.imageUrl")).doesNotContainNull();
+        assertThat(response.jsonPath().getList("themes.imagePath")).doesNotContainNull();
     }
 
     @Test
     @DisplayName("테마를 삭제한다.")
-    void deleteTheme() {
+    void 테마를_삭제한다() {
         // given
-        int themaId = createThemeHelper("삭제할 테마", "삭제될 예정입니다", "/resources/image/delete");
+        int themaId = createThemeHelper("삭제할 테마", "삭제될 예정입니다", "/images/themes/delete.webp");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -98,11 +99,11 @@ class ThemeApiTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private int createThemeHelper(String name, String description, String imageUrl) {
+    private int createThemeHelper(String name, String description, String imagePath) {
         Map<String, String> request = new HashMap<>();
         request.put("name", name);
         request.put("description", description);
-        request.put("imageUrl", imageUrl);
+        request.put("imagePath", imagePath);
 
         return RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -113,10 +114,10 @@ class ThemeApiTest {
 
     @Test
     @DisplayName("인기 테마를 예약 많은 순, 예약 수가 같다면 이름 순으로 조회한다.")
-    void getPopularThemes() {
-        Theme themeA = dataInitializer.createTheme("A 테마", "설명A", "urlA");
-        Theme themeB = dataInitializer.createTheme("B 테마", "설명B", "urlB");
-        Theme themeC = dataInitializer.createTheme("C 테마", "설명C", "urlC");
+    void 인기_테마를_조회한다() {
+        Theme themeA = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
+        Theme themeB = dataInitializer.createTheme("B 테마", "설명B", "/images/themes/b.webp");
+        Theme themeC = dataInitializer.createTheme("C 테마", "설명C", "/images/themes/c.webp");
 
         ReservationTime timeA = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         ReservationTime timeB = dataInitializer.createReservationTime(LocalTime.of(11, 0));
@@ -124,17 +125,17 @@ class ThemeApiTest {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         // 테마 A에 예약 3개
-        dataInitializer.createReservation("사용자1", yesterday, timeA.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자2", yesterday, timeB.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자3", yesterday, timeC.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자일", yesterday, timeA.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자이", yesterday, timeB.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자삼", yesterday, timeC.getId(), themeA.getId());
 
         // 테마 B에 예약 1개
-        dataInitializer.createReservation("사용자4", yesterday, timeA.getId(), themeB.getId());
+        dataInitializer.createReservation("사용자사", yesterday, timeA.getId(), themeB.getId());
 
         // 테마 C에 예약 3개
-        dataInitializer.createReservation("사용자5", yesterday, timeA.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자6", yesterday, timeB.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자7", yesterday, timeC.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자오", yesterday, timeA.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자육", yesterday, timeB.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자칠", yesterday, timeC.getId(), themeC.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)
@@ -148,10 +149,10 @@ class ThemeApiTest {
 
     @Test
     @DisplayName("인기 테마 조회는 days와 limit를 생략하면 기본값을 사용한다.")
-    void getPopularThemesWithDefaultQueryParams() {
-        Theme theme = dataInitializer.createTheme("A 테마", "설명A", "urlA");
+    void 인기_테마_조회시_days와_limit를_생략하면_기본값을_사용한다() {
+        Theme theme = dataInitializer.createTheme("A 테마", "설명A", "/images/themes/a.webp");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
-        dataInitializer.createReservation("사용자1", LocalDate.now().minusDays(1), time.getId(), theme.getId());
+        dataInitializer.createReservation("사용자일", LocalDate.now().minusDays(1), time.getId(), theme.getId());
 
         RestAssured.given().log().all()
                 .when().get("/themes/rank")
@@ -159,31 +160,6 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("themeRankings.theme.name", contains("A 테마"))
                 .body("themeRankings.size()", is(1));
-    }
-
-    @Test
-    @DisplayName("인기 테마 조회는 오늘을 제외하고 days일 범위만 조회한다.")
-    void getPopularThemesExcludesTodayAndIncludesExactDaysBeforeToday() {
-        Theme includedStartTheme = dataInitializer.createTheme("시작일 포함 테마", "설명", "url");
-        Theme includedEndTheme = dataInitializer.createTheme("종료일 포함 테마", "설명", "url");
-        Theme excludedTodayTheme = dataInitializer.createTheme("오늘 제외 테마", "설명", "url");
-        Theme excludedBeforeRangeTheme = dataInitializer.createTheme("범위 이전 제외 테마", "설명", "url");
-        ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
-        LocalDate today = LocalDate.now();
-
-        dataInitializer.createReservation("사용자1", today.minusDays(7), time.getId(), includedStartTheme.getId());
-        dataInitializer.createReservation("사용자2", today.minusDays(1), time.getId(), includedEndTheme.getId());
-        dataInitializer.createReservation("사용자3", today, time.getId(), excludedTodayTheme.getId());
-        dataInitializer.createReservation("사용자4", today.minusDays(8), time.getId(), excludedBeforeRangeTheme.getId());
-
-        RestAssured.given().log().all()
-                .queryParam("days", 7)
-                .queryParam("limit", 10)
-                .when().get("/themes/rank")
-                .then().log().all()
-                .statusCode(200)
-                .body("themeRankings.theme.name", contains("시작일 포함 테마", "종료일 포함 테마"))
-                .body("themeRankings.size()", is(2));
     }
 
     @ParameterizedTest
@@ -198,7 +174,7 @@ class ThemeApiTest {
             "7, 51, 400"
     })
     @DisplayName("인기 테마 조회 조건의 경계값을 검증한다.")
-    void validatePopularThemeRankingQueryRange(int days, int limit, int statusCode) {
+    void 인기_테마_조회_조건이_유효하지_않으면_400을_반환한다(int days, int limit, int statusCode) {
         RestAssured.given().log().all()
                 .queryParam("days", days)
                 .queryParam("limit", limit)

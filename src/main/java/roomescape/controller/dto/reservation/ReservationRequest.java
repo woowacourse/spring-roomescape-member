@@ -9,12 +9,12 @@ import roomescape.service.dto.reservation.CreateReservationCommand;
 
 public record ReservationRequest(
         @NotBlank(message = "예약자 이름은 필수입니다.")
-        @Size(max = 50, message = "예약자 이름은 50자를 넘을 수 없습니다.")
+        @Size(min = 2, max = 20, message = "예약자 이름은 2자 이상 20자 이하여야 합니다.")
+        @Pattern(regexp = "^[가-힣a-zA-Z ]+$", message = "예약자 이름은 완성형 한글, 영문, 공백만 허용합니다.")
         String name,
 
-        @NotBlank(message = "예약 날짜는 필수입니다.")
-        @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "예약 날짜 형식은 yyyy-MM-dd 이어야 합니다.")
-        String date,
+        @NotNull(message = "예약 날짜는 필수입니다.")
+        LocalDate date,
 
         @NotNull(message = "예약 시간은 필수입니다.")
         Long timeId,
@@ -26,7 +26,7 @@ public record ReservationRequest(
     public CreateReservationCommand toCommand() {
         return new CreateReservationCommand(
                 name.trim(),
-                LocalDate.parse(date),
+                date,
                 timeId,
                 themeId
         );

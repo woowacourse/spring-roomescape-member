@@ -1,10 +1,9 @@
 package roomescape.global.exception.theme;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.BadRequestException;
 
-public class InvalidThemeException extends RoomescapeException {
+public class InvalidThemeException extends BadRequestException {
     public InvalidThemeException(String message) {
-        super(ErrorCode.INVALID_THEME, message);
+        super(message);
     }
 }

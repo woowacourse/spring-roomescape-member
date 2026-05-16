@@ -4,90 +4,273 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 카페 시스템</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8fafc;
-            margin: 0;
-            color: #1e293b;
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --bg-dark: #09090b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
-        .container {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Full screen hero background */
+        .hero {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=2500&auto=format&fit=crop') no-repeat center center/cover;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(9, 9, 11, 0.4), rgba(9, 9, 11, 0.95));
+            z-index: 1;
+        }
+
+        /* Top Navigation */
+        .navbar {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between; /* 양쪽 정렬로 변경 */
+            align-items: center;
+            z-index: 10;
+        }
+
+        .navbar a.admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            transition: color 0.3s;
+        }
+
+        .navbar a.admin-link:hover {
+            color: var(--primary);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .hero-content {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            background: white;
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
+            max-width: 900px;
+            padding: 2rem;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            margin-bottom: 2.5rem;
-            font-size: 2rem;
-            font-weight: 800;
-            color: #4f46e5;
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        .btn-group {
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            text-decoration: none;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            justify-content: center;
         }
 
-        a {
-            text-decoration: none;
-            padding: 1.25rem;
-            border-radius: 12px;
+        .card h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
             color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: transform 0.2s, background 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 2;
         }
 
-        a:active {
-            transform: scale(0.98);
+        .card p {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.5;
+            z-index: 2;
         }
 
-        .user-btn {
-            background-color: #4f46e5;
+        .card::after {
+            content: '→';
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 1.5rem;
+            color: white;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateX(-10px);
         }
 
-        .user-btn:hover {
-            background-color: #4338ca;
+        .card:hover {
+            transform: scale(1.02);
+            border-color: rgba(255,255,255,0.2);
         }
 
-        .admin-btn {
-            background-color: #475569;
+        .card:hover::after {
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .admin-btn:hover {
-            background-color: #334155;
+        /* Bento Box Layout */
+        .primary-card {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            min-height: 200px;
         }
 
-        .footer {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #94a3b8;
+        .primary-card h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .primary-card:hover {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1));
+            box-shadow: 0 20px 50px rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .secondary-card {
+            background: rgba(255, 255, 255, 0.03);
+            min-height: 180px;
+        }
+        
+        .secondary-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .admin-cards .card {
+            padding: 1.5rem 1rem;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .admin-cards .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0;
+        }
+
+        .admin-cards .card::after {
+            display: none;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .navbar { padding: 1rem; }
+            .action-cards { grid-template-columns: 1fr; }
+            .primary-card { grid-column: span 1; min-height: 180px; }
+            .primary-card h2 { font-size: 2rem; }
+            .card::after { opacity: 1; transform: translateX(0); font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Roomescape</h1>
-    <div class="btn-group">
-        <a href="/user-reservation.html" class="user-btn">방탈출 예약하기 (사용자)</a>
-        <a href="/popular-themes.html" class="user-btn" style="background-color: #10b981;">실시간 인기 테마 (사용자)</a>
-        <a href="/admin-reservation.html" class="admin-btn">예약 현황 관리 (관리자)</a>
-        <a href="/admin-time.html" class="admin-btn">예약 시간 관리 (관리자)</a>
-        <a href="/admin-theme.html" class="admin-btn">테마 정보 관리 (관리자)</a>
-    </div>
-    <p class="footer">Woowacourse Level 2 - Roomescape System</p>
-</div>
+    <nav class="navbar">
+        <div class="logo">ROOM ESCAPE</div>
+        <a href="/admin-reservation.html" class="admin-link">ADMIN</a>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-content">
+            <h1>ESCAPE THE ORDINARY</h1>
+            <p class="subtitle">당신의 한계를 시험할 미스터리 속으로.</p>
+            
+            <h2 class="section-title">For Challengers</h2>
+            <div class="action-cards" style="margin-bottom: 3rem;">
+                <a href="/user-reservation.html" class="card primary-card">
+                    <h2>방탈출 예약하기</h2>
+                    <p>원하는 테마와 시간을 선택하고<br>도전을 시작하세요.</p>
+                </a>
+                <a href="/my-reservation.html" class="card secondary-card">
+                    <h2>내 예약 관리</h2>
+                    <p>나의 예약 내역을 조회하고<br>일정을 변경하거나 취소하세요.</p>
+                </a>
+                <a href="/popular-themes.html" class="card secondary-card">
+                    <h2>실시간 인기 테마</h2>
+                    <p>다른 도전자들이 가장 많이 선택한<br>테마의 순위를 확인하세요.</p>
+                </a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

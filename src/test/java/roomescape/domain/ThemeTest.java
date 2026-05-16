@@ -16,7 +16,7 @@ class ThemeTest {
     @Test
     @DisplayName("테마를 정상적으로 생성한다.")
     void createTheme() {
-        Theme theme = Theme.createNew("비밀 연구소", "바이러스를 막아라", "https://image.url/lab.png");
+        Theme theme = Theme.createNew("비밀 연구소", "바이러스를 막아라", "/images/themes/lab.webp");
 
         assertThat(theme.getName()).isEqualTo("비밀 연구소");
         assertThat(theme.getId()).isNull();
@@ -25,13 +25,13 @@ class ThemeTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
-    @DisplayName("테마 이름, 설명, URL이 null이거나 공백이면 예외가 발생한다.")
+    @DisplayName("테마 이름, 설명, 이미지 경로가 null이거나 공백이면 예외가 발생한다.")
     void validate_NullOrBlank(String invalidInput) {
-        assertThatThrownBy(() -> Theme.createNew(invalidInput, "설명", "url"))
+        assertThatThrownBy(() -> Theme.createNew(invalidInput, "설명", "/images/themes/theme.webp"))
                 .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("비어있을 수 없습니다");
 
-        assertThatThrownBy(() -> Theme.createNew("이름", invalidInput, "url"))
+        assertThatThrownBy(() -> Theme.createNew("이름", invalidInput, "/images/themes/theme.webp"))
                 .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("비어있을 수 없습니다");
     }
@@ -42,11 +42,20 @@ class ThemeTest {
         String exactBoundary = "a".repeat(255);
         String overBoundary = "a".repeat(256);
 
-        assertThatCode(() -> Theme.createNew(exactBoundary, "설명", "url"))
+        assertThatCode(() -> Theme.createNew(exactBoundary, "설명", "/images/themes/theme.webp"))
                 .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> Theme.createNew(overBoundary, "설명", "url"))
+        assertThatThrownBy(() -> Theme.createNew(overBoundary, "설명", "/images/themes/theme.webp"))
                 .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("255자를 초과할 수 없습니다");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"theme.webp", "images/themes/theme.webp", "/assets/themes/theme.webp"})
+    @DisplayName("테마 이미지 경로가 테마 이미지 디렉터리로 시작하지 않으면 예외가 발생한다.")
+    void validateImagePath_Prefix(String invalidImagePath) {
+        assertThatThrownBy(() -> Theme.createNew("비밀 연구소", "바이러스를 막아라", invalidImagePath))
+                .isInstanceOf(InvalidThemeException.class)
+                .hasMessageContaining("/images/themes/");
     }
 }

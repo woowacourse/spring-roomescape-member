@@ -1,15 +1,9 @@
 package roomescape.global.exception.theme;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.NotFoundException;
 
-public class ThemeNotFoundException extends RoomescapeException {
-
-    public ThemeNotFoundException() {
-        super(ErrorCode.THEME_NOT_FOUND, "존재하지 않는 테마입니다.");
-    }
-
+public class ThemeNotFoundException extends NotFoundException {
     public ThemeNotFoundException(String message) {
-        super(ErrorCode.THEME_NOT_FOUND, message);
+        super(message);
     }
 }

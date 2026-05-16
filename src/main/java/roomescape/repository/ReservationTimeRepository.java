@@ -47,6 +47,14 @@ public class ReservationTimeRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsReservationByTimeId(Long timeId) {
+        String sql = "select count(1) from reservation where time_id = :timeId;";
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+        Integer count = jdbcTemplate.queryForObject(sql, parameters, Integer.class);
+        return count != null && count > 0;
+    }
+
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time order by start_at;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
@@ -75,7 +83,7 @@ public class ReservationTimeRepository {
     public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
         String sql = "select time_id " +
                 "from reservation " +
-                "where theme_id = :themeId and date = :date;";
+                "where theme_id = :themeId and date = :date and status = 'RESERVED';";
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
                 .addValue("date", date);

@@ -7,7 +7,7 @@ public record ThemeResponse(
         Long id,
         String name,
         String description,
-        String imageUrl
+        String imagePath
 ) {
 
     public static ThemeResponse from(Theme theme) {
@@ -15,7 +15,7 @@ public record ThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
-                theme.getImageUrl()
+                theme.getImagePath()
         );
     }
 
@@ -24,7 +24,7 @@ public record ThemeResponse(
                 result.id(),
                 result.name(),
                 result.description(),
-                result.imageUrl()
+                result.imagePath()
         );
     }
 }

@@ -27,4 +27,13 @@ class ReservationTimeTest {
                 .isInstanceOf(InvalidReservationTimeException.class)
                 .hasMessage("예약 시간은 비어있을 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("시작 시간이 같으면 같은 예약 시간으로 판단한다.")
+    void hasSameStartAt() {
+        ReservationTime first = ReservationTime.from(1L, LocalTime.of(10, 0));
+        ReservationTime second = ReservationTime.from(2L, LocalTime.of(10, 0));
+
+        assertThat(first.hasSameStartAt(second)).isTrue();
+    }
 }

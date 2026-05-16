@@ -30,15 +30,15 @@ public class TestDataInitializer {
         return reservationTimeRepository.save(ReservationTime.createNew(localTime.withSecond(0).withNano(0)));
     }
 
-    public Theme createTheme(String name, String description, String imageUrl) {
-        return themeRepository.save(Theme.createNew(name, description, imageUrl));
+    public Theme createTheme(String name, String description, String imagePath) {
+        return themeRepository.save(Theme.createNew(name, description, imagePath));
     }
 
-    public void createReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
+                .orElseThrow(() -> new ReservationTimeNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(ThemeNotFoundException::new);
-        reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
+                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다."));
+        return reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
     }
 }

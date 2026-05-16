@@ -1,11 +1,9 @@
 package roomescape.global.exception.reservation;
 
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.RoomescapeException;
+import roomescape.global.exception.status.ConflictException;
 
-public class DuplicateReservationException extends RoomescapeException {
-
-    public DuplicateReservationException() {
-        super(ErrorCode.DUPLICATE_RESERVATION, "이미 예약된 시간입니다.");
+public class DuplicateReservationException extends ConflictException {
+    public DuplicateReservationException(String message) {
+        super(message);
     }
 }

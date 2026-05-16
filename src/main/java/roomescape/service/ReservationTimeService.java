@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservedTimes;
 import roomescape.global.exception.reservationtime.DuplicateReservationTimeException;
+import roomescape.global.exception.reservationtime.ReservationTimeInUseException;
 import roomescape.global.exception.theme.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -28,7 +29,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResult createReservationTime(CreateReservationTimeCommand command) {
         if (reservationTimeRepository.existsByStartAt(command.startAt())) {
-            throw new DuplicateReservationTimeException();
+            throw new DuplicateReservationTimeException("이미 등록된 예약 시간입니다.");
         }
         ReservationTime savedReservationTime = reservationTimeRepository.save(
                 ReservationTime.createNew(command.startAt()));
@@ -44,12 +45,15 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(Long id) {
+        if (reservationTimeRepository.existsReservationByTimeId(id)) {
+            throw new ReservationTimeInUseException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 
     public AvailableReservationTimesResult getAvailableReservationTimes(AvailableReservationTimesCondition condition) {
         ThemeResult theme = ThemeResult.from(themeRepository.findById(condition.themeId())
-                .orElseThrow(ThemeNotFoundException::new));
+                .orElseThrow(() -> new ThemeNotFoundException("선택한 테마가 존재하지 않습니다.")));
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         ReservedTimes reservedTimes = new ReservedTimes(
