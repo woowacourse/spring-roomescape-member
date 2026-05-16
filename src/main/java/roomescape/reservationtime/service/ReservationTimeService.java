@@ -14,7 +14,7 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final Logger logger = LoggerFactory.getLogger(ReservationTimeRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(ReservationTimeService.class);
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;

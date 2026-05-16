@@ -29,7 +29,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final Logger logger = LoggerFactory.getLogger(ReservationTimeRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 
     public ReservationService(ReservationRepository reservationRepository,
@@ -67,7 +67,6 @@ public class ReservationService {
     private Boolean isPassed(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime localDateTime = LocalDateTime.of(date, time);
-        logger.info("현재 시각 - %s".formatted(now));
         return localDateTime.isBefore(now);
     }
 

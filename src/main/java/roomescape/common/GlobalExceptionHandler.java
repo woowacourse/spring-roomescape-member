@@ -21,11 +21,10 @@ import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private final Logger logger = LoggerFactory.getLogger(ReservationTimeRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
