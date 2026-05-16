@@ -221,6 +221,29 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 사용자는_취소한_예약과_같은_슬롯으로_다시_예약할_수_있다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.plusDays(1), 1L, 1L);
+
+        Map<String, Object> cancellationParams = new HashMap<>();
+        cancellationParams.put("name", "고래");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(cancellationParams)
+                .when().put("/reservations/1/cancellation")
+                .then().log().all()
+                .statusCode(200)
+                .body("status", is("CANCELLED"));
+
+        createReservationRequest("고래", TODAY.plusDays(1), 1L, 1L)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(2))
+                .body("status", is("RESERVED"));
+    }
+
+    @Test
     void 존재하지_않는_예약을_변경하면_404를_반환한다() {
         createReservationPrerequisites(LocalTime.of(10, 0));
 

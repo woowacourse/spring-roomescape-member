@@ -47,6 +47,7 @@ public class ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservation")
+                .usingColumns("name", "date", "time_id", "theme_id", "status")
                 .usingGeneratedKeyColumns("id");
     }
 

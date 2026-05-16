@@ -23,8 +23,11 @@ CREATE TABLE reservation
     time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
     status   VARCHAR(20)  NOT NULL DEFAULT 'RESERVED',
+    active_slot BOOLEAN GENERATED ALWAYS AS (
+        CASE WHEN status = 'RESERVED' THEN TRUE ELSE NULL END
+    ),
     PRIMARY KEY (id),
-    CONSTRAINT unique_reservation_slot UNIQUE (date, time_id, theme_id),
+    CONSTRAINT unique_active_reservation_slot UNIQUE (date, time_id, theme_id, active_slot),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
