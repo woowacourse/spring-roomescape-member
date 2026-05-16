@@ -16,6 +16,7 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.reservation.service.dto.ReservationUpdateServiceDto;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.TimeService;
@@ -97,7 +98,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private Theme findTheme(Long themeId) {
-        return themeRepository.findById(themeId);
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                        "Theme not found. themeId=%d".formatted(themeId)));
     }
 
     @Override

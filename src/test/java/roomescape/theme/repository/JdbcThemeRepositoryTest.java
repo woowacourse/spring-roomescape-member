@@ -49,6 +49,25 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    void findById() {
+        Theme saved = jdbcThemeRepository.save(new Theme("테마", "설명", "https://img.test/a.png"));
+
+        assertThat(jdbcThemeRepository.findById(saved.getId()))
+                .hasValueSatisfying(theme -> {
+                    assertThat(theme.getId()).isEqualTo(saved.getId());
+                    assertThat(theme.getName()).isEqualTo("테마");
+                    assertThat(theme.getDescription()).isEqualTo("설명");
+                    assertThat(theme.getImageUrl()).isEqualTo("https://img.test/a.png");
+                });
+    }
+
+    @Test
+    void findById_없으면_빈_Optional을_반환한다() {
+        assertThat(jdbcThemeRepository.findById(1L))
+                .isEmpty();
+    }
+
+    @Test
     void deleteById() {
         Theme saved = jdbcThemeRepository.save(new Theme("x", "y", "https://img.test/c.png"));
 
