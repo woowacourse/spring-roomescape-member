@@ -16,15 +16,16 @@
 ### 테마
 
 - [x] 테마는 이름, 설명, 썸네일 이미지 URL을 필수로 가진다.
-- [x] 관리자는 테마를 추가하거나 삭제할 수 있다.
-- [x] 삭제된 테마는 사용자용 전체 테마 목록에서 제외된다.
-- [x] 테마를 삭제해도 기존 예약 데이터는 유지된다.
+- [x] 관리자는 테마를 추가하거나 비활성화할 수 있다.
+- [x] 비활성화된 테마는 사용자용 전체 테마 목록에서 제외된다.
+- [x] 테마를 비활성화해도 기존 예약 데이터는 유지된다.
 
 ### 예약 시간
 
 - [x] 예약 시간은 `startAt`으로 관리한다.
 - [x] 관리자는 예약 시간을 추가하거나 비활성화할 수 있다.
     - [x] 단, 예약이 존재하는 시간은 비활성화할 수 없다.
+    - [x] 비활성화된 예약 시간과 같은 시간은 다시 등록할 수 있다.
 - [x] 테마별 예약 가능 여부 조회 시 각 예약 시간의 예약 가능 상태를 함께 반환한다.
 
 ### 요구사항
@@ -43,6 +44,38 @@
 * 관리자 API는 요청 헤더에 `role: ADMIN` 이 필요하다.
 * 날짜는 `YYYY-MM-DD`, 시간은 `HH:mm:ss` 형식을 사용한다.
 * 유효성 검증 실패, 중복 등록, 조회 실패 등의 예외는 에러 응답으로 반환된다.
+
+### 에러 응답
+
+Body:
+
+```json
+{
+  "code": "ENTITY_NOT_FOUND",
+  "message": "존재하지 않는 테마 정보입니다."
+}
+```
+
+주요 에러 코드는 다음과 같다.
+
+| Code | 설명 |
+| --- | --- |
+| `VALIDATION_ERROR` | 도메인 유효성 검증 실패 |
+| `CONSTRAINT_VIOLATION` | 경로 변수 또는 요청 파라미터 검증 실패 |
+| `INVALID_REQUEST_BODY` | 요청 본문 검증 실패 |
+| `INVALID_JSON` | 잘못된 JSON 형식 |
+| `TYPE_MISMATCH` | 요청 값 타입 변환 실패 |
+| `MISSING_REQUEST_PARAMETER` | 필수 요청 파라미터 누락 |
+| `ENTITY_NOT_FOUND` | 리소스 조회 실패 |
+| `DUPLICATE_ENTITY` | 중복 리소스 생성 시도 |
+| `FORBIDDEN` | 권한 또는 소유자 검증 실패 |
+| `INACTIVE` | 비활성화된 리소스 사용 시도 |
+| `PAST_RESERVATION_TIME` | 과거 예약 일시 사용 |
+| `ALREADY_PASSED_RESERVATION` | 이미 지난 예약 취소 시도 |
+| `ALREADY_CANCELED_RESERVATION` | 이미 취소된 예약 수정 시도 |
+| `METHOD_NOT_ALLOWED` | 지원하지 않는 HTTP 메서드 |
+| `NO_RESOURCE_FOUND` | 존재하지 않는 경로 |
+| `INTERNAL_SERVER_ERROR` | 처리되지 않은 서버 예외 |
 
 ## 비즈니스별 API 명세
 
@@ -316,12 +349,12 @@ Body:
 }
 ```
 
-#### 테마 삭제
+#### 테마 비활성화
 
 **Request**
 
 ```http
-DELETE /api/admin/themes/1 HTTP/1.1
+PATCH /api/admin/themes/1 HTTP/1.1
 role: ADMIN
 ```
 
