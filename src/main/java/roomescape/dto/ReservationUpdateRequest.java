@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 
 public record ReservationUpdateRequest(
+
+        @NotNull(message = "변경할 날짜를 입력해주세요.")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 

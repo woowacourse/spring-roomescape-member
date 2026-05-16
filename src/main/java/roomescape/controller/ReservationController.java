@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.dto.ReservedTimeResponseDTO;
 import roomescape.service.ReservationService;
 
@@ -42,7 +43,8 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponseDTO> readById(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponseDTO> readById(
+            @PathVariable @Positive(message = "예약 아이디는 1 이상이어야 합니다.") Long id) {
         return ResponseEntity.ok(reservationService.readReservationById(id));
     }
 
