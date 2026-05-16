@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.dto.ErrorResponse;
+import roomescape.dto.FieldErrorResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 
@@ -18,12 +19,15 @@ import roomescape.exception.RoomescapeException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
-                                                                                     HttpServletRequest request) {
-        List<ErrorResponse> errors = e.getBindingResult().getFieldErrors().stream()
-                .map(fe -> new ErrorResponse("INVALID_CONSTRAINT", request.getRequestURI(), fe.getDefaultMessage()))
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
+                                                                               HttpServletRequest request) {
+        List<FieldErrorResponse> fieldErrors = e.getBindingResult().getFieldErrors().stream()
+                .map(fe -> new FieldErrorResponse(fe.getField(), fe.getDefaultMessage()))
                 .toList();
-        return ResponseEntity.badRequest().body(errors);
+        ErrorResponse errorResponse = new ErrorResponse(
+                "INVALID_CONSTRAINT", request.getRequestURI(), "요청 값이 유효하지 않습니다.", fieldErrors
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

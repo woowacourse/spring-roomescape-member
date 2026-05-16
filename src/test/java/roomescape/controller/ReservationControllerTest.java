@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -101,6 +102,24 @@ public class ReservationControllerTest {
                 .statusCode(400);
     }
 
+    @Test
+    public void 예약_생성_시_검증_실패_응답은_errors_필드에_필드별_오류를_포함한다() {
+        ReservationRequest invalid = new ReservationRequest("", LocalDate.now().plusDays(1), null, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(invalid)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_CONSTRAINT"))
+                .body("errors.size()", is(2))
+                .body("errors.field", hasItems("name", "timeId"))
+                .body("errors.message", hasItems(
+                        ErrorCode.RESERVATION_NAME_BLANK.getMessage(),
+                        ErrorCode.RESERVATION_TIME_NULL.getMessage()
+                ));
+    }
 
     @Test
     public void 예약_생성_시_존재하지_않는_예약_시간으로_예약하는_경우_404를_반환한다() {
