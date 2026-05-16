@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dto.ReservationPatchRequest;
 import roomescape.dto.ReservationRequest;
 import roomescape.exception.RoomescapeException;
 
@@ -84,6 +85,30 @@ public class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("무빙", LocalDate.now(clock), 1L, 2L);
 
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    void 사용자는_예약을_수정할_수_있다() {
+        ReservationPatchRequest reservationPatchRequest = new ReservationPatchRequest(LocalDate.now(clock), 9L);
+
+        Assertions.assertThatCode(() -> reservationService.patchById(11L, reservationPatchRequest))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 사용자는_지난_예약을_수정할_수_없다() {
+        ReservationPatchRequest reservationPatchRequest = new ReservationPatchRequest(LocalDate.now(clock), 9L);
+
+        Assertions.assertThatCode(() -> reservationService.patchById(1L, reservationPatchRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    void 사용자는_없는_예약을_수정할_수_없다() {
+        ReservationPatchRequest reservationPatchRequest = new ReservationPatchRequest(LocalDate.now(clock), 9L);
+
+        Assertions.assertThatCode(() -> reservationService.patchById(99999L, reservationPatchRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 

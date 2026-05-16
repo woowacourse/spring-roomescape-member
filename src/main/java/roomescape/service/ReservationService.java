@@ -87,6 +87,9 @@ public class ReservationService {
     }
 
     public ReservationResponse patchById(Long id, ReservationPatchRequest reservationPatchRequest) {
+        if (!reservationRepository.existsById(id)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
         Reservation reservation = reservationRepository.findById(id);
         ReservationTime time = timeRepository.findById(reservationPatchRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
