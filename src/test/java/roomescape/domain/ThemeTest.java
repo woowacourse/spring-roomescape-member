@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.ValidationException;
 
 class ThemeTest {
 
@@ -38,7 +39,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(invalidName, description, thumbnailImageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("이름은 필수 값입니다.");
     }
 
@@ -52,7 +53,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, invalidDescription, thumbnailImageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("설명은 필수 값입니다.");
     }
 
@@ -72,7 +73,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, description, invalidUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("올바른 이미지 주소 형식이 아닙니다. url=" + invalidUrl);
     }
 

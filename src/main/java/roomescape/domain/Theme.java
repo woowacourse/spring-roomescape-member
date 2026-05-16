@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.net.URI;
 import lombok.Getter;
 import roomescape.global.exception.InactiveException;
+import roomescape.global.exception.ValidationException;
 
 @Getter
 public class Theme {
@@ -40,22 +41,22 @@ public class Theme {
             URI uri = URI.create(thumbnailImageUrl);
 
             if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
-                throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
+                throw new ValidationException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
+            throw new ValidationException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
         }
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("설명은 필수 값입니다.");
+            throw new ValidationException("설명은 필수 값입니다.");
         }
     }
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 값입니다.");
+            throw new ValidationException("이름은 필수 값입니다.");
         }
     }
 

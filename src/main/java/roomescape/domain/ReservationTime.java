@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Getter;
 import roomescape.global.exception.InactiveException;
+import roomescape.global.exception.ValidationException;
 
 @Getter
 public class ReservationTime {
@@ -31,7 +32,7 @@ public class ReservationTime {
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("추가 할 예약 시작 시간 정보가 누락되었습니다.");
+            throw new ValidationException("추가 할 예약 시작 시간 정보가 누락되었습니다.");
         }
     }
 

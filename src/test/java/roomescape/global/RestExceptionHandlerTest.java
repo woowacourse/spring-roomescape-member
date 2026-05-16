@@ -128,28 +128,6 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void 일반_잘못된_요청_예외는_400_BAD_REQUEST를_응답한다() {
-        // when & then
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .when().get("/dummy/badRequest")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body("message", equalTo("잘못된 요청 예외"));
-    }
-
-    @Test
-    void 잘못된_상태_예외는_400_BAD_REQUEST를_응답한다() {
-        // when & then
-        RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .when().get("/dummy/illegalState")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body("message", equalTo("잘못된 상태 예외"));
-    }
-
-    @Test
     void 접근_권한_예외는_403_FORBIDDEN을_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()

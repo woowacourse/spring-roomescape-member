@@ -69,11 +69,6 @@ public class RestExceptionHandler {
         return createResponse(HttpStatus.NOT_FOUND, "존재하지 않는 경로입니다.");
     }
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException e) {
-        return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-
     @ExceptionHandler(exception = Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error(e.getMessage(), e);

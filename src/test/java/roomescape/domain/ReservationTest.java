@@ -11,6 +11,9 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.AlreadyPassedReservationException;
+import roomescape.global.exception.PastReservationTimeException;
+import roomescape.global.exception.ValidationException;
 
 class ReservationTest {
 
@@ -40,7 +43,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(invalidName, date, theme, reservationTime)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("예약자 정보는 비어있을 수 없습니다.");
+                ValidationException.class).hasMessage("예약자 정보는 비어있을 수 없습니다.");
     }
 
     @ParameterizedTest(name = "날짜 {0}, 테마 {1}, 시간 {2} 일 때, {3} 예외가 발생한다")
@@ -49,7 +52,16 @@ class ReservationTest {
                                               String expectedMessage) {
         // when & then
         assertThatThrownBy(() -> Reservation.create("이프", date, theme, reservationTime)).isInstanceOf(
-                IllegalArgumentException.class).hasMessageContaining(expectedMessage);
+                ValidationException.class).hasMessageContaining(expectedMessage);
+    }
+
+    @ParameterizedTest(name = "날짜 {0}, 테마 {1}, 시간 {2} 일 때, 과거 예약 일시 예외가 발생한다")
+    @MethodSource("roomescape.domain.fixture.ReservationFixture#pastReservationDateTimeConstructor")
+    void 과거_시간으로_예약을_생성하면_예외가_발생한다(LocalDate date, Theme theme, ReservationTime reservationTime,
+                                      String expectedMessage) {
+        // when & then
+        assertThatThrownBy(() -> Reservation.create("이프", date, theme, reservationTime)).isInstanceOf(
+                PastReservationTimeException.class).hasMessageContaining(expectedMessage);
     }
 
     @Test
@@ -75,6 +87,6 @@ class ReservationTest {
                 ReservationStatus.RESERVED);
 
         // when & then
-        assertThatThrownBy(reservation::cancel).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(reservation::cancel).isInstanceOf(AlreadyPassedReservationException.class);
     }
 }

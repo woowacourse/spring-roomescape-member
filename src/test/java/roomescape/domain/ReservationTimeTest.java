@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.ValidationException;
 
 class ReservationTimeTest {
 
@@ -14,7 +15,7 @@ class ReservationTimeTest {
     void 예약_시간을_생성할_때_시작_시간_정보가_없다면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> ReservationTime.create(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ValidationException.class)
                 .hasMessageContaining("추가 할 예약 시작 시간 정보가 누락되었습니다");
     }
 

@@ -40,16 +40,6 @@ public class DummyController {
         throw new BusinessException();
     }
 
-    @GetMapping("/dummy/badRequest")
-    public void badRequest() {
-        throw new IllegalArgumentException("잘못된 요청 예외");
-    }
-
-    @GetMapping("/dummy/illegalState")
-    public void illegalState() {
-        throw new IllegalStateException("잘못된 상태 예외");
-    }
-
     @GetMapping("/dummy/forbidden")
     public void forbidden() {
         throw new ForbiddenException("접근 권한이 없습니다.");

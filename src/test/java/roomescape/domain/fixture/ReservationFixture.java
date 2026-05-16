@@ -32,7 +32,12 @@ public final class ReservationFixture {
                         ThemeFixture.createDefaultTheme(),
                         null,
                         "예약 날짜 및 시간 정보는 비어있을 수 없습니다."
-                ),
+                )
+        );
+    }
+
+    public static Stream<Arguments> pastReservationDateTimeConstructor() {
+        return Stream.of(
                 Arguments.of(
                         LocalDate.now().minusDays(1),
                         ThemeFixture.createDefaultTheme(),
