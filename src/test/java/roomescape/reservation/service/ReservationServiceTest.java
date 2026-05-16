@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
@@ -24,8 +25,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -163,5 +167,83 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.deleteByAdmin(99L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("성공: 변경하려는 시간대에 중복 예약이 없고 모든 정보가 올바르면 예약을 정상 수정한다.")
+    void 예약_변경_비즈니스_로직_성공() {
+        // given
+        Long reservationId = 1L;
+        String name = "밍구";
+        LocalDate newDate = LocalDate.now().plusDays(2);
+        Long newTimeId = 2L;
+
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(newTimeId, LocalTime.of(13, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "이미지");
+        Reservation originalReservation = new Reservation(reservationId, name, LocalDate.now().plusDays(1), originalTime, theme);
+        Reservation updatedReservation = new Reservation(reservationId, name, newDate, newTime, theme);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(originalReservation));
+        given(reservationTimeRepository.findById(newTimeId)).willReturn(Optional.of(newTime));
+        given(reservationRepository.existsByDateTimeAndTheme(newDate, newTimeId, theme.id())).willReturn(false);
+
+        given(reservationRepository.findById(reservationId))
+                .willReturn(Optional.of(originalReservation))
+                .willReturn(Optional.of(updatedReservation));
+
+        // when
+        Reservation result = reservationService.updateReservationDateTimeByUser(reservationId, name, newDate, newTimeId);
+
+        // then
+        assertThat(result.getDate()).isEqualTo(newDate);
+        assertThat(result.getTime().id()).isEqualTo(newTimeId);
+        verify(reservationRepository).updateDateTime(reservationId, name, newDate, newTimeId);
+    }
+
+    @Test
+    @DisplayName("예외: 예약 수정 시 변경하려는 날짜와 시간에 동일 테마의 예약이 이미 존재하면 DuplicateException이 발생한다.")
+    void 예약_변경_실패_중복_예약_존재() {
+        // given
+        Long reservationId = 1L;
+        String name = "밍구";
+        LocalDate newDate = LocalDate.now().plusDays(2);
+        Long newTimeId = 2L;
+
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(newTimeId, LocalTime.of(13, 0));
+        Theme theme = new Theme(1L, "테마", "설명", "이미지");
+        Reservation originalReservation = new Reservation(reservationId, name, LocalDate.now().plusDays(1), originalTime, theme);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(originalReservation));
+        given(reservationTimeRepository.findById(newTimeId)).willReturn(Optional.of(newTime));
+        given(reservationRepository.existsByDateTimeAndTheme(newDate, newTimeId, theme.id())).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationDateTimeByUser(reservationId, name, newDate, newTimeId))
+                .isInstanceOf(DuplicateException.class)
+                .hasMessageContaining("이미 예약이 완료되었습니다.");
+
+        verify(reservationRepository, never()).updateDateTime(anyLong(), anyString(), any(LocalDate.class), anyLong());
+    }
+
+    @Test
+    @DisplayName("예외: 본인의 예약이더라도 이미 시간과 날짜가 지나간 과거의 예약은 취소(삭제)할 수 없다.")
+    void 예약_취소_실패_지나간_예약() {
+        // given
+        Long reservationId = 1L;
+        String name = "밍구";
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation pastReservation = new Reservation(reservationId, name, pastDate, time, null);
+
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(pastReservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteByUser(reservationId, name))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("지난 예약은 삭제할 수 없습니다.");
+
+        verify(reservationRepository, never()).delete(anyLong());
     }
 }
