@@ -73,7 +73,7 @@ public class ReservationService {
         if (date.isBefore(now.toLocalDate())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_DATE);
         }
-        if (date.isEqual(now.toLocalDate()) && time.startAt().getHour() <= now.getHour()) {
+        if (date.isEqual(now.toLocalDate()) && time.isPast(now)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_WRONG_TIME);
         }
     }
@@ -96,9 +96,8 @@ public class ReservationService {
         reservationRequestDayCheck(reservation.date(), reservation.time());
         reservationRequestDayCheck(reservationPatchRequest.date(), time);
 
-        Theme theme = reservation.theme();
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationPatchRequest.date(),
-                reservationPatchRequest.timeId(), theme.id())) {
+                reservationPatchRequest.timeId(), reservation.themeId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 

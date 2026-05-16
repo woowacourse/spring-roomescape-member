@@ -47,4 +47,8 @@ public class Reservation {
     public Theme theme() {
         return theme;
     }
+
+    public Long themeId() {
+        return theme.id();
+    }
 }

@@ -1,5 +1,6 @@
 package roomescape.model;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
@@ -22,6 +23,10 @@ public class ReservationTime {
         if (startAt.getMinute() != 0) {
             throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
         }
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        return startAt.getHour() <= now.getHour();
     }
 
     public boolean isValid() {
