@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,15 +24,13 @@ import roomescape.domain.time.repository.TimeRepository;
 @Service
 public class ReservationService {
 
-    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationRepository reservationRepository,
+    public ReservationService(ReservationRepository reservationRepository,
         TimeRepository timeRepository,
         ThemeRepository themeRepository) {
-        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -58,8 +55,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
-        Reservation reservation = createReservation(requestDto);
+    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto, LocalDateTime now) {
+        Reservation reservation = createReservation(requestDto, now);
         validateDuplicates(requestDto.date(), requestDto.timeId(), requestDto.themeId());
         return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
     }
@@ -70,23 +67,25 @@ public class ReservationService {
         }
     }
 
-    private Reservation createReservation(ReservationCreateRequestDto requestDto) {
+    private Reservation createReservation(ReservationCreateRequestDto requestDto,
+        LocalDateTime now) {
         Time time = timeRepository.findTimeById(requestDto.timeId())
             .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
             .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND, List.of()));
-        return Reservation.create(requestDto.name(), requestDto.date(), time, theme, LocalDateTime.now(clock));
+        return Reservation.create(requestDto.name(), requestDto.date(), time, theme, now);
     }
 
     @Transactional
-    public void updateReservation(String name, Long id, ReservationUpdateRequestDto requestDto) {
+    public void updateReservation(String name, Long id, ReservationUpdateRequestDto requestDto,
+        LocalDateTime now) {
         Reservation reservation = getReservationById(id);
         ReservationValidator.validateOwner(name, reservation);
         Time time = getTimeById(requestDto.timeId());
         validateDuplicatesExceptMe(id, requestDto.date(), requestDto.timeId(),
             reservation.getTheme().getId());
-        ReservationValidator.validateDateAccessable(reservation, LocalDateTime.now(clock));
-        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, LocalDateTime.now(clock));
+        ReservationValidator.validateDateAccessable(reservation, now);
+        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, now);
 
         reservationRepository.updateReservationById(id, requestDto.date(), requestDto.timeId());
     }
@@ -119,10 +118,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteMemberReservationById(String name, Long id) {
+    public void deleteMemberReservationById(String name, Long id, LocalDateTime now) {
         Reservation reservation = getReservationById(id);
         ReservationValidator.validateOwner(name, reservation);
-        ReservationValidator.validateDateAccessable(reservation, LocalDateTime.now(clock));
+        ReservationValidator.validateDateAccessable(reservation, now);
         reservationRepository.deleteReservationById(id);
     }
 }

@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +15,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.global.config.TestClockConfig;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import(TestClockConfig.class)
 @DisplayName("사용자 시간의")
 class TimeApiTest {
 
@@ -38,9 +37,12 @@ class TimeApiTest {
         @Test
         @DisplayName("예약 가능한 시간을 조회한다.")
         void 성공() {
+            String date = LocalDate.now()
+                .plusDays(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             given()
                 .params(Map.of(
-                    "date", "2026-05-10",
+                    "date", date,
                     "themeId", 1
                 ))
                 .when()

@@ -1,8 +1,7 @@
 package roomescape.domain.time.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +18,12 @@ import roomescape.domain.time.repository.TimeRepository;
 @Service
 public class TimeService {
 
-    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-    public TimeService(Clock clock, ReservationRepository reservationRepository, ThemeRepository themeRepository,
+    public TimeService(ReservationRepository reservationRepository, ThemeRepository themeRepository,
         TimeRepository timeRepository) {
-        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
@@ -41,8 +38,8 @@ public class TimeService {
     }
 
     @Transactional
-    public List<TimeResponseDto> getAvailableTimes(LocalDate date, Long themeId) {
-        validateDate(date);
+    public List<TimeResponseDto> getAvailableTimes(LocalDate date, Long themeId, LocalDateTime now) {
+        validateDate(date, now.toLocalDate());
         validateThemeId(themeId);
         List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndThemeId(date,
             themeId);
@@ -50,13 +47,12 @@ public class TimeService {
         return timeRepository.findAllTimes()
             .stream()
             .filter(time -> !reservedTimeIds.contains(time.getId()))
-            .filter(time -> !time.isPast(LocalTime.now(clock)))
+            .filter(time -> !time.isPast(now.toLocalTime()))
             .map(TimeResponseDto::from)
             .toList();
     }
 
-    private void validateDate(LocalDate date) {
-        LocalDate now = LocalDate.now(clock);
+    private void validateDate(LocalDate date, LocalDate now) {
         if (date.isBefore(now)) {
             throw new BusinessException(ErrorCode.TIME_INVALID_DATE);
         }

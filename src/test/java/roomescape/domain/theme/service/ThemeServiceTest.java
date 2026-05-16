@@ -5,12 +5,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -32,17 +29,12 @@ import roomescape.domain.time.repository.FakeTimeRepository;
 
 class ThemeServiceTest {
 
-    private final Clock fixedClock;
     private final FakeTimeRepository timeRepository;
     private final FakeThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeService themeService;
 
     ThemeServiceTest() {
-        this.fixedClock = Clock.fixed(
-            Instant.parse("2026-01-01T10:00:00Z"),
-            ZoneId.of("UTC")
-        );
         this.timeRepository = new FakeTimeRepository();
         this.themeRepository = new FakeThemeRepository();
         this.reservationRepository = new FakeReservationRepository();
@@ -95,7 +87,7 @@ class ThemeServiceTest {
                         targetDate,
                         Time.reconstruct(1L, LocalTime.of(10, 0)),
                         theme,
-                        LocalDateTime.now(fixedClock)
+                        LocalDateTime.of(2026, 1, 1, 0, 0)
                     ));
                 }
             }
@@ -229,7 +221,7 @@ class ThemeServiceTest {
             Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"));
             reservationRepository.save(
-                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, LocalDateTime.now(fixedClock)));
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, LocalDateTime.of(2026, 1, 1, 0, 0)));
             Long referencedId = theme.getId();
 
             assertThatThrownBy(() -> themeService.deleteThemeById(referencedId))

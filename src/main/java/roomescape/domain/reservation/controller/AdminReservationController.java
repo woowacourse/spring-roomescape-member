@@ -2,6 +2,7 @@ package roomescape.domain.reservation.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class AdminReservationController {
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
         @Valid @RequestBody ReservationCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(reservationService.saveReservation(requestDto));
+            .body(reservationService.saveReservation(requestDto, LocalDateTime.now()));
     }
 
     @DeleteMapping("/{id}")

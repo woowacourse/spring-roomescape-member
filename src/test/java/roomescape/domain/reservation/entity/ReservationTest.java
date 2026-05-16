@@ -3,13 +3,9 @@ package roomescape.domain.reservation.entity;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,16 +20,6 @@ class ReservationTest {
     @DisplayName("예약 생성 테스트")
     class Create {
 
-        Clock fixedClock;
-
-        @BeforeEach
-        void setUp() {
-            this.fixedClock = Clock.fixed(
-                Instant.parse("2026-05-12T11:00:00Z"),
-                ZoneId.of("UTC")
-            );
-        }
-
         @Test
         @DisplayName("정상 테스트")
         void 성공() {
@@ -41,7 +27,8 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatCode(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
+            assertThatCode(() -> Reservation.create("브라운", date, time, theme,
+                LocalDateTime.of(2026, 1, 1, 0, 0)))
                 .doesNotThrowAnyException();
         }
 
@@ -52,7 +39,8 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme,
+                LocalDateTime.now().minusDays(1)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);
@@ -65,7 +53,8 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(10, 0));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, LocalDateTime.now(fixedClock)))
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme,
+                LocalDateTime.now().minusHours(1)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_ALREADY_PASSED);

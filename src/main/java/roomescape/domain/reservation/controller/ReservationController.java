@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URLDecoder;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class ReservationController {
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
         @Valid @RequestBody ReservationCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(reservationService.saveReservation(requestDto));
+            .body(reservationService.saveReservation(requestDto, LocalDateTime.now()));
     }
 
     @PatchMapping("/{id}")
@@ -54,7 +55,8 @@ public class ReservationController {
         @NotNull @RequestHeader("Reservation-Name") String name,
         @NotNull @PathVariable Long id,
         @Valid @RequestBody ReservationUpdateRequestDto requestDto) {
-        reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto);
+        reservationService.updateReservation(URLDecoder.decode(name, UTF_8), id, requestDto,
+            LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -62,7 +64,8 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(
         @NotNull @RequestHeader("Reservation-Name") String name,
         @NotNull @PathVariable Long id) {
-        reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id);
+        reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id,
+            LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

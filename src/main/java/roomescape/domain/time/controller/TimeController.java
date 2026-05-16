@@ -3,6 +3,7 @@ package roomescape.domain.time.controller;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,6 @@ public class TimeController {
         @NotNull @RequestParam @Min(1) Long themeId
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(timeService.getAvailableTimes(date, themeId));
+            .body(timeService.getAvailableTimes(date, themeId, LocalDateTime.now()));
     }
 }

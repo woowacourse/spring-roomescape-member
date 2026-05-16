@@ -5,12 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,21 +28,16 @@ import roomescape.domain.time.repository.TimeRepository;
 
 class TimeServiceTest {
 
-    private final Clock fixedClock;
     private final TimeService timeService;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
     TimeServiceTest() {
-        this.fixedClock = Clock.fixed(
-            Instant.parse("2026-01-01T10:00:00Z"),
-            ZoneId.of("UTC")
-        );
         this.themeRepository = new FakeThemeRepository();
         this.timeRepository = new FakeTimeRepository();
         this.reservationRepository = new FakeReservationRepository();
-        this.timeService = new TimeService(fixedClock, reservationRepository, themeRepository, timeRepository);
+        this.timeService = new TimeService(reservationRepository, themeRepository, timeRepository);
     }
 
     @Nested
@@ -112,13 +104,17 @@ class TimeServiceTest {
             ));
 
             reservationRepository.save(
-                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1, LocalDateTime.now(fixedClock)));
+                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2, LocalDateTime.now(fixedClock)));
+                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3, LocalDateTime.now(fixedClock)));
+                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1, LocalDateTime.now(fixedClock)));
+                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
@@ -126,7 +122,8 @@ class TimeServiceTest {
                 TimeResponseDto.from(time3), TimeResponseDto.from(time4));
 
             // when
-            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
+            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0));
 
             // then
             assertThat(actual).isEqualTo(expected);
@@ -138,7 +135,8 @@ class TimeServiceTest {
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long wrongThemeId = 1L;
 
-            assertThatThrownBy(() -> timeService.getAvailableTimes(date, wrongThemeId))
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, wrongThemeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST);
@@ -151,7 +149,8 @@ class TimeServiceTest {
             LocalDate date = LocalDate.of(2025, 1, 1);
             Long themeId = theme.getId();
 
-            assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId))
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0)))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.TIME_INVALID_DATE);
@@ -222,7 +221,8 @@ class TimeServiceTest {
             Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
             Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 Url"));
             reservationRepository.save(
-                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, LocalDateTime.now(fixedClock)));
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
 
             assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
                 .isInstanceOf(BusinessException.class)
