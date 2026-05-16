@@ -64,9 +64,7 @@ public class ReservationService {
 
     @Transactional
     public void cancelMyReservation(Long id, String name) {
-        Reservation reservation = reservationRepository.findById(id)
-                .filter(r -> r.getName().equals(name))
-                .orElseThrow(() -> new NotFoundException(RESERVATION_NOT_FOUND_FORMAT.formatted(id)));
+        Reservation reservation = findMyReservation(id, name);
 
         if (reservation.isPast(LocalDateTime.now())) {
             throw new BusinessRuleViolationException(PAST_RESERVATION_CANCEL_REJECTED);
