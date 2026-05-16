@@ -1,16 +1,15 @@
 package roomescape.theme.presentation.dto.request;
 
-import roomescape.global.exception.ThemeErrorCode;
-import roomescape.global.validation.RequestValidator;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeCreateRequest(
+        @NotBlank(message = "테마 이름을 입력해 주세요.")
         String name,
+
+        @NotBlank(message = "테마 설명을 입력해 주세요.")
         String description,
+
+        @NotBlank(message = "테마 썸네일을 입력해 주세요.")
         String thumbnail
 ) {
-    public ThemeCreateRequest {
-        RequestValidator.requireNotBlank(name, ThemeErrorCode.THEME_NAME_REQUIRED);
-        RequestValidator.requireNotBlank(description, ThemeErrorCode.THEME_DESCRIPTION_REQUIRED);
-        RequestValidator.requireNotBlank(thumbnail, ThemeErrorCode.THEME_THUMBNAIL_REQUIRED);
-    }
 }

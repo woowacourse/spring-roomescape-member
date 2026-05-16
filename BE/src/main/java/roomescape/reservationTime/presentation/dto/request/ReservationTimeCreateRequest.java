@@ -1,13 +1,10 @@
 package roomescape.reservationTime.presentation.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import roomescape.global.exception.ReservationTimeErrorCode;
-import roomescape.global.validation.RequestValidator;
 
 public record ReservationTimeCreateRequest(
+        @NotNull(message = "예약 시간을 입력해 주세요.")
         LocalTime startAt
 ) {
-    public ReservationTimeCreateRequest {
-        RequestValidator.requireNotNull(startAt, ReservationTimeErrorCode.RESERVATION_TIME_START_AT_REQUIRED);
-    }
 }
