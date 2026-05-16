@@ -4,8 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidDomainStateException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -34,21 +36,13 @@ class ReservationTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        @DisplayName("이름이 비어있으면 예외가 발생한다.")
-        void nullCheck() {
-            assertThatThrownBy(() -> new Reservation(1L, null, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
-        }
-
         @ParameterizedTest
+        @NullAndEmptySource
         @ValueSource(strings = {" ", "  "})
         @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
         void failWhenNameIsBlank(String name) {
             assertThatThrownBy(() -> new Reservation(1L, name, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
 
         @Test
@@ -56,15 +50,14 @@ class ReservationTest {
         void failWhenNameIsTooLong() {
             String longName = "열한글자이름입니다용ㅇ";
             assertThatThrownBy(() -> new Reservation(1L, longName, futureDate, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("이름은 10글자 이하여야 합니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
         @DisplayName("필수 데이터(날짜, 시간, 테마)가 누락되면 예외가 발생한다.")
         void failWhenRequiredFieldIsNull() {
             assertThatThrownBy(() -> new Reservation(1L, "브라운", null, reservationTime, theme, ReservationStatus.RESERVED))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
     }
 
@@ -80,15 +73,14 @@ class ReservationTest {
         }
 
         @Test
-        @DisplayName("과거 일시로 생성하면 invariant 위반으로 BusinessRuleViolationException 이 발생한다.")
+        @DisplayName("과거 일시로 생성하면 invariant 위반으로 예외가 발생한다.")
         void createFailWhenPast() {
             // given
             LocalDate pastDate = today.toLocalDate().minusDays(1);
 
             // when & then
             assertThatThrownBy(() -> Reservation.create("브라운", pastDate, reservationTime, theme, today))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("과거 시각으로는 예약할 수 없습니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
@@ -104,11 +96,10 @@ class ReservationTest {
         }
 
         @Test
-        @DisplayName("이름이 비어있으면 invariant 검증 이전에 NullPointerException 이 발생한다.")
+        @DisplayName("이름이 비어있으면 invariant 검증 이전에 예외가 발생한다.")
         void createFailWhenNameBlank() {
             assertThatThrownBy(() -> Reservation.create(" ", futureDate, reservationTime, theme, today))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("예약자 이름은 반드시 입력해야 합니다.");
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
     }
 

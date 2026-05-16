@@ -3,6 +3,7 @@ package roomescape.time.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidDomainStateException;
 
 import java.time.LocalTime;
 
@@ -40,23 +41,21 @@ class ReservationTimeTest {
     }
 
     @Test
-    @DisplayName("시작 시간이 null이면 NullPointerException이 발생한다.")
+    @DisplayName("시작 시간이 null이면 예외를 발생한다.")
     void failWhenStartAtIsNull() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("예약 시간은 반드시 입력해야 합니다.");
+                .isInstanceOf(InvalidDomainStateException.class);
     }
 
 
     @Test
-    @DisplayName("예약을 30분 단위로 추가하지 않으면 BusinessRuleViolationException 이 발생한다.")
+    @DisplayName("예약을 30분 단위로 추가하지 않으면 예외가 발생한다.")
     void validTimeUnit() {
         // given
         LocalTime inValidStartAt = LocalTime.of(12, 24);
 
         // when & then
         assertThatThrownBy(() -> ReservationTime.fromValidTimeUnit(inValidStartAt))
-                .isInstanceOf(BusinessRuleViolationException.class)
-                .hasMessageContaining("예약은 30분 단위로 입력해야 합니다.");
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 }

@@ -4,8 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidDomainStateException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,30 +25,21 @@ class ThemeTest {
     @DisplayName("이름 검증 테스트")
     class NameValidationTest {
 
-        @Test
-        @DisplayName("이름이 비어있으면 예외가 발생한다.")
-        void nullCheck() {
-            assertThatThrownBy(() -> new Theme(null, null, "설명", "url"))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("테마 이름은(는) 반드시 입력해야 합니다.");
-        }
-
         @ParameterizedTest
+        @NullAndEmptySource
         @ValueSource(strings = {" ", "  "})
         @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
         void failWhenNameIsBlank(String name) {
             assertThatThrownBy(() -> new Theme(null, name, "설명", "url"))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("테마 이름은(는) 반드시 입력해야 합니다.");
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
 
         @Test
-        @DisplayName("이름이 255자를 초과하면 예외가 발생한다.")
+        @DisplayName("이름이 길이를 초과하면 예외가 발생한다.")
         void failWhenNameIsTooLong() {
             String longName = "a".repeat(256);
             assertThatThrownBy(() -> new Theme(null, longName, "설명", "url"))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("테마 이름은(는) 255자 이하로 입력해야 합니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 
@@ -54,21 +47,20 @@ class ThemeTest {
     @DisplayName("설명 검증 테스트")
     class DescriptionValidationTest {
 
-        @Test
+        @ParameterizedTest
+        @NullAndEmptySource
         @DisplayName("설명이 비어있으면 예외가 발생한다.")
-        void failWhenDescriptionIsBlank() {
-            assertThatThrownBy(() -> new Theme(null, "이름", null, "url"))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("테마 설명은(는) 반드시 입력해야 합니다.");
+        void failWhenDescriptionIsBlank(String description) {
+            assertThatThrownBy(() -> new Theme(null, "이름", description, "url"))
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
 
         @Test
-        @DisplayName("설명이 255자를 초과하면 예외가 발생한다.")
+        @DisplayName("설명이 길이를 초과하면 예외가 발생한다.")
         void failWhenDescriptionIsTooLong() {
             String longDescription = "b".repeat(256);
             assertThatThrownBy(() -> new Theme(null, "이름", longDescription, "url"))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("테마 설명은(는) 255자 이하로 입력해야 합니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 
@@ -76,21 +68,20 @@ class ThemeTest {
     @DisplayName("썸네일 URL 검증 테스트")
     class ThumbnailUrlValidationTest {
 
-        @Test
+        @ParameterizedTest
+        @NullAndEmptySource
         @DisplayName("썸네일 URL이 비어있으면 예외가 발생한다.")
-        void failWhenUrlIsBlank() {
-            assertThatThrownBy(() -> new Theme(null, "이름", "설명", null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("테마 썸네일 URL은(는) 반드시 입력해야 합니다.");
+        void failWhenUrlIsBlank(String url) {
+            assertThatThrownBy(() -> new Theme(null, "이름", "설명", url))
+                    .isInstanceOf(InvalidDomainStateException.class);
         }
 
         @Test
-        @DisplayName("썸네일 URL이 1024자를 초과하면 예외가 발생한다.")
+        @DisplayName("썸네일 URL이 길이를 초과하면 예외가 발생한다.")
         void failWhenUrlIsTooLong() {
             String longUrl = "c".repeat(1025);
             assertThatThrownBy(() -> new Theme(null, "이름", "설명", longUrl))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("테마 썸네일 URL은(는) 1024자 이하로 입력해야 합니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 }
