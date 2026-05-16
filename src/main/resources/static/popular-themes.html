@@ -279,17 +279,20 @@
         </div>
     </div>
 
-<script>
+<script type="module">
+    import { fetchThemes, fetchRankedThemes } from '/js/api.js';
+    import { showToast } from '/js/utils.js';
+
     const rankList = document.getElementById('rankList');
     const daysSelect = document.getElementById('daysSelect');
     const limitInput = document.getElementById('limitInput');
     let maxLimit = 10;
 
+    window.loadRankings = loadRankings; // expose to global scope for onclick
+
     async function init() {
         try {
-            const res = await fetch('/themes');
-            const data = await res.json();
-            const themes = data.themes || data;
+            const themes = await fetchThemes();
             
             if (themes && themes.length > 0) {
                 maxLimit = themes.length;
@@ -318,9 +321,7 @@
         rankList.innerHTML = '<div class="loading">데이터를 분석하고 있습니다...</div>';
 
         try {
-            const res = await fetch(`/themes/rank?days=${days}&limit=${limit}`);
-            const data = await res.json();
-            const rankings = data.themeRankings || data.themes || data;
+            const rankings = await fetchRankedThemes(days, limit);
             rankList.innerHTML = '';
 
             if (rankings.length === 0) {
@@ -344,6 +345,7 @@
             });
         } catch (e) {
             rankList.innerHTML = '<div class="loading">순위 정보를 가져오는 중 오류가 발생했습니다.</div>';
+            showToast('순위 정보를 가져오는 중 오류가 발생했습니다.', 'error');
         }
     }
 

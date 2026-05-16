@@ -270,15 +270,27 @@
         </div>
     </div>
 
-<script>
+<script type="module">
+    import { fetchReservationTimes, createReservationTime, deleteReservationTime as apiDeleteTime } from '/js/api.js';
+    import { showToast } from '/js/utils.js';
+
     const timeForm = document.getElementById('timeForm');
     const timeList = document.getElementById('timeList');
 
+    window.deleteTime = async (id) => {
+        if (!confirm('해당 예약 시간을 정말로 삭제하시겠습니까?\n이미 이 시간을 사용하는 예약이 있다면 삭제가 불가능할 수 있습니다.')) return;
+        try {
+            await apiDeleteTime(id);
+            showToast('시간이 삭제되었습니다.', 'success');
+            loadTimes();
+        } catch (e) {
+            showToast('삭제에 실패했습니다. 사용 중인 시간일 수 있습니다.', 'error');
+        }
+    };
+
     async function loadTimes() {
         try {
-            const res = await fetch('/reservation-times');
-            const data = await res.json();
-            const times = data.reservationTimes || data;
+            const times = await fetchReservationTimes();
             timeList.innerHTML = '';
 
             if (times.length === 0) {
@@ -297,6 +309,7 @@
             });
         } catch (e) {
             console.error('시간 목록 로드 오류:', e);
+            showToast('시간 목록 로드 실패', 'error');
         }
     }
 
@@ -304,33 +317,14 @@
         e.preventDefault();
         const timeVal = document.getElementById('timeInput').value;
         try {
-            const res = await fetch('/reservation-times', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({startAt: timeVal})
-            });
-            if (res.ok) {
-                timeForm.reset();
-                loadTimes();
-            } else {
-                const error = await res.json();
-                alert(error.message || '이미 존재하는 시간이거나 추가할 수 없습니다.');
-            }
+            await createReservationTime(timeVal);
+            showToast('새로운 시간이 등록되었습니다.', 'success');
+            timeForm.reset();
+            loadTimes();
         } catch (e) {
-            alert('서버와 통신 중 오류가 발생했습니다.');
+            showToast(e.message || '이미 존재하는 시간이거나 추가할 수 없습니다.', 'error');
         }
     });
-
-    async function deleteTime(id) {
-        if (!confirm('해당 예약 시간을 정말로 삭제하시겠습니까?\n이미 이 시간을 사용하는 예약이 있다면 삭제가 불가능할 수 있습니다.')) return;
-        try {
-            const res = await fetch(`/reservation-times/${id}`, {method: 'DELETE'});
-            if (res.ok) loadTimes();
-            else alert('삭제에 실패했습니다. 사용 중인 시간일 수 있습니다.');
-        } catch (e) {
-            alert('서버 오류가 발생했습니다.');
-        }
-    }
 
     loadTimes();
 </script>

@@ -577,4 +577,5 @@ GET /themes/rank?days=7&limit=10
 | `409 Conflict`              | `ConflictException`                   | 이미 취소된 예약을 변경하거나 다시 취소하는 경우        | `"이미 취소된 예약입니다."`               |
 | `409 Conflict`              | `ConflictException`                   | 예약이 존재하는 시간을 삭제하는 경우               | `"예약이 존재하는 시간은 삭제할 수 없습니다."`    |
 | `500 Internal Server Error` | `Exception`                           | 서버 내부 오류                           | `"서버에 일시적인 문제가 발생했습니다."`        |
+
 * * *
