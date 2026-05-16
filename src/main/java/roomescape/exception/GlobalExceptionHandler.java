@@ -40,6 +40,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(exception.getMessage()));
     }
 
+    @ExceptionHandler(InvalidReferenceException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidReference(InvalidReferenceException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldErrors().stream()

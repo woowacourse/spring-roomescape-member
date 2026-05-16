@@ -144,7 +144,7 @@ public class ReservationValidationTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 timeId로 예약 시 404를 반환한다.")
+    @DisplayName("존재하지 않는 timeId로 예약 시 400을 반환한다.")
     void nonExistentTimeIdReservationTest() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -157,11 +157,11 @@ public class ReservationValidationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @Test
-    @DisplayName("존재하지 않는 themeId로 예약 시 404를 반환한다.")
+    @DisplayName("존재하지 않는 themeId로 예약 시 400을 반환한다.")
     void nonExistentThemeIdReservationTest() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -174,6 +174,6 @@ public class ReservationValidationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 }

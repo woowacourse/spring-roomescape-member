@@ -108,7 +108,7 @@ class AdminReservationValidationTest {
     }
 
     @Test
-    @DisplayName("관리자 예약 생성 시 존재하지 않는 timeId면 404를 반환한다.")
+    @DisplayName("관리자 예약 생성 시 존재하지 않는 timeId면 400을 반환한다.")
     void createReservationWithNonExistentTimeId() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -121,11 +121,11 @@ class AdminReservationValidationTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @Test
-    @DisplayName("관리자 예약 생성 시 존재하지 않는 themeId면 404를 반환한다.")
+    @DisplayName("관리자 예약 생성 시 존재하지 않는 themeId면 400을 반환한다.")
     void createReservationWithNonExistentThemeId() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -138,6 +138,6 @@ class AdminReservationValidationTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 }
