@@ -23,6 +23,8 @@ import roomescape.reservation.service.UserReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class UserReservationController {
+    private static final String HEADER_USER_NAME = "X-User-Name";
+
     private final UserReservationService userReservationService;
 
     public UserReservationController(UserReservationService userReservationService) {
@@ -50,7 +52,7 @@ public class UserReservationController {
 
     @GetMapping("/my")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(
-            @RequestHeader("X-User-Name") String name) {
+            @RequestHeader(HEADER_USER_NAME) String name) {
         List<ReservationResponse> response = userReservationService.getMyReservations(decodeName(name)).stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -59,7 +61,7 @@ public class UserReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable long id,
-                                                  @RequestHeader("X-User-Name") String name) {
+                                                  @RequestHeader(HEADER_USER_NAME) String name) {
         userReservationService.deleteReservation(id, decodeName(name));
         return ResponseEntity.noContent().build();
     }
@@ -67,7 +69,7 @@ public class UserReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable long id,
-            @RequestHeader("X-User-Name") String name,
+            @RequestHeader(HEADER_USER_NAME) String name,
             @Valid @RequestBody ReservationUpdateRequest request) {
         ReservationResponse response = ReservationResponse.from(
                 userReservationService.updateReservation(id, decodeName(name), request.date(), request.timeId()));
