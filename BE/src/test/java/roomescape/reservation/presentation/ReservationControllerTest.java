@@ -119,7 +119,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.message").value("예약자 이름을 입력해 주세요."));
     }
 
     @Test
@@ -156,7 +156,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.message").value("예약 테마를 선택해 주세요."));
     }
 
     @Test
