@@ -8,6 +8,7 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,10 +19,10 @@ public class ReservationCommandService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    private void validatePastDateTime(LocalDate date, long timeId) {
-        ReservationTime reservationTime = reservationTimeDao.findById(timeId);
-        if (date.atTime(reservationTime.startAt()).isBefore(LocalDateTime.now())) {
+    private void validateNotPast(LocalDate date, ReservationTime time) {
+        if (date.atTime(time.startAt()).isBefore(LocalDateTime.now())) {
             throw new PastReservationException();
         }
     }
@@ -33,7 +34,9 @@ public class ReservationCommandService {
     }
 
     public Reservation create(String name, LocalDate date, long timeId, long themeId) {
-        validatePastDateTime(date, timeId);
+        ReservationTime time = reservationTimeDao.findById(timeId);
+        themeDao.findById(themeId);
+        validateNotPast(date, time);
         validateDuplicate(date, timeId, themeId);
         return reservationDao.save(name, date, timeId, themeId);
     }
@@ -44,14 +47,13 @@ public class ReservationCommandService {
 
     public void cancel(long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId);
-        if (reservation.reservationDate().atTime(reservation.reservationTime().startAt()).isBefore(LocalDateTime.now())) {
-            throw new PastReservationException();
-        }
+        validateNotPast(reservation.reservationDate(), reservation.reservationTime());
         reservationDao.delete(reservationId);
     }
 
     public Reservation update(long reservationId, LocalDate newDate, long newTimeId) {
-        validatePastDateTime(newDate, newTimeId);
+        ReservationTime newTime = reservationTimeDao.findById(newTimeId);
+        validateNotPast(newDate, newTime);
         Reservation current = reservationDao.findById(reservationId);
         long themeId = current.reservationTheme().id();
         if (reservationDao.existsByDateAndTimeIdAndThemeIdExcluding(newDate, newTimeId, themeId, reservationId)) {

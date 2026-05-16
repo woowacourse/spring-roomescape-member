@@ -159,4 +159,21 @@ public class ReservationValidationTest {
                 .then().log().all()
                 .statusCode(404);
     }
+
+    @Test
+    @DisplayName("존재하지 않는 themeId로 예약 시 404를 반환한다.")
+    void nonExistentThemeIdReservationTest() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", "2026-06-05");
+        params.put("timeId", 1L);
+        params.put("themeId", 999L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
 }

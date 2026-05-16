@@ -48,12 +48,24 @@ public class ThemeDao {
     }
 
     public void delete(long themeId) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = """
+                DELETE FROM theme WHERE id = ?
+                """;
         int affected = jdbcTemplate.update(sql, themeId);
 
         if(affected == 0) {
             throw new NoSuchElementException("삭제할 id에 해당하는 테마가 존재하지 않습니다.");
         }
+    }
+
+    public Theme findById(long themeId) {
+        String sql = """
+                SELECT * FROM theme WHERE id = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, themeId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
     }
 
     public List<Theme> findAllThemes() {

@@ -123,4 +123,21 @@ class AdminReservationValidationTest {
                 .then().log().all()
                 .statusCode(404);
     }
+
+    @Test
+    @DisplayName("관리자 예약 생성 시 존재하지 않는 themeId면 404를 반환한다.")
+    void createReservationWithNonExistentThemeId() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", "2026-06-05");
+        params.put("timeId", 1L);
+        params.put("themeId", 999L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
 }
