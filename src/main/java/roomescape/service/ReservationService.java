@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +56,9 @@ public class ReservationService {
             throw new IdNotFoundException("요청하신 테마를 찾을 수 없습니다. 선택하신 테마가 정확한지 다시 한번 확인해 주세요.");
         }
 
-        if (time.getStartAt().isBefore(LocalTime.now()) && request.date().isBefore(LocalDate.now())) {
+        LocalDateTime targetDateTime = LocalDateTime.of(request.date(), time.getStartAt());
+
+        if (targetDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("이미 지난 시간/날짜는 예약할 수 없습니다.");
         }
 
