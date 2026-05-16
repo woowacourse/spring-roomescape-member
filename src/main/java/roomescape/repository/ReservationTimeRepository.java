@@ -83,7 +83,7 @@ public class ReservationTimeRepository {
     public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
         String sql = "select time_id " +
                 "from reservation " +
-                "where theme_id = :themeId and date = :date;";
+                "where theme_id = :themeId and date = :date and status = 'RESERVED';";
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
                 .addValue("date", date);

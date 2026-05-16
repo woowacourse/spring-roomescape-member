@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.util.TestDataInitializer;
@@ -19,6 +20,9 @@ class ReservationTimeRepositoryTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private TestDataInitializer dataInitializer;
@@ -50,5 +54,26 @@ class ReservationTimeRepositoryTest {
         );
 
         assertThat(reservedTimeIds).isEmpty();
+    }
+
+    @Test
+    void 취소된_예약의_시간은_예약된_시간으로_조회하지_않는다() {
+        LocalDate targetDate = LocalDate.of(2026, 5, 20);
+        ReservationTime reservedTime = dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        ReservationTime cancelledTime = dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        Theme theme = dataInitializer.createTheme("테마", "설명", "/images/themes/theme.webp");
+
+        dataInitializer.createReservation("예약사용자", targetDate, reservedTime.getId(), theme.getId());
+        Reservation cancelledReservation = dataInitializer.createReservation(
+                "취소사용자",
+                targetDate,
+                cancelledTime.getId(),
+                theme.getId()
+        );
+        reservationRepository.updateStatus(cancelledReservation.cancel());
+
+        List<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(theme.getId(), targetDate);
+
+        assertThat(reservedTimeIds).containsExactly(reservedTime.getId());
     }
 }
