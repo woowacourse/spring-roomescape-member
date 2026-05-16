@@ -21,13 +21,6 @@ import roomescape.controller.dto.ErrorResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            InvalidInputException.class,
-            PastReservationException.class})
-    public ResponseEntity<ErrorResponse> handleBadRequest(RoomescapeException e) {
-        return ResponseEntity.badRequest().body(ErrorResponse.from(e));
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         String detail = e.getBindingResult()
@@ -64,25 +57,6 @@ public class GlobalExceptionHandler {
         return invalidInput(e.getParameterName() + "는 필수입니다.");
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
-        return ResponseEntity.status(404).body(ErrorResponse.from(e));
-    }
-
-    @ExceptionHandler(ForbiddenReservationException.class)
-    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenReservationException e) {
-        return ResponseEntity.status(403).body(ErrorResponse.from(e));
-    }
-
-    @ExceptionHandler({
-            DuplicateReservationException.class,
-            PastReservationLockedException.class,
-            ResourceInUseException.class,
-            UnchangedReservationException.class})
-    public ResponseEntity<ErrorResponse> handleConflict(RoomescapeException e) {
-        return ResponseEntity.status(409).body(ErrorResponse.from(e));
-    }
-
     @ExceptionHandler(NoResourceFoundException.class)
     public Object handleNoResource(HttpServletRequest request) {
         if (isHtmlRequest(request)) {
@@ -90,8 +64,14 @@ public class GlobalExceptionHandler {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
             return modelAndView;
         }
-        return ResponseEntity.status(404)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(ErrorCode.NOT_FOUND.name(), "존재하지 않는 리소스입니다."));
+    }
+
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException e) {
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(ErrorResponse.from(e));
     }
 
     @ExceptionHandler(Exception.class)
