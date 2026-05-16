@@ -22,6 +22,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .internalServerError()
                 .body(ErrorResponse.of(ErrorCode.UNKNOWN_SERVER_ERROR));
     }
+
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex,
