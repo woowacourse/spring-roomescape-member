@@ -1,5 +1,6 @@
 package roomescape.theme.application.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import roomescape.theme.domain.repository.ThemeRepository;
 @Service
 public class ThemeQueryService {
 
+    private final Clock clock;
     private final ThemeRepository themeRepository;
     private final PopularThemeDao popularThemeDao;
 
@@ -27,7 +29,7 @@ public class ThemeQueryService {
                 .toList();
     }
 
-    public List<PopularThemeResult> findPopularThemes(LocalDate today) {
-        return popularThemeDao.findTop10PopularThemes(PopularThemePeriod.from(today));
+    public List<PopularThemeResult> findPopularThemes() {
+        return popularThemeDao.findTop10PopularThemes(PopularThemePeriod.from(LocalDate.now(clock)));
     }
 }

@@ -1,7 +1,11 @@
 package roomescape.theme.service;
 
+import static org.mockito.Mockito.when;
+
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
@@ -27,6 +32,12 @@ import roomescape.theme.infra.JdbcThemeRepository;
 })
 public class ThemeQueryServiceTest {
 
+    private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 5, 6);
+    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
+
+    @MockitoBean
+    Clock clock;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -37,6 +48,8 @@ public class ThemeQueryServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(clock.instant()).thenReturn(CURRENT_DATE.atStartOfDay(ZONE_ID).toInstant());
+        when(clock.getZone()).thenReturn(ZONE_ID);
         testHelper = new TestDataHelper(jdbcTemplate);
     }
 
@@ -68,13 +81,12 @@ public class ThemeQueryServiceTest {
         Long firstThemeId = testHelper.insertTheme(ThemeFixture.themeCreateCommand(1));
         Long secondThemeId = testHelper.insertTheme(ThemeFixture.themeCreateCommand(2));
 
-        LocalDate today = LocalDate.of(2026, 5, 6);
-        testHelper.insertReservation("테마1 예약자1", today.minusDays(1), firstThemeId, nineTimeId);
-        testHelper.insertReservation("테마1 예약자2", today.minusDays(1), firstThemeId, tenTimeId);
-        testHelper.insertReservation("테마2 예약자1", today.minusDays(2), secondThemeId, nineTimeId);
-        testHelper.insertReservation("기간 밖 예약자", today.minusDays(8), secondThemeId, tenTimeId);
+        testHelper.insertReservation("테마1 예약자1", CURRENT_DATE.minusDays(1), firstThemeId, nineTimeId);
+        testHelper.insertReservation("테마1 예약자2", CURRENT_DATE.minusDays(1), firstThemeId, tenTimeId);
+        testHelper.insertReservation("테마2 예약자1", CURRENT_DATE.minusDays(2), secondThemeId, nineTimeId);
+        testHelper.insertReservation("기간 밖 예약자", CURRENT_DATE.minusDays(8), secondThemeId, tenTimeId);
 
-        List<PopularThemeResult> responses = themeQueryService.findPopularThemes(today);
+        List<PopularThemeResult> responses = themeQueryService.findPopularThemes();
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(responses).containsExactly(

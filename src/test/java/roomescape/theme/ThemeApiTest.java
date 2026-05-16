@@ -3,11 +3,14 @@ package roomescape.theme;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +20,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.TestDataHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ThemeApiTest {
+
+    private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 1, 1);
+    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
+
+    @MockitoBean
+    Clock clock;
 
     @LocalServerPort
     private int port;
@@ -33,6 +43,8 @@ public class ThemeApiTest {
 
     @BeforeEach
     void setUp() {
+        when(clock.instant()).thenReturn(CURRENT_DATE.atStartOfDay(ZONE_ID).toInstant());
+        when(clock.getZone()).thenReturn(ZONE_ID);
         RestAssured.port = port;
         testHelper = new TestDataHelper(jdbcTemplate);
         testHelper.clearDatabase();
@@ -165,12 +177,11 @@ public class ThemeApiTest {
         Long theme3Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(3));
         Long theme4Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(4));
 
-        LocalDate today = LocalDate.now();
-        LocalDate oneDayAgo = today.minusDays(1);
-        LocalDate twoDaysAgo = today.minusDays(2);
-        LocalDate threeDaysAgo = today.minusDays(3);
-        LocalDate fourDaysAgo = today.minusDays(4);
-        LocalDate eightDaysAgo = today.minusDays(8);
+        LocalDate oneDayAgo = CURRENT_DATE.minusDays(1);
+        LocalDate twoDaysAgo = CURRENT_DATE.minusDays(2);
+        LocalDate threeDaysAgo = CURRENT_DATE.minusDays(3);
+        LocalDate fourDaysAgo = CURRENT_DATE.minusDays(4);
+        LocalDate eightDaysAgo = CURRENT_DATE.minusDays(8);
 
         testHelper.insertReservation("테마1 예약자1", oneDayAgo, theme1Id, nineTimeId);
         testHelper.insertReservation("테마1 예약자2", oneDayAgo, theme1Id, tenTimeId);
