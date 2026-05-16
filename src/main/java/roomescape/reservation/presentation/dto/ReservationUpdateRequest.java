@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import roomescape.reservation.application.dto.ReservationUpdateCommand;
 
 public record ReservationUpdateRequest(
@@ -15,7 +14,7 @@ public record ReservationUpdateRequest(
         @Positive(message = "시간ID는 양수여야 합니다.")
         Long timeId
 ) {
-    public ReservationUpdateCommand toCommand(LocalDateTime now) {
-        return new ReservationUpdateCommand(date, timeId, now);
+    public ReservationUpdateCommand toCommand() {
+        return new ReservationUpdateCommand(date, timeId);
     }
 }

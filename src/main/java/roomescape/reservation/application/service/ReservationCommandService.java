@@ -1,5 +1,6 @@
 package roomescape.reservation.application.service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import roomescape.theme.domain.repository.ThemeRepository;
 @Service
 public class ReservationCommandService {
 
+    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository timeRepository;
@@ -35,7 +37,7 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Reservation reservation = request.toEntity(theme.getId(), time.getId(), time.getStartAt());
-        reservation.validateReservable(request.now());
+        reservation.validateReservable(LocalDateTime.now(clock));
         validateDuplicateReservation(reservation);
 
         return ReservationResult.from(
@@ -53,7 +55,7 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Reservation updatedReservation = reservation.updateDateAndTime(request.date(), request.timeId(), time.getStartAt());
-        updatedReservation.validateReservable(request.now());
+        updatedReservation.validateReservable(LocalDateTime.now(clock));
 
         updateReservation(updatedReservation);
 
@@ -67,11 +69,11 @@ public class ReservationCommandService {
         );
     }
 
-    public void delete(Long id, LocalDateTime now) {
+    public void delete(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
-        reservation.validateDeletable(now);
+        reservation.validateDeletable(LocalDateTime.now(clock));
 
         if (reservationRepository.delete(id) == 0) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
