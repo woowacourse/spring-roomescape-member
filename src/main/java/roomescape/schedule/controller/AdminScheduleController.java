@@ -13,11 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.schedule.dto.AdminScheduleRequest;
-import roomescape.schedule.dto.ScheduleResponse;
 import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.service.ScheduleService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/schedules")
