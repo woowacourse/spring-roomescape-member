@@ -14,30 +14,35 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.dto.CreateTimeRequest;
 import roomescape.domain.reservationtime.dto.CreateTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.theme.Theme;
+import roomescape.support.exception.NotFoundException;
 import roomescape.support.exception.RoomescapeException;
+import roomescape.support.fake.FakeReservationDateRepository;
 import roomescape.support.fake.FakeReservationRepository;
 import roomescape.support.fake.FakeReservationTimeRepository;
+import roomescape.support.fake.FakeThemeRepository;
 
 class ReservationTimeServiceTest {
 
     private FakeReservationRepository reservationRepository;
     private FakeReservationTimeRepository reservationTimeRepository;
+    private FakeThemeRepository themeRepository;
+    private FakeReservationDateRepository reservationDateRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
+        reservationDateRepository = new FakeReservationDateRepository();
     }
 
     @Test
     void 예약_시간을_생성한다() {
         // given
-        ReservationTimeService reservationTimeService = new ReservationTimeService(
-            reservationTimeRepository,
-            reservationRepository
-        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
 
         // when
         CreateTimeResponse response = reservationTimeService.createReservationTime(
@@ -58,10 +63,7 @@ class ReservationTimeServiceTest {
         // given
         reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
-        ReservationTimeService reservationTimeService = new ReservationTimeService(
-            reservationTimeRepository,
-            reservationRepository
-        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
 
         // when
         List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTime();
@@ -92,10 +94,7 @@ class ReservationTimeServiceTest {
                 Theme.of(1L, "공포", "무서운 테마", "theme-url")
             )
         );
-        ReservationTimeService reservationTimeService = new ReservationTimeService(
-            reservationTimeRepository,
-            reservationRepository
-        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(reservationTime.getId()))
@@ -109,15 +108,84 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.save(
             ReservationTime.createWithoutId(LocalTime.of(10, 0))
         );
-        ReservationTimeService reservationTimeService = new ReservationTimeService(
-            reservationTimeRepository,
-            reservationRepository
-        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
 
         // when
         reservationTimeService.deleteReservationTime(reservationTime.getId());
 
         // then
         assertThat(reservationTimeRepository.findById(reservationTime.getId())).isEmpty();
+    }
+
+    @Test
+    void 예약_가능_시간을_조회한다() {
+        // given
+        ReservationTime firstReservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(10, 0))
+        );
+        ReservationTime secondReservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(11, 0))
+        );
+        ReservationDate reservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 16))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        reservationRepository.save(
+            Reservation.createWithoutId("보예", reservationDate, firstReservationTime, theme)
+        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
+
+        // when
+        List<ReservationTimeAvailabilityResponse> responses = reservationTimeService.getReservationTimeAvailability(
+            theme.getId(),
+            reservationDate.getId()
+        );
+
+        // then
+        assertThat(responses)
+            .extracting(
+                ReservationTimeAvailabilityResponse::timeId,
+                ReservationTimeAvailabilityResponse::startAt,
+                ReservationTimeAvailabilityResponse::available
+            )
+            .containsExactly(
+                tuple(firstReservationTime.getId(), LocalTime.of(10, 0), false),
+                tuple(secondReservationTime.getId(), LocalTime.of(11, 0), true)
+            );
+    }
+
+    @Test
+    void 존재하지_않는_테마로_예약_가능_시간을_조회할_수_없다() {
+        // given
+        ReservationDate reservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 16))
+        );
+        ReservationTimeService reservationTimeService = createReservationTimeService();
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.getReservationTimeAvailability(1L, reservationDate.getId()))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("존재하지 않는 테마 입니다.");
+    }
+
+    @Test
+    void 존재하지_않는_날짜로_예약_가능_시간을_조회할_수_없다() {
+        // given
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        ReservationTimeService reservationTimeService = createReservationTimeService();
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.getReservationTimeAvailability(theme.getId(), 1L))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage("존재하지 않는 날짜 입니다.");
+    }
+
+    private ReservationTimeService createReservationTimeService() {
+        return new ReservationTimeService(
+            reservationTimeRepository,
+            reservationRepository,
+            themeRepository,
+            reservationDateRepository
+        );
     }
 }

@@ -6,12 +6,17 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.support.exception.ConflictException;
+import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.dto.CreateTimeRequest;
 import roomescape.domain.reservationtime.dto.CreateTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.theme.ThemeRepository;
+import roomescape.support.exception.ConflictException;
+import roomescape.support.exception.NotFoundException;
+import roomescape.support.exception.errors.ReservationDateErrors;
 import roomescape.support.exception.errors.ReservationTimeErrors;
+import roomescape.support.exception.errors.ThemeErrors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,8 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationDateRepository reservationDateRepository;
 
     public CreateTimeResponse createReservationTime(CreateTimeRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.save(request.toEntity());
@@ -39,6 +46,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeAvailabilityResponse> getReservationTimeAvailability(Long themeId, Long dateId) {
+        validateThemeAndDateExists(themeId, dateId);
         List<ReservationTime> allReservationTime = reservationTimeRepository.findAll();
         Set<Long> reservedTimeIds = getReservedTimeIds(themeId, dateId);
         return allReservationTime.stream()
@@ -47,6 +55,13 @@ public class ReservationTimeService {
                 isAvailable(reservationTime, reservedTimeIds)
             ))
             .toList();
+    }
+
+    private void validateThemeAndDateExists(Long themeId, Long dateId) {
+        themeRepository.findById(themeId)
+            .orElseThrow(() -> new NotFoundException(ThemeErrors.THEME_NOT_EXIST));
+        reservationDateRepository.findById(dateId)
+            .orElseThrow(() -> new NotFoundException(ReservationDateErrors.RESERVATION_DATE_NOT_EXIST));
     }
 
     private Set<Long> getReservedTimeIds(Long themeId, Long dateId) {
