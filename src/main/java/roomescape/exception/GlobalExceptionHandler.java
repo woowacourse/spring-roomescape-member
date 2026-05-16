@@ -40,10 +40,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
+        protected ResponseEntity<Object> handleExceptionInternal(
             Exception e, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.warn("Spring MVC 예외: {}", e.getMessage());
-        return ResponseEntity.status(status).body(new ErrorResponse(HttpStatus.valueOf(status.value()).name(), e.getMessage()));
+        return ResponseEntity.status(status).body(new ErrorResponse(HttpStatus.valueOf(status.value()).name(), "잘못된 요청입니다."));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
