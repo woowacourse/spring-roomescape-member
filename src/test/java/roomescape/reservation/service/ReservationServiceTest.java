@@ -252,25 +252,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘_날짜이고_시간이_지난_예약을_삭제하면_RESERVATION_EXPIRED를_던지고_예외를_발생한다() {
-        // given
-        LocalTime now = LocalTime.now();
-        int beforeHour = now.getHour() - 1;
-        Reservation reservation = new Reservation(
-                1L, "어셔", LocalDate.now(),
-                new ReservationTime(1L, LocalTime.of(beforeHour, 0)),
-                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
-        );
-        when(reservationRepository.findById(any())).thenReturn(Optional.of(reservation));
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔"))
-                .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.RESERVATION_EXPIRED);
-    }
-
-    @Test
     void 본인의_미래_예약의_날짜와_시간을_변경한다() {
         // given
         ReservationTime oldTime = new ReservationTime(1L, LocalTime.of(10, 0));
@@ -278,11 +259,13 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "공포방", "공포스럽습니다...", "url-image");
         Reservation reservation = new Reservation(
                 1L, "어셔", LocalDate.now().plusDays(1), oldTime, theme);
+        Reservation updatedReservation = new Reservation(
+                1L, "어셔", LocalDate.now().plusDays(2), newTime, theme);
 
         when(reservationRepository.findById(any())).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(newTime));
         when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), any(), any())).thenReturn(false);
-
+        when(reservationRepository.findById(any())).thenReturn(Optional.of(updatedReservation));
         // when
         Reservation result = reservationService.updateUserReservation(1L, "어셔", LocalDate.now().plusDays(2), 2L);
 

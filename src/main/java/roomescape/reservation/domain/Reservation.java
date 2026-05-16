@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
+import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.DomainNotValidValueException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -48,8 +50,16 @@ public class Reservation {
         return theme;
     }
 
-    public boolean isOwnedBy(String name) {
-        return this.name.equals(name);
+    public void validateOwnedBy(String name) {
+        if (!this.name.equals(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+    }
+
+    public void validateNotExpired(LocalDateTime dateTime) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(dateTime)) {
+            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
+        }
     }
 
     private void validateTheme(Theme theme) {
@@ -74,9 +84,5 @@ public class Reservation {
         if (name == null || name.isBlank()) {
             throw new DomainNotValidValueException("예약자 이름은 비어있을 수 없습니다.");
         }
-    }
-
-    public boolean isExpired(LocalDateTime dateTime) {
-        return LocalDateTime.of(date, time.getStartAt()).isBefore(dateTime);
     }
 }

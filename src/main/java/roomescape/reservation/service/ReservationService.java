@@ -69,12 +69,8 @@ public class ReservationService {
     public void cancelUserReservation(Long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        if (!reservation.isOwnedBy(name)) {
-            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
-        }
-        if (reservation.isExpired(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
-        }
+        reservation.validateOwnedBy(name);
+        reservation.validateNotExpired(LocalDateTime.now());
         reservationRepository.deleteById(id);
     }
 
@@ -82,26 +78,20 @@ public class ReservationService {
     public Reservation updateUserReservation(Long id, String name, LocalDate date, Long timeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        if (!reservation.isOwnedBy(name)) {
-            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
-        }
-
-        if (reservation.isExpired(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
-        }
+        reservation.validateOwnedBy(name);
+        reservation.validateNotExpired(LocalDateTime.now());
 
         ReservationTime newTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
         validatePastDateTime(date, newTime);
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
             throw new BusinessException(ErrorCode.RESERVATION_DUPLICATE);
         }
-
         reservationRepository.update(id, date, timeId);
-        return new Reservation(id, name, date, newTime, reservation.getTheme());
+
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
     private void validatePastDateTime(LocalDate date, ReservationTime time) {

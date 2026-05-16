@@ -1,7 +1,9 @@
 package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.DomainNotValidValueException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -9,8 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class ReservationTest {
 
@@ -75,46 +76,55 @@ class ReservationTest {
     }
 
     @Test
-    void 예약자_이름과_같은_이름이면_true를_반환한다() {
+    void 예약자_이름과_같은_이름이면_정상통과한다() {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.now(), time, theme);
 
         // when & then
-        assertThat(reservation.isOwnedBy("어셔")).isTrue();
+        assertThatCode(() -> reservation.validateOwnedBy("어셔"))
+                .doesNotThrowAnyException();
     }
 
     @Test
-    void 예약자_이름과_다른_이름이면_false를_반환한다() {
+    void 예약자_이름과_다른_이름이면_예외를_발생한다() {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.now(), time, theme);
 
         // when & then
-        assertThat(reservation.isOwnedBy("어셔2")).isFalse();
+        assertThatThrownBy(() -> reservation.validateOwnedBy("레서"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
     }
 
     @Test
-    void 예약_시점이_주어진_시간보다_과거이면_true를_반환한다() {
+    void 예약_시점이_주어진_시간보다_과거이면_예외를_발생한다() {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2020, 1, 1), time, theme);
 
         // when & then
-        assertThat(reservation.isExpired(LocalDateTime.of(2026, 5, 13, 14, 0))).isTrue();
+        assertThatThrownBy(() -> reservation.validateNotExpired(LocalDateTime.now()))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_EXPIRED);
+
     }
 
     @Test
-    void 예약_시점이_주어진_시각보다_미래이면_false를_반환한다() {
+    void 예약_시점이_주어진_시각보다_미래이면_정상_통과한다() {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2099, 12, 31), time, theme);
 
         // when & then
-        assertThat(reservation.isExpired(LocalDateTime.of(2026, 5, 13, 14, 0))).isFalse();
+        assertThatCode(() -> reservation.validateNotExpired(LocalDateTime.of(2026, 5, 13, 14, 0)))
+                .doesNotThrowAnyException();
     }
 }
