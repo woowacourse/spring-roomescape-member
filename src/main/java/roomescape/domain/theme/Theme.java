@@ -1,9 +1,13 @@
 package roomescape.domain.theme;
 
 import lombok.Getter;
+import roomescape.support.exception.BadRequestException;
+import roomescape.support.exception.errors.ThemeErrors;
 
 @Getter
 public class Theme {
+
+    private static final int MAX_NAME_LENGTH = 10;
 
     private final Long id;
     private final String name;
@@ -11,6 +15,7 @@ public class Theme {
     private final String url;
 
     private Theme(Long id, String name, String content, String url) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.content = content;
@@ -33,5 +38,11 @@ public class Theme {
             content,
             url
         );
+    }
+
+    private void validateName(String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new BadRequestException(ThemeErrors.INVALID_THEME_NAME_LENGTH);
+        }
     }
 }
