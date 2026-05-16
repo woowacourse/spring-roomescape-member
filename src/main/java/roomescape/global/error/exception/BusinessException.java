@@ -1,7 +1,7 @@
-package roomescape.domain.global.exception.custom;
+package roomescape.global.error.exception;
 
-import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.error.ErrorDetail;
+import roomescape.global.error.ErrorCode;
+import roomescape.global.error.ErrorDetail;
 
 public class BusinessException extends RuntimeException {
 

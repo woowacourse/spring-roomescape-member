@@ -1,4 +1,4 @@
-package roomescape.domain.global.handler;
+package roomescape.global.error;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
@@ -15,10 +15,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.domain.global.exception.custom.BusinessException;
-import roomescape.domain.global.exception.error.ErrorCode;
-import roomescape.domain.global.exception.error.ErrorDetail;
-import roomescape.domain.global.exception.error.ErrorResponse;
+import roomescape.global.error.exception.BusinessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

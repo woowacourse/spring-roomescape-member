@@ -1,4 +1,4 @@
-package roomescape.domain.global.exception.error;
+package roomescape.global.error;
 
 public record ErrorDetail(String field, String value, String message) {
 

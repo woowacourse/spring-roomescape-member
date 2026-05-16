@@ -1,4 +1,4 @@
-package roomescape.domain.global.exception.error;
+package roomescape.global.error;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;

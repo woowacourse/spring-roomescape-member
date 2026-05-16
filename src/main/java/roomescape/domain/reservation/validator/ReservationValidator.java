@@ -3,8 +3,8 @@ package roomescape.domain.reservation.validator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import roomescape.domain.global.exception.custom.BusinessException;
-import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.global.error.exception.BusinessException;
+import roomescape.global.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.time.entity.Time;
 

@@ -1,4 +1,4 @@
-package roomescape.domain.global.exception.error;
+package roomescape.global.error;
 
 import org.springframework.http.HttpStatus;
 
