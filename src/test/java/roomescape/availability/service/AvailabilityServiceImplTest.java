@@ -82,9 +82,9 @@ class AvailabilityServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(2L));
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00"),
-                new ReservationTime(3L, "14:00", "16:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00"),
+                reservationTime(3L, "14:00", "16:00")
         );
         when(timeRepository.findAll()).thenReturn(allTimes);
 
@@ -102,8 +102,8 @@ class AvailabilityServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(1L, 2L));
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00")
         );
         when(timeRepository.findAll()).thenReturn(allTimes);
 
@@ -118,12 +118,16 @@ class AvailabilityServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(Collections.emptyList());
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00")
         );
         when(timeRepository.findAll()).thenReturn(allTimes);
 
         assertThat(availabilityService.getAvailableTimes(1L, date))
                 .isEqualTo(allTimes);
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }

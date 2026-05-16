@@ -24,7 +24,7 @@ public class TimeServiceImpl implements TimeService {
 
   @Override
   public ReservationTime create(String startAt, String endAt) {
-    ReservationTime time = new ReservationTime(startAt, endAt);
+    ReservationTime time = new ReservationTime(ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     return timeRepository.save(time.getStartAt(), time.getEndAt());
   }
 

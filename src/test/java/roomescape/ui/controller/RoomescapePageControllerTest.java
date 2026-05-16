@@ -58,7 +58,7 @@ class RoomescapePageControllerTest {
     private void stubDashboardData() {
         Theme theme = new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L);
         Mockito.when(reservationService.getAll()).thenReturn(List.of(
-                new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, "10:00", "11:00"), theme)
+                new Reservation("브라운", LocalDate.of(2026, 5, 6), reservationTime(1L, "10:00", "11:00"), theme)
                         .withId(1L)
         ));
         Mockito.when(themeService.getAll()).thenReturn(List.of(
@@ -68,13 +68,13 @@ class RoomescapePageControllerTest {
                 theme
         ));
         Mockito.when(timeService.findAll()).thenReturn(List.of(
-                new ReservationTime(1L, "10:00", "11:00")
+                reservationTime(1L, "10:00", "11:00")
         ));
         Mockito.when(holidayService.getAll()).thenReturn(List.of(
                 new Holiday(1L, LocalDate.of(2026, 5, 7))
         ));
         Mockito.when(availabilityService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(
-                new ReservationTime(1L, "10:00", "11:00")
+                reservationTime(1L, "10:00", "11:00")
         ));
     }
 
@@ -191,5 +191,9 @@ class RoomescapePageControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard/reservations"))
                 .andExpect(flash().attribute("errorMessage", "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }

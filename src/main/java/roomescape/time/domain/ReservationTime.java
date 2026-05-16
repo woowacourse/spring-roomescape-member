@@ -8,14 +8,6 @@ public class ReservationTime {
     private final LocalTime startAt;
     private final LocalTime endAt;
 
-    public ReservationTime(String startAt, String endAt) {
-        this(null, parse(startAt), parse(endAt));
-    }
-
-    public ReservationTime(Long id, String startAt, String endAt) {
-        this(id, parse(startAt), parse(endAt));
-    }
-
     public ReservationTime(LocalTime startAt, LocalTime endAt) {
         this(null, startAt, endAt);
     }

@@ -95,8 +95,8 @@ class ThemeControllerTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
 
         List<ReservationTime> times = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00")
         );
         Mockito.when(availabilityService.getAvailableTimes(themeId, date)).thenReturn(times);
 
@@ -134,5 +134,9 @@ class ThemeControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
                 .andExpect(jsonPath("$.message").value("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }

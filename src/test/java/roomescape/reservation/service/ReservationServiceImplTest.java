@@ -60,7 +60,7 @@ class ReservationServiceImplTest {
     @Test
     void 과거_날짜와_시간이면_예외가_발생한다() {
         ReservationSaveServiceDto request = new ReservationSaveServiceDto("브라운", LocalDate.of(2026, 5, 12), 1L, 1L);
-        ReservationTime time = new ReservationTime(1L, "09:00", "10:00");
+        ReservationTime time = reservationTime(1L, "09:00", "10:00");
 
         when(timeService.findById(1L)).thenReturn(time);
         when(themeRepository.findById(1L)).thenReturn(new Theme("테마", "설명", "url").withId(1L));
@@ -76,7 +76,7 @@ class ReservationServiceImplTest {
     @Test
     void 중복_예약이면_예외가_발생한다() {
         ReservationSaveServiceDto request = new ReservationSaveServiceDto("브라운", LocalDate.of(2099, 8, 5), 1L, 1L);
-        ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
+        ReservationTime time = reservationTime(1L, "10:00", "11:00");
 
         when(timeService.findById(1L)).thenReturn(time);
         when(themeRepository.findById(1L)).thenReturn(new Theme("테마", "설명", "url").withId(1L));
@@ -93,7 +93,7 @@ class ReservationServiceImplTest {
 
     @Test
     void 소유자가_아니면_취소_시_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
+        ReservationTime time = reservationTime(1L, "10:00", "11:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), time, theme).withId(1L);
 
@@ -107,7 +107,7 @@ class ReservationServiceImplTest {
 
     @Test
     void 지난_예약은_취소_시_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(1L, "09:00", "10:00");
+        ReservationTime time = reservationTime(1L, "09:00", "10:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         // fixedClock = 2026-05-12T10:00:00Z → 2026-05-12 09:00이 이미 지남
         Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 12), time, theme).withId(1L);
@@ -122,7 +122,7 @@ class ReservationServiceImplTest {
 
     @Test
     void 소유자가_아니면_변경_시_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
+        ReservationTime time = reservationTime(1L, "10:00", "11:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), time, theme).withId(1L);
 
@@ -138,8 +138,8 @@ class ReservationServiceImplTest {
 
     @Test
     void 휴일_날짜로_변경하면_INVALID_REQUEST_예외가_발생한다() {
-        ReservationTime existingTime = new ReservationTime(1L, "10:00", "11:00");
-        ReservationTime newTime = new ReservationTime(1L, "14:00", "15:00");
+        ReservationTime existingTime = reservationTime(1L, "10:00", "11:00");
+        ReservationTime newTime = reservationTime(1L, "14:00", "15:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), existingTime, theme).withId(1L);
 
@@ -158,7 +158,7 @@ class ReservationServiceImplTest {
 
     @Test
     void 빈_문자열_요청자로_변경하면_INVALID_REQUEST_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
+        ReservationTime time = reservationTime(1L, "10:00", "11:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), time, theme).withId(1L);
 
@@ -174,8 +174,8 @@ class ReservationServiceImplTest {
 
     @Test
     void 과거_날짜로_변경_시_예외가_발생한다() {
-        ReservationTime existingTime = new ReservationTime(1L, "10:00", "11:00");
-        ReservationTime newTime = new ReservationTime(1L, "09:00", "10:00");
+        ReservationTime existingTime = reservationTime(1L, "10:00", "11:00");
+        ReservationTime newTime = reservationTime(1L, "09:00", "10:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), existingTime, theme).withId(1L);
 
@@ -193,8 +193,8 @@ class ReservationServiceImplTest {
 
     @Test
     void 이미_예약된_시간으로_변경_시_예외가_발생한다() {
-        ReservationTime existingTime = new ReservationTime(1L, "10:00", "11:00");
-        ReservationTime newTime = new ReservationTime(2L, "14:00", "15:00");
+        ReservationTime existingTime = reservationTime(1L, "10:00", "11:00");
+        ReservationTime newTime = reservationTime(2L, "14:00", "15:00");
         Theme theme = new Theme("테마", "설명", "url").withId(1L);
         Reservation reservation = new Reservation("브라운", LocalDate.of(2099, 8, 5), existingTime, theme).withId(1L);
 
@@ -210,5 +210,9 @@ class ReservationServiceImplTest {
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }
