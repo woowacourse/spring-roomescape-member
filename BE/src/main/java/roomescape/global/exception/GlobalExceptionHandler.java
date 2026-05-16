@@ -43,6 +43,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseBody> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        if (e.getRootCause() instanceof BusinessException businessException) {
+            return handleBusinessException(businessException);
+        }
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseBody(ErrorType.BUSINESS, ErrorCode.INVALID_HTTP_MESSAGE.getMessage()));
