@@ -11,6 +11,8 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
@@ -143,17 +145,41 @@ class ReservationControllerE2ETest {
         }
     }
 
-    @DisplayName("사용자가 자신의 이름으로 예약을 조회한다")
-    @Sql("/data.sql")
-    @Test
-    void 사용자_이름으로_예약_조회() {
-        String requestParamFormat = "/api/reservations?username=%s";
+    @Nested
+    class 예약_조회_케이스 {
 
-        RestAssured.given().log().all()
-                .when().get(requestParamFormat.formatted("루드비코"))
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(4));
+        final String requestParamFormat = "/api/reservations?username=%s";
+
+        @DisplayName("사용자가 자신의 이름으로 예약을 조회한다")
+        @Sql("/data.sql")
+        @Test
+        void 사용자_이름으로_예약_조회() {
+            RestAssured.given().log().all()
+                    .when().get(requestParamFormat.formatted("루드비코"))
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(4));
+        }
+
+        @DisplayName("이름이 빈 값이거나 공백이면 400 Bad Request를 응답한다")
+        @Sql("/data.sql")
+        @ParameterizedTest
+        @ValueSource(strings = {"", " ", "\t", "\n"})
+        void 사용자_이름에_빈_값이나_공백을_전달하면_400을_응답한다(String invalidName) {
+            RestAssured.given().log().all()
+                    .when().get(requestParamFormat.formatted(invalidName))
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        @DisplayName("사용자 이름을 전달하지 않으면 400 Bad Request를 응답한다")
+        @Test
+        void username_파라미터를_전달하지_않으면_400을_응답한다() {
+            RestAssured.given().log().all()
+                    .when().get("/api/reservations")
+                    .then().log().all()
+                    .statusCode(400);
+        }
     }
 
     @Nested

@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,9 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDTO>> readAllByUsername(@RequestParam String username) {
+    public ResponseEntity<List<ReservationResponseDTO>> readAllByUsername(
+            @RequestParam @NotBlank(message = "이름은 1글자 이상 입력되어야 합니다.") String username
+    ) {
         return ResponseEntity
                 .ok(reservationService.findAllByUsername(username));
     }

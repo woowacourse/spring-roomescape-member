@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@Priority(2)
+@Priority(3)
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
                 "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
         );
         return ResponseEntity
-                .status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(problemDetail.getStatus())
                 .body(problemDetail);
     }
 }
