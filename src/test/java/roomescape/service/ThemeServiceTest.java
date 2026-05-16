@@ -17,8 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomConflictException;
-import roomescape.exception.CustomUnprocessableEntityException;
+import roomescape.exception.CustomInvalidRequestException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -54,7 +53,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now().plusDays(2);
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(FUTURE_RANKING_PERIOD.getMessage());
     }
 
@@ -64,7 +63,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now().minusDays(1);
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(INVALID_RANKING_PERIOD.getMessage());
     }
 
@@ -75,7 +74,7 @@ public class ThemeServiceTest {
         LocalDate endDate = LocalDate.now();
 
         assertThatThrownBy(() -> themeService.readRanking(startDate, endDate))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(LONG_RANKING_PERIOD.getMessage());
     }
 
@@ -87,7 +86,7 @@ public class ThemeServiceTest {
         reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
 
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(CustomConflictException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(REFERENCED_THEME.getMessage());
     }
 

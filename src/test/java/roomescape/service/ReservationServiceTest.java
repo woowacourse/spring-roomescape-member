@@ -18,9 +18,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomConflictException;
-import roomescape.exception.CustomNotFoundException;
-import roomescape.exception.CustomUnprocessableEntityException;
+import roomescape.exception.CustomInvalidRequestException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -64,7 +62,7 @@ public class ReservationServiceTest {
                 futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
-                .isInstanceOf(CustomNotFoundException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
@@ -75,7 +73,7 @@ public class ReservationServiceTest {
                 futureDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
-                .isInstanceOf(CustomNotFoundException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_THEME.getMessage());
     }
 
@@ -89,7 +87,7 @@ public class ReservationServiceTest {
                 pastDateTime.toLocalDate(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(serviceReservationCreateRequest))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_CREATE.getMessage());
     }
 
@@ -104,7 +102,7 @@ public class ReservationServiceTest {
         reservationService.create(request);
 
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(CustomConflictException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(DUPLICATED_RESERVATION.getMessage());
     }
 
@@ -116,7 +114,7 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomNotFoundException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_RESERVATION.getMessage());
     }
 
@@ -130,7 +128,7 @@ public class ReservationServiceTest {
         ServiceReservationUpdateRequest request = new ServiceReservationUpdateRequest(futureDateTime.toLocalDate(), 2L);
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomNotFoundException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
@@ -145,7 +143,7 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_CREATE.getMessage());
     }
 
@@ -160,7 +158,7 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_UPDATE.getMessage());
     }
 
@@ -176,14 +174,14 @@ public class ReservationServiceTest {
                 reservationTime.getId());
 
         assertThatThrownBy(() -> reservationService.update(1L, request))
-                .isInstanceOf(CustomConflictException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(DUPLICATED_RESERVATION.getMessage());
     }
 
     @Test
     void deleteNotFoundReservationExceptionTest() {
         assertThatThrownBy(() -> reservationService.delete(1L))
-                .isInstanceOf(CustomNotFoundException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_FOUND_RESERVATION.getMessage());
     }
 
@@ -197,7 +195,7 @@ public class ReservationServiceTest {
         reservationRepository.create(new Reservation("fizz", pastDate.toLocalDate(), reservationTime, theme));
 
         assertThatThrownBy(() -> reservationService.delete(1L))
-                .isInstanceOf(CustomUnprocessableEntityException.class)
+                .isInstanceOf(CustomInvalidRequestException.class)
                 .hasMessage(NOT_ALLOW_PAST_TIME_RESERVATION_DELETE.getMessage());
     }
 

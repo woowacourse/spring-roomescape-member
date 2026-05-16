@@ -6,8 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
-import roomescape.exception.CustomConflictException;
-import roomescape.exception.CustomUnprocessableEntityException;
+import roomescape.exception.CustomInvalidRequestException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -49,7 +48,7 @@ public class ThemeService {
 
     private void validateReferencedTheme(Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new CustomConflictException(ErrorCode.REFERENCED_THEME);
+            throw new CustomInvalidRequestException(ErrorCode.REFERENCED_THEME);
         }
     }
 
@@ -65,13 +64,13 @@ public class ThemeService {
         LocalDate localDate = LocalDate.now();
 
         if (startDate.isAfter(localDate) || endDate.isAfter(localDate)) {
-            throw new CustomUnprocessableEntityException(ErrorCode.FUTURE_RANKING_PERIOD);
+            throw new CustomInvalidRequestException(ErrorCode.FUTURE_RANKING_PERIOD);
         }
         if (startDate.isAfter(endDate)) {
-            throw new CustomUnprocessableEntityException(ErrorCode.INVALID_RANKING_PERIOD);
+            throw new CustomInvalidRequestException(ErrorCode.INVALID_RANKING_PERIOD);
         }
         if (ChronoUnit.DAYS.between(startDate, endDate) > MAX_RANKING_PERIOD) {
-            throw new CustomUnprocessableEntityException(ErrorCode.LONG_RANKING_PERIOD);
+            throw new CustomInvalidRequestException(ErrorCode.LONG_RANKING_PERIOD);
         }
     }
 }

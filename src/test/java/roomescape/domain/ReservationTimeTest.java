@@ -5,14 +5,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.CustomInvalidDomainException;
+import roomescape.exception.ErrorCode;
 
 public class ReservationTimeTest {
 
     @Test
     void timeNullExceptionTest() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .hasMessage("[ERROR] 예약 시간은 비어 있을 수 없습니다.")
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomInvalidDomainException.class)
+                .hasMessage(ErrorCode.NOT_ALLOW_TIME_NULL.getMessage());
     }
 
     @Test

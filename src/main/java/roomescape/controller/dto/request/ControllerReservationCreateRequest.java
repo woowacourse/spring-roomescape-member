@@ -1,24 +1,37 @@
 package roomescape.controller.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import roomescape.exception.CustomInvalidRequestException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.dto.request.ServiceReservationCreateRequest;
 
 public record ControllerReservationCreateRequest(
-        @NotBlank(message = "[ERROR] 이름은 비어 있을 수 없습니다.")
         String name,
-
-        @NotNull(message = "[ERROR] 날짜는 비어 있을 수 없습니다.")
         LocalDate date,
-
-        @NotNull(message = "[ERROR] 예약 시간의 id는 비어 있을 수 없습니다.")
         Long timeId,
-
-        @NotNull(message = "[ERROR] 테마의 id는 비어 있을 수 없습니다.")
         Long themeId
 ) {
+
+    public ControllerReservationCreateRequest {
+        validate(name, date, timeId, themeId);
+    }
+
     public ServiceReservationCreateRequest toServiceReservationRequest() {
         return new ServiceReservationCreateRequest(name, date, timeId, themeId);
+    }
+
+    private void validate(String name, LocalDate date, Long timeId, Long themeId) {
+        if (name == null || name.isBlank()) {
+            throw new CustomInvalidRequestException(ErrorCode.NOT_ALLOW_NAME_NULL);
+        }
+        if (date == null) {
+            throw new CustomInvalidRequestException(ErrorCode.NOT_ALLOW_DATE_NULL);
+        }
+        if (timeId == null) {
+            throw new CustomInvalidRequestException(ErrorCode.NOT_ALLOW_TIME_NULL);
+        }
+        if (themeId == null) {
+            throw new CustomInvalidRequestException(ErrorCode.NOT_ALLOW_THEME_NULL);
+        }
     }
 }

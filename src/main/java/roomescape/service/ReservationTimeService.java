@@ -6,9 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.CustomConflictException;
-import roomescape.exception.CustomNotFoundException;
-import roomescape.exception.CustomUnprocessableEntityException;
+import roomescape.exception.CustomInvalidRequestException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -49,7 +47,7 @@ public class ReservationTimeService {
 
     private void validateDuplicatedReservationTime(LocalTime startAt) {
         if (reservationTimeRepository.existByStartAt(startAt)) {
-            throw new CustomConflictException(ErrorCode.DUPLICATED_RESERVATION_TIME);
+            throw new CustomInvalidRequestException(ErrorCode.DUPLICATED_RESERVATION_TIME);
         }
     }
 
@@ -72,13 +70,13 @@ public class ReservationTimeService {
 
     private void validateExistTheme(Long themeId) {
         if (!themeRepository.existById(themeId)) {
-            throw new CustomNotFoundException(ErrorCode.NOT_FOUND_THEME);
+            throw new CustomInvalidRequestException(ErrorCode.NOT_FOUND_THEME);
         }
     }
 
     private void validateNotPastDate(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new CustomUnprocessableEntityException(ErrorCode.PAST_RESERVATION_TIME_READ);
+            throw new CustomInvalidRequestException(ErrorCode.PAST_RESERVATION_TIME_READ);
         }
     }
 
@@ -90,7 +88,7 @@ public class ReservationTimeService {
 
     private void validateReferencedTime(Long id) {
         if (reservationRepository.existByTimeId(id)) {
-            throw new CustomConflictException(ErrorCode.REFERENCED_TIME);
+            throw new CustomInvalidRequestException(ErrorCode.REFERENCED_TIME);
         }
     }
 }

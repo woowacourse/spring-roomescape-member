@@ -25,8 +25,14 @@ public enum ErrorCode {
     INVALID_METHOD_REQUEST("[ERROR] 지원하지 않는 메서드입니다. 메서드를 다시 한 번 확인해 주세요."),
     INVALID_URL_REQUEST("[ERROR] 잘못된 경로입니다. URL을 다시 한 번 확인해 주세요."),
 
-    INTERNAL_SERVER_VALID_ERROR("[ERROR] 서버 내부 도메인에 문제가 발생했습니다."),
     INTERNAL_SERVER_ERROR("[ERROR] 서버 내부에서 에러가 발생했습니다."),
+
+    NOT_ALLOW_NAME_NULL("[ERROR] 이름은 비어 있을 수 없습니다."),
+    NOT_ALLOW_DATE_NULL("[ERROR] 날짜는 비어 있을 수 없습니다."),
+    NOT_ALLOW_TIME_NULL("[ERROR] 예약 시간은 비어 있을 수 없습니다."),
+    NOT_ALLOW_THEME_NULL("[ERROR] 테마는 비어 있을 수 없습니다."),
+    NOT_ALLOW_DESCRIPTION_NULL("[ERROR] 설명은 비어 있을 수 없습니다."),
+    NOT_ALLOW_THUMBNAIL_NULL("[ERROR] 썸네일은 비어 있을 수 없습니다."),
     ;
 
     private final String message;

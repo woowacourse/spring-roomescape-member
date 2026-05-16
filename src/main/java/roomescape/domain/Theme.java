@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.exception.CustomInvalidDomainException;
+import roomescape.exception.ErrorCode;
+
 public class Theme {
 
     private final Long id;
@@ -30,14 +33,14 @@ public class Theme {
     }
 
     private void validate(String name, String description, String thumbnailUrl) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
+        if (name == null || name.isBlank()) {
+            throw new CustomInvalidDomainException(ErrorCode.NOT_ALLOW_NAME_NULL);
         }
-        if (description.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 설명은 비어 있을 수 없습니다.");
+        if (description == null || description.isBlank()) {
+            throw new CustomInvalidDomainException(ErrorCode.NOT_ALLOW_DESCRIPTION_NULL);
         }
-        if (thumbnailUrl.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 썸네일은 비어 있을 수 없습니다.");
+        if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
+            throw new CustomInvalidDomainException(ErrorCode.NOT_ALLOW_THUMBNAIL_NULL);
         }
     }
 

@@ -74,7 +74,7 @@ public class ReservationSteps {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409)
+                .statusCode(400)
                 .body("message", is(DUPLICATED_RESERVATION.getMessage()));
     }
 }
