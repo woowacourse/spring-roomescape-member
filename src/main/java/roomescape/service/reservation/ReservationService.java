@@ -1,7 +1,6 @@
 package roomescape.service.reservation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
@@ -9,7 +8,6 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.InvalidInputException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
@@ -20,15 +18,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final ReservationValidator reservationValidator;
 
     public ReservationService(
             final ReservationRepository reservationRepository,
             final ReservationTimeService reservationTimeService,
-            final ThemeService themeService
+            final ThemeService themeService,
+            final ReservationValidator reservationValidator
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.reservationValidator = reservationValidator;
     }
 
     public List<Reservation> getAll() {
@@ -36,26 +37,16 @@ public class ReservationService {
     }
 
     public List<Reservation> getAllByName(final String name) {
-        validateReservationName(name);
+        reservationValidator.validateReservationName(name);
         return reservationRepository.findAllByName(name);
     }
 
     public Reservation save(final String name, final LocalDate date, final Long themeId, final Long timeId) {
-        if (themeId == null) {
-            throw new InvalidInputException(ErrorCode.THEME_ID_REQUIRED, "themeId는 필수입니다.");
-        }
-
-        if (timeId == null) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_TIME_ID_REQUIRED, "timeId는 필수입니다.");
-        }
-
-        if (date == null) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_DATE_REQUIRED, "날짜는 필수입니다.");
-        }
+        reservationValidator.validateCreateRequest(date, themeId, timeId);
 
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        validateReservationDateTime(date, reservationTime);
+        reservationValidator.validateReservationDateTime(date, reservationTime);
 
         if(reservationRepository.existsByDateAndThemeIdAndTimeId(date, themeId, timeId)){
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED, "동일한 시기에 예약을 할 수 없습니다.");
@@ -70,7 +61,7 @@ public class ReservationService {
     }
 
     public void deleteByIdAndName(final long id, final String name) {
-        validateReservationName(name);
+        reservationValidator.validateReservationName(name);
 
         Reservation reservation = reservationRepository.findByIdAndName(id, name)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -78,12 +69,7 @@ public class ReservationService {
                         "조회한 이름으로 찾은 예약이 없습니다."
                 ));
 
-        if (isPastReservation(reservation)) {
-            throw new ConflictException(
-                    ErrorCode.PAST_RESERVATION_CANNOT_BE_CANCELLED,
-                    "이미 지난 예약은 취소할 수 없습니다."
-            );
-        }
+        reservationValidator.validateCancelable(reservation);
 
         reservationRepository.deleteById(reservation.getId());
     }
@@ -94,15 +80,8 @@ public class ReservationService {
             final LocalDate date,
             final Long timeId
     ) {
-        validateReservationName(name);
-
-        if (timeId == null) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_TIME_ID_REQUIRED, "timeId는 필수입니다.");
-        }
-
-        if (date == null) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_DATE_REQUIRED, "날짜는 필수입니다.");
-        }
+        reservationValidator.validateReservationName(name);
+        reservationValidator.validateUpdateRequest(date, timeId);
 
         Reservation reservation = reservationRepository.findByIdAndName(id, name)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -110,15 +89,10 @@ public class ReservationService {
                         "조회한 이름으로 찾은 예약이 없습니다."
                 ));
 
-        if (isPastReservation(reservation)) {
-            throw new ConflictException(
-                    ErrorCode.PAST_RESERVATION_CANNOT_BE_UPDATED,
-                "이미 지난 예약은 변경할 수 없습니다."
-            );
-        }
+        reservationValidator.validateUpdatable(reservation);
 
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        validateReservationDateTime(date, reservationTime);
+        reservationValidator.validateReservationDateTime(date, reservationTime);
 
         if (reservationRepository.existsByDateAndThemeIdAndTimeIdExcludingId(
                 date,
@@ -132,25 +106,4 @@ public class ReservationService {
         Reservation updatedReservation = reservation.withDateAndTime(date, reservationTime);
         return reservationRepository.update(updatedReservation);
     }
-
-    private void validateReservationName(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_NAME_REQUIRED, "예약자 이름은 필수입니다.");
-        }
-    }
-
-    private void validateReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
-        if (toReservationDateTime(date, reservationTime).isBefore(LocalDateTime.now())) {
-            throw new InvalidInputException(ErrorCode.RESERVATION_DATE_TIME_IN_PAST, "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
-        }
-    }
-
-    private LocalDateTime toReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
-        return LocalDateTime.of(date, reservationTime.getStartAt());
-    }
-
-    private boolean isPastReservation(final Reservation reservation) {
-        return toReservationDateTime(reservation.getDate(), reservation.getTime()).isBefore(LocalDateTime.now());
-    }
-
 }

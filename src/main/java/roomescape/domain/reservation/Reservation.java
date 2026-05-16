@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -44,6 +45,10 @@ public class Reservation {
 
     public Reservation withDateAndTime(final LocalDate date, final ReservationTime time) {
         return new Reservation(this.id, this.name, date, this.theme, time);
+    }
+
+    public boolean isBefore(final LocalDateTime standardDateTime) {
+        return getReservationDateTime().isBefore(standardDateTime);
     }
 
     private static void validateId(final Long id){
@@ -92,6 +97,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return this.time;
+    }
+
+    private LocalDateTime getReservationDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
     }
 
     @Override
