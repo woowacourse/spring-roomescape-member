@@ -45,7 +45,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
         if (reservationReq.getDate().isBefore(LocalDate.now())) {
-            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DATE_PAST);
         }
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), reservationReq.getDate(), findReservationTime.getId());
@@ -69,7 +69,7 @@ public class ReservationService {
         );
 
         if (!standard.isAfter(findReservation.getCreatedAt())) {
-            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DATE_PAST);
         }
 
         return ReservationResponse.from(findReservation);
@@ -98,7 +98,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse update(Long id, ReservationUpdateRequest newReservationReq) {
         if (newReservationReq.getDate().isBefore(LocalDate.now())) {
-            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DATE_PAST);
         }
 
         if (!reservationQueryingDao.existsById(id)) {
@@ -130,7 +130,7 @@ public class ReservationService {
         );
 
         if (!standard.isAfter(findReservation.getUpdatedAt())) {
-            throw new BusinessException(ErrorCode.PAST_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DATE_PAST);
         }
         return ReservationResponse.from(findReservation);
     }

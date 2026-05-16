@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 400
-    INVALID_RESERVATION_NAME(HttpStatus.BAD_REQUEST, "예약자명이 잘못되었습니다."),
-    INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST, "예약 날짜가 잘못되었습니다."),
-    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "예약 시간이 잘못되었습니다."),
-    INVALID_THEME_NAME(HttpStatus.BAD_REQUEST, "테마명이 잘못되었습니다."),
+    RESERVATION_NAME_INVALID(HttpStatus.BAD_REQUEST, "예약자명이 잘못되었습니다."),
+    RESERVATION_DATE_INVALID(HttpStatus.BAD_REQUEST, "예약 날짜가 잘못되었습니다."),
+    RESERVATION_TIME_INVALID(HttpStatus.BAD_REQUEST, "예약 시간이 잘못되었습니다."),
+    THEME_NAME_INVALID(HttpStatus.BAD_REQUEST, "테마명이 잘못되었습니다."),
 
     // 404
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
@@ -20,7 +20,7 @@ public enum ErrorCode {
     RESERVATION_TIME_DELETE_CONFLICT(HttpStatus.CONFLICT, "예약이 있는 시간은 삭제할 수 없습니다."),
 
     // 422
-    PAST_RESERVATION_DATE(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다.");
+    RESERVATION_DATE_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

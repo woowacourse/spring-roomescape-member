@@ -18,7 +18,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new BusinessException(ErrorCode.INVALID_RESERVATION_TIME);
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_INVALID);
         }
     }
 

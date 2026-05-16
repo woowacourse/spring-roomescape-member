@@ -20,7 +20,7 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_THEME_NAME);
+            throw new BusinessException(ErrorCode.THEME_NAME_INVALID);
         }
     }
 

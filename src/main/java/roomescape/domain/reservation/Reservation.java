@@ -32,13 +32,13 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_RESERVATION_NAME);
+            throw new BusinessException(ErrorCode.RESERVATION_NAME_INVALID);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new BusinessException(ErrorCode.INVALID_RESERVATION_DATE);
+            throw new BusinessException(ErrorCode.RESERVATION_DATE_INVALID);
         }
     }
 

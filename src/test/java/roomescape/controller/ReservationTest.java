@@ -68,7 +68,7 @@ class ReservationTest {
 
         Map<String, String> updateRequest = new HashMap<>();
         updateRequest.put("name", "은오");
-        updateRequest.put("date", "2026-08-04");
+        updateRequest.put("date", "2026-08-08");
         updateRequest.put("timeId", "1");
         updateRequest.put("themeId", "1");
 
