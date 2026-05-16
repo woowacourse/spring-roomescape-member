@@ -73,7 +73,8 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public ReservationResponseDTO readReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("예약이 존재하지 않습니다."));
+                .orElseThrow(
+                        () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         return ReservationResponseDTO.from(reservation);
     }
 

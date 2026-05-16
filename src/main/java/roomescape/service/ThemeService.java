@@ -52,7 +52,7 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public ThemeResponseDTO findById(Long id) {
         Theme result = themeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당하는 id의 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND));
         return ThemeResponseDTO.from(result);
     }
 

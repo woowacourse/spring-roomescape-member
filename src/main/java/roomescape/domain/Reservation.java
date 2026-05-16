@@ -4,9 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.exception.ReservationErrorCode;
-import roomescape.exception.ReservationTimeErrorCode;
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.ThemeErrorCode;
 
 public class Reservation {
 
@@ -63,13 +61,13 @@ public class Reservation {
 
     private static void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND);
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_TIME);
         }
     }
 
     private static void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND);
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_THEME);
         }
     }
 
