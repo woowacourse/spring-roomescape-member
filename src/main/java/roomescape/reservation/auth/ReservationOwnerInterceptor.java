@@ -62,7 +62,7 @@ public class ReservationOwnerInterceptor implements HandlerInterceptor {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(ReservationNotFoundException::new);
 
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.hasSameName(name)) {
             throw new ForbiddenException();
         }
     }
