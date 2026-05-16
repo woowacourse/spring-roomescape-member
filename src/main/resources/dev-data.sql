@@ -52,97 +52,97 @@ INSERT INTO theme (name, description, thumbnail_image_url)
 VALUES ('은행 금고', '삼엄한 경비를 뚫고 금고에서 탈출하세요', 'https://loremflickr.com/800/600/bank,vault');
 
 -- reservation
--- 인기 테마 윈도우 (오늘=2026-05-06 기준, 어제부터 7일 = 2026-04-29 ~ 2026-05-05)
+-- 인기 테마 윈도우 (오늘=CURRENT_DATE 기준, 어제부터 7일 = CURRENT_DATE - 7일 ~ CURRENT_DATE - 1일)
 -- 윈도우 내 카운트 목표:
 --   theme 1: 5건, theme 5: 4건, theme 8: 4건, theme 3: 3건, theme 4: 3건,
 --   theme 2: 2건, theme 7: 2건, theme 6: 1건, theme 9: 1건, theme 10: 1건
 
 -- 윈도우 내 (기존)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('김민수', '2026-05-05', 3, 1);
+VALUES ('김민수', DATEADD('DAY', -1, CURRENT_DATE), 3, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('이지영', '2026-05-05', 5, 2);
+VALUES ('이지영', DATEADD('DAY', -1, CURRENT_DATE), 5, 2);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('박서준', '2026-05-04', 7, 3);
+VALUES ('박서준', DATEADD('DAY', -2, CURRENT_DATE), 7, 3);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('정유나', '2026-05-04', 4, 1);
+VALUES ('정유나', DATEADD('DAY', -2, CURRENT_DATE), 4, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('최도현', '2026-05-03', 6, 5);
+VALUES ('최도현', DATEADD('DAY', -3, CURRENT_DATE), 6, 5);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('한소희', '2026-05-03', 8, 4);
+VALUES ('한소희', DATEADD('DAY', -3, CURRENT_DATE), 8, 4);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('강민호', '2026-05-02', 2, 7);
+VALUES ('강민호', DATEADD('DAY', -4, CURRENT_DATE), 2, 7);
 
 -- 윈도우 내 (theme 1: +3건 → 총 5건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오현우', '2026-04-29', 3, 1);
+VALUES ('오현우', DATEADD('DAY', -7, CURRENT_DATE), 3, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('신예린', '2026-04-30', 2, 1);
+VALUES ('신예린', DATEADD('DAY', -6, CURRENT_DATE), 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('배수지', '2026-05-01', 1, 1);
+VALUES ('배수지', DATEADD('DAY', -5, CURRENT_DATE), 1, 1);
 
 -- 윈도우 내 (theme 5: +3건 → 총 4건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('남궁민', '2026-05-05', 1, 5);
+VALUES ('남궁민', DATEADD('DAY', -1, CURRENT_DATE), 1, 5);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('류준열', '2026-05-04', 2, 5);
+VALUES ('류준열', DATEADD('DAY', -2, CURRENT_DATE), 2, 5);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('서지혜', '2026-05-02', 3, 5);
+VALUES ('서지혜', DATEADD('DAY', -4, CURRENT_DATE), 3, 5);
 
 -- 윈도우 내 (theme 8: +4건 → 총 4건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('곽도원', '2026-04-30', 3, 8);
+VALUES ('곽도원', DATEADD('DAY', -6, CURRENT_DATE), 3, 8);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('전미도', '2026-05-01', 2, 8);
+VALUES ('전미도', DATEADD('DAY', -5, CURRENT_DATE), 2, 8);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('변요한', '2026-05-03', 1, 8);
+VALUES ('변요한', DATEADD('DAY', -3, CURRENT_DATE), 1, 8);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('이주영', '2026-05-05', 9, 8);
+VALUES ('이주영', DATEADD('DAY', -1, CURRENT_DATE), 9, 8);
 
 -- 윈도우 내 (theme 3: +2건 → 총 3건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍은채', '2026-05-02', 8, 3);
+VALUES ('홍은채', DATEADD('DAY', -4, CURRENT_DATE), 8, 3);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('차은우', '2026-05-05', 7, 3);
+VALUES ('차은우', DATEADD('DAY', -1, CURRENT_DATE), 7, 3);
 
 -- 윈도우 내 (theme 4: +2건 → 총 3건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('박보검', '2026-05-01', 4, 4);
+VALUES ('박보검', DATEADD('DAY', -5, CURRENT_DATE), 4, 4);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('김다미', '2026-05-04', 8, 4);
+VALUES ('김다미', DATEADD('DAY', -2, CURRENT_DATE), 8, 4);
 
 -- 윈도우 내 (theme 2: +1건 → 총 2건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('손석구', '2026-05-04', 6, 2);
+VALUES ('손석구', DATEADD('DAY', -2, CURRENT_DATE), 6, 2);
 
 -- 윈도우 내 (theme 7: +1건 → 총 2건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('전여빈', '2026-04-30', 5, 7);
+VALUES ('전여빈', DATEADD('DAY', -6, CURRENT_DATE), 5, 7);
 
 -- 윈도우 내 (theme 6: +1건 → 총 1건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('이정은', '2026-05-03', 4, 6);
+VALUES ('이정은', DATEADD('DAY', -3, CURRENT_DATE), 4, 6);
 
 -- 윈도우 내 (theme 9: +1건 → 총 1건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('조여정', '2026-05-01', 5, 9);
+VALUES ('조여정', DATEADD('DAY', -5, CURRENT_DATE), 5, 9);
 
 -- 윈도우 내 (theme 10: +1건 → 총 1건)
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('이성민', '2026-04-30', 6, 10);
+VALUES ('이성민', DATEADD('DAY', -6, CURRENT_DATE), 6, 10);
 
--- 윈도우 직전 (2026-04-28) — 카운트에 포함되면 안 됨
+-- 윈도우 직전 (CURRENT_DATE - 8일) — 카운트에 포함되면 안 됨
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('윈도우직전', '2026-04-28', 7, 1);
+VALUES ('윈도우직전', DATEADD('DAY', -8, CURRENT_DATE), 7, 1);
 
--- 오늘 (2026-05-06) — end가 어제(05-05)이므로 카운트에서 제외되어야 함
+-- 오늘 (CURRENT_DATE) — end가 어제(CURRENT_DATE - 1일)이므로 카운트에서 제외되어야 함
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('오늘예약', '2026-05-06', 8, 5);
+VALUES ('오늘예약', CURRENT_DATE, 8, 5);
 
 -- 미래 — 윈도우 밖
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('윤채영', '2026-05-14', 9, 8);
+VALUES ('윤채영', DATEADD('DAY', 8, CURRENT_DATE), 9, 8);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('임재현', '2026-05-14', 5, 6);
+VALUES ('임재현', DATEADD('DAY', 8, CURRENT_DATE), 5, 6);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('송하은', '2026-05-15', 6, 10);
+VALUES ('송하은', DATEADD('DAY', 9, CURRENT_DATE), 6, 10);
