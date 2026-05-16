@@ -50,7 +50,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
 
-        validateReservationDateTme(date, time.startAt());
+        validateReservationDateTime(date, time.startAt());
         validateDuplicateReservation(date, timeId, themeId);
 
         try {
@@ -60,7 +60,7 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationDateTme(LocalDate date, LocalTime time) {
+    private void validateReservationDateTime(LocalDate date, LocalTime time) {
         LocalDate today = LocalDate.now();
 
         if (date.isBefore(today)) {
