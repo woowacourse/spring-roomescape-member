@@ -1,10 +1,14 @@
 package roomescape.support.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.support.exception.errors.RoomescapeErrors;
@@ -34,7 +38,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-
         String message = e.getAllErrors()
             .stream()
             .findFirst()
@@ -49,6 +52,31 @@ public class GlobalExceptionHandler {
         HttpMessageNotReadableException e
     ) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrors.INPUT_FORMAT_ERROR);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
+        String message = e.getConstraintViolations()
+            .stream()
+            .findFirst()
+            .map(ConstraintViolation::getMessage)
+            .orElse(RoomescapeErrors.INPUT_VALIDATION_ERROR.getMessage());
+
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrors.INPUT_VALIDATION_ERROR, message);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+        MissingServletRequestParameterException e
+    ) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, RoomescapeErrors.REQUIRED_PARAMETER_MISSING);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+        HttpRequestMethodNotSupportedException e
+    ) {
+        return ErrorResponse.of(HttpStatus.METHOD_NOT_ALLOWED, RoomescapeErrors.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(Exception.class)

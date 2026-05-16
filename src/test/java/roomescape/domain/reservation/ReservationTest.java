@@ -121,6 +121,20 @@ class ReservationTest {
     }
 
     @Test
+    void 이름이_10자를_초과하면_예외가_발생한다() {
+        // given
+        String name = "보예보예보예보예보예보";
+        ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(15, 40));
+        Theme theme = Theme.of(1L, "공포", "무서운 테마", "theme-url");
+
+        // when & then
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
+            .isInstanceOf(RoomescapeException.class)
+            .hasMessage("이름은 10자 이하여야 합니다.");
+    }
+
+    @Test
     void 날짜가_null이면_예외가_발생한다() {
         // given
         String name = "보예";

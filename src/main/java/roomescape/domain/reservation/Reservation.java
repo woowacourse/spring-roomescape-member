@@ -12,6 +12,8 @@ import roomescape.support.exception.errors.ThemeErrors;
 @Getter
 public class Reservation {
 
+    private static final int MAX_NAME_LENGTH = 10;
+
     private final Long id;
     private final String name;
     private final ReservationDate date;
@@ -77,6 +79,9 @@ public class Reservation {
     private static void validate(String name, ReservationDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new BadRequestException(ReservationErrors.INVALID_RESERVATION_NAME);
+        }
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new BadRequestException(ReservationErrors.INVALID_RESERVATION_NAME_LENGTH);
         }
         if (date == null) {
             throw new BadRequestException(ReservationErrors.INVALID_RESERVATION_DATE);

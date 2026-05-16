@@ -9,6 +9,8 @@ public enum RoomescapeErrors implements Errors {
     INPUT_VALIDATION_ERROR("입력 검증 오류가 발생했습니다."),
     INTERNAL_SERVER_ERROR("서버 내부 오류가 발생했습니다."),
     INVALID_GENERATED_KEY("생성 키를 조회할 수 없습니다."),
+    REQUIRED_PARAMETER_MISSING("필수 요청 파라미터가 누락되었습니다."),
+    METHOD_NOT_ALLOWED("요청한 경로에서 지원하지 않는 HTTP 메서드입니다."),
     ;
 
     private final String message;
