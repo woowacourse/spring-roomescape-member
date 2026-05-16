@@ -17,7 +17,7 @@ public interface ReservationRepository {
 
     boolean existsByTimeId(Long timeId);
 
-    List<ReservationEntity> findByName(String name);
+    List<ReservationEntity> findByNameOrderByDateAscTimeAsc(String name);
 
     Optional<ReservationEntity> findById(Long id);
 

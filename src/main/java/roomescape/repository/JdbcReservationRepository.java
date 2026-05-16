@@ -117,7 +117,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findByName(String name) {
+    public List<ReservationEntity> findByNameOrderByDateAscTimeAsc(String name) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
