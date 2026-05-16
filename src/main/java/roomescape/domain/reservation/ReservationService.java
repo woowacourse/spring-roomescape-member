@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
@@ -25,7 +24,6 @@ import roomescape.support.exception.errors.ReservationErrors;
 import roomescape.support.exception.errors.ReservationTimeErrors;
 import roomescape.support.exception.errors.ThemeErrors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -62,10 +60,7 @@ public class ReservationService {
     }
 
     public void deleteReservationByAdmin(Long id) {
-        int deletedCount = reservationRepository.deleteById(id);
-        if (deletedCount == 0) {
-            log.warn("이미 삭제된 예약 삭제 요청이 들어왔습니다. reservationId={}", id);
-        }
+        reservationRepository.deleteById(id);
     }
 
     public void deleteUserReservation(Long id) {
