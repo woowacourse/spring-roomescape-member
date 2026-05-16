@@ -114,7 +114,8 @@ RFC 9457 Problem Details 형식. `Content-Type: application/problem+json`.
 | 400 | `validation-error` | 요청 본문이 `@Valid` 검증 실패 |
 | 400 | `missing-parameter` | 필수 쿼리 파라미터 누락 |
 | 400 | `malformed-request-body` | 요청 본문 JSON 파싱 실패 |
-| 404 | `not-found` | 리소스 미존재 또는 본인 소유 아님 |
+| 401 | `unauthorized` | 다른 사람 이름으로 본인 예약 접근 |
+| 404 | `not-found` | 리소스 미존재 |
 | 409 | `conflict` | 동일 날짜·시간·테마 중복 예약 |
 | 422 | `business-rule-violation` | 지난 시각 예약/변경, 예약이 존재하는 시간·테마 삭제 |
 | 500 | `internal-error` | 처리되지 않은 예외 |

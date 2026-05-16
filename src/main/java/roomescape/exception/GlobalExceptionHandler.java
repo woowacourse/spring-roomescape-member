@@ -34,6 +34,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ProblemType.NOT_FOUND, ex.getMessage(), ex, request);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail handleUnauthorized(UnauthorizedException ex, WebRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, ProblemType.UNAUTHORIZED, ex.getMessage(), ex, request);
+    }
+
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex, WebRequest request) {
         return build(HttpStatus.CONFLICT, ProblemType.CONFLICT, ex.getMessage(), ex, request);
