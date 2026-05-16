@@ -100,4 +100,22 @@ public class ReservationService {
         }
         return reservationRepository.findAllByName(name);
     }
+
+    @Transactional
+    public Reservation updateReservationDateTimeByUser(long id, String name, LocalDate date, long timeId) {
+        Reservation reservation = findById(id);
+
+        if (!reservation.getName().equals(name)) {
+            throw new UnauthorizedActionException("예약자 이름이 일치하지 않아 수정할 수 없습니다.");
+        }
+
+        ReservationTime time = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다."));
+
+        validateReservationDateTime(date, time.startAt());
+        validateDuplicateReservation(date, timeId, reservation.getTheme().id());
+
+        reservationRepository.updateDateTime(reservation.getId(), name, date, timeId);
+        return findById(id);
+    }
 }

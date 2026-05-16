@@ -10,6 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationDeleteRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationUpdateRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -54,5 +55,20 @@ public class UserReservationController {
             @Valid @RequestBody ReservationDeleteRequest reservationDeleteRequest) {
         reservationService.deleteByUser(id, reservationDeleteRequest.name());
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable long id,
+            @Valid @RequestBody ReservationUpdateRequest updateRequest){
+
+        Reservation updateReservation = reservationService.updateReservationDateTimeByUser(
+                id,
+                updateRequest.name(),
+                updateRequest.date(),
+                updateRequest.timeId()
+        );
+
+        return ResponseEntity.ok(ReservationResponse.from(updateReservation));
     }
 }

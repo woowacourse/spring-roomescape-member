@@ -49,4 +49,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByName(String name) {
         return reservationDao.findAllByName(name);
     }
+
+    @Override
+    public void updateDateTime(Long id, String name, LocalDate date, long timeId) {
+        reservationDao.updateDateTime(id, name, date, timeId);
+    }
 }

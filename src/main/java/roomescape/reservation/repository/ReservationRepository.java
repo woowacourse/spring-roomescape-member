@@ -13,4 +13,5 @@ public interface ReservationRepository {
     Optional<Reservation> findById(long id);
     boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId);
     List<Reservation> findAllByName(String name);
+    void updateDateTime(Long id, String name, LocalDate date, long timeId);
 }

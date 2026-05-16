@@ -144,4 +144,14 @@ public class ReservationDao {
 
         return jdbcTemplate.query(sql, rowMapper, name);
     }
+
+    public void updateDateTime(Long id, String name, LocalDate date, long timeId) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ? AND name = ?
+                """;
+
+        jdbcTemplate.update(sql, date, timeId, id, name);
+    }
 }
