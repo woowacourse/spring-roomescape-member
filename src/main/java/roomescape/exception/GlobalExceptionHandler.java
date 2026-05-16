@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,18 +17,18 @@ public class GlobalExceptionHandler {
                 .getDefaultMessage();
 
         return ResponseEntity.badRequest()
-                .body(new ExceptionResponse(message));
+                .body(new ExceptionResponse(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message));
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(BusinessException e) {
         return ResponseEntity.status(e.getExceptionCode().getStatus())
-                .body(new ExceptionResponse(e.getExceptionCode().getMessage()));
+                .body(new ExceptionResponse(e.getExceptionCode().getStatus(), e.getExceptionCode().name(), e.getExceptionCode().getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(Exception e) {
         return ResponseEntity.internalServerError()
-                .body(new ExceptionResponse("서버 오류가 발생했습니다."));
+                .body(new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."));
     }
 }
