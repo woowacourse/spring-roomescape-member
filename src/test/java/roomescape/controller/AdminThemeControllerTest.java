@@ -11,8 +11,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -43,22 +47,19 @@ public class AdminThemeControllerTest {
                 .header("Location", "/admin/themes/1");
     }
 
-    @Test
-    void 테마_이름이_공백이면_400을_반환한다() {
-        createTheme("", "설명", "https://asdfsdf.sdfs")
+    @ParameterizedTest
+    @MethodSource("invalidThemeRequests")
+    void 테마_추가_요청_값이_잘못되면_400을_반환한다(String name, String description, String thumbnail) {
+        createTheme(name, description, thumbnail)
                 .statusCode(400);
     }
 
-    @Test
-    void 테마_설명이_공백이면_400을_반환한다() {
-        createTheme("방탈출1", "", "https://asdfsdf.sdfs")
-                .statusCode(400);
-    }
-
-    @Test
-    void 썸네일이_URL_형식이_아니면_400을_반환한다() {
-        createTheme("방탈출1", "설명", "올바르지않은URL")
-                .statusCode(400);
+    private static Stream<Arguments> invalidThemeRequests() {
+        return Stream.of(
+                Arguments.of("", "설명", "https://asdfsdf.sdfs"),
+                Arguments.of("방탈출1", "", "https://asdfsdf.sdfs"),
+                Arguments.of("방탈출1", "설명", "올바르지않은URL")
+        );
     }
 
     @Test
