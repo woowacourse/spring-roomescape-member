@@ -93,6 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (timeId == null) {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
         }
+
         return timeService.findById(timeId);
     }
 
@@ -121,12 +122,23 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation update(Long id, LocalDate date, Long timeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+        validatePastReservation(reservation.getDate(), reservation.getTime());
         ReservationTime newTime = findTime(timeId);
         validatePast(date, newTime);
         validateDuplicatedReservation(reservation.getThemeId(), newTime, date);
         reservationRepository.update(id, date, timeId);
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+    }
+
+    private void validatePastReservation(LocalDate date, ReservationTime time) {
+        if (isPast(date, time)) {
+            throw PastReservationException.pastUpdate();
+        }
+    }
+
+    private boolean isPast(LocalDate date, ReservationTime time) {
+        return date.isBefore(LocalDate.now()) || (date.equals(LocalDate.now()) && time.isStartBefore(LocalTime.now()));
     }
 
     private void validateNotPastForCancel(Reservation reservation) {
