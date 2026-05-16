@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.theme.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +12,6 @@ import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeSort;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.UserThemeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;

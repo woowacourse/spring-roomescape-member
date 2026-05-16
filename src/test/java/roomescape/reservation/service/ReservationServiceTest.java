@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.service;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +13,6 @@ import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;

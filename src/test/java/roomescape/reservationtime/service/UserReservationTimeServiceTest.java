@@ -1,4 +1,4 @@
-package roomescape.reservationtime;
+package roomescape.reservationtime.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,6 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.AvailableTime;
 import roomescape.reservationtime.dto.ScheduleResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.reservationtime.service.UserReservationTimeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;

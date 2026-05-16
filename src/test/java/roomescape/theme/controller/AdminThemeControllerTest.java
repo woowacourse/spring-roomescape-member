@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.theme.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.theme.controller.AdminThemeController;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.service.AdminThemeService;

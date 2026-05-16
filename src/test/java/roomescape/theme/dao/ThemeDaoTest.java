@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.theme.dao;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeSort;

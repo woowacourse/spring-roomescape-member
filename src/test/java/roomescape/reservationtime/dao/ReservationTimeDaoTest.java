@@ -1,4 +1,4 @@
-package roomescape.reservationtime;
+package roomescape.reservationtime.dao;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.reservationtime.dao.ReservationTimeDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

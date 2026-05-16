@@ -1,4 +1,4 @@
-package roomescape.reservationtime;
+package roomescape.reservationtime.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.reservationtime.controller.UserReservationTimeController;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.AvailableTime;
 import roomescape.reservationtime.dto.ScheduleResponse;

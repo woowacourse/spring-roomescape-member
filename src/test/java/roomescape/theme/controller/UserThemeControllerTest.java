@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.theme.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.theme.controller.UserThemeController;
 import roomescape.theme.domain.SortOrder;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeSort;

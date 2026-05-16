@@ -1,4 +1,4 @@
-package roomescape.reservationtime;
+package roomescape.reservationtime.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalTime;
-import roomescape.reservationtime.controller.AdminReservationTimeController;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.service.AdminReservationTimeService;
