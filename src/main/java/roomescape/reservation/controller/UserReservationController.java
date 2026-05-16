@@ -41,7 +41,7 @@ public class UserReservationController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) Long themeId
     ) {
-        List<ReservationResponse> responses = reservationService.search(name, from, to, themeId)
+        List<ReservationResponse> responses = reservationService.findByFilter(name, from, to, themeId)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

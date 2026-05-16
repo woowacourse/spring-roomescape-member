@@ -15,8 +15,6 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    List<Reservation> findAll(LocalDateTime now);
-
     List<Reservation> findByFilter(String name, LocalDate from, LocalDate to, Long themeId, LocalDateTime now);
 
     void update(Reservation reservation);

@@ -36,7 +36,7 @@ public class Theme {
         validateNotNull(value, String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
 
         if (value.isBlank()) {
-            throw new IllegalArgumentException(String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
+            throw new InvalidDomainStateException(String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
         }
 
         if (value.length() > maxLength) {

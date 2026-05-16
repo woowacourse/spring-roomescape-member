@@ -26,13 +26,13 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readAll(
+    public ResponseEntity<List<ReservationResponse>> readAllByFilter(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) Long themeId
     ) {
-        List<ReservationResponse> responses = reservationService.search(name, from, to, themeId)
+        List<ReservationResponse> responses = reservationService.findByFilter(name, from, to, themeId)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

@@ -133,43 +133,35 @@ class ReservationServiceTest {
 
             // when
             reservationService.cancelById(saved.getId());
+            List<Reservation> results = reservationService.findByFilter(null, null, null, null);
 
             // then
-            assertThat(reservationService.findAll().get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
     }
 
     @Nested
-    @DisplayName("findAll 메서드는")
-    class FindAll {
+    @DisplayName("findByFilter 메서드는")
+    class FindByFilter {
 
         @Test
-        @DisplayName("저장된 예약을 ID 내림차순으로 반환한다.")
-        void findAllReturnsAll() {
+        @DisplayName("검색 조건을 입력하지 않으면 전체 데이터를 반환한다.")
+        void findAll() {
             // given
             LocalDate reservationDate = futureDate.toLocalDate();
             Long timeId = insertReservationTime(futureDate.toLocalTime());
             reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
             reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(1), timeId, themeId));
+            reservationService.save(new ReservationRequest("검프", reservationDate.plusDays(2), timeId, themeId));
+            reservationService.save(new ReservationRequest("류시", reservationDate.plusDays(3), timeId, themeId));
 
             // when
-            List<Reservation> result = reservationService.findAll();
+            List<Reservation> results = reservationService.findByFilter(null, null, null, null);
 
             // then
-            assertThat(result).extracting(Reservation::getName)
-                    .containsExactly("제임스", "브라운");
+            assertThat(results).hasSize(4);
         }
-
-        @Test
-        @DisplayName("예약이 없으면 빈 목록을 반환한다.")
-        void findAllReturnsEmpty() {
-            assertThat(reservationService.findAll()).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("search 메서드는")
-    class Search {
 
         @Test
         @DisplayName("모든 검색 조건이 다 맞아야 해당하는 예약을 필터링하여 반환한다.")
@@ -181,7 +173,7 @@ class ReservationServiceTest {
             reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(1), timeId, themeId));
 
             // when
-            List<Reservation> results = reservationService.search("브라운", reservationDate, reservationDate.plusDays(1), themeId);
+            List<Reservation> results = reservationService.findByFilter("브라운", reservationDate, reservationDate.plusDays(1), themeId);
 
             // then
             assertThat(results).hasSize(1);
@@ -202,7 +194,7 @@ class ReservationServiceTest {
             reservationService.save(new ReservationRequest("제임스", reservationDate.plusDays(3), timeId, themeId));
 
             // when
-            List<Reservation> results = reservationService.search("브라운", null, null, null);
+            List<Reservation> results = reservationService.findByFilter("브라운", null, null, null);
 
             // then
             assertThat(results).hasSize(3);
@@ -217,7 +209,7 @@ class ReservationServiceTest {
             LocalDate tomorrowDate = futureDate.toLocalDate().plusDays(1);
 
             // when - then
-            assertThatThrownBy(() -> reservationService.search("브라운", tomorrowDate, todayDate, null))
+            assertThatThrownBy(() -> reservationService.findByFilter("브라운", tomorrowDate, todayDate, null))
                     .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("from 은 to 보다 이전이어야 합니다.");
         }

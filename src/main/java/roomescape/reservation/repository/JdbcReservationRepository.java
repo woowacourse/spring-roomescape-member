@@ -107,36 +107,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll(LocalDateTime now) {
-        String sql = """
-            select
-                r.id as reservation_id,
-                r.name as reservation_name,
-                r.reservation_date,
-                case 
-                    when r.status = 'RESERVED' and (r.reservation_date < ? or (r.reservation_date = ? and t.start_at <= ?))
-                        then 'COMPLETED'
-                    else r.status
-                end as reservation_status,
-                r.time_id,
-                t.start_at as time_start_at,
-                h.id as theme_id,
-                h.name as theme_name,
-                h.description as theme_description,
-                h.thumbnail_url as theme_thumbnail_url
-            from reservation r
-            inner join reservation_time t on r.time_id = t.id
-            inner join theme h on r.theme_id = h.id
-            order by r.id DESC
-            """;
-        return jdbcTemplate.query(sql, reservationRowMapper,
-                Date.valueOf(now.toLocalDate()),
-                Date.valueOf(now.toLocalDate()),
-                Time.valueOf(now.toLocalTime())
-        );
-    }
-
-    @Override
     public List<Reservation> findByFilter(String name, LocalDate from, LocalDate to, Long themeId, LocalDateTime now) {
         List<Object> params = new ArrayList<>();
 

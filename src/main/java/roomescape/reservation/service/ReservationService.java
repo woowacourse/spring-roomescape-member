@@ -69,6 +69,11 @@ public class ReservationService {
         ReservationTime time = reservationTimeService.getById(request.timeId());
         Theme theme = themeService.getById(request.themeId());
 
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdExcluding(
+                request.date(), request.timeId(), request.themeId(), id)) {
+            throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
+
         Reservation updated = existing.update(
                 request.name(),
                 request.date(),
@@ -77,20 +82,11 @@ public class ReservationService {
                 LocalDateTime.now()
         );
 
-        if (reservationRepository.existsByDateAndTimeIdAndThemeIdExcluding(
-                request.date(), request.timeId(), request.themeId(), id)) {
-            throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
-        }
-
         reservationRepository.update(updated);
         return updated;
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll(LocalDateTime.now());
-    }
-
-    public List<Reservation> search(String name, LocalDate from, LocalDate to, Long themeId) {
+    public List<Reservation> findByFilter(String name, LocalDate from, LocalDate to, Long themeId) {
         validatePeriodOrder(from, to);
         return reservationRepository.findByFilter(name, from, to, themeId, LocalDateTime.now());
     }
