@@ -36,7 +36,7 @@ public class ReservationController {
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
-        if(name!=null){
+        if (name != null) {
             return ReservationResponses.from(reservationService.findByName(name));
         }
         return ReservationResponses.from(reservationService.findAll(page, size));
@@ -58,5 +58,11 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         reservationService.deleteById(id);
+    }
+
+    @DeleteMapping("/reservations/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancel(@PathVariable Long id) {
+        reservationService.cancelById(id);
     }
 }

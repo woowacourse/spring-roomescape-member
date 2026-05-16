@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.PastReservationException;
 
 @Service
 public class ReservationService {
@@ -39,6 +40,16 @@ public class ReservationService {
             throw new IllegalArgumentException("예약자 이름은 필수입니다.");
         }
         return reservationDao.findByName(name);
+    }
+
+    public void cancelById(Long id) {
+        Reservation reservation = reservationDao.findById(id);
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        if (reservation.getTime().isPast(reservation.getDate(), now)) {
+            throw new PastReservationException("지난 예약은 취소할 수 없습니다.");
+        }
+        reservationDao.deleteById(id);
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
