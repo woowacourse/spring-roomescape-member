@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import roomescape.global.exception.ReadOnlyViolationException;
 
 import javax.sql.DataSource;
 
@@ -17,7 +16,7 @@ public class ReadOnlyAwareJdbcTemplate extends JdbcTemplate {
 
     private void rejectIfReadOnly() {
         if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-            throw new ReadOnlyViolationException(
+            throw new UnsupportedOperationException(
                     "읽기 전용 트랜잭션에서는 쓰기 작업을 수행할 수 없습니다.");
         }
     }
