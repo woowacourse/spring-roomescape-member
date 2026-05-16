@@ -43,6 +43,20 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("기존에 이미 해당 시간이 있으면 예외가 발생한다.")
+    void saveTest_duplicate() {
+        // given
+        LocalTime startTime = LocalTime.of(10, 0);
+        ReservationTime time = new ReservationTime(null, startTime);
+
+        reservationTimeRepository.save(time);
+
+        // when & then
+        assertThatThrownBy(() ->  reservationTimeRepository.save(time))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     @DisplayName("ID를 통해 시간 정보를 삭제한다.")
     void deleteByIdTest() {
         // given

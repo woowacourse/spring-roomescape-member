@@ -58,6 +58,35 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("기존에 이미 동일한 예약이 있으면 예외가 발생한다.")
+    void saveTest_duplicate() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        reservationRepository.save(
+                new Reservation(
+                        null,
+                        "브라운",
+                        LocalDate.of(2024, 5, 1),
+                        time,
+                        theme
+                )
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationRepository.save(
+                new Reservation(
+                        null,
+                        "브라운",
+                        LocalDate.of(2024, 5, 1),
+                        time,
+                        theme
+                )
+        )).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     @DisplayName("ID를 통해 예약을 삭제한다.")
     void deleteByIdTest() {
         // given
