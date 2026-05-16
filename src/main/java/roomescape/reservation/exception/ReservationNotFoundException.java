@@ -1,14 +1,12 @@
 package roomescape.reservation.exception;
 
-public class ReservationNotFoundException extends RuntimeException {
-    private final Long id;
+import org.springframework.http.HttpStatus;
 
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
+
+public class ReservationNotFoundException extends BusinessException {
     public ReservationNotFoundException(Long id) {
-        super("예약이 존재하지 않습니다. id=" + id);
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
+        super(HttpStatus.NOT_FOUND, ErrorCode.RESERVATION_NOT_FOUND, "예약을 찾을 수 없습니다. id=" + id);
     }
 }

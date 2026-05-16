@@ -94,9 +94,7 @@ class ThemeServiceImplTest {
 
         assertThatThrownBy(() -> themeService.deleteById(99L))
                 .isInstanceOf(ThemeNotFoundException.class)
-                .hasMessage("테마가 존재하지 않습니다. id=99")
-                .extracting(e -> ((ThemeNotFoundException) e).getId())
-                .isEqualTo(99L);
+                .hasMessage("테마를 찾을 수 없습니다. id=99");
     }
 
     @Test
@@ -106,7 +104,7 @@ class ThemeServiceImplTest {
 
         assertThatThrownBy(() -> themeService.getAvailableTimes(999L, date))
                 .isInstanceOf(ThemeNotFoundException.class)
-                .hasMessage("테마가 존재하지 않습니다. id=999");
+                .hasMessage("테마를 찾을 수 없습니다. id=999");
 
         verifyNoInteractions(timeService, holidayRepository, reservationRepository);
     }

@@ -179,7 +179,7 @@ class ReservationServiceImplTest {
         // when & then
         assertThatThrownBy(() -> reservationService.create(dto))
                 .isInstanceOf(PastReservationException.class)
-                .hasMessage("과거 날짜는 예약이 불가합니다.");
+                .hasMessage("과거 날짜·시간은 예약이 불가합니다.");
     }
 
     @DisplayName("전체 예약 목록을 반환한다.")

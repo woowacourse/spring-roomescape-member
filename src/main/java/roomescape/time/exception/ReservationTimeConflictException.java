@@ -1,14 +1,12 @@
 package roomescape.time.exception;
 
-public class ReservationTimeConflictException extends RuntimeException {
-    private final Long id;
+import org.springframework.http.HttpStatus;
 
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
+
+public class ReservationTimeConflictException extends BusinessException {
     public ReservationTimeConflictException(Long id) {
-        super("존재하는 예약 시간입니다. id=" + id);
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
+        super(HttpStatus.CONFLICT, ErrorCode.TIME_IN_USE, "해당 시간에 예약이 존재하여 삭제할 수 없습니다. id=" + id);
     }
 }

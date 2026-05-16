@@ -1,7 +1,12 @@
 package roomescape.reservation.exception;
 
-public class DuplicateReservationException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
+
+public class DuplicateReservationException extends BusinessException {
     public DuplicateReservationException() {
-        super("중복 예약은 불가합니다.");
+        super(HttpStatus.CONFLICT, ErrorCode.DUPLICATE_RESERVATION);
     }
 }

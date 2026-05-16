@@ -1,14 +1,12 @@
 package roomescape.holiday.exception;
 
-public class HolidayNotFoundException extends RuntimeException {
-    private final Long id;
+import org.springframework.http.HttpStatus;
 
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
+
+public class HolidayNotFoundException extends BusinessException {
     public HolidayNotFoundException(Long id) {
-        super("휴일이 존재하지 않습니다. id=" + id);
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
+        super(HttpStatus.NOT_FOUND, ErrorCode.HOLIDAY_NOT_FOUND, "휴일 정보를 찾을 수 없습니다. id=" + id);
     }
 }
