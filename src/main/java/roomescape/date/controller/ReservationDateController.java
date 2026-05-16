@@ -2,6 +2,7 @@ package roomescape.date.controller;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,13 +12,10 @@ import roomescape.date.service.ReservationDateService;
 
 @RestController
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class ReservationDateController {
 
     private final ReservationDateService reservationDateService;
-
-    public ReservationDateController(ReservationDateService reservationDateService) {
-        this.reservationDateService = reservationDateService;
-    }
 
     @GetMapping("/dates")
     public ResponseEntity<List<ReservationDateDetailDto>> getReservationDates() {

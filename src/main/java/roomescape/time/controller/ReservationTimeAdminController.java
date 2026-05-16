@@ -2,6 +2,7 @@ package roomescape.time.controller;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +14,10 @@ import roomescape.time.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class ReservationTimeAdminController {
-    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeAdminController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
-    }
+    private final ReservationTimeService reservationTimeService;
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeDetailDto>> getReservationTimes() {

@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,10 @@ import roomescape.reservation.service.ReservationService;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class ReservationAdminController {
 
     private final ReservationService reservationService;
-
-    public ReservationAdminController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationDetailDto>> getReservations() {

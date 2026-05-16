@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,10 @@ import roomescape.theme.service.ThemeService;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class ThemeAdminController {
 
     private final ThemeService themeService;
-
-    public ThemeAdminController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {

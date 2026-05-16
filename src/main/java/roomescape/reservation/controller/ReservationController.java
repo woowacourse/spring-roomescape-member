@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationDetailDto> create(@Validated @RequestBody ReservationSaveDto dto) {
