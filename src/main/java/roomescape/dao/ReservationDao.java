@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -144,5 +145,23 @@ public class ReservationDao {
                 timeId
         );
         return Boolean.TRUE.equals(result);
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT r.id, r.name,r.date,rt.id AS time_id, rt.start_at,
+                    t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        RESERVATION_ROW_MAPPER,
+                        id
+                ).stream()
+                .findFirst();
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnprocessableEntityException;
 import roomescape.dao.ReservationDao;
@@ -62,20 +63,23 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public ReservationResponse update(Long id, ReservationRequest request) {
-        if (!reservationDao.existsById(id)) {
-            throw new NotFoundException("변경하려는 예약이 존재하지 않습니다.");
+    public ReservationResponse updateDateTime(Long id, ReservationRequest request) {
+        Reservation origin = reservationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("변경하려는 예약이 존재하지 않습니다."));
+
+        if (!request.name().equals(origin.getName().value())) {
+            throw new ForbiddenException("다른 사람의 예약은 변경할 수 없습니다.");
         }
 
-        Reservation reservation = converToReservation(id, request);
+        Reservation modified = converToReservation(id, request);
 
-        boolean isSucceed = reservationDao.update(reservation);
+        boolean isSucceed = reservationDao.update(modified);
 
         if (!isSucceed) {
             throw new OptimisticLockingFailureException("다른 사용자가 예약했습니다. 다시 시도해주세요.");
         }
 
-        return ReservationResponse.from(reservation);
+        return ReservationResponse.from(modified);
     }
 
     private Reservation converToReservation(Long id, ReservationRequest request) {
