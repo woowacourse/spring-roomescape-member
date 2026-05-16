@@ -1,15 +1,8 @@
 package roomescape.exception;
 
-public class CustomConflictException extends RuntimeException {
-
-    private final ErrorCode errorCode;
+public class CustomConflictException extends CustomException {
 
     public CustomConflictException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
+        super(errorCode);
     }
 }
