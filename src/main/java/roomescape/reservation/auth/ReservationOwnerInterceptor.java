@@ -14,11 +14,11 @@ import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 
 @Component
-public class AuthorizationHeaderInterceptor implements HandlerInterceptor {
+public class ReservationOwnerInterceptor implements HandlerInterceptor {
 
     private final ReservationRepository reservationRepository;
 
-    public AuthorizationHeaderInterceptor(ReservationRepository reservationRepository) {
+    public ReservationOwnerInterceptor(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

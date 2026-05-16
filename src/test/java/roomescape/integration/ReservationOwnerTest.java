@@ -241,6 +241,37 @@ public class ReservationOwnerTest {
                 .statusCode(403);
     }
 
+    @DisplayName("예약 변경 시, name 헤더가 없으면 예외가 발생한다.")
+    @Test
+    void updateMyReservation_without_authorization() {
+        //given
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(LocalTime.of(10, 0))
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "테마", "설명", "thumbnailUrl"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, reservation_date, time_id,  theme_id) VALUES (?, ?, ?, ?)",
+                "brown", Date.valueOf(LocalDate.of(2026, 5, 5)), 1L, 1L
+        );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2026-05-10");
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("예약 변경 시, 변경 대상이 이미 지난 예약이면 예외가 발생한다.")
     @Test
     void updateMyReservation_expired_original() {

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,9 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAllReservationsByName(@RequestParam("name") String name) {
-        validateName(name);
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestFormatException();
+        }
 
         List<ReservationResponse> responses = reservationService.findReservationsByName(name)
                 .stream()
@@ -54,20 +55,12 @@ public class ReservationController {
         return ResponseEntity.ok(responses);
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidRequestFormatException();
-        }
-    }
-
     @Authorized
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMyReservation(
             @PathVariable Long id,
-            @RequestHeader("Authorization") String name,
             @RequestBody ReservationUpdateRequest request
     ) {
-        validateName(name);
         reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
     }
@@ -75,11 +68,8 @@ public class ReservationController {
     @Authorized
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMyReservation(
-            @PathVariable Long id,
-            @RequestHeader("Authorization") String name
+            @PathVariable Long id
     ) {
-        validateName(name);
-
         reservationService.validateReservationNotExpired(id);
         reservationService.deleteReservationById(id);
 
