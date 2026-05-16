@@ -315,7 +315,7 @@ class ReservationServiceTest {
         ));
 
         // when
-        reservationService.deleteReservationByName(savedReservation.getId(), "인직");
+        reservationService.cancelReservation(savedReservation.getId(), "인직");
 
         // then
         assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();

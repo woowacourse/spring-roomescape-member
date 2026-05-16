@@ -333,7 +333,7 @@ class ReservationControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
-        then(reservationService).should().deleteReservationByName(1L, "브라운");
+        then(reservationService).should().cancelReservation(1L, "브라운");
     }
 
     @Test
@@ -342,7 +342,7 @@ class ReservationControllerTest {
         // given
         willThrow(new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND))
                 .given(reservationService)
-                .deleteReservationByName(1L, "브라운");
+                .cancelReservation(1L, "브라운");
 
         // when & then
         mockMvc.perform(delete("/reservations/me/1")
@@ -357,7 +357,7 @@ class ReservationControllerTest {
         // given
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH))
                 .given(reservationService)
-                .deleteReservationByName(1L, "브라운");
+                .cancelReservation(1L, "브라운");
 
         // when & then
         mockMvc.perform(delete("/reservations/me/1")
@@ -372,7 +372,7 @@ class ReservationControllerTest {
         // given
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_PAST))
                 .given(reservationService)
-                .deleteReservationByName(1L, "브라운");
+                .cancelReservation(1L, "브라운");
 
         // when & then
         mockMvc.perform(delete("/reservations/me/1")
