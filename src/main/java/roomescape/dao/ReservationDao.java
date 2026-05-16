@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.UserReservationUpdateRequest;
 
 @Repository
 @Transactional(readOnly = true)

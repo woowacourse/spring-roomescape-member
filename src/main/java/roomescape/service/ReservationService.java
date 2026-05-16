@@ -1,8 +1,6 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -79,6 +77,28 @@ public class ReservationService {
     }
 
     public ReservationResponse update(Long id, UserReservationUpdateRequest request) {
+        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
+
+        if (time == null) {
+            throw new IdNotFoundException("요청하신 시간 정보를 찾을 수 없습니다. 선택하신 시간이 정확한지 다시 한번 확인해 주세요.");
+        }
+
+        LocalDateTime targetDateTime = LocalDateTime.of(request.date(), time.getStartAt());
+
+        Theme theme = themeDao.findThemeById(request.themeId());
+
+        if (theme == null) {
+            throw new IdNotFoundException("요청하신 테마를 찾을 수 없습니다. 선택하신 테마가 정확한지 다시 한번 확인해 주세요.");
+        }
+
+        if (targetDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("이미 지난 시간/날짜는 예약할 수 없습니다.");
+        }
+
+        if (reservationDao.existsBy(request.date(), theme, time)) {
+            throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
+        }
+
         Reservation newReservation = reservationDao.update(id, request.date(), request.timeId());
         return ReservationResponse.from(newReservation);
     }
