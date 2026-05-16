@@ -5,14 +5,15 @@ import java.time.LocalTime;
 
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.theme.controller.dto.response.ThemeDetailDto;
 
 public record ReservationDetailDto(
         Long id,
         String name,
         LocalDate date,
         LocalTime time,
-        ThemeDetailDto theme,
+        Long themeId,
+        String themeName,
+        String themeThumbnailUrl,
         ReservationStatus status
 ) {
 
@@ -22,7 +23,9 @@ public record ReservationDetailDto(
                 reservation.getName(),
                 reservation.getDate().getDate(),
                 reservation.getTime().getStartAt(),
-                ThemeDetailDto.from(reservation.getTheme()),
+                reservation.getTheme().getId(),
+                reservation.getTheme().getName(),
+                reservation.getTheme().getThumbnailUrl(),
                 reservation.getStatus()
         );
     }

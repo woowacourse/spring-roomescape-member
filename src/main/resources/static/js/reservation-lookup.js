@@ -292,16 +292,8 @@ async function submitReschedule() {
 }
 
 function getThemeThumbnailUrl(reservation) {
-    if (reservation.theme && reservation.theme.thumbnailUrl) {
-        return reservation.theme.thumbnailUrl;
-    }
-
     if (reservation.themeThumbnailUrl) {
         return reservation.themeThumbnailUrl;
-    }
-
-    if (reservation.thumbnailUrl) {
-        return reservation.thumbnailUrl;
     }
 
     return "";
@@ -360,10 +352,6 @@ async function reloadReservationsBySearchedName() {
 }
 
 function getThemeName(reservation) {
-    if (reservation.theme && reservation.theme.name) {
-        return reservation.theme.name;
-    }
-
     if (reservation.themeName) {
         return reservation.themeName;
     }
@@ -372,14 +360,6 @@ function getThemeName(reservation) {
 }
 
 function getReservationDate(reservation) {
-    if (reservation.date && reservation.date.date) {
-        return reservation.date.date;
-    }
-
-    if (reservation.reservationDate && reservation.reservationDate.date) {
-        return reservation.reservationDate.date;
-    }
-
     if (reservation.date) {
         return reservation.date;
     }
@@ -388,16 +368,8 @@ function getReservationDate(reservation) {
 }
 
 function getReservationTime(reservation) {
-    if (reservation.time && reservation.time.startAt) {
-        return reservation.time.startAt;
-    }
-
-    if (reservation.reservationTime && reservation.reservationTime.startAt) {
-        return reservation.reservationTime.startAt;
-    }
-
-    if (reservation.startAt) {
-        return reservation.startAt;
+    if (reservation.time) {
+        return reservation.time;
     }
 
     return "";

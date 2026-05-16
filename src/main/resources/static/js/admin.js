@@ -433,7 +433,7 @@ async function loadReservations() {
                 <td>${reservation.name}</td>
                 <td>${reservation.date}</td>
                 <td>${formatTime(reservation.time)}</td>
-                <td>${reservation.theme.name}</td>
+                <td>${reservation.themeName}</td>
                 <td>${reservation.status}</td>
                 <td class="align-right">
                     <button class="reschedule-button" type="button" 
@@ -514,7 +514,7 @@ async function loadRescheduleDates() {
 }
 
 async function loadRescheduleTimes() {
-    const themeId = reschedulingReservation.theme.id;
+    const themeId = reschedulingReservation.themeId;
     const response = await fetch(`/member/times?dateId=${selectedDate.id}&themeId=${themeId}`);
 
     if (!response.ok) {
