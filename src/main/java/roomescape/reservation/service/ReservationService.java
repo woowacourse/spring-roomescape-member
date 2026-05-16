@@ -158,4 +158,5 @@ public class ReservationService {
             log.warn("User already has a reservation at the same time: name={}, date={}, time={}", name, date, time.startAt());
             throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
-    }}
+    }
+}
