@@ -46,6 +46,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     private void validateAuthorizationHeader(final String authorization) {
+        System.out.println("Authorization Header: " + authorization);
         if (authorization == null || authorization.isBlank()
                 || !authorization.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
             throw new AuthenticationFailedException(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
