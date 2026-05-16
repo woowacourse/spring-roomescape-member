@@ -8,10 +8,9 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationTimeRepository;
-import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.NotFoundException;
+import roomescape.global.exception.customException.ConflictException;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,12 +35,14 @@ public class ReservationService {
         Reservation reservation = Reservation.createWithNullId(
                 name,
                 date,
-                findTargetTimeById(timeId),
-                findTargetThemeById(themeId)
+                reservationTimeRepository.getById(timeId),
+                themeRepository.getById(themeId)
         );
 
-        reservation.validateUniqueness(
-                reservationRepository.findByDateAndThemeId(reservation.date(), reservation.theme().id()));
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.date(), reservation.time().id(),
+                reservation.theme().id())) {
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
+        }
 
         return reservationRepository.save(reservation);
     }
@@ -55,7 +56,7 @@ public class ReservationService {
     }
 
     private Reservation createNewReservation(Long id, String name, LocalDate date, Long timeId) {
-        Reservation target = findById(id);
+        Reservation target = reservationRepository.getById(id);
         target.checkOwnership(name);
 
         LocalDate newDate = decideNewLocalDateValue(date, target.date());
@@ -66,7 +67,7 @@ public class ReservationService {
 
     private ReservationTime decideNewReservationTimeValue(Long timeId, ReservationTime originReservationTime) {
         if (timeId != null) {
-            return findTargetTimeById(timeId);
+            return reservationTimeRepository.getById(timeId);
         }
         return originReservationTime;
     }
@@ -76,21 +77,6 @@ public class ReservationService {
             return newDate;
         }
         return originDate;
-    }
-
-    private Theme findTargetThemeById(Long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
-    }
-
-    private ReservationTime findTargetTimeById(Long timeId) {
-        return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-    }
-
-    public Reservation findById(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND_BY_ID));
     }
 
     public List<Reservation> findAll() {
@@ -112,9 +98,7 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id, String name) {
-        Reservation deleteTarget = reservationRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND_BY_ID)
-        );
+        Reservation deleteTarget = reservationRepository.getById(id);
 
         deleteTarget.checkOwnership(name);
         deleteTarget.validateFuture();

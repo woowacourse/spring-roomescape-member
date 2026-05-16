@@ -13,7 +13,7 @@ import roomescape.entity.ThemeRepository;
 import roomescape.entity.ThemeSortType;
 
 @Repository
-public class ThemeJdbcTemplateRepository implements ThemeRepository {
+public class ThemeJdbcTemplateRepository extends AbstractThemeRepository {
 
     private static final String FIND_QUERY = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT id, name, description, thumbnail_url FROM theme";

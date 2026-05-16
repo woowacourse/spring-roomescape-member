@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.entity.Reservation;
-import roomescape.entity.ReservationRepository;
+import roomescape.infrastructure.AbstractReservationRepository;
 
-public class FakeReservationRepository implements ReservationRepository {
+public class FakeReservationRepository extends AbstractReservationRepository {
 
     private final Map<Long, Reservation> store = new HashMap<>();
     private Long sequence = 1L;

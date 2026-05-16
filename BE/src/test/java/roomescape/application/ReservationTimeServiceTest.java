@@ -87,7 +87,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
     void deleteTimeWithReferencedReservationById() {
         // given
-        ReservationTime savedReservationTime = reservationTimeService.save(LocalTime.now());
+        ReservationTime savedReservationTime = reservationTimeService.save(LocalTime.now().plusHours(1));
         reservationRepository.save(
                 Reservation.createWithNullId("테스터", LocalDate.now(), savedReservationTime, null));
 

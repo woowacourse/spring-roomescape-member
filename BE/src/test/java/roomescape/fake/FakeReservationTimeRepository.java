@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.entity.ReservationTime;
-import roomescape.entity.ReservationTimeRepository;
+import roomescape.infrastructure.AbstractReservationTimeRepository;
 
-public class FakeReservationTimeRepository implements ReservationTimeRepository {
+public class FakeReservationTimeRepository extends AbstractReservationTimeRepository {
 
     private final Map<Long, ReservationTime> store = new HashMap<>();
     private Long sequence = 0L;

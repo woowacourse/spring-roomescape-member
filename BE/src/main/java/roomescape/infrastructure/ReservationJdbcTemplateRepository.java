@@ -19,7 +19,7 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
 @Repository
-public class ReservationJdbcTemplateRepository implements ReservationRepository {
+public class ReservationJdbcTemplateRepository extends AbstractReservationRepository {
 
     private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
             SELECT r.id,
