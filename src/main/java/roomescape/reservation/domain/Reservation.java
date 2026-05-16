@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.RoomEscapeException;
 
 @Getter
@@ -36,6 +37,9 @@ public class Reservation {
     }
 
     public Reservation updateDateAndTime(LocalDate date, Long timeId) {
+        if (this.date.equals(date) && this.timeId.equals(timeId)) {
+            throw new ConflictException("동일한 날짜와 시간으로 변경할 수 없습니다.");
+        }
         return Reservation.builder()
                 .id(this.id)
                 .name(this.name)

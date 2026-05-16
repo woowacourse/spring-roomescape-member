@@ -160,6 +160,26 @@ class ReservationCommandServiceTest {
         });
     }
 
+    @DisplayName("동일한 날짜와 시간으로 예약 변경 시 예외 발생을 테스트합니다.")
+    @Test
+    void update_same_date_and_time_exception() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.futureReservationDate(),
+                themeId,
+                timeId
+        );
+
+        assertThatThrownBy(() -> reservationCommandService.update(
+                reservationId,
+                new ReservationUpdateCommand(ReservationFixture.futureReservationDate(), timeId, NOW)
+        ))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("동일한 날짜와 시간으로 변경할 수 없습니다.");
+    }
+
     @DisplayName("존재하지 않는 예약 업데이트 시도 시 예외 발생을 테스트합니다.")
     @Test
     void update_not_found_reservation_exception() {
