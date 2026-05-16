@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.util.HashMap;
@@ -266,7 +267,24 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is("요청이 올바르지 않습니다."));
+                .body("message", containsString("timeId"));
+    }
+
+    @Test
+    void 예약_필수값이_여러개_없으면_필드별_400_에러_응답() {
+        Map<String, Object> reservation = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST"))
+                .body("message", containsString("name"))
+                .body("message", containsString("date"))
+                .body("message", containsString("themeId"))
+                .body("message", containsString("timeId"));
     }
 
 
