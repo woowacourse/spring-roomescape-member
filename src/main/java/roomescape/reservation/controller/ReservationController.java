@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
+import roomescape.reservation.dto.UpdateReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -30,7 +31,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid ReservationRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Valid CreateReservationRequest request) {
         Long id = reservationService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -54,7 +55,7 @@ public class ReservationController {
     public ResponseEntity<Void> updateMyReservation(
             @PathVariable @NotNull(message = "예약 ID는 필수입니다.") @Positive(message = "예약 ID는 양수여야 합니다.") Long id,
             @RequestParam @NotBlank(message = "사용자 이름은 필수입니다.") String name,
-            @RequestBody @Valid ReservationRequest request) {
+            @RequestBody @Valid UpdateReservationRequest request) {
         reservationService.update(id, request.scheduleId(), name);
         return ResponseEntity.noContent().build();
     }

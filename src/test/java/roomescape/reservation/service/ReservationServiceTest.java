@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.exception.CustomBusinessException;
 import roomescape.exception.ErrorCode;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
@@ -49,7 +49,7 @@ class ReservationServiceTest {
     @DisplayName("새로운 예약을 성공적으로 생성한다.")
     void createReservationSuccessfully() {
         // given
-        ReservationRequest request = new ReservationRequest(2L, "user1");
+        CreateReservationRequest request = new CreateReservationRequest(2L, "user1");
         Schedule availableSchedule = new Schedule(2L, LocalDateTime.of(2026, 12, 10, 15, 0), theme);
 
         when(userService.findByName("user1")).thenReturn(user);
@@ -69,7 +69,7 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 스케줄에 예약을 시도하면 예외가 발생한다.")
     void createReservationOnReservedSchedule() {
         // given
-        ReservationRequest request = new ReservationRequest(1L, "user1");
+        CreateReservationRequest request = new CreateReservationRequest(1L, "user1");
 
         when(userService.findByName("user1")).thenReturn(user);
         when(scheduleService.findById(1L)).thenReturn(schedule);

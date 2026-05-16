@@ -7,7 +7,7 @@ import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundException;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -33,7 +33,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Long create(ReservationRequest request) {
+    public Long create(CreateReservationRequest request) {
         User user = userService.findByName(request.name());
         Schedule schedule = scheduleService.findById(request.scheduleId());
         ensureScheduleIsBookable(schedule);
