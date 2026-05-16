@@ -441,4 +441,35 @@ public class MissionStepTest {
                 .body("message", is("이미 존재하는 테마 이름입니다."));
     }
 
+    @Test
+    void 이름으로_내_예약을_조회한다() {
+        Map<String, Object> brownReservation = new HashMap<>();
+        brownReservation.put("name", "브라운");
+        brownReservation.put("date", "2030-08-05");
+        brownReservation.put("timeId", 1);
+        brownReservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(brownReservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("브라운"));
+    }
+
+    @Test
+    void 빈_이름으로_내_예약을_조회하면_실패한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"));
+    }
 }

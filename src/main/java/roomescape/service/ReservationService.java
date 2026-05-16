@@ -34,6 +34,13 @@ public class ReservationService {
         return reservationDao.findAll(page, size);
     }
 
+    public List<Reservation> findByName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
+        }
+        return reservationDao.findByName(name);
+    }
+
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
         if (!reservationTimeDao.existsById(timeId)) {
             throw new NotFoundException("존재하지 않는 예약 시간입니다.");
