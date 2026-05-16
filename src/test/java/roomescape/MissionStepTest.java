@@ -520,4 +520,38 @@ public class MissionStepTest {
                 .body("code", is("PAST_RESERVATION"))
                 .body("message", is("지난 예약은 취소할 수 없습니다."));
     }
+
+    @Test
+    void 내_예약의_날짜와_시간을_변경한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(reservationId))
+                .body("name", is("브라운"))
+                .body("date", is("2030-08-06"))
+                .body("time.id", is(1))
+                .body("theme.id", is(1));
+    }
 }

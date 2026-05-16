@@ -39,6 +39,18 @@ public class Reservation {
         return new Reservation(name, date, time, theme);
     }
 
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        return time.isPast(date, now);
+    }
+
     private static void validateRequired(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
@@ -86,11 +98,4 @@ public class Reservation {
         }
     }
 
-    public Long getTimeId() {
-        return time.getId();
-    }
-
-    public Long getThemeId() {
-        return theme.getId();
-    }
 }

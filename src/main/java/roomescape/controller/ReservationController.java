@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.service.ReservationService;
 
 @Validated
@@ -64,5 +66,18 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancel(@PathVariable Long id) {
         reservationService.cancelById(id);
+    }
+
+    @PatchMapping("/reservations/{id}")
+    public ReservationResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        Reservation reservation = reservationService.updateDateAndTime(
+                id,
+                request.date(),
+                request.timeId()
+        );
+        return ReservationResponse.from(reservation);
     }
 }

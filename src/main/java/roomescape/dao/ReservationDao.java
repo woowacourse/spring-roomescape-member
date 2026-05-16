@@ -182,6 +182,16 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = """
+                UPDATE reservation 
+                SET date = ?, time_id = ? 
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, date.toString(), timeId, id);
+    }
+
     public boolean existByTimeId(Long timeId) {
         String sql = "SELECT count(*) FROM reservation where time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
