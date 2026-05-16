@@ -1,7 +1,6 @@
 package roomescape.common.handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,10 +17,10 @@ import roomescape.common.validation.exception.RequestValidationException;
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String EXCEPTION_LOG_FORMAT = "[{}] {}";
     private static final String DATA_INTEGRITY_EXCEPTION_LOG_FORMAT = "[{}] 데이터 무결성 예외 발생";
     private static final String UNKNOWN_EXCEPTION_LOG_FORMAT = "[{}] 예상치 못한 예외 발생";
