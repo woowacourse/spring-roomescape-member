@@ -9,10 +9,6 @@ public class Reservation {
     private ReservationTime time;
     private Theme theme;
 
-    public Reservation() {
-
-    }
-
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
