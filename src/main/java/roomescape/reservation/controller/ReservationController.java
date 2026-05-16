@@ -79,7 +79,10 @@ public class ReservationController {
             @RequestHeader("Authorization") String name
     ) {
         validateName(name);
+
+        reservationService.validateReservationNotExpired(id);
         reservationService.deleteReservationById(id);
+
         return ResponseEntity.noContent().build();
     }
 }

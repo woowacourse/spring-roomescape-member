@@ -162,21 +162,20 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationById(Long id) {
-        if (reservationRepository.findById(id).isEmpty()) {
-            throw new ReservationNotFoundException();
-        }
-
-        Reservation reservation = getReservation(id);
-        validateExpiry(
-                reservation.getDate(),
-                reservation.getTime().getStartAt()
-        );
-
         int affectedRow = reservationRepository.deleteById(id);
         int nonAffected = 0;
 
         if (affectedRow == nonAffected) {
             throw new ReservationNotFoundException();
         }
+    }
+
+    public void validateReservationNotExpired(Long id) {
+        Reservation reservation = getReservation(id);
+
+        validateExpiry(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
+        );
     }
 }
