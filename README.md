@@ -112,10 +112,13 @@ RFC 9457 Problem Details 형식. `Content-Type: application/problem+json`.
 | 상태 | type slug | 발생 조건 |
 |---|---|---|
 | 400 | `validation-error` | 요청 본문이 `@Valid` 검증 실패 |
-| 400 | `missing-parameter` | 필수 쿼리 파라미터 누락 |
-| 400 | `malformed-request-body` | 요청 본문 JSON 파싱 실패 |
-| 401 | `unauthorized` | 다른 사람 이름으로 본인 예약 접근 |
-| 404 | `not-found` | 리소스 미존재 |
+| 400 | `bad-request` | 필수 쿼리 파라미터 누락, 요청 본문 파싱 실패, 경로 변수 타입 불일치 등 일반 잘못된 요청 |
+| 401 | `unauthorized` | 다른 사람 이름으로 본인 예약 변경·취소 시도 |
+| 404 | `not-found` | 도메인 리소스 미존재 (예: 예약 id) |
+| 404 | `no-resource` | 정적 리소스 미존재 (Spring MVC `NoResourceFoundException`) |
+| 405 | `method-not-supported` | 지원하지 않는 HTTP 메서드 |
+| 406 | `not-acceptable` | 응답 가능한 미디어 타입 없음 |
 | 409 | `conflict` | 동일 날짜·시간·테마 중복 예약 |
+| 415 | `media-type-not-supported` | 지원하지 않는 요청 미디어 타입 |
 | 422 | `business-rule-violation` | 지난 시각 예약/변경, 예약이 존재하는 시간·테마 삭제 |
 | 500 | `internal-error` | 처리되지 않은 예외 |
