@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
 
+@Validated
 @RestController
 @RequestMapping("/times")
 public class TimeController {
