@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -116,7 +117,9 @@ class ReservationServiceTest {
 
         reservationService.deleteReservation(savedReservation.getId());
 
-        assertThat(reservationService.getReservations()).isEmpty();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> reservationService.getReservation(savedReservation.getId()))
+                .withMessageContaining("존재하지 않는 예약 ID입니다.");
     }
 
     private ReservationTime createReservationTime(LocalTime time) {

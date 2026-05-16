@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Import;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @JdbcTest
 @Import({
@@ -21,16 +24,16 @@ import roomescape.entity.Theme;
         JdbcReservationTimeRepository.class,
         JdbcThemeRepository.class
 })
-class JdbcReservationRepositoryTest {
+class ReservationRepositoryTest {
 
     @Autowired
-    private JdbcReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
-    private JdbcReservationTimeRepository timeRepository;
+    private ReservationTimeRepository timeRepository;
 
     @Autowired
-    private JdbcThemeRepository themeRepository;
+    private ThemeRepository themeRepository;
 
     @Test
     void 예약을_저장한다() {
