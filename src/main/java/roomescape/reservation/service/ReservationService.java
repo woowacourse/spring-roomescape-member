@@ -70,6 +70,15 @@ public class ReservationService {
     reservationDAO.delete(id);
   }
 
+  public void deleteByNameAndReservationId(String name, Long reservationId) {
+    boolean isExistReservation = reservationDAO.existsByNameAndReservationId(name, reservationId);
+    if (!isExistReservation) {
+      throw new IllegalStateException("해당 예약이 이미 존재하지 않습니다.");
+    }
+
+    reservationDAO.deleteByNameAndReservationId(name, reservationId);
+  }
+
   public boolean existsByTimeId(Long timeId) {
     return reservationDAO.existsByTimeId(timeId);
   }

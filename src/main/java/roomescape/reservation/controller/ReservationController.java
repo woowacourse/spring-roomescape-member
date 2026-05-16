@@ -28,8 +28,10 @@ public class ReservationController {
 
     @ResponseBody
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationCreateResponse> create(@RequestBody ReservationRequest request) {
-        ReservationCreateResponse reservationCreateResponse = reservationFacade.createReservation(request);
+    public ResponseEntity<ReservationCreateResponse> create(
+        @RequestBody ReservationRequest request) {
+        ReservationCreateResponse reservationCreateResponse = reservationFacade.createReservation(
+            request);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationCreateResponse);
     }
 
@@ -54,6 +56,13 @@ public class ReservationController {
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteReservation(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/reservations/my")
+    public ResponseEntity<Void> deleteMyReservationById(@RequestParam String name,
+        @RequestParam Long reservationId) {
+        reservationFacade.deleteReservationByNameAndReservationId(name, reservationId);
         return ResponseEntity.ok().build();
     }
 }

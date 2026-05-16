@@ -93,6 +93,11 @@ public class ReservationDAO {
     jdbcTemplate.update(sql, id);
   }
 
+  public void deleteByNameAndReservationId(String name, Long reservationId) {
+    String sql = "delete from reservation where name = ? and id = ?";
+    jdbcTemplate.update(sql, name, reservationId);
+  }
+
   public boolean existsByTimeId(Long timeId) {
     String sql = "select count(*) from reservation where time_id = ?";
     Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
@@ -169,6 +174,13 @@ public class ReservationDAO {
   public boolean existsByTimeIdAndThemeId(Long timeId, Long themeId) {
     String sql = "select count(*) from reservation where time_id = ? and theme_id = ?";
     Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId);
+
+    return count != null && count > 0;
+  }
+
+  public boolean existsByNameAndReservationId(String name, Long reservationId) {
+    String sql = "select count(*) from reservation where name = ? and id = ?";
+    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, reservationId);
 
     return count != null && count > 0;
   }
