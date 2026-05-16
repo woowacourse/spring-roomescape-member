@@ -34,8 +34,7 @@ class ReservationTimeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value(201))
-                .andExpect(jsonPath("$.data.startAt").value("15:30"));
+                .andExpect(jsonPath("$.startAt").value("15:30"));
     }
 
     @Test
@@ -84,8 +83,7 @@ class ReservationTimeControllerTest {
     void getReservationTimes() throws Exception {
         mockMvc.perform(get("/times"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.data").isArray());
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -95,9 +93,8 @@ class ReservationTimeControllerTest {
                         .param("date", "2026-05-13")
                         .param("themeId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].isAvailable").exists());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].isAvailable").exists());
     }
 
     @Test
@@ -118,6 +115,6 @@ class ReservationTimeControllerTest {
                 .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
-        return objectMapper.readTree(responseBody).get("data").get("id").asLong();
+        return objectMapper.readTree(responseBody).get("id").asLong();
     }
 }

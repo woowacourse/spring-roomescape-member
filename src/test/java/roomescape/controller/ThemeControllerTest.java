@@ -38,8 +38,7 @@ class ThemeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value(201))
-                .andExpect(jsonPath("$.data.name").value("테마"));
+                .andExpect(jsonPath("$.name").value("테마"));
     }
 
     @Test
@@ -80,8 +79,7 @@ class ThemeControllerTest {
     void getThemes() throws Exception {
         mockMvc.perform(get("/themes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.data").isArray());
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -92,8 +90,7 @@ class ThemeControllerTest {
                         .param("endDate", "2026-05-31")
                         .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.data").isArray());
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -118,6 +115,6 @@ class ThemeControllerTest {
                         .content(objectMapper.writeValueAsString(params)))
                 .andReturn();
 
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("data").get("id").asLong();
+        return objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
     }
 }

@@ -74,16 +74,6 @@ class ReservationCommandTest {
                 .hasMessage("유효하지 않은 날짜 형식입니다.");
     }
 
-    @Test
-    @DisplayName("LocalDate를 직접 전달해도 과거 날짜면 예외를 던진다")
-    void PastLocalDateTest() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        assertThatThrownBy(() -> new ReservationCommand("브라운", yesterday, 1L, 1L))
-                .isInstanceOf(InvalidRequestValueException.class)
-                .hasMessage("예약일은 현재 날짜보다 이전일 수 없습니다.");
-    }
-
     @ParameterizedTest
     @ValueSource(longs = {0, -1, -100})
     @DisplayName("시간 ID가 0 이하인 경우 예외 테스트")

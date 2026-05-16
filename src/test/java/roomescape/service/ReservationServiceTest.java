@@ -130,7 +130,9 @@ public class ReservationServiceTest {
                 new Theme(1, "테스트", "설명", "url")
         );
         ReservationService reservationService = new ReservationService(
-                createReservationRepository(reservation, false, 0), null, null
+                createReservationRepository(reservation, false, 0),
+                createReservationTimeRepository(new ReservationTime(1, LocalTime.parse("10:00"))),
+                createThemeRepository(new Theme(1, "테스트", "설명", "url"))
         );
 
         ReservationCommand sameCommand = new ReservationCommand("브라운", date, 1, 1);
@@ -174,7 +176,9 @@ public class ReservationServiceTest {
         );
 
         ReservationService reservationService = new ReservationService(
-                createReservationRepository(reservation, false, 0), null, null
+                createReservationRepository(reservation, false, 0),
+                createReservationTimeRepository(new ReservationTime(1, LocalTime.parse("10:00"))),
+                createThemeRepository(new Theme(1, "테스트", "설명", "url"))
         );
 
         ReservationCommand updateCommand = new ReservationCommand("브라운", LocalDate.now().plusDays(1), 1, 1);

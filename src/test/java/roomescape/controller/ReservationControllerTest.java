@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -48,8 +47,7 @@ class ReservationControllerTest {
     void getReservations() throws Exception {
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.data").isArray());
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -58,7 +56,7 @@ class ReservationControllerTest {
         mockMvc.perform(get("/reservations")
                         .param("name", "홍길동"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].name").value("홍길동"));
+                .andExpect(jsonPath("$[0].name").value("홍길동"));
     }
 
     @Test
@@ -77,11 +75,11 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.name").value("브라운"));
+                .andExpect(jsonPath("$.name").value("브라운"));
     }
 
     @Test
-    @DisplayName("새로 예약을 생성할 때 중복된 날짜, 시간, 테마로 예약하면 400 에러를 반환한다")
+    @DisplayName("새로 예약을 생성할 때 중복된 날짜, 시간, 테마로 예약하면 409 에러를 반환한다")
     void addDuplicatedReservation() throws Exception {
         Map<String, Object> params = Map.of(
                 "name", "새로운예약자",
@@ -93,7 +91,7 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value("해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다."));
     }
 
@@ -146,15 +144,12 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("수정하려는 시간대에 이미 다른 예약이 존재하면 400 에러를 반환한다")
+    @DisplayName("수정하려는 시간대에 이미 다른 예약이 존재하면 409 에러를 반환한다")
     void updateReservationToDuplicatedTime() throws Exception {
-        LocalDate otherDate = LocalDate.now().plusDays(5);
-        createReservationAndGetId("타인", otherDate);
-
         Map<String, Object> updateParams = Map.of(
                 "id", 2L,
                 "name", "홍길동",
-                "date", otherDate.toString(),
+                "date", setupDate,
                 "timeId", 1L,
                 "themeId", 1L
         );
@@ -163,7 +158,7 @@ class ReservationControllerTest {
                         .header("name", "홍길동")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateParams)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value("해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다."));
     }
 
@@ -184,23 +179,5 @@ class ReservationControllerTest {
                         .content(objectMapper.writeValueAsString(updateParams)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorMessage").value("해당 예약을 수정할 권한이 없습니다."));
-    }
-
-    private long createReservationAndGetId(String name, LocalDate date) throws Exception {
-        Map<String, Object> params = Map.of(
-                "name", name,
-                "date", date.toString(),
-                "timeId", 1L,
-                "themeId", 1L
-        );
-
-        MvcResult result = mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params)))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        return objectMapper.readTree(responseBody).get("data").get("id").asLong();
     }
 }
