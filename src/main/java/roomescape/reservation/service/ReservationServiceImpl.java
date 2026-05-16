@@ -49,7 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationTime time = findTime(reservation.timeId());
         Long themeId = reservation.themeId();
         LocalDate date = reservation.date();
-        validatePast(date, time);
+        validateNotPast(date, time);
         validateThemeId(themeId);
         validateNotHoliday(date);
         validateDuplicatedReservation(themeId, time, date);
@@ -58,7 +58,7 @@ public class ReservationServiceImpl implements ReservationService {
         return saved.withTheme(themeRepository.findById(themeId));
     }
 
-    private void validatePast(LocalDate date, ReservationTime time) {
+    private void validateNotPast(LocalDate date, ReservationTime time) {
         if (date.isBefore(LocalDate.now())) {
             throw PastReservationException.pastDate();
         }
@@ -122,16 +122,16 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation update(Long id, LocalDate date, Long timeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
-        validatePastReservation(reservation.getDate(), reservation.getTime());
+        validateReservationNotPast(reservation.getDate(), reservation.getTime());
         ReservationTime newTime = findTime(timeId);
-        validatePast(date, newTime);
+        validateNotPast(date, newTime);
         validateDuplicatedReservation(reservation.getThemeId(), newTime, date);
         reservationRepository.update(id, date, timeId);
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
-    private void validatePastReservation(LocalDate date, ReservationTime time) {
+    private void validateReservationNotPast(LocalDate date, ReservationTime time) {
         if (isPast(date, time)) {
             throw PastReservationException.pastUpdate();
         }
