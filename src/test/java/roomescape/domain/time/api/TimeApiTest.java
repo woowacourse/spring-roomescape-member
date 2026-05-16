@@ -3,7 +3,6 @@ package roomescape.domain.time.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -81,7 +80,7 @@ class TimeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("themeId"))
                 .body("errors.find { it.field == 'themeId' }.value", equalTo("0"))
-                .body("errors.find { it.field == 'themeId' }.message", notNullValue());
+                .body("errors.find { it.field == 'themeId' }.message", equalTo("테마 id는 1 이상이어야 합니다."));
         }
 
         @Test

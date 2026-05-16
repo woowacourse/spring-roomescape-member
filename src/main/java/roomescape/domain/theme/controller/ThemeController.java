@@ -35,7 +35,7 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponseDto>> getPopularThemes(
         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-        @RequestParam @Min(1) Integer limit
+        @RequestParam @Min(value = 1, message = "조회 개수는 1 이상이어야 합니다.") Integer limit
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(themeService.getPopularThemes(startDate, endDate, limit));

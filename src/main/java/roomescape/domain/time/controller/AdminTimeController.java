@@ -42,7 +42,8 @@ public class AdminTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteTime(
+        @PathVariable @Min(value = 1, message = "시간 id는 1 이상이어야 합니다.") Long id) {
         timeService.deleteTimeById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();

@@ -65,7 +65,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
         @RequestHeader(NAME_HEADER) String name,
-        @PathVariable @Min(1) Long id) {
+        @PathVariable @Min(value = 1, message = "예약 id는 1 이상이어야 합니다.") Long id) {
         reservationService.deleteMemberReservationById(URLDecoder.decode(name, UTF_8), id,
             LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

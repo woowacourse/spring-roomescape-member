@@ -44,7 +44,8 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteReservation(
+        @PathVariable @Min(value = 1, message = "예약 id는 1 이상이어야 합니다.") Long id) {
         reservationService.deleteReservationById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();

@@ -3,7 +3,6 @@ package roomescape.domain.theme.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.RestAssured;
@@ -68,7 +67,7 @@ class AdminThemeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("name"))
                 .body("errors.find { it.field == 'name' }.value", equalTo(""))
-                .body("errors.find { it.field == 'name' }.message", notNullValue());
+                .body("errors.find { it.field == 'name' }.message", equalTo("테마 이름을 입력해주세요."));
         }
 
         @Test
@@ -86,7 +85,7 @@ class AdminThemeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("description"))
                 .body("errors.find { it.field == 'description' }.value", nullValue())
-                .body("errors.find { it.field == 'description' }.message", notNullValue());
+                .body("errors.find { it.field == 'description' }.message", equalTo("테마 설명을 입력해주세요."));
         }
     }
 

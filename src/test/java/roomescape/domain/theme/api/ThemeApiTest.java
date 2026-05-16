@@ -3,7 +3,6 @@ package roomescape.domain.theme.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -95,7 +94,7 @@ class ThemeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("limit"))
                 .body("errors.find { it.field == 'limit' }.value", equalTo("0"))
-                .body("errors.find { it.field == 'limit' }.message", notNullValue());
+                .body("errors.find { it.field == 'limit' }.message", equalTo("조회 개수는 1 이상이어야 합니다."));
         }
 
         @Test

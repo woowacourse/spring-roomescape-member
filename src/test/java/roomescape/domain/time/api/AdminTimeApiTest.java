@@ -3,7 +3,6 @@ package roomescape.domain.time.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.RestAssured;
@@ -75,7 +74,7 @@ class AdminTimeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("startAt"))
                 .body("errors.find { it.field == 'startAt' }.value", nullValue())
-                .body("errors.find { it.field == 'startAt' }.message", notNullValue());
+                .body("errors.find { it.field == 'startAt' }.message", equalTo("예약 시간을 입력해주세요."));
         }
 
         @Test
@@ -137,7 +136,7 @@ class AdminTimeApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("id"))
                 .body("errors.find { it.field == 'id' }.value", equalTo("0"))
-                .body("errors.find { it.field == 'id' }.message", notNullValue());
+                .body("errors.find { it.field == 'id' }.message", equalTo("시간 id는 1 이상이어야 합니다."));
         }
     }
 

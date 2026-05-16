@@ -33,7 +33,8 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteTheme(
+        @PathVariable @Min(value = 1, message = "테마 id는 1 이상이어야 합니다.") Long id) {
         themeService.deleteThemeById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();

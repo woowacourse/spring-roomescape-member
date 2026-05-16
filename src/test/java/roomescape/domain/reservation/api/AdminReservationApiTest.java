@@ -3,7 +3,6 @@ package roomescape.domain.reservation.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.RestAssured;
@@ -84,7 +83,7 @@ class AdminReservationApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("name"))
                 .body("errors.find { it.field == 'name' }.value", equalTo(""))
-                .body("errors.find { it.field == 'name' }.message", notNullValue());
+                .body("errors.find { it.field == 'name' }.message", equalTo("예약자 이름을 입력해주세요."));
         }
 
         @Test
@@ -103,7 +102,7 @@ class AdminReservationApiTest {
                 .statusCode(400)
                 .body("errors.field", hasItem("themeId"))
                 .body("errors.find { it.field == 'themeId' }.value", nullValue())
-                .body("errors.find { it.field == 'themeId' }.message", equalTo("널이어서는 안됩니다"));
+                .body("errors.find { it.field == 'themeId' }.message", equalTo("테마를 선택해주세요."));
         }
 
         @Test
