@@ -159,6 +159,4 @@ public class ReservationTimeAcceptanceTest {
                 .body("code",
                         is(ReservationTimeErrorCode.RESERVATION_EXIST_ON_TIME.getErrorName()));
     }
-
-
 }
