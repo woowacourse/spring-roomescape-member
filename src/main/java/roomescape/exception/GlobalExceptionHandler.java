@@ -29,4 +29,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(new GlobalErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(NameNotFoundException.class)
+    public ResponseEntity<GlobalErrorResponse> handleNameNotFoundException(IdNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new GlobalErrorResponse(e.getMessage()));
+    }
 }

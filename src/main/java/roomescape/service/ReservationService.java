@@ -15,6 +15,7 @@ import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.request.UserReservationUpdateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.IdNotFoundException;
+import roomescape.exception.NameNotFoundException;
 
 @Service
 public class ReservationService {
@@ -30,7 +31,7 @@ public class ReservationService {
 
     public ReservationResponse find(String name) {
         Reservation response = reservationDao.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 예약이 존재하지 않습니다"));
+                .orElseThrow(() -> new NameNotFoundException("해당 이름의 예약이 존재하지 않습니다"));
         return ReservationResponse.from(response);
     }
 
