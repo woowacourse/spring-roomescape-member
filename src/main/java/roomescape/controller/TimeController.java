@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +35,7 @@ public class TimeController {
 
     @GetMapping("/{themeId}")
     public ResponseEntity<TimeAllResponse> readAllByThemeIdAndDate(@PathVariable Long themeId,
-                                                                   @RequestParam("date") String date) {
+                                                                   @RequestParam("date") @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}") String date) {
         TimeAllResponse reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }

@@ -1,8 +1,10 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +20,7 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
+@Validated
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -47,7 +50,8 @@ public class ReservationController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<ReservationAllResponse> readReservationByName(@RequestParam String name) {
+    public ResponseEntity<ReservationAllResponse> readReservationByName(
+            @RequestParam("name") @Size(min = 1, max = 20) String name) {
         ReservationAllResponse reservations = reservationService.readByName(name);
         return ResponseEntity.ok(reservations);
     }

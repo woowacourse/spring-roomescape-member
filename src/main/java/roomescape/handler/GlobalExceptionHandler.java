@@ -1,6 +1,7 @@
 package roomescape.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,6 +37,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
                                                                                HttpServletRequest request) {
         ErrorResponse response = new ErrorResponse("INVALID_REQUEST_BODY", request.getRequestURI(), "입력값이 없습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e,
+                                                                            HttpServletRequest request) {
+        ErrorResponse response = new ErrorResponse("INVALID_INPUT", request.getRequestURI(),
+                "처리할 수 없는 입력값의 형식입니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

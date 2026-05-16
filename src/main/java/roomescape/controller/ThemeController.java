@@ -1,8 +1,11 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeAllResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
 import roomescape.service.ThemeService;
 
+@Validated
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
@@ -42,10 +44,7 @@ public class ThemeController {
     }
 
     @GetMapping("/ranks")
-    public ResponseEntity<ThemeAllResponse> readRanks(@RequestParam("limit") Long limit) {
-        if (limit <= 0 || limit > 30) {
-            throw new RoomescapeException(ErrorCode.THEME_RANK_INVALID_LIMIT);
-        }
+    public ResponseEntity<ThemeAllResponse> readRanks(@RequestParam("limit") @Min(1) @Max(30) Long limit) {
         ThemeAllResponse themeResponses = themeService.readRanks(limit);
         return ResponseEntity.ok().body(themeResponses);
     }
