@@ -53,7 +53,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     private void validateThemeExists(Long themeId) {
         if (themeId == null || !themeRepository.existsById(themeId)) {
-            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                    "Theme not found while finding available times. themeId=%s".formatted(themeId));
         }
     }
 }

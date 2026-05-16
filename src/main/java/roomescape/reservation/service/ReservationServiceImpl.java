@@ -75,19 +75,24 @@ public class ReservationServiceImpl implements ReservationService {
     private void validatePastReservation(LocalDate date, ReservationTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
-            throw new ReservationException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
+            throw new ReservationException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED,
+                    "Past reservation is not allowed. date=%s, timeId=%d, startAt=%s"
+                            .formatted(date, time.getId(), time.getStartAt()));
         }
     }
 
     private void validateHoliday(LocalDate date) {
         if (holidayService.isHoliday(date)) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+                    "Reservation is not allowed on holiday. date=%s".formatted(date));
         }
     }
 
     private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
         if (reservationRepository.isDuplicated(themeId, time, date)) {
-            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION);
+            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION,
+                    "Duplicated reservation exists. themeId=%d, timeId=%d, date=%s"
+                            .formatted(themeId, time.getId(), date));
         }
     }
 
@@ -98,7 +103,8 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation update(ReservationUpdateServiceDto dto) {
         Reservation existing = reservationRepository.findById(dto.id())
-                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found. reservationId=%d".formatted(dto.id())));
         validateOwner(existing, dto.requesterName());
 
         ReservationTime newTime = timeService.findById(dto.timeId());
@@ -109,45 +115,57 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
         return reservationRepository.findById(dto.id())
-                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found after update. reservationId=%d".formatted(dto.id())));
     }
 
     private void validateDuplicatedReservation(Long reservationId, Long themeId,
             ReservationTime time, LocalDate date) {
         if (reservationRepository.isDuplicatedExcludingId(reservationId, themeId, time, date)) {
-            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION);
+            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION,
+                    "Duplicated reservation exists during update. reservationId=%d, themeId=%d, timeId=%d, date=%s"
+                            .formatted(reservationId, themeId, time.getId(), date));
         }
     }
 
     @Override
     public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
-            throw new ReservationException(ErrorCode.RESERVATION_NOT_FOUND);
+            throw new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                    "Reservation not found. reservationId=%d".formatted(id));
         }
     }
 
     @Override
     public void cancel(Long id, String requesterName) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found. reservationId=%d".formatted(id)));
         validateOwner(reservation, requesterName);
-        validatePastCancel(reservation.getDate(), reservation.getTime());
+        validatePastCancel(reservation);
         reservationRepository.deleteById(id);
     }
 
     private void validateOwner(Reservation reservation, String requesterName) {
         if (requesterName == null || requesterName.isBlank()) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+                    "Requester name is required. reservationId=%d".formatted(reservation.getId()));
         }
         if (!reservation.getName().equals(requesterName)) {
-            throw new ReservationException(ErrorCode.RESERVATION_OWNER_MISMATCH);
+            throw new ReservationException(ErrorCode.RESERVATION_OWNER_MISMATCH,
+                    "Reservation owner mismatch. reservationId=%d, owner=%s, requester=%s"
+                            .formatted(reservation.getId(), reservation.getName(), requesterName));
         }
     }
 
-    private void validatePastCancel(LocalDate date, ReservationTime time) {
+    private void validatePastCancel(Reservation reservation) {
+        LocalDate date = reservation.getDate();
+        ReservationTime time = reservation.getTime();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
-            throw new ReservationException(ErrorCode.PAST_RESERVATION_CANCEL_NOT_ALLOWED);
+            throw new ReservationException(ErrorCode.PAST_RESERVATION_CANCEL_NOT_ALLOWED,
+                    "Past reservation cannot be canceled. reservationId=%d, date=%s, timeId=%d, startAt=%s"
+                            .formatted(reservation.getId(), date, time.getId(), time.getStartAt()));
         }
     }
 }

@@ -51,7 +51,8 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public void deleteById(Long id) {
         if (!themeRepository.deleteById(id)) {
-            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                    "Theme not found. themeId=%d".formatted(id));
         }
     }
 

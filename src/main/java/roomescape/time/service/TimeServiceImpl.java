@@ -36,26 +36,31 @@ public class TimeServiceImpl implements TimeService {
   @Override
   public ReservationTime findById(Long id) {
     return timeRepository.findById(id)
-        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND,
+            "Reservation time not found. timeId=%d".formatted(id)));
   }
 
   @Override
   public ReservationTime findByStartAt(String startAt) {
     if (startAt == null || startAt.isBlank()) {
-      throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+      throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+          "Reservation time startAt is required.");
     }
     LocalTime startTime = ReservationTime.parse(startAt);
     return timeRepository.findByStartAt(startTime)
-        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND,
+            "Reservation time not found. startAt=%s".formatted(startTime)));
   }
 
   @Override
   public void deleteById(Long id) {
     if (!timeRepository.existsById(id)) {
-      throw new TimeException(ErrorCode.TIME_NOT_FOUND);
+      throw new TimeException(ErrorCode.TIME_NOT_FOUND,
+          "Reservation time not found. timeId=%d".formatted(id));
     }
     if (reservationRepository.existsByTimeId(id)) {
-      throw new TimeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
+      throw new TimeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED,
+          "Reservation time is in use. timeId=%d".formatted(id));
     }
     timeRepository.deleteById(id);
   }

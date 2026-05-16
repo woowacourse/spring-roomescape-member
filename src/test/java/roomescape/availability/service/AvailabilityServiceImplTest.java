@@ -57,7 +57,9 @@ class AvailabilityServiceImplTest {
 
         assertThatThrownBy(() -> availabilityService.getAvailableTimes(999L, date))
                 .isInstanceOf(ThemeException.class)
-                .hasMessage(ErrorCode.THEME_NOT_FOUND.getDefaultMessage());
+                .hasMessage("Theme not found while finding available times. themeId=999")
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_NOT_FOUND);
 
         verifyNoInteractions(timeRepository, holidayRepository, reservationRepository);
     }

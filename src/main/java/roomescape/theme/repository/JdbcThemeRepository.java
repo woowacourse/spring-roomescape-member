@@ -51,7 +51,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 id
         );
         if (themes.isEmpty()) {
-            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                    "Theme not found. themeId=%d".formatted(id));
         }
         return themes.get(0);
     }

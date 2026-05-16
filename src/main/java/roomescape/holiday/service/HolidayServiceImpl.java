@@ -34,7 +34,8 @@ public class HolidayServiceImpl implements HolidayService {
     public void delete(Long id) {
         boolean deleted = holidayRepository.deleteById(id);
         if (!deleted) {
-            throw new HolidayException(ErrorCode.HOLIDAY_NOT_FOUND);
+            throw new HolidayException(ErrorCode.HOLIDAY_NOT_FOUND,
+                    "Holiday not found. holidayId=%d".formatted(id));
         }
     }
 

@@ -67,6 +67,8 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("date=2026-05-12")
+                .hasMessageContaining("timeId=1")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
 
@@ -85,6 +87,9 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("themeId=1")
+                .hasMessageContaining("timeId=1")
+                .hasMessageContaining("date=2099-08-05")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
 
@@ -101,6 +106,9 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.cancel(1L, "초코"))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("reservationId=1")
+                .hasMessageContaining("owner=브라운")
+                .hasMessageContaining("requester=초코")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_OWNER_MISMATCH);
     }
@@ -116,6 +124,8 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.cancel(1L, "브라운"))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("reservationId=1")
+                .hasMessageContaining("date=2026-05-12")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PAST_RESERVATION_CANCEL_NOT_ALLOWED);
     }
@@ -132,6 +142,8 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.update(dto))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("reservationId=1")
+                .hasMessageContaining("requester=초코")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_OWNER_MISMATCH);
     }
@@ -152,6 +164,7 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.update(dto))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("date=2099-09-01")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.INVALID_REQUEST);
     }
@@ -168,6 +181,7 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.update(dto))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("reservationId=1")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.INVALID_REQUEST);
     }
@@ -187,6 +201,7 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.update(dto))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("date=2026-05-12")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
     }
@@ -208,6 +223,10 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.update(dto))
                 .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining("reservationId=1")
+                .hasMessageContaining("themeId=1")
+                .hasMessageContaining("timeId=2")
+                .hasMessageContaining("date=2099-09-01")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
     }

@@ -38,7 +38,10 @@ class TimeServiceImplTest {
         when(timeRepository.existsById(1L)).thenReturn(false);
 
         assertThatThrownBy(() -> timeService.deleteById(1L))
-                .isInstanceOf(TimeException.class);
+                .isInstanceOf(TimeException.class)
+                .hasMessage("Reservation time not found. timeId=1")
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_NOT_FOUND);
 
         verify(reservationRepository, never()).existsByTimeId(1L);
     }
@@ -50,6 +53,7 @@ class TimeServiceImplTest {
 
         assertThatThrownBy(() -> timeService.deleteById(1L))
                 .isInstanceOf(TimeException.class)
+                .hasMessage("Reservation time is in use. timeId=1")
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED);
 

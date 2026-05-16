@@ -7,4 +7,8 @@ public class ThemeException extends RoomescapeException {
     public ThemeException(ErrorCode errorCode) {
         super(errorCode);
     }
+
+    public ThemeException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
+    }
 }

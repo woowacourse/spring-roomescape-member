@@ -7,4 +7,8 @@ public class HolidayException extends RoomescapeException {
     public HolidayException(ErrorCode errorCode) {
         super(errorCode);
     }
+
+    public HolidayException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
+    }
 }

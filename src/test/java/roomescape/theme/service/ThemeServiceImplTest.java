@@ -90,7 +90,9 @@ class ThemeServiceImplTest {
 
         assertThatThrownBy(() -> themeService.deleteById(99L))
                 .isInstanceOf(ThemeException.class)
-                .hasMessage(ErrorCode.THEME_NOT_FOUND.getDefaultMessage());
+                .hasMessage("Theme not found. themeId=99")
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_NOT_FOUND);
     }
 
     @Test
