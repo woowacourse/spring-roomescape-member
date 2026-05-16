@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -93,13 +94,14 @@ public class ReservationService {
         ReservationDate reservationDate,
         ReservationTime reservationTime
     ) {
-        LocalDate today = LocalDate.now(clock);
-        LocalTime now = LocalTime.now(clock);
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDate today = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime();
         if (isPastDate(reservationDate, today)) {
             throw new BadRequestException(ReservationDateErrors.RESERVATION_DATE_MUST_BE_TODAY_OR_LATER, today);
         }
-        if (isPastTimeToday(reservationDate, reservationTime, today, now)) {
-            throw new BadRequestException(ReservationTimeErrors.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER, now);
+        if (isPastTimeToday(reservationDate, reservationTime, today, currentTime)) {
+            throw new BadRequestException(ReservationTimeErrors.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER, currentTime);
         }
     }
 
@@ -130,13 +132,14 @@ public class ReservationService {
     }
 
     private void validateUserCanDeleteReservation(Reservation reservation) {
-        LocalDate today = LocalDate.now(clock);
-        LocalTime now = LocalTime.now(clock);
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDate today = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime();
         if (isPastDate(reservation.getDate(), today)) {
             throw new BadRequestException(ReservationDateErrors.PAST_RESERVATION_DATE_CANNOT_BE_DELETED, today);
         }
-        if (isPastTimeToday(reservation.getDate(), reservation.getTime(), today, now)) {
-            throw new BadRequestException(ReservationTimeErrors.PAST_RESERVATION_TiME_CANNOT_BE_DELETED, now);
+        if (isPastTimeToday(reservation.getDate(), reservation.getTime(), today, currentTime)) {
+            throw new BadRequestException(ReservationTimeErrors.PAST_RESERVATION_TiME_CANNOT_BE_DELETED, currentTime);
         }
     }
 
