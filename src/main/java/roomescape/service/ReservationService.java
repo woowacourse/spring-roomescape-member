@@ -13,6 +13,7 @@ import roomescape.service.dto.reservation.CreateReservationCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.global.exception.reservation.ExpiredReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
 import roomescape.global.exception.reservation.SameReservationScheduleException;
@@ -78,6 +79,7 @@ public class ReservationService {
     @Transactional
     public ReservationResult changeReservationSchedule(ChangeReservationScheduleCommand command) {
         Reservation reservation = getReservation(command.reservationId(), command.name());
+        validateNotExpiredReservation(reservation, "지난 예약은 변경할 수 없습니다.");
         ReservationTime time = getReservationTime(command.timeId());
         validateReservableDateTime(command.date(), time);
 
@@ -98,6 +100,7 @@ public class ReservationService {
     @Transactional
     public ReservationResult cancelReservation(CancelReservationCommand command) {
         Reservation reservation = getReservation(command.reservationId(), command.name());
+        validateNotExpiredReservation(reservation, "지난 예약은 취소할 수 없습니다.");
         Reservation cancelledReservation = reservation.cancel();
         return ReservationResult.from(reservationRepository.updateStatus(cancelledReservation));
     }
@@ -144,5 +147,15 @@ public class ReservationService {
     private boolean isSameSchedule(Reservation reservation, LocalDate date, ReservationTime time) {
         return reservation.getDate().equals(date)
                 && reservation.getTime().getId().equals(time.getId());
+    }
+
+    private void validateNotExpiredReservation(Reservation reservation, String message) {
+        LocalDate today = LocalDate.now(clock);
+        LocalTime now = LocalTime.now(clock);
+
+        if (reservation.getDate().isBefore(today)
+                || reservation.getDate().isEqual(today) && reservation.getTime().getStartAt().isBefore(now)) {
+            throw new ExpiredReservationException(message);
+        }
     }
 }

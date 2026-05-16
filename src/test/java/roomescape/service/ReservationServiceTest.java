@@ -18,6 +18,7 @@ import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.reservation.DuplicateReservationException;
+import roomescape.global.exception.reservation.ExpiredReservationException;
 import roomescape.global.exception.reservation.InvalidReservationException;
 import roomescape.global.exception.reservation.ReservationNotFoundException;
 import roomescape.global.exception.reservation.SameReservationScheduleException;
@@ -157,6 +158,25 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 지난_예약은_변경할_수_없다() {
+        Reservation reservation = pastReservation();
+        ReservationTime targetTime = ReservationTime.from(2L, LocalTime.of(11, 0));
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(targetTime));
+
+        ChangeReservationScheduleCommand command = new ChangeReservationScheduleCommand(
+                1L,
+                "고래",
+                LocalDate.of(2026, 5, 16),
+                2L
+        );
+
+        assertThatThrownBy(() -> reservationService.changeReservationSchedule(command))
+                .isInstanceOf(ExpiredReservationException.class)
+                .hasMessage("지난 예약은 변경할 수 없습니다.");
+    }
+
+    @Test
     void 예약자_이름이_일치하지_않으면_예약을_변경할_수_없다() {
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation()));
 
@@ -183,6 +203,17 @@ class ReservationServiceTest {
                 .hasMessage("해당 예약을 찾을 수 없습니다.");
     }
 
+    @Test
+    void 지난_예약은_취소할_수_없다() {
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(pastReservation()));
+
+        CancelReservationCommand command = new CancelReservationCommand(1L, "고래");
+
+        assertThatThrownBy(() -> reservationService.cancelReservation(command))
+                .isInstanceOf(ExpiredReservationException.class)
+                .hasMessage("지난 예약은 취소할 수 없습니다.");
+    }
+
     private void stubReservationDependencies(LocalTime startAt) {
         ReservationTime time = ReservationTime.from(1L, startAt);
         Theme theme = Theme.from(1L, "테마", "설명", "/images/themes/theme.webp");
@@ -195,6 +226,17 @@ class ReservationServiceTest {
                 1L,
                 "고래",
                 LocalDate.of(2026, 5, 16),
+                ReservationTime.from(1L, LocalTime.of(10, 0)),
+                Theme.from(1L, "테마", "설명", "/images/themes/theme.webp"),
+                ReservationStatus.RESERVED
+        );
+    }
+
+    private Reservation pastReservation() {
+        return Reservation.from(
+                1L,
+                "고래",
+                LocalDate.of(2026, 5, 14),
                 ReservationTime.from(1L, LocalTime.of(10, 0)),
                 Theme.from(1L, "테마", "설명", "/images/themes/theme.webp"),
                 ReservationStatus.RESERVED

@@ -405,6 +405,40 @@ class ReservationApiTest extends ApiTestSupport {
     }
 
     @Test
+    void 지난_예약을_변경하면_409를_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.minusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+        params.put("date", TODAY.plusDays(1).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/schedule")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 지난_예약을_취소하면_409를_반환한다() {
+        createReservationPrerequisites(LocalTime.of(10, 0));
+        dataInitializer.createReservation("고래", TODAY.minusDays(1), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "고래");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().put("/reservations/1/cancellation")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     void 이미_취소된_예약을_변경하면_409를_반환한다() {
         createCancelledReservation();
 
