@@ -51,7 +51,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public void removeByIdAndName(Long id, String username) {
+    public void cancelByIdAndName(Long id, String username) {
         Reservation reservation = getReservation(id);
         validateOwner(username, reservation);
         validatePastUpdate(reservation.getDate(), reservation.getTime());

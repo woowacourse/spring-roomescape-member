@@ -80,7 +80,7 @@ public class ReservationServiceTest {
         String username = "토리";
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.removeByIdAndName(reservationId, username))
+        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
                 .isInstanceOf(RoomescapeException.class);
     }
 
@@ -91,7 +91,7 @@ public class ReservationServiceTest {
         String username = "수라";
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.removeByIdAndName(reservationId, username))
+        Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
                 .isInstanceOf(RoomescapeException.class);
     }
 

@@ -35,19 +35,19 @@ public class ReservationController {
                 .body(reservationResponse);
     }
 
-    @GetMapping(params = {"username"})
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> readAllByName(@RequestParam String username) {
         List<ReservationResponse> reservationResponses = reservationService.readAllByName(username);
         return ResponseEntity.ok(reservationResponses);
     }
 
-    @DeleteMapping(value = "/{id}", params = "username")
-    public ResponseEntity<Void> removeByIdAndName(@PathVariable Long id, @RequestParam String username) {
-        reservationService.removeByIdAndName(id, username);
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> cancelByIdAndName(@PathVariable Long id, @RequestParam String username) {
+        reservationService.cancelByIdAndName(id, username);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping(value = "/{id}", params = "username")
+    @PatchMapping(value = "/{id}")
     public ResponseEntity<ReservationResponse> update(@PathVariable Long id,
                                                       @RequestParam String username,
                                                       @Valid @RequestBody ReservationUpdateRequest reservationUpdateRequest) {
