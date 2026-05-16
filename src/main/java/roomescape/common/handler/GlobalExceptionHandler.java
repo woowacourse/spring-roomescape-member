@@ -62,10 +62,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DomainValidationException.class)
-    public ResponseEntity<ErrorDetailDto> handleInternalServer(DomainValidationException e) {
-        log.error("Internal Server Exception: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ErrorDetailDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+    public ResponseEntity<ErrorDetailDto> handleDomainValidationException(DomainValidationException e) {
+        log.error("DomainValidation Exception: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorDetailDto.of(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
