@@ -7,6 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let allReservations = []; // To store reservations for filtering
 
+  document.querySelectorAll('.page-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.tabTarget;
+      document.querySelectorAll('.page-tab').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+
   async function getErrorMessage(res) {
     const fallbackMessage = '요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.';
 

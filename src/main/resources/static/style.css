@@ -71,6 +71,49 @@ header {
   margin-bottom: 2rem;
 }
 
+.page-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  margin-bottom: 1.5rem;
+  background: #edf0f3;
+  border-radius: 14px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.page-tab {
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.85rem 1.2rem;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.page-tab:hover {
+  color: var(--text-dark);
+}
+
+.page-tab.active {
+  background: #fff;
+  color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(25, 31, 40, 0.08);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
 .section-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -223,6 +266,29 @@ header {
   background: #d93845;
 }
 
+.btn-secondary {
+  background: #f2f4f6;
+  color: var(--text-dark);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-secondary:hover {
+  background: #e5e8eb;
+}
+
+.btn-small {
+  width: auto;
+  min-width: 64px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 /* Tables for Admin */
 .admin-table {
   width: 100%;
@@ -260,4 +326,153 @@ header {
   padding: 3rem;
   color: var(--text-light);
   font-style: italic;
+}
+
+.reservation-panel {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.section-header.compact {
+  margin-bottom: 1.25rem;
+}
+
+.section-header .section-title {
+  margin-bottom: 0.4rem;
+}
+
+.section-subtitle {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.lookup-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.lookup-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.lookup-button {
+  width: auto;
+  min-width: 120px;
+  height: 57px;
+  padding: 0 1.4rem;
+}
+
+.status-message {
+  margin-top: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  background: #f2f4f6;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.status-message.success {
+  background: rgba(0, 198, 142, 0.12);
+  color: #008a64;
+}
+
+.status-message.error {
+  background: rgba(240, 68, 82, 0.12);
+  color: #c62838;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.reservation-table th,
+.reservation-table td {
+  vertical-align: middle;
+}
+
+.table-control {
+  min-width: 120px;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.table-muted {
+  margin-top: 0.2rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.table-empty {
+  text-align: center;
+  color: var(--text-light);
+  padding: 2rem 1rem;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 1rem;
+  }
+
+  header {
+    display: block;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .nav-links a {
+    margin-left: 0;
+  }
+
+  .glass-card {
+    padding: 1.5rem;
+  }
+
+  .page-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .page-tab {
+    flex: 1;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+
+  .lookup-form {
+    display: block;
+  }
+
+  .lookup-input {
+    margin-bottom: 1rem;
+  }
+
+  .lookup-button {
+    width: 100%;
+  }
 }
