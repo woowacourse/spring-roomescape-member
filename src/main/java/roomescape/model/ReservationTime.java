@@ -24,6 +24,10 @@ public class ReservationTime {
         }
     }
 
+    public boolean isValid() {
+        return startAt.getMinute() == 0;
+    }
+
     public Long id() {
         return id;
     }

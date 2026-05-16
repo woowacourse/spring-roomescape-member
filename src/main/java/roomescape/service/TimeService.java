@@ -43,7 +43,7 @@ public class TimeService {
     }
 
     private boolean isValidTime(ReservationTime time) {
-        if (time.startAt().getMinute() != 0) {
+        if (!time.isValid()) {
             log.warn("유효하지 않는 시간 데이터 발견: id:{}, startAt:{}", time.id(), time.startAt());
             return false;
         }
