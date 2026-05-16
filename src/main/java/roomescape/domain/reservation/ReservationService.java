@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
@@ -28,7 +27,6 @@ import roomescape.support.exception.errors.ThemeErrors;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReservationService {
 
@@ -38,7 +36,6 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    @Transactional
     public CreateReservationResponse createReservation(CreateReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
             .orElseThrow(() -> new NotFoundException(ReservationTimeErrors.RESERVATION_TIME_NOT_EXIST));
@@ -64,7 +61,6 @@ public class ReservationService {
         return UserReservationResponse.of(name, reservations);
     }
 
-    @Transactional
     public void deleteReservationByAdmin(Long id) {
         int deletedCount = reservationRepository.deleteById(id);
         if (deletedCount == 0) {
@@ -72,7 +68,6 @@ public class ReservationService {
         }
     }
 
-    @Transactional
     public void deleteUserReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
@@ -80,7 +75,6 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    @Transactional
     public void updateReservation(Long id, UpdateReservationRequest request) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(ReservationErrors.RESERVATION_NOT_FOUND));
