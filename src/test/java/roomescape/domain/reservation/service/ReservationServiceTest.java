@@ -310,6 +310,32 @@ class ReservationServiceTest {
         }
 
         @Test
+        @DisplayName("변경하려는 날짜와 시간이 미래이면 예약을 변경한다.")
+        void 성공3() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 1, 1),
+                    Time.reconstruct(1L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"),
+                    LocalDateTime.of(2025, 12, 31, 0, 0)));
+            Long changeTimeId = timeRepository.save(Time.create(LocalTime.of(13, 0))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                LocalDate.of(2026, 1, 1), changeTimeId);
+
+            reservationService.updateReservation(name, savedReservation.getId(), request,
+                LocalDateTime.of(2026, 1, 1, 10, 0));
+
+            Optional<Reservation> actual = reservationRepository.findReservationById(
+                savedReservation.getId());
+            assertAll(
+                () -> assertThat(actual).isPresent(),
+                () -> assertThat(actual.get().getDate()).isEqualTo(request.date()),
+                () -> assertThat(actual.get().getTime().getId()).isEqualTo(changeTimeId)
+            );
+        }
+
+        @Test
         @DisplayName("요청한 시간 id가 존재하지 않으면 예외가 발생한다.")
         void 실패1() {
             String name = "시오";
@@ -429,8 +455,29 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 예약을 변경하려고 하면 예외가 발생한다.")
+        @DisplayName("오늘의 지난 시간으로 변경하려고 하면 예외가 발생한다.")
         void 실패6() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 1, 2),
+                    Time.reconstruct(2L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"),
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
+            Long pastTimeId = timeRepository.save(Time.create(LocalTime.of(9, 0))).getId();
+            ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(
+                LocalDate.of(2026, 1, 1), pastTimeId);
+
+            assertThatThrownBy(() -> reservationService.updateReservation(name,
+                savedReservation.getId(), request, LocalDateTime.of(2026, 1, 1, 10, 0)))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 예약을 변경하려고 하면 예외가 발생한다.")
+        void 실패7() {
             Long notFoundId = 99999L;
             Long timeId = timeRepository.save(Time.create(LocalTime.of(20, 30))).getId();
             ReservationUpdateRequestDto request = new ReservationUpdateRequestDto(

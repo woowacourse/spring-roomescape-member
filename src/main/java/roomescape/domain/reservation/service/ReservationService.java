@@ -2,25 +2,25 @@ package roomescape.domain.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.error.exception.BusinessException;
-import roomescape.global.error.ErrorCode;
-import roomescape.global.error.ErrorDetail;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.validator.ReservationValidator;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.error.ErrorCode;
+import roomescape.global.error.ErrorDetail;
+import roomescape.global.error.exception.BusinessException;
 
 @Service
 public class ReservationService {
@@ -84,12 +84,12 @@ public class ReservationService {
     public void updateReservation(String name, Long id, ReservationUpdateRequestDto requestDto,
         LocalDateTime now) {
         Reservation reservation = getReservationById(id);
-        ReservationValidator.validateOwner(name, reservation);
+        validateOwner(name, reservation);
         Time time = getTimeById(requestDto.timeId());
         validateDuplicatesExceptMe(id, requestDto.date(), requestDto.timeId(),
             reservation.getTheme().getId());
-        ReservationValidator.validateDateAccessable(reservation, now);
-        ReservationValidator.validateDateTimeChangeable(requestDto.date(), time, now);
+        validateDateAccessable(reservation, now);
+        validateDateTimeChangeable(requestDto.date(), time, now);
 
         reservationRepository.updateReservationById(id, requestDto.date(), requestDto.timeId());
     }
@@ -118,6 +118,15 @@ public class ReservationService {
         }
     }
 
+    private void validateDateTimeChangeable(LocalDate date, Time time, LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        LocalTime nowTime = now.toLocalTime();
+
+        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(nowTime))) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_PASSED);
+        }
+    }
+
     @Transactional
     public void deleteReservationById(Long id) {
         if (reservationRepository.deleteReservationById(id) == 0) {
@@ -128,8 +137,20 @@ public class ReservationService {
     @Transactional
     public void deleteMemberReservationById(String name, Long id, LocalDateTime now) {
         Reservation reservation = getReservationById(id);
-        ReservationValidator.validateOwner(name, reservation);
-        ReservationValidator.validateDateAccessable(reservation, now);
+        validateOwner(name, reservation);
+        validateDateAccessable(reservation, now);
         reservationRepository.deleteReservationById(id);
+    }
+
+    private void validateOwner(String name, Reservation reservation) {
+        if (!reservation.isOwner(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+    }
+
+    private void validateDateAccessable(Reservation reservation, LocalDateTime now) {
+        if (reservation.isPast(now)) {
+            throw new BusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
+        }
     }
 }
