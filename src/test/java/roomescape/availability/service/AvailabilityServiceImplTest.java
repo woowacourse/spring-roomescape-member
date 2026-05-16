@@ -95,6 +95,22 @@ class AvailabilityServiceImplTest {
     }
 
     @Test
+    void getAvailableTimes_모든시간이_예약되어있으면_빈리스트() {
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        when(themeRepository.existsById(1L)).thenReturn(true);
+        when(holidayRepository.existsByDate(date)).thenReturn(false);
+        when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(1L, 2L));
+
+        List<ReservationTime> allTimes = List.of(
+                new ReservationTime(1L, "10:00", "12:00"),
+                new ReservationTime(2L, "12:00", "14:00")
+        );
+        when(timeRepository.findAll()).thenReturn(allTimes);
+
+        assertThat(availabilityService.getAvailableTimes(1L, date)).isEmpty();
+    }
+
+    @Test
     void getAvailableTimes_예약이없으면_전체시간을_반환한다() {
         LocalDate date = LocalDate.of(2026, 5, 6);
         when(themeRepository.existsById(1L)).thenReturn(true);
