@@ -25,15 +25,9 @@ public class GlobalExceptionHandler {
                 .body(new ExceptionResponse(e.getExceptionCode().getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionResponse> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.internalServerError()
-                .body(new ExceptionResponse(e.getMessage()));
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(Exception e) {
         return ResponseEntity.internalServerError()
-                .body(new ExceptionResponse(e.getMessage()));
+                .body(new ExceptionResponse("서버 오류가 발생했습니다."));
     }
 }
