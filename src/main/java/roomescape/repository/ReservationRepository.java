@@ -23,7 +23,7 @@ public class ReservationRepository {
             new ReservationName(resultSet.getString("name")),
             new ReservationDate(resultSet.getDate("date").toLocalDate()),
             ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
-            Theme.of(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),
+            Theme.load(resultSet.getLong("theme_id"), new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"), new ThumbnailUrl(resultSet.getString("thumbnail_url"))));
     private static final String SELECT_ALL = """
             SELECT r.id   AS reservation_id,

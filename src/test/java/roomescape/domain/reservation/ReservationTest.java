@@ -26,7 +26,7 @@ public class ReservationTest {
         ReservationName name = new ReservationName("zeze");
         ReservationDate date = new ReservationDate(LocalDate.of(2099, 1, 1));
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Theme theme = Theme.of(
+        Theme theme = Theme.load(
                 1L,
                 new ThemeName("공포의 방"),
                 "설명",

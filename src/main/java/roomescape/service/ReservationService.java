@@ -58,7 +58,6 @@ public class ReservationService {
     @Transactional
     public Reservation update(ReservationUpdateRequest request, long id, LocalDateTime now) {
         Reservation reservation = findReservationById(id);
-
         reservation.ensureNotPast(now);
 
         ReservationDate reservationDate = new ReservationDate(request.getDate());

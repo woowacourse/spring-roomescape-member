@@ -30,7 +30,7 @@ public class ThemeService {
 
     @Transactional
     public Theme create(ThemeCreateRequest request) {
-        Theme theme = Theme.of(new ThemeName(request.getName()), request.getDescription(),
+        Theme theme = Theme.create(new ThemeName(request.getName()), request.getDescription(),
                 new ThumbnailUrl(request.getThumbnailUrl()));
         return themeRepository.save(theme);
     }

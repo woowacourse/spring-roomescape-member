@@ -15,7 +15,7 @@ import roomescape.domain.theme.ThumbnailUrl;
 @Repository
 public class ThemeRepository {
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
-            Theme.of(rs.getLong("id"), new ThemeName(rs.getString("name")), rs.getString("description"),
+            Theme.load(rs.getLong("id"), new ThemeName(rs.getString("name")), rs.getString("description"),
                     new ThumbnailUrl(rs.getString("thumbnail_url")));
     private static final String EXISTS_BY_ID = """
             SELECT EXISTS (
@@ -42,7 +42,7 @@ public class ThemeRepository {
                 "thumbnail_url", theme.getThumbnailUrl().getValue()
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return Theme.of(generatedKey, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+        return Theme.load(generatedKey, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
     }
 
     public List<Theme> findAll() {

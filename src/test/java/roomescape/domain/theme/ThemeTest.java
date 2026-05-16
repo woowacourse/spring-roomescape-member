@@ -10,7 +10,7 @@ public class ThemeTest {
     @ParameterizedTest
     @MethodSource("nullCases")
     void 매개변수에_NULL이_포함되면_예외가_발생한다(ThemeName themeName, String description, ThumbnailUrl thumbnailUrl) {
-        Assertions.assertThatThrownBy(() -> Theme.of(themeName, description, thumbnailUrl))
+        Assertions.assertThatThrownBy(() -> Theme.create(themeName, description, thumbnailUrl))
                 .isInstanceOf(NullPointerException.class);
     }
 
