@@ -19,14 +19,4 @@ public record ReservationRequest(
 
         @NotNull
         Long themeId
-) {
-    public ReservationRequest {
-        validate(date);
-    }
-
-    private void validate(LocalDate date) {
-        if (date != null && date.isBefore(LocalDate.now())) {
-            throw new CustomException(ErrorCode.RESERVATION_NOT_ALLOWED_DATE);
-        }
-    }
-}
+) { }

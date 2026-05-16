@@ -33,8 +33,12 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = reservationService.saveReservation(reservationRequest.name(),
-                reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+        Reservation reservation = reservationService.saveReservation(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
+        );
         ReservationResponse reservationResponse = toResponse(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
