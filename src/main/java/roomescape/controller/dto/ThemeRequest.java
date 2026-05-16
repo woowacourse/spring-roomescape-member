@@ -1,11 +1,17 @@
 package roomescape.controller.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.service.dto.ThemeCreateCommand;
 
 public class ThemeRequest {
 
+    @NotBlank(message = "이름은 비어 있을 수 없습니다.")
     private String name;
+
+    @NotBlank(message = "설명은 비어 있을 수 없습니다.")
     private String description;
+
+    @NotBlank(message = "썸네일은 비어 있을 수 없습니다.")
     private String thumbnailUrl;
 
     public ThemeRequest() {
