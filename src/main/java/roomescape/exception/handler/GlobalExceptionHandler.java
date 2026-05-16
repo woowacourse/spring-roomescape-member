@@ -12,40 +12,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import roomescape.exception.BusinessRuleViolationException;
-import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.ResourceNotFoundException;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRequest(InvalidRequestException e, HttpServletRequest request) {
-        return build(HttpStatus.BAD_REQUEST, "INVALID_Request", e.getMessage(), request);
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException e, HttpServletRequest request) {
-        return build(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", e.getMessage(), request);
-    }
-
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException e, HttpServletRequest request) {
-        return build(HttpStatus.CONFLICT, "DUPLICATE_RESOURCE", e.getMessage(), request);
-    }
-
-    @ExceptionHandler(BusinessRuleViolationException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessRule(BusinessRuleViolationException e, HttpServletRequest request) {
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, "BUSINESS_RULE_VIOLATION", e.getMessage(), request);
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomescape(RoomescapeException e, HttpServletRequest request) {
+        log.warn("[{}] {} {} - {}", e.getStatus().value(), request.getMethod(), request.getRequestURI(), e.getMessage());
+        return ResponseEntity.status(e.getStatus())
+                .body(new ErrorResponse(e.getCode(), e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e, HttpServletRequest request) {
         log.error("[500] {} {} - unhandled: {}", request.getMethod(), request.getRequestURI(), e.getMessage(), e);
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "일시적인 오류가 발생했습니다.", request);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("INTERNAL_ERROR", "일시적인 오류가 발생했습니다."));
     }
 
     @Override
@@ -57,10 +42,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("VALIDATION_FAILED", "요청 값 검증에 실패했습니다."));
-    }
-
-    private ResponseEntity<ErrorResponse> build(HttpStatus status, String code, String message, HttpServletRequest request) {
-        log.warn("[{}] {} {} - {}", status.value(), request.getMethod(), request.getRequestURI(), message);
-        return ResponseEntity.status(status).body(new ErrorResponse(code, message));
     }
 }

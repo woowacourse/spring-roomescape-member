@@ -1,12 +1,12 @@
 package roomescape.reservation.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidDomainStateException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Reservation {
 
@@ -80,8 +80,8 @@ public class Reservation {
     }
 
     private void validateNotPast(LocalDateTime now) {
-        Objects.requireNonNull(now, "현재 시각은 반드시 입력해야 합니다.");
-        Objects.requireNonNull(time.getStartAt(), "예약 시간의 startAt은 반드시 입력해야 합니다.");
+        validateNotNull(now, "현재 시각은 반드시 입력해야 합니다.");
+        validateNotNull(time.getStartAt(), "예약 시간의 startAt은 반드시 입력해야 합니다.");
 
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
@@ -90,10 +90,10 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        Objects.requireNonNull(name, "예약자 이름은 반드시 입력해야 합니다.");
+        validateNotNull(name, "예약자 이름은 반드시 입력해야 합니다.");
 
         if (name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 반드시 입력해야 합니다.");
+            throw new InvalidDomainStateException("예약자 이름은 반드시 입력해야 합니다.");
         }
 
         if (name.length() > MAX_NAME_LENGTH) {
@@ -104,7 +104,9 @@ public class Reservation {
     }
 
     private void validateNotNull(Object obj, String message) {
-        Objects.requireNonNull(obj, message);
+        if (obj == null) {
+            throw new InvalidDomainStateException(message);
+        }
     }
 
     public Long getId() {

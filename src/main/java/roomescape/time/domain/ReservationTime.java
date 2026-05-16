@@ -1,9 +1,9 @@
 package roomescape.time.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidDomainStateException;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class ReservationTime {
 
@@ -13,7 +13,7 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateStartAtNotNull(startAt);
+        validateNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -29,8 +29,10 @@ public class ReservationTime {
         }
     }
 
-    private void validateStartAtNotNull(LocalTime startAt) {
-        Objects.requireNonNull(startAt, "예약 시간은 반드시 입력해야 합니다.");
+    private void validateNotNull(Object obj) {
+        if (obj == null) {
+            throw new InvalidDomainStateException("예약 시간은 반드시 입력해야 합니다.");
+        }
     }
 
     public Long getId() {

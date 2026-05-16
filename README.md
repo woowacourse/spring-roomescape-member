@@ -175,6 +175,9 @@ HTTP/1.1 500 Internal Server Error
 DTO에서 @NotNull로 막았는데 Domain까지 null이 왔다는 건 검증 로직이 뚫렸거나 개발자 실수라는 뜻이다.
 따라서, Domain 에 NULL이 전달될 경우 이것은 서버 에러로 판단한다. 그러므로, 500 에러를 반환한다.
 
++) 개선사항
+기존에 domain에서 Object.requireNonNull() 로 NPE를 발생해 500 예외를 반환했습니다. 하지만, NPE는 범용적이라 제 코드 문제인지 라이브러리 문제인지 구분아 어렵다고 생각했습니다.
+따라서, NPE로 표현하는 게 불명확하다는 생각을 하여 `InvalidDomainStateException` 이라는 커스텀 예외를 만들어 500 에러를 반환하도록 변경했습니다.
 
 ---
 

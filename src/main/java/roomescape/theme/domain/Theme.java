@@ -1,8 +1,7 @@
 package roomescape.theme.domain;
 
 import roomescape.exception.BusinessRuleViolationException;
-
-import java.util.Objects;
+import roomescape.exception.InvalidDomainStateException;
 
 public class Theme {
 
@@ -34,7 +33,7 @@ public class Theme {
     }
 
     private void validateText(String value, String fieldName, int maxLength) {
-        Objects.requireNonNull(value, String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
+        validateNotNull(value, String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
 
         if (value.isBlank()) {
             throw new IllegalArgumentException(String.format("테마 %s은(는) 반드시 입력해야 합니다.", fieldName));
@@ -44,6 +43,12 @@ public class Theme {
             throw new BusinessRuleViolationException(
                     String.format("테마 %s은(는) %d자 이하로 입력해야 합니다. (현재 길이: %d)", fieldName, maxLength, value.length())
             );
+        }
+    }
+
+    private void validateNotNull(Object obj, String message) {
+        if (obj == null) {
+            throw new InvalidDomainStateException(message);
         }
     }
 
