@@ -118,10 +118,31 @@
             align-items: center;
         }
 
+        .reservation-card.inactive {
+            opacity: 0.7;
+        }
+
         .info h3 { margin-bottom: 0.5rem; font-size: 1.3rem; }
         .info p { color: var(--text-muted); font-size: 1rem; margin-bottom: 0.2rem; }
 
         .actions { display: flex; gap: 0.5rem; }
+
+        .status-badge {
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .status-completed {
+            color: var(--text-muted);
+            background: rgba(148, 163, 184, 0.12);
+        }
+
+        .status-cancelled {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.12);
+        }
         
         .btn-danger {
             background: rgba(239, 68, 68, 0.1);
@@ -285,25 +306,38 @@
                 return;
             }
 
+            const now = new Date();
+
             data.forEach(r => {
-                if(r.status === 'CANCELLED') return; // 취소된 예약은 안보여줌
+                // 날짜/시간 비교 (과거 예약인지 확인)
+                const resDateTimeStr = r.date + 'T' + (r.time ? r.time.startAt : '00:00:00');
+                const isPast = new Date(resDateTimeStr) < now;
+                const isCancelled = r.status === 'CANCELLED';
+                const isEditable = !isPast && !isCancelled;
+
                 const div = document.createElement('div');
                 div.className = 'reservation-card';
+                if (!isEditable) {
+                    div.classList.add('inactive');
+                }
+
                 div.innerHTML = `
                     <div class="info">
                         <h3>${r.theme ? r.theme.name : '알수없음'}</h3>
                         <p>${r.date} | ${r.time ? r.time.startAt : '알수없음'}</p>
                     </div>
                     <div class="actions">
-                        <button type="button" onclick="openEditModal(${r.id}, ${r.theme?.id}, '${r.date}', ${r.time?.id})">변경</button>
-                        <button type="button" class="btn-danger" onclick="cancelRes(${r.id})">취소</button>
+                        ${isCancelled
+                            ? '<span class="status-badge status-cancelled">취소됨</span>'
+                            : isPast
+                                ? '<span class="status-badge status-completed">이용 완료</span>'
+                            : `<button type="button" onclick="openEditModal(${r.id}, ${r.theme?.id}, '${r.date}', ${r.time?.id})">변경</button>
+                               <button type="button" class="btn-danger" onclick="cancelRes(${r.id})">취소</button>`
+                        }
                     </div>
                 `;
                 resList.appendChild(div);
             });
-            if(resList.children.length === 0) {
-                resList.innerHTML = '<p style="text-align:center; color:#94a3b8;">현재 유효한 예약이 없습니다.</p>';
-            }
         } catch(e) {
             resList.innerHTML = '<p style="text-align:center; color:#ef4444;">조회 중 오류가 발생했습니다.</p>';
         }
