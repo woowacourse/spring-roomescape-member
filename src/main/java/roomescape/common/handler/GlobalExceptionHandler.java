@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DomainValidationException.class)
     public ResponseEntity<ErrorDetailDto> handleDomainValidationException(DomainValidationException e) {
-        log.error("DomainValidation Exception: {}", e.getMessage());
+        log.warn("DomainValidation Exception: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorDetailDto.of(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
