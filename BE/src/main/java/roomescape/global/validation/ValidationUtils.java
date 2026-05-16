@@ -3,9 +3,9 @@ package roomescape.global.validation;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.BadRequestException;
 
-public final class RequestValidator {
+public final class ValidationUtils {
 
-    private RequestValidator() {
+    private ValidationUtils() {
     }
 
     public static void requireNotBlank(String value, ErrorCode errorCode) {
