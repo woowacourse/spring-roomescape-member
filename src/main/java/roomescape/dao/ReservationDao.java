@@ -66,7 +66,7 @@ public class ReservationDao {
                 offset);
     }
 
-    public List<Reservation> findByName(String name) {
+    public List<Reservation> findByName(String name, int page, int size) {
         String sql = """
                  SELECT
                      r.id as reservation_id,
@@ -84,8 +84,11 @@ public class ReservationDao {
                  INNER JOIN theme th
                  ON r.theme_id = th.id
                  WHERE r.name = ?
-                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC, r.name ASC
+                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC, r.name ASC 
+                 LIMIT ? OFFSET ?
                 """;
+
+        int offset = page * size;
 
         return jdbcTemplate.query(sql,
                 (resultSet, rowNum) -> new Reservation(
@@ -102,7 +105,9 @@ public class ReservationDao {
                                 resultSet.getString("thumbnail")
                         )
                 ),
-                name);
+                name,
+                size,
+                offset);
     }
 
     public Reservation findById(Long id) {

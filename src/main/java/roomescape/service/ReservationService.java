@@ -35,11 +35,11 @@ public class ReservationService {
         return reservationDao.findAll(page, size);
     }
 
-    public List<Reservation> findByName(String name) {
+    public List<Reservation> findByName(String name, int page, int size) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 필수입니다.");
         }
-        return reservationDao.findByName(name);
+        return reservationDao.findByName(name, page, size);
     }
 
     public void cancelById(Long id) {
