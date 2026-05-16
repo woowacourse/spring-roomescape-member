@@ -128,8 +128,7 @@ public class ReservationServiceImpl implements ReservationService {
         validateNotPast(date, newTime);
         validateDuplicatedReservation(reservation.getThemeId(), newTime, date);
         reservationRepository.update(id, date, timeId);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+        return reservation.withDateAndTime(date, newTime);
     }
 
     private void validateReservationNotPast(LocalDate date, ReservationTime time) {

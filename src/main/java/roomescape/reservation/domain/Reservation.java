@@ -32,6 +32,10 @@ public class Reservation {
         return new Reservation(this.id, this.name, this.date, this.time, this.themeId, theme);
     }
 
+    public Reservation withDateAndTime(LocalDate date, ReservationTime time) {
+        return new Reservation(this.id, this.name, date, time, this.themeId, this.theme);
+    }
+
     public Long getId() {
         return id;
     }
