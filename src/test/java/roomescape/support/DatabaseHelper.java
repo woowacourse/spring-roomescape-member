@@ -29,4 +29,8 @@ public class DatabaseHelper {
     public void insertSchedule(Long id, Long themeId, String startAt, String endAt) {
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)", id, themeId, startAt, endAt);
     }
+
+    public void insertReservation(Long id, Long scheduleId, Long userId) {
+        jdbcTemplate.update("INSERT INTO reservation (id, schedule_id, user_id) VALUES (?, ?, ?)", id, scheduleId, userId);
+    }
 }

@@ -41,8 +41,8 @@ public class ThemeService {
         themeRepository.delete(id);
     }
 
-    public PopularThemesResponse findPopularThemes(String sort, int limit, int days) {
-        List<PopularThemeResponse> responses = themeRepository.findPopularThemes(sort, limit, days);
+    public PopularThemesResponse findPopularThemes(int limit, int days) {
+        List<PopularThemeResponse> responses = themeRepository.findPopularThemes(limit, days);
         return PopularThemesResponse.from(responses);
     }
 }

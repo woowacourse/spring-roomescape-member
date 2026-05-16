@@ -3,13 +3,9 @@ package roomescape.reservation.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.ReservationCreateInfo;
-import roomescape.reservation.dto.ReservationIdResponse;
-import roomescape.reservation.dto.ReservationRequest;
+import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.dto.*;
+import roomescape.reservation.model.Reservation;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -23,10 +19,35 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationIdResponse> create(@RequestBody @Valid ReservationRequest request) {
-        ReservationCreateInfo info = new ReservationCreateInfo(
-                request.userId(), request.startAt(), request.themeId());
-        ReservationIdResponse response = reservationService.create(info);
+    public ResponseEntity<ReservationIdResponse> create(
+            @RequestBody @Valid ReservationRequest request, @RequestHeader("X-User-Id") Long userId) {
+        ReservationIdResponse response = reservationService.create(userId, request.scheduleId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ReservationsResponse> findAllByUserId(@RequestHeader("X-User-Id") @Valid Long id) {
+        ReservationsResponse response = reservationService.findAllByUserId(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelMyReservation(
+            @PathVariable Long id, @RequestHeader("X-User-Id") Long userId) {
+        reservationService.cancel(id, userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateMyReservation(
+            @PathVariable Long id, @RequestBody @Valid ReservationUpdateRequest request,
+            @RequestHeader("X-User-Id") Long userId) {
+        reservationService.changeSchedule(id, request.scheduleId(), userId);
+
+        Reservation reservation = reservationService.findById(id);
+        ReservationResponse response = ReservationResponse.from(reservation);
+
+        return ResponseEntity.ok(response);
     }
 }

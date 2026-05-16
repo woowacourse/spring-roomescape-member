@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +30,8 @@ public class ScheduleRepositoryTest {
 
     @Autowired
     private DatabaseHelper databaseHelper;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -47,5 +51,39 @@ public class ScheduleRepositoryTest {
         assertThat(schedules.getFirst().getStartAt()).isEqualTo(schedule.getStartAt());
         assertThat(schedules.getFirst().getEndAt()).isEqualTo(schedule.getEndAt());
         assertThat(schedules.getFirst().getTheme().getName()).isEqualTo(theme.getName());
+    }
+
+    @Test
+    void 스케줄을_데이터베이스에서_정상적으로_삭제한다() {
+        databaseHelper.insertTheme(50L, theme.getName(), theme.getDescription(), theme.getImageUrl(), "02:00:00");
+        databaseHelper.insertSchedule(50L, 50L, "2026-05-25 14:00:00", "2026-05-25 16:00:00");
+
+        scheduleRepository.delete(50L);
+
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM schedule WHERE id=?", Integer.class, 50L);
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    void ID로_스케줄을_조회하면_존재하는_경우_Optional에_담아_반환한다() {
+        Long themeId = 99L;
+        databaseHelper.insertTheme(themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), "02:00:00");
+
+        Theme savedTheme = new Theme(themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
+        Schedule validSchedule = new Schedule(schedule.getStartAt(), savedTheme);
+
+        Long savedScheduleId = scheduleRepository.create(validSchedule);
+
+        Optional<Schedule> foundSchedule = scheduleRepository.findById(savedScheduleId);
+
+        assertThat(foundSchedule).isPresent();
+        assertThat(foundSchedule.get().getId()).isEqualTo(savedScheduleId);
+    }
+
+    @Test
+    void ID로_스케줄을_조회하면_존재하지_않는_경우_빈_Optional을_반환한다() {
+        Optional<Schedule> foundSchedule = scheduleRepository.findById(999L);
+
+        assertThat(foundSchedule).isEmpty();
     }
 }

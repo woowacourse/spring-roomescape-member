@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,5 +85,60 @@ public class ReservationRepositoryTest {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation WHERE id = ?", Integer.class, savedId);
 
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    void 사용자가_본인의_예약_목록을_정상적으로_조회한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+
+        reservationRepository.create(reservation);
+
+        List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId());
+
+        assertThat(reservations).isNotNull();
+        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.getFirst().getUser().getName()).isEqualTo(user.getName());
+        assertThat(reservations.getFirst().getSchedule().getStartAt()).isEqualTo(schedule.getStartAt());
+        assertThat(reservations.getFirst().getTheme().getName()).isEqualTo(theme.getName());
+        assertThat(reservations.getFirst().getUser().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    void ID로_예약을_조회하면_존재하는_경우_Optional에_담아_반환한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long savedId = savedReservation.getId();
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedId);
+
+        assertThat(foundReservation).isPresent();
+        assertThat(foundReservation.get().getId()).isEqualTo(savedId);
+        assertThat(foundReservation.get().getUser().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    void ID로_예약을_조회하면_존재하지_않는_경우_빈_Optional을_반환한다() {
+        Long id = 999L;
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(id);
+
+        assertThat(foundReservation).isEmpty();
+    }
+
+    @Test
+    void 예약의_스케줄을_정상적으로_변경한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long reservationId = savedReservation.getId();
+
+        databaseHelper.insertSchedule(30L, 1L, "2026-12-11 12:00:00", "2026-12-11 14:00:00");
+
+        Long newScheduleId = 30L;
+
+        reservationRepository.updateSchedule(reservationId, newScheduleId);
+
+        Optional<Reservation> updatedReservation = reservationRepository.findById(reservationId);
+        assertThat(updatedReservation).isPresent();
+        assertThat(updatedReservation.get().getSchedule().getId()).isEqualTo(newScheduleId);
     }
 }

@@ -1,16 +1,11 @@
 package roomescape.schedule.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 import roomescape.schedule.dto.ScheduleRequest;
 import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.service.ScheduleService;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/schedules")
@@ -23,10 +18,8 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<SchedulesResponse> findAll(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam Long themeId) {
-        SchedulesResponse responses = scheduleService.findAll(new ScheduleRequest(date, themeId));
+    public ResponseEntity<SchedulesResponse> findAll(@Valid @ModelAttribute ScheduleRequest request) {
+        SchedulesResponse responses = scheduleService.findAll(request);
         return ResponseEntity.ok(responses);
     }
 }

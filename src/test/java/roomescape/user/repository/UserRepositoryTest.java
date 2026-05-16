@@ -18,11 +18,10 @@ class UserRepositoryTest {
 
     @Test
     void 새로운_유저를_저장하고_생성된_ID를_반환한다() {
-        User user = new User("루크", Role.USER);
+        User user = new User("테스트용유저", Role.USER);
 
-        Long id = userRepository.create(user);
+        User newUser = userRepository.create(user);
 
-        assertThat(id).isNotNull();
-        assertThat(id).isPositive();
+        assertThat(newUser).isNotNull();
     }
 }

@@ -78,12 +78,7 @@ public class ThemeRepository {
         }
     }
 
-    public List<PopularThemeResponse> findPopularThemes(String sort, int limit, int days) {
-        String orderByColumn = "reservation_count";
-        if (!"reservations".equals(sort)) {
-            throw new IllegalArgumentException("예약 순으로만 정렬이 가능합니다.");
-        }
-
+    public List<PopularThemeResponse> findPopularThemes(int limit, int days) {
         String sql = """
                 SELECT t.name AS theme_name, COUNT(r.id) AS reservation_count
                 FROM theme t
@@ -91,9 +86,9 @@ public class ThemeRepository {
                 INNER JOIN reservation r ON s.id = r.schedule_id
                 WHERE s.start_at >= ? AND s.start_at < ? 
                 GROUP BY t.id, t.name
-                ORDER BY %s DESC, t.id ASC
+                ORDER BY reservation_count DESC, t.id ASC
                 LIMIT ? 
-                """.formatted(orderByColumn);
+                """;
 
         LocalDate today = LocalDate.now();
         LocalDateTime startAt = today.minusDays(days).atStartOfDay();
