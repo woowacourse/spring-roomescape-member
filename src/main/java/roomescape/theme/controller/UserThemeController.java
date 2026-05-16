@@ -2,7 +2,8 @@ package roomescape.theme.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,12 +39,12 @@ public class UserThemeController {
     public ResponseEntity<List<ThemeResponse>> getRankedThemes(
             @RequestParam(defaultValue = "reservationCount") SortType sort,
             @RequestParam(defaultValue = "DESC") SortOrder order,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(defaultValue = "10") Long limit) {
 
-        LocalDate actualEndDate = endDate.orElseGet(LocalDate::now);
-        LocalDate actualStartDate = startDate.orElseGet(() -> actualEndDate.minusDays(6));
+        LocalDate actualEndDate = Objects.requireNonNullElseGet(endDate, LocalDate::now);
+        LocalDate actualStartDate = Objects.requireNonNullElse(startDate, actualEndDate.minusDays(6));
 
         List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit)
                 .stream()
