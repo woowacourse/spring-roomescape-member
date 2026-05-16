@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.EntityInUseException;
 import roomescape.exception.ErrorCode;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -14,9 +15,11 @@ import roomescape.theme.repository.ThemeRepository;
 public class AdminThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public AdminThemeService(ThemeRepository themeRepository) {
+    public AdminThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -30,6 +33,9 @@ public class AdminThemeService {
 
     @Transactional
     public void delete(long id) {
+        if (reservationRepository.countByThemeId(id) > 0) {
+            throw new EntityInUseException(ErrorCode.THEME_IN_USE, "예약이 있어 삭제할 수 없습니다.");
+        }
         try {
             themeRepository.delete(id);
         } catch (DataIntegrityViolationException e) {
