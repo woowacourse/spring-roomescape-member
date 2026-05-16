@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -185,17 +184,19 @@ class ReservationServiceTest {
     @DisplayName("수정 시 도메인 예외(소유권, 제약 위반)가 전파된다")
     void update_DateAndTime_fail_due_to_domain_rule_propagation() {
         // given
-        Reservation saved = reservationService.save(TESTER_NAME, tomorrow, savedTime.id(),
+        Reservation saved = reservationService.save(TESTER_NAME, today, savedTime.id(),
                 savedTheme.id());
+        ReservationTime newTime = reservationTimeRepository.save(
+                ReservationTime.createWithNullId(LocalTime.now().plusHours(5)));
 
         // 1. 소유권 위반 (ForbiddenException 전파)
         assertThatThrownBy(
-                () -> reservationService.updateDateAndTime(saved.id(), "다른사람", null, null)
+                () -> reservationService.updateDateAndTime(saved.id(), "다른사람", tomorrow, newTime.id())
         ).isInstanceOf(ForbiddenException.class);
 
         // 2. 과거 날짜 수정 (DomainRuleViolationException 전파)
         assertThatThrownBy(
-                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, yesterday, null)
+                () -> reservationService.updateDateAndTime(saved.id(), TESTER_NAME, yesterday, newTime.id())
         ).isInstanceOf(DomainRuleViolationException.class);
     }
 }

@@ -38,45 +38,31 @@ public class ReservationService {
                 reservationTimeRepository.getById(timeId),
                 themeRepository.getById(themeId)
         );
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.date(), reservation.time().id(),
-                reservation.theme().id())) {
-            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
-        }
-
+        validateReservationUniqueness(reservation);
         return reservationRepository.save(reservation);
     }
 
+    private void validateReservationUniqueness(Reservation reservation) {
+        boolean isAlreadyExist = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.date(),
+                reservation.time().id(),
+                reservation.theme().id()
+        );
+
+        if (isAlreadyExist) {
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
     @Transactional
-    public Reservation updateDateAndTime(Long id, String name, LocalDate date, Long timeId) {
-        Reservation updated = createNewReservation(id, name, date, timeId);
+    public Reservation updateDateAndTime(Long id, String name, LocalDate newDate, Long newTimeId) {
+        Reservation target = reservationRepository.getById(id);
+        target.checkOwnership(name);
+        ReservationTime newTime = reservationTimeRepository.getById(newTimeId);
+        Reservation updated = target.update(newDate, newTime);
         updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.theme().id()));
         reservationRepository.update(updated);
         return updated;
-    }
-
-    private Reservation createNewReservation(Long id, String name, LocalDate date, Long timeId) {
-        Reservation target = reservationRepository.getById(id);
-        target.checkOwnership(name);
-
-        LocalDate newDate = decideNewLocalDateValue(date, target.date());
-        ReservationTime newTime = decideNewReservationTimeValue(timeId, target.time());
-
-        return target.update(newDate, newTime);
-    }
-
-    private ReservationTime decideNewReservationTimeValue(Long timeId, ReservationTime originReservationTime) {
-        if (timeId != null) {
-            return reservationTimeRepository.getById(timeId);
-        }
-        return originReservationTime;
-    }
-
-    private LocalDate decideNewLocalDateValue(LocalDate newDate, LocalDate originDate) {
-        if (newDate != null) {
-            return newDate;
-        }
-        return originDate;
     }
 
     public List<Reservation> findAll() {

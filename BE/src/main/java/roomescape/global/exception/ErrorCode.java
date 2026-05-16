@@ -18,7 +18,8 @@ public enum ErrorCode {
     THEME_NAME_EMPTY("테마 이름이 비어있습니다. 이름을 입력해주세요."),
     THEME_DESCRIPTION_EMPTY("테마 설명이 비어있습니다. 설명을 입력해주세요."),
     THEME_THUMBNAIL_EMPTY("테마 썸네일 주소가 비어있습니다. 주소를 입력해주세요."),
-    RESERVATION_UPDATE_REQUEST_EMPTY("수정할 내용이 없습니다. 변경할 정보를 입력해주세요"),
+    RESERVATION_UPDATE_DATE_EMPTY("변경할 예약 날짜가 누락되었습니다. 날짜를 선택해주세요."),
+    RESERVATION_UPDATE_TIME_ID_EMPTY("변경할 예약 시간이 누락되었습니다. 시간을 선택해주세요."),
 
     // Bad Request - 400 (JSON 관련 오류)
     INVALID_HTTP_MESSAGE("요청 정보가 올바르지 않습니다. 입력 내용을 다시 확인해주세요."),

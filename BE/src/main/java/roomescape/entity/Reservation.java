@@ -58,12 +58,12 @@ public record Reservation(
         }
     }
 
-    public Reservation update(LocalDate date, ReservationTime time) {
+    public Reservation update(LocalDate newDate, ReservationTime newTime) {
         Reservation updatedReservation = new Reservation(
                 this.id,
                 this.name,
-                date,
-                time,
+                newDate,
+                newTime,
                 this.theme
         );
         updatedReservation.validateFuture();

@@ -9,12 +9,19 @@ public record ReservationUpdateRequest(
         Long timeId
 ) {
     public ReservationUpdateRequest {
-        validateUpdateRequestNotEmpty(date, timeId);
+        validateDateNotEmpty(date);
+        validateTimeIdNotEmpty(timeId);
     }
 
-    private static void validateUpdateRequestNotEmpty(LocalDate date, Long timeId) {
-        if (date == null && timeId == null) {
-            throw new InvalidRequestException(ErrorCode.RESERVATION_UPDATE_REQUEST_EMPTY);
+    private static void validateTimeIdNotEmpty(Long timeId) {
+        if (timeId == null) {
+            throw new InvalidRequestException(ErrorCode.RESERVATION_UPDATE_TIME_ID_EMPTY);
+        }
+    }
+
+    private static void validateDateNotEmpty(LocalDate date) {
+        if (date == null) {
+            throw new InvalidRequestException(ErrorCode.RESERVATION_UPDATE_DATE_EMPTY);
         }
     }
 }
