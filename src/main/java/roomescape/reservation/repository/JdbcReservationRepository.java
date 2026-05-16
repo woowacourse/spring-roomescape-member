@@ -128,7 +128,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId){
+    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, long themeId){
         String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at AND theme_id = :theme_id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
@@ -140,7 +140,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId, Long excludeId) {
+    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, long themeId, long excludeId) {
         String sql = """
                 SELECT COUNT(*) FROM reservation
                 WHERE date = :date
@@ -171,7 +171,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(Long timeId) {
+    public boolean existsByTimeId(long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE start_at = (SELECT start_at FROM reservation_time WHERE id = :timeId) AND status = 'RESERVED'";
         SqlParameterSource params = new MapSqlParameterSource("timeId", timeId);
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);

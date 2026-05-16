@@ -15,15 +15,15 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId);
+    boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, long themeId);
 
-    boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId, Long excludeId);
+    boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, long themeId, long excludeId);
 
     boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsByTimeId(long timeId);
 
     boolean updateStatus(Reservation reservation);
 
-    boolean updateDateAndTime(Long id, LocalDate date, LocalTime time); 
+    boolean updateDateAndTime(Long id, LocalDate date, LocalTime time);
 }
