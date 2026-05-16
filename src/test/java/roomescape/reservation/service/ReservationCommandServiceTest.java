@@ -58,8 +58,8 @@ class ReservationCommandServiceTest {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
 
-        ReservationCreateCommand request = ReservationFixture.futureStarkCreateCommand(themeId, timeId);
-        ReservationResult result = reservationCommandService.save(request, NOW);
+        ReservationCreateCommand request = ReservationFixture.futureStarkCreateCommand(themeId, timeId, NOW);
+        ReservationResult result = reservationCommandService.save(request);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(result.id()).isPositive();
@@ -77,8 +77,8 @@ class ReservationCommandServiceTest {
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
         testHelper.insertReservation("스타크", ReservationFixture.futureReservationDate(), themeId, timeId);
 
-        ReservationCreateCommand request = ReservationFixture.futureKayaCreateCommand(themeId, timeId);
-        assertThatThrownBy(() -> reservationCommandService.save(request, NOW))
+        ReservationCreateCommand request = ReservationFixture.futureKayaCreateCommand(themeId, timeId, NOW);
+        assertThatThrownBy(() -> reservationCommandService.save(request))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("이미 해당 날짜와 시간에 예약이 존재합니다.");
     }
@@ -90,8 +90,7 @@ class ReservationCommandServiceTest {
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationCommandService.save(
-                ReservationFixture.pastStarkCreateCommand(themeId, timeId),
-                NOW
+                ReservationFixture.pastStarkCreateCommand(themeId, timeId, NOW)
         ))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
@@ -152,8 +151,7 @@ class ReservationCommandServiceTest {
         Long updateTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
         ReservationResult result = reservationCommandService.update(
                 reservationId,
-                new ReservationUpdateCommand(ReservationFixture.futureReservationDate(), updateTimeId),
-                NOW
+                new ReservationUpdateCommand(ReservationFixture.futureReservationDate(), updateTimeId, NOW)
         );
 
         SoftAssertions.assertSoftly(softly -> {
@@ -168,7 +166,7 @@ class ReservationCommandServiceTest {
         Long newTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
 
         assertThatThrownBy(
-                () -> reservationCommandService.update(1L, ReservationFixture.futureStarkUpdateCommand(newTimeId), NOW))
+                () -> reservationCommandService.update(1L, ReservationFixture.futureStarkUpdateCommand(newTimeId, NOW)))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
     }
@@ -195,8 +193,7 @@ class ReservationCommandServiceTest {
 
         assertThatThrownBy(() -> reservationCommandService.update(
                 starkReservationId,
-                ReservationFixture.futureStarkUpdateCommand(elevenTimeId),
-                NOW)
+                ReservationFixture.futureStarkUpdateCommand(elevenTimeId, NOW))
         )
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
@@ -217,8 +214,7 @@ class ReservationCommandServiceTest {
         assertThatThrownBy(() ->
                 reservationCommandService.update(
                         reservationId,
-                        new ReservationUpdateCommand(ReservationFixture.pastReservationDate(), timeId),
-                        NOW
+                        new ReservationUpdateCommand(ReservationFixture.pastReservationDate(), timeId, NOW)
                 ))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");

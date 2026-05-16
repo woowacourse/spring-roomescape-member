@@ -30,7 +30,7 @@ public class ReservationCommandService {
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository timeRepository;
 
-    public ReservationResult save(ReservationCreateCommand request, LocalDateTime now) {
+    public ReservationResult save(ReservationCreateCommand request) {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
 
@@ -38,7 +38,7 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Reservation reservation = request.toEntity(theme.getId(), time.getId());
-        reservationPolicy.validateReservable(reservation, time, now);
+        reservationPolicy.validateReservable(reservation, time, request.now());
         validateDuplicateReservation(reservation);
 
         return ReservationResult.from(
@@ -48,7 +48,7 @@ public class ReservationCommandService {
         );
     }
 
-    public ReservationResult update(Long reservationId, ReservationUpdateCommand request, LocalDateTime now) {
+    public ReservationResult update(Long reservationId, ReservationUpdateCommand request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
@@ -56,7 +56,7 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Reservation updatedReservation = reservation.updateDateAndTime(request.date(), request.timeId());
-        reservationPolicy.validateReservable(updatedReservation, time, now);
+        reservationPolicy.validateReservable(updatedReservation, time, request.now());
 
         updateReservation(updatedReservation);
 

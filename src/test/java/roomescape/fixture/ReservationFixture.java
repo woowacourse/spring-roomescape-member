@@ -1,6 +1,7 @@
 package roomescape.fixture;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
@@ -18,24 +19,20 @@ public class ReservationFixture {
     private ReservationFixture() {
     }
 
-    public static ReservationCreateCommand pastStarkCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(STARK, PAST_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand pastStarkCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(STARK, PAST_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationCreateCommand futureStarkCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(STARK, FUTURE_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand futureStarkCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(STARK, FUTURE_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationCreateCommand futureKayaCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand futureKayaCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationUpdateCommand pastStarkUpdateCommand(Long timeId) {
-        return new ReservationUpdateCommand(PAST_RESERVATION_DATE, timeId);
-    }
-
-    public static ReservationUpdateCommand futureStarkUpdateCommand(Long timeId) {
-        return new ReservationUpdateCommand(FUTURE_RESERVATION_DATE, timeId);
+    public static ReservationUpdateCommand futureStarkUpdateCommand(Long timeId, LocalDateTime now) {
+        return new ReservationUpdateCommand(FUTURE_RESERVATION_DATE, timeId, now);
     }
 
     public static LocalDate pastReservationDate() {

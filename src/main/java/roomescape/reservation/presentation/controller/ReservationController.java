@@ -51,10 +51,10 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> save(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
-        ReservationCreateCommand createCommand = request.toCommand();
+        ReservationCreateCommand createCommand = request.toCommand(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationResponse.from(reservationCommandService.save(createCommand, LocalDateTime.now())));
+                .body(ReservationResponse.from(reservationCommandService.save(createCommand)));
     }
 
     @PatchMapping("/{id}")
@@ -62,9 +62,9 @@ public class ReservationController {
             @PathVariable Long id,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
-        ReservationUpdateCommand updateCommand = request.toCommand();
+        ReservationUpdateCommand updateCommand = request.toCommand(LocalDateTime.now());
 
-        return ResponseEntity.ok(ReservationResponse.from(reservationCommandService.update(id, updateCommand, LocalDateTime.now())));
+        return ResponseEntity.ok(ReservationResponse.from(reservationCommandService.update(id, updateCommand)));
     }
 
     @DeleteMapping("/{id}")
