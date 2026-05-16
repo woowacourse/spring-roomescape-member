@@ -120,4 +120,3 @@ public class DatabaseMissionStepTest {
         assertThat(countAfterDelete).isEqualTo(0);
     }
 }
-

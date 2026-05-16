@@ -94,4 +94,3 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
-

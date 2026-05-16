@@ -12,4 +12,3 @@ public class TimeNotFoundException extends RuntimeException {
         return id;
     }
 }
-

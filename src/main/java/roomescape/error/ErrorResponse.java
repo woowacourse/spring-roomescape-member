@@ -5,4 +5,3 @@ public record ErrorResponse(ErrorCode code, String message) {
         return new ErrorResponse(code, code.getMessage());
     }
 }
-
