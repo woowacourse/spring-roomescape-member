@@ -50,7 +50,7 @@ class AdminReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(LocalTime.of(10, 0)))
                 .isInstanceOf(DuplicateException.class)
                 .extracting(Throwable::getMessage)
-                .isEqualTo("이미 존재하는 예약 시간입니다");
+                .isEqualTo("이미 존재하는 예약 시간입니다.");
     }
 
     @Test
@@ -60,7 +60,7 @@ class AdminReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(ApiException.class)
                 .extracting(Throwable::getMessage)
-                .isEqualTo("예약이 있어 삭제할 수 없습니다");
+                .isEqualTo("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test

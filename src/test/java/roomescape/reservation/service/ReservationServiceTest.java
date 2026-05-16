@@ -45,9 +45,10 @@ class ReservationServiceTest {
     void 성공적으로_예약을_저장한다() {
         // given
         String name = "밍구";
-        LocalDate date = LocalDate.now();
+
+        LocalDate date = LocalDate.now().plusDays(1);
+
         ReservationTime time = new ReservationTime(1L, LocalTime.of(14, 0));
-        // Theme 레코드 구조 반영: id, name, description, thumbnail
         Theme theme = new Theme(1L, "우테코 탈출", "레벨 2 미션 테마입니다.", "https://example.com/image.png");
         Reservation reservation = new Reservation(1L, name, date, time, theme);
 
@@ -100,7 +101,7 @@ class ReservationServiceTest {
         given(reservationRepository.save(any(Reservation.class))).willThrow(new DuplicateKeyException("중복 예약"));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.save("밍구", LocalDate.now(), 1L, 1L))
+        assertThatThrownBy(() -> reservationService.save("밍구", LocalDate.now().plusDays(1), 1L, 1L))
                 .isInstanceOf(DuplicateException.class)
                 .hasMessageContaining("이미 예약되어 있습니다.");
     }
@@ -124,7 +125,11 @@ class ReservationServiceTest {
     void 사용자는_본인의_예약인_경우_삭제할_수_있다() {
         // given
         String userName = "밍구";
-        Reservation reservation = new Reservation(1L, userName, LocalDate.now(), null, null);
+
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+
+        Reservation reservation = new Reservation(1L, userName, LocalDate.now().plusDays(1), time, null);
+
         given(reservationRepository.findById(1L)).willReturn(Optional.of(reservation));
 
         // when

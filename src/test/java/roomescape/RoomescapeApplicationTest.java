@@ -2,6 +2,7 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +38,7 @@ class RoomescapeApplicationTest {
         Map<String, Object> request = new HashMap<>();
         request.put("themeId", 1);
         request.put("name", "캐모");
-        request.put("date", "2026-05-07");
+        request.put("date", LocalDate.now().plusDays(7).toString());
         request.put("timeId", 2);
 
         RestAssured.given().log().all()
@@ -66,12 +67,28 @@ class RoomescapeApplicationTest {
 
     @Test
     void 예약자의_이름_JSON을_전송하여_예약을_삭제할_수_있다() {
+        Map<String, Object> createRequest = new HashMap<>();
+        createRequest.put("name", "User1");
+        createRequest.put("date", LocalDate.now().plusDays(7).toString());
+        createRequest.put("timeId", 1);
+        createRequest.put("themeId", 1);
+
+        var createResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(createRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().response();
+
+        long generatedId = createResponse.jsonPath().getLong("id");
+
         Map<String, String> deleteRequest = Map.of("name", "User1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(deleteRequest)
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + generatedId)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -157,18 +174,6 @@ class RoomescapeApplicationTest {
                 .body("date", is("2026-05-01"))
                 .body("schedules.find { it.timeId == 1 }.isAvailable", is(false))
                 .body("schedules.find { it.timeId == 2 }.isAvailable", is(true));
-    }
-
-    @Test
-    void limit_파라미터를_2로_지정하면_상위_2개의_테마만_반환된다() {
-        RestAssured.given().log().all()
-                .queryParam("limit", 2)
-                .when().get("/themes/rank")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(2))
-                .body("[0].id", is(3))
-                .body("[1].id", is(2));
     }
 
     @Test

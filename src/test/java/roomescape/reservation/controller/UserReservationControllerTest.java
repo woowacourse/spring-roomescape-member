@@ -37,19 +37,22 @@ class UserReservationControllerTest {
 
     @Test
     void 예약_목록을_조회할_수_있다() throws Exception {
+        // given
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
-        Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
+        Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 22), time, theme);
 
-        when(reservationService.findAll()).thenReturn(List.of(reservation));
+        when(reservationService.findAllByName("브라운")).thenReturn(List.of(reservation));
 
+        // when & then
         mockMvc.perform(get("/reservations")
+                        .param("name", "브라운")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(3))
                 .andExpect(jsonPath("$[0].name").value("브라운"))
-                .andExpect(jsonPath("$[0].date").value("2026-05-01"))
+                .andExpect(jsonPath("$[0].date").value("2026-05-22"))
                 .andExpect(jsonPath("$[0].time.id").value(1))
                 .andExpect(jsonPath("$[0].time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$[0].theme.id").value(2))
