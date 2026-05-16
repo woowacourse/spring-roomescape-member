@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.ProblemType;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -150,7 +151,8 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("type", is(ProblemType.VALIDATION_ERROR.uri().toString()));
     }
 
     @Test

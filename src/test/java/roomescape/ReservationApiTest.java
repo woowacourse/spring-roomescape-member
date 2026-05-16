@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.ProblemType;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -225,7 +226,8 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("type", is(ProblemType.VALIDATION_ERROR.uri().toString()));
     }
 
     @Test
@@ -304,7 +306,8 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("type", is(ProblemType.CONFLICT.uri().toString()));
     }
 
     @Test
@@ -511,7 +514,8 @@ class ReservationApiTest {
                 .body(body)
                 .when().put("/reservations/me/" + reservationId + "?name=티뉴")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(401)
+                .body("type", is(ProblemType.UNAUTHORIZED.uri().toString()));
     }
 
     @Test
@@ -527,7 +531,8 @@ class ReservationApiTest {
                 .body(body)
                 .when().put("/reservations/me/9999?name=민욱")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("type", is(ProblemType.NOT_FOUND.uri().toString()));
     }
 
     @Test
@@ -565,7 +570,8 @@ class ReservationApiTest {
                 .body(body)
                 .when().put("/reservations/me/" + reservationId + "?name=민욱")
                 .then().log().all()
-                .statusCode(422);
+                .statusCode(422)
+                .body("type", is(ProblemType.BUSINESS_RULE_VIOLATION.uri().toString()));
     }
 
     @Test
@@ -601,7 +607,8 @@ class ReservationApiTest {
                 .body(body)
                 .when().put("/reservations/me/" + reservationId)
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("type", is(ProblemType.BAD_REQUEST.uri().toString()));
     }
 
     @Test
