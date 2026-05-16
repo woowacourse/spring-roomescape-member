@@ -38,4 +38,10 @@ public class ReservationValidator {
                     throw new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
                 });
     }
+
+    public void validateOwner(Reservation targetReservation, String name) {
+        if (!targetReservation.isOwner(name)) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH);
+        }
+    }
 }
