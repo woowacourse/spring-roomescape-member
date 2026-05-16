@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.code.RoomEscapeErrorCode;
 import roomescape.theme.doamin.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.ThemeTimeQueryRepository;
 import roomescape.theme.service.dto.ThemeTimeAvailability;
+import roomescape.theme.service.exception.ThemeNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,14 @@ public class ThemeService {
 
     public Theme getTheme(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new ThemeNotFoundException(RoomEscapeErrorCode.THEME_NOT_FOUND));
+    }
+
+    public Theme saveTheme(String name, String description, String thumbnailUrl) {
+        return themeRepository.save(Theme.of(name, description, thumbnailUrl));
+    }
+
+    public void deleteTheme(long id) {
+        themeRepository.delete(id);
     }
 }

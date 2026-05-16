@@ -11,26 +11,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.admin.service.AdminThemeService;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.doamin.Theme;
+import roomescape.theme.service.ThemeService;
 
 @RequestMapping("/admin/themes")
 @RestController
 @RequiredArgsConstructor
 public class AdminThemeController {
-    private final AdminThemeService adminThemeService;
+    private final ThemeService themeService;
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid ThemeRequest request) {
-        final Theme theme = adminThemeService.saveTheme(request.name(), request.description(), request.thumbnailUrl());
+        final Theme theme = themeService.saveTheme(request.name(), request.description(), request.thumbnailUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
-        adminThemeService.deleteTheme(id);
+        themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 }

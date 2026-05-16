@@ -25,7 +25,7 @@ class ReservationControllerTest {
     void userReservationCreateApi() {
         Map<String,Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2026-05-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -75,32 +75,73 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(422);
     }
 
-    // 중복된 예약은 실패한다.
-    @DisplayName("중복된 예약은 실패한다.")
+    @DisplayName("동일 테마, 동일 날짜, 동일 타임 중복된 예약은 실패한다.")
     @Test
     void duplicateReservation() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", LocalDate.now());
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
+        createReservation(params);
 
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @DisplayName("동일 테마, 동일 날짜, 다른 타임 예약은 성공한다.")
+    @Test
+    void duplicateThemeAndDate() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        createReservation(params);
+
+        params.put("timeId", 2);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
 
+    @DisplayName("동일 테마, 다른 날짜, 다른 타임 예약은 성공한다.")
+    @Test
+    void duplicateTheme() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        createReservation(params);
+
+        params.put("timeId", 2);
+        params.put("date", LocalDate.now().plusDays(2).toString());
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(201);
+    }
+
+    private void createReservation(Map<String, Object> params) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
     }
 
 }

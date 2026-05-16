@@ -1,5 +1,11 @@
 package roomescape.reservation.service;
 
+import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_ALREADY_RESERVED;
+import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_DATE_IN_PAST;
+import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_TIME_IN_PAST;
+import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_TIME_NOT_FOUND;
+import static roomescape.exception.code.RoomEscapeErrorCode.THEME_NOT_FOUND;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -8,17 +14,23 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.service.exception.ReservationCreateException;
+import roomescape.reservation.service.exception.ReservationNotFoundException;
 import roomescape.theme.doamin.Theme;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    private final ThemeService themeService;
-    private final ReservationTimeService reservationTimeService;
 
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
 
     public Reservation createReservation(String name,
                                   LocalDate date,
@@ -26,14 +38,14 @@ public class ReservationService {
                                   long themeId) {
         validateReservationDateNotPast(date);
 
-        final ReservationTime findTime = reservationTimeService.getTime(timeId);
-        validateReservationTimeNotPast(findTime);
+        Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
+        validateReservationTime(findTime);
 
-        final Theme findTheme = themeService.getTheme(themeId);
-
+        Optional<Theme> findTheme = themeRepository.findById(themeId);
+        validateTheme(findTheme);
         validateDuplicateReservation(date, timeId, themeId);
 
-        return reservationRepository.save(Reservation.of(name, date, findTime, findTheme));
+        return reservationRepository.save(Reservation.of(name, date, findTime.get(), findTheme.get()));
     }
 
     public void deleteReservation(long id) {
@@ -47,7 +59,7 @@ public class ReservationService {
     public Reservation getReservation(long id) {
         Optional<Reservation> findReservation = reservationRepository.findById(id);
         if (findReservation.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
+            throw new ReservationNotFoundException();
         }
 
         return findReservation.get();
@@ -55,29 +67,31 @@ public class ReservationService {
 
     private void validateReservationDateNotPast(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("예약 날짜는 오늘 이후여야 합니다.");
+            throw new ReservationCreateException(RESERVATION_DATE_IN_PAST);
         }
     }
 
     private void validateDuplicateReservation(LocalDate date, long timeId, long themeId) {
         reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
-                .ifPresent(r -> {
-                    throw new IllegalArgumentException("이미 예약이 존재하는 시간입니다.");
+                .ifPresent(reservation -> {
+                    throw new ReservationCreateException(RESERVATION_ALREADY_RESERVED);
                 });
     }
 
-    private void validateReservationTimeNotPast(ReservationTime reservationTime) {
-        if (reservationTime.getStartAt().isBefore(LocalDate.now().atStartOfDay().toLocalTime())) {
-            throw new IllegalArgumentException("예약 시간은 현재 시간 이후여야 합니다.");
+    private void validateReservationTime(Optional<ReservationTime> findTime) {
+        if (findTime.isEmpty()) {
+            throw new ReservationCreateException(RESERVATION_TIME_NOT_FOUND);
+        }
+
+        if (findTime.get().getStartAt().isBefore(LocalDate.now().atStartOfDay().toLocalTime())) {
+            throw new ReservationCreateException(RESERVATION_TIME_IN_PAST);
         }
     }
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    private void validateTheme(Optional<Theme> findTheme) {
+        if (findTheme.isEmpty()) {
+            throw new ReservationCreateException(THEME_NOT_FOUND);
+        }
     }
 
-
-    public void cancelReservation(long reservationId, String username) {
-
-    }
 }

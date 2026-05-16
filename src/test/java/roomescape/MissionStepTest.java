@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,15 +28,15 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "23:00");
 
-        final String location = RestAssured.given().log().all()
+        final Long id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
-                .header("Location");
-        final long id = Long.parseLong(location.split("/")[2]);
+                .jsonPath()
+                .getLong("id");
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -54,7 +55,7 @@ public class MissionStepTest {
     void 예약과_시간_연결() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

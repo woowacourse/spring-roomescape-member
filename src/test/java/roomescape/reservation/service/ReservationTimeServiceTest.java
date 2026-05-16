@@ -3,7 +3,6 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -13,10 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.service.exception.ReservationTimeCreateException;
+import roomescape.reservation.service.exception.ReservationTimeDeleteException;
+import roomescape.reservation.service.exception.ReservationTimeNotFoundException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -62,8 +63,7 @@ class ReservationTimeServiceTest {
         LocalTime startAt = LocalTime.of(11, 0);
 
         assertThatThrownBy(() -> reservationTimeService.createTime(startAt))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다.");
+                .isInstanceOf(ReservationTimeCreateException.class);
     }
 
     @DisplayName("예약에 사용 중인 시간은 삭제할 수 없다.")
@@ -71,16 +71,15 @@ class ReservationTimeServiceTest {
     void deleteTimeFailByInUse() {
         // test-data.sql 기준:
         // time_id=3 (12:00)은 여러 예약에서 사용 중
-        assertThatThrownBy(() -> reservationTimeService.deleteTime(3L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(3L))
+                .isInstanceOf(ReservationTimeDeleteException.class);
     }
 
     @DisplayName("예약에 사용되지 않은 시간은 삭제할 수 있다.")
     @Test
     void deleteTimeSuccess() {
         // 22:00(id=13)은 기본 데이터 기준 예약 없음
-        reservationTimeService.deleteTime(13L);
+        reservationTimeService.deleteReservationTime(13L);
 
         assertThat(reservationTimeRepository.findById(13L)).isEmpty();
     }
@@ -99,7 +98,6 @@ class ReservationTimeServiceTest {
     @Test
     void getTimeFailByMissingTime() {
         assertThatThrownBy(() -> reservationTimeService.getTime(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 }

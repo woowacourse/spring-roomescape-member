@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.doamin.Theme;
+import roomescape.reservation.service.exception.ReservationCreateException;
+import roomescape.reservation.service.exception.ReservationNotFoundException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -60,8 +60,7 @@ class ReservationServiceTest {
                 999L,
                 1L
         ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(ReservationCreateException.class);
     }
 
     @DisplayName("존재하지 않는 테마로 예약을 생성하면 예외가 발생한다.")
@@ -75,8 +74,7 @@ class ReservationServiceTest {
                 1L,
                 999L
         ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .isInstanceOf(ReservationCreateException.class);
     }
 
     @DisplayName("아이디로 예약을 조회할 수 있다.")
@@ -103,8 +101,7 @@ class ReservationServiceTest {
     @Test
     void getReservationFailByMissingReservation() {
         assertThatThrownBy(() -> reservationService.getReservation(999999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @DisplayName("사용자 이름으로 예약 목록을 조회한다.")
