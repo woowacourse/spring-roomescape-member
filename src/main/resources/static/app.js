@@ -311,8 +311,7 @@ function updateMyReservation() {
 
     // 백엔드 DTO에 맞춰 요청 본문 생성
     const updateData = {
-        scheduleId: parseInt(newScheduleId),
-        name: currentUser // 이 필드는 컨트롤러에서 사용되지 않지만 DTO 형식을 맞추기 위해 포함
+        scheduleId: parseInt(newScheduleId)
     };
 
     fetch(`/reservations/${reservationToUpdateId}?name=${currentUser}`, {
