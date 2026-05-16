@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.support.ReservationTestHelper;
 
 /*
  * 미션2 사이클1 - 사용자 예약 API 요구사항 테스트.
@@ -35,7 +34,7 @@ public class UserReservationStepTest extends IntegrationTest {
 
     private static final String FUTURE_DATE = "2050-12-31";
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTestHelper helper;
 
     private Long timeId;
     private Long themeIdA;
@@ -43,9 +42,9 @@ public class UserReservationStepTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        timeId = insertTime(LocalTime.of(10, 0));
-        themeIdA = insertTheme("테마A", "설명A", "https://example.com/a.jpg");
-        themeIdB = insertTheme("테마B", "설명B", "https://example.com/b.jpg");
+        timeId = helper.insertTime(LocalTime.of(10, 0));
+        themeIdA = helper.insertTheme("테마A", "설명A", "https://example.com/a.jpg");
+        themeIdB = helper.insertTheme("테마B", "설명B", "https://example.com/b.jpg");
     }
 
 
@@ -121,23 +120,5 @@ public class UserReservationStepTest extends IntegrationTest {
                 .then().statusCode(201);
     }
 
-
-    private Long insertTime(LocalTime startAt) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Time.valueOf(startAt));
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
-                Long.class, Time.valueOf(startAt));
-    }
-
-    private Long insertTheme(String name, String description, String thumbnailUrl) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
-                name, description, thumbnailUrl);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM theme WHERE name = ?",
-                Long.class, name);
-    }
 
 }

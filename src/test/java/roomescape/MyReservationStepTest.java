@@ -6,8 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.sql.Date;
-import java.sql.Time;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.support.ReservationTestHelper;
 
 /*
  * 미션2 사이클2 - 내 예약 관리 API 통합 테스트.
@@ -50,7 +48,7 @@ public class MyReservationStepTest extends IntegrationTest {
     }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTestHelper helper;
 
     private Long timeId10;
     private Long timeId11;
@@ -58,9 +56,9 @@ public class MyReservationStepTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        timeId10 = insertTime(LocalTime.of(10, 0));
-        timeId11 = insertTime(LocalTime.of(11, 0));
-        themeId = insertTheme("테마A", "설명", "https://example.com/a.jpg");
+        timeId10 = helper.insertTime(LocalTime.of(10, 0));
+        timeId11 = helper.insertTime(LocalTime.of(11, 0));
+        themeId = helper.insertTheme("테마A", "설명", "https://example.com/a.jpg");
     }
 
     @Nested
@@ -71,10 +69,10 @@ public class MyReservationStepTest extends IntegrationTest {
         @DisplayName("내 이름으로 된 예약 목록을 날짜, 시간 순으로 반환한다")
         void 내_예약_조회() {
             // 브라운 다른 날짜로 2개 예약
-            insertReservation("브라운", FUTURE_DATE_2, timeId10, themeId);
-            insertReservation("브라운", FUTURE_DATE_1, timeId11, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE_2, timeId10, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE_1, timeId11, themeId);
             // 다른 사람의 예약 1개 (필터링 검증용)
-            insertReservation("콘", FUTURE_DATE_1, timeId10, themeId);
+            helper.insertReservation("콘", FUTURE_DATE_1, timeId10, themeId);
 
             ExtractableResponse<Response> response = RestAssured.given().log().all()
                     .when().get("/user/reservations?name=브라운")
@@ -92,8 +90,8 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("같은 날짜에 여러 예약이 있으면 시간 순으로 정렬된다")
         void 같은_날짜_시간_정렬() {
-            insertReservation("브라운", FUTURE_DATE_1, timeId11, themeId);
-            insertReservation("브라운", FUTURE_DATE_1, timeId10, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE_1, timeId11, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             ExtractableResponse<Response> response = RestAssured.given()
                     .when().get("/user/reservations?name=브라운")
@@ -132,7 +130,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("본인의 미래 예약을 취소하면 204를 반환하고 실제로 삭제된다")
         void 본인_미래_예약_취소() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             RestAssured.given().log().all()
                     .when().delete("/user/reservations/" + reservationId + "?name=브라운")
@@ -158,7 +156,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("다른 사람의 예약 취소 시도 → 404 (정보 노출 방지)")
         void 다른_사람의_예약() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             RestAssured.given().log().all()
                     .when().delete("/user/reservations/" + reservationId + "?name=콘")
@@ -172,7 +170,7 @@ public class MyReservationStepTest extends IntegrationTest {
         void 이미_지난_예약() {
             // 고정 Clock 기준 어제 (2026-05-12)
             LocalDate yesterday = TODAY.minusDays(1);
-            Long reservationId = insertReservationAndReturnId("브라운", yesterday, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", yesterday, timeId10, themeId);
 
             RestAssured.given().log().all()
                     .when().delete("/user/reservations/" + reservationId + "?name=브라운")
@@ -184,7 +182,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("name 파라미터 누락 → 400")
         void name_누락() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             RestAssured.given().log().all()
                     .when().delete("/user/reservations/" + reservationId)
@@ -201,7 +199,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("본인의 미래 예약을 변경하면 200 + 변경된 예약을 반환한다")
         void 본인_미래_예약_변경() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "브라운");
@@ -222,7 +220,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("같은 시간으로의 변경도 허용된다 (자기 자신과는 충돌하지 않음)")
         void 같은_시간으로_변경_허용() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "브라운");
@@ -257,7 +255,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("다른 사람의 예약 변경 시도 → 404")
         void 다른_사람의_예약() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "콘");
@@ -277,7 +275,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @DisplayName("이미 지난 예약 변경 시도 → 400")
         void 이미_지난_예약() {
             LocalDate yesterday = TODAY.minusDays(1);
-            Long reservationId = insertReservationAndReturnId("브라운", yesterday, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", yesterday, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "브라운");
@@ -296,7 +294,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("새 시간이 과거인 변경 시도 → 400")
         void 새_시간이_과거() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "브라운");
@@ -316,8 +314,8 @@ public class MyReservationStepTest extends IntegrationTest {
         @DisplayName("변경하려는 시간이 다른 사람에 의해 예약됨 → 400")
         void 시간_충돌() {
             // 같은 테마에 두 예약 (다른 시간)
-            Long myReservation = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
-            insertReservationAndReturnId("콘", FUTURE_DATE_1, timeId11, themeId);
+            Long myReservation = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            helper.insertReservationAndReturnId("콘", FUTURE_DATE_1, timeId11, themeId);
 
             // 브라운이 자기 예약을 콘의 시간으로 변경 시도
             Map<String, Object> body = new HashMap<>();
@@ -337,7 +335,7 @@ public class MyReservationStepTest extends IntegrationTest {
         @Test
         @DisplayName("존재하지 않는 timeId로 변경 시도 → 404")
         void 존재하지_않는_시간() {
-            Long reservationId = insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
+            Long reservationId = helper.insertReservationAndReturnId("브라운", FUTURE_DATE_1, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "브라운");
@@ -417,39 +415,5 @@ public class MyReservationStepTest extends IntegrationTest {
                     .then().statusCode(200)
                     .body("size()", is(0));
         }
-    }
-
-
-    private Long insertReservationAndReturnId(String name, LocalDate date, Long timeId, Long themeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, Date.valueOf(date), timeId, themeId);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation WHERE name = ? AND date = ? AND time_id = ? AND theme_id = ?",
-                Long.class, name, Date.valueOf(date), timeId, themeId);
-    }
-
-    private Long insertTime(LocalTime startAt) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Time.valueOf(startAt));
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
-                Long.class, Time.valueOf(startAt));
-    }
-
-    private Long insertTheme(String name, String description, String thumbnailUrl) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
-                name, description, thumbnailUrl);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM theme WHERE name = ?",
-                Long.class, name);
-    }
-
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, Date.valueOf(date), timeId, themeId);
     }
 }

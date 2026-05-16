@@ -4,8 +4,6 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.sql.Date;
-import java.sql.Time;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.support.ReservationTestHelper;
 
 /*
  * 미션2 사이클2 - 에러 응답 명세 통합 테스트.
@@ -49,15 +47,15 @@ public class ErrorResponseStepTest extends IntegrationTest {
     }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTestHelper helper;
 
     private Long timeId10;
     private Long themeId;
 
     @BeforeEach
     void setUp() {
-        timeId10 = insertTime(LocalTime.of(10, 0));
-        themeId = insertTheme("테마A", "설명", "https://example.com/a.jpg");
+        timeId10 = helper.insertTime(LocalTime.of(10, 0));
+        themeId = helper.insertTheme("테마A", "설명", "https://example.com/a.jpg");
     }
 
     @Nested
@@ -86,7 +84,7 @@ public class ErrorResponseStepTest extends IntegrationTest {
         @DisplayName("중복 예약 시도 → 400 + 메시지")
         void 중복_예약() {
             // 첫 예약
-            insertReservation("브라운", FUTURE_DATE, timeId10, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE, timeId10, themeId);
 
             Map<String, Object> body = new HashMap<>();
             body.put("name", "콘");
@@ -240,7 +238,7 @@ public class ErrorResponseStepTest extends IntegrationTest {
         @Test
         @DisplayName("예약이 존재하는 시간 삭제 시도 → 400 + 메시지")
         void 예약_존재하는_시간_삭제() {
-            insertReservation("브라운", FUTURE_DATE, timeId10, themeId);
+            helper.insertReservation("브라운", FUTURE_DATE, timeId10, themeId);
 
             RestAssured.given().log().all()
                     .when().delete("/admin/times/" + timeId10)
@@ -273,29 +271,5 @@ public class ErrorResponseStepTest extends IntegrationTest {
                     .statusCode(400)
                     .body("message", is("요청 파라미터 형식이 올바르지 않습니다."));
         }
-    }
-
-    private Long insertTime(LocalTime startAt) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Time.valueOf(startAt));
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
-                Long.class, Time.valueOf(startAt));
-    }
-
-    private Long insertTheme(String name, String description, String thumbnailUrl) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
-                name, description, thumbnailUrl);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM theme WHERE name = ?",
-                Long.class, name);
-    }
-
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, Date.valueOf(date), timeId, themeId);
     }
 }

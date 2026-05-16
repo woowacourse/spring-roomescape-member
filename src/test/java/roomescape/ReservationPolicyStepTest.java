@@ -3,7 +3,6 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.sql.Time;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationCreateCommand;
+import roomescape.support.ReservationTestHelper;
 
 /*
  * 미션2 사이클2 - 서비스 정책 검증 테스트.
@@ -48,7 +47,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
     }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTestHelper helper;
 
     @Autowired
     private ReservationService reservationService;
@@ -61,8 +60,8 @@ public class ReservationPolicyStepTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        timeId10 = insertTime(LocalTime.of(10, 0));
-        themeId = insertTheme("테마A", "설명", "https://example.com/a.jpg");
+        timeId10 = helper.insertTime(LocalTime.of(10, 0));
+        themeId = helper.insertTheme("테마A", "설명", "https://example.com/a.jpg");
     }
 
     @Nested
@@ -96,7 +95,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         @Test
         @DisplayName("오늘 + 미래 시간(15:00, 현재 12:00)은 허용된다")
         void 오늘이지만_미래_시간은_허용() {
-            Long timeId15 = insertTime(LocalTime.of(15, 0));
+            Long timeId15 = helper.insertTime(LocalTime.of(15, 0));
             ReservationCreateCommand command = new ReservationCreateCommand(
                     "브라운", TODAY, timeId15, themeId
             );
@@ -142,7 +141,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         @DisplayName("같은 날짜+시간이라도 테마가 다르면 허용된다")
         void 같은_날짜_시간이지만_테마가_다르면_허용() {
             LocalDate futureDate = TODAY.plusDays(1);
-            Long anotherThemeId = insertTheme("테마B", "설명B", "https://example.com/b.jpg");
+            Long anotherThemeId = helper.insertTheme("테마B", "설명B", "https://example.com/b.jpg");
 
             reservationService.create(new ReservationCreateCommand(
                     "브라운", futureDate, timeId10, themeId
@@ -175,7 +174,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         @Test
         @DisplayName("예약이 없는 시간은 삭제할 수 있다")
         void 예약이_없는_시간은_삭제_허용() {
-            Long unusedTimeId = insertTime(LocalTime.of(15, 0));
+            Long unusedTimeId = helper.insertTime(LocalTime.of(15, 0));
 
             assertThatCode(() -> reservationTimeService.delete(unusedTimeId))
                     .doesNotThrowAnyException();
@@ -240,22 +239,4 @@ public class ReservationPolicyStepTest extends IntegrationTest {
         }
     }
 
-
-    private Long insertTime(LocalTime startAt) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Time.valueOf(startAt));
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
-                Long.class, Time.valueOf(startAt));
-    }
-
-    private Long insertTheme(String name, String description, String thumbnailUrl) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
-                name, description, thumbnailUrl);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM theme WHERE name = ?",
-                Long.class, name);
-    }
 }
