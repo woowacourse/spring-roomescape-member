@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
@@ -22,6 +23,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.TimeService;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -55,6 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = timeService.findById(reservation.timeId());
         Theme theme = findTheme(reservation.themeId());
@@ -104,6 +107,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public Reservation update(ReservationUpdateServiceDto dto) {
         Reservation existing = reservationRepository.findById(dto.id())
                 .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
@@ -132,6 +136,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
             throw new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
@@ -140,6 +145,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public void cancel(Long id, String requesterName) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,

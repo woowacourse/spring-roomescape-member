@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -17,6 +18,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.TimeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final ThemeRepository themeRepository;

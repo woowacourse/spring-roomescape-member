@@ -6,14 +6,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.theme.domain.Theme;
+import org.springframework.transaction.annotation.Transactional;
+
 import roomescape.error.ErrorCode;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeServiceImpl implements ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -39,6 +42,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
+    @Transactional
     public Theme create(ThemeSaveServiceDto theme) {
         Theme newTheme = new Theme(
                 theme.name(),
@@ -49,6 +53,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         if (!themeRepository.deleteById(id)) {
             throw new ThemeException(ErrorCode.THEME_NOT_FOUND,
