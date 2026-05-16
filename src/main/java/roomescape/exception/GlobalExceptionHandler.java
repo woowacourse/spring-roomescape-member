@@ -25,39 +25,45 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String DETAIL_VALIDATION_ERROR = "요청 본문의 일부 필드가 유효하지 않습니다.";
     private static final String DETAIL_INTERNAL_ERROR = "요청을 처리하는 중 알 수 없는 오류가 발생했습니다.";
-
     private static final String ERRORS_PROPERTY = "errors";
     private static final String POINTER_PREFIX = "/";
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, WebRequest request) {
-        return build(HttpStatus.NOT_FOUND, ProblemType.NOT_FOUND, ex.getMessage(), ex, request);
+        return buildProblem(HttpStatus.NOT_FOUND, ProblemType.NOT_FOUND, ex, request);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ProblemDetail handleUnauthorized(UnauthorizedException ex, WebRequest request) {
-        return build(HttpStatus.UNAUTHORIZED, ProblemType.UNAUTHORIZED, ex.getMessage(), ex, request);
+        return buildProblem(HttpStatus.UNAUTHORIZED, ProblemType.UNAUTHORIZED, ex, request);
     }
 
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex, WebRequest request) {
-        return build(HttpStatus.CONFLICT, ProblemType.CONFLICT, ex.getMessage(), ex, request);
+        return buildProblem(HttpStatus.CONFLICT, ProblemType.CONFLICT, ex, request);
     }
 
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ProblemDetail handleBusinessRuleViolation(BusinessRuleViolationException ex, WebRequest request) {
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, ProblemType.BUSINESS_RULE_VIOLATION, ex.getMessage(), ex, request);
+        return buildProblem(HttpStatus.UNPROCESSABLE_ENTITY, ProblemType.BUSINESS_RULE_VIOLATION, ex, request);
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception ex, WebRequest request) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR, DETAIL_INTERNAL_ERROR, ex, request);
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, DETAIL_INTERNAL_ERROR);
+        applyType(problem, ProblemType.INTERNAL_ERROR, request);
+        logException(ex, status, request);
+        return problem;
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, DETAIL_VALIDATION_ERROR);
         List<FieldErrorDetail> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldErrorDetail::from)
@@ -68,27 +74,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
-            Exception ex, Object body, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+            Exception ex,
+            Object body,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
         ResponseEntity<Object> response = super.handleExceptionInternal(ex, body, headers, status, request);
         if (response != null && response.getBody() instanceof ProblemDetail problem) {
-            decorate(problem, ex, status, request);
+            applyType(problem, mappingFor(ex, status), request);
         }
         logException(ex, status, request);
         return response;
     }
 
-    private ProblemDetail build(HttpStatus status, ProblemType type, String detail, Exception ex, WebRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
-        problem.setType(type.uri());
-        problem.setTitle(type.title());
-        problem.setInstance(URI.create(extractUri(request)));
+    private ProblemDetail buildProblem(
+            HttpStatus status,
+            ProblemType type,
+            Exception ex,
+            WebRequest request
+    ) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
+        applyType(problem, type, request);
         logException(ex, status, request);
         return problem;
     }
 
-    private void decorate(ProblemDetail problem, Exception ex, HttpStatusCode status, WebRequest request) {
-        ProblemType type = mappingFor(ex, status);
+    private void applyType(ProblemDetail problem, ProblemType type, WebRequest request) {
         problem.setType(type.uri());
         problem.setTitle(type.title());
         problem.setInstance(URI.create(extractUri(request)));

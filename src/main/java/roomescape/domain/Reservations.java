@@ -1,7 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.ReservationTime;
-
 import java.util.List;
 
 public class Reservations {
