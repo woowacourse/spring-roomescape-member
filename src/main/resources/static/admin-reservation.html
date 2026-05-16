@@ -355,11 +355,43 @@
         </div>
     </div>
 
-<script>
+<script type="module">
+    import { fetchThemes, fetchReservationTimes, fetchAdminReservations, createReservation, deleteAdminReservation } from '/js/api.js';
+    import { showToast } from '/js/utils.js';
+
     const resForm = document.getElementById('resForm');
     const themeSelect = document.getElementById('themeSelect');
     const timeSelect = document.getElementById('timeSelect');
     const resList = document.getElementById('resList');
+
+    let currentPage = 0;
+    const pageSize = 10;
+    let allReservations = [];
+
+    window.prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+            renderReservations();
+        }
+    };
+
+    window.nextPage = () => {
+        if ((currentPage + 1) * pageSize < allReservations.length) {
+            currentPage++;
+            renderReservations();
+        }
+    };
+
+    window.deleteRes = async (id) => {
+        if (!confirm('정말로 해당 예약을 삭제(취소)하시겠습니까?')) return;
+        try {
+            await deleteAdminReservation(id);
+            showToast('예약이 삭제되었습니다.', 'success');
+            loadReservations();
+        } catch (e) {
+            showToast('삭제에 실패했습니다.', 'error');
+        }
+    };
 
     async function init() {
         await Promise.all([loadThemes(), loadTimes(), loadReservations()]);
@@ -367,9 +399,7 @@
 
     async function loadThemes() {
         try {
-            const res = await fetch('/themes');
-            const data = await res.json();
-            const themes = data.themes || data;
+            const themes = await fetchThemes();
             themes.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.id;
@@ -383,9 +413,7 @@
 
     async function loadTimes() {
         try {
-            const res = await fetch('/reservation-times');
-            const data = await res.json();
-            const times = data.reservationTimes || data;
+            const times = await fetchReservationTimes();
             times.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.id;
@@ -397,19 +425,12 @@
         }
     }
 
-    let currentPage = 0;
-    const pageSize = 10;
-    let allReservations = [];
-
     async function loadReservations() {
         try {
             let page = 0;
             let rawReservations = [];
             while (true) {
-                const res = await fetch(`/admin/reservations?page=${page}&size=100`);
-                if (!res.ok) break;
-                const data = await res.json();
-                const items = data.reservations || data;
+                const items = await fetchAdminReservations(page, 100);
                 if (!Array.isArray(items)) break;
                 rawReservations = rawReservations.concat(items);
                 if (items.length < 100) break;
@@ -432,6 +453,7 @@
             renderReservations();
         } catch (e) {
             console.error('예약 로드 실패', e);
+            showToast('예약 목록 로드 실패', 'error');
         }
     }
 
@@ -467,20 +489,6 @@
         document.getElementById('pageInfo').textContent = `${currentPage + 1} 페이지`;
     }
 
-    function prevPage() {
-        if (currentPage > 0) {
-            currentPage--;
-            renderReservations();
-        }
-    }
-
-    function nextPage() {
-        if ((currentPage + 1) * pageSize < allReservations.length) {
-            currentPage++;
-            renderReservations();
-        }
-    }
-
     resForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {
@@ -490,34 +498,15 @@
             timeId: parseInt(timeSelect.value)
         };
         try {
-            const res = await fetch('/reservations', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-                resForm.reset();
-                currentPage = 0;
-                loadReservations();
-            } else {
-                const error = await res.json();
-                alert(error.message || '예약 추가에 실패했습니다. 이미 예약된 시간인지 확인해주세요.');
-            }
+            await createReservation(payload);
+            showToast('예약이 추가되었습니다.', 'success');
+            resForm.reset();
+            currentPage = 0;
+            loadReservations();
         } catch (e) {
-            alert('서버 오류가 발생했습니다.');
+            showToast(e.message || '예약 추가에 실패했습니다. 이미 예약된 시간인지 확인해주세요.', 'error');
         }
     });
-
-    async function deleteRes(id) {
-        if (!confirm('정말로 해당 예약을 삭제(취소)하시겠습니까?')) return;
-        try {
-            const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
-            if (res.ok) loadReservations();
-            else alert('삭제에 실패했습니다.');
-        } catch (e) {
-            alert('서버 오류가 발생했습니다.');
-        }
-    }
 
     init();
 </script>
