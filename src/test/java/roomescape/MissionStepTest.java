@@ -179,7 +179,7 @@ public class MissionStepTest {
             .when().delete("/reservations/999?name=아무개")
             .then().log().all()
             .statusCode(404)
-            .body("code", is("RESERVATION_NOT_FOUND"))
+            .body("code", is("R001"))
             .body("message", is("예약이 존재하지 않습니다."));
     }
 
@@ -266,7 +266,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("INVALID_REQUEST"))
+                .body("code", is("C001"))
                 .body("message", containsString("timeId"));
     }
 
@@ -280,7 +280,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("INVALID_REQUEST"))
+                .body("code", is("C001"))
                 .body("message", containsString("name"))
                 .body("message", containsString("date"))
                 .body("message", containsString("themeId"))
@@ -304,7 +304,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("PAST_RESERVATION_NOT_ALLOWED"))
+                .body("code", is("R003"))
                 .body("message", is("지난 날짜와 시간으로 예약할 수 없습니다."));
     }
 
@@ -331,7 +331,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(409)
-                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("code", is("R002"))
                 .body("message", is("이미 예약된 시간입니다."));
     }
 
@@ -387,7 +387,7 @@ public class MissionStepTest {
                 .when().delete("/reservations/1?name=초코")
                 .then().log().all()
                 .statusCode(403)
-                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("code", is("R005"))
                 .body("message", is("본인의 예약만 취소·변경할 수 있습니다."));
     }
 
@@ -403,7 +403,7 @@ public class MissionStepTest {
                 .when().delete("/reservations/1?name=tester1")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("PAST_RESERVATION_CANCEL_NOT_ALLOWED"))
+                .body("code", is("R004"))
                 .body("message", is("이미 지난 예약은 취소할 수 없습니다."));
     }
 
@@ -493,7 +493,7 @@ public class MissionStepTest {
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(403)
-                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("code", is("R005"))
                 .body("message", is("본인의 예약만 취소·변경할 수 있습니다."));
     }
 
@@ -526,7 +526,7 @@ public class MissionStepTest {
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("PAST_RESERVATION_NOT_ALLOWED"))
+                .body("code", is("R003"))
                 .body("message", is("지난 날짜와 시간으로 예약할 수 없습니다."));
     }
 
@@ -584,7 +584,7 @@ public class MissionStepTest {
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(409)
-                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("code", is("R002"))
                 .body("message", is("이미 예약된 시간입니다."));
     }
 

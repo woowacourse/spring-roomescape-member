@@ -86,7 +86,9 @@ class ThemeControllerTest {
                 .when(themeService).deleteById(id);
 
         mockMvc.perform(delete("/themes/{id}", id))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("TH001"))
+                .andExpect(jsonPath("$.message").value("테마가 존재하지 않습니다."));
     }
 
     @Test
@@ -132,7 +134,7 @@ class ThemeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
+                .andExpect(jsonPath("$.code").value("S001"))
                 .andExpect(jsonPath("$.message").value("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
     }
 

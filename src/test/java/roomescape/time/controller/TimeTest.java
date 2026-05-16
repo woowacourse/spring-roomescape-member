@@ -56,7 +56,7 @@ public class TimeTest {
         .when().delete("/times/999")
         .then().log().all()
         .statusCode(404)
-        .body("code", is("TIME_NOT_FOUND"))
+        .body("code", is("T001"))
         .body("message", is("예약 시간이 존재하지 않습니다."));
   }
 
@@ -148,7 +148,7 @@ public class TimeTest {
         .when().delete("/times/1")
         .then().log().all()
         .statusCode(409)
-        .body("code", is("RESERVED_TIME_DELETE_NOT_ALLOWED"))
+        .body("code", is("T002"))
         .body("message", is("예약이 존재하는 시간은 삭제할 수 없습니다."));
   }
 }
