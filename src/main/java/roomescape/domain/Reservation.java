@@ -99,10 +99,10 @@ public class Reservation {
         return theme.getId();
     }
 
-    public void validateNotPastTime() {
+    public void validateNotPastTime(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
 
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+        if (reservationDateTime.isBefore(now)) {
             throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
         }
     }

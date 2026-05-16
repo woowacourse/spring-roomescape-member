@@ -52,7 +52,7 @@ public class ReservationService {
 
         Reservation reservation = Reservation.create(reservationRequestDTO.name(),
                 date, time, theme);
-        reservation.validateNotPastTime();
+        reservation.validateNotPastTime(LocalDateTime.now(clock));
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -99,7 +99,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND)
         );
-        reservation.validateNotPastTime();
+        reservation.validateNotPastTime(LocalDateTime.now(clock));
 
         ReservationTime time = reservationTimeRepository.findById(request.timeId()).orElseThrow(
                 () -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND)
@@ -117,7 +117,7 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomEscapeException(
                         ReservationErrorCode.RESERVATION_NOT_FOUND)
                 );
-        reservation.validateNotPastTime();
+        reservation.validateNotPastTime(LocalDateTime.now(clock));
         // TODO: 내 예약이 아니면 예외(관리자 모드 제외)
         reservationRepository.delete(id);
     }
