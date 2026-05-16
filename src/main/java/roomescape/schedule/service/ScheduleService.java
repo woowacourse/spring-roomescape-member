@@ -2,6 +2,9 @@ package roomescape.schedule.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
@@ -10,7 +13,6 @@ import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
-import roomescape.exception.CustomBusinessException;
 import roomescape.exception.ErrorCode;
 
 import java.time.LocalDateTime;
@@ -46,7 +48,7 @@ public class ScheduleService {
 
     public Schedule findById(Long id) {
         return scheduleRepository.findById(id)
-                .orElseThrow(() -> new CustomBusinessException(ErrorCode.SCHEDULE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SCHEDULE_NOT_FOUND));
     }
 
     // TODO: 메서드가 너무 길다. (2026. 5. 12.)
@@ -56,24 +58,24 @@ public class ScheduleService {
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
 
         if (newStartAt.isBefore(LocalDateTime.now())) {
-            throw new CustomBusinessException(ErrorCode.PAST_SCHEDULE_CREATION);
+            throw new BadRequestException(ErrorCode.PAST_SCHEDULE_CREATION);
         }
 
         if (newStartAt.toLocalTime().isBefore(OPENING_TIME)) {
-            throw new CustomBusinessException(ErrorCode.INVALID_SCHEDULE_TIME);
+            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
         }
 
         LocalTime requiredTime = theme.getRequiredTime();
         LocalDateTime newEndAt = newStartAt.plusHours(requiredTime.getHour())
                 .plusMinutes(requiredTime.getMinute());
         if (newEndAt.toLocalTime().isAfter(CLOSE_TIME)) {
-            throw new CustomBusinessException(ErrorCode.INVALID_SCHEDULE_TIME);
+            throw new BadRequestException(ErrorCode.INVALID_SCHEDULE_TIME);
         }
 
         List<Schedule> existingSchedules = scheduleRepository.findDailySchedules(request.themeId(), request.date());
         for (Schedule existingSchedule : existingSchedules) {
             if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
-                throw new CustomBusinessException(ErrorCode.DUPLICATE_SCHEDULE_TIME);
+                throw new ConflictException(ErrorCode.DUPLICATE_SCHEDULE_TIME);
             }
         }
 
@@ -84,7 +86,7 @@ public class ScheduleService {
     @Transactional
     public void delete(Long scheduleId) {
         if (reservationRepository.existsByScheduleId(scheduleId)) {
-            throw new CustomBusinessException(ErrorCode.SCHEDULE_IN_USE);
+            throw new BadRequestException(ErrorCode.SCHEDULE_IN_USE);
         }
         scheduleRepository.delete(scheduleId);
     }

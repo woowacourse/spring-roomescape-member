@@ -2,8 +2,11 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.CustomBusinessException;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
+import roomescape.exception.ForbiddenException;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
@@ -33,14 +36,7 @@ public class ReservationService {
     public Long create(ReservationRequest request) {
         User user = userService.findByName(request.name());
         Schedule schedule = scheduleService.findById(request.scheduleId());
-
-        if (reservationRepository.existsByScheduleId(schedule.getId())) {
-            throw new CustomBusinessException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
-        }
-
-        if (schedule.isBefore()) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_PAST_TIME);
-        }
+        ensureScheduleIsBookable(schedule);
 
         Reservation reservation = new Reservation(user, schedule);
         return reservationRepository.create(reservation);
@@ -66,46 +62,42 @@ public class ReservationService {
     @Transactional
     public void delete(Long reservationId, String userName) {
         User currentUser = userService.findByName(userName);
-
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new CustomBusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        if (!reservation.getUser().getId().equals(currentUser.getId())) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_NOT_OWNER);
-        }
-
-        if (reservation.getSchedule().isBefore()) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
-        }
-
+        ensureReservationCanBeModified(reservationId, currentUser);
         reservationRepository.delete(reservationId);
     }
 
-    // TODO: 너무 길다. (2026. 5. 13.)
     @Transactional
     public void update(Long reservationId, Long newScheduleId, String userName) {
         User currentUser = userService.findByName(userName);
         Schedule newSchedule = scheduleService.findById(newScheduleId);
-        Reservation reservationToUpdate = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new CustomBusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservationToUpdate.getUser().getId().equals(currentUser.getId())) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_NOT_OWNER);
-        }
-        if (reservationToUpdate.getSchedule().isBefore()) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
-        }
-        if (newSchedule.isBefore()) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_PAST_TIME);
-        }
-        if (reservationRepository.existsByScheduleId(newScheduleId)) {
-            throw new CustomBusinessException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
-        }
+        ensureReservationCanBeModified(reservationId, currentUser);
+        ensureScheduleIsBookable(newSchedule);
 
         int updatedRows = reservationRepository.update(reservationId, newSchedule.getId(), currentUser.getId());
-
         if (updatedRows == 0) {
-            throw new CustomBusinessException(ErrorCode.RESERVATION_UPDATE_FAILED);
+            throw new BadRequestException(ErrorCode.RESERVATION_UPDATE_FAILED);
+        }
+    }
+
+    private void ensureScheduleIsBookable(Schedule Schedule) {
+        if (Schedule.isBefore()) {
+            throw new BadRequestException(ErrorCode.RESERVATION_PAST_TIME);
+        }
+        if (reservationRepository.existsByScheduleId(Schedule.getId())) {
+            throw new ConflictException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
+        }
+    }
+
+    private void ensureReservationCanBeModified(Long reservationId, User currentUser) {
+        Reservation reservationToUpdate = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!reservationToUpdate.getUser().getId().equals(currentUser.getId())) {
+            throw new ForbiddenException(ErrorCode.RESERVATION_NOT_OWNER);
+        }
+        if (reservationToUpdate.getSchedule().isBefore()) {
+            throw new BadRequestException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 }

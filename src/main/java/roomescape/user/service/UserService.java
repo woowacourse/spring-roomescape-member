@@ -2,12 +2,12 @@ package roomescape.user.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.NotFoundException;
 import roomescape.user.dto.UserRequest;
 import roomescape.user.dto.UserResponse;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.repository.UserRepository;
-import roomescape.exception.CustomBusinessException;
 import roomescape.exception.ErrorCode;
 
 @Service
@@ -30,6 +30,6 @@ public class UserService {
 
     public User findByName(String name) {
         return userRepository.findByName(name)
-                .orElseThrow(() -> new CustomBusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -2,10 +2,10 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.NotFoundException;
 import roomescape.theme.dto.*;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.exception.CustomBusinessException;
 import roomescape.exception.ErrorCode;
 
 import java.util.List;
@@ -42,6 +42,6 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new CustomBusinessException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
     }
 }
