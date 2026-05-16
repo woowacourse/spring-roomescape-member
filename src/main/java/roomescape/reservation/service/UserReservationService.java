@@ -1,7 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +13,9 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserReservationService {
@@ -88,7 +89,7 @@ public class UserReservationService {
 
         newTime.validateFutureDate(newDate);
 
-        List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.getTheme().id());
+        List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.theme().id());
         if (!reservation.hasSameDateAndTime(newDate, newTimeId) && takenTimeIds.contains(newTimeId)) {
             throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
@@ -98,7 +99,7 @@ public class UserReservationService {
         } catch (DuplicateKeyException e) {
             throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
-        return new Reservation(id, reservation.getName(), newDate, newTime, reservation.getTheme());
+        return new Reservation(id, reservation.name(), newDate, newTime, reservation.theme());
     }
 
     private void validateOwnerAndActive(Reservation reservation, String name) {

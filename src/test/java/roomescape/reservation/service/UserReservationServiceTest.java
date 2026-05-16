@@ -1,11 +1,5 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +9,11 @@ import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.OwnershipViolationException;
 import roomescape.reservation.domain.Reservation;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 class UserReservationServiceTest extends ServiceIntegrationTest {
 
@@ -40,10 +39,10 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         Reservation saved = userReservationService.createReservation("브라운", tomorrow, 2L, 2L);
 
-        assertThat(saved.getName()).isEqualTo("브라운");
-        assertThat(saved.getDate()).isEqualTo(tomorrow);
-        assertThat(saved.getTime().startAt()).isNotNull();
-        assertThat(saved.getTheme().name()).isEqualTo("Theme B");
+        assertThat(saved.name()).isEqualTo("브라운");
+        assertThat(saved.date()).isEqualTo(tomorrow);
+        assertThat(saved.time().startAt()).isNotNull();
+        assertThat(saved.theme().name()).isEqualTo("Theme B");
     }
 
     @Test
@@ -120,7 +119,7 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
         List<Reservation> result = userReservationService.getMyReservations("ScheduleTest");
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("ScheduleTest");
+        assertThat(result.get(0).name()).isEqualTo("ScheduleTest");
     }
 
     @Test
@@ -135,8 +134,8 @@ class UserReservationServiceTest extends ServiceIntegrationTest {
         LocalDate newDate = LocalDate.now().plusDays(3);
         Reservation updated = userReservationService.updateReservation(1L, "ScheduleTest", newDate, 2L);
 
-        assertThat(updated.getDate()).isEqualTo(newDate);
-        assertThat(updated.getTime().id()).isEqualTo(2L);
+        assertThat(updated.date()).isEqualTo(newDate);
+        assertThat(updated.time().id()).isEqualTo(2L);
     }
 
     @Test

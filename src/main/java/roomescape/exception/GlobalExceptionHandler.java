@@ -1,6 +1,5 @@
 package roomescape.exception;
 
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +15,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-            HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+                                                             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         if (body instanceof ProblemDetail pd) {
             ErrorCode code = STANDARD_CODES.getOrDefault(ex.getClass(), ErrorCode.INTERNAL_ERROR);
             pd.setProperty("code", code.name());

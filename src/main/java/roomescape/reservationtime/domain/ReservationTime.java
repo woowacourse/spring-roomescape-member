@@ -1,10 +1,11 @@
 package roomescape.reservationtime.domain;
 
+import roomescape.exception.BusinessRuleException;
+import roomescape.exception.ErrorCode;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import roomescape.exception.BusinessRuleException;
-import roomescape.exception.ErrorCode;
 
 public record ReservationTime(Long id, LocalTime startAt) {
 

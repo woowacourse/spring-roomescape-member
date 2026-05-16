@@ -1,19 +1,16 @@
 package roomescape.reservationtime.controller;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.dto.ScheduleResponse;
 import roomescape.reservationtime.service.UserReservationTimeService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/times")

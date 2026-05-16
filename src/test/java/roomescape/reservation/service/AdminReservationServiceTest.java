@@ -1,15 +1,16 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.ServiceIntegrationTest;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AdminReservationServiceTest extends ServiceIntegrationTest {
 
@@ -29,8 +30,8 @@ class AdminReservationServiceTest extends ServiceIntegrationTest {
     void 관리자가_과거_날짜로도_예약을_등록할_수_있다() {
         Reservation saved = adminReservationService.forceCreateReservation(1L, "브라운", LocalDate.of(2020, 1, 1), 1L);
 
-        assertThat(saved.getName()).isEqualTo("브라운");
-        assertThat(saved.getDate()).isEqualTo(LocalDate.of(2020, 1, 1));
+        assertThat(saved.name()).isEqualTo("브라운");
+        assertThat(saved.date()).isEqualTo(LocalDate.of(2020, 1, 1));
     }
 
     @Test

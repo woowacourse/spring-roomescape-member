@@ -1,9 +1,5 @@
 package roomescape.theme.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +7,8 @@ import roomescape.ServiceIntegrationTest;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.EntityInUseException;
 import roomescape.theme.domain.Theme;
+
+import static org.assertj.core.api.Assertions.*;
 
 class AdminThemeServiceTest extends ServiceIntegrationTest {
 

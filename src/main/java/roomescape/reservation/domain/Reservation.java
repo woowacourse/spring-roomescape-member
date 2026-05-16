@@ -1,47 +1,15 @@
 package roomescape.reservation.domain;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import roomescape.exception.BusinessRuleException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.OwnershipViolationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
-public class Reservation {
-    private final Long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
-    private final Theme theme;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
+public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
 
     public void validateOwner(String name) {
         if (!this.name.equals(name)) {
