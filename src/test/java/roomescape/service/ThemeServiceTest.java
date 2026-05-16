@@ -1,12 +1,14 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,13 +16,21 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.TestTimeConfig;
+import roomescape.config.TestTimeConfig;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(TestTimeConfig.class)
 @Sql(scripts = "/empty.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeServiceTest {
 
     @LocalServerPort
@@ -29,14 +39,20 @@ class ThemeServiceTest {
     Clock clock;
     @Autowired
     private ThemeService themeService;
+    @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     public void init() {
         RestAssured.port = port;
     }
 
-    @DisplayName("인기 테마를 조회한다")
     @Test
+    @Sql(scripts = "/data.sql")
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
         List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes(1L, 10L);
         assertThat(popularThemes)
@@ -46,5 +62,51 @@ class ThemeServiceTest {
                         6L, 5L, 4L, 8L, 7L, // 2순위: 예약 수가 같으면 테마 이름 오름차순 정렬
                         10L, 9L // 예약 개수가 0개여도, 상위 10위 이내라면 조회되어야 함 (예약 개수 0개인 테마들은 2순위 정렬 기준으로 비교)
                 );
+    }
+
+    // 중복되는 테마는 추가할 수 없다.
+    @Test
+    void 중복된_테마를_추가하면_예외가_발생한다() {
+        ThemeRequestDTO request = new ThemeRequestDTO(
+                "귀신찾기",
+                "귀신을 찾는다",
+                "https://image.png"
+        );
+        themeService.addTheme(request);
+
+        assertThatThrownBy(() -> themeService.addTheme(request))
+                .isInstanceOf(RoomEscapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(ThemeErrorCode.THEME_DUPLICATE);
+    }
+
+
+    // 존재하지 않는 테마를 조회하면 예외 발생한다.
+    @Test
+    void 존재하지_않는_테마를_조회하면_예외가_발생한다() {
+        assertThatThrownBy(() -> themeService.findById(1L))
+                .isInstanceOf(RoomEscapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(ThemeErrorCode.THEME_NOT_FOUND);
+    }
+
+
+    // 예약이 있는 테마는 삭제할 수 없다.
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_예외가_발생한다() {
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.parse("10:00"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.create("귀신찾기", "귀신을 찾는다", "https://image.png")
+        );
+        reservationRepository.save(
+                Reservation.create("브라운", LocalDate.parse("2026-08-05"), time, theme)
+        );
+
+        assertThatThrownBy(() -> themeService.deleteTheme(time.getId()))
+                .isInstanceOf(RoomEscapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(ThemeErrorCode.RESERVATION_EXIST_ON_THEME);
     }
 }
