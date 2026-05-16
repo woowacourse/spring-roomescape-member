@@ -46,7 +46,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationService.hasReservationsByTimeId(id)) {
-            throw new ConflictException(String.format(CANNOT_DELETE_TIME_IN_USE, id));
+            throw new BusinessRuleViolationException(String.format(CANNOT_DELETE_TIME_IN_USE, id));
         }
         reservationTimeService.deleteTime(id);
     }
@@ -54,7 +54,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTheme(Long id) {
         if (reservationService.hasReservationsByThemeId(id)) {
-            throw new ConflictException(String.format(CANNOT_DELETE_THEME_IN_USE, id));
+            throw new BusinessRuleViolationException(String.format(CANNOT_DELETE_THEME_IN_USE, id));
         }
         themeService.deleteTheme(id);
     }

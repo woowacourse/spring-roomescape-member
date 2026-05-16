@@ -31,25 +31,25 @@ class ReservationFacadeTest {
     private ThemeService themeService;
 
     @Test
-    void 사용중인_시간_삭제시_ConflictException이_발생한다() {
+    void 사용중인_시간_삭제시_BusinessRuleViolationException이_발생한다() {
         ReservationTime time = reservationTimeService.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
         Theme theme = themeService.addTheme(new Theme(null, "공포", "무서운 테마", "https://example.com/horror.jpg"));
         reservationFacade.addReservation(new ReservationRequest(
                 "브라운", LocalDate.of(2026, 8, 5), time.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationFacade.deleteTime(time.getId()))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @Test
-    void 사용중인_테마_삭제시_ConflictException이_발생한다() {
+    void 사용중인_테마_삭제시_BusinessRuleViolationException이_발생한다() {
         ReservationTime time = reservationTimeService.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
         Theme theme = themeService.addTheme(new Theme(null, "공포", "무서운 테마", "https://example.com/horror.jpg"));
         reservationFacade.addReservation(new ReservationRequest(
                 "브라운", LocalDate.of(2026, 8, 5), time.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationFacade.deleteTheme(theme.getId()))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @Test
