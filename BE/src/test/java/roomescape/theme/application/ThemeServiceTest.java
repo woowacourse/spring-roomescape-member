@@ -12,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.DefaultReferenceChecker;
+import roomescape.reservation.application.ReservationReferenceChecker;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
@@ -34,7 +36,7 @@ class ThemeServiceTest {
     private PopularThemeRepository popularThemeRepository;
     private ThemeService themeService;
     private ReservationRepository reservationRepository;
-    private ThemeValidator themeValidator;
+    private ReservationReferenceChecker referenceChecker;
 
     @BeforeEach
     void setUp() {
@@ -45,8 +47,8 @@ class ThemeServiceTest {
                 themeRepository.findAll()
         );
         reservationRepository = new FakeReservationRepository();
-        themeValidator = new ThemeValidator(reservationRepository);
-        themeService = new ThemeService(themeValidator, themeRepository, popularThemeRepository);
+        referenceChecker = new DefaultReferenceChecker(reservationRepository);
+        themeService = new ThemeService(referenceChecker, themeRepository, popularThemeRepository);
     }
 
     @Test
@@ -124,7 +126,7 @@ class ThemeServiceTest {
         reservations.add(Reservation.create("테스터2", today, null, firstTheme));
         reservations.add(Reservation.create("테스터3", today, null, secondTheme));
         popularThemeRepository = new FakePopularThemeRepository(reservations, themeRepository.findAll());
-        themeService = new ThemeService(themeValidator, themeRepository, popularThemeRepository);
+        themeService = new ThemeService(referenceChecker, themeRepository, popularThemeRepository);
 
         // when
         List<Theme> themes = themeService.findTopNByPeriod(

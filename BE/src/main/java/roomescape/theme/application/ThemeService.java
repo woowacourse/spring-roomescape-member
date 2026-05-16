@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ThemeErrorCode;
 import roomescape.global.exception.customException.EntityNotFoundException;
+import roomescape.reservation.application.ReservationReferenceChecker;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.domain.PopularThemeRepository;
 import roomescape.theme.domain.Theme;
@@ -17,16 +18,16 @@ import roomescape.theme.domain.ThemeSortType;
 @Transactional(readOnly = true)
 public class ThemeService {
 
-    private final ThemeValidator themeValidator;
+    private final ReservationReferenceChecker referenceChecker;
     private final ThemeRepository themeRepository;
     private final PopularThemeRepository popularThemeRepository;
 
     public ThemeService(
-            ThemeValidator themeValidator,
+            ReservationReferenceChecker referenceChecker,
             ThemeRepository themeRepository,
             PopularThemeRepository popularThemeRepository
     ) {
-        this.themeValidator = themeValidator;
+        this.referenceChecker = referenceChecker;
         this.themeRepository = themeRepository;
         this.popularThemeRepository = popularThemeRepository;
     }
@@ -56,7 +57,7 @@ public class ThemeService {
     public void deleteById(Long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ThemeErrorCode.THEME_NOT_FOUND, id));
-        themeValidator.validateNotReferencedByReservation(id);
+        referenceChecker.validateThemeNotReferenced(id);
         themeRepository.deleteById(id);
     }
 }
