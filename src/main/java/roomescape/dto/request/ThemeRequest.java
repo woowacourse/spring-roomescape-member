@@ -6,6 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record ThemeRequest(
         @NotNull @NotBlank String name,
-        String description,
-        MultipartFile file) {
+        @NotNull String description,
+        @NotNull MultipartFile file) {
 }
