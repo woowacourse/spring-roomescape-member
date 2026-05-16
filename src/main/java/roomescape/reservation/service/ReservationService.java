@@ -93,4 +93,11 @@ public class ReservationService {
         }
         reservationRepository.delete(reservation.getId());
     }
+
+    public List<Reservation> findAllByName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("조회할 예약자 이름은 필수입니다.");
+        }
+        return reservationRepository.findAllByName(name);
+    }
 }

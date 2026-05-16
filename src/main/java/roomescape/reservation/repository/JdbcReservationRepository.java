@@ -44,4 +44,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         return reservationDao.existsByDateTimeAndTheme(date, timeId, themeId);
     }
+
+    @Override
+    public List<Reservation> findAllByName(String name) {
+        return reservationDao.findAllByName(name);
+    }
 }

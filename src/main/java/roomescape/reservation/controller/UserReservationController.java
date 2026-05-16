@@ -22,8 +22,11 @@ public class UserReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @RequestParam(required = true) String name
+    ) {
+        List<Reservation> reservations = reservationService.findAllByName(name);
+
         List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
