@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -74,6 +75,32 @@ class AdminReservationControllerTest {
                 .andExpect(header().string("Location", "/admin/reservations/1"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("브라운"));
+
+        verify(reservationService, times(1)).createByAdmin(
+                "브라운",
+                LocalDate.of(2099, 1, 1),
+                1L,
+                1L);
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 중복_예약이면_에러_응답() throws Exception {
+        // given
+        given(reservationService.createByAdmin(
+                eq("브라운"),
+                eq(LocalDate.of(2099, 1, 1)),
+                eq(1L),
+                eq(1L)))
+                .willThrow(new DuplicateReservationException("이미 예약된 시간입니다."));
+
+        // when & then
+        mockMvc.perform(post("/admin/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validRequest()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_RESERVATION"))
+                .andExpect(jsonPath("$.detail").value("이미 예약된 시간입니다."));
 
         verify(reservationService, times(1)).createByAdmin(
                 "브라운",

@@ -64,6 +64,60 @@ public class MissionStepTest {
     }
 
     @Test
+    void 중복_예약_생성_시_에러_응답() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+        Map<String, String> duplicateParams = new HashMap<>(params);
+        duplicateParams.put("name", "구구");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("detail", is("이미 예약된 시간입니다."));
+    }
+
+    @Test
+    void 관리자_중복_예약_생성_시_에러_응답() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+        Map<String, String> duplicateParams = new HashMap<>(params);
+        duplicateParams.put("name", "구구");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("detail", is("이미 예약된 시간입니다."));
+    }
+
+    @Test
     void 시간_관리_API() {
         jdbcTemplate.update("DELETE FROM reservation_time;");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;");
