@@ -60,6 +60,32 @@
                 <p class="empty inline">최근 7일 기준 인기 테마를 조회할 수 있습니다.</p>
             </div>
         </section>
+        <section class="panel">
+            <div class="section-head">
+                <h2>내 예약</h2>
+            </div>
+            <form id="my-reservation-form" class="toolbar compact my-reservation-toolbar">
+                <label>
+                    이름
+                    <input id="my-reservation-name" type="text" maxlength="10" required>
+                </label>
+                <button type="submit">조회</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>날짜</th>
+                        <th>테마</th>
+                        <th>시간</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="my-reservation-rows"></tbody>
+                </table>
+            </div>
+        </section>
     </section>
 
     <section id="page-reservation" class="page" data-page="reservation" hidden>

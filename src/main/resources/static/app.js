@@ -1,5 +1,6 @@
 const state = {
   reservations: [],
+  myReservations: [],
   themes: [],
   times: [],
   availableTimes: [],
@@ -41,6 +42,11 @@ function bindEvents() {
     await runSafely(createReservation);
   });
 
+  $("#my-reservation-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await runSafely(loadMyReservations);
+  });
+
   $("#theme-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     await runSafely(createTheme);
@@ -66,9 +72,21 @@ async function loadAll() {
 }
 
 async function loadReservations() {
-  state.reservations = await request("/reservations");
+  state.reservations = await request("/admin/reservations");
   renderReservations();
   renderHome();
+}
+
+async function loadMyReservations() {
+  const name = $("#my-reservation-name").value.trim();
+  if (!name) {
+    showNotice("이름을 입력해주세요.", true);
+    return;
+  }
+
+  state.myReservations = await request(`/reservations?name=${encodeURIComponent(name)}`);
+  renderMyReservations();
+  showNotice("내 예약을 조회했습니다.");
 }
 
 async function loadThemes() {
@@ -128,6 +146,9 @@ async function createReservation() {
   state.availableTimes = [];
   renderAvailableTimes();
   await loadReservations();
+  if ($("#my-reservation-name").value.trim() === payload.name) {
+    await loadMyReservations();
+  }
   showNotice("예약이 생성되었습니다.");
 }
 
@@ -163,11 +184,41 @@ async function createTime() {
   showNotice("시간이 추가되었습니다.");
 }
 
-async function deleteReservation(id) {
+async function deleteAdminReservation(id) {
   await runSafely(async () => {
-    await request(`/reservations/${id}`, { method: "DELETE" });
+    await request(`/admin/reservations/${id}`, { method: "DELETE" });
     await loadReservations();
-    showNotice("예약이 삭제되었습니다.");
+    showNotice("관리자 예약 삭제가 완료되었습니다.");
+  });
+}
+
+async function cancelMyReservation(id) {
+  await runSafely(async () => {
+    const name = $("#my-reservation-name").value.trim();
+    await request(`/reservations/${id}?name=${encodeURIComponent(name)}`, { method: "DELETE" });
+    await loadReservations();
+    await loadMyReservations();
+    showNotice("예약이 취소되었습니다.");
+  });
+}
+
+async function updateMyReservation(id) {
+  await runSafely(async () => {
+    const name = $("#my-reservation-name").value.trim();
+    const payload = {
+      date: $(`#my-reservation-date-${id}`).value || null,
+      timeId: Number($(`#my-reservation-time-${id}`).value) || null,
+      themeId: Number($(`#my-reservation-theme-${id}`).value) || null,
+    };
+
+    await request(`/reservations/${id}?name=${encodeURIComponent(name)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+
+    await loadReservations();
+    await loadMyReservations();
+    showNotice("예약이 변경되었습니다.");
   });
 }
 
@@ -273,6 +324,7 @@ function renderReservationOptions() {
   $("#reservation-theme").innerHTML = themeOptions;
   $("#selected-theme").innerHTML = themeOptions;
   renderAvailableTimes();
+  renderMyReservations();
 }
 
 function renderAvailableTimes() {
@@ -310,10 +362,62 @@ function renderReservations() {
           <td>${reservation.date}</td>
           <td>${escapeHtml(reservation.theme?.name ?? "-")}</td>
           <td>${formatTime(reservation.time?.startAt)}</td>
-          <td><button class="danger" type="button" onclick="deleteReservation(${reservation.id})">삭제</button></td>
+          <td><button class="danger" type="button" onclick="deleteAdminReservation(${reservation.id})">삭제</button></td>
         </tr>
       `).join("")
     : `<tr><td colspan="6" class="empty">예약이 없습니다.</td></tr>`;
+}
+
+function renderMyReservations() {
+  const themeOptions = state.themes.map((theme) => (
+    `<option value="${theme.id}">${escapeHtml(theme.name)}</option>`
+  )).join("");
+  const timeOptions = state.times.map((time) => (
+    `<option value="${time.id}">${formatTime(time.startAt)}</option>`
+  )).join("");
+
+  $("#my-reservation-rows").innerHTML = state.myReservations.length
+    ? state.myReservations.map((reservation) => `
+        <tr>
+          <td>${reservation.id}</td>
+          <td>
+            <input id="my-reservation-date-${reservation.id}" type="date" value="${reservation.date}">
+          </td>
+          <td>
+            <select id="my-reservation-theme-${reservation.id}">
+              ${themeOptions}
+            </select>
+          </td>
+          <td>
+            <select id="my-reservation-time-${reservation.id}">
+              ${timeOptions}
+            </select>
+          </td>
+          <td class="actions">
+            <button type="button" data-update-reservation-id="${reservation.id}">변경</button>
+            <button class="danger" type="button" data-cancel-reservation-id="${reservation.id}">취소</button>
+          </td>
+        </tr>
+      `).join("")
+    : `<tr><td colspan="5" class="empty">조회된 예약이 없습니다.</td></tr>`;
+
+  state.myReservations.forEach((reservation) => {
+    const themeSelect = $(`#my-reservation-theme-${reservation.id}`);
+    const timeSelect = $(`#my-reservation-time-${reservation.id}`);
+    if (themeSelect) {
+      themeSelect.value = String(reservation.theme?.id ?? "");
+    }
+    if (timeSelect) {
+      timeSelect.value = String(reservation.time?.id ?? "");
+    }
+  });
+
+  $$("[data-update-reservation-id]").forEach((button) => {
+    button.addEventListener("click", () => updateMyReservation(Number(button.dataset.updateReservationId)));
+  });
+  $$("[data-cancel-reservation-id]").forEach((button) => {
+    button.addEventListener("click", () => cancelMyReservation(Number(button.dataset.cancelReservationId)));
+  });
 }
 
 function renderThemes() {
