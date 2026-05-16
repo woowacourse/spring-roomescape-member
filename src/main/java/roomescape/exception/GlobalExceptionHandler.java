@@ -5,9 +5,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import roomescape.exception.code.CommonErrorCode;
 import roomescape.exception.code.ErrorCode;
@@ -35,6 +37,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e);
         return handleExceptionInternal(e.getErrorCode());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
+        FieldError fieldError = ex.getBindingResult().getFieldError();
+        String message = (fieldError == null) ? CommonErrorCode.INVALID_INPUT_VALUE.getMessage() : fieldError.getDefaultMessage();
+        return ResponseEntity.status(CommonErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(makeErrorResponse(CommonErrorCode.INVALID_INPUT_VALUE, message));
     }
 
     /**
