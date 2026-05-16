@@ -69,6 +69,11 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    public void deleteByThemeId(Long themeId) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(sql, themeId);
+    }
+
     public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation(username, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

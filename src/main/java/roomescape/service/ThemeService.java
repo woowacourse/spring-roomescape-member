@@ -9,15 +9,18 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse register(ThemeRequest themeRequest) {
@@ -27,10 +30,11 @@ public class ThemeService {
     }
 
     public void removeById(Long id) {
-        int deleteCnt = themeRepository.deleteById(id);
-        if (deleteCnt == 0) {
+        if (!themeRepository.existsById(id)) {
             throw new RoomescapeException(ErrorCode.THEME_NOT_FOUND);
         }
+        reservationRepository.deleteByThemeId(id);
+        themeRepository.deleteById(id);
     }
 
     public ThemeAllResponse readAll() {

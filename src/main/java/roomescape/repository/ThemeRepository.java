@@ -41,9 +41,9 @@ public class ThemeRepository {
         return new Theme(id, theme.name(), theme.description(), theme.url());
     }
 
-    public int deleteById(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM THEME WHERE ID = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     public Optional<Theme> findById(Long id) {
@@ -75,5 +75,10 @@ public class ThemeRepository {
                 limit ?;
                 """;
         return jdbcTemplate.query(sql, themeRowMapper, lastWeekDate, currentDate, limit);
+    }
+
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM THEME WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }
