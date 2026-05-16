@@ -52,6 +52,18 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
+    public void deleteMyReservation(long id, String username) {
+        if (!isMyReservation(getReservation(id), username)) {
+            throw new ReservationNotFoundException();
+        }
+
+        reservationRepository.delete(id);
+    }
+
+    private boolean isMyReservation(Reservation reservation, String username) {
+        return reservation.getName().equals(username);
+    }
+
     public List<Reservation> getMyReservations(String username) {
         return reservationRepository.findAllByName(username);
     }

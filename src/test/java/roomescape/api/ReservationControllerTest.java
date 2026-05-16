@@ -41,12 +41,29 @@ class ReservationControllerTest {
     @DisplayName("사용자 예약 삭제")
     @Test
     void userReservationDelete(){
+        SessionFilter sessionFilter = loginAs("김철수");
+
         RestAssured.given().log().all()
+                .filter(sessionFilter)
                 .contentType(ContentType.JSON)
                 .pathParam("id",1)
                 .when().delete("/reservations/{id}")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("사용자는 다른 사람의 예약을 삭제할 수 없다.")
+    @Test
+    void userReservationDeleteByOtherUser() {
+        SessionFilter sessionFilter = loginAs("이영희");
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .pathParam("id", 1)
+                .when().delete("/reservations/{id}")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @DisplayName("사용자 예약 조회")

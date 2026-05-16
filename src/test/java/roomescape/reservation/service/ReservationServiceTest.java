@@ -118,4 +118,24 @@ class ReservationServiceTest {
                 .extracting(Reservation::getName)
                 .containsOnly("김철수");
     }
+
+    @DisplayName("사용자는 본인의 예약을 삭제할 수 있다.")
+    @Test
+    void deleteMyReservation() {
+        Reservation reservation = reservationService.getMyReservations("김철수").getFirst();
+
+        reservationService.deleteMyReservation(reservation.getId(), "김철수");
+
+        assertThatThrownBy(() -> reservationService.getReservation(reservation.getId()))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("사용자는 다른 사람의 예약을 삭제할 수 없다.")
+    @Test
+    void deleteMyReservationFailByOtherUser() {
+        Reservation reservation = reservationService.getMyReservations("김철수").getFirst();
+
+        assertThatThrownBy(() -> reservationService.deleteMyReservation(reservation.getId(), "이영희"))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
 }
