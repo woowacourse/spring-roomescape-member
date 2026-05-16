@@ -63,8 +63,7 @@ class ReservationServiceTest {
     @Test
     void 새로운_예약을_정상적으로_등록한다() {
         // given
-        ReservationTime time = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
         LocalDate reservationDate = LocalDate.now().plusDays(1);
         ReservationRequest request = new ReservationRequest("이프", reservationDate, theme.getId(), time.getId());
@@ -138,8 +137,7 @@ class ReservationServiceTest {
     void 비활성화된_시간대로_예약하면_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0));
-        inactiveTime.deactivate();
+        ReservationTime inactiveTime = ReservationTime.create(LocalTime.of(10, 0)).deactivate();
         ReservationTime savedTime = reservationTimeRepository.save(inactiveTime);
         ReservationRequest request = new ReservationRequest("웨지", LocalDate.now().plusDays(1), theme.getId(),
                 savedTime.getId());
@@ -199,8 +197,7 @@ class ReservationServiceTest {
     @Test
     void 취소한_예약_건에_대해서_예약이_가능하다() {
         // given
-        ReservationTime time = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
         LocalDate date = LocalDate.now().plusDays(1);
 
@@ -221,7 +218,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
         for (int hour = 0; hour <= 23; hour++) {
             reservationTimeRepository.save(
-                    ReservationTimeFixture.createReservationTimeWithId(null, LocalTime.of(hour, 0)));
+                    ReservationTime.create(LocalTime.of(hour, 0)));
         }
         LocalTime nowTime = LocalTime.now();
 
@@ -242,11 +239,9 @@ class ReservationServiceTest {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime reservedTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
-        reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme, reservedTime));
+        ReservationTime reservedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
+        reservationRepository.save(Reservation.create("이프", date, theme, reservedTime));
 
         // when
         List<ReservationTimeStatusResponse> response = reservationService.getReservationStatusByTheme(theme.getId(),
@@ -262,10 +257,8 @@ class ReservationServiceTest {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime activeTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0));
-        inactiveTime.deactivate();
+        ReservationTime activeTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime inactiveTime = ReservationTime.create(LocalTime.of(11, 0)).deactivate();
         ReservationTime savedInactiveTime = reservationTimeRepository.save(inactiveTime);
 
         // when
@@ -294,10 +287,8 @@ class ReservationServiceTest {
     void 예약을_수정한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime originalTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime modifiedTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime modifiedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
 
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
@@ -319,10 +310,8 @@ class ReservationServiceTest {
     void 예약자_이름이_일치하지_않으면_예약_수정_시_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime originalTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime modifiedTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime modifiedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
         ReservationModifyRequest request = new ReservationModifyRequest("웨지", LocalDate.now().plusDays(2),
@@ -337,10 +326,8 @@ class ReservationServiceTest {
     void 비활성화된_테마의_예약을_수정하면_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime originalTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime modifiedTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime modifiedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
 
@@ -358,10 +345,8 @@ class ReservationServiceTest {
     void 비활성화된_시간대로_예약을_수정하면_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime originalTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0));
-        inactiveTime.deactivate();
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime inactiveTime = ReservationTime.create(LocalTime.of(11, 0)).deactivate();
         ReservationTime savedInactiveTime = reservationTimeRepository.save(inactiveTime);
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
@@ -377,16 +362,13 @@ class ReservationServiceTest {
     void 수정하려는_예약이_기존_예약과_중복되면_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
-        ReservationTime originalTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
-        ReservationTime duplicateTime = reservationTimeRepository.save(
-                ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        ReservationTime originalTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime duplicateTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
         LocalDate duplicateDate = LocalDate.now().plusDays(2);
 
         Reservation reservation = reservationRepository.save(
                 ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
-        reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("웨지", duplicateDate, theme, duplicateTime));
+        reservationRepository.save(Reservation.create("웨지", duplicateDate, theme, duplicateTime));
         ReservationModifyRequest request = new ReservationModifyRequest("바니", duplicateDate, duplicateTime.getId());
 
         // when & then

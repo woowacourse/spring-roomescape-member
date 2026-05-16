@@ -33,7 +33,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     void 시간을_저장하고_ID로_조회한다() {
         // given
         LocalTime reservationStartTime = LocalTime.of(10, 0);
-        ReservationTime time = ReservationTimeFixture.createReservationTime(reservationStartTime);
+        ReservationTime time = ReservationTime.create(reservationStartTime);
 
         // when
         ReservationTime saved = reservationTimeRepository.save(time);
@@ -48,7 +48,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     void 같은_시간으로_저장하면_참조_무결성_예외가_발생한다() {
         // given
         LocalTime reservationStartTime = LocalTime.of(10, 0);
-        ReservationTime time = ReservationTimeFixture.createReservationTime(reservationStartTime);
+        ReservationTime time = ReservationTime.create(reservationStartTime);
         reservationTimeRepository.save(time);
 
         // when & then
@@ -62,8 +62,8 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
 
         // when
-        saved.deactivate();
-        reservationTimeRepository.update(saved);
+        ReservationTime deactivatedTime = saved.deactivate();
+        reservationTimeRepository.update(deactivatedTime);
         ReservationTime time = reservationTimeRepository.findById(saved.getId()).get();
 
         // then
@@ -85,7 +85,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     void 특정_시간이_존재하는지_확인한다() {
         // given
         LocalTime targetTime = LocalTime.of(10, 0);
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(targetTime));
+        reservationTimeRepository.save(ReservationTime.create(targetTime));
 
         // when & then
         LocalTime otherTime = LocalTime.of(11, 0);
@@ -96,8 +96,8 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     @Test
     void 모든_시간_목록을_조회한다() {
         // given
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
 
         // when
         List<ReservationTime> times = reservationTimeRepository.findAllByPaging(0, 10);

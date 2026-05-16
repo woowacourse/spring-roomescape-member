@@ -13,7 +13,7 @@ class ReservationTimeTest {
     @Test
     void 예약_시간을_생성할_때_시작_시간_정보가_없다면_예외가_발생한다() {
         // when & then
-        assertThatThrownBy(() -> new ReservationTime(null))
+        assertThatThrownBy(() -> ReservationTime.create(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("추가 할 예약 시작 시간 정보가 누락되었습니다");
     }
@@ -24,7 +24,7 @@ class ReservationTimeTest {
         LocalTime startAt = LocalTime.of(11, 0);
 
         // when
-        ReservationTime reservationTime = new ReservationTime(startAt);
+        ReservationTime reservationTime = ReservationTime.create(startAt);
 
         // then
         assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
@@ -35,7 +35,7 @@ class ReservationTimeTest {
         // given
         LocalDate reservationDate = LocalDate.of(2026, 1, 1);
         LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTime reservationTime = new ReservationTime(startAt);
+        ReservationTime reservationTime = ReservationTime.create(startAt);
 
         // when
         LocalDateTime reservationDateTime = reservationTime.toReservationDateTime(reservationDate);
@@ -48,12 +48,12 @@ class ReservationTimeTest {
     void 예약_시간을_비활성화_한다() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTime reservationTime = new ReservationTime(startAt);
+        ReservationTime reservationTime = ReservationTime.create(startAt);
 
         // when
-        reservationTime.deactivate();
+        ReservationTime deactivatedTime = reservationTime.deactivate();
 
         // then
-        assertThat(reservationTime.isActive()).isFalse();
+        assertThat(deactivatedTime.isActive()).isFalse();
     }
 }

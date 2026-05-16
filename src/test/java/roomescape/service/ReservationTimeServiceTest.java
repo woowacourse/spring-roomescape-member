@@ -53,7 +53,7 @@ class ReservationTimeServiceTest {
     void 이미_등록된_시간으로_등록을_시도하면_예외가_발생한다() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(startAt));
+        reservationTimeRepository.save(ReservationTime.create(startAt));
 
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
@@ -66,7 +66,7 @@ class ReservationTimeServiceTest {
     void 모든_예약_시간_목록을_조회한다() {
         // given
         reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
-        reservationTimeRepository.save(ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
 
         // when
         List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimesByPaging(0, 10);

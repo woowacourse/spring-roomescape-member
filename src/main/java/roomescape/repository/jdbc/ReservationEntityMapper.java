@@ -9,7 +9,7 @@ import roomescape.domain.Theme;
 public final class ReservationEntityMapper {
 
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> {
-        ReservationTime time = new ReservationTime(
+        ReservationTime time = ReservationTime.restore(
                 rs.getLong("time_id"),
                 rs.getTime("time_start").toLocalTime(),
                 rs.getBoolean("time_active")

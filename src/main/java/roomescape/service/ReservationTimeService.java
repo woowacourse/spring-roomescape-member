@@ -27,7 +27,7 @@ public class ReservationTimeService {
         LocalTime startAt = request.startAt();
 
         validateDuplicateTime(startAt);
-        ReservationTime reservationTime = new ReservationTime(startAt);
+        ReservationTime reservationTime = ReservationTime.create(startAt);
 
         return ReservationTimeResponse.from(reservationTimeRepository.save(reservationTime));
     }
@@ -40,8 +40,8 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new ForbiddenException("예약이 존재하는 시간대는 삭제할 수 없습니다.");
         }
-        time.deactivate();
-        reservationTimeRepository.update(time);
+        ReservationTime deactivatedTime = time.deactivate();
+        reservationTimeRepository.update(deactivatedTime);
     }
 
     public List<ReservationTimeResponse> getAllReservationTimesByPaging(int page, int size) {

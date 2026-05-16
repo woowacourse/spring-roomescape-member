@@ -57,9 +57,9 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     void 동일한_날짜와_시간으로_저장하면_DB_제약조건_에러가_발생한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        Reservation first = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
+        Reservation first = Reservation.create("이프", date, theme,
                 reservationTime);
-        Reservation second = ReservationFixture.createDefaultReservationWithNameAndDate("아루", date, theme,
+        Reservation second = Reservation.create("아루", date, theme,
                 reservationTime);
         reservationRepository.save(first);
 
@@ -72,8 +72,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     void 특정_테마의_특정_날짜와_시간에_활성화된_예약이_존재하는지_확인한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        Reservation reservation = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
-                reservationTime);
+        Reservation reservation = Reservation.create("이프", date, theme, reservationTime);
         reservationRepository.save(reservation);
 
         // when & then
@@ -149,17 +148,17 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 특정_테마와_날짜에_활성화된_예약이_존재하는_시간_식별자를_조회한다() {
         // given
-        ReservationTime canceledTime = new ReservationTime(2L, LocalTime.of(11, 0), true);
+        ReservationTime canceledTime = ReservationTime.restore(2L, LocalTime.of(11, 0), true);
         dataSource.insertReservationTime(canceledTime.getStartAt());
 
         LocalDate date = LocalDate.now().plusDays(1);
 
-        Reservation reservation = ReservationFixture.createDefaultReservationWithNameAndDate("이프", date, theme,
+        Reservation reservation = Reservation.create("이프", date, theme,
                 reservationTime);
         reservationRepository.save(reservation);
 
         Reservation secondReservation = reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme, canceledTime));
+                Reservation.create("바니", date, theme, canceledTime));
 
         Reservation canceledReservation = secondReservation.cancel();
         reservationRepository.update(canceledReservation);
@@ -176,9 +175,9 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // given
         LocalDate firstDate = LocalDate.now().plusDays(1);
         LocalDate secondDate = firstDate.plusDays(1);
-        Reservation first = ReservationFixture.createDefaultReservationWithNameAndDate("바니", firstDate, theme,
+        Reservation first = Reservation.create("바니", firstDate, theme,
                 reservationTime);
-        Reservation second = ReservationFixture.createDefaultReservationWithNameAndDate("웨지", secondDate, theme,
+        Reservation second = Reservation.create("웨지", secondDate, theme,
                 reservationTime);
         reservationRepository.save(first);
         reservationRepository.save(second);
@@ -195,7 +194,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.save(
-                ReservationFixture.createDefaultReservationWithNameAndDate("바니", date, theme, reservationTime));
+                Reservation.create("바니", date, theme, reservationTime));
 
         // when & then
         assertThat(reservationRepository.existsByTimeId(reservationTime.getId())).isTrue();

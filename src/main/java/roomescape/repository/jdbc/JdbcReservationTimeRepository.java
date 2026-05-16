@@ -35,7 +35,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return ps;
         }, keyHolder);
 
-        return new ReservationTime(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+        return ReservationTime.restore(Objects.requireNonNull(keyHolder.getKey()).longValue(),
                 reservationTime.getStartAt(), reservationTime.isActive());
     }
 
