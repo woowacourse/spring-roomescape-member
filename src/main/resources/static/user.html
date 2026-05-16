@@ -323,14 +323,16 @@
     input[type="date"]:focus { border-color: var(--accent); }
 
     /* Time slots grid */
-    .time-slots {
+    .time-slots,
+    .change-time-slots {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 10px;
       margin-bottom: 24px;
     }
 
-    .time-slot {
+    .time-slot,
+    .change-time-slot {
       padding: 10px 8px;
       border-radius: 8px;
       border: 1px solid var(--border);
@@ -343,20 +345,23 @@
       text-align: center;
     }
 
-    .time-slot:hover:not(.unavailable) {
+    .time-slot:hover:not(.unavailable),
+    .change-time-slot:hover:not(.unavailable) {
       border-color: var(--accent);
       background: var(--accent-dim);
       color: var(--accent);
     }
 
-    .time-slot.selected {
+    .time-slot.selected,
+    .change-time-slot.selected {
       border-color: var(--accent);
       background: var(--accent);
       color: #0a0d1a;
       font-weight: 700;
     }
 
-    .time-slot.unavailable {
+    .time-slot.unavailable,
+    .change-time-slot.unavailable {
       opacity: 0.35;
       cursor: not-allowed;
       text-decoration: line-through;
@@ -374,12 +379,18 @@
       transition: all 0.15s;
     }
 
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn-accent {
       background: var(--accent);
       color: #0a0d1a;
     }
 
-    .btn-accent:hover {
+    .btn-accent:hover:not(:disabled) {
       background: #d97706;
       transform: translateY(-1px);
     }
@@ -424,6 +435,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      flex-wrap: wrap;
     }
 
     .reservation-item img {
@@ -434,7 +446,22 @@
       flex-shrink: 0;
     }
 
-    .reservation-info { flex: 1; }
+    .reservation-info {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .reservation-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .reservation-actions .btn {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
 
     .reservation-theme {
       font-size: 15px;
@@ -445,6 +472,21 @@
     .reservation-meta {
       font-size: 13px;
       color: var(--muted);
+    }
+
+    .change-panel {
+      flex-basis: 100%;
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .change-panel input[type="date"] {
+      margin-bottom: 16px;
+    }
+
+    .change-panel .loading-center {
+      padding: 18px;
     }
 
     /* Empty state */
@@ -683,6 +725,7 @@
   let selectedTheme = null;
   let selectedDate = null;
   let selectedTime = null;
+  let selectedChangeTime = null;
 
   function init() {
     username = localStorage.getItem('username');
@@ -812,9 +855,7 @@
 
   function selectTheme(theme) {
     selectedTheme = theme;
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('booking-date').min = tomorrow.toISOString().split('T')[0];
+    document.getElementById('booking-date').min = getTomorrowDateString();
     document.getElementById('booking-date').value = '';
 
     const themeInfoHtml = `
@@ -950,13 +991,123 @@
             <div class="reservation-theme">${r.themeName}</div>
             <div class="reservation-meta">📅 ${formatDate(r.date)} &nbsp; ⏰ ${r.time}</div>
           </div>
-          <button class="btn btn-danger" onclick="deleteMyReservation(${r.id})">삭제</button>
+          <div class="reservation-actions">
+            <button class="btn btn-ghost" onclick="openReservationChange(${JSON.stringify(r).replace(/"/g,'&quot;')})">변경</button>
+            <button class="btn btn-danger" onclick="deleteMyReservation(${r.id})">삭제</button>
+          </div>
         </div>
       `).join('');
       list.style.display = 'flex';
     } catch (e) {
       document.getElementById('my-loading').style.display = 'none';
       showToast(e.message || '예약 목록을 불러올 수 없습니다.', 'error');
+    }
+  }
+
+  function openReservationChange(reservation) {
+    document.querySelectorAll('.change-panel').forEach(panel => panel.remove());
+    selectedChangeTime = null;
+
+    const item = document.getElementById(`res-${reservation.id}`);
+    const panel = document.createElement('div');
+    panel.className = 'change-panel';
+    panel.id = `change-panel-${reservation.id}`;
+    panel.innerHTML = `
+      <label for="change-date-${reservation.id}">날짜 선택</label>
+      <input type="date" id="change-date-${reservation.id}" min="${getTomorrowDateString()}" value="${reservation.date}">
+      <div class="loading-center" id="change-loading-${reservation.id}" style="display:none"><div class="spinner"></div></div>
+      <div class="change-time-slots" id="change-times-${reservation.id}" style="display:none"></div>
+      <div class="btn-row">
+        <button class="btn btn-accent" id="change-submit-${reservation.id}" onclick="submitReservationChange(${reservation.id})" disabled>변경 확정</button>
+        <button class="btn btn-ghost" onclick="closeReservationChange(${reservation.id})">취소</button>
+      </div>
+    `;
+    item.appendChild(panel);
+
+    const dateInput = document.getElementById(`change-date-${reservation.id}`);
+    dateInput.addEventListener('change', () => loadChangeTimes(reservation, dateInput.value));
+    loadChangeTimes(reservation, dateInput.value);
+  }
+
+  function closeReservationChange(id) {
+    document.getElementById(`change-panel-${id}`)?.remove();
+    selectedChangeTime = null;
+  }
+
+  async function loadChangeTimes(reservation, date) {
+    selectedChangeTime = null;
+    const loading = document.getElementById(`change-loading-${reservation.id}`);
+    const container = document.getElementById(`change-times-${reservation.id}`);
+    const submitButton = document.getElementById(`change-submit-${reservation.id}`);
+
+    if (!date) {
+      container.style.display = 'none';
+      submitButton.disabled = true;
+      return;
+    }
+
+    loading.style.display = 'flex';
+    container.style.display = 'none';
+    submitButton.disabled = true;
+
+    try {
+      const times = await apiFetch(
+        `${API}/themes/${reservation.themeId}/times?date=${date}`,
+        {},
+        '변경 가능한 시간을 불러올 수 없습니다.'
+      );
+
+      container.innerHTML = times.map(t => {
+        const available = t.isAvailable !== undefined ? t.isAvailable : t.available;
+        const current = date === reservation.date && t.id === reservation.timeId;
+        const enabled = available && !current;
+        const classes = ['change-time-slot'];
+        if (!enabled) classes.push('unavailable');
+
+        return `
+          <div class="${classes.join(' ')}"
+               onclick="${enabled ? `pickChangeTime(${reservation.id}, ${t.id}, '${t.startAt}')` : ''}"
+               id="change-slot-${reservation.id}-${t.id}">
+            ${t.startAt}
+          </div>
+        `;
+      }).join('');
+      loading.style.display = 'none';
+      container.style.display = 'grid';
+    } catch (e) {
+      loading.style.display = 'none';
+      showToast(e.message || '변경 가능한 시간을 불러올 수 없습니다.', 'error');
+    }
+  }
+
+  function pickChangeTime(reservationId, timeId, startAt) {
+    selectedChangeTime = { id: timeId, startAt };
+    document.querySelectorAll(`#change-times-${reservationId} .change-time-slot`).forEach(s => s.classList.remove('selected'));
+    document.getElementById(`change-slot-${reservationId}-${timeId}`).classList.add('selected');
+    document.getElementById(`change-submit-${reservationId}`).disabled = false;
+  }
+
+  async function submitReservationChange(id) {
+    const date = document.getElementById(`change-date-${id}`).value;
+    if (!date || !selectedChangeTime) {
+      showToast('변경할 날짜와 시간을 선택해주세요.', 'error');
+      return;
+    }
+
+    try {
+      await apiFetch(`${API}/reservations/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date,
+          timeId: selectedChangeTime.id
+        })
+      }, '예약 변경에 실패했습니다.');
+
+      showToast('예약이 변경되었습니다.');
+      await loadMyReservations();
+    } catch (e) {
+      showToast(e.message || '예약 변경에 실패했습니다.', 'error');
     }
   }
 
@@ -981,6 +1132,12 @@
     const d = new Date(dateStr + 'T00:00:00');
     const days = ['일','월','화','수','목','금','토'];
     return `${dateStr} (${days[d.getDay()]})`;
+  }
+
+  function getTomorrowDateString() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
   }
 
   init();

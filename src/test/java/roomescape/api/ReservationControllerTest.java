@@ -1,5 +1,7 @@
 package roomescape.api;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import io.restassured.http.ContentType;
@@ -8,18 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.reservation.controller.ReservationController;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
-    @Autowired
-    private ReservationController reservationController;
 
     @DisplayName("사용자 예약 추가")
     @Test
@@ -79,6 +77,82 @@ class ReservationControllerTest {
                 .statusCode(200);
 
 
+    }
+
+    @DisplayName("사용자는 본인 예약의 날짜와 시간을 변경할 수 있다.")
+    @Test
+    void userReservationDateTimeChange() {
+        SessionFilter sessionFilter = loginAs("김철수");
+        String changeDate = LocalDate.now().plusDays(8).toString();
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", changeDate);
+        params.put("timeId", 4);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .pathParam("id", 15)
+                .body(params)
+                .when().patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", equalTo(15))
+                .body("date", equalTo(changeDate))
+                .body("time", equalTo("13:00"));
+    }
+
+    @DisplayName("사용자는 다른 사람 예약의 날짜와 시간을 변경할 수 없다.")
+    @Test
+    void userReservationDateTimeChangeByOtherUser() {
+        SessionFilter sessionFilter = loginAs("이영희");
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(8).toString());
+        params.put("timeId", 4);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .pathParam("id", 15)
+                .body(params)
+                .when().patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("이미 예약된 날짜와 시간으로 변경할 수 없다.")
+    @Test
+    void userReservationDateTimeChangeDuplicate() {
+        SessionFilter sessionFilter = loginAs("김철수");
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(6).toString());
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .pathParam("id", 15)
+                .body(params)
+                .when().patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @DisplayName("날짜와 시간이 변경되지 않은 예약 변경 요청은 실패한다.")
+    @Test
+    void userReservationDateTimeChangeNotChanged() {
+        SessionFilter sessionFilter = loginAs("김철수");
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(7).toString());
+        params.put("timeId", 3);
+
+        RestAssured.given().log().all()
+                .filter(sessionFilter)
+                .contentType(ContentType.JSON)
+                .pathParam("id", 15)
+                .body(params)
+                .when().patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(422);
     }
 
     @DisplayName("예약은 오늘 이후 날짜로만 가능하다.")

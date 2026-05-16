@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_ALREADY_RESERVED;
 import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_DATE_IN_PAST;
+import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_NOT_CHANGED;
 import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_TIME_IN_PAST;
 import static roomescape.exception.code.RoomEscapeErrorCode.RESERVATION_TIME_NOT_FOUND;
 import static roomescape.exception.code.RoomEscapeErrorCode.THEME_NOT_FOUND;
@@ -15,6 +16,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.service.exception.ReservationChangeException;
 import roomescape.reservation.service.exception.ReservationCreateException;
 import roomescape.reservation.service.exception.ReservationNotFoundException;
 import roomescape.theme.doamin.Theme;
@@ -36,14 +38,14 @@ public class ReservationService {
                                   LocalDate date,
                                   long timeId,
                                   long themeId) {
-        validateReservationDateNotPast(date);
+        validateCreateReservationDateNotPast(date);
 
         Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
-        validateReservationTime(findTime);
+        validateCreateReservationTime(findTime);
 
         Optional<Theme> findTheme = themeRepository.findById(themeId);
         validateTheme(findTheme);
-        validateDuplicateReservation(date, timeId, themeId);
+        validateCreateDuplicateReservation(date, timeId, themeId);
 
         return reservationRepository.save(Reservation.of(name, date, findTime.get(), findTheme.get()));
     }
@@ -58,6 +60,33 @@ public class ReservationService {
         }
 
         reservationRepository.delete(id);
+    }
+
+    public Reservation changeMyReservationDateTime(
+            long id,
+            String username,
+            LocalDate date,
+            long timeId
+    ) {
+        Reservation reservation = getReservation(id);
+        if (!isMyReservation(reservation, username)) {
+            throw new ReservationNotFoundException();
+        }
+
+        validateReservationChanged(reservation, date, timeId);
+        validateChangeReservationDateNotPast(date);
+
+        Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
+        validateChangeReservationTime(findTime);
+        validateChangeDuplicateReservation(date, timeId, reservation.getTheme().getId());
+
+        return reservationRepository.save(new Reservation(
+                reservation.getId(),
+                reservation.getName(),
+                date,
+                findTime.get(),
+                reservation.getTheme()
+        ));
     }
 
     private boolean isMyReservation(Reservation reservation, String username) {
@@ -77,20 +106,13 @@ public class ReservationService {
         return findReservation.get();
     }
 
-    private void validateReservationDateNotPast(LocalDate date) {
+    private void validateCreateReservationDateNotPast(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
             throw new ReservationCreateException(RESERVATION_DATE_IN_PAST);
         }
     }
 
-    private void validateDuplicateReservation(LocalDate date, long timeId, long themeId) {
-        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
-                .ifPresent(reservation -> {
-                    throw new ReservationCreateException(RESERVATION_ALREADY_RESERVED);
-                });
-    }
-
-    private void validateReservationTime(Optional<ReservationTime> findTime) {
+    private void validateCreateReservationTime(Optional<ReservationTime> findTime) {
         if (findTime.isEmpty()) {
             throw new ReservationCreateException(RESERVATION_TIME_NOT_FOUND);
         }
@@ -104,6 +126,42 @@ public class ReservationService {
         if (findTheme.isEmpty()) {
             throw new ReservationCreateException(THEME_NOT_FOUND);
         }
+    }
+
+    private void validateCreateDuplicateReservation(LocalDate date, long timeId, long themeId) {
+        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .ifPresent(reservation -> {
+                    throw new ReservationCreateException(RESERVATION_ALREADY_RESERVED);
+                });
+    }
+
+    private void validateReservationChanged(Reservation reservation, LocalDate date, long timeId) {
+        if (reservation.getDate().equals(date) && reservation.getTime().getId().equals(timeId)) {
+            throw new ReservationChangeException(RESERVATION_NOT_CHANGED);
+        }
+    }
+
+    private void validateChangeReservationDateNotPast(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new ReservationChangeException(RESERVATION_DATE_IN_PAST);
+        }
+    }
+
+    private void validateChangeReservationTime(Optional<ReservationTime> findTime) {
+        if (findTime.isEmpty()) {
+            throw new ReservationChangeException(RESERVATION_TIME_NOT_FOUND);
+        }
+
+        if (findTime.get().getStartAt().isBefore(LocalDate.now().atStartOfDay().toLocalTime())) {
+            throw new ReservationChangeException(RESERVATION_TIME_IN_PAST);
+        }
+    }
+
+    private void validateChangeDuplicateReservation(LocalDate date, long timeId, long themeId) {
+        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .ifPresent(reservation -> {
+                    throw new ReservationChangeException(RESERVATION_ALREADY_RESERVED);
+                });
     }
 
 }
