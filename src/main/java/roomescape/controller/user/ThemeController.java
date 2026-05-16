@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.PopularThemeResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.dto.TimeAvailabilityResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationAvailabilityService;
 import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
@@ -19,11 +19,11 @@ import java.util.List;
 public class ThemeController {
 
     private final ThemeService themeService;
-    private final ReservationService reservationService;
+    private final ReservationAvailabilityService reservationAvailabilityService;
 
-    public ThemeController(ThemeService themeService, ReservationService reservationService) {
+    public ThemeController(ThemeService themeService, ReservationAvailabilityService reservationAvailabilityService) {
         this.themeService = themeService;
-        this.reservationService = reservationService;
+        this.reservationAvailabilityService = reservationAvailabilityService;
     }
 
     @GetMapping
@@ -37,7 +37,7 @@ public class ThemeController {
     @GetMapping("/{id}/times")
     public ResponseEntity<List<TimeAvailabilityResponse>> getAvailableTimes(
             @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id, @RequestParam("date") LocalDate date) {
-        List<TimeAvailabilityResponse> times = reservationService.findAvailableTime(id, date).stream()
+        List<TimeAvailabilityResponse> times = reservationAvailabilityService.findAvailableTime(id, date).stream()
                 .map(TimeAvailabilityResponse::from)
                 .toList();
         return ResponseEntity.ok(times);

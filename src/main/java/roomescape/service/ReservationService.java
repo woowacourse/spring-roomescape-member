@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.ForbiddenReservationException;
 import roomescape.exception.InvalidInputException;
@@ -13,9 +12,6 @@ import roomescape.exception.PastReservationException;
 import roomescape.exception.PastReservationLockedException;
 import roomescape.exception.UnchangedReservationException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.service.result.TimeAvailabilityResult;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,14 +22,10 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
     private final ReservationCreator reservationCreator;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository, ReservationCreator reservationCreator) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationCreator reservationCreator) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
         this.reservationCreator = reservationCreator;
     }
 
@@ -68,20 +60,6 @@ public class ReservationService {
         return findUpdatedReservation(id);
     }
 
-    public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
-        validateThemeExists(themeId);
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
-
-        return times.stream()
-                .map(time -> new TimeAvailabilityResult(
-                        time.getId(),
-                        time.getStartAt(),
-                        isAvailable(time, reservations)
-                ))
-                .toList();
-    }
-
     private Reservation findReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
@@ -107,11 +85,6 @@ public class ReservationService {
     private boolean isPast(LocalDate date, ReservationTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         return reservationDateTime.isBefore(LocalDateTime.now());
-    }
-
-    private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
-        return reservations.stream()
-                .noneMatch(reservation -> reservation.hasTime(time));
     }
 
     private void validateUpdatableReservationAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
@@ -175,14 +148,5 @@ public class ReservationService {
         if (date == null && timeId == null) {
             throw new InvalidInputException("변경할 날짜 또는 시간이 필요합니다.");
         }
-    }
-
-    private void validateThemeExists(Long themeId) {
-        findTheme(themeId);
-    }
-
-    private Theme findTheme(Long themeId) {
-        return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
     }
 }

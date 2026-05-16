@@ -16,9 +16,6 @@ import roomescape.exception.PastReservationException;
 import roomescape.exception.PastReservationLockedException;
 import roomescape.exception.UnchangedReservationException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.service.result.TimeAvailabilityResult;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -41,13 +38,9 @@ import static org.mockito.Mockito.when;
 class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = mock();
-    private final ReservationTimeRepository reservationTimeRepository = mock();
-    private final ThemeRepository themeRepository = mock();
     private final ReservationCreator reservationCreator = mock();
     private final ReservationService service = new ReservationService(
             reservationRepository,
-            reservationTimeRepository,
-            themeRepository,
             reservationCreator);
 
     private final LocalDate date = LocalDate.now().plusDays(1);
@@ -89,7 +82,6 @@ class ReservationServiceTest {
 
         verify(reservationCreator).findReservationTime(timeId);
         verify(reservationCreator, never()).create("브라운", date, timeId, themeId);
-        verifyNoInteractions(themeRepository);
         verifyNoInteractions(reservationRepository);
     }
 
@@ -495,47 +487,4 @@ class ReservationServiceTest {
         verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
-    @Test
-    void 예약_가능한_시간_조회_테스트() {
-        // given
-        Long themeId = 1L;
-        ReservationTime reservedTime = new ReservationTime(1L, LocalTime.parse("08:00"));
-        ReservationTime availableTime = new ReservationTime(2L, LocalTime.parse("10:00"));
-        Theme theme = new Theme(themeId, "테스트 테마", "테마 설명", "썸네일 주소");
-        Reservation reservation = new Reservation(1L, "브라운", date, reservedTime, theme);
-
-        when(themeRepository.findBy(themeId))
-                .thenReturn(Optional.of(theme));
-        when(reservationTimeRepository.findAll())
-                .thenReturn(List.of(reservedTime, availableTime));
-        when(reservationRepository.findReservationsByThemeAndDate(themeId, date))
-                .thenReturn(List.of(reservation));
-
-        // when
-        List<TimeAvailabilityResult> result = service.findAvailableTime(themeId, date);
-
-        // then
-        assertThat(result).extracting(TimeAvailabilityResult::available)
-                .containsExactly(false, true);
-        verify(themeRepository).findBy(themeId);
-        verify(reservationTimeRepository).findAll();
-        verify(reservationRepository).findReservationsByThemeAndDate(themeId, date);
-    }
-
-    @Test
-    void 존재하지_않는_테마의_예약_가능_시간_조회시_예외_발생() {
-        // given
-        Long themeId = 1L;
-        when(themeRepository.findBy(themeId))
-                .thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> service.findAvailableTime(themeId, date))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
-
-        verify(themeRepository).findBy(themeId);
-        verifyNoInteractions(reservationCreator);
-        verifyNoInteractions(reservationRepository);
-    }
 }

@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.result.PopularThemeResult;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationAvailabilityService;
 import roomescape.service.ThemeService;
 import roomescape.service.result.TimeAvailabilityResult;
 
@@ -32,7 +32,7 @@ class ThemeControllerTest {
     private ThemeService themeService;
 
     @MockitoBean
-    private ReservationService reservationService;
+    private ReservationAvailabilityService reservationAvailabilityService;
 
     @Test
     void 테마_목록을_조회한다() throws Exception {
@@ -52,7 +52,7 @@ class ThemeControllerTest {
     @Test
     void 예약_가능_시간을_조회한다() throws Exception {
         // given
-        given(reservationService.findAvailableTime(
+        given(reservationAvailabilityService.findAvailableTime(
                 eq(1L),
                 eq(LocalDate.of(2099, 1, 1))))
                 .willReturn(List.of(new TimeAvailabilityResult(1L, LocalTime.of(10, 0), true)));
@@ -69,7 +69,7 @@ class ThemeControllerTest {
     @Test
     void 존재하지_않는_테마의_예약_가능_시간_조회시_에러_응답() throws Exception {
         // given
-        given(reservationService.findAvailableTime(
+        given(reservationAvailabilityService.findAvailableTime(
                 eq(999L),
                 eq(LocalDate.of(2099, 1, 1))))
                 .willThrow(new NotFoundException("존재하지 않는 테마입니다."));
