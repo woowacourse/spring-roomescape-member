@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,21 @@ public class ReservationTimeDao {
                 """,
                 Boolean.class,
                 timeId
+        );
+        return Boolean.TRUE.equals(result);
+    }
+
+    public boolean existsByStartAt(LocalTime time) {
+        Boolean result = jdbcTemplate.queryForObject(
+                """
+                SELECT EXISTS(
+                    SELECT *
+                    FROM reservation_time
+                    WHERE start_at = ?
+                )
+                """,
+                Boolean.class,
+                time
         );
         return Boolean.TRUE.equals(result);
     }
