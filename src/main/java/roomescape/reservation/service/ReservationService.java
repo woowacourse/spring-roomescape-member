@@ -87,7 +87,7 @@ public class ReservationService {
 
         reservation.updateDateAndTime(newDate, newTime.startAt());
         Reservation changedReservation = reservationRepository.updateDateAndTime(reservation);
-        log.info("Reservation changed: id={}, date={}, time={}", changedReservation.id(), changedReservation.theme(), changedReservation.time());
+        log.info("Reservation changed: id={}, date={}, time={}", changedReservation.id(), changedReservation.date(), changedReservation.time());
         return changedReservation;
     }
 
