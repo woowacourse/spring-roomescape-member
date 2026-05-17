@@ -43,7 +43,7 @@ public class ThemeDao {
         return themes.stream().findFirst();
     }
 
-    public List<Theme> selectByTrend(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> selectTopThemesByReservation(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT
                     t.id,

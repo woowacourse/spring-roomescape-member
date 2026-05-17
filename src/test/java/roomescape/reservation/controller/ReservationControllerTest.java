@@ -90,7 +90,7 @@ public class ReservationControllerTest {
                 .then()
                 .statusCode(400)
                 .body("code", equalTo("INVALID_REQUEST"))
-                .body("message", equalTo("이름은 필수입니다."));
+                .body("message", equalTo("요청 값이 올바르지 않습니다."));
     }
 
     @Test

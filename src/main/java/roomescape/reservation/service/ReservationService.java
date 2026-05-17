@@ -78,7 +78,7 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    public void deleteIdByName(Long id, String name) {
+    public void deleteByIdIfNameMatches(Long id, String name) {
         Reservation originReservation = reservationDao.selectById(id)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
 

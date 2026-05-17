@@ -127,7 +127,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void 다른_사람의_예약은_변경할_수_없다() {
+    void 다른_사람의_예약은_변경_예외발생() {
         Long reservationId = 1L;
         Reservation reservation = new Reservation(
                 reservationId,
@@ -158,7 +158,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약은_변경할_수_없다() {
+    void 존재하지_않는_예약은_변경_예외발생() {
         Long notFoundId = 999L;
 
         ReservationChangeRequest request = new ReservationChangeRequest(
@@ -198,13 +198,13 @@ public class ReservationServiceTest {
         given(reservationDao.selectById(reservationId))
                 .willReturn(Optional.of(originReservation));
 
-        reservationService.deleteIdByName(reservationId, name);
+        reservationService.deleteByIdIfNameMatches(reservationId, name);
 
         verify(reservationDao, times(1)).deleteById(reservationId);
     }
 
     @Test
-    void 다른_사람의_예약은_취소할_수_없다() {
+    void 다른_사람의_예약은_취소_예외발생() {
         Long reservationId = 1L;
         Reservation reservation = new Reservation(
                 reservationId,
@@ -224,13 +224,13 @@ public class ReservationServiceTest {
         given(reservationDao.selectById(reservationId))
                 .willReturn(Optional.of(reservation));
 
-        assertThatThrownBy(() -> reservationService.deleteIdByName(reservationId, request.name()))
+        assertThatThrownBy(() -> reservationService.deleteByIdIfNameMatches(reservationId, request.name()))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessageContaining(ErrorCode.CANNOT_DELETE_OTHER_RESERVATION.getMessage());
     }
 
     @Test
-    void 존재하지_않는_예약은_취소할_수_없다() {
+    void 존재하지_않는_예약은_취소_예외발생() {
         Long notFoundId = 999L;
 
         ReservationChangeRequest request = new ReservationChangeRequest(
@@ -240,13 +240,13 @@ public class ReservationServiceTest {
                 2L
         );
 
-        assertThatThrownBy(() -> reservationService.deleteIdByName(notFoundId, request.name()))
+        assertThatThrownBy(() -> reservationService.deleteByIdIfNameMatches(notFoundId, request.name()))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
 
     @Test
-    void 지난_예약은_취소할_수_없다() {
+    void 지난_예약은_취소_예외발생() {
         Long pastReserved = 1L;
 
         ReservationChangeRequest request = new ReservationChangeRequest(
@@ -264,7 +264,7 @@ public class ReservationServiceTest {
         );
         given(reservationDao.selectById(pastReserved)).willReturn(Optional.of(reservation));
 
-        assertThatThrownBy(() -> reservationService.deleteIdByName(pastReserved, request.name()))
+        assertThatThrownBy(() -> reservationService.deleteByIdIfNameMatches(pastReserved, request.name()))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessageContaining(ErrorCode.CANNOT_DELETE_PAST_RESERVATION.getMessage());
     }

@@ -131,7 +131,7 @@ public class ReservationDao {
                 """;
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId, now);
-        return count != null && count > 0;
+        return count > 0;
     }
 
     public void deleteById(Long id) {

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.RoomescapeException;
-import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
@@ -31,7 +30,7 @@ public class ThemeService {
     }
 
     public List<Theme> findByTrend(LocalDate startDate, LocalDate endDate, int limit) {
-        return themeDao.selectByTrend(startDate, endDate, limit);
+        return themeDao.selectTopThemesByReservation(startDate, endDate, limit);
     }
 
     public Theme add(String name, String description, String image) {

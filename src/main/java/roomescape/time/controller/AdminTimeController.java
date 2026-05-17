@@ -34,7 +34,7 @@ public class AdminTimeController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -31,13 +31,13 @@ public class ThemeDaoTest {
     private ThemeDao themeDao;
 
     @Test
-    void 테마_전체_조회_테스트() {
+    void 테마_전체_조회_성공() {
         List<Theme> themes = themeDao.selectAll();
         assertThat(themes.size()).isEqualTo(11);
     }
 
     @Test
-    void 테마_단일_조회_테스트() {
+    void 테마_단일_조회_성공() {
         Theme firstTheme = themeDao.selectById(1L)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
         assertThat(firstTheme.getName()).isEqualTo("은하수");
@@ -48,7 +48,7 @@ public class ThemeDaoTest {
     }
 
     @Test
-    void 테마_생성_테스트() {
+    void 테마_생성_성공() {
         Theme theme = new Theme("디스커버리", "디스커버리 테마방입니다", "http.jp");
         Theme expected = themeDao.insert(theme);
 
@@ -62,7 +62,7 @@ public class ThemeDaoTest {
     }
 
     @Test
-    void 테마_삭제_테스트() {
+    void 테마_삭제_성공() {
         long id = 1L;
         themeDao.deleteById(id);
 

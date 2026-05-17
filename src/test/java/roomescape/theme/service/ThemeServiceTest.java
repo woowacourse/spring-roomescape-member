@@ -33,7 +33,7 @@ public class ThemeServiceTest {
     private ThemeService themeService;
 
     @Test
-    void 존재하지_않는_테마_삭제_실패() {
+    void 존재하지_않는_테마_삭제_예외발생() {
         Long notFoundId = 999L;
 
         assertThatThrownBy(() -> themeService.removeById(notFoundId))
@@ -57,7 +57,7 @@ public class ThemeServiceTest {
     }
 
     @Test
-    void 예약이_존재하는_테마_삭제_실패() {
+    void 예약이_존재하는_테마_삭제_예외발생() {
         Long themeId = 10L;
 
         given(themeDao.selectById(themeId))
