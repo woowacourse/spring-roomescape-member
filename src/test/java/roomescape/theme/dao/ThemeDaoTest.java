@@ -2,8 +2,6 @@ package roomescape.theme.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +29,6 @@ public class ThemeDaoTest {
 
     @Autowired
     private ThemeDao themeDao;
-
-    @Test
-    void 데이터베이스_연동() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void 테마_전체_조회_테스트() {

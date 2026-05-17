@@ -1,5 +1,6 @@
 package roomescape.global;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,20 +15,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        String message = "";
-
-        if (ex.getBindingResult().hasErrors()) {
-            message = ex.getBindingResult().getFieldErrors().getFirst().getDefaultMessage();
-        }
-        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REQUEST.name(), message);
+        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_DATE_FORMAT.name(),
-                ErrorCode.INVALID_DATE_FORMAT.getMessage());
+        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_DATE_FORMAT);
 
         return ResponseEntity.badRequest().body(response);
     }
@@ -36,6 +31,13 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException ex) {
         ErrorCode error = ex.getErrorCode();
 
-        return ResponseEntity.status(error.getStatus()).body(ErrorResponse.of(error.name(), error.getMessage()));
+        return ResponseEntity.status(error.getStatus()).body(ErrorResponse.of(error));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+        ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REQUEST);
+
+        return ResponseEntity.badRequest().body(response);
     }
 }

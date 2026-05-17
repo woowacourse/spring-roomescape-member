@@ -1,17 +1,18 @@
 package roomescape.time.controller;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.service.TimeService;
 import roomescape.time.dto.AvailableTimeResponse;
 import roomescape.time.dto.TimeResponse;
+import roomescape.time.service.TimeService;
 
+@Validated
 @RestController
 public class TimeController {
 
@@ -30,8 +31,8 @@ public class TimeController {
     }
 
     @GetMapping(value = "/times/available-time", params = {"themeId", "date"})
-    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@Valid @RequestParam Long themeId,
-                                                                            @Valid @RequestParam LocalDate date) {
+    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
+                                                                            @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date).stream()
                 .map(AvailableTimeResponse::from)
                 .collect(Collectors.toList());

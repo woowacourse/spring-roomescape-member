@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +20,7 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
+@Validated
 @RestController
 public class ReservationController {
 
@@ -37,13 +39,13 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> readById(@Valid @PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> readById(@PathVariable Long id) {
         Reservation reservation = reservationService.findById(id);
         return ResponseEntity.ok().body(ReservationResponse.from(reservation));
     }
 
     @GetMapping(value = "/reservations/list", params = "name")
-    public ResponseEntity<List<ReservationResponse>> readByName(@Valid @RequestParam String name) {
+    public ResponseEntity<List<ReservationResponse>> readByName(@RequestParam String name) {
         List<ReservationResponse> reservations = reservationService.findByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -65,7 +67,7 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> updateDateTimeByName(@Valid @PathVariable Long id,
+    public ResponseEntity<ReservationResponse> updateDateTimeByName(@PathVariable Long id,
                                                                     @Valid @RequestBody ReservationChangeRequest request) {
         Reservation reservation = reservationService.modifyDateTimeByName(
                 id,
@@ -85,7 +87,7 @@ public class ReservationController {
     }
 
     @DeleteMapping(value = "/reservations/my/{id}", params = "name")
-    public ResponseEntity<Void> deleteIdByName(@Valid @PathVariable Long id, @Valid @RequestParam String name) {
+    public ResponseEntity<Void> deleteIdByName(@PathVariable Long id, @RequestParam String name) {
         reservationService.deleteIdByName(id, name);
         return ResponseEntity.noContent().build();
     }
