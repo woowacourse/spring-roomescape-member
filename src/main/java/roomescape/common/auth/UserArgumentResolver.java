@@ -12,6 +12,8 @@ import roomescape.common.exception.GlobalErrorCode;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+import static roomescape.common.exception.GlobalErrorCode.INVALID_AUTHENTICATION_HEADER;
+
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -35,15 +37,21 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         String authorization = webRequest.getHeader(AUTHORIZATION_HEADER);
 
         if(authorization == null || authorization.isBlank() || !authorization.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
-            throw new DomainException(GlobalErrorCode.INVALID_AUTHENTICATION_HEADER);
+            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
         }
 
         String name = authorization.substring(AUTHORIZATION_HEADER_PREFIX.length()).trim();
 
         if(name.isBlank()) {
-            throw new DomainException(GlobalErrorCode.INVALID_AUTHENTICATION_HEADER);
+            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
         }
 
-        return URLDecoder.decode(name, StandardCharsets.UTF_8);
+        String decode;
+        try {
+            decode = URLDecoder.decode(name, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
+        }
+        return decode;
     }
 }
