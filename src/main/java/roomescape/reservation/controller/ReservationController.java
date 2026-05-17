@@ -55,7 +55,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     public ReservationResponse updateReservation(@PathVariable Long id,
                                                  @RequestParam String name,
-                                                 @RequestBody ReservationUpdateRequest request) {
+                                                 @Valid @RequestBody ReservationUpdateRequest request) {
         Reservation reservation = reservationService.updateByIdAndName(id, name, request);
         return ReservationResponse.from(reservation);
     }

@@ -37,11 +37,12 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(ReservationRequest request) {
-        String name = request.name();
-        Long timeId = request.timeId();
-        Long themeId = request.themeId();
-        LocalDate date = request.date();
-        Reservation reservation = createReservation(name, timeId, themeId, date);
+        Reservation reservation = createReservation(
+                null,
+                request.name(),
+                request.timeId(),
+                request.themeId(),
+                request.date());
         return reservationRepository.save(reservation);
     }
 
@@ -82,11 +83,12 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationNotFoundException(id));
         validateOwner(reservation, name);
 
-        LocalDate date = getDateOrDefault(request, reservation);
-        ReservationTime reservationTime = getReservationTimeOrDefault(request, reservation);
-        Theme theme = getThemeOrDefault(request, reservation);
-
-        Reservation updatedReservation = createReservation(name, reservationTime.getId(), theme.getId(), date);
+        Reservation updatedReservation = createReservation(
+                id,
+                name,
+                request.timeId(),
+                request.themeId(),
+                request.date());
 
         return reservationRepository.update(updatedReservation);
     }
@@ -97,7 +99,7 @@ public class ReservationService {
         }
     }
 
-    private Reservation createReservation(String name, Long timeId, Long themeId, LocalDate date) {
+    private Reservation createReservation(Long id, String name, Long timeId, Long themeId, LocalDate date) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeNotFoundException(timeId));
         Theme theme = themeRepository.findById(themeId)
@@ -114,6 +116,7 @@ public class ReservationService {
                 });
 
         return Reservation.of(
+                id,
                 name,
                 date,
                 reservationTime,

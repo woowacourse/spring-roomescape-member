@@ -157,23 +157,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_수정_요청에_없는_값은_기존_값을_사용한다() {
-        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
-        Reservation reservation = reservationService.save(reservationRequest);
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), null, null);
-
-        Reservation updatedReservation = reservationService.updateByIdAndName(
-                reservation.getId(),
-                "봉구스",
-                updateRequest
-        );
-
-        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2099, 5, 7));
-        assertThat(updatedReservation.getTime()).isEqualTo(reservation.getTime());
-        assertThat(updatedReservation.getTheme()).isEqualTo(reservation.getTheme());
-    }
-
-    @Test
     void 수정할_예약이_없으면_에러를_던진다() {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 7), null, null);
 
@@ -205,7 +188,7 @@ class ReservationServiceTest {
     void 존재하지_않는_테마로_수정하면_에러를_던진다() {
         ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
         Reservation reservation = reservationService.save(reservationRequest);
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(null, null, 999L);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2099, 5, 6), 1L, 999L);
 
         assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
                 .isInstanceOf(ThemeNotFoundException.class);
@@ -215,7 +198,7 @@ class ReservationServiceTest {
     void 과거_날짜_시간으로_수정하면_에러를_던진다() {
         ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
         Reservation reservation = reservationService.save(reservationRequest);
-        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2000, 1, 1), null, null);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.of(2000, 1, 1), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.updateByIdAndName(reservation.getId(), "봉구스", updateRequest))
                 .isInstanceOf(PastReservationNotAllowedException.class);
