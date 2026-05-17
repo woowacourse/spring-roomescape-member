@@ -44,7 +44,8 @@ public class Theme {
             throw new IllegalArgumentException("테마 이름은 비어 있을 수 없습니다. 테마 이름을 입력해주세요.");
         }
         if (name.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("테마 이름은 255자를 넘을 수 없습니다. 255자 이내로 입력해주세요.");
+            throw new IllegalArgumentException(
+                    String.format("테마 이름은 %d자 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_LENGTH, MAX_LENGTH));
         }
     }
 
@@ -53,7 +54,8 @@ public class Theme {
             throw new IllegalArgumentException("테마 설명은 비어 있을 수 없습니다. 테마 설명을 입력해주세요.");
         }
         if (description.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("테마 설명은 255자를 넘을 수 없습니다. 255자 이내로 입력해주세요.");
+            throw new IllegalArgumentException(
+                    String.format("테마 설명은 %d자를 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_LENGTH, MAX_LENGTH));
         }
     }
 
@@ -62,7 +64,8 @@ public class Theme {
             throw new IllegalArgumentException("썸네일 경로는 비어 있을 수 없습니다. 썸네일 경로를 입력해주세요.");
         }
         if (thumbnail.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("썸네일 경로는 255자를 넘을 수 없습니다. 255자 이내로 입력해주세요.");
+            throw new IllegalArgumentException(
+                    String.format("썸네일 경로는 %d자를 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_LENGTH, MAX_LENGTH));
         }
     }
 }

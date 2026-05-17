@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import roomescape.exception.UnprocessableException;
 
 public class Reservation {
+    private static final int MAX_NAME_LENGTH = 255;
 
     private final Long id;
     private final String name;
@@ -88,8 +89,9 @@ public class Reservation {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 비어 있을 수 없습니다. 이름을 입력해주세요.");
         }
-        if (name.length() > 255) {
-            throw new IllegalArgumentException("이름은 255자를 넘을 수 없습니다. 255자 이내로 입력해주세요.");
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException(
+                    String.format("이름은 %d자를 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_NAME_LENGTH, MAX_NAME_LENGTH));
         }
     }
 
