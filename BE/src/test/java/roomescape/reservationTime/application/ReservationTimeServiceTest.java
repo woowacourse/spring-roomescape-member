@@ -57,7 +57,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간 목록을 조회 시 오류가 발생하지 않음")
+    @DisplayName("예약 시간 목록을 조회한다")
     void getTimes_success() {
         // given
         LocalTime testStartAt = LocalTime.now();
@@ -73,8 +73,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간이 없으도 오류를 발생시키지 않음")
-    void getTimesWhenEmpty() {
+    @DisplayName("예약 시간이 없으면 빈 목록을 반환한다")
+    void getTimes_success_when_empty() {
         // when
         List<ReservationTime> reservationTimes = reservationTimeService.getTimes();
 
@@ -101,8 +101,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제 시 값이 있으면 오류를 발생시키지 않음")
-    void deleteTime() {
+    @DisplayName("예약 시간을 삭제한다")
+    void deleteTime_success() {
         // given
         LocalTime testStartAt = LocalTime.now();
         ReservationTime saved = saveTime(testStartAt);
@@ -124,8 +124,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
-    void deleteTimeWithReferencedReservationTime() {
+    @DisplayName("예약에서 참조 중인 예약 시간을 삭제하면 예외가 발생한다")
+    void deleteTime_fail_with_referenced_time() {
         // given
         LocalTime testStartAt = LocalTime.now();
         ReservationTime savedReservationTime = saveTime(testStartAt);

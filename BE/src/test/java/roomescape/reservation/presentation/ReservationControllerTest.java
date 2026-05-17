@@ -72,7 +72,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 정상 저장 시 201과 응답 본문을 반환한다.")
+    @DisplayName("POST /reservations - 정상 저장 시 201과 응답 본문을 반환한다")
     void createReservation_success() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
@@ -105,7 +105,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 예약자 이름이 비어 있으면 에러 응답을 반환한다.")
+    @DisplayName("POST /reservations - 예약자 이름이 비어 있으면 에러 응답을 반환한다")
     void createReservation_fail_with_empty_name() throws Exception {
         // given
         Map<String, Object> body = new HashMap<>();
@@ -123,7 +123,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 예약 날짜 형식이 잘못되면 에러 응답을 반환한다.")
+    @DisplayName("POST /reservations - 예약 날짜 형식이 잘못되면 에러 응답을 반환한다")
     void createReservation_fail_with_invalid_date_format() throws Exception {
         // given
         Map<String, Object> body = new HashMap<>();
@@ -142,7 +142,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 테마 ID가 비어 있으면 에러 응답을 반환한다.")
+    @DisplayName("POST /reservations - 테마 ID가 비어 있으면 에러 응답을 반환한다")
     void createReservation_fail_with_empty_theme_id() throws Exception {
         // given
         Map<String, Object> body = new HashMap<>();
@@ -160,7 +160,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 서비스 정책 위반 시 에러 응답을 반환한다.")
+    @DisplayName("POST /reservations - 서비스 정책 위반 시 에러 응답을 반환한다")
     void createReservation_fail_with_business_exception() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
@@ -184,7 +184,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /reservations - 필터 없이 호출하면 전체 목록을 반환한다.")
+    @DisplayName("GET /reservations - 필터 없이 호출하면 전체 목록을 반환한다")
     void readReservations_no_filter() throws Exception {
         // given
         List<Reservation> reservations = List.of(
@@ -205,7 +205,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /reservations?date=...&themeId=... - 예약 응답 형식을 유지하면서 필터링한다.")
+    @DisplayName("GET /reservations?date=...&themeId=... - 예약 응답 형식을 유지하면서 필터링한다")
     void readReservations_filter_by_date_and_theme() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
@@ -233,7 +233,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /reservations/me - 이름을 기반으로 본인 예약 목록을 반환한다.")
+    @DisplayName("GET /reservations/me - 이름을 기반으로 본인 예약 목록을 반환한다")
     void readMyReservations_success() throws Exception {
         // given
         Reservation reservation = sampleReservation(
@@ -261,7 +261,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /reservations/me/{id} - 본인 예약 변경 요청을 서비스에 전달하고 204 응답을 반환한다.")
+    @DisplayName("PATCH /reservations/me/{id} - 본인 예약 변경 요청을 서비스에 전달하고 204 응답을 반환한다")
     void updateMyReservation_success() throws Exception {
         // given
         Map<String, Object> body = new HashMap<>();
@@ -287,7 +287,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /reservations/me/{id} - 이미 예약된 시간으로 변경하면 에러 응답을 반환한다.")
+    @DisplayName("PATCH /reservations/me/{id} - 이미 예약된 시간으로 변경하면 에러 응답을 반환한다")
     void updateMyReservation_fail_with_duplicate_reservation() throws Exception {
         // given
         Map<String, Object> body = new HashMap<>();
@@ -313,7 +313,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/{id} - 정상 삭제 시 204와 빈 본문을 반환한다.")
+    @DisplayName("DELETE /reservations/{id} - 정상 삭제 시 204와 빈 본문을 반환한다")
     void deleteReservation_success() throws Exception {
         // when & then
         mockMvc.perform(delete("/reservations/1")
@@ -325,7 +325,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/me/{id} - 본인 예약 취소 요청을 서비스에 전달하고 204 응답을 반환한다.")
+    @DisplayName("DELETE /reservations/me/{id} - 본인 예약 취소 요청을 서비스에 전달하고 204 응답을 반환한다")
     void deleteMyReservation_success() throws Exception {
         // when & then
         mockMvc.perform(delete("/reservations/me/1")
@@ -337,7 +337,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/me/{id} - 존재하지 않는 예약이면 에러 응답을 반환한다.")
+    @DisplayName("DELETE /reservations/me/{id} - 존재하지 않는 예약이면 에러 응답을 반환한다")
     void deleteMyReservation_fail_with_not_found_reservation() throws Exception {
         // given
         willThrow(new EntityNotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND))
@@ -352,7 +352,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/me/{id} - 본인 예약이 아니면 에러 응답을 반환한다.")
+    @DisplayName("DELETE /reservations/me/{id} - 본인 예약이 아니면 에러 응답을 반환한다")
     void deleteMyReservation_fail_with_invalid_owner() throws Exception {
         // given
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_OWNER_MISMATCH))
@@ -367,7 +367,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reservations/me/{id} - 지난 예약이면 취소할 수 없다는 에러 응답을 반환한다.")
+    @DisplayName("DELETE /reservations/me/{id} - 지난 예약이면 취소할 수 없다는 에러 응답을 반환한다")
     void deleteMyReservation_fail_with_past_reservation() throws Exception {
         // given
         willThrow(new BusinessException(ReservationErrorCode.RESERVATION_ALREADY_PAST))

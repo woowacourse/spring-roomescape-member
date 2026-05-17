@@ -26,9 +26,9 @@ import roomescape.theme.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 
-    private static final String TEST_THEMA_NAME = "테스트 테마";
-    private static final String TEST_THEMA_DESCRIPTION = "테스트 테마 설명";
-    private static final String TEST_THEMA_THUMBNAIL = "https://good.com/thumb-nail";
+    private static final String TEST_THEME_NAME = "테스트 테마";
+    private static final String TEST_THEME_DESCRIPTION = "테스트 테마 설명";
+    private static final String TEST_THEME_THUMBNAIL = "https://good.com/thumb-nail";
 
     private List<Reservation> reservations;
     private ThemeRepository themeRepository;
@@ -51,24 +51,24 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("저장 시도 시 오류가 발생하지 않는다")
+    @DisplayName("테마를 저장한다")
     void save_success() {
         // when
-        Theme theme = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = saveTheme(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
 
         // then
         assertThat(theme.getId()).isNotNull();
-        assertThat(theme.getName()).isEqualTo(TEST_THEMA_NAME);
-        assertThat(theme.getDescription()).isEqualTo(TEST_THEMA_DESCRIPTION);
-        assertThat(theme.getThumbnailUrl()).isEqualTo(TEST_THEMA_THUMBNAIL);
+        assertThat(theme.getName()).isEqualTo(TEST_THEME_NAME);
+        assertThat(theme.getDescription()).isEqualTo(TEST_THEME_DESCRIPTION);
+        assertThat(theme.getThumbnailUrl()).isEqualTo(TEST_THEME_THUMBNAIL);
         assertThat(themeRepository.findById(theme.getId())).contains(theme);
     }
 
     @Test
-    @DisplayName("아이디 기반으로 조회 시 오류가 발생하지 않음.")
+    @DisplayName("아이디 기반으로 테마를 조회한다")
     void findById_success() {
         // given
-        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved = saveTheme(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
 
         // when
         var theme = themeService.findById(saved.getId());
@@ -78,11 +78,11 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("전부 다 잘 찾아오는 것 시도 시 오류 발생 안함.")
+    @DisplayName("전체 테마 목록을 조회한다")
     void findAll_success() {
         // given
-        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme saved2 = saveTheme(TEST_THEMA_NAME + "2", TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme saved = saveTheme(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
+        Theme saved2 = saveTheme(TEST_THEME_NAME + "2", TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
 
         // when
         List<Theme> themes = themeService.findAll();
@@ -92,17 +92,17 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("아이디 기반 삭제 시도 시 오류 발생 안함")
+    @DisplayName("아이디 기반으로 테마를 삭제한다")
     void deleteById_success() {
         // given
-        Theme saved = saveTheme(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Long deleteTagetId = saved.getId();
+        Theme saved = saveTheme(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
+        Long deleteTargetId = saved.getId();
 
         // when
-        themeService.deleteById(deleteTagetId);
+        themeService.deleteById(deleteTargetId);
 
         // then
-        assertThat(themeRepository.findById(deleteTagetId)).isEmpty();
+        assertThat(themeRepository.findById(deleteTargetId)).isEmpty();
     }
 
     @Test
@@ -115,7 +115,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("정렬 기준으로 테마들을 조회 시 오류 발생 안함")
+    @DisplayName("정렬 기준으로 인기 테마를 조회한다")
     void findTopNByPeriod_success() {
         // given
         Theme firstTheme = themeRepository.save(Theme.create("인기 테마", "설명", "https://good.com/thumb-nail/1"));
@@ -140,8 +140,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 테마 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
-    void deleteTimeWithReferencedReservationTime() {
+    @DisplayName("예약에서 참조 중인 테마를 삭제하면 예외가 발생한다")
+    void deleteById_fail_with_referenced_theme() {
         // given
         ReservationTime time = ReservationTime.create(LocalTime.now().plusHours(1));
         Theme theme = themeRepository.save(Theme.create("인기 테마", "설명", "https://good.com/thumb-nail/1"));

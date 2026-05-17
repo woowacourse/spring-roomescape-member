@@ -17,9 +17,9 @@ import roomescape.theme.domain.Theme;
 @Import(ThemeJdbcTemplateRepository.class)
 class ThemeJdbcTemplateRepositoryTest {
 
-    private static final String TEST_THEMA_NAME = "테스트 테마";
-    private static final String TEST_THEMA_DESCRIPTION = "테스트 테마 설명";
-    private static final String TEST_THEMA_THUMBNAIL = "https://good.com/thumb-nail";
+    private static final String TEST_THEME_NAME = "테스트 테마";
+    private static final String TEST_THEME_DESCRIPTION = "테스트 테마 설명";
+    private static final String TEST_THEME_THUMBNAIL = "https://good.com/thumb-nail";
 
     private final JdbcTemplate jdbcTemplate;
     private final ThemeJdbcTemplateRepository themeRepository;
@@ -31,10 +31,10 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("테마를 잘 저장한다")
+    @DisplayName("테마를 저장한다")
     void save_success() {
         // given
-        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
 
         // when
         Theme savedTheme = themeRepository.save(theme);
@@ -50,7 +50,7 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("아이디를 기반으로 테마를 찾는다")
     void findById_success() {
         // given
-        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
         Theme savedTheme = themeRepository.save(theme);
 
         // when
@@ -61,8 +61,8 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("아이디를 기반으로 테마를 찾는다 - 없어도 오류가 발생하지 않는다. - Optional<Empty> 반환")
-    void findById_success_even_if_no_theme() {
+    @DisplayName("존재하지 않는 아이디로 테마를 조회하면 빈 Optional을 반환한다")
+    void findById_success_when_not_found() {
         // when
         Long notExistThemeId = 999L;
         Optional<Theme> foundTheme = themeRepository.findById(notExistThemeId);
@@ -75,8 +75,8 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("모든 테마를 가져온다")
     void findAll_success() {
         // given
-        Theme theme1 = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme theme2 = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme1 = Theme.create(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
+        Theme theme2 = Theme.create(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
         themeRepository.save(theme1);
         themeRepository.save(theme2);
 
@@ -88,7 +88,7 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("모든 테마를 가져온다 - 없는 경우에는 빈 리스트 반환")
+    @DisplayName("테마가 없으면 빈 목록을 반환한다")
     void findAll_success_even_if_no_theme() {
         // when
         List<Theme> result = themeRepository.findAll();
@@ -101,7 +101,7 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("아이디를 기반으로 테마를 삭제한다")
     void deleteById_success() {
         // given
-        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEME_NAME, TEST_THEME_DESCRIPTION, TEST_THEME_THUMBNAIL);
         Theme savedTheme = themeRepository.save(theme);
 
         // when
@@ -113,7 +113,7 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("없는 ID 기반으로 테마를 삭제해도 오류가 발생하지 않는다")
+    @DisplayName("존재하지 않는 ID로 테마를 삭제해도 예외가 발생하지 않는다")
     void deleteById_success_even_if_no_theme() {
         // when
         Long notExistThemeId = 999L;

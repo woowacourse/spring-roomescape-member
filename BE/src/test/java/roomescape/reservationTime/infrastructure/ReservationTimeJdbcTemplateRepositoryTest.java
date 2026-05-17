@@ -23,33 +23,33 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("시간 저장을 잘 한다")
+    @DisplayName("예약 시간을 저장한다")
     void save_success() {
-        //given
+        // given
         ReservationTime testReservationTime = ReservationTime.create(
                 LocalTime.now()
         );
 
-        //when
+        // when
         ReservationTime result = timeRepository.save(testReservationTime);
 
-        //then
+        // then
         Assertions.assertNotNull(result.getId());
     }
 
     @Test
-    @DisplayName("id에 맞는 시간이 존재하면 id 로 잘 찾아온다.")
+    @DisplayName("아이디에 맞는 예약 시간이 존재하면 조회한다")
     void findById_success() {
-        //given
+        // given
         ReservationTime time1 = ReservationTime.create(LocalTime.of(12, 0));
         ReservationTime time2 = ReservationTime.create(LocalTime.of(13, 0));
         timeRepository.save(time1);
         ReservationTime saved2 = timeRepository.save(time2);
 
-        //when
+        // when
         Optional<ReservationTime> result = timeRepository.findById(saved2.getId());
 
-        //then
+        // then
         Assertions.assertTrue(result.isPresent());
 
         LocalTime foundTime = result.get().getStartAt();
@@ -57,20 +57,20 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     }
 
     @Test
-    @DisplayName("id에 맞는 시간이 존재하지 않으면, Optional empty를 반환한다.")
-    void findById_success_but_return_empty_value() {
-        //when
+    @DisplayName("존재하지 않는 아이디로 예약 시간을 조회하면 빈 Optional을 반환한다")
+    void findById_success_when_not_found() {
+        // when
         long notExistTimeId = 999L;
         Optional<ReservationTime> result = timeRepository.findById(notExistTimeId);
 
-        //then
+        // then
         Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
-    @DisplayName("저장되어 있는 모든 시간을 잘 가져온다")
+    @DisplayName("전체 예약 시간 목록을 조회한다")
     void findAll_success() {
-        //given
+        // given
         ReservationTime time1 = ReservationTime.create(LocalTime.of(11, 0));
         ReservationTime time2 = ReservationTime.create(LocalTime.of(12, 0));
         ReservationTime time3 = ReservationTime.create(LocalTime.of(13, 0));
@@ -79,25 +79,25 @@ class ReservationTimeJdbcTemplateRepositoryTest {
         timeRepository.save(time2);
         timeRepository.save(time3);
 
-        //when
+        // when
         List<ReservationTime> result = timeRepository.findAll();
 
-        //then
+        // then
         Assertions.assertEquals(3, result.size());
     }
 
     @Test
-    @DisplayName("삭제를 id 기반으로 잘 한다")
+    @DisplayName("아이디를 기반으로 예약 시간을 삭제한다")
     void deleteById_success() {
-        //given
+        // given
         ReservationTime time = ReservationTime.create(LocalTime.of(11, 0));
         ReservationTime saved = timeRepository.save(time);
 
-        //when
+        // when
         Long deleteTargetId = saved.getId();
         timeRepository.deleteById(deleteTargetId);
 
-        //then
+        // then
         Optional<ReservationTime> deleteTargetFindResult = timeRepository.findAll()
                 .stream()
                 .filter(reservationTime -> reservationTime.getId().equals(deleteTargetId))

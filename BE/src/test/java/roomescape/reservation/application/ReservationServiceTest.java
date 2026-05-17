@@ -95,7 +95,6 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 테마 ID로 예약하면 잘못된 요청 예외가 전파된다")
-    //메서드명-성공 혹은 실패 - (이유)
     void saveReservation_fail_with_not_found_theme() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
@@ -188,7 +187,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("이름을 기반으로 자신 예약 목록 조회 기능")
+    @DisplayName("이름을 기반으로 자신의 예약 목록을 조회한다")
     void getReservationsByName_success() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
@@ -208,7 +207,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("자신의 예약 날짜 및 시간 수정 기능")
+    @DisplayName("자신의 예약 날짜와 시간을 수정한다")
     void updateReservationSchedule_success() {
         // given
         ReservationTime savedTime1 = reservationTimeRepository.save(
@@ -251,7 +250,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 ID로 수정하면 예외 발생")
+    @DisplayName("존재하지 않는 예약 ID로 수정하면 예외가 발생한다")
     void updateReservationSchedule_fail_with_not_found_reservation() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(
@@ -270,7 +269,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("본인의 예약이 아니면 수정 시 예외 발생")
+    @DisplayName("본인의 예약이 아니면 수정 시 예외가 발생한다")
     void updateReservationSchedule_fail_with_invalid_owner() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(
@@ -302,8 +301,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("이름을 기반으로 자신의 예약 삭제 기능")
-    void deleteReservationByName_success() {
+    @DisplayName("이름을 기반으로 자신의 예약을 취소한다")
+    void cancelReservation_success() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
