@@ -489,11 +489,11 @@ erDiagram
 
 - **ReservationServiceTest**
 - [x] 현재 날짜 기준 테스트 수정
-- [ ] 에러코드와 에러메시지 차이 공부해보기
+- [x] 에러코드와 에러메시지 차이 공부해보기
 
 
 - **ReservationController**
-- [ ] 수정 성공된 ReservationResponse 반환
+- [x] 수정 성공된 ReservationResponse 반환
 
 
 - **행동가이드**

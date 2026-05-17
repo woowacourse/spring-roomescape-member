@@ -47,7 +47,7 @@ public class ReservationService {
         return reservationDao.findByName(name);
     }
 
-    public void update(Long id, LocalDate newDate, Long newTimeId, Long newThemeId) {
+    public Reservation update(Long id, LocalDate newDate, Long newTimeId, Long newThemeId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
         validatePastReservation(reservation.date(), reservation.time(), "변경");
@@ -56,6 +56,8 @@ public class ReservationService {
         validatePastReservation(newDate, reservationTime, "변경");
         validateHasDuplicateReservation(newDate, newTimeId, newThemeId, id);
         reservationDao.updateReservation(id, newDate, newTimeId, newThemeId);
+
+        return reservationDao.findById(id).orElseThrow();
     }
 
     public void deleteByIdFromAdmin(Long id) {

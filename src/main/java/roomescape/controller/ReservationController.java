@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,10 +52,13 @@ public class ReservationController {
     }
 
     @PutMapping("/reservations/{id}")
-    public void updateReservation(@PathVariable Long id, @RequestBody ReservationRequest request) {
-        reservationService.update(id, request.date(), request.timeId(), request.themeId());
-    }
+    public ReservationResponse updateReservation(@PathVariable Long id,
+                                                 @RequestBody ReservationRequest request) {
+        Reservation updatedReservation = reservationService.update(id, request.date(), request.timeId(),
+                request.themeId());
 
+        return ReservationResponse.from(updatedReservation);
+    }
 
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
