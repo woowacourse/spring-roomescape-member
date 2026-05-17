@@ -11,7 +11,7 @@ public interface CommonDao<T> {
 
     T insert(T t);
 
-    int update(T t);
+    T update(T t);
 
     int delete(Long id);
 

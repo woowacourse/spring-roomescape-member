@@ -65,7 +65,7 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
-    public int update(Time time) {
+    public Time update(Time time) {
         String sql = """
                 UPDATE times
                 SET start_at = :startAt
@@ -74,7 +74,8 @@ public class TimeJdbcDao implements TimeDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startAt", time.getStartAt())
                 .addValue("id", time.getId());
-        return jdbcTemplate.update(sql, params);
+        jdbcTemplate.update(sql, params);
+        return time;
     }
 
     @Override

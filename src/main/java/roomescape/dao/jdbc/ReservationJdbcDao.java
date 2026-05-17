@@ -42,8 +42,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 TIME_ROW_MAPPER.mapRow(rs, rowNum),
                 THEME_ROW_MAPPER.mapRow(rs, rowNum),
                 ReservationStatus.valueOf(rs.getString("status")),
-                deletedAt != null ? deletedAt.toLocalDateTime() : null,
-                rs.getLong("version")
+                deletedAt != null ? deletedAt.toLocalDateTime() : null
         );
     };
 
@@ -187,7 +186,8 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public int update(Reservation reservation) {
+    public Reservation update(Reservation reservation) {
+        long currentVersion = findVersionById(reservation.getId());
         String sql = """
                 UPDATE reservations
                 SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId,
@@ -202,12 +202,18 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("status", reservation.getStatus().name())
                 .addValue("deletedAt", reservation.getDeletedAt())
                 .addValue("id", reservation.getId())
-                .addValue("version", reservation.getVersion());
+                .addValue("version", currentVersion);
         int updated = jdbcTemplate.update(sql, params);
         if (updated == 0) {
             throw new ConflictException("다른 사용자가 이미 수정했습니다. 다시 시도해주세요.");
         }
-        return updated;
+        return findById(reservation.getId()).orElseThrow();
+    }
+
+    private long findVersionById(Long id) {
+        String sql = "SELECT version FROM reservations WHERE id = :id";
+        Long version = jdbcTemplate.queryForObject(sql, new MapSqlParameterSource("id", id), Long.class);
+        return version != null ? version : 0L;
     }
 
     @Override

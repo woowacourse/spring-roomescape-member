@@ -89,7 +89,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public int update(Theme theme) {
+    public Theme update(Theme theme) {
         String sql = """
                 UPDATE themes
                 SET name = :name, thumbnail_url = :thumbnailUrl, description = :description
@@ -100,7 +100,8 @@ public class ThemeJdbcDao implements ThemeDao {
                 .addValue("thumbnailUrl", theme.getThumbnailUrl())
                 .addValue("description", theme.getDescription())
                 .addValue("id", theme.getId());
-        return jdbcTemplate.update(sql, params);
+        jdbcTemplate.update(sql, params);
+        return theme;
     }
 
     @Override

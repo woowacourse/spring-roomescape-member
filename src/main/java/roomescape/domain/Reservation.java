@@ -12,10 +12,9 @@ public class Reservation {
     private Time time;
     private ReservationStatus status;
     private LocalDateTime deletedAt;
-    private long version;
 
     public Reservation(Long id, String name, LocalDate date, Time time, Theme theme,
-                       ReservationStatus status, LocalDateTime deletedAt, long version) {
+                       ReservationStatus status, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -23,20 +22,14 @@ public class Reservation {
         this.theme = theme;
         this.status = status;
         this.deletedAt = deletedAt;
-        this.version = version;
-    }
-
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme,
-                       ReservationStatus status, LocalDateTime deletedAt) {
-        this(id, name, date, time, theme, status, deletedAt, 0L);
     }
 
     public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
-        this(id, name, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        this(id, name, date, time, theme, ReservationStatus.BOOKED, null);
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
-        this(null, name, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        this(null, name, date, time, theme, ReservationStatus.BOOKED, null);
     }
 
     public void validateCreate(LocalDateTime now) {
@@ -112,9 +105,5 @@ public class Reservation {
 
     public LocalDateTime getDeletedAt() {
         return deletedAt;
-    }
-
-    public long getVersion() {
-        return version;
     }
 }

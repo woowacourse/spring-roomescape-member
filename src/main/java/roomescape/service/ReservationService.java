@@ -58,8 +58,7 @@ public class ReservationService {
         Time time = timeDao.findById(reservationPatchDto.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
         reservation.update(reservationPatchDto.date(), time);
-        reservationDao.update(reservation);
-        return reservation;
+        return reservationDao.update(reservation);
     }
 
     @Transactional
