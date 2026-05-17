@@ -9,8 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.repository.projection.ReservationDetailProjection;
-import roomescape.reservationtime.dto.response.TimeInformation;
-import roomescape.theme.dto.response.ThemeFindResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,16 +24,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("reservation_name"),
                     resultSet.getDate("date").toLocalDate(),
-                    new ThemeFindResponse(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail_url")
-                    ),
-                    new TimeInformation(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    )
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail_url"),
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
             );
 
     @Override

@@ -1,8 +1,5 @@
 package roomescape.reservation.repository.projection;
 
-import roomescape.reservationtime.dto.response.TimeInformation;
-import roomescape.theme.dto.response.ThemeFindResponse;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -10,18 +7,22 @@ public record ReservationDetailProjection(
         Long id,
         String name,
         LocalDate date,
-        ThemeFindResponse themeFindResponse,
-        TimeInformation timeInformation
+        Long themeId,
+        String themeName,
+        String themeDescription,
+        String thumbnailUrl,
+        Long timeId,
+        LocalTime startAt
 ) {
     public long getTimeId() {
-        return timeInformation().id();
+        return timeId();
     }
 
     public long getThemeId() {
-        return themeFindResponse().id();
+        return themeId();
     }
 
     public LocalTime getTime() {
-        return timeInformation().time();
+        return startAt();
     }
 }

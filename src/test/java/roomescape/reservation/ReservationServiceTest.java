@@ -14,9 +14,7 @@ import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.projection.ReservationDetailProjection;
-import roomescape.reservationtime.dto.response.TimeInformation;
 import roomescape.schedule.ScheduleService;
-import roomescape.theme.dto.response.ThemeFindResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -46,18 +44,35 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationService reservationService;
 
+    private ReservationDetailProjection createReservationDetailProjection(
+            Long id,
+            String name,
+            LocalDate date,
+            Long themeId,
+            Long timeId,
+            LocalTime startAt
+    ) {
+        return new ReservationDetailProjection(
+                id,
+                name,
+                date,
+                themeId,
+                "themeName",
+                "themeDescription",
+                "themeThumbnailUrl",
+                timeId,
+                startAt
+        );
+    }
+
     @Test
     @DisplayName("이름 기준 예약 삭제에 성공한다.")
     void deleteByIdAndName_테스트_1() {
         // given
         long reservationId = 1L;
         String name = "a";
-        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
-                reservationId, name,
-                LocalDate.of(2026, 5, 5),
-                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
-                new TimeInformation(7L, LocalTime.of(8, 0))
-        );
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 5), 1L, 7L, LocalTime.of(8, 0));
         when(reservationRepository.findDetailByIdAndName(reservationId, name))
                 .thenReturn(Optional.of(reservationDetail));
 
@@ -94,12 +109,8 @@ class ReservationServiceTest {
         long reservationId = 1L;
         String name = "a";
 
-        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
-                reservationId, name,
-                LocalDate.of(2026, 5, 13),
-                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
-                new TimeInformation(1L, LocalTime.of(10, 0))
-        );
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
 
         when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
         doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(reservationDetail.date());
@@ -118,12 +129,8 @@ class ReservationServiceTest {
         long reservationId = 1L;
         String name = "a";
 
-        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
-                reservationId, name,
-                LocalDate.of(2026, 5, 13),
-                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
-                new TimeInformation(1L, LocalTime.of(10, 0))
-        );
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
 
         when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
         doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
@@ -146,13 +153,8 @@ class ReservationServiceTest {
                 4L
         );
 
-        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
-                4L,
-                "d",
-                LocalDate.of(2026, 5, 5),
-                new ThemeFindResponse(4L, "theme", "desc", "url"),
-                new TimeInformation(3L, LocalTime.of(12, 0))
-        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 5), 4L, 3L, LocalTime.of(12, 0));
         Reservation updatedReservation = new Reservation(4L, "d", 4L);
 
         when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
@@ -180,13 +182,8 @@ class ReservationServiceTest {
                 2L
         );
 
-        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
-                4L,
-                "d",
-                LocalDate.of(2026, 5, 6),
-                new ThemeFindResponse(2L, "theme", "desc", "url"),
-                new TimeInformation(2L, LocalTime.of(11, 0))
-        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
 
         when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
         when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 5), 2L, 2L)).thenReturn(2L);
@@ -222,13 +219,8 @@ class ReservationServiceTest {
                 LocalDate.of(2026, 5, 7),
                 5L
         );
-        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
-                4L,
-                "d",
-                LocalDate.of(2026, 5, 6),
-                new ThemeFindResponse(2L, "theme", "desc", "url"),
-                new TimeInformation(2L, LocalTime.of(11, 0))
-        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
 
         when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
         when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 7), 5L, 2L))
@@ -252,12 +244,8 @@ class ReservationServiceTest {
         long oldReservationId = 4L;
         String oldReservationName = "d";
 
-        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
-                oldReservationId, oldReservationName,
-                LocalDate.of(2026, 5, 6),
-                new ThemeFindResponse(2L, "theme", "desc", "url"),
-                new TimeInformation(2L, LocalTime.of(11, 0))
-        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                oldReservationId, oldReservationName, LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
 
         when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
         doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(oldReservation.date());
@@ -284,12 +272,8 @@ class ReservationServiceTest {
         long oldReservationId = 4L;
         String oldReservationName = "d";
 
-        ReservationDetailProjection oldReservation = new ReservationDetailProjection(
-                oldReservationId, oldReservationName,
-                LocalDate.of(2026, 5, 6),
-                new ThemeFindResponse(2L, "theme", "desc", "url"),
-                new TimeInformation(2L, LocalTime.of(11, 0))
-        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                oldReservationId, oldReservationName, LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
 
         when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
         doNothing().when(scheduleService).validateNotPastDate(oldReservation.date());

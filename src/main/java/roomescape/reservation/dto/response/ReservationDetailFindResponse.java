@@ -14,25 +14,27 @@ public record ReservationDetailFindResponse(
         ThemeFindResponse theme,
         TimeInformation time
 ) {
-    public static List<ReservationDetailFindResponse> from(List<ReservationDetailProjection> rows) {
-        return rows.stream()
-                .map(row -> new ReservationDetailFindResponse(
-                        row.id(),
-                        row.name(),
-                        row.date(),
-                        row.themeFindResponse(),
-                        row.timeInformation()
-                ))
+    public static List<ReservationDetailFindResponse> from(List<ReservationDetailProjection> projections) {
+        return projections.stream()
+                .map(ReservationDetailFindResponse::from)
                 .toList();
     }
 
-    public static ReservationDetailFindResponse from(ReservationDetailProjection row) {
+    public static ReservationDetailFindResponse from(ReservationDetailProjection projection) {
         return new ReservationDetailFindResponse(
-                row.id(),
-                row.name(),
-                row.date(),
-                row.themeFindResponse(),
-                row.timeInformation()
+                projection.id(),
+                projection.name(),
+                projection.date(),
+                new ThemeFindResponse(
+                        projection.themeId(),
+                        projection.themeName(),
+                        projection.themeDescription(),
+                        projection.thumbnailUrl()
+                ),
+                new TimeInformation(
+                        projection.timeId(),
+                        projection.startAt()
+                )
         );
     }
 }
