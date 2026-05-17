@@ -78,6 +78,21 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 날짜_형식이_잘못되면_400을_반환한다() {
+        // given
+        int timeId = createTime("10:00");
+        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("name", "브라운", "date", "잘못된날짜", "timeId", timeId, "themeId", themeId))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 중복_예약을_하면_409를_반환한다() {
         // given
         int timeId = createTime("10:00");
