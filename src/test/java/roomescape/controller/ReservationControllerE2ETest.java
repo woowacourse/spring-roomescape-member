@@ -258,6 +258,19 @@ class ReservationControllerE2ETest {
                     .statusCode(400);
         }
 
+        @DisplayName("예약 취소 시 잘못된 타입의 파라미터를 전달하면 400 Bad Request를 응답한다")
+        @Test
+        void 예약_취소_시_잘못된_타입의_파라미터를_전달하면_400을_응답한다() {
+            RestAssured.given().log().all()
+                    .queryParam("name", "루드비코")
+                    .queryParam("date", "2026-05-15")
+                    .queryParam("timeId", "not-a-number")
+                    .queryParam("themeId", 1)
+                    .when().delete("/api/reservations")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
         private static Stream<Arguments> provideInvalidCancellationRequests() {
             return Stream.of(
                     Arguments.of("name 누락", Map.of("date", "2026-05-18", "timeId", 1, "themeId", 1)),

@@ -5,9 +5,13 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
@@ -128,6 +132,19 @@ class AdminControllerE2ETest {
                     .then().log().all()
                     .statusCode(422);
         }
+
+        @DisplayName("예약 시간 생성 시 필수 파라미터가 누락되면 400 Bad Request를 응답한다")
+        @Test
+        void 예약_시간_생성_시_시간이_누락되면_400을_응답한다() {
+            Map<String, String> requestBody = Map.of(); // empty body
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().post("/admin/times")
+                    .then().log().all()
+                    .statusCode(400);
+        }
     }
 
     @Nested
@@ -149,6 +166,26 @@ class AdminControllerE2ETest {
                     .then().log().all()
                     .statusCode(201)
                     .header(HttpHeaders.LOCATION, "/themes/1");
+        }
+
+        @DisplayName("테마 생성 시 필수 데이터가 누락되면 400 Bad Request를 응답한다")
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("provideInvalidThemeRequests")
+        void 테마_생성_시_필수_데이터가_누락되면_400을_응답한다(String description, Map<String, String> invalidRequest) {
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(invalidRequest)
+                    .when().post("/admin/themes")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        private static Stream<Arguments> provideInvalidThemeRequests() {
+            return Stream.of(
+                    Arguments.of("이름 누락", Map.of("description", "설명", "imageUrl", "https://image.png")),
+                    Arguments.of("설명 누락", Map.of("name", "이름", "imageUrl", "https://image.png")),
+                    Arguments.of("이미지 누락", Map.of("name", "이름", "description", "설명"))
+            );
         }
 
         @DisplayName("테마 삭제에 성공하면 204 No Content를 응답한다")
