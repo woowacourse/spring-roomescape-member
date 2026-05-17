@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
-import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -91,12 +90,31 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마를 삭제하면 예외가 발생한다.")
-    public void delete_fail_whenThemeNotFound() {
+    @DisplayName("존재하지 않는 테마 삭제를 요청해도 성공한다.")
+    public void delete_success_whenThemeNotFound() {
+        // when
+        themeService.delete(37L);
+
+        // then
+        assertThat(themeService.list()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마를 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenReservationExists() {
+        // given
+        Theme theme = themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        );
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationRepository.save(new Reservation("브라운", LocalDate.now().plusDays(1), time, theme));
+
         // when, then
-        assertThatThrownBy(() -> themeService.delete(37L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("삭제할 테마가 존재하지 않습니다. 테마 목록을 확인해주세요.");
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
     }
 
     @Test
