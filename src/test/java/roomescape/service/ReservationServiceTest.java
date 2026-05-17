@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationUpdateRequest;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 
 @SpringBootTest
 @Transactional
@@ -25,17 +27,20 @@ public class ReservationServiceTest {
     void 존재하지_않는_예약을_삭제할_경우_예외가_발생한다() {
         // when
         Assertions.assertThatThrownBy(() -> reservationService.removeById(-1L))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
 
     @Test
     void 존재하는_예약을_추가할_경우_예외가_발생한다() {
         // given
-        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 1), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("토리", LocalDate.now().plusDays(1), 1L, 1L);
+        reservationService.register(reservationRequest);
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_DUPLICATED.getMessage());
     }
 
     @Test
@@ -54,7 +59,8 @@ public class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("토리", LocalDate.of(2026, 5, 1), 2L, 2L);
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_PAST_DATE.getMessage());
     }
 
     @Test
@@ -63,7 +69,8 @@ public class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("토리임", LocalDate.now().plusDays(1L), -1L, 2L);
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -72,7 +79,8 @@ public class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("토리임", LocalDate.now().plusDays(1L), 1L, -2L);
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(ErrorCode.THEME_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -97,7 +105,7 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, otherName))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining(ErrorCode.RESERVATION_NOT_OWNER.getMessage());
     }
 
@@ -110,7 +118,7 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservationId, username))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(UnprocessableEntityException.class)
                 .hasMessageContaining(ErrorCode.RESERVATION_PAST_UPDATE.getMessage());
     }
 
@@ -133,7 +141,8 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.update(-1L, "토리", updateRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -142,8 +151,9 @@ public class ReservationServiceTest {
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
 
         // when
-        Assertions.assertThatThrownBy(() -> reservationService.update(1L, "토리", updateRequest))
-                .isInstanceOf(RoomescapeException.class);
+        Assertions.assertThatThrownBy(() -> reservationService.update(1L, "윤기", updateRequest))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_PAST_UPDATE.getMessage());
     }
 
     @Test
@@ -157,7 +167,8 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.update(id, "토리", updateRequest))
-                .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED.getMessage());
     }
 
     @Test
