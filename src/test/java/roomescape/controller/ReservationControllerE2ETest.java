@@ -96,6 +96,26 @@ class ReservationControllerE2ETest {
                     .statusCode(400);
         }
 
+        @DisplayName("JSON 본문의 필드 타입이 일치하지 않으면 400 Bad Request를 응답한다")
+        @Sql("/initialize_theme_and_time.sql")
+        @Test
+        void JSON_본문의_필드_타입이_일치하지_않으면_400을_응답한다() {
+            Map<String, Object> requestBodyWithTypeMismatch = Map.of(
+                    "name", "루드비코",
+                    "date", FUTURE_DATE,
+                    "timeId", "not-a-number", // String instead of Long
+                    "themeId", 1
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBodyWithTypeMismatch)
+                    .when().post("/api/reservations")
+                    .then().log().all()
+                    .statusCode(400)
+                    .body("title", is("잘못된 요청 본문"));
+        }
+
         @DisplayName("같은 날짜/시간/테마로 중복 예약하면 409 Conflict를 응답한다")
         @Sql("/initialize_theme_and_time.sql")
         @Test

@@ -133,6 +133,23 @@ class AdminControllerE2ETest {
                     .statusCode(422);
         }
 
+        @DisplayName("잘못된 JSON 형식으로 시간 생성을 요청하면 400 Bad Request를 응답한다")
+        @Test
+        void 잘못된_JSON_형식으로_시간_생성을_요청하면_400을_응답한다() {
+            long notATimeFormat = 1;
+            Map<String, Object> requestBody = Map.of(
+                    "startAt", notATimeFormat
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().post("/admin/times")
+                    .then().log().all()
+                    .statusCode(400)
+                    .body("title", is("잘못된 요청 본문"));
+        }
+
         @DisplayName("예약 시간 생성 시 필수 파라미터가 누락되면 400 Bad Request를 응답한다")
         @Test
         void 예약_시간_생성_시_시간이_누락되면_400을_응답한다() {
