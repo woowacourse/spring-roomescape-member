@@ -60,7 +60,7 @@ public class ReservationService {
         target.checkOwnership(name);
         ReservationTime newTime = reservationTimeRepository.getById(newTimeId);
         Reservation updated = target.update(newDate, newTime);
-        updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.theme().id()));
+        updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.themeId()));
         reservationRepository.update(updated);
         return updated;
     }

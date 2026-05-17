@@ -160,8 +160,8 @@ public class ReservationJdbcTemplateRepository extends AbstractReservationReposi
         return Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.time().id(),
-                "theme_id", reservation.theme().id()
+                "time_id", reservation.timeId(),
+                "theme_id", reservation.themeId()
         );
     }
 
@@ -217,7 +217,7 @@ public class ReservationJdbcTemplateRepository extends AbstractReservationReposi
         Map<String, Object> params = new HashMap<>();
         params.put("id", reservation.id());
         params.put("date", reservation.date());
-        params.put("time_id", reservation.time().id());
+        params.put("time_id", reservation.timeId());
 
         namedParameterJdbcTemplate.update(UPDATE_DATE_AND_TIME_QUERY, params);
     }
