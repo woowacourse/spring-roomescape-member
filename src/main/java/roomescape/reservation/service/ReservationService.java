@@ -84,11 +84,15 @@ public class ReservationService {
         }
     }
 
+    public boolean existsByScheduleId(Long scheduleId) {
+        return reservationRepository.existsByScheduleId(scheduleId);
+    }
+
     private void ensureScheduleIsBookable(Schedule Schedule) {
         if (Schedule.isBefore(LocalDateTime.now(clock))) {
             throw new BadRequestException(ErrorCode.RESERVATION_PAST_TIME);
         }
-        if (reservationRepository.existsByScheduleId(Schedule.getId())) {
+        if (this.existsByScheduleId(Schedule.getId())) {
             throw new ConflictException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
         }
     }

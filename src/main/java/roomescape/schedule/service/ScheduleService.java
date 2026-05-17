@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
 import roomescape.schedule.dto.SchedulesResponse;
@@ -29,13 +28,11 @@ public class ScheduleService {
     public static final LocalTime CLOSE_TIME = LocalTime.of(20, 0);
 
     private final ScheduleRepository scheduleRepository;
-    private final ReservationRepository reservationRepository;
     private final ThemeService themeService;
     private final Clock clock;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, ReservationRepository reservationRepository, ThemeService themeService, Clock clock) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ThemeService themeService, Clock clock) {
         this.scheduleRepository = scheduleRepository;
-        this.reservationRepository = reservationRepository;
         this.themeService = themeService;
         this.clock = clock;
     }
@@ -72,9 +69,6 @@ public class ScheduleService {
 
     @Transactional
     public void delete(Long scheduleId) {
-        if (reservationRepository.existsByScheduleId(scheduleId)) {
-            throw new BadRequestException(ErrorCode.SCHEDULE_IN_USE);
-        }
         scheduleRepository.delete(scheduleId);
     }
 

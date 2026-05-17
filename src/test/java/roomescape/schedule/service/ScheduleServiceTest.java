@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 class ScheduleServiceTest {
 
     private ScheduleService scheduleService;
-    private ReservationRepository reservationRepository;
     private ScheduleRepository scheduleRepository;
     private ThemeService themeService;
     private Clock clock;
@@ -41,10 +40,9 @@ class ScheduleServiceTest {
     void setUp() {
         scheduleRepository = Mockito.mock(ScheduleRepository.class);
         themeService = Mockito.mock(ThemeService.class);
-        reservationRepository = Mockito.mock(ReservationRepository.class);
         clock = Clock.fixed(Instant.parse("2024-05-16T10:00:00Z"), ZoneId.of("Asia/Seoul"));
 
-        scheduleService = new ScheduleService(scheduleRepository, reservationRepository, themeService, clock);
+        scheduleService = new ScheduleService(scheduleRepository, themeService, clock);
     }
 
     @Test
@@ -86,5 +84,17 @@ class ScheduleServiceTest {
         assertThatThrownBy(() -> scheduleService.create(request))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.DUPLICATE_SCHEDULE_TIME.getMessage());
+    }
+
+    @Test
+    void 스케줄을_성공적으로_삭제한다() {
+        // given
+        Long scheduleId = 1L;
+
+        // when
+        scheduleService.delete(scheduleId);
+
+        // then
+        Mockito.verify(scheduleRepository, Mockito.times(1)).delete(scheduleId);
     }
 }
