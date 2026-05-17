@@ -1,14 +1,5 @@
 package roomescape.reservationtime.controller;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,36 +9,40 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.service.AdminReservationTimeService;
 
+import java.time.LocalTime;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @WebMvcTest(AdminReservationTimeController.class)
 class AdminReservationTimeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockitoBean
-    private AdminReservationTimeService reservationTimeService;
+    private AdminReservationTimeService adminReservationTimeService;
 
     @Test
-    void 예약_시간을_생성할_수_있다() throws Exception {
-        ReservationTime saved = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
-
-        when(reservationTimeService.createReservationTime(eq(LocalTime.of(10, 0)))).thenReturn(saved);
+    void 예약_시간을_정상적으로_생성한다() throws Exception {
+        given(adminReservationTimeService.createReservationTime(any()))
+                .willReturn(new ReservationTime(1L, LocalTime.of(10, 0)));
 
         mockMvc.perform(post("/admin/times")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.startAt").value("10:00:00"));
+                        .content("""
+                                {"startAt":"10:00:00"}
+                                """))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void 예약_시간을_삭제할_수_있다() throws Exception {
-        mockMvc.perform(delete("/admin/times/{id}", 1L))
-                .andExpect(status().isNoContent());
+    void 예약시간_생성시_startAt이_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/admin/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
     }
 }

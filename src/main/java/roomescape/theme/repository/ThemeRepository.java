@@ -1,19 +1,20 @@
 package roomescape.theme.repository;
 
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.controller.SortColumn;
-import roomescape.theme.controller.SortOrder;
+import roomescape.theme.domain.SortOrder;
+import roomescape.theme.domain.SortType;
 import roomescape.theme.domain.Theme;
+
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository {
@@ -57,8 +58,9 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate, Long limit) {
-        String sql = getReservationSortSql(sortColumn, sortOrder, limit);
+    public List<Theme> findRanked(SortType sortType, SortOrder sortOrder, LocalDate startDate, LocalDate endDate,
+                                  Long limit) {
+        String sql = getReservationSortSql(sortType, sortOrder, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
@@ -73,20 +75,24 @@ public class ThemeRepository {
         }
     }
 
-    private String getReservationSortSql(SortColumn sortColumn, SortOrder sortOrder, Long limit) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
-                        "FROM themes t " +
-                        "INNER JOIN reservation r ON t.id = r.theme_id " +
-                        "WHERE r.date >= ? AND r.date <= ? " +
-                        "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY " + sortColumn.getValue() + " " + sortOrder.getValue()
-        );
+    private String getReservationSortSql(SortType sortType, SortOrder sortOrder, Long limit) {
+        String limitClause = limit != null ? "LIMIT " + limit : "";
+        return """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount
+                FROM themes t
+                INNER JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY %s %s
+                %s
+                """.formatted(toColumnName(sortType), sortOrder.name(), limitClause);
+    }
 
-        if (limit != null) {
-            sql.append(" LIMIT ").append(limit);
-        }
-
-        return sql.toString();
+    private String toColumnName(SortType column) {
+        return switch (column) {
+            case RESERVATION_COUNT -> "reservationCount";
+            case ID -> "id";
+            case NAME -> "name";
+        };
     }
 }

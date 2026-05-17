@@ -1,15 +1,17 @@
 package roomescape.reservationtime.service;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserReservationTimeService {
@@ -27,20 +29,17 @@ public class UserReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-
     @Transactional(readOnly = true)
-    public List<AvailableTime> getSchedules(LocalDate date, Long themeId) {
+    public List<AvailableTime> getSchedules(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-
-        List<Long> reservedTimeIds = reservationRepository.findByDateAndTheme(date, themeId);
-        Set<Long> reservedIdSet = new HashSet<>(reservedTimeIds);
+        Set<Long> reservedIdSet = new HashSet<>(reservationRepository.findByDateAndTheme(date, themeId));
 
         return allTimes.stream()
-                .map(time -> new AvailableTime(
-                        time.id(),
-                        time.startAt(),
-                        !reservedIdSet.contains(time.id())
-                ))
+                .map(time -> {
+                    boolean notReserved = !reservedIdSet.contains(time.id());
+                    boolean notPast = LocalDateTime.of(date, time.startAt()).isAfter(LocalDateTime.now());
+                    return new AvailableTime(time.id(), time.startAt(), notReserved && notPast);
+                })
                 .toList();
     }
 }

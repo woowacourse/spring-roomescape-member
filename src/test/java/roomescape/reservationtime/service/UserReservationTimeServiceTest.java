@@ -1,78 +1,56 @@
 package roomescape.reservationtime.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.repository.ReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.ServiceIntegrationTest;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
 
-@ExtendWith(MockitoExtension.class)
-class UserReservationTimeServiceTest {
+import java.time.LocalDate;
+import java.util.List;
 
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Mock
-    private ReservationRepository reservationRepository;
+class UserReservationTimeServiceTest extends ServiceIntegrationTest {
 
-    @InjectMocks
-    private UserReservationTimeService reservationTimeService;
+    @Autowired
+    private UserReservationTimeService userReservationTimeService;
+
+    @BeforeEach
+    void setUp() {
+
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES ('Theme A', 'Desc', 'https://a.png')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('13:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('14:00:00')");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('User', '2099-12-31', 1, 1)");
+    }
 
     @Test
     void 예약_시간_목록을_조회할_수_있다() {
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
+        List<ReservationTime> times = userReservationTimeService.getReservationTimes();
 
-        when(reservationTimeRepository.findAll()).thenReturn(times);
-
-        List<ReservationTime> result = reservationTimeService.getReservationTimes();
-
-        assertThat(result).hasSize(2);
-        assertThat(result)
-                .extracting(ReservationTime::startAt)
-                .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
+        assertThat(times).hasSize(5);
     }
 
     @Test
     void 스케줄_목록을_조회할_수_있다() {
-        LocalDate date = LocalDate.of(2026, 5, 8);
-        Long themeId = 1L;
+        List<AvailableTime> schedules = userReservationTimeService.getSchedules(LocalDate.of(2099, 12, 31), 1L);
 
-        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        when(reservationTimeRepository.findAll()).thenReturn(List.of(time1, time2));
-
-        when(reservationRepository.findByDateAndTheme(date, themeId))
-                .thenReturn(List.of(2L));
-
-        List<AvailableTime> result = reservationTimeService.getSchedules(date, themeId);
-
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).isAvailable()).isTrue();
-        assertThat(result.get(1).isAvailable()).isFalse();
+        assertThat(schedules).hasSize(5);
+        assertThat(schedules.stream().filter(t -> t.timeId() == 1).findFirst().get().isAvailable()).isFalse();
+        assertThat(schedules.stream().filter(t -> t.timeId() == 2).findFirst().get().isAvailable()).isTrue();
     }
 
     @Test
-    void 전체_시간_목록이_없으면_스케줄_목록도_비어있다() {
-        LocalDate date = LocalDate.of(2026, 5, 8);
-        Long themeId = 1L;
+    void 과거_날짜의_스케줄은_예약_여부와_관계없이_모두_불가능하다() {
+        List<AvailableTime> schedules = userReservationTimeService.getSchedules(LocalDate.now().minusDays(1), 1L);
 
-        when(reservationTimeRepository.findAll()).thenReturn(Collections.emptyList());
-
-        List<AvailableTime> result = reservationTimeService.getSchedules(date, themeId);
-        assertThat(result).isEmpty();
+        assertThat(schedules).allMatch(t -> !t.isAvailable());
     }
 }

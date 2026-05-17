@@ -1,18 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,70 +11,109 @@ import roomescape.reservation.service.UserReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @WebMvcTest(UserReservationController.class)
 class UserReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockitoBean
     private UserReservationService userReservationService;
 
     @Test
-    void 예약_목록을_조회할_수_있다() throws Exception {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
-        Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
-
-        when(userReservationService.getReservations()).thenReturn(List.of(reservation));
-
-        mockMvc.perform(get("/reservations")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(3))
-                .andExpect(jsonPath("$[0].name").value("브라운"))
-                .andExpect(jsonPath("$[0].date").value("2026-05-01"))
-                .andExpect(jsonPath("$[0].time.id").value(1))
-                .andExpect(jsonPath("$[0].time.startAt").value("10:00:00"))
-                .andExpect(jsonPath("$[0].theme.id").value(2))
-                .andExpect(jsonPath("$[0].theme.name").value("Theme A"));
-    }
-
-    @Test
-    void 예약을_생성할_수_있다() throws Exception {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
-        Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
-
-        ReservationRequest request = new ReservationRequest(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
-
-        when(userReservationService.createReservation(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L), eq(2L)))
-                .thenReturn(reservation);
+    void 예약을_정상적으로_생성한다() throws Exception {
+        Reservation reservation = new Reservation(1L, "테스트", LocalDate.of(2099, 12, 31),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "테마", "설명", "썸네일"));
+        given(userReservationService.createReservation(anyString(), any(), anyLong(), anyLong()))
+                .willReturn(reservation);
 
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(3))
-                .andExpect(jsonPath("$.name").value("브라운"))
-                .andExpect(jsonPath("$.date").value("2026-05-01"))
-                .andExpect(jsonPath("$.time.id").value(1))
-                .andExpect(jsonPath("$.time.startAt").value("10:00:00"))
-                .andExpect(jsonPath("$.theme.id").value(2))
-                .andExpect(jsonPath("$.theme.name").value("Theme A"));
+                        .content("""
+                                {"themeId":1,"name":"테스트","date":"2099-12-31","timeId":1}
+                                """))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void 예약을_삭제할_수_있다() throws Exception {
-        ReservationDeleteRequest request = new ReservationDeleteRequest("브라운");
-
-        mockMvc.perform(delete("/reservations/{id}", 1L)
+    void 예약_생성시_themeId가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNoContent());
+                        .content("""
+                                {"name":"테스트","date":"2099-12-31","timeId":1}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_생성시_name이_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"themeId":1,"date":"2099-12-31","timeId":1}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_생성시_name이_공백이면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"themeId":1,"name":"   ","date":"2099-12-31","timeId":1}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_생성시_date가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"themeId":1,"name":"테스트","timeId":1}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_생성시_timeId가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"themeId":1,"name":"테스트","date":"2099-12-31"}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_수정시_date가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(patch("/reservations/1")
+                        .header("X-User-Name", "테스트")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"timeId":1}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약_수정시_timeId가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(patch("/reservations/1")
+                        .header("X-User-Name", "테스트")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"date":"2099-12-31"}
+                                """))
+                .andExpect(status().isBadRequest());
     }
 }

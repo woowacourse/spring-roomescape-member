@@ -1,21 +1,21 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ApiException;
+import roomescape.exception.BusinessRuleException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
-import roomescape.exception.UnauthorizedActionException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserReservationService {
@@ -33,16 +33,26 @@ public class UserReservationService {
 
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessRuleException(ErrorCode.PAST_DATE_RESERVATION, "지나간 날짜·시간에는 예약할 수 없습니다.");
+        }
+
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND, "예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND, "해당 테마를 찾을 수 없습니다."));
+
+        reservationTime.validateFutureDate(date);
+
+        List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(date, themeId);
+        if (takenTimeIds.contains(timeId)) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+        }
+
         try {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다");
-        } catch (DataIntegrityViolationException e) {
-            throw new ApiException("요청이 데이터 무결성 조건을 위반했습니다");
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
         }
     }
 
@@ -51,15 +61,49 @@ public class UserReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> getMyReservations(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     @Transactional
     public void deleteReservation(long id, String name) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
+        reservationRepository.findById(id).ifPresent(reservation -> {
+            validateOwnerAndActive(reservation, name);
+            reservationRepository.delete(id);
+        });
+    }
 
-        if (!reservation.getName().equals(name)) {
-            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
+    @Transactional
+    public Reservation updateReservation(long id, String name, LocalDate newDate, long newTimeId) {
+        if (newDate.isBefore(LocalDate.now())) {
+            throw new BusinessRuleException(ErrorCode.PAST_DATE_RESERVATION, "지나간 날짜·시간에는 예약할 수 없습니다.");
         }
 
-        reservationRepository.delete(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND, "해당 예약을 찾을 수 없습니다."));
+        validateOwnerAndActive(reservation, name);
+
+        ReservationTime newTime = reservationTimeRepository.findById(newTimeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND, "예약 시간을 찾을 수 없습니다."));
+
+        newTime.validateFutureDate(newDate);
+
+        List<Long> takenTimeIds = reservationRepository.findByDateAndTheme(newDate, reservation.theme().id());
+        if (!reservation.hasSameDateAndTime(newDate, newTimeId) && takenTimeIds.contains(newTimeId)) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+        }
+
+        try {
+            reservationRepository.update(id, newDate, newTimeId);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_RESERVATION, "해당 날짜의 해당 시간은 이미 예약되었습니다.");
+        }
+        return new Reservation(id, reservation.name(), newDate, newTime, reservation.theme());
+    }
+
+    private void validateOwnerAndActive(Reservation reservation, String name) {
+        reservation.validateOwner(name);
+        reservation.validateIsActive();
     }
 }
