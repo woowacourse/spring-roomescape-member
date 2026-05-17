@@ -249,13 +249,29 @@ function loadMyReservations() {
                 const li = document.createElement('li');
                 const startDateTime = new Date(reservation.startAt);
                 const endDateTime = new Date(reservation.endAt);
+                const now = new Date(); // 🚨 현재 시간 가져오기
 
                 const formattedDate = startDateTime.toLocaleDateString('ko-KR');
                 const formattedStartTime = startDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
                 const formattedEndTime = endDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
-                // 🚨 "테마: " 레이블을 추가하고, div와 span으로 구조화하여 CSS로 제어하기 쉽게 만듭니다.
-                // 🚨 오른쪽에 '변경'과 '취소' 버튼을 추가합니다.
+                // 🚨 예약 시간이 지났는지 확인하여 버튼 영역의 HTML을 동적으로 생성합니다.
+                let buttonsHtml = '';
+                if (startDateTime > now) {
+                    buttonsHtml = `
+                        <div class="reservation-item-buttons">
+                            <button class="change-btn small" data-id="${reservation.reservationId}">변경</button>
+                            <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
+                        </div>
+                    `;
+                } else {
+                    buttonsHtml = `
+                        <div class="reservation-item-buttons">
+                            <span style="color: #95a5a6; font-size: 0.9em; font-weight: bold;">이용 완료</span>
+                        </div>
+                    `;
+                }
+
                 li.innerHTML = `
                     <div class="reservation-item-content">
                         <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
@@ -264,15 +280,15 @@ function loadMyReservations() {
                             <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
                         </div>
                     </div>
-                    <div class="reservation-item-buttons">
-                        <button class="change-btn small" data-id="${reservation.reservationId}">변경</button>
-                        <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
-                    </div>
+                    ${buttonsHtml}
                 `;
                 myReservationList.appendChild(li);
             });
         })
-        .catch(error => console.error('내 예약 목록 로드 중 에러:', error));
+        .catch(error => {
+            console.error('내 예약 목록 로드 중 에러:', error);
+            document.getElementById('my-reservation-list').innerHTML = '<li class="empty-message" style="color: #e74c3c;">내 예약 목록을 불러오는데 실패했습니다.</li>';
+        });
 }
 
 // =================================================================================================
