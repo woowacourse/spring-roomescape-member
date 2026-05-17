@@ -17,6 +17,7 @@ import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
 import roomescape.reservation.infra.ThemeRepository;
 import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.presentation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,30 @@ public class ReservationService {
         return reservationRepository.findByName(name).stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public void update(Long id, ReservationUpdateRequest body) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 예약은 존재하지 않습니다."));
+        ReservationTime time = reservationTimeRepository.findById(body.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
+
+        validateReservationDateTime(body.date(), time.getStartAt());
+
+        Reservation updatedReservation = new Reservation(
+                reservation.getId(),
+                reservation.getName(),
+                body.date(),
+                time,
+                reservation.getTheme()
+        );
+
+        try {
+            reservationRepository.update(updatedReservation);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 
     @Transactional

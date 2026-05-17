@@ -182,6 +182,63 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 사용자가_본인_예약의_날짜와_시간을_변경할_수_있다() {
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("date", "2026-05-05");
+        updateRequest.put("timeId", 4);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/6")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "park")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(4))
+                .body("[0].id", is(6))
+                .body("[0].date", is("2026-05-05"))
+                .body("[0].time.id", is(4))
+                .body("[0].time.time", is("13:00"));
+    }
+
+    @Test
+    void 사용자가_본인_예약을_중복된_날짜와_시간으로_변경하면_실패한다() {
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("date", "2026-05-06");
+        updateRequest.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/6")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("해당 날짜와 시간, 테마에는 이미 예약이 존재합니다."));
+    }
+
+    @Test
+    void 사용자가_본인_예약을_과거_날짜와_시간으로_변경하면_실패한다() {
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("date", "2026-05-01");
+        updateRequest.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/6")
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("RESERVATION_DATE_TIME_EXPIRED"))
+                .body("message", is("지난 날짜와 시간으로는 예약할 수 없습니다."));
+    }
+
+    @Test
     void 사용자_예약_추가_및_이름으로_삭제() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

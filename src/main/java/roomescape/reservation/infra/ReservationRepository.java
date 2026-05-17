@@ -9,7 +9,11 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    java.util.Optional<Reservation> findById(Long id);
+
     List<Reservation> findByName(String name);
+
+    void update(Reservation reservation);
 
     void deleteById(Long id);
 
