@@ -57,10 +57,17 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate) {
-        List<Theme> themes = themeService.findPopularThemes(new Period(startDate, endDate));
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
+        List<Theme> themes = themeService.findPopularThemes(resolvePeriod(startDate, endDate));
 
         return ResponseEntity.ok(ThemeResponse.from(themes));
+    }
+
+    private Period resolvePeriod(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null && endDate == null) {
+            return Period.lastWeek(clock);
+        }
+        return new Period(startDate, endDate);
     }
 }
