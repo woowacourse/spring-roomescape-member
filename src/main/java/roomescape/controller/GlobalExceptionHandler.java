@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         return parseOf(ErrorCode.INVALID_REQUEST_FORMAT);
     }
 
@@ -31,13 +31,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
         MethodArgumentTypeMismatchException e
     ) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         return parseFrom(ErrorCode.INVALID_REQUEST_URI_VARIABLE_TYPE, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         String joinedMessage = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining("\n"));
@@ -47,19 +47,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         return parseOf(ErrorCode.NOT_FOUND);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElement(NoSuchElementException e) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         return parseOf(ErrorCode.NOT_FOUND);
     }
 
     @ExceptionHandler(RoomEscapeException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(RoomEscapeException e) {
-        printErrorStatus(e);
+        printWarnStatus(e);
         return parseOf(e.getCode());
     }
 
@@ -67,6 +67,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         printErrorStatus(e);
         return parseOf(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private void printWarnStatus(Exception e) {
+        log.warn("[{}] {}", e.getClass().getSimpleName(), e.getMessage());
     }
 
     private void printErrorStatus(Exception e) {
