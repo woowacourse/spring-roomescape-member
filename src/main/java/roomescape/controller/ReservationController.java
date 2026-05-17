@@ -33,15 +33,17 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponse> getReservations(
-        @RequestParam(required = false) String name
-    ) {
-        if (name == null || name.isBlank()) {
-            return reservationService.getReservations().stream()
-                .map(ReservationResponse::from)
-                .toList();
-        }
+    public List<ReservationResponse> getReservations() {
+        return reservationService.getReservations().stream()
+            .map(ReservationResponse::from)
+            .toList();
+    }
 
+    @GetMapping(params = "name")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ReservationResponse> getReservations(
+        @RequestParam String name
+    ) {
         return reservationService.getReservations(name).stream()
             .map(ReservationResponse::from)
             .toList();
