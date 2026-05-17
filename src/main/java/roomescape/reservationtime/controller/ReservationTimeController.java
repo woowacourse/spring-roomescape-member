@@ -23,7 +23,7 @@ public class ReservationTimeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTimeResponse> getAvailableReservationTimes(
+    public List<ReservationTimeResponse> getReservationTimes(
             @ModelAttribute AvailableReservationTimeRequest request) {
         if (request.isEmpty()) {
             return reservationTimeService.findAll()
