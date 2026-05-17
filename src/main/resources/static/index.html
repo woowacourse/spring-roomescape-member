@@ -201,6 +201,7 @@
     <nav class="top-nav">
         <div class="top-nav-logo">🔐 RoomEscape</div>
         <div class="top-nav-links">
+            <a class="btn btn-ghost btn-sm" href="/my.html">내 예약</a>
             <a class="btn btn-ghost btn-sm" href="/admin/reservation.html">🛠 관리자</a>
         </div>
     </nav>
@@ -318,7 +319,7 @@
 
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label for="book-user-id">사용자 ID</label>
-                    <input id="book-user-id" placeholder="1" style="max-width: 300px;" type="number" min="1">
+                    <input id="book-user-id" min="1" placeholder="1" style="max-width: 300px;" type="number">
                 </div>
 
                 <button class="btn btn-primary btn-full" onclick="submitReservation()" style="max-width: 300px;">
@@ -358,7 +359,13 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let errorMsg = text;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) errorMsg = json.message;
+            } catch (e) {
+            }
+            throw new Error(errorMsg || `HTTP ${res.status}`);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;

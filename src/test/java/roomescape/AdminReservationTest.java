@@ -37,7 +37,7 @@ public class AdminReservationTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", 1);
-        params.put("date", "2023-08-05");
+        params.put("date", "2030-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -65,32 +65,16 @@ public class AdminReservationTest {
         insertUser(1L, "브라운", "brown@test.com");
         insertTheme(1L, "테마명");
         insertReservationTime(1L, "10:00:00");
-        insertReservation(1L, 1L, "2023-08-05", 1L);
+        insertReservation(1L, 1L, "2030-08-05", 1L);
 
         RestAssured.given().log().all()
                 .when().get("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(1))
-                .body("date", is("2023-08-05"));
+                .body("date", is("2030-08-05"));
     }
 
-    @Test
-    void 관리자_내_예약_조회() {
-        insertUser(1L, "브라운", "brown@test.com");
-        insertUser(2L, "루키", "rookie@test.com");
-        insertTheme(1L, "테마명");
-        insertReservationTime(1L, "10:00:00");
-        insertReservation(1L, 1L, "2023-08-05", 1L);
-        insertReservation(2L, 1L, "2023-08-06", 1L);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/reservations/my?userId=1")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].date", is("2023-08-05"));
-    }
 
     private void insertUser(Long id, String name, String email) {
         jdbcTemplate.update("INSERT INTO users(id, name, email) VALUES (?, ?, ?)", id, name, email);

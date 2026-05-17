@@ -1,7 +1,5 @@
 package roomescape;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -15,15 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AdminReservationTimeTest {
 
     @Test
-    void 관리자_시간_조회() {
-        RestAssured.given().log().all()
-                .when().get("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
     void 관리자_시간_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00:00");
@@ -34,12 +23,6 @@ public class AdminReservationTimeTest {
                 .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")

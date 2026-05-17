@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,7 +53,7 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id, r.date,
                        u.id as user_id, u.name as user_name, u.email,
@@ -64,7 +65,8 @@ public class ReservationDao {
                 JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        List<Reservation> results = jdbcTemplate.query(sql, rowMapper, id);
+        return results.stream().findFirst();
     }
 
     public List<Reservation> findAll() {
@@ -79,6 +81,12 @@ public class ReservationDao {
                 JOIN theme th ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT COUNT(1) FROM reservation WHERE time_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        return count != null && count > 0;
     }
 
     public List<Reservation> findAllByUserId(Long userId) {
@@ -112,6 +120,11 @@ public class ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, Date.valueOf(date), timeId, id);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -133,6 +146,16 @@ public class ReservationDao {
                 """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class,
                 Date.valueOf(date), timeId, themeId);
+        return count != null && count > 0;
+    }
+
+    public boolean isExistsByDateAndTimeIdAndThemeIdExcludingId(LocalDate date, Long timeId, Long themeId, Long excludeId) {
+        String sql = """
+                SELECT COUNT(1) FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class,
+                Date.valueOf(date), timeId, themeId, excludeId);
         return count != null && count > 0;
     }
 }
