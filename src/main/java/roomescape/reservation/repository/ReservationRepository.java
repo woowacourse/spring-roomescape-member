@@ -50,10 +50,10 @@ public class ReservationRepository {
             return insert(reservation);
         }
 
-        return merge(reservation);
+        return updateOrInsert(reservation);
     }
 
-    private Reservation merge(Reservation reservation) {
+    private Reservation updateOrInsert(Reservation reservation) {
         final String sql = """
                 UPDATE reservation
                 SET name = ?,

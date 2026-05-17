@@ -62,10 +62,10 @@ public class ThemeRepository {
             return insert(theme);
         }
 
-        return merge(theme);
+        return updateOrInsert(theme);
     }
 
-    private Theme merge(Theme theme) {
+    private Theme updateOrInsert(Theme theme) {
         final String sql = """
                 UPDATE theme
                 SET name = ?,

@@ -53,10 +53,10 @@ public class ReservationTimeRepository {
             return insert(reservationTime);
         }
 
-        return merge(reservationTime);
+        return updateOrInsert(reservationTime);
     }
 
-    private ReservationTime merge(ReservationTime reservationTime) {
+    private ReservationTime updateOrInsert(ReservationTime reservationTime) {
         final String sql = "UPDATE reservation_time SET start_at = ? WHERE id = ?";
         final int affectedRows = jdbcTemplate.update(sql, reservationTime.getStartAt(), reservationTime.getId());
 
