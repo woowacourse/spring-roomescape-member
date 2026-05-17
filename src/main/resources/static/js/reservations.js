@@ -23,8 +23,8 @@
         document.querySelectorAll('[data-bind="user"]').forEach(el => el.textContent = user);
 
         try {
-            const reservations = await api.listReservations(user);
-            renderLedger(reservations);
+            const result = await api.listReservations(user);
+            renderLedger(result.items);
         } catch (e) {
             modal.alert({title: '조회 실패', message: e.message});
         }
@@ -88,7 +88,6 @@
         }
 
         async function onUpdate(id, dataset, userName) {
-            // confirm-modal은 textContent만 지원하므로 별도 인라인 폼 사용
             const updatePanel = document.getElementById('update-panel');
             if (updatePanel) updatePanel.remove();
 
@@ -141,8 +140,8 @@
                         timeId: newTimeId
                     }, userName);
                     panel.remove();
-                    const reservations = await api.listReservations(userName);
-                    renderLedger(reservations);
+                    const result = await api.listReservations(userName);
+                    renderLedger(result.items);
                 } catch (e) {
                     modal.alert({title: '변경 실패', message: e.message});
                 }
@@ -151,7 +150,7 @@
     });
 
     function escapeHtml(s) {
-        return String(s).replace(/[&<>\"']/g, c => ({
+        return String(s).replace(/[&<>\\"']/g, c => ({
             '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[c]));
     }

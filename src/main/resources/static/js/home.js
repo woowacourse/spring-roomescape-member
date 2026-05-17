@@ -7,18 +7,18 @@
 
     document.addEventListener('DOMContentLoaded', async function () {
         try {
-            const [themes, popular] = await Promise.all([
+            const [themesPage, popular] = await Promise.all([
                 api.listThemes(0, PAGE_SIZE),
                 api.popularThemes()
             ]);
-            hasMoreThemes = themes.length === PAGE_SIZE;
+            hasMoreThemes = themesPage.hasNext;
 
             const popularStrip = document.getElementById('popular-strip');
             const popularEmpty = document.getElementById('popular-empty');
             const popularCount = document.getElementById('popular-count');
             renderStrip(popular, popularStrip, popularEmpty, popularCount);
 
-            renderThemesPage(themes);
+            renderThemesPage(themesPage.items);
         } catch (e) {
             modal.alert({title: '데이터 로드 실패', message: e.message || '서버에 연결할 수 없습니다.'});
         }
@@ -63,9 +63,9 @@
     async function loadThemePage(delta) {
         themePage += delta;
         try {
-            const themes = await api.listThemes(themePage, PAGE_SIZE);
-            hasMoreThemes = themes.length === PAGE_SIZE;
-            renderThemesPage(themes);
+            const result = await api.listThemes(themePage, PAGE_SIZE);
+            hasMoreThemes = result.hasNext;
+            renderThemesPage(result.items);
             document.getElementById('themes').scrollIntoView({behavior: 'smooth'});
         } catch (e) {
             themePage -= delta; // rollback

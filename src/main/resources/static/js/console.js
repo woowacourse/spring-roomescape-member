@@ -15,15 +15,15 @@
 
     async function reloadAll() {
         try {
-            const [reservations, themes, times] = await Promise.all([
+            const [resResult, themesResult, times] = await Promise.all([
                 api.listReservations(null, resPage, PAGE_SIZE),
                 api.listThemes(themePage, PAGE_SIZE),
                 api.listTimes()
             ]);
-            hasMoreRes = reservations.length === PAGE_SIZE;
-            hasMoreThemes = themes.length === PAGE_SIZE;
-            renderReservations(reservations);
-            renderThemes(themes);
+            hasMoreRes = resResult.hasNext;
+            hasMoreThemes = themesResult.hasNext;
+            renderReservations(resResult.items);
+            renderThemes(themesResult.items);
             renderTimes(times);
         } catch (e) {
             modal.alert({title: '데이터 로드 실패', message: e.message});
@@ -82,17 +82,17 @@
         if (resPage > 0) {
             document.getElementById('res-prev').addEventListener('click', async () => {
                 resPage--;
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = items.length === PAGE_SIZE;
-                renderReservations(items);
+                const result = await api.listReservations(null, resPage, PAGE_SIZE);
+                hasMoreRes = result.hasNext;
+                renderReservations(result.items);
             });
         }
         if (hasMoreRes) {
             document.getElementById('res-next').addEventListener('click', async () => {
                 resPage++;
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = items.length === PAGE_SIZE;
-                renderReservations(items);
+                const result = await api.listReservations(null, resPage, PAGE_SIZE);
+                hasMoreRes = result.hasNext;
+                renderReservations(result.items);
             });
         }
     }
@@ -146,17 +146,17 @@
         if (themePage > 0) {
             document.getElementById('theme-prev').addEventListener('click', async () => {
                 themePage--;
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = items.length === PAGE_SIZE;
-                renderThemes(items);
+                const result = await api.listThemes(themePage, PAGE_SIZE);
+                hasMoreThemes = result.hasNext;
+                renderThemes(result.items);
             });
         }
         if (hasMoreThemes) {
             document.getElementById('theme-next').addEventListener('click', async () => {
                 themePage++;
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = items.length === PAGE_SIZE;
-                renderThemes(items);
+                const result = await api.listThemes(themePage, PAGE_SIZE);
+                hasMoreThemes = result.hasNext;
+                renderThemes(result.items);
             });
         }
     }
@@ -210,17 +210,17 @@
         try {
             await m.call(id);
             if (kind === 'reservation') {
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                if (items.length === 0 && resPage > 0) resPage--;
+                const check = await api.listReservations(null, resPage, PAGE_SIZE);
+                if (check.items.length === 0 && resPage > 0) resPage--;
                 const refetched = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = refetched.length === PAGE_SIZE;
-                renderReservations(refetched);
+                hasMoreRes = refetched.hasNext;
+                renderReservations(refetched.items);
             } else if (kind === 'theme') {
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                if (items.length === 0 && themePage > 0) themePage--;
+                const check = await api.listThemes(themePage, PAGE_SIZE);
+                if (check.items.length === 0 && themePage > 0) themePage--;
                 const refetched = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = refetched.length === PAGE_SIZE;
-                renderThemes(refetched);
+                hasMoreThemes = refetched.hasNext;
+                renderThemes(refetched.items);
             } else {
                 const times = await api.listTimes();
                 renderTimes(times);
@@ -246,9 +246,9 @@
             await api.createTheme(payload);
             e.target.reset();
             themePage = 0;
-            const items = await api.listThemes(0, PAGE_SIZE);
-            hasMoreThemes = items.length === PAGE_SIZE;
-            renderThemes(items);
+            const result = await api.listThemes(0, PAGE_SIZE);
+            hasMoreThemes = result.hasNext;
+            renderThemes(result.items);
         } catch (err) {
             modal.alert({title: '등록 실패', message: err.message});
         }

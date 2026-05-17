@@ -56,10 +56,9 @@ window.api = (function () {
         let page = 0;
         while (true) {
             const data = await getJson(`${basePath}?page=${page}&size=${size}`);
-            // 래퍼 객체에서 첫 번째 배열 필드를 꺼냄
             const items = Array.isArray(data) ? data : Object.values(data).find(Array.isArray) || [];
             all.push(...items);
-            if (items.length < size) break;
+            if (!data.hasNext) break;
             page++;
         }
         return all;
@@ -68,7 +67,7 @@ window.api = (function () {
     return {
         listThemes: async (page = 0, size = 10) => {
             const data = await getJson(`/api/themes?page=${page}&size=${size}`);
-            return data.themes || [];
+            return {items: data.themes || [], hasNext: data.hasNext ?? false};
         },
         listAllThemes: () => fetchAllPages('/api/themes'),
         popularThemes: async () => {
@@ -76,10 +75,12 @@ window.api = (function () {
             return data.themes || [];
         },
         listReservations: async (userName, page = 0, size = 10) => {
-            const data = await getJson(userName
-                ? '/api/reservations?user_name=' + encodeURIComponent(userName)
-                : `/api/reservations?page=${page}&size=${size}`);
-            return data.reservations || [];
+            if (userName) {
+                const data = await getJson('/api/reservations?user_name=' + encodeURIComponent(userName));
+                return {items: data.reservations || [], hasNext: false};
+            }
+            const data = await getJson(`/api/reservations?page=${page}&size=${size}`);
+            return {items: data.reservations || [], hasNext: data.hasNext ?? false};
         },
 
         createReservation: (payload) => postJson('/api/reservations', payload),
