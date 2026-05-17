@@ -1,5 +1,6 @@
 package roomescape.theme.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.theme.model.Theme;
 
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ public class ThemeResponse {
     private final String name;
     private final String description;
     private final String imageUrl;
+    @JsonFormat(pattern = "HH:mm")
     private final LocalTime requiredTime;
 
     private ThemeResponse(Long id, String name, String description, String imageUrl, LocalTime requiredTime) {
