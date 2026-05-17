@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
@@ -9,21 +10,18 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.AcceptanceTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class ReservationControllerTest extends AcceptanceTest {
 
     @Test
-    void 예약_추가() {
+    void 예약을_생성한다() {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2026-05-05");
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 
@@ -73,11 +71,11 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_조회() {
+    void 예약을_조회한다() {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        createReservation("브라운", "2023-08-05", timeId, themeId);
+        createReservation("브라운", "2026-05-05", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -87,11 +85,50 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_삭제() {
+    void 이름에_따른_예약들을_조회할_수_있다() {
+        long time10Id = createTime("10:00");
+        long time11Id = createTime("11:00");
+        long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
+
+        createReservation("브라운", "2026-05-10", time10Id, themeId);
+        createReservation("조이", "2026-05-10", time11Id, themeId);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", hasItem("브라운"))
+                .body("name", not(hasItem("조이")));
+    }
+
+    @Test
+    void 예약을_수정한다() {
+        long timeId = createTime("10:00");
+        long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
+        long reservationId = createReservation("브라운", "2026-05-10", timeId, themeId);
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("name", "조이");
+        updateParams.put("date", "2026-05-10");
+        updateParams.put("timeId", timeId);
+        updateParams.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().put("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("조이"));
+    }
+
+    @Test
+    void 예약을_삭제한다() {
         long timeId = createTime("10:00");
         long themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        long reservationId = createReservation("브라운", "2023-08-05", timeId, themeId);
+        long reservationId = createReservation("브라운", "2026-05-06", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)

@@ -41,12 +41,7 @@ public class ThemeDao {
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
 
-        return new Theme(
-                generatedId.longValue(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail()
-        );
+        return theme.createWithId(generatedId.longValue());
     }
 
     public Optional<Theme> findById(Long themeId) {
@@ -102,7 +97,7 @@ public class ThemeDao {
                     WHERE id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, themeId));
     }
 
     public boolean existsByName(String name) {
@@ -113,7 +108,7 @@ public class ThemeDao {
                     WHERE name = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     public int delete(long themeId) {

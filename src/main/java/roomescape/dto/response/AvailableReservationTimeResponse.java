@@ -1,17 +1,18 @@
 package roomescape.dto.response;
 
 import java.time.LocalTime;
-import roomescape.domain.ReservationTime;
+import roomescape.dao.dto.ReservationTimeAvailability;
 
 public record AvailableReservationTimeResponse(
-        Long id,
+        long id,
         LocalTime startAt,
-        boolean isNotReserved
+        boolean reserved
 ) {
-    public static AvailableReservationTimeResponse from(ReservationTime reservationTime, boolean isNotReserved) {
+    public static AvailableReservationTimeResponse from(ReservationTimeAvailability reservationTimeAvailability) {
         return new AvailableReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt(),
-                isNotReserved);
+                reservationTimeAvailability.id(),
+                reservationTimeAvailability.startAt(),
+                reservationTimeAvailability.reserved()
+        );
     }
 }

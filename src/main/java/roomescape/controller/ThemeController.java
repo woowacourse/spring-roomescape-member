@@ -27,7 +27,7 @@ public class ThemeController {
 
     @GetMapping("/rankings")
     public ResponseEntity<List<ThemeResponse>> readThemeRankings() {
-        List<ThemeResponse> responses = themeService.getThemeRankings(LocalDate.now());
+        List<ThemeResponse> responses = themeService.getThemeRankings();
         return ResponseEntity.ok(responses);
     }
 }

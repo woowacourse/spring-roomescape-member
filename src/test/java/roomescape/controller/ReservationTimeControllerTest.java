@@ -12,20 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.AcceptanceTest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTimeControllerTest {
+public class ReservationTimeControllerTest extends AcceptanceTest {
 
     @Test
-    void 시간_조회() {
-        long reservationTimeId = createTime("09:00");
+    void 시간을_조회한다() {
+        long reservationTimeId = createTime("22:00");
         long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        LocalDate date = LocalDate.of(2026, 5, 5);
+        LocalDate date = LocalDate.now();
         createReservation("러키", date, reservationTimeId, themeId);
 
         List<AvailableReservationTimeResponse> responses = RestAssured.given().log().all()
@@ -37,9 +34,9 @@ public class ReservationTimeControllerTest {
                 .getList(".", AvailableReservationTimeResponse.class);
 
         assertThat(responses)
-                .extracting("startAt", "isNotReserved")
+                .extracting("startAt", "reserved")
                 .contains(
-                        tuple(LocalTime.of(9, 0), false)
+                        tuple(LocalTime.of(22, 0), true)
                 );
     }
 

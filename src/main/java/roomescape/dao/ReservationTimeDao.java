@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dao.dto.ReservationTimeAvailability;
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -18,6 +21,13 @@ public class ReservationTimeDao {
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getTime("start_at").toLocalTime()
+            );
+
+    private static final RowMapper<ReservationTimeAvailability> TIME_AVAILABILITY_ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTimeAvailability(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime(),
+                    resultSet.getBoolean("reserved")
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,7 +45,7 @@ public class ReservationTimeDao {
         parameters.put("start_at", reservationTime.getStartAt());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
-        return new ReservationTime(generatedId.longValue(), reservationTime.getStartAt());
+        return reservationTime.createWithId(generatedId.longValue());
     }
 
     public List<ReservationTime> findAll() {
@@ -60,6 +70,36 @@ public class ReservationTimeDao {
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
+    }
+
+    public List<ReservationTimeAvailability> findAvailabilitiesByThemeIdAndDate(long themeId, LocalDate date) {
+        String sql = """
+                SELECT rt.id,
+                       rt.start_at,
+                       CASE
+                           WHEN r.id IS NULL THEN false
+                           ELSE true
+                       END AS reserved
+                FROM reservation_time AS rt
+                LEFT JOIN reservation AS r
+                    ON r.time_id = rt.id
+                   AND r.theme_id = ?
+                   AND r.date = ?
+                ORDER BY rt.start_at
+                """;
+        return jdbcTemplate.query(sql, TIME_AVAILABILITY_ROW_MAPPER, themeId, date);
+    }
+
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     public int delete(long id) {

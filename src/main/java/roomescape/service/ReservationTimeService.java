@@ -1,14 +1,14 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Reservation;
+import roomescape.dao.dto.ReservationTimeAvailability;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
@@ -26,29 +26,36 @@ public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
+    private final Clock clock;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
-                                  ReservationDao reservationDao) {
+
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao, ReservationDao reservationDao, Clock clock) {
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
+        this.clock = clock;
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
+        validateUniqueTime(reservationTime.getStartAt());
         ReservationTime newReservationTime = reservationTimeDao.save(reservationTime);
         return ReservationTimeResponse.from(newReservationTime);
     }
 
+    private void validateUniqueTime(LocalTime startAt) {
+        boolean exists = reservationTimeDao.existsByStartAt(startAt);
+        if (exists) {
+            throw new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
+    }
+
     public List<AvailableReservationTimeResponse> getReservationTimes(long themeId, LocalDate date) {
         validateTheme(themeId);
-
-        List<Reservation> reservations = reservationDao.findByThemeIdAndDate(themeId, date);
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-
-        Set<Long> reservedTimeIds = extractReservedTimeIds(reservations);
-        return reservationTimes.stream()
-                .map(time -> AvailableReservationTimeResponse.from(time, isNotReserved(time, reservedTimeIds)))
+        validateDate(date);
+        List<ReservationTimeAvailability> timeAvailabilities = reservationTimeDao.findAvailabilitiesByThemeIdAndDate(themeId, date);
+        return timeAvailabilities.stream()
+                .map(AvailableReservationTimeResponse::from)
                 .toList();
     }
 
@@ -59,14 +66,11 @@ public class ReservationTimeService {
         }
     }
 
-    private Set<Long> extractReservedTimeIds(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
-    }
-
-    private boolean isNotReserved(ReservationTime time, Set<Long> reservedTimeIds) {
-        return !reservedTimeIds.contains(time.getId());
+    private void validateDate(LocalDate date) {
+        boolean exists = date.isBefore(LocalDate.now(clock));
+        if (exists) {
+            throw new ReservationException(ReservationErrorCode.PAST_DATE_NOT_ALLOWED);
+        }
     }
 
     public void delete(long reservationTimeId) {
