@@ -41,8 +41,8 @@ public class ReservationController {
                 .body(ReservationResponse.from(reservation));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ReservationResponse> updateReservation(
+    @PatchMapping("/{id}/schedule")
+    public ResponseEntity<ReservationResponse> updateReservationSchedule(
             @PathVariable Long id,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {

@@ -313,7 +313,7 @@ async function updateMyReservation(event) {
       throw new Error("변경할 날짜와 시간을 선택해주세요.");
     }
 
-    await request(`/reservations/${reservation.id}`, {
+    await request(`/reservations/${reservation.id}/schedule`, {
       method: "PATCH",
       body: JSON.stringify({
         date: draft.date,

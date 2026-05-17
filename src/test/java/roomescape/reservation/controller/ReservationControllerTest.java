@@ -94,7 +94,7 @@ class ReservationControllerTest {
                 reservationTime2.getId()
         );
 
-        mockMvc.perform(patch("/reservations/{id}", id)
+        mockMvc.perform(patch("/reservations/{id}/schedule", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
