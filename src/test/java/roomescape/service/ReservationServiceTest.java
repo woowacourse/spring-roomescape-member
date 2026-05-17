@@ -203,6 +203,18 @@ class ReservationServiceTest {
     }
 
     @Test
+    void cancelOwnReservation_과거_예약이면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        Long reservationId = reservationRepository.save(
+                buildReservation("브라운", themeId, timeId, LocalDate.of(2026, 5, 1)));
+
+        assertThatThrownBy(() -> service.cancelOwnReservation(reservationId, "브라운"))
+                .isInstanceOf(PastReservationModificationException.class);
+        assertThat(reservationRepository.findById(reservationId)).isPresent();
+    }
+
+    @Test
     void updateOwnReservation_변경된_도메인을_반환한다() {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "u"));
         Long themeId2 = themeRepository.save(new Theme(null, "추리", "재밌음", "u"));

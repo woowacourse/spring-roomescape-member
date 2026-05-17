@@ -108,6 +108,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약", id));
         validateReservationOwner(name, reservation);
+        validateExistingNotInPast(reservation);
 
         reservationRepository.deleteById(id);
     }
