@@ -86,7 +86,7 @@ public class ReservationService {
             .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         LocalDate playDay = reservation.getDate().getPlayDay();
         if (playDay.isBefore(today) || playDay.isEqual(today)) {
-            throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_CANCEL);
+            throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_UPDATE);
         }
     }
 
