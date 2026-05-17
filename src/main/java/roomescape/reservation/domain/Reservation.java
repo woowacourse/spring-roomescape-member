@@ -109,7 +109,7 @@ public class Reservation {
     }
 
     public boolean isPast(LocalDateTime now) {
-        return time.toLocalDateTime(date).isBefore(now);
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
     }
 
     public boolean isReservedBy(String name) {
