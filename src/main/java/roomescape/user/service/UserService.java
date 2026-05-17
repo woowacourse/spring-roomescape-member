@@ -1,14 +1,16 @@
 package roomescape.user.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.user.dto.UserRequest;
 import roomescape.user.dto.UserResponse;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.repository.UserRepository;
-
-import java.util.Optional;
+import roomescape.exception.ErrorCode;
 
 @Service
 public class UserService {
@@ -23,22 +25,17 @@ public class UserService {
 
     @Transactional
     public UserResponse create(UserRequest request) {
-        User user = new User(request.name(), DEFAULT);
-        Long id = userRepository.create(user);
-        return UserResponse.from(new User(id, request.name(), DEFAULT));
+        try {
+            User user = new User(request.name(), DEFAULT);
+            Long id = userRepository.create(user);
+            return UserResponse.from(new User(id, request.name(), DEFAULT));
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException(ErrorCode.DUPLICATE_USER_NAME);
+        }
     }
 
-    public Optional<User> findByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Transactional
-    public User findOrCreateByName(String name) {
+    public User findByName(String name) {
         return userRepository.findByName(name)
-                .orElseGet(() -> {
-                    User newUser = new User(name, DEFAULT);
-                    Long newId = userRepository.create(newUser);
-                    return new User(newId, name, DEFAULT);
-                });
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

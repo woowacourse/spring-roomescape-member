@@ -2,6 +2,10 @@
 
 // 현재 로그인한 사용자 이름을 저장할 변수
 let currentUser = '';
+// 🚨 예약 변경 모드를 위한 전역 변수
+let isUpdateMode = false;
+let reservationToUpdateId = null;
+
 
 // 로그인 버튼 클릭 이벤트
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -43,6 +47,63 @@ document.getElementById('login-name').addEventListener('keyup', (event) => {
 document.getElementById('admin-page-btn').addEventListener('click', () => {
     window.location.href = '/admin.html';
 });
+
+// '내 예약 보기' 버튼 클릭 이벤트
+document.getElementById('my-reservations-nav-btn').addEventListener('click', () => {
+    document.getElementById('reservation-section').classList.add('hidden');
+    document.getElementById('my-reservations-section').classList.remove('hidden');
+    loadMyReservations(); // '내 예약 보기' 화면으로 전환될 때 예약 목록을 불러옵니다.
+});
+
+// '예약하기' 페이지로 돌아가기 버튼 클릭 이벤트 (새로 추가된 버튼)
+document.getElementById('back-to-reservation-btn').addEventListener('click', () => {
+    resetToCreateMode(); // 🚨 생성 모드로 초기화
+    document.getElementById('my-reservations-section').classList.add('hidden');
+    document.getElementById('reservation-section').classList.remove('hidden');
+});
+
+// 🚨 '내 예약 목록' 리스트에 이벤트 위임을 사용하여 클릭 이벤트 처리
+document.getElementById('my-reservation-list').addEventListener('click', (event) => {
+    // 클릭된 요소가 'change-btn' 클래스를 가지고 있는지 확인
+    if (event.target.classList.contains('change-btn')) {
+        reservationToUpdateId = event.target.dataset.id;
+        enterUpdateMode();
+        return;
+    }
+
+    // 클릭된 요소가 'delete-btn' 클래스를 가지고 있는지 확인
+    if (event.target.classList.contains('delete-btn')) {
+        const reservationId = event.target.dataset.id;
+        if (confirm('정말로 이 예약을 취소하시겠습니까?')) {
+            deleteMyReservation(reservationId);
+        }
+    }
+});
+
+// 🚨 예약 변경 모드로 진입하는 함수
+function enterUpdateMode() {
+    isUpdateMode = true;
+
+    // 1. 화면 전환
+    document.getElementById('my-reservations-section').classList.add('hidden');
+    document.getElementById('reservation-section').classList.remove('hidden');
+
+    // 2. UI 텍스트 변경
+    document.querySelector('.reservation-form h2').textContent = '변경할 시간 선택';
+    document.getElementById('reserve-btn').textContent = '예약 변경하기';
+
+    // 3. 기존 선택 초기화
+    document.getElementById('schedule-list').innerHTML = '<li class="empty-message">변경할 테마와 날짜를 선택한 후 조회해주세요.</li>';
+}
+
+// 🚨 예약 생성 모드로 돌아가는 함수
+function resetToCreateMode() {
+    isUpdateMode = false;
+    reservationToUpdateId = null;
+    document.querySelector('.reservation-form h2').textContent = '예약 가능한 시간';
+    document.getElementById('reserve-btn').textContent = '예약하기';
+}
+
 
 // =================================================================================================
 // ✅ TODO 1: 테마 목록을 API(GET /themes)로 가져와서 <select>에 채우기
@@ -160,9 +221,149 @@ document.getElementById('search-schedule-btn').addEventListener('click', () => {
 
 
 // =================================================================================================
+// ✅ 사용자 본인의 예약 목록 조회
+// API 명세: GET /reservations?name={name}
+// =================================================================================================
+function loadMyReservations() {
+    if (!currentUser) { // 로그인하지 않았다면 조회하지 않습니다.
+        return;
+    }
+
+    fetch(`/reservations?name=${currentUser}`)
+        .then(response => {
+            if (!response.ok) throw new Error('내 예약 목록을 불러오는데 실패했습니다.');
+            return response.json();
+        })
+        .then(reservationsResponse => {
+            const myReservationList = document.getElementById('my-reservation-list');
+            myReservationList.innerHTML = ''; // 기존 목록 초기화
+
+            const reservations = reservationsResponse; // 🚨 @JsonValue 때문에 reservationsResponse 자체가 배열입니다.
+
+            if (reservations.length === 0) {
+                myReservationList.innerHTML = '<li class="empty-message">예약된 내역이 없습니다.</li>';
+                return;
+            }
+
+            reservations.forEach(reservation => {
+                const li = document.createElement('li');
+                const startDateTime = new Date(reservation.startAt);
+                const endDateTime = new Date(reservation.endAt);
+                const now = new Date(); // 🚨 현재 시간 가져오기
+
+                const formattedDate = startDateTime.toLocaleDateString('ko-KR');
+                const formattedStartTime = startDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                const formattedEndTime = endDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+                // 🚨 예약 시간이 지났는지 확인하여 버튼 영역의 HTML을 동적으로 생성합니다.
+                let buttonsHtml = '';
+                if (startDateTime > now) {
+                    buttonsHtml = `
+                        <div class="reservation-item-buttons">
+                            <button class="change-btn small" data-id="${reservation.reservationId}">변경</button>
+                            <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
+                        </div>
+                    `;
+                } else {
+                    buttonsHtml = `
+                        <div class="reservation-item-buttons">
+                            <span style="color: #95a5a6; font-size: 0.9em; font-weight: bold;">이용 완료</span>
+                        </div>
+                    `;
+                }
+
+                li.innerHTML = `
+                    <div class="reservation-item-content">
+                        <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
+                        <div class="reservation-item-details">
+                            <span>날짜: ${formattedDate}</span>
+                            <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
+                        </div>
+                    </div>
+                    ${buttonsHtml}
+                `;
+                myReservationList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('내 예약 목록 로드 중 에러:', error);
+            document.getElementById('my-reservation-list').innerHTML = '<li class="empty-message" style="color: #e74c3c;">내 예약 목록을 불러오는데 실패했습니다.</li>';
+        });
+}
+
+// =================================================================================================
+// ✅ 사용자 본인의 예약 취소
+// API 명세: DELETE /reservations/{id}?name={name}
+// =================================================================================================
+function deleteMyReservation(id) {
+    fetch(`/reservations/${id}?name=${currentUser}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (response.status === 204) { // 204 No Content
+                alert('예약이 성공적으로 취소되었습니다.');
+                loadMyReservations(); // 내 예약 목록 새로고침
+                loadPopularThemes(); // 인기 테마 통계도 바뀔 수 있으므로 새로고침
+            } else {
+                response.json().then(errorBody => {
+                    alert(`예약 취소 실패: ${errorBody.message || '알 수 없는 오류'}`);
+                });
+            }
+        })
+        .catch(error => console.error('예약 취소 중 에러:', error));
+}
+
+// =================================================================================================
+// ✅ 사용자 본인의 예약 변경
+// API 명세: PUT /reservations/{id}?name={name}
+// =================================================================================================
+function updateMyReservation() {
+    const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
+    if (!selectedScheduleRadio) {
+        alert("변경할 시간을 선택해주세요.");
+        return;
+    }
+    const newScheduleId = selectedScheduleRadio.value;
+
+    // 백엔드 DTO에 맞춰 요청 본문 생성
+    const updateData = {
+        scheduleId: parseInt(newScheduleId)
+    };
+
+    fetch(`/reservations/${reservationToUpdateId}?name=${currentUser}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+    })
+        .then(response => {
+            if (response.ok) { // 200 OK
+                alert('예약이 성공적으로 변경되었습니다.');
+                resetToCreateMode(); // 상태 초기화
+                // '내 예약 보기' 페이지로 돌아가서 새로고침
+                document.getElementById('reservation-section').classList.add('hidden');
+                document.getElementById('my-reservations-section').classList.remove('hidden');
+                loadMyReservations();
+                loadPopularThemes(); // 인기 테마 통계도 바뀔 수 있으므로 새로고침
+            } else {
+                response.json().then(errorBody => {
+                    alert(`예약 변경 실패: ${errorBody.message || '알 수 없는 오류'}`);
+                });
+            }
+        })
+        .catch(error => console.error('예약 변경 중 에러:', error));
+}
+
+
+// =================================================================================================
 // ✅ TODO 3: '예약하기' 버튼 클릭 시 API(POST /reservations) 호출
 // =================================================================================================
 document.getElementById('reserve-btn').addEventListener('click', () => {
+    // 🚨 예약 생성 모드와 변경 모드를 분기합니다.
+    if (isUpdateMode) {
+        updateMyReservation();
+        return;
+    }
+
     const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
 
     if (!selectedScheduleRadio) {

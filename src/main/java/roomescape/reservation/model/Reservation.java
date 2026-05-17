@@ -1,7 +1,6 @@
 package roomescape.reservation.model;
 
 import roomescape.schedule.model.Schedule;
-import roomescape.theme.model.Theme;
 import roomescape.user.model.User;
 
 public class Reservation {

@@ -1,95 +1,79 @@
 package roomescape.schedule.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.Test;
+import roomescape.theme.model.Theme;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import org.junit.jupiter.api.Test;
-import roomescape.theme.model.Theme;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ScheduleTest {
 
+    private final Theme theme = new Theme(1L, "우테코 방탈출", "꿀잼", "path", LocalTime.of(1, 30));
+
     @Test
-    void 스케줄을_성공적으로_생성한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 10, 0);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
+    void 스케줄_시작_시간이_현재_시간보다_이전이면_true를_반환한다() {
+        // given
+        LocalDateTime startAt = LocalDateTime.of(2026, 5, 16, 14, 59);
+        Schedule schedule = new Schedule(startAt, theme);
 
-        Schedule schedule = new Schedule(1L, startAt, theme);
+        LocalDateTime targetTime = LocalDateTime.of(2026, 5, 16, 15, 0);
 
-        assertThat(schedule.getId()).isEqualTo(1L);
-        assertThat(schedule.getStartAt()).isEqualTo(startAt);
-        assertThat(schedule.getEndAt()).isEqualTo(LocalDateTime.of(2026, 12, 10, 12, 0));
-        assertThat(schedule.getTheme().getName()).isEqualTo(theme.getName());
+        // when
+        boolean result = schedule.isBefore(targetTime);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @Test
-    void 시작_시간이_null이면_예외가_발생한다() {
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
+    void 스케줄_시작_시간이_현재_시간이랑_같으면_false를_반환한다() {
+        // given
+        LocalDateTime startAt = LocalDateTime.of(2026, 5, 16, 15, 0);
+        Schedule schedule = new Schedule(startAt, theme);
 
+        LocalDateTime targetTime = LocalDateTime.of(2026, 5, 16, 15, 0);
+
+        // when
+        boolean result = schedule.isBefore(targetTime);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 스케줄_시작_시간이_현재_시간보다_이후이면_false를_반환한다() {
+        // given
+        LocalDateTime startAt = LocalDateTime.of(2026, 5, 16, 16, 0);
+        Schedule schedule = new Schedule(startAt, theme);
+
+        LocalDateTime targetTime = LocalDateTime.of(2026, 5, 16, 15, 59);
+
+        // when
+        boolean result = schedule.isBefore(targetTime);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 스케줄_생성_시_시작_시간이_null이면_IllegalArgumentException이_발생한다() {
+        // when & then
         assertThatThrownBy(() -> new Schedule(null, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시작 시간은 필수입니다.");
+                .hasMessage("스케줄 시작 시간은 필수입니다.");
     }
 
     @Test
-    void 테마가_null이면_예외가_발생한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 10, 0);
+    void 스케줄_생성_시_테마_정보가_null이면_IllegalArgumentException이_발생한다() {
+        // given
+        LocalDateTime startAt = LocalDateTime.of(2026, 5, 16, 12, 0);
 
+        // when & then
         assertThatThrownBy(() -> new Schedule(startAt, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마 정보는 필수입니다.");
-    }
-
-    @Test
-    void ID가_없어도_생성에_성공한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 10, 0);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-
-        Schedule schedule = new Schedule(startAt, theme);
-
-        assertThat(schedule.getId()).isNull();
-    }
-
-    @Test
-    void 오전_10시_정각_예약은_성공한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 10, 0);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-
-        Schedule schedule = new Schedule(startAt, theme);
-
-        assertThat(schedule.getStartAt().toLocalTime()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(schedule.getEndAt().toLocalTime()).isEqualTo(LocalTime.of(12, 0));
-    }
-
-    @Test
-    void 오전_10시_이전에_예약을_하면_예외가_발생한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 9, 59);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-
-        assertThatThrownBy(() -> new Schedule(startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("오전 10시 이전에는 예약이 불가능합니다.");
-    }
-
-    @Test
-    void 오후_8시_이후에_종료되는_스케줄이면_예외가_발생한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 18, 1);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-
-        assertThatThrownBy(() -> new Schedule(startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("오후 8시 이후에는 예약이 불가능합니다.");
-    }
-
-    @Test
-    void 오후_8시_정각에_종료되는_스케줄은_성공한다() {
-        LocalDateTime startAt = LocalDateTime.of(2026, 12, 10, 18, 0);
-        Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-
-        Schedule schedule = new Schedule(startAt, theme);
-
-        assertThat(schedule.getEndAt().toLocalTime()).isEqualTo(LocalTime.of(20, 0));
     }
 }

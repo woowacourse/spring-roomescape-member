@@ -46,7 +46,7 @@ public class ScheduleRepositoryTest {
                 themeId, schedule.getStartAt(), schedule.getEndAt());
 
         // when
-        List<Schedule> schedules = scheduleRepository.findAllByThemeIdAndDate(themeId, LocalDate.of(2026, 12, 10));
+        List<Schedule> schedules = scheduleRepository.findDailySchedules(themeId, LocalDate.of(2026, 12, 10));
 
         // then
         assertThat(schedules).isNotNull();
@@ -75,7 +75,7 @@ public class ScheduleRepositoryTest {
                 2L, themeId, "2026-12-10 13:00:00", "2026-12-10 15:00:00");
 
         // when
-        List<Schedule> availableSchedules = scheduleRepository.findAllAvailableByThemeAndDate(themeId, LocalDate.of(2026, 12, 10));
+        List<Schedule> availableSchedules = scheduleRepository.findReservableSchedules(themeId, LocalDate.of(2026, 12, 10));
 
         // then
         assertThat(availableSchedules).hasSize(1);
