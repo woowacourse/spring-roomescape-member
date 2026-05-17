@@ -10,6 +10,7 @@ import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.CreateReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.service.ScheduleService;
@@ -43,7 +44,12 @@ public class ReservationService {
         ensureScheduleIsBookable(schedule);
 
         Reservation reservation = new Reservation(user, schedule);
-        return reservationRepository.create(reservation);
+        
+        try {
+            return reservationRepository.create(reservation);
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
+        }
     }
 
     public ReservationsResponse findReservationsByUserName(String name) {
