@@ -12,7 +12,7 @@ import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.dto.ReservationUpdateDtoDateAndTimeIdOnly;
 import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.PastDateBookingException;
+import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastDateCancellationException;
 import roomescape.exception.PastDateModificationException;
 import roomescape.exception.ReservationNotFoundException;
@@ -63,7 +63,7 @@ public class ReservationService {
         return ReservationResponseDTO.from(reservation);
     }
 
-    public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
+    public ReservationResponseDTO reserve(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
                 .orElseThrow(() ->
                         new ReservationTimeNotFoundException("ID로 예약 시간 조회 실패: " + reservationRequestDTO.timeId())
@@ -73,7 +73,7 @@ public class ReservationService {
                         new ThemeNotFoundException("ID로 테마 조회 실패: " + reservationRequestDTO.themeId())
                 );
 
-        validateBookingDate(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
+        validateReservationDate(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
         validateNotDuplicated(reservationRequestDTO.date(), time, theme);
 
         Reservation reservation = Reservation.withoutId(
@@ -104,7 +104,7 @@ public class ReservationService {
         // 현재 예약이 이미 지난 것인지 체크 (수정 불가 사유)
         validateModificationDate(LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()));
         // 새로 변경하려는 시간이 과거인지 체크 (예약 불가 사유)
-        validateBookingDate(LocalDateTime.of(updateDto.date(), reservationTimeForUpdate.getStartAt()));
+        validateReservationDate(LocalDateTime.of(updateDto.date(), reservationTimeForUpdate.getStartAt()));
 
         validateNotDuplicated(updateDto.date(), reservationTimeForUpdate, theme);
 
@@ -113,7 +113,7 @@ public class ReservationService {
         return reservationRepository.update(reservation);
     }
 
-    public int deleteReservationByUsernameAndDateAndTimeIdAndThemeId(ReservationRequestDTO requestDTO) {
+    public int cancelReservation(ReservationRequestDTO requestDTO) {
         ReservationTime time = reservationTimeRepository.findById(requestDTO.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("취소 대상을 위한 시간 조회 실패: " + requestDTO.timeId()));
 
@@ -132,9 +132,9 @@ public class ReservationService {
         return deletedRows;
     }
 
-    private void validateBookingDate(LocalDateTime targetDateTime) {
+    private void validateReservationDate(LocalDateTime targetDateTime) {
         if (targetDateTime.isBefore(LocalDateTime.now())) {
-            throw new PastDateBookingException("과거 시간으로 예약 시도: " + targetDateTime);
+            throw new PastDateReservationException("과거 시간으로 예약 시도: " + targetDateTime);
         }
     }
 

@@ -4,12 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
-public class PastDateBookingException extends BusinessException {
+public class PastDateReservationException extends BusinessException {
 
     private static final String CLIENT_TITLE = "예약 불가";
     private static final String CLIENT_DETAIL = "선택하신 시간이 현재보다 이전이어서 예약할 수 없습니다. 현재 시간 이후의 일정을 선택해 주세요.";
 
-    public PastDateBookingException(String logMessage) {
+    public PastDateReservationException(String logMessage) {
         super(logMessage);
     }
 

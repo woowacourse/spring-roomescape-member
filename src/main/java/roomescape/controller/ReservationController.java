@@ -40,7 +40,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> add(@Valid @RequestBody ReservationRequestDTO request) {
-        ReservationResponseDTO saved = reservationService.addReservation(request);
+        ReservationResponseDTO saved = reservationService.reserve(request);
         return ResponseEntity
                 .created(URI.create("/reservations/" + saved.id()))
                 .build();
@@ -59,7 +59,7 @@ public class ReservationController {
 
     @DeleteMapping
     public ResponseEntity<Void> delete(@Valid @ModelAttribute ReservationRequestDTO request) {
-        reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(request);
+        reservationService.cancelReservation(request);
         return ResponseEntity
                 .noContent()
                 .build();

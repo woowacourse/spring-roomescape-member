@@ -14,7 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
-import roomescape.exception.PastDateBookingException;
+import roomescape.exception.PastDateReservationException;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
@@ -81,7 +81,7 @@ class GlobalExceptionHandlerTest {
         @DisplayName("PastDateBookingException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
         @Test
         void PastDateBookingException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(PastDateBookingException.class)
+            Mockito.doThrow(PastDateReservationException.class)
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))
