@@ -1,7 +1,7 @@
 package roomescape.domain.reservationtime;
 
+import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,8 @@ public class ReservationTimeController {
         @RequestBody TimeRequest request
     ) {
         TimeResponse response = reservationTimeService.createTime(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        URI location = URI.create("/times/" + response.id());
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/times")

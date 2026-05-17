@@ -3,9 +3,9 @@ package roomescape.domain.reservation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.dto.ReservationFixRequest;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.MyReservationsResponse;
+import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationtime.dto.TimeResponse;
 
 @Validated
@@ -32,11 +33,12 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<Void> createReservation(
+    public ResponseEntity<ReservationResponse> createReservation(
         @RequestBody @Valid ReservationRequest request
     ) {
-        reservationService.createReservation(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        ReservationResponse response = reservationService.createReservation(request);
+        URI location = URI.create("/reservations/" + response.id());
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/reservations")
@@ -69,6 +71,6 @@ public class ReservationController {
         @RequestBody ReservationFixRequest request
     ) {
         reservationService.updateMyReservation(id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.ReservationFixRequest;
 import roomescape.domain.reservation.dto.MyReservationsResponse;
+import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.domain.theme.Theme;
@@ -32,7 +33,7 @@ public class ReservationService {
         this.adminThemeRepository = adminThemeRepository;
     }
 
-    public void createReservation(ReservationRequest request) {
+    public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
             .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
         Theme theme = adminThemeRepository.findById(request.themeId())
@@ -40,13 +41,15 @@ public class ReservationService {
 
         validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
         time.validateIfTimePast(request.date());
+
         Reservation reservation = Reservation.of(
             request.name(),
             request.date(),
             time,
             theme
         );
-        reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationResponse.of(saved);
     }
 
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
