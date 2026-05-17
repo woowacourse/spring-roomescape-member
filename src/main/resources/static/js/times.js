@@ -30,6 +30,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusStrip = document.getElementById("status-strip");
     const adminLoginButton = document.getElementById("admin-login-button");
 
+    const ERROR_MAP = {
+        "INVALID_INPUT_VALUE": "입력하신 정보가 규정된 형식에 맞지 않습니다. 입력 규칙을 확인하고 다시 입력해 주세요.",
+        "INVALID_JSON_FORMAT": "데이터 처리 중 문법 오류가 발생했습니다. 잠시 후 다시 시도하거나 고객센터로 문의해 주세요.",
+        "INVALID_PARAMETER_TYPE": "잘못된 접근 경로입니다. 정상적인 경로를 통해 다시 시도해 주세요.",
+        "MISSING_REQUIRED_PARAMETER": "필수 요청 정보가 누락되었습니다. 누락된 항목이 없는지 확인해 주세요.",
+        "MISSING_PATH_VARIABLE": "요청 경로 정보가 부족합니다. URL 주소가 정확한지 확인해 주세요.",
+        "DATA_INTEGRITY_VIOLATION": "이미 존재하거나 처리할 수 없는 데이터 조건입니다. 입력 값을 다시 확인해 주세요.",
+        "METHOD_NOT_ALLOWED": "지원하지 않는 요청 방식입니다. 올바른 방법으로 접근해 주세요.",
+        "NOT_FOUND": "요청하신 정보를 찾을 수 없습니다. 경로를 다시 확인해 주세요.",
+        "INTERNAL_SERVER_ERROR": "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도하거나 고객센터로 문의해 주세요.",
+        "UNAUTHORIZED": "인증 권한이 없습니다. 다시 로그인해 주세요.",
+
+        "INVALID_RESERVATION_NAME": "예약자 이름이 올바르지 않습니다. 성함을 공백 없이 정확히 입력해 주세요.",
+        "INVALID_RESERVATION_DATE": "예약 날짜가 선택되지 않았습니다. 방문하실 날짜를 목록에서 선택해 주세요.",
+        "RESERVATION_NOT_FOUND": "조회 요청하신 예약 내역을 찾을 수 없습니다. 예약 번호를 다시 확인해 주세요.",
+        "RESERVATION_CANNOT_CANCEL": "예약 취소/변경이 불가능한 상태입니다. 취소는 방문 전날 자정까지만 가능하니 예약 정책을 확인해 주세요.",
+        "RESERVATION_DUPLICATED": "선택하신 시간대에 이미 다른 예약이 존재합니다. 다른 시간이나 테마를 선택해 주세요.",
+
+        "RESERVATION_DATE_DUPLICATED": "이미 등록된 날짜입니다. 다른 날짜를 선택해 주세요.",
+        "RESERVATION_TIME_DUPLICATED": "이미 등록된 시간입니다. 다른 시간을 선택해 주세요.",
+        "PAST_TIME_NOT_ALLOWED": "현재보다 이전 시간은 예약할 수 없습니다. 현재 시각 이후의 시간을 선택해 주세요.",
+        "THEME_IN_USE": "현재 예약이 진행 중인 테마는 변경할 수 없습니다. 관리자에게 문의해 주세요.",
+        "RESERVATION_DATE_IN_USE": "예약이 존재하는 날짜는 변경할 수 없습니다. 예약을 먼저 확인해 주세요.",
+        "RESERVATION_TIME_IN_USE": "예약이 존재하는 시간은 변경할 수 없습니다. 예약을 먼저 확인해 주세요."
+    };
+
+    function getFriendlyErrorMessage(error, defaultMsg) {
+        if (!error || !error.code) {
+            return defaultMsg;
+        }
+        const friendlyMessage = ERROR_MAP[error.code];
+        if (friendlyMessage) {
+            console.error(`[Developer Message] ${error.message}\n[Action Guide] ${error.action}`);
+            return friendlyMessage;
+        }
+        return error.message || defaultMsg;
+    }
+
     const navReservation = document.getElementById("nav-reservation");
     const navMyReservation = document.getElementById("nav-my-reservation");
     const reservationView = document.getElementById("reservation-view");
@@ -175,11 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch(url, { headers: { Accept: "application/json" } });
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            let message = error.message || `요청에 실패했습니다: ${url}`;
-            if (error.action) {
-                message += `\n(${error.action})`;
-            }
-            throw new Error(message);
+            throw new Error(getFriendlyErrorMessage(error, `요청에 실패했습니다: ${url}`));
         }
         return response.json();
     }
@@ -278,11 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
 
             if (!response.ok) {
-                let errorMsg = result.message || "예약 요청 중 문제가 발생했습니다.";
-                if (result.action) {
-                    errorMsg += ` (${result.action})`;
-                }
-                message.textContent = errorMsg;
+                message.textContent = getFriendlyErrorMessage(result, "예약 요청 중 문제가 발생했습니다.");
                 message.classList.add("error");
                 return;
             }
@@ -368,11 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const response = await fetch(`/reservations/${id}`, { method: "DELETE" });
                     if (!response.ok) {
                         const error = await response.json().catch(() => ({}));
-                        let errorMsg = error.message || "취소에 실패했습니다.";
-                        if (error.action) {
-                            errorMsg += ` (${error.action})`;
-                        }
-                        alert(errorMsg);
+                        alert(getFriendlyErrorMessage(error, "취소에 실패했습니다."));
                         return;
                     }
                     alert("예약이 취소되었습니다.");
@@ -470,11 +496,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
-                let errorMsg = error.message || "수정에 실패했습니다.";
-                if (error.action) {
-                    errorMsg += ` (${error.action})`;
-                }
-                alert(errorMsg);
+                alert(getFriendlyErrorMessage(error, "수정에 실패했습니다."));
                 return;
             }
 
