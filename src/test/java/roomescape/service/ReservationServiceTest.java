@@ -18,6 +18,8 @@ import roomescape.exception.code.BadRequestCode;
 import roomescape.exception.code.ConflictCode;
 import roomescape.exception.code.NotFoundCode;
 import roomescape.exception.code.UnprocessableCode;
+import roomescape.policy.AdminReservationCancelPolicy;
+import roomescape.policy.UserReservationCancelPolicy;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -48,6 +50,8 @@ class ReservationServiceTest {
     private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
     private static final LocalDateTime NOW = LocalDateTime.of(FIXED_TODAY, FIXED_TIME);
     private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
+    private final UserReservationCancelPolicy userCancelPolicy = new UserReservationCancelPolicy();
+    private final AdminReservationCancelPolicy adminCancelPolicy = new AdminReservationCancelPolicy();
     @Mock
     private ReservationRepository reservationRepository;
     @Mock
@@ -138,10 +142,15 @@ class ReservationServiceTest {
     }
 
     @Test
-    void id로_예약을_삭제한다() {
-        reservationService.deleteById(1L);
+    void 관리자는_지난_예약도_취소할_수_있다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation past = new Reservation(1L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(past));
 
-        verify(reservationRepository).deleteById(eq(1L));
+        reservationService.updateCancelled(1L, NOW, adminCancelPolicy);
+
+        verify(reservationRepository).updateCancelled(eq(1L));
     }
 
     @Test
@@ -210,7 +219,7 @@ class ReservationServiceTest {
         Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
 
-        reservationService.updateCancelled(1L, NOW);
+        reservationService.updateCancelled(1L, NOW, userCancelPolicy);
 
         verify(reservationRepository).updateCancelled(eq(1L));
     }
@@ -219,19 +228,19 @@ class ReservationServiceTest {
     void 존재하지_않는_예약을_취소하면_404_예외가_발생한다() {
         given(reservationRepository.findById(999L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.updateCancelled(999L, NOW))
+        assertThatThrownBy(() -> reservationService.updateCancelled(999L, NOW, userCancelPolicy))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(NotFoundCode.RESERVATION_NOT_FOUND.getMessage());
     }
 
     @Test
-    void 이미_지난_예약은_취소할_수_없다() {
+    void 이미_지난_예약은_사용자가_취소할_수_없다() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         Reservation past = new Reservation(7L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
         given(reservationRepository.findById(7L)).willReturn(Optional.of(past));
 
-        assertThatThrownBy(() -> reservationService.updateCancelled(7L, NOW))
+        assertThatThrownBy(() -> reservationService.updateCancelled(7L, NOW, userCancelPolicy))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage(UnprocessableCode.RESERVATION_ALREADY_STARTED.getMessage());
     }

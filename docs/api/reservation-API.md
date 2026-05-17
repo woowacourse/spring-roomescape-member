@@ -131,13 +131,16 @@ Error Response
 DELETE /admin/reservations/{reservationId}
 ```
 
-> 행을 물리적으로 제거하는 **hard delete**다. 사용자의 `DELETE /reservations/{id}`(soft cancel: `canceled_reservation` 으로 행 이동)와는 의도가
-> 다르다.
-> 운영상 잘못 들어간 예약을 정정하기 위한 용도이므로 이력 보존이 필요 없을 때 사용한다. 삭제된 예약은 조회와 집계 어디에도 남지 않는다.
+> 사용자 취소와 동일하게 `reservation`의 행을 `canceled_reservation`으로 옮기는 **soft delete**다.
+> 관리자는 운영상 정정을 위해 이미 시작된 예약도 삭제할 수 있어 시간 검증을 적용하지 않는다.
 
 Response `204 No Content`
 
-존재 여부와 무관하게 204로 응답한다 (관리자 삭제 API 공통 규칙 — 테마/시간 삭제와 동일). 결국 존재하지 않는 상태를 만드는 것이 목적이며, DELETE 멱등성과도 맞다.
+Error Response
+
+| 상태              | `code`                  | 조건                      |
+|-----------------|-------------------------|-------------------------|
+| `404 Not Found` | `RESERVATION_NOT_FOUND` | 존재하지 않는 `reservationId` |
 
 ---
 

@@ -15,6 +15,7 @@ import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.ConflictCode;
 import roomescape.exception.code.NotFoundCode;
 import roomescape.exception.code.UnprocessableCode;
+import roomescape.policy.ReservationCancelPolicy;
 import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -42,14 +43,12 @@ public class ReservationService {
         return reservationRepository.findAllReservations();
     }
 
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
-    }
-
     @Transactional
-    public void updateCancelled(Long id, LocalDateTime now) {
+    public void updateCancelled(Long id, LocalDateTime now, ReservationCancelPolicy policy) {
         try {
-            getValidReservation(id, now);
+            Reservation reservation = reservationRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
+            policy.validate(reservation, now);
             reservationRepository.updateCancelled(id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND);

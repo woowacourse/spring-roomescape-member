@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.policy.UserReservationCancelPolicy;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.request.ReservationEditRequest;
 import roomescape.request.ReservationRequest;
@@ -28,7 +29,8 @@ import java.util.List;
 @RequestMapping("/reservations")
 public class ReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
-    private static final UserReservationSavePolicy POLICY = new UserReservationSavePolicy();
+    private static final UserReservationSavePolicy SAVE_POLICY = new UserReservationSavePolicy();
+    private static final UserReservationCancelPolicy CANCEL_POLICY = new UserReservationCancelPolicy();
     private final ReservationService reservationService;
     private final Clock clock;
 
@@ -48,7 +50,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
         LocalDateTime now = LocalDateTime.now(clock);
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), now, POLICY);
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), now, SAVE_POLICY);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
@@ -61,7 +63,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.updateCancelled(id, LocalDateTime.now(clock));
+        reservationService.updateCancelled(id, LocalDateTime.now(clock), CANCEL_POLICY);
 
         return ResponseEntity.noContent().build();
     }
