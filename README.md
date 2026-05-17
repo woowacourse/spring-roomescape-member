@@ -36,24 +36,29 @@
 
 ## 📝API 명세
 
-| 기능           | 메서드 / URL                           | 요청 본문                                | 응답 본문                                                                                                 |
-|--------------|-------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------|
-| (어드민)        |                                     |
-| 예약 조회        | `GET /admin/reservations`           |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
-| 예약 삭제        | `DELETE /admin/reservations/{id}`   |                                      |                                                                                                       |
-| 시간 추가        | `POST /admin/times`                 | `{startAt}`                          | `{id, startAt}`                                                                                       |
-| 시간 삭제        | `DELETE /admin/times/{id}`          |                                      |                                                                                                       |
-| 테마 추가        | `POST /admin/themes`                | `{name, description, thumbnail_url}` | `{theme_id, name, description, thumbnail_url, rumtime}`                                               |
-| 테마 삭제        | `DELETE /admin/themes/{id}`         |                                      |                                                                                                       |
-| (유저)         |                                     |                                      |
-| 예약 추가        | `POST /reservations`                | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
-| 이름으로 예약 삭제   | `DELETE /reservations/{id}?name={}` |                                      |                                                                                                       |
-| 이름으로 예약 조회   | `GET /reservations?name={}`         |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
-| 예약 변경        | `PATCH /reservations/{id}?name={}`  | `{date, time_id, theme_id}`          | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
-| 시간 조회        | `GET /times`                        |                                      | `[{id, startAt}, ...]`                                                                                |
-| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}`     |                                      | `[{id, startAt}, ...]`                                                                                |
-| 테마 조회        | `GET /themes`                       |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
-| 인기 있는 테마 조회  | `GET /themes?days={}&limits={}`     |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
+### 어드민 API
+
+| 기능    | 메서드 / URL                         | 요청 본문                               | 응답 코드            | 응답 본문                                                                                                 |
+|-------|-----------------------------------|-------------------------------------|------------------|-------------------------------------------------------------------------------------------------------|
+| 예약 조회 | `GET /admin/reservations`         |                                     | `200 OK`         | `[{id, name, date, time: {id, startAt}, theme: {id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 예약 삭제 | `DELETE /admin/reservations/{id}` |                                     | `204 No Content` |                                                                                                       |
+| 시간 추가 | `POST /admin/times`               | `{startAt}`                         | `201 Created`    | `{id, startAt}`                                                                                       |
+| 시간 삭제 | `DELETE /admin/times/{id}`        |                                     | `204 No Content` |                                                                                                       |
+| 테마 추가 | `POST /admin/themes`              | `{name, description, thumbnailUrl}` | `201 Created`    | `{id, name, description, thumbnailUrl, runtime}`                                                      |
+| 테마 삭제 | `DELETE /admin/themes/{id}`       |                                     | `204 No Content` |                                                                                                       |
+
+### 사용자 API
+
+| 기능           | 메서드 / URL                           | 요청 본문                           | 응답 코드            | 응답 본문                                                                                                 |
+|--------------|-------------------------------------|---------------------------------|------------------|-------------------------------------------------------------------------------------------------------|
+| 예약 추가        | `POST /reservations`                | `{name, date, timeId, themeId}` | `201 Created`    | `{id, name, date, time: {id, startAt}, theme: {id, name, description, thumbnailUrl, runtime}}`        |
+| 이름으로 예약 조회   | `GET /reservations?name={}`         |                                 | `200 OK`         | `[{id, name, date, time: {id, startAt}, theme: {id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 이름으로 예약 삭제   | `DELETE /reservations/{id}?name={}` |                                 | `204 No Content` |                                                                                                       |
+| 예약 변경        | `PATCH /reservations/{id}?name={}`  | `{date, timeId, themeId}`       | `200 OK`         | `{id, name, date, time: {id, startAt}, theme: {id, name, description, thumbnailUrl, runtime}}`        |
+| 시간 조회        | `GET /times`                        |                                 | `200 OK`         | `[{id, startAt}, ...]`                                                                                |
+| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}`     |                                 | `200 OK`         | `[{id, startAt}, ...]`                                                                                |
+| 테마 조회        | `GET /themes`                       |                                 | `200 OK`         | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                               |
+| 인기 있는 테마 조회  | `GET /themes?days={}&limits={}`     |                                 | `200 OK`         | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                               |
 
 ## 예외 처리
 
@@ -63,13 +68,13 @@
 
 | 상황                          | 응답 코드                       | 메시지                                                            |
 |-----------------------------|-----------------------------|----------------------------------------------------------------|
-| 요청 본문의 필수값이 없음              | `400 Bad Request`           | `입력값이 잘못되었습니다.`                                                |
+| 요청 본문의 필수값이 없음              | `400 Bad Request`           | `{field}: 널이어서는 안됩니다.`, `{field}: 공백일 수 없습니다.`                 |
 | 필수 query parameter가 없음      | `400 Bad Request`           | `{field}: 입력값이 필요합니다.`                                         |
 | 요청 본문의 형식이 잘못됨              | `400 Bad Request`           | `입력 형식이 잘못되었습니다.`                                              |
 | 잘못된 path/query parameter 형식 | `400 Bad Request`           | `{field}: 입력 형식이 잘못되었습니다.`                                     |
 | query parameter 조합이 올바르지 않음 | `400 Bad Request`           | `날짜와 테마는 함께 입력해야 합니다.`, `날짜와 제한은 함께 입력해야 합니다.`                 |
 | `days`, `limits`가 0 이하      | `400 Bad Request`           | `{field}: 0보다 커야 합니다.`                                         |
-| 수정할 예약 정보가 없음               | `400 Bad Request`           | `변경할 예약 정보가 없습니다.`                                             |
+| 예약 수정 요청 필드가 없음             | `400 Bad Request`           | `{field}: 널이어서는 안됩니다.`                                         |
 | 존재하지 않는 예약 시간으로 예약 생성       | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
 | 존재하지 않는 예약 시간으로 예약 수정       | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
 | 존재하지 않는 테마로 예약 생성           | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
@@ -79,6 +84,7 @@
 | 존재하지 않는 예약 시간 삭제            | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
 | 존재하지 않는 테마 삭제               | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
 | 존재하지 않는 URL 요청              | `404 Not Found`             | `존재하지 않는 요청입니다.`                                               |
+| 지원하지 않는 HTTP 메서드 요청         | `405 Method Not Allowed`    | `API 메서드가 잘못되었습니다.`                                            |
 | 수정/삭제하려는 예약의 이름이 입력한 이름과 다름 | `403 Forbidden`             | `예약을 수정/삭제할 권한이 없습니다.`                                         |
 | 같은 날짜 + 시간 + 테마에 이미 예약이 있음  | `409 Conflict`              | `이미 예약이 있습니다. date= ..., reservationTimeId= ..., themeId= ...` |
 | 이미 존재하는 예약 시간 생성            | `409 Conflict`              | `이미 존재하는 예약 시간입니다.`                                            |
@@ -98,6 +104,7 @@
 | `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음     |
 | `403 Forbidden`             | 권한이 없는 요청              |
 | `404 Not Found`             | 없는 자원에 대한 접근           |
+| `405 Method Not Allowed`    | 지원하지 않는 HTTP 메서드 요청    |
 | `409 Conflict`              | 서버의 현재 상태와 충돌          |
 | `422 Unprocessable Entity`  | 유효성 검사 실패 및 비즈니스 로직 위반 |
 | `500 Internal Server Error` | 서버 내부 오류               |
