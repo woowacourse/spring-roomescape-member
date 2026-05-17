@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationUpdateRequest;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -60,7 +62,7 @@ public class ReservationService {
 
     private void validateOwner(String username, Reservation reservation) {
         if (!reservation.getName().equals(username)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_NOT_OWNER);
         }
     }
 
@@ -94,18 +96,18 @@ public class ReservationService {
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND)
+                () -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND)
         );
     }
 
     private ReservationTime getReservationTime(Long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
     }
 
     private boolean isOverDateAndTime(LocalDate date, ReservationTime time) {
@@ -117,13 +119,13 @@ public class ReservationService {
 
     private void validatePastUpdate(LocalDate date, ReservationTime time) {
         if (isOverDateAndTime(date, time)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_PAST_UPDATE);
         }
     }
 
     private void validatePastRegister(LocalDate date, ReservationTime time) {
         if (isOverDateAndTime(date, time)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_DATE);
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_PAST_DATE);
         }
     }
 
@@ -131,14 +133,14 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date,
                 timeId,
                 themeId)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
 
     private void validateDuplicateExceptSelf(LocalDate date, Long timeId, Long themeId, Long reservationId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndReservationIdNot(date, timeId, themeId,
                 reservationId)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
         }
     }
 

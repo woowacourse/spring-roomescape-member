@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -27,7 +29,7 @@ public class ThemeService {
 
     public ThemeResponse register(ThemeRequest themeRequest) {
         if (themeRepository.existsByName(themeRequest.name())) {
-            throw new RoomescapeException(ErrorCode.THEME_DUPLICATED);
+            throw new ConflictException(ErrorCode.THEME_DUPLICATED);
         }
         Theme theme = themeRepository.save(themeRequest.name(), themeRequest.description(), themeRequest.url());
         return ThemeResponse.from(theme);
@@ -35,10 +37,10 @@ public class ThemeService {
 
     public void removeById(Long id) {
         themeRepository.findById(id).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND)
+                () -> new NotFoundException(ErrorCode.THEME_NOT_FOUND)
         );
         if (reservationRepository.existsByThemeId(id)) {
-            throw new RoomescapeException(ErrorCode.THEME_HAS_RESERVATIONS);
+            throw new UnprocessableEntityException(ErrorCode.THEME_HAS_RESERVATIONS);
         }
         themeRepository.deleteById(id);
     }

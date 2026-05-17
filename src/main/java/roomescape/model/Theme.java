@@ -1,7 +1,7 @@
 package roomescape.model;
 
+import roomescape.exception.BadRequestException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
 
 public class Theme {
 
@@ -29,26 +29,26 @@ public class Theme {
 
     private void validateName() {
         if (name == null || name.isBlank()) {
-            throw new RoomescapeException(ErrorCode.THEME_NAME_BLANK);
+            throw new BadRequestException(ErrorCode.THEME_NAME_BLANK);
         }
 
         if (name.length() > MAX_THEME_NAME_LENGTH) {
-            throw new RoomescapeException(ErrorCode.THEME_NAME_LENGTH_INVALID);
+            throw new BadRequestException(ErrorCode.THEME_NAME_LENGTH_INVALID);
         }
     }
 
     private void validateDescription() {
         if (description == null || description.isBlank()) {
-            throw new RoomescapeException(ErrorCode.THEME_DESCRIPTION_BLANK);
+            throw new BadRequestException(ErrorCode.THEME_DESCRIPTION_BLANK);
         }
         if (description.length() > MAX_THEME_DESCRIPTION_LENGTH) {
-            throw new RoomescapeException(ErrorCode.THEME_DESCRIPTION_LENGTH_INVALID);
+            throw new BadRequestException(ErrorCode.THEME_DESCRIPTION_LENGTH_INVALID);
         }
     }
 
     private void validateUrl() {
         if (url == null || url.isBlank()) {
-            throw new RoomescapeException(ErrorCode.THEME_URL_BLANK);
+            throw new BadRequestException(ErrorCode.THEME_URL_BLANK);
         }
     }
 

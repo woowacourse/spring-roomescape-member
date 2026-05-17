@@ -1,8 +1,8 @@
 package roomescape.model;
 
 import java.time.LocalDate;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
 
 public class Reservation {
 
@@ -32,28 +32,28 @@ public class Reservation {
 
     private void validateName() {
         if (name == null || name.isBlank()) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_BLANK);
+            throw new BadRequestException(ErrorCode.RESERVATION_NAME_BLANK);
         }
         if (name.length() > MAX_RESERVATION_NAME_LENGTH) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NAME_LENGTH_INVALID);
+            throw new BadRequestException(ErrorCode.RESERVATION_NAME_LENGTH_INVALID);
         }
     }
 
     private void validateDate() {
         if (date == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DATE_NULL);
+            throw new BadRequestException(ErrorCode.RESERVATION_DATE_NULL);
         }
     }
 
     private void validateTime() {
         if (time == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_NULL);
+            throw new BadRequestException(ErrorCode.RESERVATION_TIME_NULL);
         }
     }
 
     private void validateTheme() {
         if (theme == null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_THEME_NULL);
+            throw new BadRequestException(ErrorCode.RESERVATION_THEME_NULL);
         }
     }
 

@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
@@ -41,20 +43,20 @@ public class TimeService {
 
     public void removeById(Long id) {
         timeRepository.findById(id).orElseThrow(
-                () -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND)
+                () -> new NotFoundException(ErrorCode.TIME_NOT_FOUND)
         );
         if (reservationRepository.existsByTimeId(id)) {
-            throw new RoomescapeException(ErrorCode.TIME_HAS_RESERVATIONS);
+            throw new UnprocessableEntityException(ErrorCode.TIME_HAS_RESERVATIONS);
         }
         timeRepository.deleteById(id);
     }
 
     public TimeResponse register(TimeRequest timeRequest) {
         if (timeRequest.startAt().getMinute() != 0) {
-            throw new RoomescapeException(ErrorCode.TIME_NOT_ON_THE_HOUR);
+            throw new UnprocessableEntityException(ErrorCode.TIME_NOT_ON_THE_HOUR);
         }
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
-            throw new RoomescapeException(ErrorCode.TIME_DUPLICATED);
+            throw new ConflictException(ErrorCode.TIME_DUPLICATED);
         }
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
