@@ -102,6 +102,7 @@
                     <tr>
                         <th>ID</th>
                         <th>예약자</th>
+                        <th>테마</th>
                         <th>날짜</th>
                         <th>시간</th>
                         <th>액션</th>
@@ -109,7 +110,7 @@
                     </thead>
                     <tbody id="reservation-table-body">
                     <tr>
-                        <td colspan="5">
+                        <td colspan="6">
                             <div class="empty-state">
                                 <div class="spinner"></div>
                             </div>
@@ -171,7 +172,7 @@
             resPageState.page = 0;
             resPageState.totalLoaded = 0;
             document.getElementById('reservation-table-body').innerHTML =
-                `<tr><td colspan="5"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
+                `<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
         }
 
         try {
@@ -186,7 +187,7 @@
             const tbody = document.getElementById('reservation-table-body');
 
             if (reset && !reservations.length) {
-                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📭</div><p>예약이 없습니다.</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>예약이 없습니다.</p></div></td></tr>`;
                 document.getElementById('total-count').textContent = '0';
                 document.getElementById('res-load-more-btn').style.display = 'none';
                 return;
@@ -198,6 +199,7 @@
                 <tr>
                     <td><span class="badge badge-gray">#${r.id}</span></td>
                     <td><strong>${r.name}</strong></td>
+                    <td>${r.themeName ?? '–'}</td>
                     <td>${r.date}</td>
                     <td>${r.time ?? '–'}</td>
                     <td>
