@@ -25,8 +25,8 @@ class AdminThemeServiceTest {
 
     @DisplayName("관리자는 테마를 저장할 수 있다.")
     @Test
-    void saveTheme() {
-        Theme savedTheme = themeService.saveTheme(
+    void save() {
+        Theme savedTheme = themeService.save(
                 "감옥 탈출",
                 "철통 보안 감옥에서 탈출하라!",
                 "https://image.test/prison.png"

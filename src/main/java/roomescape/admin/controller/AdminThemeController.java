@@ -24,7 +24,7 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid ThemeRequest request) {
-        final Theme theme = themeService.saveTheme(request.name(), request.description(), request.thumbnailUrl());
+        final Theme theme = themeService.save(request.name(), request.description(), request.thumbnailUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(theme));
     }
 
