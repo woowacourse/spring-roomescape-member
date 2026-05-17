@@ -23,7 +23,7 @@ public interface ReservationRepository {
 
     int deleteReservationWith(String name, LocalDate date, Long timeId, Long themeId);
 
-    boolean existReservationByTimeId(Long timeId);
+    boolean existsReservationByTimeId(Long timeId);
 
-    boolean existReservationByThemeId(Long themeId);
+    boolean existsReservationByThemeId(Long themeId);
 }

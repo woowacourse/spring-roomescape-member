@@ -51,7 +51,7 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (reservationRepository.existReservationByThemeId(id)) {
+        if (reservationRepository.existsReservationByThemeId(id)) {
             throw new ThemeInUseException("테마 삭제 실패 (사용 중): " + id);
         }
         if (themeRepository.findById(id).isEmpty()) {

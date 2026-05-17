@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +48,7 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.existReservationByTimeId(id)) {
+        if (reservationRepository.existsReservationByTimeId(id)) {
             throw new ReservationTimeInUseException("예약 시간 삭제 실패 (사용 중): " + id);
         }
         if (reservationTimeRepository.findById(id).isEmpty()) {
