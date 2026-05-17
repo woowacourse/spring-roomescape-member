@@ -59,12 +59,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_삭제한다() {
+    void 테마를_삭제한다_존재하지_않는_테마를_삭제해도_예외가_발생하지_않는다() {
+        // given
+        long id = 1L;
+        
         // when & then
-        assertThatCode(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
+        assertThatCode(() -> themeService.deleteThemeById(id))
             .doesNotThrowAnyException();
 
-        verify(themeRepository, times(1)).deleteById(SAVED_THEME.getId());
+        verify(themeRepository, times(1)).deleteById(id);
         verifyNoMoreInteractions(themeRepository);
     }
 

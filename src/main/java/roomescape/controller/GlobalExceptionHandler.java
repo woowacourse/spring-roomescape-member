@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +46,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
-        printWarnStatus(e);
-        return parseOf(ErrorCode.NOT_FOUND);
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> handleNoSuchElement(NoSuchElementException e) {
         printWarnStatus(e);
         return parseOf(ErrorCode.NOT_FOUND);
     }

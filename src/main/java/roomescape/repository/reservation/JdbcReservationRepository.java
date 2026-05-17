@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -73,14 +72,11 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(final long id) {
-        int update = template.update("""
-            DELETE FROM reservation
-            WHERE id = ?;
-            """, id);
-
-        if (update == 0) {
-            throw new NoSuchElementException("존재하지 않는 reservation 의 id 입니다. id = " + id);
-        }
+        template.update("""
+                DELETE FROM reservation
+                WHERE id = ?;
+                """,
+            id);
     }
 
     @Override

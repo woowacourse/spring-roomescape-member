@@ -186,21 +186,18 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 없는_예약을_삭제하는_경우_예외가_발생한다() {
+    void 없는_예약을_삭제해도_예외가_발생하지_않는다() {
         // given
         when(reservationRepository.findById(anyLong()))
             .thenReturn(Optional.empty());
 
-        Reservation reservation = reservation();
+        long unSavedId = 3L;
+        String name = "name";
 
         // when & then
-        Long id = reservation.getId();
-        String name = reservation.getName().value();
-        assertThatThrownBy(() -> reservationService.deleteReservation(id, name))
-            .isInstanceOf(RoomEscapeException.class)
-            .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+        assertThatCode(() -> reservationService.deleteReservation(unSavedId, name))
+            .doesNotThrowAnyException();
 
-        verify(reservationRepository, times(1)).findById(id);
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
@@ -335,6 +332,23 @@ class ReservationServiceTest {
             .hasMessageContaining(ErrorCode.TIME_HAS_RESERVATIONS.getMessage());
 
         verify(reservationRepository, times(1)).existsByTimeIdAndDateOnOrAfter(anyLong(), any());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_시간을_삭제해도_예외가_발생하지_않는다() {
+        // given
+        when(reservationRepository.existsByTimeIdAndDateOnOrAfter(anyLong(), any()))
+            .thenReturn(false);
+
+        long unSavedTimeId = 3L;
+
+        // when & then
+        assertThatCode(() -> reservationService.deleteReservationTime(unSavedTimeId))
+            .doesNotThrowAnyException();
+
+        verify(reservationRepository, times(1)).existsByTimeIdAndDateOnOrAfter(anyLong(), any());
+        verify(timeRepository, times(1)).deleteById(anyLong());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 

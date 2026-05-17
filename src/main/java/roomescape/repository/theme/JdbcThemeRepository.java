@@ -3,7 +3,6 @@ package roomescape.repository.theme;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -55,15 +54,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(final long id) {
-        int update = template.update("""
+        template.update("""
                 DELETE FROM theme
                 WHERE id = ?;
                 """,
             id);
-
-        if (update == 0) {
-            throw new NoSuchElementException("존재하지 않는 theme 의 id 입니다. id = " + id);
-        }
     }
 
     @Override

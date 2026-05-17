@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,9 +112,12 @@ public class ReservationService {
     }
 
     public void deleteReservation(final long id, String requestName) {
-        Reservation reservation = reservationRepository.findById(id)
-            .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        Optional<Reservation> saved = reservationRepository.findById(id);
+        if (saved.isEmpty()) {
+            return;
+        }
 
+        Reservation reservation = saved.get();
         MemberName name = new MemberName(requestName);
         if (!reservation.isBooker(name)) {
             throw new RoomEscapeException(ErrorCode.FORBIDDEN);
