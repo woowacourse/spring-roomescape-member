@@ -123,7 +123,7 @@ class ReservationServiceTest {
         void returnsActiveReservation() {
             Reservation saved = reservationService.create(requestDto1);
 
-            assertThat(reservationService.findActiveById(saved.getId())).isEqualTo(saved);
+            assertThat(reservationService.findActiveById(saved.getId())).usingRecursiveComparison().isEqualTo(saved);
         }
 
         @Test
@@ -148,7 +148,7 @@ class ReservationServiceTest {
 
             List<Reservation> result = reservationService.findAllByName(requestDto1.name());
 
-            assertThat(result).containsExactly(saved);
+            assertThat(result).usingRecursiveComparison().isEqualTo(List.of(saved));
         }
 
         @Test

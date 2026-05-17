@@ -87,7 +87,7 @@ class AdminReservationServiceTest {
 
             PageResponse<Reservation> result = adminReservationService.findAll(0, 10);
 
-            assertThat(result.content()).isEqualTo(saved);
+            assertThat(result.content()).usingRecursiveComparison().isEqualTo(saved);
             assertThat(result.totalElements()).isEqualTo(saved.size());
         }
 
@@ -99,7 +99,7 @@ class AdminReservationServiceTest {
 
             PageResponse<Reservation> result = adminReservationService.findAll(0, 1);
 
-            assertThat(result.content()).isEqualTo(List.of(saved2));
+            assertThat(result.content()).usingRecursiveComparison().isEqualTo(List.of(saved2));
             assertThat(result.totalElements()).isEqualTo(2);
             assertThat(result.totalPages()).isEqualTo(2);
         }
@@ -113,7 +113,7 @@ class AdminReservationServiceTest {
         void returnsReservationById() {
             Reservation saved = adminReservationService.createByAdmin(requestDto1);
 
-            assertThat(adminReservationService.findById(saved.getId())).isEqualTo(saved);
+            assertThat(adminReservationService.findById(saved.getId())).usingRecursiveComparison().isEqualTo(saved);
         }
 
         @Test
