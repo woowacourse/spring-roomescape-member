@@ -35,8 +35,12 @@ public class GlobalExceptionHandler {
                 .toList();
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("INVALID_ARGUMENT", "입력 형식이 올바르지 않습니다.", errors));
+                .badRequest()
+                .body(new ErrorResponse(
+                        "INVALID_ARGUMENT",
+                        "입력 형식이 올바르지 않습니다.",
+                        errors)
+                );
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -47,16 +51,16 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(constraintViolation -> {
                     String propertyPath = constraintViolation.getPropertyPath().toString();
-                    String fieldName = propertyPath.substring(propertyPath.lastIndexOf('.')+1);
+                    String fieldName = propertyPath.substring(propertyPath.lastIndexOf('.') + 1);
 
                     return new ErrorResponse.FieldErrorDetail(
                             fieldName,
-                            e.getMessage()
+                            constraintViolation.getMessage()
                     );
                 }).toList();
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .badRequest()
                 .body(new ErrorResponse(
                         "INVALID_ARGUMENT",
                         "입력 형식이 올바르지 않습니다.",
@@ -69,10 +73,36 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException e
     ) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .badRequest()
                 .body(new ErrorResponse(
                         "INVALID_ARGUMENT",
                         "입력 형식이 올바르지 않습니다.",
+                        null
+                ));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException e
+    ) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(
+                        "INVALID_ARGUMENT",
+                        e.getMessage(),
+                        null
+                ));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(
+            Exception e
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        "INTERNAL_SERVER_ERROR",
+                        "서버 내부 오류가 발생했습니다.",
                         null
                 ));
     }
