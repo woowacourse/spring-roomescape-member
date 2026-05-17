@@ -10,7 +10,6 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.business.BusinessException;
 import roomescape.exception.business.DuplicateReservationException;
 import roomescape.exception.business.PastTimeCancelException;
-import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationFactory;
 import roomescape.reservation.dto.ReservationRequest;
@@ -82,9 +81,6 @@ public class ReservationService {
         LocalDate newDate = request.date();
 
         Reservation changed = reservation.reschedule(newDate, newTime);
-        if (changed.isPast()) {
-            throw new PastTimeReservationException();
-        }
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(newDate, request.timeId(), reservation.getTheme().getId())) {
             throw new DuplicateReservationException();
         }

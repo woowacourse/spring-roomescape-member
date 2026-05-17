@@ -3,6 +3,8 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -30,13 +32,17 @@ public class Reservation {
     }
 
     public Reservation reschedule(LocalDate date, ReservationTime time) {
-        return Reservation.builder()
+        Reservation changed = Reservation.builder()
                 .id(id)
                 .name(this.name)
                 .date(date)
                 .time(time)
                 .theme(this.theme)
                 .build();
+        if (changed.isPast()) {
+            throw new BusinessException(ErrorCode.PAST_TIME_RESERVATION);
+        }
+        return changed;
     }
 
     public boolean isPast() {
