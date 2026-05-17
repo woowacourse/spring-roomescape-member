@@ -10,6 +10,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.dto.ReservationTimeAvailability;
 
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query("""
-                SELECT id, start_at
+                SELECT id, start_at, deleted_at
                 FROM reservation_time
                 WHERE deleted_at IS NULL
                 """, reservationTimeRowMapper);
@@ -47,7 +48,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         return jdbcTemplate.query("""
-                        SELECT id, start_at
+                        SELECT id, start_at, deleted_at
                         FROM reservation_time
                         WHERE id = ? AND deleted_at IS NULL
                         """, reservationTimeRowMapper, id)
@@ -60,6 +61,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = """
                  SELECT rt.id AS id,
                         rt.start_at AS start_at,
+                        rt.deleted_at AS deleted_at,
                         r.id IS NULL AS available
                  FROM reservation_time rt
                  LEFT JOIN reservation r
@@ -111,13 +113,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
+                    LocalTime.parse(resultSet.getString("start_at")),
+                    toLocalDateTime(resultSet.getTimestamp("deleted_at"))
             );
 
     private final RowMapper<ReservationTimeAvailability> reservationTimeAvailabilityRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
+                LocalTime.parse(resultSet.getString("start_at")),
+                toLocalDateTime(resultSet.getTimestamp("deleted_at"))
         );
 
         if(resultSet.getBoolean("available")) {
@@ -125,4 +129,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
         return ReservationTimeAvailability.unavailable(reservationTime);
     };
+
+    private LocalDateTime toLocalDateTime(Timestamp timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toLocalDateTime();
+    }
 }

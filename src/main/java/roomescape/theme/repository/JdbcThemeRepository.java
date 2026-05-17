@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +24,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
+                    resultSet.getString("thumbnail"),
+                    toLocalDateTime(resultSet.getTimestamp("deleted_at"))
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -42,7 +44,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query("""
-                SELECT id, name, description, thumbnail
+                SELECT id, name, description, thumbnail, deleted_at
                 FROM theme
                 WHERE deleted_at IS NULL
                 """, themeRowMapper);
@@ -51,7 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         return jdbcTemplate.query("""
-                        SELECT id, name, description, thumbnail
+                        SELECT id, name, description, thumbnail, deleted_at
                         FROM theme
                         WHERE id = ? AND deleted_at IS NULL
                         """, themeRowMapper, id)
@@ -66,14 +68,15 @@ public class JdbcThemeRepository implements ThemeRepository {
                             t.id,
                             t.name,
                             t.description,
-                            t.thumbnail
+                            t.thumbnail,
+                            t.deleted_at
                         FROM theme t
                         INNER JOIN reservation r
                             ON r.theme_id = t.id
                         WHERE r.date BETWEEN ? AND ?
                             AND t.deleted_at IS NULL
                             AND r.deleted_at IS NULL
-                        GROUP BY t.id, t.name, t.description, t.thumbnail
+                        GROUP BY t.id, t.name, t.description, t.thumbnail, t.deleted_at
                         ORDER BY COUNT(r.id) DESC
                         LIMIT ?
                         """,
@@ -114,5 +117,12 @@ public class JdbcThemeRepository implements ThemeRepository {
             preparedStatement.setString(3, theme.getThumbnail());
             return preparedStatement;
         }, keyHolder);
+    }
+
+    private LocalDateTime toLocalDateTime(Timestamp timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toLocalDateTime();
     }
 }

@@ -2,6 +2,7 @@ package roomescape.theme.domain;
 
 import roomescape.common.exception.DomainException;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static roomescape.theme.exception.ThemeErrorCode.*;
@@ -11,12 +12,17 @@ public class Theme {
     private final String name;
     private final String description;
     private final String thumbnail;
+    private final LocalDateTime deletedAt;
 
     public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        this(id, name, description, thumbnail, null);
+    }
+
+    public Theme(Long id, String name, String description, String thumbnail, LocalDateTime deletedAt) {
         validateName(name);
         validateDescription(description);
         validateThumbnail(thumbnail);
@@ -24,6 +30,7 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+        this.deletedAt = deletedAt;
     }
 
     public Theme withId(Long id) {
@@ -32,7 +39,7 @@ public class Theme {
             throw new DomainException(THEME_ALREADY_HAS_ID);
         }
 
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(id, name, description, thumbnail, deletedAt);
     }
 
     private void validateId(Long id) {
@@ -73,6 +80,10 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 
     @Override

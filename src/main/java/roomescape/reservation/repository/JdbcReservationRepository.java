@@ -12,6 +12,7 @@ import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,12 +33,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id AS reservation_id,
                     r.guest_name,
                     r.date,
+                    r.deleted_at AS reservation_deleted_at,
                     t.id AS time_id,
                     t.start_at,
+                    t.deleted_at AS time_deleted_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    th.deleted_at AS theme_deleted_at
                 FROM reservation r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
@@ -57,12 +61,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id AS reservation_id,
                     r.guest_name,
                     r.date,
+                    r.deleted_at AS reservation_deleted_at,
                     t.id AS time_id,
                     t.start_at,
+                    t.deleted_at AS time_deleted_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    th.deleted_at AS theme_deleted_at
                 FROM reservation r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
@@ -81,12 +88,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id AS reservation_id,
                     r.guest_name,
                     r.date,
+                    r.deleted_at AS reservation_deleted_at,
                     t.id AS time_id,
                     t.start_at,
+                    t.deleted_at AS time_deleted_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    th.deleted_at AS theme_deleted_at
                 FROM reservation r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
@@ -190,14 +200,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("start_at").toLocalTime()
+                resultSet.getTime("start_at").toLocalTime(),
+                toLocalDateTime(resultSet.getTimestamp("time_deleted_at"))
         );
 
         Theme theme = new Theme(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),
-                resultSet.getString("theme_thumbnail")
+                resultSet.getString("theme_thumbnail"),
+                toLocalDateTime(resultSet.getTimestamp("theme_deleted_at"))
         );
 
         return new Reservation(
@@ -205,7 +217,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                 resultSet.getString("guest_name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime,
-                theme
+                theme,
+                toLocalDateTime(resultSet.getTimestamp("reservation_deleted_at"))
         );
     };
+
+    private LocalDateTime toLocalDateTime(Timestamp timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toLocalDateTime();
+    }
 }
