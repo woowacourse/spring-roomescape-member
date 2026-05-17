@@ -5,16 +5,21 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.FieldError;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.exception.business.BusinessException;
 
 @Slf4j
@@ -40,7 +45,42 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-        protected ResponseEntity<Object> handleExceptionInternal(
+    protected ResponseEntity<Object> handleTypeMismatch(
+            TypeMismatchException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("타입 변환 실패: {}", e.getMessage());
+        return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_INPUT", "요청 값의 타입이 올바르지 않습니다."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("지원하지 않는 HTTP 메서드: {}", e.getMethod());
+        return ResponseEntity.status(status).body(new ErrorResponse("METHOD_NOT_ALLOWED", "지원하지 않는 HTTP 메서드입니다."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("필수 파라미터 누락: {}", e.getParameterName());
+        return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_INPUT", "필수 요청 파라미터가 누락됐습니다."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+            NoResourceFoundException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("존재하지 않는 경로: {}", e.getResourcePath());
+        return ResponseEntity.status(status).body(new ErrorResponse("NOT_FOUND", "존재하지 않는 경로입니다."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.warn("지원하지 않는 Content-Type: {}", e.getContentType());
+        return ResponseEntity.status(status).body(new ErrorResponse("INVALID_INPUT", "지원하지 않는 Content-Type입니다."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
             Exception e, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.warn("Spring MVC 예외: {}", e.getMessage());
         return ResponseEntity.status(status).body(new ErrorResponse(HttpStatus.valueOf(status.value()).name(), "잘못된 요청입니다."));
