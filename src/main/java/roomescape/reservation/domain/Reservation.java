@@ -6,6 +6,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -16,8 +17,39 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
+    public static Reservation create(String name,
+                                     LocalDate date,
+                                     ReservationTime time,
+                                     Theme theme,
+                                     LocalDateTime now) {
+        Reservation reservation = new Reservation(name, date, time, theme);
+        if (reservation.isPast(now)) {
+            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+        }
+
+        return reservation;
+    }
+
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
+    }
+
+    public Reservation changeDateTime(LocalDate newDate, ReservationTime newTime, LocalDateTime now) {
+        if (isPast(now)) {
+            throw new InvalidRequestException("이미 지난 예약은 변경할 수 없습니다.");
+        }
+
+        if (Objects.equals(this.date, newDate)
+                && Objects.equals(this.time.getStartAt(), newTime.getStartAt())) {
+            throw new InvalidRequestException("변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요.");
+        }
+
+        Reservation changedReservation = new Reservation(id, name, newDate, newTime, theme);
+        if (changedReservation.isPast(now)) {
+            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+        }
+
+        return changedReservation;
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -76,8 +108,12 @@ public class Reservation {
         }
     }
 
-    public boolean isSameTime(ReservationTime time) {
-        return Objects.equals(this.time, time);
+    public boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
+    }
+
+    public boolean isReservedBy(String name) {
+        return Objects.equals(this.name, name);
     }
 
     @Override

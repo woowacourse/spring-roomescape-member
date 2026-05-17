@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -37,6 +37,22 @@ class ThemeServiceTest {
     private ReservationRepository reservationRepository;
 
     @Test
+    @DisplayName("테마를 생성한다.")
+    public void create_success() {
+        // when
+        Theme theme = themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        );
+
+        // then
+        assertThat(themeService.list())
+                .extracting(Theme::getId)
+                .containsExactly(theme.getId());
+    }
+
+    @Test
     @DisplayName("이미 존재하는 이름의 테마를 생성하면 예외가 발생한다.")
     public void create_fail() {
         // given
@@ -52,8 +68,51 @@ class ThemeServiceTest {
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://example.com/theme.png"
         ))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("이미 존재하는 테마 이름입니다.");
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    public void delete_success() {
+        // given
+        Theme theme = themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        );
+
+        // when
+        themeService.delete(theme.getId());
+
+        // then
+        assertThat(themeService.list()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 삭제를 요청해도 성공한다.")
+    public void delete_success_whenThemeNotFound() {
+        // when
+        themeService.delete(37L);
+
+        // then
+        assertThat(themeService.list()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마를 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenReservationExists() {
+        // given
+        Theme theme = themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        );
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationRepository.save(new Reservation("브라운", LocalDate.now().plusDays(1), time, theme));
+
+        // when, then
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test

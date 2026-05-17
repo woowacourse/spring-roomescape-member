@@ -2,9 +2,9 @@ package roomescape.reservationtime.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.domain.Reservation;
-import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -35,15 +35,11 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime create(LocalTime startAt) {
         ReservationTime reservationTime = new ReservationTime(startAt);
-        validateNotDuplicated(reservationTime);
+        if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
+            throw new ConflictException("이미 등록된 예약 시간입니다. 다른 시간을 입력해주세요.");
+        }
 
         return reservationTimeRepository.save(reservationTime);
-    }
-
-    private void validateNotDuplicated(ReservationTime reservationTime) {
-        if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
-            throw new InvalidRequestException("이미 존재하는 예약 시간입니다.");
-        }
     }
 
     @Transactional(readOnly = true)
@@ -53,12 +49,17 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
-        validateThemeExists(themeId);
+        if (!themeRepository.existsById(themeId)) {
+            throw new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
+        }
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         Set<ReservationTime> reservedTimes = reservations.stream()
@@ -73,11 +74,5 @@ public class ReservationTimeService {
                         !reservedTimes.contains(reservationTime)
                 ))
                 .toList();
-    }
-
-    private void validateThemeExists(Long themeId) {
-        if (!themeRepository.existsById(themeId)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
-        }
     }
 }

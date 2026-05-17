@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.service.ThemeService;
 
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ public class ThemeController {
             @Positive(message = "조회 기간은 양수여야 합니다.") @RequestParam("days") int days,
             @Positive(message = "조회 개수는 양수여야 합니다.") @RequestParam("size") int size) {
         return ResponseEntity.ok(
-                ThemesResponse.from(themeService.findPopularThemes(days, LocalDate.now() ,size)
+                ThemesResponse.from(themeService.findPopularThemes(days, LocalDate.now(), size)
                         .stream()
                         .map(ThemeResponse::from)
                         .toList())

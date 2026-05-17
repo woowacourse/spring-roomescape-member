@@ -7,15 +7,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.InfrastructureException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.global.exception.InfrastructureException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -73,6 +74,82 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(Long id, String name) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.id = ? AND r.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id, name)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
@@ -90,7 +167,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
-                WHERE date = ? AND theme_id = ?
+                WHERE r.date = ? AND r.theme_id = ?
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
@@ -101,10 +178,32 @@ public class JdbcReservationRepository implements ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         int rowCount = insert(reservation, keyHolder);
-        validateCreatedRowCount(rowCount);
+        validateCreatedRowCount(rowCount, reservation);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = getGeneratedId(keyHolder, reservation);
         return reservation.withId(id);
+    }
+
+    @Override
+    public Optional<Reservation> update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        int updatedRowCount = jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
+
+        if (updatedRowCount == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(reservation);
     }
 
     private int insert(Reservation reservation, KeyHolder keyHolder) {
@@ -126,33 +225,85 @@ public class JdbcReservationRepository implements ReservationRepository {
         }, keyHolder);
     }
 
-    private void validateCreatedRowCount(int rowCount) {
+    private void validateCreatedRowCount(int rowCount, Reservation reservation) {
         if (rowCount != 1) {
-            log.error("Reservation insert affected unexpected row count. rowCount={}", rowCount);
+            log.error(
+                    "Reservation insert affected unexpected row count. rowCount={}, name={}, date={}, timeId={}, themeId={}",
+                    rowCount,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
     }
 
-    private Long getGeneratedId(KeyHolder keyHolder) {
+    private Long getGeneratedId(KeyHolder keyHolder, Reservation reservation) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            log.error("Reservation insert did not return generated id.");
+            log.error(
+                    "Reservation insert did not return generated id. name={}, date={}, timeId={}, themeId={}",
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
         return key.longValue();
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByTimeId(Long timeId) {
         String sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-            )
-            """;
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                )
+                """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
+    }
+
+    @Override
+    public boolean existsConflict(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                )
+                """;
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
+    @Override
+    public boolean existsConflictExcluding(LocalDate date, Long timeId, Long themeId, Long id) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?
+                )
+                """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, id));
     }
 
     @Override

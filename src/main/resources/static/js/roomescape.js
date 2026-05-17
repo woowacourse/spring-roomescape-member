@@ -1,5 +1,21 @@
 const API_BASE = "";
-    const DEMO_DATE = "2026-05-06";
+
+    function toDateInputValue(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function dateOffset(days) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return toDateInputValue(date);
+    }
+
+    const TODAY = dateOffset(0);
+    const DEFAULT_RESERVATION_DATE = dateOffset(1);
+    const DEMO_POPULARITY_DATE = dateOffset(-1);
     const PAGE = document.body.dataset.page || "user";
 
     const state = {
@@ -9,21 +25,26 @@ const API_BASE = "";
       popularThemes: [],
       times: [],
       reservations: [],
+      myReservations: [],
       availableTimes: [],
       demoReservations: [
-        { id: 1, name: "guest-8", date: "2026-05-05", themeId: 1, timeId: 1 },
-        { id: 2, name: "guest-9", date: "2026-05-05", themeId: 1, timeId: 2 },
-        { id: 3, name: "guest-10", date: "2026-05-05", themeId: 1, timeId: 3 },
-        { id: 4, name: "guest-18", date: "2026-05-05", themeId: 2, timeId: 1 },
-        { id: 5, name: "guest-19", date: "2026-05-05", themeId: 2, timeId: 2 },
-        { id: 6, name: "guest-56", date: "2026-05-06", themeId: 11, timeId: 1 },
-        { id: 7, name: "guest-57", date: "2026-05-06", themeId: 11, timeId: 2 }
+        { id: 1, name: "브라운", date: DEFAULT_RESERVATION_DATE, themeId: 1, timeId: 1 },
+        { id: 2, name: "브라운", date: dateOffset(2), themeId: 2, timeId: 2 },
+        { id: 3, name: "guest-10", date: DEFAULT_RESERVATION_DATE, themeId: 1, timeId: 3 },
+        { id: 4, name: "guest-18", date: DEMO_POPULARITY_DATE, themeId: 2, timeId: 1 },
+        { id: 5, name: "guest-19", date: DEMO_POPULARITY_DATE, themeId: 2, timeId: 2 },
+        { id: 6, name: "guest-56", date: DEMO_POPULARITY_DATE, themeId: 11, timeId: 1 },
+        { id: 7, name: "guest-57", date: DEMO_POPULARITY_DATE, themeId: 11, timeId: 2 }
       ],
       selectedThemeId: null,
       selectedTimeId: null,
       adminSelectedThemeId: null,
       adminSelectedTimeId: null,
-      adminAvailableTimes: []
+      adminAvailableTimes: [],
+      editingReservationId: null,
+      editDate: "",
+      editAvailableTimes: [],
+      editSelectedTimeId: null
     };
 
     const demoThemes = Array.from({ length: 12 }, (_, index) => {
@@ -79,6 +100,10 @@ const API_BASE = "";
       summaryTime: $("#summaryTime"),
       reserveButton: $("#reserveButton"),
       formMessage: $("#formMessage"),
+      myReservationName: $("#myReservationName"),
+      myReservationButton: $("#myReservationButton"),
+      myReservationMessage: $("#myReservationMessage"),
+      myReservationList: $("#myReservationList"),
       themeMetric: $("#themeMetric"),
       timeMetric: $("#timeMetric"),
       reservationMetric: $("#reservationMetric"),
@@ -137,62 +162,97 @@ const API_BASE = "";
       return thumbnail;
     }
 
-    async function getJson(path) {
+    async function requestJson(path, options = {}) {
       const controller = new AbortController();
       const timer = window.setTimeout(() => controller.abort(), 5000);
       const response = await fetch(`${API_BASE}${path}`, {
-        headers: { Accept: "application/json" },
+        method: options.method || "GET",
+        headers: {
+          Accept: "application/json",
+          ...(options.body ? { "Content-Type": "application/json" } : {})
+        },
+        body: options.body ? JSON.stringify(options.body) : undefined,
         signal: controller.signal
       }).finally(() => window.clearTimeout(timer));
+
       if (!response.ok) {
         throw new Error(await errorMessageFrom(response));
       }
+
+      if (response.status === 204 || options.expectJson === false) {
+        return null;
+      }
+
       return response.json();
+    }
+
+    async function getJson(path) {
+      return requestJson(path);
     }
 
     async function postJson(path, body) {
-      const response = await fetch(`${API_BASE}${path}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-      if (!response.ok) {
-        throw new Error(await errorMessageFrom(response));
-      }
-      return response.json();
+      return requestJson(path, { method: "POST", body });
+    }
+
+    async function patchJson(path, body) {
+      return requestJson(path, { method: "PATCH", body });
     }
 
     async function deleteJson(path) {
-      const response = await fetch(`${API_BASE}${path}`, {
-        method: "DELETE",
-        headers: { Accept: "application/json" }
-      });
-      if (!response.ok) {
-        throw new Error(await errorMessageFrom(response));
-      }
+      return requestJson(path, { method: "DELETE", expectJson: false });
     }
 
     async function errorMessageFrom(response) {
       const fallback = `HTTP ${response.status}`;
       const contentType = response.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
+      if (!contentType.includes("application/json") && !contentType.includes("+json")) {
         return fallback;
       }
 
       try {
         const body = await response.json();
-        return typeof body.message === "string" && body.message.trim()
-          ? body.message
-          : fallback;
+        const detail = typeof body.detail === "string" && body.detail.trim()
+          ? body.detail.trim()
+          : "";
+        const message = typeof body.message === "string" && body.message.trim()
+          ? body.message.trim()
+          : "";
+        const title = typeof body.title === "string" && body.title.trim()
+          ? body.title.trim()
+          : "";
+        const validationErrors = Array.isArray(body.errors)
+          ? body.errors
+              .map((error) => {
+                const field = error.field ? `${fieldLabel(error.field)}: ` : "";
+                const reason = error.reason || error.message || "";
+                return `${field}${reason}`.trim();
+              })
+              .filter(Boolean)
+          : [];
+        const mainMessage = detail || message || title || fallback;
+        return [mainMessage, ...validationErrors].join("\n");
       } catch (error) {
         return fallback;
       }
     }
 
+    function fieldLabel(field) {
+      const labels = {
+        name: "이름",
+        date: "날짜",
+        timeId: "시간",
+        themeId: "테마",
+        startAt: "시작 시간",
+        description: "설명",
+        thumbnail: "썸네일"
+      };
+      return labels[field] || field;
+    }
+
     function endpointMessageOr(error, fallback) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.";
+      }
       if (error instanceof Error && error.message && !/^HTTP \d+$/.test(error.message)) {
         return error.message;
       }
@@ -391,9 +451,12 @@ const API_BASE = "";
           const data = await getJson(`/times/availability?date=${elements.dateInput.value}&themeId=${state.selectedThemeId}`);
           state.availableTimes = data.availableTimes || [];
         } catch (error) {
-          state.mode = "demo";
-          setSourceStatus();
-          state.availableTimes = getDemoAvailability();
+          state.availableTimes = [];
+          state.selectedTimeId = null;
+          renderTimes();
+          elements.formMessage.textContent = endpointMessageOr(error, "예약 가능 시간을 불러오지 못했습니다.");
+          elements.formMessage.className = "message error";
+          return;
         }
       } else {
         state.availableTimes = getDemoAvailability();
@@ -421,9 +484,11 @@ const API_BASE = "";
           const data = await getJson(`/times/availability?date=${date}&themeId=${themeId}`);
           state.adminAvailableTimes = data.availableTimes || [];
         } catch (error) {
-          state.mode = "demo";
-          setSourceStatus();
-          state.adminAvailableTimes = getDemoAvailabilityFor(date, themeId);
+          state.adminAvailableTimes = [];
+          state.adminSelectedTimeId = null;
+          renderAdminReserveTimes();
+          setAdminReserveMessage(endpointMessageOr(error, "예약 가능 시간을 불러오지 못했습니다."), "error");
+          return;
         }
       } else {
         state.adminAvailableTimes = getDemoAvailabilityFor(date, themeId);
@@ -457,16 +522,13 @@ const API_BASE = "";
         if (state.mode === "live") {
           createdReservation = await postJson("/reservations", payload);
         } else {
-          createdReservation = {
-            id: getNextId(state.demoReservations),
-            name: payload.name,
-            date: payload.date,
-            themeId: payload.themeId,
-            timeId: payload.timeId
-          };
-          state.demoReservations = [...state.demoReservations, createdReservation];
+          createdReservation = createDemoReservation(payload);
         }
         state.reservations = [...state.reservations, createdReservation];
+        if (elements.myReservationName.value.trim() === name) {
+          state.myReservations = [...state.myReservations, createdReservation];
+          renderMyReservations();
+        }
 
         showToast(`${name}님의 예약이 완료되었습니다.`, `${formatDate(payload.date)} · ${theme.name} · ${normalizeTime(time.startAt)}`);
         elements.nameInput.value = "";
@@ -480,8 +542,239 @@ const API_BASE = "";
       }
     }
 
+    async function loadMyReservations() {
+      const name = elements.myReservationName.value.trim();
+      if (!name) {
+        state.myReservations = [];
+        state.editingReservationId = null;
+        renderMyReservations();
+        setMyReservationMessage("예약자 이름을 입력해주세요.", "error");
+        return;
+      }
+
+      try {
+        const data = state.mode === "live"
+          ? await getJson(`/reservations?name=${encodeURIComponent(name)}`)
+          : { reservations: state.demoReservations.filter((reservation) => reservation.name === name) };
+        state.myReservations = data.reservations || [];
+        state.editingReservationId = null;
+        state.editAvailableTimes = [];
+        state.editSelectedTimeId = null;
+        renderMyReservations();
+        setMyReservationMessage(
+          state.myReservations.length === 0 ? "조회된 예약이 없습니다." : `${state.myReservations.length}건의 예약을 조회했습니다.`,
+          state.myReservations.length === 0 ? "" : "ok"
+        );
+      } catch (error) {
+        setMyReservationMessage(endpointMessageOr(error, "예약 조회에 실패했습니다."), "error");
+      }
+    }
+
+    function renderMyReservations() {
+      if (!elements.myReservationList) {
+        return;
+      }
+
+      elements.myReservationList.innerHTML = "";
+      if (state.myReservations.length === 0) {
+        elements.myReservationList.innerHTML = `<div class="empty">조회된 예약이 없습니다.</div>`;
+        return;
+      }
+
+      [...state.myReservations]
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)) || normalizeTime(getReservationTime(a)?.startAt || "").localeCompare(normalizeTime(getReservationTime(b)?.startAt || "")))
+        .forEach((reservation) => {
+          const theme = getReservationTheme(reservation);
+          const time = getReservationTime(reservation);
+          const isEditing = state.editingReservationId === reservation.id;
+          const card = document.createElement("div");
+          card.className = "my-reservation-card";
+          card.innerHTML = `
+            <div class="my-reservation-main">
+              <div class="list-main">
+                <span class="list-title">${escapeHtml(theme?.name || "-")}</span>
+                <span class="list-meta">${escapeHtml(formatDate(reservation.date))} · ${escapeHtml(normalizeTime(time?.startAt || "-"))} · ${escapeHtml(reservation.name || "")}</span>
+              </div>
+              <div class="reservation-actions">
+                <button class="secondary-button" type="button" data-edit-reservation-id="${reservation.id}">${isEditing ? "닫기" : "변경"}</button>
+                <button class="danger-button" type="button" data-cancel-reservation-id="${reservation.id}">취소</button>
+              </div>
+            </div>
+            ${isEditing ? `
+              <div class="reservation-edit">
+                <div class="edit-grid">
+                  <label class="field">
+                    <span class="label">변경 날짜</span>
+                    <input class="date-input" type="date" min="${TODAY}" value="${escapeHtml(state.editDate)}" data-edit-date>
+                  </label>
+                  <div class="field">
+                    <span class="label">변경 시간</span>
+                    <div class="edit-time-grid" data-edit-time-grid></div>
+                  </div>
+                </div>
+                <div class="edit-actions">
+                  <button class="primary-button" type="button" data-save-reservation-id="${reservation.id}" ${state.editSelectedTimeId ? "" : "disabled"}>변경 저장</button>
+                </div>
+              </div>
+            ` : ""}
+          `;
+          elements.myReservationList.appendChild(card);
+          if (isEditing) {
+            renderEditTimes(card);
+          }
+        });
+    }
+
+    function renderEditTimes(container) {
+      const grid = container.querySelector("[data-edit-time-grid]");
+      if (!grid) {
+        return;
+      }
+      grid.innerHTML = "";
+
+      if (!state.editDate) {
+        grid.innerHTML = `<div class="empty">날짜를 선택해주세요.</div>`;
+        return;
+      }
+
+      if (state.editAvailableTimes.length === 0) {
+        grid.innerHTML = `<div class="empty">예약 가능한 시간이 없습니다.</div>`;
+        return;
+      }
+
+      state.editAvailableTimes.forEach((time) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `time-button${time.id === state.editSelectedTimeId ? " selected" : ""}`;
+        button.disabled = !time.isAvailable;
+        button.textContent = normalizeTime(time.startAt);
+        button.dataset.editTimeId = String(time.id);
+        grid.appendChild(button);
+      });
+    }
+
+    async function toggleEditReservation(id) {
+      if (state.editingReservationId === id) {
+        state.editingReservationId = null;
+        state.editAvailableTimes = [];
+        state.editSelectedTimeId = null;
+        renderMyReservations();
+        return;
+      }
+
+      const reservation = state.myReservations.find((item) => item.id === id);
+      if (!reservation) {
+        setMyReservationMessage("변경할 예약을 찾을 수 없습니다.", "error");
+        return;
+      }
+
+      state.editingReservationId = id;
+      state.editDate = reservation.date;
+      state.editSelectedTimeId = null;
+      state.editAvailableTimes = [];
+      renderMyReservations();
+      await loadEditAvailability();
+    }
+
+    async function loadEditAvailability() {
+      const reservation = state.myReservations.find((item) => item.id === state.editingReservationId);
+      if (!reservation) {
+        return;
+      }
+
+      const themeId = getReservationThemeId(reservation);
+      if (!state.editDate || !themeId) {
+        state.editAvailableTimes = [];
+        state.editSelectedTimeId = null;
+        renderMyReservations();
+        return;
+      }
+
+      try {
+        if (state.mode === "live") {
+          const data = await getJson(`/times/availability?date=${state.editDate}&themeId=${themeId}`);
+          state.editAvailableTimes = data.availableTimes || [];
+        } else {
+          state.editAvailableTimes = getDemoAvailabilityFor(state.editDate, themeId);
+        }
+        const selected = state.editAvailableTimes.find((time) => time.id === state.editSelectedTimeId);
+        if (selected && !selected.isAvailable) {
+          state.editSelectedTimeId = null;
+        }
+        renderMyReservations();
+      } catch (error) {
+        state.editAvailableTimes = [];
+        state.editSelectedTimeId = null;
+        renderMyReservations();
+        setMyReservationMessage(endpointMessageOr(error, "변경 가능한 시간을 불러오지 못했습니다."), "error");
+      }
+    }
+
+    async function updateMyReservation(id) {
+      const reservation = state.myReservations.find((item) => item.id === id);
+      const name = elements.myReservationName.value.trim();
+      if (!reservation || !name) {
+        setMyReservationMessage("예약 정보를 다시 조회해주세요.", "error");
+        return;
+      }
+      if (!state.editDate || !state.editSelectedTimeId) {
+        setMyReservationMessage("변경할 날짜와 시간을 선택해주세요.", "error");
+        return;
+      }
+
+      const payload = {
+        name,
+        date: state.editDate,
+        timeId: state.editSelectedTimeId
+      };
+
+      try {
+        const updatedReservation = state.mode === "live"
+          ? await patchJson(`/reservations/${id}`, payload)
+          : updateDemoReservation(id, payload);
+        replaceReservation(updatedReservation);
+        state.editingReservationId = null;
+        state.editAvailableTimes = [];
+        state.editSelectedTimeId = null;
+        renderMyReservations();
+        setMyReservationMessage("예약이 변경되었습니다.", "ok");
+        showToast("예약이 변경되었습니다.", `${formatDate(updatedReservation.date)} · ${normalizeTime(getReservationTime(updatedReservation)?.startAt || "")}`);
+        await loadAvailability();
+      } catch (error) {
+        setMyReservationMessage(endpointMessageOr(error, "예약 변경에 실패했습니다."), "error");
+      }
+    }
+
+    async function cancelMyReservation(id) {
+      const name = elements.myReservationName.value.trim();
+      if (!name) {
+        setMyReservationMessage("예약자 이름을 입력해주세요.", "error");
+        return;
+      }
+
+      try {
+        if (state.mode === "live") {
+          await deleteJson(`/reservations/${id}?name=${encodeURIComponent(name)}`);
+        } else {
+          cancelDemoReservation(id, name);
+        }
+        state.myReservations = state.myReservations.filter((reservation) => reservation.id !== id);
+        state.reservations = state.reservations.filter((reservation) => reservation.id !== id);
+        if (state.editingReservationId === id) {
+          state.editingReservationId = null;
+          state.editAvailableTimes = [];
+          state.editSelectedTimeId = null;
+        }
+        renderMyReservations();
+        setMyReservationMessage("예약이 취소되었습니다.", "ok");
+        await loadAvailability();
+      } catch (error) {
+        setMyReservationMessage(endpointMessageOr(error, "예약 취소에 실패했습니다."), "error");
+      }
+    }
+
     function showToast(title, detail) {
-      elements.toast.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
+      elements.toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span>`;
       elements.toast.classList.add("show");
       window.clearTimeout(showToast.timer);
       showToast.timer = window.setTimeout(() => {
@@ -491,6 +784,103 @@ const API_BASE = "";
 
     function getNextId(items) {
       return Math.max(0, ...items.map((item) => Number(item.id) || 0)) + 1;
+    }
+
+    function getReservationThemeId(reservation) {
+      return Number(reservation.themeId || reservation.theme?.id) || null;
+    }
+
+    function getReservationTimeId(reservation) {
+      return Number(reservation.timeId || reservation.time?.id) || null;
+    }
+
+    function isPastDateTime(date, timeId) {
+      const time = state.times.find((item) => item.id === Number(timeId));
+      if (!date || !time) {
+        return false;
+      }
+      const target = new Date(`${date}T${normalizeTime(time.startAt)}:00`);
+      return target.getTime() <= Date.now();
+    }
+
+    function assertFutureSlot(date, timeId) {
+      if (isPastDateTime(date, timeId)) {
+        throw new Error("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+      }
+    }
+
+    function assertNoDuplicateReservation(date, timeId, themeId, ignoreId = null) {
+      const duplicated = state.demoReservations.some((reservation) =>
+        reservation.id !== ignoreId &&
+        reservation.date === date &&
+        getReservationTimeId(reservation) === Number(timeId) &&
+        getReservationThemeId(reservation) === Number(themeId)
+      );
+      if (duplicated) {
+        throw new Error("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+      }
+    }
+
+    function createDemoReservation(payload) {
+      assertFutureSlot(payload.date, payload.timeId);
+      assertNoDuplicateReservation(payload.date, payload.timeId, payload.themeId);
+      const reservation = {
+        id: getNextId(state.demoReservations),
+        name: payload.name,
+        date: payload.date,
+        themeId: payload.themeId,
+        timeId: payload.timeId
+      };
+      state.demoReservations = [...state.demoReservations, reservation];
+      return reservation;
+    }
+
+    function updateDemoReservation(id, payload) {
+      const reservation = state.demoReservations.find((item) => item.id === id && item.name === payload.name);
+      if (!reservation) {
+        throw new Error("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+      }
+      if (isPastDateTime(reservation.date, getReservationTimeId(reservation))) {
+        throw new Error("이미 지난 예약은 변경할 수 없습니다.");
+      }
+      if (reservation.date === payload.date && getReservationTimeId(reservation) === Number(payload.timeId)) {
+        throw new Error("현재 예약과 같은 날짜와 시간으로 변경할 수 없습니다.");
+      }
+
+      const themeId = getReservationThemeId(reservation);
+      assertFutureSlot(payload.date, payload.timeId);
+      assertNoDuplicateReservation(payload.date, payload.timeId, themeId, id);
+
+      const updatedReservation = {
+        ...reservation,
+        date: payload.date,
+        timeId: payload.timeId
+      };
+      state.demoReservations = state.demoReservations.map((item) =>
+        item.id === id ? updatedReservation : item
+      );
+      return updatedReservation;
+    }
+
+    function cancelDemoReservation(id, name) {
+      const reservation = state.demoReservations.find((item) => item.id === id && item.name === name);
+      if (!reservation) {
+        throw new Error("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+      }
+      if (isPastDateTime(reservation.date, getReservationTimeId(reservation))) {
+        throw new Error("이미 지난 예약은 취소할 수 없습니다.");
+      }
+      state.demoReservations = state.demoReservations.filter((item) => item.id !== id);
+    }
+
+    function replaceReservation(reservation) {
+      const exists = state.reservations.some((item) => item.id === reservation.id);
+      state.reservations = exists
+        ? state.reservations.map((item) => item.id === reservation.id ? reservation : item)
+        : [...state.reservations, reservation];
+      state.myReservations = state.myReservations.map((item) =>
+        item.id === reservation.id ? reservation : item
+      );
     }
 
     function setAdminMessage(text, type = "") {
@@ -503,12 +893,17 @@ const API_BASE = "";
       elements.adminReserveMessage.className = `admin-message${type ? ` ${type}` : ""}`;
     }
 
+    function setMyReservationMessage(text, type = "") {
+      elements.myReservationMessage.textContent = text;
+      elements.myReservationMessage.className = `message${type ? ` ${type}` : ""}`;
+    }
+
     function getReservationTheme(reservation) {
-      return reservation.theme || state.themes.find((theme) => theme.id === reservation.themeId) || null;
+      return reservation.theme || state.themes.find((theme) => theme.id === getReservationThemeId(reservation)) || null;
     }
 
     function getReservationTime(reservation) {
-      return reservation.time || state.times.find((time) => time.id === reservation.timeId) || null;
+      return reservation.time || state.times.find((time) => time.id === getReservationTimeId(reservation)) || null;
     }
 
     function renderAdmin() {
@@ -746,14 +1141,7 @@ const API_BASE = "";
         if (state.mode === "live") {
           createdReservation = await postJson("/reservations", payload);
         } else {
-          createdReservation = {
-            id: getNextId(state.demoReservations),
-            name: payload.name,
-            date: payload.date,
-            themeId: payload.themeId,
-            timeId: payload.timeId
-          };
-          state.demoReservations = [...state.demoReservations, createdReservation];
+          createdReservation = createDemoReservation(payload);
         }
         state.reservations = [...state.reservations, createdReservation];
         elements.adminReserveName.value = "";
@@ -793,6 +1181,8 @@ const API_BASE = "";
       try {
         if (state.mode === "live") {
           await deleteJson(`/admin/times/${id}`);
+        } else if (state.demoReservations.some((reservation) => getReservationTimeId(reservation) === id)) {
+          throw new Error("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
         }
         state.times = state.times.filter((time) => time.id !== id);
         state.demoReservations = state.demoReservations.filter((reservation) => reservation.timeId !== id);
@@ -824,6 +1214,15 @@ const API_BASE = "";
       }
     }
 
+    function initializeDateInputs() {
+      if (elements.dateInput) {
+        elements.dateInput.min = TODAY;
+      }
+      if (elements.adminReserveDate) {
+        elements.adminReserveDate.min = TODAY;
+      }
+    }
+
     function renderDemoFirst() {
       state.mode = "demo";
       state.themes = demoThemes;
@@ -835,7 +1234,7 @@ const API_BASE = "";
       if (isAdminPage()) {
         state.adminSelectedThemeId = state.themes[0]?.id || null;
         state.adminSelectedTimeId = null;
-        elements.adminReserveDate.value = DEMO_DATE;
+        elements.adminReserveDate.value = DEFAULT_RESERVATION_DATE;
         state.adminAvailableTimes = getDemoAvailabilityFor(elements.adminReserveDate.value, state.adminSelectedThemeId);
         renderAdmin();
         return;
@@ -843,7 +1242,7 @@ const API_BASE = "";
 
       state.selectedThemeId = state.themes[0]?.id || null;
       state.selectedTimeId = null;
-      elements.dateInput.value = DEMO_DATE;
+      elements.dateInput.value = DEFAULT_RESERVATION_DATE;
       renderPopularThemes();
       renderThemes();
       state.availableTimes = getDemoAvailability();
@@ -852,15 +1251,16 @@ const API_BASE = "";
     }
 
     async function loadInitialData() {
+      initializeDateInputs();
       const isFilePreview = window.location.protocol === "file:";
       if (isFilePreview) {
         renderDemoFirst();
         return;
       } else {
         if (isAdminPage()) {
-          elements.adminReserveDate.value = DEMO_DATE;
+          elements.adminReserveDate.value = DEFAULT_RESERVATION_DATE;
         } else {
-          elements.dateInput.value = DEMO_DATE;
+          elements.dateInput.value = DEFAULT_RESERVATION_DATE;
         }
         state.mode = "loading";
         setSourceStatus();
@@ -915,6 +1315,44 @@ const API_BASE = "";
       });
       elements.nameInput.addEventListener("input", syncSummary);
       elements.reserveButton.addEventListener("click", reserve);
+      elements.myReservationButton.addEventListener("click", loadMyReservations);
+      elements.myReservationName.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          loadMyReservations();
+        }
+      });
+      elements.myReservationList.addEventListener("click", (event) => {
+        const editButton = event.target.closest("[data-edit-reservation-id]");
+        if (editButton) {
+          toggleEditReservation(Number(editButton.dataset.editReservationId));
+          return;
+        }
+
+        const cancelButton = event.target.closest("[data-cancel-reservation-id]");
+        if (cancelButton) {
+          cancelMyReservation(Number(cancelButton.dataset.cancelReservationId));
+          return;
+        }
+
+        const timeButton = event.target.closest("[data-edit-time-id]");
+        if (timeButton) {
+          state.editSelectedTimeId = Number(timeButton.dataset.editTimeId);
+          renderMyReservations();
+          return;
+        }
+
+        const saveButton = event.target.closest("[data-save-reservation-id]");
+        if (saveButton) {
+          updateMyReservation(Number(saveButton.dataset.saveReservationId));
+        }
+      });
+      elements.myReservationList.addEventListener("change", (event) => {
+        if (event.target.matches("[data-edit-date]")) {
+          state.editDate = event.target.value;
+          state.editSelectedTimeId = null;
+          loadEditAvailability();
+        }
+      });
     }
 
     if (isAdminPage()) {
