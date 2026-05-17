@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -40,6 +41,9 @@ class ReservationTimeServiceTest extends ServiceTest {
 
     @Autowired
     private ThemeDao themeDao;
+
+    @Autowired
+    private Clock clock;
 
     @Test
     void 예약_시간을_생성할_수_있다() {
@@ -102,10 +106,10 @@ class ReservationTimeServiceTest extends ServiceTest {
     }
 
     @Test
-    void 예약시간_조회시_테마가_존재하지_않으면_예외가_발생한다() {
+    void 예약시간_조회시_날짜가_오늘_이전이면_예외가_발생한다() {
         // given
         Theme theme = saveTheme("테마1");
-        LocalDate invalidDate = LocalDate.now().minusDays(1);
+        LocalDate invalidDate = LocalDate.now(clock).minusDays(1);
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.getReservationTimes(theme.getId(), invalidDate))
@@ -114,7 +118,7 @@ class ReservationTimeServiceTest extends ServiceTest {
     }
 
     @Test
-    void 예약시간_조회시_날짜가_오늘_이전이면_예외가_발생한다() {
+    void 예약시간_조회시_테마가_존재하지_않으면_예외가_발생한다() {
         // given
         long invalidThemeId = 0L;
         LocalDate date = LocalDate.now().minusDays(1);
