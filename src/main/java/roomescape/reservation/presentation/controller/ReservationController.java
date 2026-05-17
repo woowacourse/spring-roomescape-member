@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
+import roomescape.reservation.application.dto.ReservationSearchCondition;
 import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.application.service.ReservationCommandService;
 import roomescape.reservation.application.service.ReservationQueryService;
@@ -35,9 +36,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> findAll(
             @RequestParam(required = false) String username
     ) {
-        List<ReservationResult> results = (username == null)
-                ? reservationQueryService.findAll()
-                : reservationQueryService.findByName(username);
+        List<ReservationResult> results = reservationQueryService.findAll(new ReservationSearchCondition(username));
 
         List<ReservationResponse> responses = results.stream()
                 .map(ReservationResponse::from)

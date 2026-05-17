@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dao.ReservationDetailDao;
 import roomescape.reservation.application.dto.ReservationDetail;
 import roomescape.reservation.application.dto.ReservationResult;
+import roomescape.reservation.application.dto.ReservationSearchCondition;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -15,15 +16,11 @@ public class ReservationQueryService {
 
     private final ReservationDetailDao reservationDetailDao;
 
-    public List<ReservationResult> findAll() {
-        List<ReservationDetail> result = reservationDetailDao.findAll();
-        return result.stream()
-                .map(ReservationResult::from)
-                .toList();
-    }
+    public List<ReservationResult> findAll(ReservationSearchCondition condition) {
+        List<ReservationDetail> result = condition.hasUsername()
+                ? reservationDetailDao.findByName(condition.username())
+                : reservationDetailDao.findAll();
 
-    public List<ReservationResult> findByName(String username) {
-        List<ReservationDetail> result = reservationDetailDao.findByName(username);
         return result.stream()
                 .map(ReservationResult::from)
                 .toList();

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.reservation.application.dto.ReservationResult;
+import roomescape.reservation.application.dto.ReservationSearchCondition;
 import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservation.infra.JdbcReservationDao;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
@@ -47,7 +48,8 @@ class ReservationQueryServiceTest {
         testHelper.insertReservation("스타크", earlierDate, themeId, nineTimeId);
         testHelper.insertReservation("비밥", laterDate, themeId, tenTimeId);
 
-        List<ReservationResult> reservations = reservationQueryService.findAll();
+        ReservationSearchCondition condition = new ReservationSearchCondition(null);
+        List<ReservationResult> reservations = reservationQueryService.findAll(condition);
 
         ReservationResult first = reservations.getFirst();
         ReservationResult second = reservations.get(1);
@@ -80,7 +82,8 @@ class ReservationQueryServiceTest {
         testHelper.insertReservation("비밥", laterDate, themeId, nineTimeId);
         testHelper.insertReservation("스타크", laterDate, themeId, tenTimeId);
 
-        List<ReservationResult> reservations = reservationQueryService.findByName("스타크");
+        ReservationSearchCondition condition = new ReservationSearchCondition("스타크");
+        List<ReservationResult> reservations = reservationQueryService.findAll(condition);
 
         ReservationResult first = reservations.getFirst();
         ReservationResult second = reservations.get(1);
