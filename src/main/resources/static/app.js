@@ -1,5 +1,6 @@
 const state = {
   reservations: [],
+  myReservations: [],
   themes: [],
   times: [],
   availableTimes: [],
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setToday();
   renderTimeSelects();
   bindEvents();
-  await loadAll();
+  await runSafely(loadAll);
   route();
 });
 
@@ -28,32 +29,37 @@ function setToday() {
 function bindEvents() {
   $("#availability-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await loadAvailableTimes();
+    await runSafely(loadAvailableTimes);
   });
 
   $("#popular-theme-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await loadPopularThemes();
+    await runSafely(loadPopularThemes);
   });
 
   $("#reservation-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createReservation();
+    await runSafely(createReservation);
+  });
+
+  $("#my-reservation-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await runSafely(loadMyReservations);
   });
 
   $("#theme-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createTheme();
+    await runSafely(createTheme);
   });
 
   $("#time-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    await createTime();
+    await runSafely(createTime);
   });
 
-  $("[data-refresh='reservations']").addEventListener("click", loadReservations);
-  $("[data-refresh='themes']").addEventListener("click", loadThemes);
-  $("[data-refresh='times']").addEventListener("click", loadTimes);
+  $("[data-refresh='reservations']").addEventListener("click", () => runSafely(loadReservations));
+  $("[data-refresh='themes']").addEventListener("click", () => runSafely(loadThemes));
+  $("[data-refresh='times']").addEventListener("click", () => runSafely(loadTimes));
 
   $("#selected-date").addEventListener("change", syncAvailabilityInputs);
   $("#selected-theme").addEventListener("change", syncAvailabilityInputs);
@@ -66,9 +72,21 @@ async function loadAll() {
 }
 
 async function loadReservations() {
-  state.reservations = await request("/reservations");
+  state.reservations = await request("/admin/reservations");
   renderReservations();
   renderHome();
+}
+
+async function loadMyReservations() {
+  const name = $("#my-reservation-name").value.trim();
+  if (!name) {
+    showNotice("이름을 입력해주세요.", true);
+    return;
+  }
+
+  state.myReservations = await request(`/reservations?name=${encodeURIComponent(name)}`);
+  renderMyReservations();
+  showNotice("내 예약을 조회했습니다.");
 }
 
 async function loadThemes() {
@@ -128,6 +146,9 @@ async function createReservation() {
   state.availableTimes = [];
   renderAvailableTimes();
   await loadReservations();
+  if ($("#my-reservation-name").value.trim() === payload.name) {
+    await loadMyReservations();
+  }
   showNotice("예약이 생성되었습니다.");
 }
 
@@ -163,22 +184,58 @@ async function createTime() {
   showNotice("시간이 추가되었습니다.");
 }
 
-async function deleteReservation(id) {
-  await request(`/reservations/${id}`, { method: "DELETE" });
-  await loadReservations();
-  showNotice("예약이 삭제되었습니다.");
+async function deleteAdminReservation(id) {
+  await runSafely(async () => {
+    await request(`/admin/reservations/${id}`, { method: "DELETE" });
+    await loadReservations();
+    showNotice("관리자 예약 삭제가 완료되었습니다.");
+  });
+}
+
+async function cancelMyReservation(id) {
+  await runSafely(async () => {
+    const name = $("#my-reservation-name").value.trim();
+    await request(`/reservations/${id}?name=${encodeURIComponent(name)}`, { method: "DELETE" });
+    await loadReservations();
+    await loadMyReservations();
+    showNotice("예약이 취소되었습니다.");
+  });
+}
+
+async function updateMyReservation(id) {
+  await runSafely(async () => {
+    const name = $("#my-reservation-name").value.trim();
+    const payload = {
+      date: $(`#my-reservation-date-${id}`).value || null,
+      timeId: Number($(`#my-reservation-time-${id}`).value) || null,
+      themeId: Number($(`#my-reservation-theme-${id}`).value) || null,
+    };
+
+    await request(`/reservations/${id}?name=${encodeURIComponent(name)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+
+    await loadReservations();
+    await loadMyReservations();
+    showNotice("예약이 변경되었습니다.");
+  });
 }
 
 async function deleteTheme(id) {
-  await request(`/admin/themes/${id}`, { method: "DELETE" });
-  await loadThemes();
-  showNotice("테마가 삭제되었습니다.");
+  await runSafely(async () => {
+    await request(`/admin/themes/${id}`, { method: "DELETE" });
+    await loadThemes();
+    showNotice("테마가 삭제되었습니다.");
+  });
 }
 
 async function deleteTime(id) {
-  await request(`/admin/times/${id}`, { method: "DELETE" });
-  await loadTimes();
-  showNotice("시간이 삭제되었습니다.");
+  await runSafely(async () => {
+    await request(`/admin/times/${id}`, { method: "DELETE" });
+    await loadTimes();
+    showNotice("시간이 삭제되었습니다.");
+  });
 }
 
 async function request(path, options = {}) {
@@ -191,9 +248,11 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    showNotice(message || `요청 실패: ${response.status}`, true);
-    throw new Error(message || `HTTP ${response.status}`);
+    const message = await readErrorMessage(response);
+    showNotice(message, true);
+    const error = new Error(message);
+    error.noticeShown = true;
+    throw error;
   }
 
   if (response.status === 204) {
@@ -201,6 +260,30 @@ async function request(path, options = {}) {
   }
 
   return response.json();
+}
+
+async function runSafely(action) {
+  try {
+    await action();
+  } catch (error) {
+    if (!error.noticeShown) {
+      showNotice(error.message || "요청을 처리할 수 없습니다.", true);
+    }
+    console.error(error);
+  }
+}
+
+async function readErrorMessage(response) {
+  const fallbackMessage = `요청 실패: ${response.status}`;
+  const contentType = response.headers.get("Content-Type") || "";
+
+  if (contentType.includes("application/json")) {
+    const body = await response.json().catch(() => null);
+    return body?.message || fallbackMessage;
+  }
+
+  const body = await response.text().catch(() => "");
+  return body || fallbackMessage;
 }
 
 function route() {
@@ -241,6 +324,7 @@ function renderReservationOptions() {
   $("#reservation-theme").innerHTML = themeOptions;
   $("#selected-theme").innerHTML = themeOptions;
   renderAvailableTimes();
+  renderMyReservations();
 }
 
 function renderAvailableTimes() {
@@ -278,10 +362,62 @@ function renderReservations() {
           <td>${reservation.date}</td>
           <td>${escapeHtml(reservation.theme?.name ?? "-")}</td>
           <td>${formatTime(reservation.time?.startAt)}</td>
-          <td><button class="danger" type="button" onclick="deleteReservation(${reservation.id})">삭제</button></td>
+          <td><button class="danger" type="button" onclick="deleteAdminReservation(${reservation.id})">삭제</button></td>
         </tr>
       `).join("")
     : `<tr><td colspan="6" class="empty">예약이 없습니다.</td></tr>`;
+}
+
+function renderMyReservations() {
+  const themeOptions = state.themes.map((theme) => (
+    `<option value="${theme.id}">${escapeHtml(theme.name)}</option>`
+  )).join("");
+  const timeOptions = state.times.map((time) => (
+    `<option value="${time.id}">${formatTime(time.startAt)}</option>`
+  )).join("");
+
+  $("#my-reservation-rows").innerHTML = state.myReservations.length
+    ? state.myReservations.map((reservation) => `
+        <tr>
+          <td>${reservation.id}</td>
+          <td>
+            <input id="my-reservation-date-${reservation.id}" type="date" value="${reservation.date}">
+          </td>
+          <td>
+            <select id="my-reservation-theme-${reservation.id}">
+              ${themeOptions}
+            </select>
+          </td>
+          <td>
+            <select id="my-reservation-time-${reservation.id}">
+              ${timeOptions}
+            </select>
+          </td>
+          <td class="actions">
+            <button type="button" data-update-reservation-id="${reservation.id}">변경</button>
+            <button class="danger" type="button" data-cancel-reservation-id="${reservation.id}">취소</button>
+          </td>
+        </tr>
+      `).join("")
+    : `<tr><td colspan="5" class="empty">조회된 예약이 없습니다.</td></tr>`;
+
+  state.myReservations.forEach((reservation) => {
+    const themeSelect = $(`#my-reservation-theme-${reservation.id}`);
+    const timeSelect = $(`#my-reservation-time-${reservation.id}`);
+    if (themeSelect) {
+      themeSelect.value = String(reservation.theme?.id ?? "");
+    }
+    if (timeSelect) {
+      timeSelect.value = String(reservation.time?.id ?? "");
+    }
+  });
+
+  $$("[data-update-reservation-id]").forEach((button) => {
+    button.addEventListener("click", () => updateMyReservation(Number(button.dataset.updateReservationId)));
+  });
+  $$("[data-cancel-reservation-id]").forEach((button) => {
+    button.addEventListener("click", () => cancelMyReservation(Number(button.dataset.cancelReservationId)));
+  });
 }
 
 function renderThemes() {

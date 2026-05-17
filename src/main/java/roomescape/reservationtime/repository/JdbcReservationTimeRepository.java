@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +16,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.exception.ReservationTimeResourceInUseException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -28,7 +32,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     rs.getObject("start_at", LocalTime.class)
             );
 
-    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate,
+                                         NamedParameterJdbcTemplate namedParameterJdbcTemplate,
                                          DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -39,10 +44,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.toEntity(reservationTime, id);
+        try {
+            SqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("start_at", reservationTime.getStartAt());
+            Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+            return ReservationTime.toEntity(reservationTime, id);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationTimeDuplicatedException();
+        }
     }
 
     @Override
@@ -92,14 +101,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = :id";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        int affectedRows = namedParameterJdbcTemplate.update(sql, params);
+        int affectedRows = executeDelete(id);
         if (affectedRows == 0) {
             throw new ReservationTimeNotFoundException(id);
         }
     }
 
+    private int executeDelete(Long id) {
+        String sql = "DELETE FROM reservation_time WHERE id = :id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+        try {
+            return namedParameterJdbcTemplate.update(sql, params);
+        } catch (DataIntegrityViolationException e) {
+            throw new ReservationTimeResourceInUseException(id);
+        }
+    }
 }

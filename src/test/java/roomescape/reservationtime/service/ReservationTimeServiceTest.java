@@ -59,7 +59,7 @@ class ReservationTimeServiceTest {
         Theme theme = themeService.save(new ThemeRequest("테마", "테마 설명", "https://example.com/theme.png"));
         ReservationRequest reservationRequest = new ReservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2099, 5, 6),
                 reservationTime1.getId(),
                 theme.getId()
         );

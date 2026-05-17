@@ -64,7 +64,7 @@ public class MissionStep3Test {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -76,7 +76,7 @@ public class MissionStep3Test {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

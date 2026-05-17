@@ -1,4 +1,7 @@
 DELETE
+FROM reservation;
+
+DELETE
 FROM reservation_time;
 
 ALTER TABLE reservation_time

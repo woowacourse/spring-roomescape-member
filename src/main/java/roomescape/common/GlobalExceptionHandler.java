@@ -1,17 +1,35 @@
 package roomescape.common;
 
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.ResourceInUseException;
 import roomescape.common.payload.ErrorResponse;
-import roomescape.reservation.exception.ReservationDuplicatedException;
+import roomescape.reservation.exception.PastReservationNotAllowedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleReservationAccessDenied(AccessDeniedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -19,9 +37,33 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(ReservationDuplicatedException.class)
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoResourceFoundException(NoResourceFoundException e) {
+        return new ErrorResponse("존재하지 않는 요청입니다.");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return new ErrorResponse("API 메서드가 잘못되었습니다.");
+    }
+
+    @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleReservationAlreadyExists(ReservationDuplicatedException e) {
+    public ErrorResponse handleDuplicatedException(DuplicatedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(ResourceInUseException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleResourceInUseException(ResourceInUseException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(PastReservationNotAllowedException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handlePastReservationNotAllowed(PastReservationNotAllowedException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -34,18 +76,44 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return new ErrorResponse("작업을 처리할 수 없습니다. : %s".formatted(e.getMessage()));
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(this::resolveFieldErrorMessage)
+                .collect(Collectors.joining(", "));
+        return new ErrorResponse(message);
+    }
+
+    private String resolveFieldErrorMessage(FieldError error) {
+        if ("typeMismatch".equals(error.getCode())) {
+            return error.getField() + ": 입력 형식이 잘못되었습니다.";
+        }
+        return error.getField() + ": " + error.getDefaultMessage();
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        logger.info("에러 핸들링 - {}", e.getClass());
+        return new ErrorResponse("%s: 입력 형식이 잘못되었습니다.".formatted(e.getName()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return new ErrorResponse("%s: 입력값이 필요합니다.".formatted(e.getParameterName()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return new ErrorResponse("작업을 처리할 수 없습니다. : %s".formatted(e.getMessage()));
+        return new ErrorResponse("입력 형식이 잘못되었습니다.");
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllException(Exception e) {
-        return new ErrorResponse("예상하지 못한 오류가 발생했습니다. : %s".formatted(e.getMessage()));
+        logger.error("서버 에러 발생({}) - {}", e.getClass(), e.getMessage());
+        return new ErrorResponse("예상하지 못한 오류가 발생했습니다.");
     }
 }

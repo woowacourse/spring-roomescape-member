@@ -11,9 +11,13 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    Optional<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
     List<Reservation> findAll();
 
-    List<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+    List<Reservation> findByName(String name);
+
+    Reservation update(Reservation reservation);
 
     void deleteById(Long id);
 

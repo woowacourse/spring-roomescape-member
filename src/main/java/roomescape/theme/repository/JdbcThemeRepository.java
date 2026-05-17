@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeResourceInUseException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -102,13 +104,20 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
+        int affectedRows = executeDelete(id);
+        if (affectedRows == 0) {
+            throw new ThemeNotFoundException(id);
+        }
+    }
+
+    private int executeDelete(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
-
-        int affectedRows = namedParameterJdbcTemplate.update(sql, params);
-        if (affectedRows == 0) {
-            throw new ThemeNotFoundException(id);
+        try {
+            return namedParameterJdbcTemplate.update(sql, params);
+        } catch (DataIntegrityViolationException e) {
+            throw new ThemeResourceInUseException(id);
         }
     }
 }

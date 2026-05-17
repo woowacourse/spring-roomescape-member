@@ -31,6 +31,20 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
+    void 이미_존재하는_예약_시간을_추가하면_409를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is("이미 존재하는 예약 시간입니다."));
+    }
+
+    @Test
     void 예약_시간을_삭제한다() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "11:00");
@@ -55,7 +69,31 @@ class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약 시간입니다. id=999"));
+    }
+
+    @Sql("/create_reservation_time.sql")
+    @Test
+    void 예약이_존재하는_예약_시간을_삭제하면_409를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "봉구스");
+        params.put("date", "2099-05-06");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is("예약이 존재하는 시간은 삭제할 수 없습니다. id=1"));
     }
 
     @ParameterizedTest(name = "{0}은 예약 시간 형식이 아니다")

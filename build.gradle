@@ -25,6 +25,14 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:5.3.1'
+
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'ch.qos.logback:logback-core:1.5.32'
+
+    implementation('ch.qos.logback:logback-classic:1.5.32') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+        exclude group: 'ch.qos.logback', module: 'logback-core'
+    }
 }
 
 test {
