@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +28,8 @@ import roomescape.controller.admin.api.dto.AdminReservationResponse;
 import roomescape.controller.admin.fixture.AdminReservationApiRequestFixture;
 import roomescape.service.ReservationService;
 import roomescape.service.command.ReservationCommand;
+import roomescape.service.fixture.ReservationServiceFixture;
 import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
 
 @WebMvcTest(AdminReservationApiController.class)
 class AdminReservationApiControllerTest extends BaseControllerUnitTest {
@@ -61,8 +59,7 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
     void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
         AdminReservationRequest body = AdminReservationApiRequestFixture.reserveSuccessRequestFixture();
-        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now(), "ACTIVE");
-        ReservationResult result = new ReservationResult(1L, "이프", LocalDate.now(), timeResult);
+        ReservationResult result = ReservationServiceFixture.createReservationResult();
         when(reservationService.reserve(any(ReservationCommand.class))).thenReturn(result);
 
         // when & then

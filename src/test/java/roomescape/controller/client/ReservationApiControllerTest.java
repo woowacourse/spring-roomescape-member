@@ -35,8 +35,8 @@ import roomescape.query.ReservationSearchCondition;
 import roomescape.query.ReservationSearchResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.command.ReservationCommand;
+import roomescape.service.fixture.ReservationServiceFixture;
 import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
 
 @WebMvcTest(ReservationApiController.class)
 class ReservationApiControllerTest extends BaseControllerUnitTest {
@@ -68,8 +68,7 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
     void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
         ReservationRequest body = ReservationApiRequestFixture.reserveSuccessRequestFixture();
-        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now(), "ACTIVE");
-        ReservationResult result = new ReservationResult(1L, "이프", LocalDate.now(), timeResult);
+        ReservationResult result = ReservationServiceFixture.createReservationResult();
         when(reservationService.reserve(any(ReservationCommand.class))).thenReturn(result);
 
         // when & then
@@ -140,8 +139,7 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
     void 예약_변경_식별자와_변경할_시간으로_예약_변경_요청시_변경_로직_실행_후_200OK() {
         // given
         ReservationChangeRequest request = new ReservationChangeRequest(LocalDate.now(), 1L);
-        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now(), "ACTIVE");
-        ReservationResult result = new ReservationResult(1L, "예약자", LocalDate.now(), timeResult);
+        ReservationResult result = ReservationServiceFixture.createReservationResult();
         when(reservationService.change(anyLong(), any(ReservationCommand.class))).thenReturn(result);
 
         // when
