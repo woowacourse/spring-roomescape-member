@@ -49,7 +49,7 @@ public class ReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> update(
             @PathVariable Long id,
-            @RequestBody ReservationUpdateDtoDateAndTimeIdOnly updateDto
+            @Valid @RequestBody ReservationUpdateDtoDateAndTimeIdOnly updateDto
     ) {
         reservationService.update(id, updateDto);
         return ResponseEntity
