@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
@@ -83,7 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, ReservationStatus status, int limit) {
         String sql = """
             select
                 t.id,
@@ -94,7 +95,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             inner join theme t on r.theme_id = t.id
             where r.reservation_date >= ?
             and r.reservation_date < ?
-            and r.status = 'COMPLETED'
+            and r.status = ?
             group by t.id
             order by count(r.id) desc, t.id asc
             limit ?
@@ -105,6 +106,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ThemeMapper,
                 Date.valueOf(startDate),
                 Date.valueOf(endDate),
+                status.name(),
                 limit
         );
     }

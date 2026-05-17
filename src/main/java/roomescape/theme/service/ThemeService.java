@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
@@ -59,6 +60,7 @@ public class ThemeService {
         return themeRepository.findPopularThemes(
                 startDate,
                 endDate,
+                ReservationStatus.COMPLETED,
                 DEFAULT_POPULAR_LIMIT
         );
     }
