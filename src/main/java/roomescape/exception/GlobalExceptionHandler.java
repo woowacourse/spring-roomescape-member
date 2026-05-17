@@ -17,10 +17,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<GlobalErrorResponse> handleDuplicateReservation(DuplicateKeyException e) {
+    public ResponseEntity<GlobalErrorResponse> handleDuplicateKeyException(DuplicateKeyException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new GlobalErrorResponse("이미 예약된 날짜/시간/테마입니다."));
+                .body(new GlobalErrorResponse("중복된 요청입니다. 다시 시도 해주세요"));
     }
 
     @ExceptionHandler(IdNotFoundException.class)
