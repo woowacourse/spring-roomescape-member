@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -25,12 +26,14 @@ public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
+    private final Clock clock;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
-                                  ReservationDao reservationDao) {
+
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao, ReservationDao reservationDao, Clock clock) {
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
+        this.clock = clock;
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
@@ -64,7 +67,7 @@ public class ReservationTimeService {
     }
 
     private void validateDate(LocalDate date) {
-        boolean exists = date.isBefore(LocalDate.now());
+        boolean exists = date.isBefore(LocalDate.now(clock));
         if (exists) {
             throw new ReservationException(ReservationErrorCode.PAST_DATE_NOT_ALLOWED);
         }
