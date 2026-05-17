@@ -91,10 +91,7 @@ public class ReservationService {
     }
 
     private void validateNotDuplicatedForUpdate(Reservation existing, Reservation updated) {
-        boolean sameSlot = existing.getDate().equals(updated.getDate())
-                && existing.getTime().getId().equals(updated.getTime().getId())
-                && existing.getTheme().getId().equals(updated.getTheme().getId());
-        if (sameSlot) {
+        if (existing.hasSameSlot(updated)) {
             return;
         }
         validateNotDuplicated(updated);

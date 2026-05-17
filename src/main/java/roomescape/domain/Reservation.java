@@ -41,6 +41,12 @@ public class Reservation {
         return reservationDateTime.isBefore(currentDateTime);
     }
 
+    public boolean hasSameSlot(Reservation other) {
+        return date.equals(other.date)
+                && time.getId().equals(other.time.getId())
+                && theme.getId().equals(other.theme.getId());
+    }
+
     public Reservation withId(Long id) {
         return new Reservation(id, name, theme, date, time);
     }
