@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,10 @@ public class ThemeService {
         LocalDate endDate = LocalDate.now();
 
         List<Long> themeIds = themeRepository.findTopThemeIds(startDate, endDate, limit);
-        return themeRepository.findAllByIds(themeIds).stream()
+        Map<Long, Theme> themeMap = themeRepository.findAllByIds(themeIds).stream()
+                .collect(Collectors.toMap(Theme::getId, theme -> theme));
+        return themeIds.stream()
+                .map(themeMap::get)
                 .map(ThemeResponse::of)
                 .collect(Collectors.toList());
     }
