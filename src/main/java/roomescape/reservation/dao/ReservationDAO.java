@@ -11,9 +11,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ThemeSimpleResponse;
-import roomescape.reservation.dto.response.TimeResponse;
 import roomescape.theme.domain.Theme;
 
 @Component
@@ -183,5 +180,12 @@ public class ReservationDAO {
     Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, reservationId);
 
     return count != null && count > 0;
+  }
+
+  public void updateReservation(LocalDate date, Long timeId, String name, Long reservationId) {
+    String sql = "update reservation set date = ?, time_id = ? "
+        + "where name = ? and id = ?";
+
+    jdbcTemplate.update(sql, date, timeId, name, reservationId);
   }
 }

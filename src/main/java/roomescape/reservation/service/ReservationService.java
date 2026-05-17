@@ -9,6 +9,7 @@ import roomescape.reservation.dao.ReservationTimeDAO;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.request.UpdateMyReservation;
 import roomescape.reservation.dto.response.ReservationCreateResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ThemeSimpleResponse;
@@ -81,6 +82,10 @@ public class ReservationService {
 
   public boolean existsByTimeId(Long timeId) {
     return reservationDAO.existsByTimeId(timeId);
+  }
+
+  public void updateMyReservation(UpdateMyReservation updateMyReservation, String name, Long reservationId) {
+    reservationDAO.updateReservation(updateMyReservation.date(), updateMyReservation.timeId(), name, reservationId);
   }
 
   private static void isAfterDate(ReservationRequest request) {

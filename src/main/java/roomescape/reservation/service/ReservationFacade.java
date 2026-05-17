@@ -7,6 +7,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
+import roomescape.reservation.dto.request.UpdateMyReservation;
 import roomescape.reservation.dto.response.ReservationCreateResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
@@ -63,5 +64,9 @@ public class ReservationFacade {
 
   public void deleteReservationByNameAndReservationId(String name, Long reservationId) {
     reservationService.deleteByNameAndReservationId(name, reservationId);
+  }
+
+  public void updateMyReservation(UpdateMyReservation updateMyReservation, String name, Long reservationId) {
+    reservationService.updateMyReservation(updateMyReservation, name, reservationId);
   }
 }
