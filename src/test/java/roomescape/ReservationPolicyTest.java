@@ -88,7 +88,9 @@ public class ReservationPolicyTest {
                 .body(params)
                 .when().patch("/reservations/1?userId=1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("date", equalTo("2030-09-10"))
+                .body("time.id", equalTo(2));
     }
 
     @Test
