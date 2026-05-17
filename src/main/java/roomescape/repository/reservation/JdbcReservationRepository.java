@@ -2,8 +2,10 @@ package roomescape.repository.reservation;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,15 +32,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getDate("res_date").toLocalDate()),
             new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getString("time_value")),
+                LocalTime.parse(rs.getString("time_value"), DateTimeFormatter.ofPattern("HH:mm"))),
             new Theme(
                 rs.getLong("theme_id"),
                 new ThemeName(
                     rs.getString("theme_name")),
                 rs.getString("theme_description"),
                 new ThemeImageUrl(
-                    rs.getString("theme_image_url"))
-            ));
+                    rs.getString("theme_image_url")))
+        );
 
     private final JdbcTemplate template;
 
@@ -56,10 +58,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName().value());
+            ps.setString(1, reservation.getNameValue());
             ps.setDate(2, Date.valueOf(reservation.getDateValue()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setLong(3, reservation.getTimeId());
+            ps.setLong(4, reservation.getThemeId());
             return ps;
         }, keyHolder);
 
@@ -72,14 +74,11 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(final long id) {
-        int update = template.update("""
-            DELETE FROM reservation
-            WHERE id = ?;
-            """, id);
-
-        if (update == 0) {
-            throw new NoSuchElementException("존재하지 않는 reservation 의 id 입니다. id = " + id);
-        }
+        template.update("""
+                DELETE FROM reservation
+                WHERE id = ?;
+                """,
+            id);
     }
 
     @Override
@@ -128,14 +127,115 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(final long timeId) {
+    public int findVersionById(long id) {
+        Integer version = template.queryForObject("""
+                SELECT version
+                FROM reservation
+                WHERE id = ?
+                """,
+            Integer.class,
+            id
+        );
+
+        if (version == null) {
+            return 0;
+        }
+        return version;
+    }
+
+    @Override
+    public boolean existsByTimeIdAndDateOnOrAfter(final long timeId, LocalDate date) {
         Integer count = template.queryForObject("""
                 SELECT COUNT(1)
                 FROM reservation
-                WHERE time_id = ?
+                WHERE time_id = ? AND res_date >= ?
                 """,
             Integer.class,
-            timeId
+            timeId,
+            Date.valueOf(date)
+        );
+
+        return count != null && count != 0;
+    }
+
+    @Override
+    public boolean existsById(long id) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE id = ?
+                """,
+            Integer.class,
+            id
+        );
+
+        return count != null && count != 0;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE res_date = ? AND time_id = ? AND theme_id = ?
+                """,
+            Integer.class,
+            Date.valueOf(date),
+            timeId,
+            themeId
+        );
+
+        return count != null && count != 0;
+    }
+
+    @Override
+    public List<Reservation> findAllByMemberName(MemberName name) {
+        return template.query("""
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.res_date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.image_url as theme_image_url
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.name = ?
+                """,
+            RESERVATION_ROW_MAPPER,
+            name.value()
+        );
+    }
+
+    @Override
+    public int updateById(Reservation updated, int version) {
+        return template.update("""
+                UPDATE reservation
+                SET name = ?, res_date = ?, time_id = ?, theme_id = ?, version = version + 1
+                WHERE id = ? AND version = ?
+                """,
+            updated.getNameValue(),
+            Date.valueOf(updated.getDateValue()),
+            updated.getTimeId(),
+            updated.getThemeId(),
+            updated.getId(),
+            version
+        );
+    }
+
+    @Override
+    public boolean existsByThemeId(long themeId) {
+        Integer count = template.queryForObject("""
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE theme_id = ?
+                """,
+            Integer.class,
+            themeId
         );
 
         return count != null && count != 0;

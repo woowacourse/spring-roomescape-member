@@ -4,16 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +30,9 @@ import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationUpdateRequest;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -34,9 +40,11 @@ import roomescape.repository.time.ReservationTimeRepository;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:30");
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description",
+    private static final ReservationTime SAVED_TIME = new ReservationTime(1L, LocalTime.of(12, 0));
+    private static final Theme SAVED_THEME = new Theme(3L, new ThemeName("name"), "description",
         ThemeImageUrl.defaultImageUrl());
+    private static final MemberName NAME = new MemberName("name");
+    private static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
 
     @Mock
     private ThemeRepository themeRepository;
@@ -50,21 +58,231 @@ class ReservationServiceTest {
 
     private Reservation reservation() {
         return new Reservation(
-            1L,
+            4L,
             new MemberName("name"),
-            new ReservationLocalDate(LocalDate.now().minusDays(1L)),
-            SAVED_TIME, SAVED_THEME);
+            new ReservationLocalDate(LocalDate.now().plusDays(1L)),
+            SAVED_TIME,
+            SAVED_THEME);
+    }
+
+    @Test
+    void 예약을_추가한다() {
+        // given
+        Reservation expectedReservation = reservation();
+
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_THEME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(false);
+        when(reservationRepository.createReservation(any()))
+            .thenReturn(expectedReservation);
+
+        // when
+        Reservation reservation = reservationService.addReservation(requestDtoFrom(expectedReservation));
+
+        // then
+        assertThat(reservation).isSameAs(expectedReservation);
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
+        verify(reservationRepository, times(1)).createReservation(any());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 이미_지난_날짜로_추가하면_예외가_발생한다() {
+        // given
+        ReservationRequest request = new ReservationRequest(
+            "n",
+            LocalDate.now().minusDays(1),
+            1L,
+            1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
+
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_시간으로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_테마로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.THEME_NOT_FOUND.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 동일한_테마에서_이미_예약된_날짜와_시간으로_추가하면_예외가_발생한다() {
+        // given
+        when(timeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_THEME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 본인의_예약을_삭제한다() {
+        // given
+        Reservation reservation = new Reservation(
+            1L, new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().plusDays(1)),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
+            SAVED_THEME
+        );
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(reservation));
+
+        // when & then
+        Long id = reservation.getId();
+        String name = reservation.getName().value();
+        assertThatCode(() -> reservationService.deleteReservation(id, name))
+            .doesNotThrowAnyException();
+
+        verify(reservationRepository, times(1)).findById(id);
+        verify(reservationRepository, times(1)).deleteById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 없는_예약을_삭제해도_예외가_발생하지_않는다() {
+        // given
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        long unSavedId = 3L;
+        String name = "name";
+
+        // when & then
+        assertThatCode(() -> reservationService.deleteReservation(unSavedId, name))
+            .doesNotThrowAnyException();
+
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 다른_사람의_예약을_삭제하는_경우_예외가_발생한다() {
+        // given
+        Reservation reservation = new Reservation(
+            1L,
+            new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().plusDays(1)),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
+            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
+        );
+
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(reservation));
+
+        Long id = reservation.getId();
+        String otherName = "otherName";
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservation(id, otherName))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.FORBIDDEN.getMessage());
+
+        verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 현재시간_이전의_예약을_삭제하는_경우_예외가_발생한다() {
+        // given
+        Reservation reservation = new Reservation(
+            1L,
+            new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().minusDays(1)),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
+            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
+        );
+
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(reservation));
+
+        // when & then
+        Long id = reservation.getId();
+        String name = reservation.getName().value();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id, name))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.PAST_RESERVATION_CANCEL.getMessage());
+
+        verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 예약자_이름으로_된_예약_목록을_조회한다() {
+        // given
+        Reservation savedReservation1 = new Reservation(
+            1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME, SAVED_THEME);
+        Reservation savedReservation2 = new Reservation(
+            2L, NAME, new ReservationLocalDate(TOMORROW.plusDays(1)), SAVED_TIME, SAVED_THEME);
+
+        when(reservationRepository.findAllByMemberName(any()))
+            .thenReturn(List.of(savedReservation1, savedReservation2));
+
+        // when
+        List<Reservation> reservations = reservationService.getReservations(NAME.value());
+
+        // then
+        assertThat(reservations).containsExactlyInAnyOrder(savedReservation1, savedReservation2);
+
+        verify(reservationRepository, times(1)).findAllByMemberName(any());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1L);
-        ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
+        ReservationTime availableTime2 = new ReservationTime(2L, LocalTime.of(14, 0));
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimeByDateAndThemeId(any(), anyLong()))
             .thenReturn(List.of(SAVED_TIME, availableTime2));
 
         // when
@@ -75,28 +293,7 @@ class ReservationServiceTest {
         assertThat(availableTimes).containsExactlyInAnyOrder(SAVED_TIME, availableTime2);
 
         verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
-        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
-    }
-
-    @Test
-    void 동일한_테마에서_이미_예약된_시간을_선택하면_예외가_발생한다() {
-        // given
-        when(timeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(SAVED_TIME));
-        when(themeRepository.findById(anyLong()))
-            .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
-            .thenReturn(List.of());
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("이미 예약된");
-
-        verify(timeRepository, times(1)).findById(anyLong());
-        verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verify(timeRepository, times(1)).findAvailableTimeByDateAndThemeId(any(), anyLong());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
@@ -104,15 +301,14 @@ class ReservationServiceTest {
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("name", tomorrow, SAVED_TIME, otherTheme);
+        Reservation reservation = new Reservation("name", TOMORROW, SAVED_TIME, otherTheme);
 
-        when(timeRepository.findById(SAVED_TIME.getId()))
+        when(timeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_TIME));
-        when(themeRepository.findById(otherTheme.getId()))
+        when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(otherTheme));
-        when(timeRepository.findByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
-            .thenReturn(List.of(SAVED_TIME));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+            .thenReturn(false);
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
@@ -120,7 +316,7 @@ class ReservationServiceTest {
 
         verify(timeRepository, times(1)).findById(anyLong());
         verify(themeRepository, times(1)).findById(anyLong());
-        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong());
         verify(reservationRepository, times(1)).createReservation(any());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
@@ -128,16 +324,202 @@ class ReservationServiceTest {
     @Test
     void 예약이_존재하는_시간을_삭제하는_경우_예외가_발생한다() {
         // given
-        when(reservationRepository.existsByTimeId(anyLong()))
+        when(reservationRepository.existsByTimeIdAndDateOnOrAfter(anyLong(), any()))
             .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("예약이 존재하는");
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.TIME_HAS_RESERVATIONS.getMessage());
 
-        verify(reservationRepository, times(1)).existsByTimeId(anyLong());
+        verify(reservationRepository, times(1)).existsByTimeIdAndDateOnOrAfter(anyLong(), any());
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 존재하지_않는_시간을_삭제해도_예외가_발생하지_않는다() {
+        // given
+        when(reservationRepository.existsByTimeIdAndDateOnOrAfter(anyLong(), any()))
+            .thenReturn(false);
+
+        long unSavedTimeId = 3L;
+
+        // when & then
+        assertThatCode(() -> reservationService.deleteReservationTime(unSavedTimeId))
+            .doesNotThrowAnyException();
+
+        verify(reservationRepository, times(1)).existsByTimeIdAndDateOnOrAfter(anyLong(), any());
+        verify(timeRepository, times(1)).deleteById(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Nested
+    @DisplayName("예약 날짜 및 시간 변경")
+    class UpdateDateTime {
+
+        private Reservation previousReservation() {
+            return new Reservation(1L, NAME, new ReservationLocalDate(TOMORROW), SAVED_TIME, SAVED_THEME);
+        }
+
+        @Test
+        void 사용자는_본인_예약의_날짜_및_시간을_변경할_수_있다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationTime newTime = new ReservationTime(2L, SAVED_TIME.getStartAt().plusHours(1));
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), newTime.getId());
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(newTime));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
+            when(reservationRepository.findVersionById(anyLong()))
+                .thenReturn(0);
+            when(reservationRepository.updateById(any(), anyInt()))
+                .thenReturn(1);
+
+            // when & then
+            assertThatCode(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .doesNotThrowAnyException();
+
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verify(reservationRepository, times(1)).findVersionById(previous.getId());
+            verify(reservationRepository, times(1)).updateById(any(), anyInt());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 예약의_날짜를_오늘_포함_과거_날짜로_변경하는_경우_예외가_발생한다() {
+            // given
+            ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.now(), SAVED_TIME.getId());
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(1L, NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.PAST_DATE_RESERVATION.getMessage());
+
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 존재하지_않는_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+            long notFoundReservationId = 2L;
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(notFoundReservationId, NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+
+            verify(reservationRepository, times(1)).findById(notFoundReservationId);
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 예약을_존재하지_않는_시간으로_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.TIME_NOT_FOUND.getMessage());
+
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 중복되는_예약으로_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.DUPLICATED_RESERVATION.getMessage());
+
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 다른_사용자의_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = previousReservation();
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+            String otherName = "otherName";
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), otherName, request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.FORBIDDEN.getMessage());
+
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
+
+        @Test
+        void 지난_날짜의_예약을_변경하는_경우_예외가_발생한다() {
+            // given
+            Reservation previous = new Reservation(
+                1L, NAME, new ReservationLocalDate(TOMORROW.minusDays(2)), SAVED_TIME, SAVED_THEME);
+            ReservationUpdateRequest request = new ReservationUpdateRequest(TOMORROW.plusDays(1), 2L);
+
+            when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous));
+            when(timeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(previous.getTime()));
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.updateDateTime(previous.getId(), NAME.value(), request))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessageContaining(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
+
+            verify(reservationRepository, times(1)).findById(previous.getId());
+            verify(timeRepository, times(1)).findById(request.timeId());
+            verify(reservationRepository, times(1))
+                .existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), previous.getThemeId());
+            verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+        }
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {

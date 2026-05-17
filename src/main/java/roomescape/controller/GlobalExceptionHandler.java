@@ -1,19 +1,20 @@
 package roomescape.controller;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.exception.ErrorMessageResponse;
-import roomescape.exception.ForbiddenAccessException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.exception.DomainViolationException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorResponse;
+import roomescape.exception.RoomEscapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,59 +22,70 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessageResponse handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
-        printErrorStatus(e);
-        return new ErrorMessageResponse("요청 형식이 올바르지 않습니다.");
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        printWarnStatus(e);
+        return parseOf(ErrorCode.INVALID_REQUEST_FORMAT);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessageResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
-        printErrorStatus(e);
-        return new ErrorMessageResponse("잘못된 입력값입니다: " + e.getValue());
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
+        MethodArgumentTypeMismatchException e
+    ) {
+        printWarnStatus(e);
+        return parseFrom(ErrorCode.INVALID_REQUEST_URI_VARIABLE_TYPE, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessageResponse handleValidation(MethodArgumentNotValidException e) {
-        printErrorStatus(e);
-        List<String> messages = e.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+        printWarnStatus(e);
+        String joinedMessage = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .toList();
+            .collect(Collectors.joining("\n"));
 
-        return new ErrorMessageResponse(messages);
+        return parseFrom(ErrorCode.VALIDATION_FAILED, joinedMessage);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessageResponse handleIllegalArgument(IllegalArgumentException e) {
-        printErrorStatus(e);
-        return new ErrorMessageResponse(e.getMessage());
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
+        printWarnStatus(e);
+        return parseOf(ErrorCode.NOT_FOUND);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessageResponse handleNoSuchElement(NoSuchElementException e) {
-        printErrorStatus(e);
-        return new ErrorMessageResponse(e.getMessage());
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(RoomEscapeException e) {
+        printWarnStatus(e);
+        return parseOf(e.getCode());
     }
 
-    @ExceptionHandler(ForbiddenAccessException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorMessageResponse handleIForbiddenAccessException(ForbiddenAccessException e) {
+    @ExceptionHandler(DomainViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDomainViolation(DomainViolationException e) {
         printErrorStatus(e);
-        return new ErrorMessageResponse(e.getMessage());
+        return parseOf(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMessageResponse handleException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
         printErrorStatus(e);
-        return new ErrorMessageResponse("서버 내부 오류가 발생했습니다.");
+        return parseOf(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private void printWarnStatus(Exception e) {
+        log.warn("[{}] {}", e.getClass().getSimpleName(), e.getMessage());
     }
 
     private void printErrorStatus(Exception e) {
         log.error("[{}] {}", e.getClass().getSimpleName(), e.getMessage(), e);
+    }
+
+    private ResponseEntity<ErrorResponse> parseOf(ErrorCode errorCode) {
+        return ResponseEntity
+            .status(errorCode.getCode())
+            .body(ErrorResponse.of(errorCode));
+    }
+
+    private ResponseEntity<ErrorResponse> parseFrom(ErrorCode errorCode, String message) {
+        return ResponseEntity
+            .status(errorCode.getCode())
+            .body(ErrorResponse.from(errorCode, message));
     }
 }

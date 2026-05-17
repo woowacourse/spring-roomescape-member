@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationLocalDate;
@@ -33,12 +34,20 @@ public class Reservation {
         return memberName;
     }
 
+    public String getNameValue() {
+        return memberName.value();
+    }
+
     public LocalDate getDateValue() {
         return date.value();
     }
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Long getTimeId() {
+        return time.getId();
     }
 
     public Theme getTheme() {
@@ -49,12 +58,17 @@ public class Reservation {
         return theme.getId();
     }
 
-    public Long getTimeId() {
-        return time.getId();
+    public Reservation withId(Long key) {
+        return new Reservation(key, memberName, date, time, theme);
     }
 
-    public Reservation withId(Long key) {
-        return new Reservation(key, this.memberName, this.date, this.time, this.theme);
+    public boolean isBeforeNow() {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date.value(), time.getStartAt());
+        return reservationDateTime.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isBooker(MemberName otherName) {
+        return memberName.equals(otherName);
     }
 
     @Override
@@ -73,5 +87,9 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public Reservation updateDateTime(LocalDate date, ReservationTime time) {
+        return new Reservation(id, memberName, new ReservationLocalDate(date), time, theme);
     }
 }

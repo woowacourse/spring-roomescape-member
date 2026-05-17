@@ -41,7 +41,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_저장한다() {
         // when
-        ReservationTime time = reservationTime(16, 30);
+        ReservationTime time = reservationTime(16, 0);
         ReservationTime saved = timeRepository.createReservationTime(time);
 
         // then
@@ -52,8 +52,8 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 저장된_모든_예약_시간을_조회한다() {
         // given
-        ReservationTime saved1 = timeRepository.createReservationTime(reservationTime(16, 30));
-        ReservationTime saved2 = timeRepository.createReservationTime(reservationTime(17, 30));
+        ReservationTime saved1 = timeRepository.createReservationTime(reservationTime(16, 0));
+        ReservationTime saved2 = timeRepository.createReservationTime(reservationTime(17, 0));
 
         // when
         List<ReservationTime> times = timeRepository.findAll();
@@ -65,7 +65,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_아이디로_삭제한다() {
         // given
-        ReservationTime saved = timeRepository.createReservationTime(reservationTime(16, 30));
+        ReservationTime saved = timeRepository.createReservationTime(reservationTime(16, 0));
 
         // when
         timeRepository.deleteById(saved.getId());
@@ -77,7 +77,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_아이디로_조회한다() {
         // given
-        ReservationTime saved = timeRepository.createReservationTime(reservationTime(16, 30));
+        ReservationTime saved = timeRepository.createReservationTime(reservationTime(16, 0));
 
         // when
         Optional<ReservationTime> target = timeRepository.findById(saved.getId());
@@ -91,8 +91,8 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
-        ReservationTime bookedTime = timeRepository.createReservationTime(reservationTime(16, 30));
-        ReservationTime availableTime = timeRepository.createReservationTime(reservationTime(17, 30));
+        ReservationTime bookedTime = timeRepository.createReservationTime(reservationTime(16, 0));
+        ReservationTime availableTime = timeRepository.createReservationTime(reservationTime(17, 0));
 
         Theme theme = themeRepository.createTheme(theme());
 
@@ -100,7 +100,8 @@ class JdbcReservationTimeRepositoryTest {
         reservationRepository.createReservation(new Reservation("name", tomorrow, bookedTime, theme));
 
         // when
-        List<ReservationTime> availableTimes = timeRepository.findByDateAndThemeId(tomorrow, theme.getId());
+        List<ReservationTime> availableTimes = timeRepository.findAvailableTimeByDateAndThemeId(tomorrow,
+            theme.getId());
 
         // then
         assertThat(availableTimes).containsExactly(availableTime);

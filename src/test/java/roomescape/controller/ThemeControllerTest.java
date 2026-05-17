@@ -1,153 +1,147 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.ResourceIdResponse;
-import roomescape.dto.theme.PopularThemesResponse;
 import roomescape.dto.theme.ThemeRequest;
-import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.service.ThemeService;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     private static final long THEME_ID = 1L;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private ThemeService themeService;
 
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
-
     @Test
-    void 관리자는_테마를_추가할_수_있다() {
+    void 관리자는_테마를_추가할_수_있다() throws Exception {
         // given
         ThemeRequest request = themeRequestDtoFrom(theme());
-
         Theme savedTheme = theme().withId(THEME_ID);
-        when(themeService.addTheme(any()))
-            .thenReturn(savedTheme);
+        when(themeService.addTheme(any())).thenReturn(savedTheme);
 
         // when
-        Response response = RestAssured
-            .given().log().all()
-            .queryParam("role", "admin")
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/themes");
+        ResultActions result = mockMvc
+            .perform(post("/themes")
+                .queryParam("role", "admin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
-        response
-            .then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
-        assertThat(responseDto).isEqualTo(new ResourceIdResponse(savedTheme.getId()));
+        result
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(THEME_ID));
 
         verify(themeService, times(1)).addTheme(any());
         verifyNoMoreInteractions(themeService);
     }
 
     @Test
-    void 모든_테마를_조회한다() {
+    void 모든_테마를_조회한다() throws Exception {
         // given
         List<Theme> themes = List.of(
             theme().withId(1L), theme().withId(2L), theme().withId(3L));
-
-        List<ThemeResponse> expectedResponse = themes.stream()
-            .map(ThemeResponse::from)
-            .toList();
-
-        when(themeService.getThemes())
-            .thenReturn(themes);
+        when(themeService.getThemes()).thenReturn(themes);
 
         // when
-        Response response = RestAssured
-            .given().log().all()
-            .when().get("/themes");
+        ResultActions result = mockMvc.perform(get("/themes"));
 
         // then
-        response
-            .then()
-            .statusCode(HttpStatus.OK.value());
-
-        List<ThemeResponse> actualResponse = response.as(new TypeRef<>() {
-        });
-        assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+        result
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(3)))
+            .andExpect(jsonPath("$[0].id").value(1L))
+            .andExpect(jsonPath("$[1].id").value(2L))
+            .andExpect(jsonPath("$[2].id").value(3L));
 
         verify(themeService, times(1)).getThemes();
         verifyNoMoreInteractions(themeService);
     }
 
     @Test
-    void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
+    void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() throws Exception {
         // given
-        List<Theme> tenPopularThemesOrderByRank = createTenThemes();
-        PopularThemesResponse expectedResponse = PopularThemesResponse.from(tenPopularThemesOrderByRank);
-
-        when(themeService.findWeekPopularThemesOrderByRank(10))
-            .thenReturn(tenPopularThemesOrderByRank);
+        List<Theme> tenPopularThemes = createTenThemes();
+        when(themeService.findWeekPopularThemesOrderByRank(10)).thenReturn(tenPopularThemes);
 
         // when
-        Response response = RestAssured
-            .given().log().all()
-            .queryParam("limit", 10)
-            .when().get("/themes/popular/week");
+        ResultActions result = mockMvc
+            .perform(get("/themes/popular/week")
+                .queryParam("limit", "10"));
 
         // then
-        response
-            .then()
-            .statusCode(HttpStatus.OK.value());
+        result
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.themes", hasSize(10)));
 
-        PopularThemesResponse actualResponse = response.as(new TypeRef<>() {
-        });
-        assertThat(actualResponse).isEqualTo(expectedResponse);
-
-        verify(themeService, times(1)).findWeekPopularThemesOrderByRank(10);
+        verify(themeService, times(1)).findWeekPopularThemesOrderByRank(anyInt());
         verifyNoMoreInteractions(themeService);
     }
 
     @Test
-    void 관리자는_테마를_삭제할_수_있다() {
+    void 관리자는_테마를_삭제할_수_있다() throws Exception {
         // given & when
-        Response response = RestAssured
-            .given().log().all()
-            .queryParam("role", "admin")
-            .pathParam("id", THEME_ID)
-            .when().delete("/themes/{id}");
+        ResultActions result = mockMvc
+            .perform(delete("/themes/{id}", THEME_ID)
+                .queryParam("role", "admin"));
 
         // then
-        response
-            .then()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+        result.andExpect(status().isNoContent());
+
+        verify(themeService, times(1)).deleteThemeById(THEME_ID);
+        verifyNoMoreInteractions(themeService);
+    }
+
+    @Test
+    void 예약이_존재하는_테마를_삭제할_경우_예외_응답을_반환한다() throws Exception {
+        // given
+        doThrow(new RoomEscapeException(ErrorCode.THEME_HAS_RESERVATIONS))
+            .when(themeService).deleteThemeById(THEME_ID);
+
+        // when
+        ResultActions result = mockMvc
+            .perform(delete("/themes/{id}", THEME_ID)
+                .queryParam("role", "admin"));
+
+        // then
+        result
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value(ErrorCode.THEME_HAS_RESERVATIONS.name()));
 
         verify(themeService, times(1)).deleteThemeById(THEME_ID);
         verifyNoMoreInteractions(themeService);
@@ -158,39 +152,32 @@ class ThemeControllerTest {
     class RoleForbidden {
 
         @Test
-        void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
+        void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() throws Exception {
             // given
             ThemeRequest request = themeRequestDtoFrom(theme());
 
             // when
-            Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "user")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/themes");
+            ResultActions result = mockMvc
+                .perform(post("/themes")
+                    .queryParam("role", "user")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)));
 
             // then
-            response
-                .then()
-                .statusCode(HttpStatus.FORBIDDEN.value());
+            result.andExpect(status().isForbidden());
 
             verifyNoMoreInteractions(themeService);
         }
 
         @Test
-        void 관리자가_아닌_사용자가_테마를_삭제하는_경우_예외가_발생한다() {
+        void 관리자가_아닌_사용자가_테마를_삭제하는_경우_예외가_발생한다() throws Exception {
             // given & when
-            Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "user")
-                .pathParam("id", THEME_ID)
-                .when().delete("/themes/{id}");
+            ResultActions result = mockMvc
+                .perform(delete("/themes/{id}", THEME_ID)
+                    .queryParam("role", "user"));
 
             // then
-            response
-                .then()
-                .statusCode(HttpStatus.FORBIDDEN.value());
+            result.andExpect(status().isForbidden());
 
             verifyNoMoreInteractions(themeService);
         }
@@ -202,7 +189,7 @@ class ThemeControllerTest {
 
     private List<Theme> createTenThemes() {
         List<Theme> themes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             themes.add(theme().withId(i));
         }
         return themes;

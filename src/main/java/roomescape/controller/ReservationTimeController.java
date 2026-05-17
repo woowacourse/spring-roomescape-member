@@ -19,7 +19,7 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.dto.reservationTime.ReservationTimeResponse;
-import roomescape.exception.ForbiddenAccessException;
+import roomescape.exception.RoleValidator;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -46,9 +46,7 @@ public class ReservationTimeController {
         @Valid @RequestBody ReservationTimeRequest requestDto,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("시간 추가는 관리자만 가능합니다.");
-        }
+        RoleValidator.requireAdmin(role);
 
         ReservationTime time = reservationService.addReservationTime(requestDto);
         return new ResourceIdResponse(time.getId());
@@ -60,9 +58,7 @@ public class ReservationTimeController {
         @PathVariable Long id,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("시간 삭제는 관리자만 가능합니다.");
-        }
+        RoleValidator.requireAdmin(role);
 
         reservationService.deleteReservationTime(id);
     }

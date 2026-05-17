@@ -3,6 +3,8 @@ package roomescape.domain.vo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import roomescape.exception.DomainViolationException;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -36,7 +38,7 @@ class ThemeImageUrlTest {
     void 빈_문자열로_생성하면_예외가_발생한다(String value) {
         // when & then
         assertThatThrownBy(() -> new ThemeImageUrl(value))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DomainViolationException.class)
             .hasMessageContaining("빈 문자열은");
     }
 
@@ -54,7 +56,7 @@ class ThemeImageUrlTest {
     void 올바르지_않은_형식으로_생성하면_예외가_발생한다(String value) {
         // when & then
         assertThatThrownBy(() -> new ThemeImageUrl(value))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DomainViolationException.class)
             .hasMessageContaining("올바른 이미지 URL");
     }
 }

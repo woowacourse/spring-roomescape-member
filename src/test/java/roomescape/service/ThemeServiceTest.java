@@ -2,7 +2,9 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -19,6 +21,9 @@ import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.theme.ThemeRequest;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +36,8 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ThemeService themeService;
@@ -52,12 +59,30 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_삭제한다() {
+    void 테마를_삭제한다_존재하지_않는_테마를_삭제해도_예외가_발생하지_않는다() {
+        // given
+        long id = 1L;
+        
         // when & then
-        assertThatCode(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
+        assertThatCode(() -> themeService.deleteThemeById(id))
             .doesNotThrowAnyException();
 
-        verify(themeRepository, times(1)).deleteById(SAVED_THEME.getId());
+        verify(themeRepository, times(1)).deleteById(id);
+        verifyNoMoreInteractions(themeRepository);
+    }
+
+    @Test
+    void 예약이_있는_테마를_삭제하는_경우_예외가_발생한다() {
+        // when
+        when(reservationRepository.existsByThemeId(anyLong()))
+            .thenReturn(true);
+
+        // then
+        assertThatThrownBy(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.THEME_HAS_RESERVATIONS.getMessage());
+
+        verify(reservationRepository, times(1)).existsByThemeId(SAVED_THEME.getId());
         verifyNoMoreInteractions(themeRepository);
     }
 

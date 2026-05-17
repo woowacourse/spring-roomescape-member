@@ -1,33 +1,28 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.regex.Pattern;
+import roomescape.exception.DomainViolationException;
 
 public class ReservationTime {
-
-    private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
 
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validateTime(startAt);
         this.id = id;
         this.startAt = startAt;
-    }
-
-    public ReservationTime(Long id, String startAt) {
-        this.id = id;
-        this.startAt = translateTime(startAt);
     }
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime(String startAt) {
-        this(null, startAt);
+    private void validateTime(LocalTime startAt) {
+        if (startAt.getMinute() != 0 && startAt.getMinute() != 30) {
+            throw new DomainViolationException("시간은 정각 또는 30분 단위여야 합니다.");
+        }
     }
 
     public Long getId() {
@@ -36,18 +31,6 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    private LocalTime translateTime(String startAt) {
-        if (!TIME_PATTERN.matcher(startAt).matches()) {
-            throw new IllegalArgumentException("시간 형식이 HH:mm (예: 09:30) 형태여야 합니다: " + startAt);
-        }
-
-        try {
-            return LocalTime.parse(startAt);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("유효하지 않은 시간 값입니다: " + startAt);
-        }
     }
 
     public ReservationTime withId(long id) {

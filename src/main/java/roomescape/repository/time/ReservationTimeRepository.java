@@ -15,5 +15,5 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(long id);
 
-    List<ReservationTime> findByDateAndThemeId(LocalDate date, long themeId);
+    List<ReservationTime> findAvailableTimeByDateAndThemeId(LocalDate date, long themeId);
 }
