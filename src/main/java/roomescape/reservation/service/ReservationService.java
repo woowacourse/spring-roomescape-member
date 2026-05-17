@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +47,7 @@ public class ReservationService {
                     throw new ReservationDuplicatedException(request.date(), request.timeId(), request.themeId());
                 });
 
-        if (isPassed(request.date(), reservationTime.getStartAt())) {
+        if (isPastDateTime(LocalDateTime.of(request.date(), reservationTime.getStartAt()))) {
             throw new PastReservationNotAllowedException();
         }
 
@@ -60,9 +59,8 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    private Boolean isPassed(LocalDate date, LocalTime time) {
+    private boolean isPastDateTime(LocalDateTime localDateTime) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime localDateTime = LocalDateTime.of(date, time);
         return localDateTime.isBefore(now);
     }
 
@@ -102,7 +100,7 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTimeOrDefault(request, reservation);
         Theme theme = getThemeOrDefault(request, reservation);
 
-        if (isPassed(date, reservationTime.getStartAt())) {
+        if (isPastDateTime(LocalDateTime.of(date, reservationTime.getStartAt()))) {
             throw new PastReservationNotAllowedException();
         }
 
