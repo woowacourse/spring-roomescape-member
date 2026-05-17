@@ -56,4 +56,14 @@ class ThemeControllerE2ETest {
                 .then().log().all()
                 .statusCode(422);
     }
+
+    @DisplayName("잘못된 형식의 테마 ID 조회 시 400 Bad Request를 응답한다")
+    @Test
+    void 잘못된_형식의_테마_ID_조회_시_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/themes/invalid-id")
+                .then().log().all()
+                .statusCode(400)
+                .body("title", is("타입 불일치"));
+    }
 }

@@ -2,6 +2,7 @@ package roomescape.handler;
 
 import jakarta.annotation.Priority;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 @Priority(2)
@@ -21,8 +23,28 @@ public class BindingExceptionHandler {
                 .body(e.getBody());
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "요청 데이터의 타입이 올바르지 않습니다."
+        );
+        problemDetail.setTitle("타입 불일치");
+
+        List<ValidationError> errors = List.of(new ValidationError(
+                e.getName(),
+                e.getValue(),
+                e.getRequiredType().getSimpleName() + " 타입이어야 합니다."
+        ));
+        problemDetail.setProperty("errors", errors);
+
+        return ResponseEntity
+                .status(problemDetail.getStatus())
+                .body(problemDetail);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleBindingException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ProblemDetail> handleValidException(MethodArgumentNotValidException e) {
         List<ValidationError> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> new ValidationError(
                         error.getField(),
