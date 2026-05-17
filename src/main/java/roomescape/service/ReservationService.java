@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,12 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final Clock clock;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, Clock clock) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.clock = clock;
     }
 
     public List<Reservation> getReservations() {
@@ -60,7 +63,7 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
         LocalDateTime reservationAt = LocalDateTime.of(request.date(), time.getStartAt());
-        if (reservationAt.isBefore(LocalDateTime.now())) {
+        if (reservationAt.isBefore(LocalDateTime.now(clock))) {
             throw new PastReservationException("지난 날짜는 예약할 수 없습니다. 오늘 이후 날짜를 선택해주세요.");
         }
     }
@@ -76,7 +79,7 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
         LocalDateTime newReservationAt = LocalDateTime.of(request.date(), time.getStartAt());
-        if (newReservationAt.isBefore(LocalDateTime.now())) {
+        if (newReservationAt.isBefore(LocalDateTime.now(clock))) {
             throw new PastReservationException("지난 날짜로 변경할 수 없습니다. 오늘 이후 날짜를 선택해 주세요.");
         }
 
@@ -93,7 +96,7 @@ public class ReservationService {
 
     private void checkNotPastReservation(Reservation reservation) {
         LocalDateTime reservationAt = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
-        if (reservationAt.isBefore(LocalDateTime.now())) {
+        if (reservationAt.isBefore(LocalDateTime.now(clock))) {
             throw new PastReservationException("지난 예약은 변경하거나 취소할 수 없습니다.");
         }
     }
