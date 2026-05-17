@@ -14,17 +14,22 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.common.payload.ErrorResponse;
 import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationAccessDeniedException;
-import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ReservationAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleReservationAccessDenied(ReservationAccessDeniedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -38,21 +43,9 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("존재하지 않는 요청입니다.");
     }
 
-    @ExceptionHandler(ReservationDuplicatedException.class)
+    @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleReservationAlreadyExists(ReservationDuplicatedException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(ReservationTimeDuplicatedException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleReservationTimeDuplicated(ReservationTimeDuplicatedException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(PastReservationNotAllowedException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErrorResponse handlePastReservationNotAllowed(PastReservationNotAllowedException e) {
+    public ErrorResponse handleDuplicatedException(DuplicatedException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -62,9 +55,9 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(ReservationAccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleReservationAccessDenied(ReservationAccessDeniedException e) {
+    @ExceptionHandler(PastReservationNotAllowedException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handlePastReservationNotAllowed(PastReservationNotAllowedException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -91,7 +84,6 @@ public class GlobalExceptionHandler {
         }
         return error.getField() + ": " + error.getDefaultMessage();
     }
-
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
