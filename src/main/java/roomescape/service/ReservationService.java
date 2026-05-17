@@ -90,7 +90,7 @@ public class ReservationService {
         validateEditedDateTime(command, now);
 
         try {
-            reservationRepository.updateReservation(id, command);
+            reservationRepository.updateReservation(id, command.date(), command.timeId());
             return reservationRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
         } catch (IllegalStateException e) {

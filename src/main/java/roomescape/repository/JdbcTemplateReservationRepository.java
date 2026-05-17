@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.command.ReservationEditCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -154,11 +153,11 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public void updateReservation(Long id, ReservationEditCommand command) {
+    public void updateReservation(Long id, LocalDate date, long timeId) {
         try {
             jdbcTemplate.update(
                     "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
-                    command.date(), command.timeId(), id);
+                    date, timeId, id);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException();
         }
