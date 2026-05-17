@@ -5,11 +5,10 @@ import org.springframework.http.HttpStatus;
 
 public record ErrorResponse(
         int status,
-        String message,
-        String path
+        String message
 ) {
 
-    public static ErrorResponse of(HttpStatus status, String message, HttpServletRequest request) {
-        return new ErrorResponse(status.value(), message, request.getRequestURI());
+    public static ErrorResponse of(HttpStatus status, String message) {
+        return new ErrorResponse(status.value(), message);
     }
 }
