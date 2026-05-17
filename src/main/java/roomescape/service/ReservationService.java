@@ -105,10 +105,17 @@ public class ReservationService {
                 () -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND)
         );
 
-        reservation.validateUpdateAvailability(request.date(), time, LocalDateTime.now(clock));
+        validateUpdateAvailableTime(request.date(), time, LocalDateTime.now(clock));
         validateDuplicateReservation(request.date(), time, reservation.getTheme());
 
         return ReservationResponseDTO.from(reservationRepository.update(id, request.date(), time));
+    }
+
+    private void validateUpdateAvailableTime(LocalDate date, ReservationTime time,
+            LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
+        }
     }
 
     @Transactional

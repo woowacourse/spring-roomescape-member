@@ -79,13 +79,6 @@ public class Reservation {
         }
     }
 
-    public void validateUpdateAvailability(LocalDate date, ReservationTime time,
-            LocalDateTime now) {
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
-            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
-        }
-    }
-
     public Long getId() {
         return id;
     }
