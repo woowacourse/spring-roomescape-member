@@ -1,6 +1,8 @@
 package roomescape.time;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
@@ -76,5 +79,13 @@ class ReservationTimeServiceTest {
         ReservationTimesResponse availableTimes = reservationTimeService.readAvailableTimes(themeId, date);
 
         assertThat(availableTimes.reservationTimes()).isEmpty();
+    }
+
+    @Test
+    void 예약_있는_시간_삭제시_409() {
+        given(reservationRepository.existsByTimeId(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(AlreadyInUseException.class);
     }
 }

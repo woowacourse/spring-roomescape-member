@@ -87,18 +87,14 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 중복_예약_생성시_409() {
+    void 관리자_이미_지난_예약_삭제시_400() {
         mockTime(LocalDate.of(2026, 5, 14), LocalTime.of(12, 0));
 
-        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
-        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
-        given(reservationRepository.existsByThemeIdAndDateAndTimeId(anyLong(), any(LocalDate.class), anyLong()))
-                .willReturn(true);
+        Reservation reservation = new Reservation(1L, "동키", theme, LocalDate.of(2026, 5, 10), reservationTime);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(reservation));
 
-        ReservationRequest request = new ReservationRequest("동키", 1L, LocalDate.of(2026, 5, 20), 1L);
-
-        assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(AlreadyInUseException.class);
+        assertThatThrownBy(() -> reservationService.deleteByAdmin(1L))
+                .isInstanceOf(InvalidStateException.class);
     }
 
     @Test
@@ -119,6 +115,21 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.update(1L, request, "그해"))
                 .isInstanceOf(ForbiddenException.class);
+    }
+
+    @Test
+    void 중복_예약_생성시_409() {
+        mockTime(LocalDate.of(2026, 5, 14), LocalTime.of(12, 0));
+
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
+        given(reservationRepository.existsByThemeIdAndDateAndTimeId(anyLong(), any(LocalDate.class), anyLong()))
+                .willReturn(true);
+
+        ReservationRequest request = new ReservationRequest("동키", 1L, LocalDate.of(2026, 5, 20), 1L);
+
+        assertThatThrownBy(() -> reservationService.create(request))
+                .isInstanceOf(AlreadyInUseException.class);
     }
 
     private void mockTime(LocalDate date, LocalTime time) {

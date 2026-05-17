@@ -59,6 +59,20 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 사용자_이름으로_예약_조회() throws Exception {
+        ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
+        ThemeResponse themeResponse = new ThemeResponse(1L, "공포의 방", "무서운 방", "http://ㄴ.com");
+        ReservationResponse reservationResponse = new ReservationResponse(
+                1L, "동키", themeResponse, LocalDate.of(2026, 6, 1), timeResponse
+        );
+        given(reservationService.readByUserName("동키"))
+                .willReturn(ReservationsResponse.from(List.of(reservationResponse)));
+
+        mockMvc.perform(get("/api/reservations").param("user_name", "동키"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void 예약_추가() throws Exception {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("userName", "매트");
@@ -74,7 +88,7 @@ class ReservationControllerTest {
 
     @Test
     void 예약_변경() throws Exception {
-        ThemeResponse themeResponse = new ThemeResponse(1L, "공포의 방", "무서운 방", "http://test.com");
+        ThemeResponse themeResponse = new ThemeResponse(1L, "공포의 방", "무서운 방", "http://s3.com");
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(2L, LocalTime.of(11, 0));
         ReservationResponse reservationResponse = new ReservationResponse(
                 1L, "동키", themeResponse, LocalDate.of(2026, 6, 1), timeResponse

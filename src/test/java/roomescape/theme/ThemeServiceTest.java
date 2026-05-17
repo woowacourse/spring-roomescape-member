@@ -1,6 +1,7 @@
 package roomescape.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.time.Clock;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.AlreadyInUseException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -21,6 +24,9 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @Mock
     private Clock clock;
@@ -50,5 +56,12 @@ class ThemeServiceTest {
         assertThat(themes.themes()).hasSize(1);
         assertThat(themes.themes().get(0).id()).isEqualTo(5L);
         assertThat(themes.themes().get(0).name()).isEqualTo("초보자 방");
+    }
+
+    @Test
+    void 예약_있는_테마_삭제시_409() {
+        given(reservationRepository.existsByThemeId(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> themeService.delete(1L)).isInstanceOf(AlreadyInUseException.class);
     }
 }
