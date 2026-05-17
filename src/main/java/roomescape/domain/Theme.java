@@ -45,7 +45,7 @@ public class Theme {
         }
         if (name.length() > MAX_LENGTH) {
             throw new IllegalArgumentException(
-                    String.format("테마 이름은 %d자 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_LENGTH, MAX_LENGTH));
+                    String.format("테마 이름은 %d자를 넘을 수 없습니다. %d자 이내로 입력해주세요.", MAX_LENGTH, MAX_LENGTH));
         }
     }
 
