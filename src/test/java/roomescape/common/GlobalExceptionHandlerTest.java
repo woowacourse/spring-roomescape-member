@@ -1,5 +1,9 @@
 package roomescape.common;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -78,6 +82,34 @@ class GlobalExceptionHandlerTest {
                 .when().post("/test/validate")
                 .then()
                 .status(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("Bean Validation 실패 시 invalid-params와 instance를 포함한다")
+    void returnsInvalidParamsAndInstanceOnValidationFailure() {
+        FakeController.TestRequest testRequest = new FakeController.TestRequest(null);
+        RestAssuredMockMvc.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(testRequest)
+                .when().post("/test/validate")
+                .then()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("title", equalTo("입력값 검증 실패"))
+                .body("instance", equalTo("/test/validate"))
+                .body("invalid-params", hasSize(1))
+                .body("invalid-params[0].field", equalTo("value"))
+                .body("invalid-params[0].reason", notNullValue());
+    }
+
+    @Test
+    @DisplayName("BaseException 발생 시 ProblemDetail 구조로 응답한다")
+    void returnsProblemDetailForBaseException() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/not-found")
+                .then()
+                .status(HttpStatus.NOT_FOUND)
+                .body("status", equalTo(404))
+                .body("detail", equalTo("찾을 수 없음"));
     }
 
     @Test
