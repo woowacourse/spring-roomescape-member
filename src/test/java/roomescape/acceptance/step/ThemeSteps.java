@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ThemeSteps {
+
     public static void createTheme(String name, String description, String thumbnailUrl) {
         Map<String, String> theme = new HashMap<>();
         theme.put("name", name);

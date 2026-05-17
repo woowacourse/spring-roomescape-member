@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import roomescape.exception.CustomInvalidDomainException;
+import roomescape.exception.ErrorCode;
 
 public class ReservationTime {
 
@@ -25,8 +27,12 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간은 비어 있을 수 없습니다.");
+            throw new CustomInvalidDomainException(ErrorCode.NOT_ALLOW_TIME_NULL);
         }
+    }
+
+    public boolean isPast(LocalTime localTime) {
+        return startAt.isBefore(localTime);
     }
 
     public Long getId() {

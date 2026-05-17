@@ -1,6 +1,7 @@
 package roomescape.acceptance.step;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReservationSteps {
+
     public static void createReservation(String name, String date, Long timeId, Long themeId) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -23,12 +25,34 @@ public class ReservationSteps {
                 .statusCode(201);
     }
 
+    public static void readMyName(String name, int expectedSize) {
+        RestAssured.given().log().all()
+                .queryParam("name", name)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(expectedSize));
+    }
+
     public static void checkAllReservationSize(int expectedSize) {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(expectedSize));
+    }
+
+    public static void updateReservation(Long id, String date, Long timeId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", date);
+        params.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200);
     }
 
     public static void deleteReservation(Long id) {
@@ -51,6 +75,6 @@ public class ReservationSteps {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is("[ERROR] 동일한 예약이 이미 존재합니다."));
+                .body("message", is(DUPLICATED_RESERVATION.getMessage()));
     }
 }

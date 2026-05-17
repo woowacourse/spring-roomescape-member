@@ -1,34 +1,28 @@
 package roomescape.acceptance;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.acceptance.step.ReservationSteps;
 import roomescape.acceptance.step.ReservationTimeSteps;
 import roomescape.acceptance.step.ThemeSteps;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ReservationAcceptanceTest {
-
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
+public class ReservationAcceptanceTest extends AcceptanceTest {
 
     @Test
     void reservationTimeApiSuccessTest() {
         // 1. 시간 추가
-        ReservationTimeSteps.createReservationTime("10:00");
+        ReservationTimeSteps.createReservationTime(FUTURE_TIME);
 
         // 2. 테마 추가
         ThemeSteps.createTheme("방탈출1", "방탈출1 설명", "theme/url.png");
 
         // 3. 예약 추가
-        ReservationSteps.createReservation("예약자", "2026-05-01", 1L, 1L);
+        ReservationSteps.createReservation("예약자", NOW_DATE, 1L, 1L);
 
         // 4. 전체 예약 조회 사이즈로 예약 추가 확인
         ReservationSteps.checkAllReservationSize(1);
+
+        // 5, 예약 업데이트
+        ReservationSteps.updateReservation(1L, FUTURE_DATE, 1L);
 
         // 5. 예약 삭제
         ReservationSteps.deleteReservation(1L);
@@ -46,14 +40,9 @@ public class ReservationAcceptanceTest {
         ThemeSteps.createTheme("방탈출1", "방탈출1 설명", "theme/url.png");
 
         // 3. 예약 추가
-        ReservationSteps.createReservation("예약자", "2026-05-01", 1L, 1L);
+        ReservationSteps.createReservation("예약자", NOW_DATE, 1L, 1L);
 
         // 4. 날짜, 시간, 테마가 동일한 예약 추가 시 예외 발생
-        ReservationSteps.createDuplicatedReservation("예약자", "2026-05-01", 1L, 1L);
-    }
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
+        ReservationSteps.createDuplicatedReservation("예약자", NOW_DATE, 1L, 1L);
     }
 }

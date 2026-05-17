@@ -1,22 +1,15 @@
 package roomescape.exception;
 
-import org.springframework.http.HttpStatus;
-
 public class CustomException extends RuntimeException {
-    private final HttpStatus status;
-    private final String message;
+
+    private final ErrorCode errorCode;
 
     public CustomException(ErrorCode errorCode) {
-        this.status = errorCode.getStatus();
-        this.message = errorCode.getMessage();
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 }

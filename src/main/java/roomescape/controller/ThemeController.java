@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ControllerThemeResponse;
+import roomescape.controller.dto.response.ControllerThemeResponse;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.service.dto.response.ServiceThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
