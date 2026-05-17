@@ -19,8 +19,7 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.dto.reservationTime.ReservationTimeResponse;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomEscapeException;
+import roomescape.exception.RoleValidator;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -47,9 +46,7 @@ public class ReservationTimeController {
         @Valid @RequestBody ReservationTimeRequest requestDto,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
-        }
+        RoleValidator.requireAdmin(role);
 
         ReservationTime time = reservationService.addReservationTime(requestDto);
         return new ResourceIdResponse(time.getId());
@@ -61,9 +58,7 @@ public class ReservationTimeController {
         @PathVariable Long id,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
-        }
+        RoleValidator.requireAdmin(role);
 
         reservationService.deleteReservationTime(id);
     }

@@ -17,8 +17,7 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.theme.PopularThemesResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomEscapeException;
+import roomescape.exception.RoleValidator;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -37,9 +36,7 @@ public class ThemeController {
         @Valid @RequestBody ThemeRequest request,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
-        }
+        RoleValidator.requireAdmin(role);
 
         Theme saved = themeService.addTheme(request);
         return new ResourceIdResponse(saved.getId());
@@ -51,9 +48,7 @@ public class ThemeController {
         @PathVariable Long id,
         @RequestParam(value = "role", required = false) String role
     ) {
-        if (!"admin".equals(role)) {
-            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
-        }
+        RoleValidator.requireAdmin(role);
 
         themeService.deleteThemeById(id);
     }
