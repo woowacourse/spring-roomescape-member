@@ -230,7 +230,9 @@
                     alert('예약이 삭제되었습니다.');
                     loadReservations();
                 } else {
-                    alert('예약 삭제에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('예약 삭제 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {

@@ -551,7 +551,9 @@
                     const userName = document.getElementById('name').value;
                     loadReservations(userName);
                 } else {
-                    alert('예약 취소에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('예약 취소 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {

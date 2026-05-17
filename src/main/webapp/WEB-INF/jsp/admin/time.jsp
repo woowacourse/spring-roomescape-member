@@ -189,6 +189,81 @@
             background: #f34359;
         }
 
+        .btn-edit {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+            margin-right: 6px;
+        }
+
+        .btn-edit:hover {
+            background: #5a6fd6;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #151932;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .modal h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            background: #2d3561;
+            color: #c5cae9;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #3a4575;
+        }
+
         .empty-state {
             text-align: center;
             color: #5c6686;
@@ -239,6 +314,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h2>시간 수정</h2>
+            <div class="form-group">
+                <label for="editStartAt">시작 시간</label>
+                <input type="time" id="editStartAt" name="editStartAt" required>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeEditModal()">취소</button>
+                <button class="btn" onclick="submitEditTime()">수정</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadTimes();
@@ -258,7 +347,10 @@
                     container.innerHTML = '<div class="time-grid">' + times.map(time => `
                         <div class="time-item">
                             <div class="time-value">${time.startAt}</div>
-                            <button class="btn-delete" onclick="deleteTime(${time.id})">삭제</button>
+                            <div>
+                                <button class="btn-edit" onclick="openEditModal(${time.id}, '${time.startAt}')">수정</button>
+                                <button class="btn-delete" onclick="deleteTime(${time.id})">삭제</button>
+                            </div>
                         </div>
                     `).join('') + '</div>';
                 })
@@ -289,13 +381,63 @@
                     document.getElementById('timeForm').reset();
                     loadTimes();
                 } else {
-                    alert('시간 추가에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('시간 추가 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {
                 console.error('시간 추가 실패:', error);
                 alert('시간 추가 중 오류가 발생했습니다.');
             });
+        });
+
+        let editingTimeId = null;
+
+        function openEditModal(id, startAt) {
+            editingTimeId = id;
+            document.getElementById('editStartAt').value = startAt;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            editingTimeId = null;
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function submitEditTime() {
+            if (!editingTimeId) return;
+
+            const timeData = {
+                startAt: document.getElementById('editStartAt').value
+            };
+
+            fetch(`/admin/times/${editingTimeId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(timeData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('시간이 수정되었습니다.');
+                    closeEditModal();
+                    loadTimes();
+                } else {
+                    return response.json().then(error => {
+                        alert('시간 수정 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('시간 수정 실패:', error);
+                alert('시간 수정 중 오류가 발생했습니다.');
+            });
+        }
+
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
         });
 
         function deleteTime(id) {
@@ -311,7 +453,9 @@
                     alert('시간이 삭제되었습니다.');
                     loadTimes();
                 } else {
-                    alert('시간 삭제에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('시간 삭제 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {
