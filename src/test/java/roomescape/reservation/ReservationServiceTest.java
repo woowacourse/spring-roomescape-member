@@ -122,8 +122,8 @@ class ReservationServiceTest {
     }
 
     private void mockTime(LocalDate date, LocalTime time) {
-        Instant fixedInstant = date.atTime(time).atZone(ZoneId.systemDefault()).toInstant();
+        Instant fixedInstant = date.atTime(time).atZone(ZoneId.of("Asia/Seoul")).toInstant();
         given(clock.instant()).willReturn(fixedInstant);
-        given(clock.getZone()).willReturn(ZoneId.systemDefault());
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }
 }

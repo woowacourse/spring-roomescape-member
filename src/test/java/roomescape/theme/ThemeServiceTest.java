@@ -31,10 +31,10 @@ class ThemeServiceTest {
     @Test
     void 인기_테마_조회() {
         LocalDate testDate = LocalDate.of(2026, 5, 10);
-        Instant fixedInstant = testDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant fixedInstant = testDate.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
 
         given(clock.instant()).willReturn(fixedInstant);
-        given(clock.getZone()).willReturn(ZoneId.systemDefault());
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
 
         LocalDate expectedStart = testDate.minusDays(7);
         LocalDate expectedEnd = testDate.minusDays(1);
