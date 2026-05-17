@@ -6,8 +6,8 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.Time;
 import roomescape.domain.Theme;
+import roomescape.domain.Time;
 
 public record ReservationResponse(
         Long id,

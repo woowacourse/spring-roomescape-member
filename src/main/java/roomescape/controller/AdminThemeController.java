@@ -1,4 +1,3 @@
-
 package roomescape.controller;
 
 import java.net.URI;
@@ -24,7 +23,7 @@ import roomescape.service.AdminThemeService;
 public class AdminThemeController {
     private final AdminThemeService adminThemeService;
 
-    public AdminThemeController(AdminThemeService adminThemeService){
+    public AdminThemeController(AdminThemeService adminThemeService) {
         this.adminThemeService = adminThemeService;
     }
 

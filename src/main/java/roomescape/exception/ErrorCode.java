@@ -2,14 +2,14 @@ package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 
-public enum ErrorCode{
+public enum ErrorCode {
     COMMON_BAD_REQUEST("COMMON_400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
 
     THEME_NAME_BLANK("THEME_400_1", "테마 이름은 비거나 공백일 수 없습니다.", HttpStatus.BAD_REQUEST),
     THEME_DESCRIPTION_BLANK("THEME_400_2", "테마 설명은 비거나 공백일 수 없습니다.", HttpStatus.BAD_REQUEST),
     THEME_THUMBNAIL_URL_BLANK("THEME_400_3", "테마 썸네일 URL은 비거나 공백일 수 없습니다.", HttpStatus.BAD_REQUEST),
-    ALREADY_EXISTS_THEME("THEME_409_1","존재하는 테마는 추가할 수 없습니다.",HttpStatus.CONFLICT),
-    UNALLOWED_DELETE_EXISTS_THEME("THEME_409_2","사용중인 테마는 삭제할 수 없습니다.",HttpStatus.CONFLICT),
+    ALREADY_EXISTS_THEME("THEME_409_1", "존재하는 테마는 추가할 수 없습니다.", HttpStatus.CONFLICT),
+    UNALLOWED_DELETE_EXISTS_THEME("THEME_409_2", "사용중인 테마는 삭제할 수 없습니다.", HttpStatus.CONFLICT),
 
     TIME_START_AT_NULL("TIME_400_1", "예약 시간은 null일 수 없습니다. ", HttpStatus.BAD_REQUEST),
     ALREADY_EXISTS_TIME("TIME_409_1", "이미 존재하는 시간은 저장할 수 없습니다.", HttpStatus.CONFLICT),

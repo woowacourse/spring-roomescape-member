@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ReservationRequest(
-        @Size(max=255)
+        @Size(max = 255)
         @NotBlank(message = "255자 이하의 이름을 입력해주세요.")
         String name,
         @NotNull(message = "날짜를 입력해주세요.")
