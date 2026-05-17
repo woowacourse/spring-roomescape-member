@@ -7,11 +7,11 @@ import integration.BaseIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -29,14 +29,10 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        dataSource.insertTheme(theme.getName(), theme.getDescription(), theme.getThumbnailImageUrl());
-        dataSource.insertReservationTime(reservationTime.getStartAt());
-    }
-
-    @AfterEach
-    void tearDown() {
         dataSource.clearTable();
         dataSource.clearId();
+        dataSource.insertTheme(theme.getName(), theme.getDescription(), theme.getThumbnailImageUrl());
+        dataSource.insertReservationTime(reservationTime.getStartAt());
     }
 
     @Test
@@ -59,9 +55,10 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         Reservation second = Reservation.createNew("아루", LocalDate.now().plusDays(1), theme, reservationTime);
         reservationRepository.save(first);
 
-        // when & then: 서비스 로직 없이 DB의 UK Constraint 확인
+        // when & then: DB의 UK Constraint 발생 후 비즈니스 예외로 변환
         assertThatThrownBy(() -> reservationRepository.save(second))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DuplicateEntityException.class)
+                .hasMessageContaining("이미 예약이 존재하는 시간입니다");
     }
 
     @Test
@@ -102,5 +99,53 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 존재하는_ID로_예약을_조회하면_Optional에_담겨_반환된다() {
+        // given
+        Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation saved = reservationRepository.save(reservation);
+
+        // when:
+        Optional<Reservation> find = reservationRepository.findById(saved.getId());
+
+        // then
+        assertThat(find).isPresent();
+    }
+
+    @Test
+    void 존재하지_않는_ID로_예약을_조회하면_빈_Optional이_반환된다() {
+        // when:
+        Optional<Reservation> find = reservationRepository.findById(1L);
+
+        // then
+        assertThat(find).isEmpty();
+    }
+
+    @Test
+    void 예약을_수정한다() {
+        // given
+        Reservation saved = reservationRepository.save(
+                Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime)
+        );
+
+        Reservation updated = new Reservation(
+                saved.getId(),
+                "아루",
+                LocalDate.now().plusDays(2),
+                theme,
+                reservationTime
+        );
+
+        // when
+        reservationRepository.update(updated);
+
+        // then
+        Optional<Reservation> find = reservationRepository.findById(saved.getId());
+
+        assertThat(find).isPresent();
+        assertThat(find.get().getName()).isEqualTo("아루");
+        assertThat(find.get().getDate()).isEqualTo(LocalDate.now().plusDays(2));
     }
 }

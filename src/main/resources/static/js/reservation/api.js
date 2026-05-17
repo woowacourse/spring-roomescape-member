@@ -15,3 +15,15 @@ export function createReservation(payload) {
     body: JSON.stringify(payload)
   });
 }
+
+export function fetchReservation(id) {
+  return requestJson(`/api/reservations/${id}`);
+}
+
+export function changeReservation(id, payload) {
+  return requestJson(`/api/reservations/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}

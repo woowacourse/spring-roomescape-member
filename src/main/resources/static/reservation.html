@@ -2,21 +2,22 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>예약하기 · RoomEscape</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles/common.css" />
-  <link rel="stylesheet" href="/styles/reservation.css" />
+  <link href="/styles/common.css" rel="stylesheet" />
+  <link href="/styles/reservation.css" rel="stylesheet" />
 </head>
 <body>
   <nav class="top-nav">
     <div class="nav-inner">
-      <a href="/" class="nav-logo">RoomEscape</a>
+      <a class="nav-logo" href="/">RoomEscape</a>
       <div class="nav-links">
         <a href="/">홈</a>
-        <a href="/reserve" class="active">예약하기</a>
+        <a class="active" href="/reserve">예약하기</a>
+        <a href="/search">예약확인</a>
         <a href="/admin">관리자</a>
       </div>
     </div>
@@ -35,7 +36,7 @@
 
       <section class="card">
         <div class="card-label">예약자 이름</div>
-        <input id="nameInput" name="name" class="text-input" type="text" placeholder="이름을 입력하세요" maxlength="20" />
+        <input class="text-input" id="nameInput" maxlength="20" name="name" placeholder="이름을 입력하세요" type="text" />
       </section>
 
       <section class="card">
@@ -50,12 +51,12 @@
         </div>
       </section>
 
-      <button class="btn-submit" data-role="submit-button" type="submit" disabled>예약 확정</button>
+      <button class="btn-submit" data-role="submit-button" disabled type="submit">예약 확정</button>
     </form>
   </main>
 
   <div class="toast" data-role="toast"></div>
 
-  <script type="module" src="/js/reservation/main.js"></script>
+  <script src="/js/reservation/main.js" type="module"></script>
 </body>
 </html>

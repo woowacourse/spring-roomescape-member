@@ -1,5 +1,5 @@
-import { getSearchParam } from "../common/helpers.js";
-import { createReservation, fetchThemes, fetchThemeSlots } from "./api.js";
+import {getSearchParam} from "../common/helpers.js";
+import {changeReservation, createReservation, fetchReservation, fetchThemes, fetchThemeSlots} from "./api.js";
 
 export default class Store {
   constructor() {
@@ -9,6 +9,24 @@ export default class Store {
     this.selectedDate = "";
     this.selectedTimeId = null;
     this.name = "";
+    this.reservationId = getSearchParam("id");
+    this.readonly = false;
+  }
+
+  async initialize() {
+    await this.loadThemes();
+
+    if (this.reservationId) {
+      const reservation = await fetchReservation(this.reservationId);
+
+      this.selectedThemeId = reservation.themeId;
+      this.selectedDate = reservation.date;
+      this.selectedTimeId = reservation.time.id;
+      this.name = reservation.name;
+      this.readonly = true;
+
+      await this.loadSlots();
+    }
   }
 
   async loadThemes() {
@@ -23,15 +41,16 @@ export default class Store {
     }
 
     this.slots = await fetchThemeSlots(this.selectedThemeId, this.selectedDate);
-    this.selectedTimeId = null;
   }
 
   setThemeId(themeId) {
     this.selectedThemeId = themeId;
+    this.selectedTimeId = null;
   }
 
   setDate(date) {
     this.selectedDate = date;
+    this.selectedTimeId = null;
   }
 
   setName(name) {
@@ -43,15 +62,29 @@ export default class Store {
   }
 
   canSubmit() {
-    return Boolean(this.selectedThemeId && this.selectedDate && this.name && this.selectedTimeId);
+    return Boolean(
+        this.selectedThemeId &&
+        this.selectedDate &&
+        this.name &&
+        this.selectedTimeId
+    );
   }
 
   submit() {
-    return createReservation({
+    const payload = {
       name: this.name,
       date: this.selectedDate,
       themeId: Number(this.selectedThemeId),
       timeId: this.selectedTimeId
-    });
+    };
+
+    if (this.reservationId) {
+      return changeReservation(this.reservationId, {
+        date: payload.date,
+        timeId: payload.timeId
+      });
+    }
+
+    return createReservation(payload);
   }
 }

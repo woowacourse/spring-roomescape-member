@@ -19,6 +19,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.TimeStatus;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
+import roomescape.repository.util.RepositoryExceptionTranslator;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,12 +32,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO reservation_time (start_at, status) VALUES (?, ?)";
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            ps.setString(2, reservationTime.getStatus().toString());
-            return ps;
-        }, keyHolder);
+        RepositoryExceptionTranslator.execute(() -> {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+                ps.setString(2, reservationTime.getStatus().toString());
+                return ps;
+            }, keyHolder);
+        }, "이미 존재하는 시간 정보입니다.");
 
         return new ReservationTime(
                 keyHolder.getKey().longValue(),
@@ -95,6 +98,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     SET start_at = ?, status = ?
                     WHERE id = ?
                 """;
-        jdbcTemplate.update(sql, time.getStartAt(), time.getStatus().toString(), time.getId());
+        RepositoryExceptionTranslator.execute(
+                () -> jdbcTemplate.update(sql, time.getStartAt(), time.getStatus().toString(), time.getId()),
+                "이미 존재하는 시간 정보입니다.");
     }
 }

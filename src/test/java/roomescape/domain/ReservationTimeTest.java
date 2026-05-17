@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 
@@ -33,17 +32,29 @@ class ReservationTimeTest {
     }
 
     @Test
-    void 예약_시간은_날짜_정보를_통해_예약_일자를_생성_할_수_있다() {
-        // given
-        LocalDate reservationDate = LocalDate.of(2026, 1, 1);
-        LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTime reservationTime = new ReservationTime(startAt);
+    void 입력받은_날짜와_예약_시간을_조합했을_때_과거라면_true를_반환한다() {
+        // given: 무조건 확실한 과거 (어제 날짜)
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
 
         // when
-        LocalDateTime reservationDateTime = reservationTime.toReservationDateTime(reservationDate);
+        boolean isPast = reservationTime.isPast(pastDate);
 
         // then
-        assertThat(reservationDateTime).isEqualTo(LocalDateTime.of(reservationDate, startAt));
+        assertThat(isPast).isTrue();
+    }
+
+    @Test
+    void 입력받은_날짜와_예약_시간을_조합했을_때_미래라면_false를_반환한다() {
+        // given: 무조건 확실한 미래 (내일 날짜)
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+
+        // when
+        boolean isPast = reservationTime.isPast(futureDate);
+
+        // then
+        assertThat(isPast).isFalse();
     }
 
     @Test
@@ -55,7 +66,7 @@ class ReservationTimeTest {
         time.deactivate();
 
         // then
-        assertThat(time.getStatus()).isEqualTo(TimeStatus.INACTIVE);
+        assertThat(time.isActive()).isFalse();
     }
 
     @Test
@@ -80,7 +91,7 @@ class ReservationTimeTest {
         time.activate();
 
         // then
-        assertThat(time.getStatus()).isEqualTo(TimeStatus.ACTIVE);
+        assertThat(time.isActive()).isTrue();
     }
 
     @Test

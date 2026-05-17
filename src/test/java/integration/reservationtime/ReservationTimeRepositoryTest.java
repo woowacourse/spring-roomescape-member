@@ -1,4 +1,4 @@
-package integration.reservation;
+package integration.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
@@ -52,9 +52,10 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
         ReservationTime time = new ReservationTime(reservationStartTime);
         reservationTimeRepository.save(time);
 
-        // when & then
+        // when & then: 무결성 위반 예외를 비즈니스 예외로 변경
         assertThatThrownBy(() -> reservationTimeRepository.save(time))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DuplicateEntityException.class)
+                .hasMessageContaining("이미 존재하는 시간 정보입니다.");
     }
 
     @Test

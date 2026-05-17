@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.util.RepositoryExceptionTranslator;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,14 +33,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO theme (name, description, thumbnail_image_url, is_active) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnailImageUrl());
-            ps.setBoolean(4, theme.isActive());
-            return ps;
-        }, keyHolder);
+
+        RepositoryExceptionTranslator.execute(
+                () -> jdbcTemplate.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                    ps.setString(1, theme.getName());
+                    ps.setString(2, theme.getDescription());
+                    ps.setString(3, theme.getThumbnailImageUrl());
+                    ps.setBoolean(4, theme.isActive());
+                    return ps;
+                }, keyHolder), "이미 존재하는 테마 정보입니다.");
 
         Long id = keyHolder.getKey().longValue();
         return new Theme(id,
@@ -56,13 +59,15 @@ public class JdbcThemeRepository implements ThemeRepository {
                     SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
                     WHERE id=?
                 """;
-        jdbcTemplate.update(sql,
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnailImageUrl(),
-                theme.isActive(),
-                theme.getId()
-        );
+
+        RepositoryExceptionTranslator.execute(
+                () -> jdbcTemplate.update(sql,
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnailImageUrl(),
+                        theme.isActive(),
+                        theme.getId()
+                ), "이미 존재하는 테마 정보입니다.");
     }
 
     @Override

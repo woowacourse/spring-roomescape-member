@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class ReservationService {
     public ReservationResult reserve(ReservationCommand command) {
         Theme theme = findThemeWithThrow(command.themeId());
         ReservationTime time = findTimeWithThrow(command.timeId());
-        validateAlreadyReservation(command, time);
+        validateAlreadyReservation(command.date(), theme, time);
 
         Reservation reservation = Reservation.createNew(command.name(), command.date(), theme, time);
         Reservation saved = reservationRepository.save(reservation);
@@ -37,8 +38,27 @@ public class ReservationService {
     }
 
     @Transactional
+    public ReservationResult change(long id, ReservationCommand command) {
+        Reservation reservation = findReservationWithThrow(id);
+        ReservationTime time = findTimeWithThrow(command.timeId());
+        if (reservation.isSameTime(command.date(), time)) {
+            return ReservationResult.from(reservation);
+        }
+
+        validateAlreadyReservation(command.date(), reservation.getTheme(), time);
+        reservation.update(command.date(), time);
+        reservationRepository.update(reservation);
+
+        return ReservationResult.from(reservation);
+    }
+
+    @Transactional
     public void cancelReservation(long id) {
-        reservationRepository.delete(id);
+        reservationRepository.findById(id)
+                .ifPresent(reservation -> {
+                    reservation.validateNotPast();
+                    reservationRepository.delete(id);
+                });
     }
 
     public List<ReservationResult> getAllReservations() {
@@ -48,10 +68,15 @@ public class ReservationService {
                 .toList();
     }
 
-    private void validateAlreadyReservation(ReservationCommand command, ReservationTime time) {
-        if (reservationRepository.existByDateAndThemeIdAndTimeId(command.date(), command.themeId(), command.timeId())) {
-            throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", command.date(), time.getStartAt());
+    private void validateAlreadyReservation(LocalDate date, Theme theme, ReservationTime time) {
+        if (reservationRepository.existByDateAndThemeIdAndTimeId(date, theme.getId(), time.getId())) {
+            throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s %s)", date, time.getStartAt());
         }
+    }
+
+    private Reservation findReservationWithThrow(long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 정보입니다."));
     }
 
     private Theme findThemeWithThrow(Long themeId) {
@@ -62,6 +87,11 @@ public class ReservationService {
 
     private ReservationTime findTimeWithThrow(Long timeId) {
         return reservationTimeRepository.findById(timeId)
+                .filter(ReservationTime::isActive)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
+    }
+
+    public ReservationResult getReservation(long id) {
+        return ReservationResult.from(findReservationWithThrow(id));
     }
 }

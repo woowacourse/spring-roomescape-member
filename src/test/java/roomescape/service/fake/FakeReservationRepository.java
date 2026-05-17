@@ -1,16 +1,18 @@
 package roomescape.service.fake;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    private final List<Reservation> reservations = new CopyOnWriteArrayList<>();
+    private final Map<Long, Reservation> storage = new HashMap();
     private final AtomicLong counter = new AtomicLong(1);
 
     @Override
@@ -22,18 +24,18 @@ public class FakeReservationRepository implements ReservationRepository {
                 reservation.getTheme(),
                 reservation.getTime()
         );
-        reservations.add(saved);
+        storage.put(saved.getId(), saved);
         return saved;
     }
 
     @Override
     public void delete(long id) {
-        reservations.removeIf(reservation -> reservation.getId().equals(id));
+        storage.values().removeIf(reservation -> reservation.getId().equals(id));
     }
 
     @Override
     public boolean existByDateAndThemeIdAndTimeId(LocalDate date, long themeId, long timeId) {
-        return reservations.stream()
+        return storage.values().stream()
                 .anyMatch(reservation -> reservation.getDate().equals(date) &&
                         reservation.getTheme().getId().equals(themeId) &&
                         reservation.getTime().getId().equals(timeId));
@@ -41,6 +43,16 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return Collections.unmodifiableList(reservations);
+        return new ArrayList<>(storage.values());
+    }
+
+    @Override
+    public Optional<Reservation> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        storage.put(reservation.getId(), reservation);
     }
 }

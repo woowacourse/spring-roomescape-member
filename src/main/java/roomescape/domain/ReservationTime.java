@@ -29,8 +29,8 @@ public class ReservationTime {
         this(null, startAt, TimeStatus.ACTIVE);
     }
 
-    public LocalDateTime toReservationDateTime(LocalDate date) {
-        return LocalDateTime.of(date, this.startAt);
+    public boolean isPast(LocalDate date) {
+        return LocalDateTime.of(date, this.startAt).isBefore(LocalDateTime.now());
     }
 
     public void deactivate() {
@@ -45,5 +45,9 @@ public class ReservationTime {
             throw new IllegalArgumentException("이미 활성화 된 시간 정보입니다.");
         }
         this.status = TimeStatus.ACTIVE;
+    }
+
+    public boolean isActive() {
+        return this.status == TimeStatus.ACTIVE;
     }
 }
