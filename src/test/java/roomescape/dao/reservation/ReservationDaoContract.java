@@ -234,6 +234,77 @@ public abstract class ReservationDaoContract {
         }
 
         @Test
+        void existsByThemeIdAndTimeIdAndDateAndIdNot_자기_자신만_있으면_false() {
+            TimeRow time = givenTime(10);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRow saved = reservationDao().create(row("달수", DATE, time, theme));
+
+            boolean result = reservationDao().existsByThemeIdAndTimeIdAndDateAndIdNot(
+                    theme.id(), time.id(), DATE, saved.id()
+            );
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void existsByThemeIdAndTimeIdAndDateAndIdNot_같은_슬롯에_다른_예약이_있으면_true() {
+            TimeRow time = givenTime(10);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRow other = reservationDao().create(row("달수", DATE, time, theme));
+            ReservationRow me = reservationDao().create(row("철수", DATE.plusDays(1), time, theme));
+
+            boolean result = reservationDao().existsByThemeIdAndTimeIdAndDateAndIdNot(
+                    theme.id(), time.id(), DATE, me.id()
+            );
+
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void existsByThemeIdAndTimeIdAndDateAndIdNot_date가_다르면_false() {
+            TimeRow time = givenTime(10);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRow other = reservationDao().create(row("달수", DATE, time, theme));
+            ReservationRow me = reservationDao().create(row("철수", DATE.plusDays(1), time, theme));
+
+            boolean result = reservationDao().existsByThemeIdAndTimeIdAndDateAndIdNot(
+                    theme.id(), time.id(), DATE.plusDays(1), me.id()
+            );
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void existsByThemeIdAndTimeIdAndDateAndIdNot_theme이_다르면_false() {
+            ThemeRow theme1 = givenTheme("방탈출1");
+            ThemeRow theme2 = givenTheme("방탈출2");
+            TimeRow time = givenTime(14);
+            ReservationRow other = reservationDao().create(row("달수", DATE, time, theme1));
+            ReservationRow me = reservationDao().create(row("철수", DATE, time, theme2));
+
+            boolean result = reservationDao().existsByThemeIdAndTimeIdAndDateAndIdNot(
+                    theme2.id(), time.id(), DATE, me.id()
+            );
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void existsByThemeIdAndTimeIdAndDateAndIdNot_time이_다르면_false() {
+            TimeRow time1 = givenTime(14);
+            TimeRow time2 = givenTime(15);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRow other = reservationDao().create(row("달수", DATE, time1, theme));
+            ReservationRow me = reservationDao().create(row("철수", DATE, time2, theme));
+
+            boolean result = reservationDao().existsByThemeIdAndTimeIdAndDateAndIdNot(
+                    theme.id(), time2.id(), DATE, me.id()
+            );
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
         void existsByThemeId_예약이_있으면_true() {
             TimeRow time = givenTime(10);
             ThemeRow theme = givenTheme("방탈출");

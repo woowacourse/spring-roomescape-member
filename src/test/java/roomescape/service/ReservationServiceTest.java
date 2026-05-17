@@ -12,6 +12,7 @@ import roomescape.dao.TimeDao;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.fixture.FakeReservationDao;
 import roomescape.fixture.FakeThemeDao;
@@ -63,6 +64,10 @@ class ReservationServiceTest {
 
     private ReservationRequestDto requestOf(String name, LocalDate date, Long timeId, Long themeId) {
         return new ReservationRequestDto(name, date, timeId, themeId);
+    }
+
+    private ReservationUpdateDto updateOf(String name, LocalDate date, Long timeId, Long themeId) {
+        return new ReservationUpdateDto(name, date, timeId, themeId);
     }
 
     @Test
@@ -163,6 +168,59 @@ class ReservationServiceTest {
         void 삭제하려는_id가_존재하지_않으면_예외() {
             assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID))
                     .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("예약을 변경할 때: ")
+    class Updated {
+
+        @Test
+        void 시간이_존재하지_않는다면_예외_처리한다() {
+            ThemeRow theme = givenTheme("방탈출");
+            TimeRow time = givenTime(14);
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+            assertThatThrownBy(() -> reservationService.update(created.id(), updateOf(created.name(), created.date(), created.timeDto().id(), NOT_EXISTS_ID)))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 테마가_존재하지_않는다면_예외_처리한다() {
+            ThemeRow theme = givenTheme("방탈출");
+            TimeRow time = givenTime(14);
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+
+            assertThatThrownBy(() -> reservationService.update(created.id(), updateOf(created.name(), created.date(), NOT_EXISTS_ID, created.themeResponseDto().id())))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 예약이_존재하지_않는다면_예외_처리한다() {
+            ThemeRow theme = givenTheme("방탈출");
+            TimeRow time = givenTime(14);
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+
+            assertThatThrownBy(() -> reservationService.update(NOT_EXISTS_ID, updateOf(created.name(), created.date(), created.timeDto().id(), created.themeResponseDto().id())))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 다른_예약과_슬롯이_겹치면_예외를_반환한다() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            reservationService.create(requestOf("다른사람", TODAY.plusDays(1), time.id(), theme.id()));
+
+            ReservationResponseDto mine = reservationService.create(
+                    requestOf("나", TODAY, time.id(), theme.id())
+            );
+
+            assertThatThrownBy(() -> reservationService.update(
+                    mine.id(),
+                    updateOf("나", TODAY.plusDays(1), time.id(), theme.id())
+            )).isInstanceOf(ConflictException.class);
         }
     }
 }

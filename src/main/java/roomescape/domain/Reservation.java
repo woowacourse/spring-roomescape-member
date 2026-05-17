@@ -14,7 +14,7 @@ public class Reservation {
     private final Time time;
     private final Theme theme;
 
-    public Reservation(Long id, Name name, LocalDate date, Time time, Theme theme) {
+    private Reservation(Long id, Name name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -23,39 +23,34 @@ public class Reservation {
     }
 
     public static Reservation create(Name name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
-        validate(date, time, now);
-        return new Reservation(null, name, date, time, theme);
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        reservation.validate(now);
+        return reservation;
     }
 
-    private static void validate(LocalDate date, Time time, LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("이미 지난 시각으로는 예약할 수 없습니다.");
-        }
-
-        LocalDate maxAvailableDate = now.toLocalDate().plusDays(14);
-        if (date.isAfter(maxAvailableDate)) {
-            throw new IllegalArgumentException("예약은 현재로부터 최대 14일 이내만 가능합니다.");
-        }
+    public static Reservation restore(Long id, Name name, LocalDate date, Time time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
     public Reservation update(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
         Name updatedName = Optional.ofNullable(name).map(Name::new).orElse(this.name);
         LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
-        validate(updatedDate, time, now);
-        return new Reservation(this.id, updatedName, updatedDate, time, theme);
+
+        Reservation updated = new Reservation(this.id, updatedName, updatedDate, time, theme);
+        updated.validate(now);
+        return updated;
     }
 
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Reservation that)) return false;
+    private void validate(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("이미 지난 시각으로는 예약할 수 없습니다.");
+        }
 
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+        LocalDate maxAvailableDate = now.toLocalDate().plusDays(14);
+        if (this.date.isAfter(maxAvailableDate)) {
+            throw new IllegalArgumentException("예약은 현재로부터 최대 14일 이내만 가능합니다.");
+        }
     }
 
     public Long getId() {

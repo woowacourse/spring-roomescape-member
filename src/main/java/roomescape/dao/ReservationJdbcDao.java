@@ -149,6 +149,26 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
+    public boolean existsByThemeIdAndTimeIdAndDateAndIdNot(Long themeId, Long timeId, LocalDate date, Long id) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservations r
+                    WHERE r.theme_id = :theme_id
+                    AND r.time_id = :time_id
+                    AND r.date = :date
+                    AND id <> :id
+                    )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("theme_id", themeId)
+                .addValue("time_id", timeId)
+                .addValue("date", date)
+                .addValue("id", id);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
+
+    @Override
     public boolean existsByThemeId(Long themeId) {
         String sql = """
                 SELECT EXISTS(

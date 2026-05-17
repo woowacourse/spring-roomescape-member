@@ -111,10 +111,22 @@ public class ReservationService {
         ReservationRow existing = reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
 
+        boolean conflicts = reservationDao.existsByThemeIdAndTimeIdAndDateAndIdNot(
+                reservationUpdate.themeId(),
+                reservationUpdate.timeId(),
+                reservationUpdate.date(),
+                id
+        );
+
+        if (conflicts) {
+            throw new ConflictException(ReservationErrorCode.DUPLICATE);
+        }
+
         Reservation updated = existing.toDomain()
                 .update(reservationUpdate.name(), reservationUpdate.date(), time, theme, LocalDateTime.now(clock));
 
-        ReservationRow updatedRow = ReservationRow.from(updated);
-        return ReservationResponseDto.from(reservationDao.update(updatedRow));
+        ReservationRow saved = reservationDao.update(ReservationRow.from(updated));
+
+        return ReservationResponseDto.from(saved);
     }
 }

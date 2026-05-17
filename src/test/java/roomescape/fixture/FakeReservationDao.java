@@ -35,7 +35,7 @@ public class FakeReservationDao implements ReservationDao {
         }
 
         Long id = generateReservationId();
-        ;
+
         ReservationRow newReservation = new ReservationRow(
                 id,
                 reservation.name(),
@@ -45,7 +45,6 @@ public class FakeReservationDao implements ReservationDao {
 
         reservations.put(id, newReservation);
         return newReservation;
-
     }
 
     @Override
@@ -74,6 +73,17 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public boolean existsByThemeIdAndTimeIdAndDateAndIdNot(Long themeId, Long timeId, LocalDate date, Long id) {
+        return reservations.values()
+                .stream()
+                .anyMatch(reservation ->
+                        reservation.themeRow().id().equals(themeId)
+                                && reservation.timeRow().id().equals(timeId)
+                                && reservation.date().equals(date)
+                                && !reservation.id().equals(id));
+    }
+
+    @Override
     public boolean existsByThemeId(Long themeId) {
         return reservations.values()
                 .stream()
@@ -89,11 +99,26 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public List<ReservationRow> findByName(String name) {
-        return List.of();
+        return reservations.values().stream()
+                .filter(reservation -> reservation.name().equals(name))
+                .toList();
     }
 
     @Override
-    public ReservationRow update(ReservationRow row) {
-        return null;
+    public ReservationRow update(ReservationRow reservation) {
+        boolean duplicate = existsByThemeIdAndTimeIdAndDateAndIdNot(
+                reservation.themeRow().id(),
+                reservation.timeRow().id(),
+                reservation.date(),
+                reservation.id()
+        );
+
+        if (duplicate) {
+            throw new DuplicateKeyException("uk_theme_time_date");
+        }
+
+        reservations.put(reservation.id(), reservation);
+
+        return reservation;
     }
 }

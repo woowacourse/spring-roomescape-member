@@ -28,6 +28,6 @@ public record ReservationRow(Long id,
 
     @Override
     public Reservation toDomain() {
-        return new Reservation(id, new Name(name), date, timeRow.toDomain(), themeRow.toDomain());
+        return Reservation.restore(id, new Name(name), date, timeRow.toDomain(), themeRow.toDomain());
     }
 }
