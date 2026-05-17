@@ -79,9 +79,6 @@ class ReservationServiceTest {
         assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
                 .doesNotThrowAnyException();
 
-        verify(reservationRepository).findDetailByIdAndName(reservationDetail.id(), reservationDetail.name());
-        verify(scheduleService).validateNotPastDate(reservationDetail.date());
-        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
         verify(reservationRepository).deleteByIdAndName(reservationId, name);
     }
 
@@ -98,12 +95,32 @@ class ReservationServiceTest {
         // when, then
         assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
                 .doesNotThrowAnyException();
-        verify(reservationRepository).findDetailByIdAndName(reservationId, name);
+
         verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
     }
 
     @Test
     @DisplayName("특정 사용자의 예약날짜가 과거인 경우 삭제 시도 시 예외가 발생한다.")
+    void deleteByIdAndName_테스트_3() {
+        long reservationId = 1L;
+        String name = "a";
+
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doThrow(EscapeRoomException.class)
+                .when(scheduleService)
+                .validateNotPastDate(reservationDetail.date());
+
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(EscapeRoomException.class);
+
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 예약날짜가 오늘과 같지만 시간이 과거시간인 경우 삭제 시도 시 예외가 발생한다.")
     void deleteByIdAndName_테스트_4() {
         long reservationId = 1L;
         String name = "a";
@@ -112,34 +129,13 @@ class ReservationServiceTest {
                 reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
 
         when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
-        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(reservationDetail.date());
+        doThrow(EscapeRoomException.class)
+                .when(scheduleService)
+                .validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
 
         assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(EscapeRoomException.class);
 
-        verify(scheduleService).validateNotPastDate(reservationDetail.date());
-        verify(scheduleService, never()).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
-    }
-
-    @Test
-    @DisplayName("특정 사용자의 예약날짜가 오늘과 같지만 시간이 과거시간인 경우 삭제 시도 시 예외가 발생한다.")
-    void deleteByIdAndName_테스트_5() {
-        long reservationId = 1L;
-        String name = "a";
-
-        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
-                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
-
-        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
-        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
-        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-
-        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
-                .isInstanceOf(IllegalStateException.class);
-
-        verify(scheduleService).validateNotPastDate(reservationDetail.date());
-        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
         verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
     }
 
