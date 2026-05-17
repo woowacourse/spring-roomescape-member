@@ -61,7 +61,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(),
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.now().plusDays(1), savedTime.id(),
                 savedTheme.id());
 
         //when
@@ -76,7 +76,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(),
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.now().plusDays(1), savedTime.id(),
                 savedTheme.id());
 
         //when
@@ -91,12 +91,12 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(), savedTheme.id());
+        reservationService.save("맥스", LocalDate.now().plusDays(1), savedTime.id(), savedTheme.id());
 
         //when & then
         assertThatThrownBy(() -> reservationService.save(
                 "피노",
-                LocalDate.of(2030, 5, 6),
+                LocalDate.now().plusDays(1),
                 savedTime.id(),
                 savedTheme.id()))
                 .isInstanceOf(DuplicatedResourceException.class)
@@ -111,8 +111,8 @@ class ReservationServiceTest {
         ReservationTime reservationTimeEleven = reservationTimeService.save(
                 new ReservationTime(LocalTime.parse("11:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen.id(), theme.id());
-        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven.id(), theme.id());
+        reservationService.save(pobi, LocalDate.now().plusDays(1), reservationTimeTen.id(), theme.id());
+        reservationService.save(pobi, LocalDate.now().plusDays(1), reservationTimeEleven.id(), theme.id());
 
         //when
         List<Reservation> reservations = reservationService.findByName(pobi);
@@ -127,17 +127,17 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2030, 1, 1);
+        LocalDate localDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
-        LocalDate newDate = LocalDate.of(2031, 1, 1);
+        LocalDate newDate = LocalDate.now().plusDays(2);
 
         //when
         reservationService.update(savedReservation.id(), newDate, reservationTimeTen.id(), theme.id());
 
         //then
         assertThat(reservationService.findByName(pobi).getFirst().date())
-                .isEqualTo(LocalDate.of(2031, 1, 1));
+                .isEqualTo(LocalDate.now().plusDays(2));
     }
 
     @Test
@@ -146,7 +146,7 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2000, 1, 1);
+        LocalDate localDate = LocalDate.now().minusDays(1);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
 
@@ -162,7 +162,7 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2026, 5, 1);
+        LocalDate localDate = LocalDate.now().minusDays(1);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
 
@@ -178,10 +178,10 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2000, 12, 16);
+        LocalDate localDate = LocalDate.now().minusDays(1);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
-        LocalDate newDate = LocalDate.of(2031, 1, 1);
+        LocalDate newDate = LocalDate.now().plusDays(2);
 
         //when && then
         assertThatThrownBy(
@@ -197,13 +197,13 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2030, 1, 1);
-        LocalDate duplicatedDate = LocalDate.of(2031, 1, 1);
+        LocalDate localDate = LocalDate.now().plusDays(1);
+        LocalDate duplicatedDate = LocalDate.now().plusDays(2);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
         Reservation duplicatedReservation = reservationDao.save(
                 new Reservation(pobi, duplicatedDate, reservationTimeTen, theme));
-        LocalDate newDate = LocalDate.of(2031, 1, 1);
+        LocalDate newDate = LocalDate.now().plusDays(2);
 
         //when && then
         assertThatThrownBy(() -> reservationService.update(
@@ -219,7 +219,7 @@ class ReservationServiceTest {
     void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
         //given
         Long fakeId = 9999L;
-        LocalDate newDate = LocalDate.of(2031, 1, 1);
+        LocalDate newDate = LocalDate.now().plusDays(2);
 
         //when & then
         assertThatThrownBy(() -> reservationService.update(fakeId, newDate, 1L, 1L))
@@ -233,7 +233,7 @@ class ReservationServiceTest {
         String pobi = "포비";
         ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2030, 1, 1);
+        LocalDate localDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
 

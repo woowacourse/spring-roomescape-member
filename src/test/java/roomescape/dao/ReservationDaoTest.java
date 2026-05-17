@@ -29,7 +29,7 @@ class ReservationDaoTest {
     @Test
     void 사용자가_선택한_날짜와_테마에_해당하는_예약시간Id를_가져온다() {
         // given
-        LocalDate targetDate = LocalDate.of(2030, 5, 6);
+        LocalDate targetDate = LocalDate.now().plusDays(1);
 
         ReservationTime targetTime1 = reservationTimeDao.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime targetTime2 = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
@@ -42,7 +42,7 @@ class ReservationDaoTest {
         reservationDao.save(new Reservation("맥스", targetDate, targetTime1, targetTheme));
         reservationDao.save(new Reservation("피노", targetDate, targetTime2, targetTheme));
 
-        reservationDao.save(new Reservation("브라운", LocalDate.of(2030, 5, 5), otherDateTime, targetTheme));
+        reservationDao.save(new Reservation("브라운", LocalDate.now().plusDays(2), otherDateTime, targetTheme));
 
         reservationDao.save(new Reservation("포비", targetDate, otherThemeTime, otherTheme));
 
@@ -61,7 +61,7 @@ class ReservationDaoTest {
     @Test
     void 이미_존재하는_예약이_있는지_확인() {
         //given
-        LocalDate date = LocalDate.of(2030, 5, 6);
+        LocalDate date = LocalDate.now().plusDays(1);
         ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeDao.save(new Theme("공포", "무서움", "https://roomescape.com/horror"));
         reservationDao.save(new Reservation("맥스", date, reservationTime, theme));
@@ -81,8 +81,8 @@ class ReservationDaoTest {
         ReservationTime reservationTimeTen = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTimeEleven = reservationTimeDao.save(new ReservationTime(LocalTime.parse("11:00")));
         Theme theme = themeDao.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        reservationDao.save(new Reservation(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen, theme));
-        reservationDao.save(new Reservation(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven, theme));
+        reservationDao.save(new Reservation(pobi, LocalDate.now().plusDays(1), reservationTimeTen, theme));
+        reservationDao.save(new Reservation(pobi, LocalDate.now().plusDays(1), reservationTimeEleven, theme));
 
         //when
         List<Reservation> reservations = reservationDao.findByName(pobi);

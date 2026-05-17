@@ -488,7 +488,7 @@ erDiagram
 
 
 - **ReservationServiceTest**
-- [ ] 현재 날짜 기준 테스트 수정
+- [x] 현재 날짜 기준 테스트 수정
 - [ ] 에러코드와 에러메시지 차이 공부해보기
 
 

@@ -19,6 +19,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.ResourceDeleteConflicted;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
@@ -75,7 +76,7 @@ class ReservationTimeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceDeleteConflicted.class)
                 .hasMessageContaining("삭제할 수 없습니다");
     }
 
