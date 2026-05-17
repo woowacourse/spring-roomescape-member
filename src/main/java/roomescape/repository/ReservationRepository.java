@@ -86,13 +86,41 @@ public class ReservationRepository {
                 .findFirst();
     }
 
+    public List<Reservation> findAllByName(String username) {
+        String sql =
+                "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
+                        +
+                        "FROM reservation r " +
+                        "INNER JOIN reservation_time t ON r.time_id = t.id " +
+                        "INNER JOIN theme m ON r.theme_id = m.id " +
+                        "WHERE r.username = ?";
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, username);
+    }
+
+    public Reservation update(Long id, LocalDate date, Long timeId) {
+        String sql = "update reservation set date = ?, time_id = ? where id = ?";
+        jdbcTemplate.update(sql, date, timeId, id);
+        return findById(id).orElseThrow();
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
+    public boolean existsByDateAndTimeIdAndThemeIdAndReservationIdNot(LocalDate date, Long timeId, Long themeId,
+                                                                      Long reservationId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ? AND id != ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, reservationId);
+    }
+
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 }

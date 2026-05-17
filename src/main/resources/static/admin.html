@@ -187,6 +187,30 @@
 </div>
 
 <script>
+    const ERROR_MESSAGES = {
+        'TIME_NULL': '시작 시간을 입력해주세요.',
+        'TIME_NOT_ON_THE_HOUR': '시작 시간은 정각(HH:00)이어야 합니다.',
+        'TIME_DUPLICATED': '이미 등록된 시간입니다.',
+        'TIME_NOT_FOUND': '존재하지 않는 시간입니다.',
+        'TIME_HAS_RESERVATIONS': '해당 시간에 예약이 존재하여 삭제할 수 없습니다.',
+        'THEME_NAME_BLANK': '테마 이름을 입력해주세요.',
+        'THEME_NAME_LENGTH_INVALID': '테마 이름은 1자 이상 20자 이하여야 합니다.',
+        'THEME_DESCRIPTION_BLANK': '테마 설명을 입력해주세요.',
+        'THEME_URL_BLANK': '테마 이미지 URL을 입력해주세요.',
+        'THEME_DUPLICATED': '이미 등록된 테마 이름입니다.',
+        'THEME_NOT_FOUND': '존재하지 않는 테마입니다.',
+        'THEME_HAS_RESERVATIONS': '해당 테마에 예약이 존재하여 삭제할 수 없습니다.',
+        'RESERVATION_NOT_FOUND': '존재하지 않는 예약입니다.',
+        'RESERVATION_PAST_CANCEL': '이미 지난 예약은 삭제할 수 없습니다.',
+    };
+
+    function clientMessage(err, fallback) {
+        if (Array.isArray(err)) {
+            return ERROR_MESSAGES[err[0]?.code] || fallback;
+        }
+        return ERROR_MESSAGES[err.code] || fallback;
+    }
+
     function showMessage(el, type, text) {
         el.className = `message ${type}`;
         el.textContent = text;
@@ -311,15 +335,16 @@
             });
 
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '예약 시간 추가에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                showMessage(message, 'error', clientMessage(err, '예약 시간 추가에 실패했습니다.'));
+                return;
             }
 
             input.value = '';
             showMessage(message, 'success', '예약 시간이 추가되었습니다.');
             loadAdminTimes();
         } catch (e) {
-            showMessage(message, 'error', e.message || '예약 시간 추가에 실패했습니다.');
+            showMessage(message, 'error', '네트워크 오류가 발생했습니다.');
         }
     }
 
@@ -346,8 +371,10 @@
             });
 
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '테마 추가에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                const errors = Array.isArray(err) ? err : [err];
+                showMessage(message, 'error', errors.map(e => clientMessage(e, '테마 추가에 실패했습니다.')).join(' / '));
+                return;
             }
 
             name.value = '';
@@ -356,7 +383,7 @@
             showMessage(message, 'success', '테마가 추가되었습니다.');
             loadAdminThemes();
         } catch (e) {
-            showMessage(message, 'error', e.message || '테마 추가에 실패했습니다.');
+            showMessage(message, 'error', '네트워크 오류가 발생했습니다.');
         }
     }
 
@@ -366,14 +393,15 @@
         try {
             const res = await fetch(`/admin/times/${id}`, { method: 'DELETE' });
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '예약 시간 삭제에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                showMessage(message, 'error', clientMessage(err, '예약 시간 삭제에 실패했습니다.'));
+                return;
             }
 
             showMessage(message, 'success', '예약 시간이 삭제되었습니다.');
             loadAdminTimes();
         } catch (e) {
-            showMessage(message, 'error', e.message || '예약 시간 삭제에 실패했습니다.');
+            showMessage(message, 'error', '네트워크 오류가 발생했습니다.');
         }
     }
 
@@ -383,14 +411,15 @@
         try {
             const res = await fetch(`/admin/themes/${id}`, { method: 'DELETE' });
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '테마 삭제에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                showMessage(message, 'error', clientMessage(err, '테마 삭제에 실패했습니다.'));
+                return;
             }
 
             showMessage(message, 'success', '테마가 삭제되었습니다.');
             loadAdminThemes();
         } catch (e) {
-            showMessage(message, 'error', e.message || '테마 삭제에 실패했습니다.');
+            showMessage(message, 'error', '네트워크 오류가 발생했습니다.');
         }
     }
 
@@ -400,14 +429,15 @@
         try {
             const res = await fetch(`/admin/reservations/${id}`, { method: 'DELETE' });
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '예약 삭제에 실패했습니다.');
+                const err = await res.json().catch(() => ({}));
+                showMessage(message, 'error', clientMessage(err, '예약 삭제에 실패했습니다.'));
+                return;
             }
 
             showMessage(message, 'success', '예약이 삭제되었습니다.');
             loadAdminReservations();
         } catch (e) {
-            showMessage(message, 'error', e.message || '예약 삭제에 실패했습니다.');
+            showMessage(message, 'error', '네트워크 오류가 발생했습니다.');
         }
     }
 

@@ -1,6 +1,9 @@
 package roomescape.model;
 
 import java.time.LocalTime;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.UnprocessableEntityException;
 
 public class ReservationTime {
 
@@ -16,8 +19,11 @@ public class ReservationTime {
     }
 
     private void validateStartAt() {
+        if (startAt == null) {
+            throw new BadRequestException(ErrorCode.TIME_NULL);
+        }
         if (startAt.getMinute() != START_MINUTE) {
-            throw new IllegalArgumentException("[ERROR] 방탈출의 시작 시간은 정각이어야 합니다.");
+            throw new UnprocessableEntityException(ErrorCode.TIME_NOT_ON_THE_HOUR);
         }
     }
 

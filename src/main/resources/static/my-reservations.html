@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예약 - 방탈출</title>
+    <style>
+        :root {
+            --bg: #f6f9fc;
+            --panel: #ffffff;
+            --line: #e5edf5;
+            --text: #191f28;
+            --muted: #8b95a1;
+            --primary: #3182f6;
+            --primary-strong: #1b64da;
+            --soft: #eef5ff;
+            --success-bg: #effaf3;
+            --success-text: #1f8f55;
+            --error-bg: #fff2f2;
+            --error-text: #d14343;
+            --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Pretendard", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(49, 130, 246, 0.10), transparent 28%),
+                linear-gradient(180deg, #f9fbff 0%, var(--bg) 38%, #f3f6fb 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            max-width: 1120px; margin: 24px auto 0; padding: 34px 32px 28px;
+            border-radius: 30px; background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
+            box-shadow: var(--shadow); text-align: left; position: relative;
+        }
+        header h1 { font-size: 2.3rem; line-height: 1.2; letter-spacing: -0.04em; }
+        header p { margin-top: 10px; color: #5f6b7a; font-size: 1rem; }
+
+        .topbar {
+            position: absolute; top: 20px; right: 22px;
+            display: flex; gap: 8px; align-items: center;
+            background: rgba(255,255,255,0.88); padding: 6px;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+            border: 1px solid rgba(229,237,245,0.95); border-radius: 999px; backdrop-filter: blur(14px);
+        }
+        .topbar a {
+            text-decoration: none; padding: 8px 12px; border-radius: 999px;
+            border: 1px solid transparent; color: #4e5968; background: transparent;
+            font-weight: 700; font-size: 0.83rem; transition: all 0.2s;
+        }
+        .topbar a.active, .topbar a:hover {
+            background: var(--soft); border-color: #d9e8ff; color: var(--primary-strong);
+        }
+
+        .container { max-width: 720px; margin: 32px auto 60px; padding: 0 16px; }
+
+        .card {
+            background: var(--panel); border-radius: 28px; padding: 28px;
+            margin-bottom: 18px; box-shadow: var(--shadow); border: 1px solid rgba(229,237,245,0.88);
+        }
+        .card h3 { margin-bottom: 18px; font-size: 1.3rem; letter-spacing: -0.03em; }
+
+        .form-row { display: flex; gap: 12px; align-items: flex-end; }
+        .form-row > div { flex: 1; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.95rem; color: #4e5968; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 15px 16px; border: 1px solid var(--line); border-radius: 18px;
+            font-size: 0.95rem; background: #fbfdff; color: var(--text);
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(49,130,246,0.12); background: white;
+        }
+
+        .btn-primary {
+            padding: 16px 24px; background: var(--primary); color: white; border: none;
+            border-radius: 18px; font-size: 1rem; font-weight: 800; cursor: pointer;
+            transition: background 0.2s, transform 0.2s; min-width: 120px;
+        }
+        .btn-primary:hover { background: var(--primary-strong); transform: translateY(-1px); }
+        .btn-primary:disabled { background: #c9d3df; cursor: not-allowed; transform: none; }
+
+        .message {
+            padding: 14px 16px; border-radius: 16px; margin-top: 18px; display: none; font-weight: 600;
+        }
+        .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #ccefd8; }
+        .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid #ffd6d6; }
+
+        .reservation-card {
+            background: var(--panel); border-radius: 24px; padding: 22px 24px;
+            margin-bottom: 14px; box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+            border: 1px solid rgba(229,237,245,0.9);
+        }
+        .reservation-card .header-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .reservation-card .theme-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+        .reservation-card .detail { color: #6b7684; font-size: 0.93rem; }
+        .reservation-card .actions { display: flex; gap: 8px; }
+
+        .btn-edit {
+            padding: 10px 18px; border: 1px solid #d9e8ff; border-radius: 14px;
+            background: #eef5ff; color: #1b64da; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-edit:hover { background: #dbeaff; }
+
+        .btn-cancel {
+            padding: 10px 18px; border: 1px solid #ffd6d6; border-radius: 14px;
+            background: #fff2f2; color: #d14343; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-cancel:hover { background: #ffe5e5; }
+
+        .badge-past {
+            padding: 6px 14px; background: #f3f4f6; border-radius: 999px;
+            font-size: 0.82rem; color: #8b95a1; font-weight: 700;
+        }
+
+        .empty { text-align: center; padding: 42px 20px; color: var(--muted); font-size: 0.96rem; }
+
+        /* 모달 */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            z-index: 100; align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white; border-radius: 28px; padding: 32px;
+            width: 100%; max-width: 480px; margin: 16px;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+        }
+        .modal h3 { font-size: 1.3rem; margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+        .time-slots { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+        .time-slot {
+            padding: 14px 18px; border: 1px solid #dbe7f3; border-radius: 18px;
+            background: #fbfdff; cursor: pointer; font-size: 0.95rem; font-weight: 700;
+            color: #4e5968; transition: all 0.2s;
+        }
+        .time-slot:hover, .time-slot.selected {
+            background: var(--soft); color: var(--primary-strong); border-color: #cfe0ff;
+        }
+
+        @media (max-width: 768px) {
+            header { margin: 16px 16px 0; padding: 28px 22px 24px; border-radius: 24px; }
+            header h1 { font-size: 1.9rem; }
+            .form-row { flex-direction: column; }
+            .btn-primary { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="topbar">
+        <a href="/">사용자</a>
+        <a href="/my-reservations.html" class="active">내 예약</a>
+        <a href="/admin.html">관리자</a>
+    </div>
+    <h1>내 예약</h1>
+    <p>예약 조회, 변경, 취소를 할 수 있습니다.</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h3>예약 조회</h3>
+        <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+                <label for="my-name">이름</label>
+                <input type="text" id="my-name" placeholder="예약 시 입력한 이름" maxlength="20">
+            </div>
+            <button class="btn-primary" onclick="loadMyReservations()">조회</button>
+        </div>
+        <div id="my-message" class="message"></div>
+    </div>
+
+    <div id="reservation-list"></div>
+</div>
+
+<!-- 예약 변경 모달 -->
+<div id="edit-modal" class="modal-overlay">
+    <div class="modal">
+        <h3>예약 변경</h3>
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+            <label for="edit-date">날짜</label>
+            <input type="date" id="edit-date">
+        </div>
+        <div class="form-group">
+            <label>예약 가능 시간</label>
+            <div id="edit-time-slots" class="time-slots">
+                <p style="color:var(--muted); font-size:0.95rem;">날짜를 선택해주세요</p>
+            </div>
+        </div>
+        <div id="edit-message" class="message"></div>
+        <div class="modal-actions">
+            <button class="btn-primary" id="btn-submit-edit" onclick="submitEdit()" disabled>변경하기</button>
+            <button onclick="closeEditModal()" style="padding:16px 24px; border:1px solid #e5edf5; border-radius:18px; background:white; font-size:1rem; font-weight:700; cursor:pointer; color:#6b7684;">취소</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ERROR_MESSAGES = {
+        'RESERVATION_NOT_FOUND': '예약을 찾을 수 없습니다.',
+        'RESERVATION_NOT_USER_CANCEL': '본인의 예약만 취소할 수 있습니다.',
+        'RESERVATION_PAST_CANCEL': '이미 지난 예약은 취소할 수 없습니다.',
+        'RESERVATION_PAST_UPDATE': '이미 지난 예약은 변경할 수 없습니다.',
+        'RESERVATION_PAST_DATE': '오늘 이전 날짜로는 변경할 수 없습니다.',
+        'RESERVATION_TIME_ALREADY_BOOKED': '이미 예약된 시간입니다. 다른 시간을 선택해주세요.',
+        'TIME_NOT_FOUND': '선택한 시간 정보를 찾을 수 없습니다.',
+    };
+
+    function clientMessage(err, fallback) {
+        return ERROR_MESSAGES[err.code] || fallback;
+    }
+
+    let currentUsername = '';
+    let editThemeId = null;
+    let editSelectedTimeId = null;
+    let isLoading = false;
+
+    async function loadMyReservations() {
+        if (isLoading) return;
+        const username = document.getElementById('my-name').value.trim();
+        const msgEl = document.getElementById('my-message');
+        const listEl = document.getElementById('reservation-list');
+        hideMessage(msgEl);
+        listEl.innerHTML = '';
+
+        if (!username) {
+            showMessage(msgEl, 'error', '이름을 입력해주세요.');
+            return;
+        }
+
+        currentUsername = username;
+        isLoading = true;
+
+        try {
+            const res = await fetch(`/reservations?username=${encodeURIComponent(username)}`);
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                showMessage(msgEl, 'error', '예약 내역을 불러오지 못했습니다.');
+                return;
+            }
+            const reservations = await res.json();
+            if (reservations.length === 0) {
+                listEl.innerHTML = '<div class="reservation-card"><p class="empty">예약 내역이 없습니다.</p></div>';
+                return;
+            }
+            reservations.forEach(r => listEl.appendChild(createReservationCard(r)));
+        } catch (e) {
+            showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다.');
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    function createReservationCard(r) {
+        const isPast = new Date(`${r.date}T${r.time?.startAt ?? '00:00'}`) < new Date();
+        const card = document.createElement('div');
+        card.className = 'reservation-card';
+        card.id = `card-${r.id}`;
+        card.innerHTML = `
+            <div class="header-row">
+                <div>
+                    <div class="theme-name">${r.theme?.name ?? '-'}</div>
+                    <div class="detail">${r.date} · ${r.time?.startAt ?? '-'}</div>
+                </div>
+                ${isPast
+                    ? '<span class="badge-past">지난 예약</span>'
+                    : `<div class="actions">
+                        <button class="btn-edit" onclick="openEditModal(${r.id}, '${r.date}', ${r.theme?.id})">변경</button>
+                        <button class="btn-cancel" onclick="cancelReservation(${r.id})">취소</button>
+                       </div>`
+                }
+            </div>
+            <div id="msg-${r.id}" class="message"></div>
+        `;
+        return card;
+    }
+
+    async function cancelReservation(id) {
+        const msgEl = document.getElementById(`msg-${id}`);
+        hideMessage(msgEl);
+
+        try {
+            const res = await fetch(`/reservations/${id}?username=${encodeURIComponent(currentUsername)}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                document.getElementById(`card-${id}`)?.remove();
+            } else {
+                const err = await res.json().catch(() => ({}));
+                showMessage(msgEl, 'error', clientMessage(err, '취소에 실패했습니다.'));
+            }
+        } catch (e) {
+            showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다.');
+        }
+    }
+
+    function openEditModal(id, date, themeId) {
+        editThemeId = themeId;
+        editSelectedTimeId = null;
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-date').value = date;
+        document.getElementById('edit-date').min = new Date().toISOString().split('T')[0];
+        document.getElementById('edit-time-slots').innerHTML = '<p style="color:var(--muted); font-size:0.95rem;">날짜를 선택해주세요</p>';
+        document.getElementById('btn-submit-edit').disabled = true;
+        hideMessage(document.getElementById('edit-message'));
+        document.getElementById('edit-modal').classList.add('open');
+        loadEditTimes();
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-modal').classList.remove('open');
+    }
+
+    async function loadEditTimes() {
+        const date = document.getElementById('edit-date').value;
+        const container = document.getElementById('edit-time-slots');
+        editSelectedTimeId = null;
+        document.getElementById('btn-submit-edit').disabled = true;
+
+        if (!date || !editThemeId) return;
+
+        try {
+            const res = await fetch(`/times?themeId=${editThemeId}&date=${date}`);
+            if (!res.ok) throw new Error();
+            const times = await res.json();
+
+            if (times.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:0.95rem;">예약 가능한 시간이 없습니다</p>';
+                return;
+            }
+            container.innerHTML = '';
+            times.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'time-slot';
+                btn.textContent = time.startAt;
+                btn.onclick = () => {
+                    container.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    editSelectedTimeId = time.id;
+                    document.getElementById('btn-submit-edit').disabled = false;
+                };
+                container.appendChild(btn);
+            });
+        } catch (e) {
+            container.innerHTML = '<p style="color:var(--muted); font-size:0.95rem;">시간을 불러오지 못했습니다</p>';
+        }
+    }
+
+    async function submitEdit() {
+        const id = document.getElementById('edit-id').value;
+        const date = document.getElementById('edit-date').value;
+        const msgEl = document.getElementById('edit-message');
+        hideMessage(msgEl);
+
+        try {
+            const res = await fetch(`/reservations/${id}?username=${encodeURIComponent(currentUsername)}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, timeId: editSelectedTimeId })
+            });
+            if (res.ok) {
+                closeEditModal();
+                loadMyReservations();
+            } else {
+                const err = await res.json().catch(() => ({}));
+                showMessage(msgEl, 'error', clientMessage(err, '변경에 실패했습니다.'));
+            }
+        } catch (e) {
+            showMessage(msgEl, 'error', '네트워크 오류가 발생했습니다.');
+        }
+    }
+
+    function showMessage(el, type, text) {
+        el.className = `message ${type}`;
+        el.textContent = text;
+    }
+
+    function hideMessage(el) {
+        el.className = 'message';
+        el.style.display = 'none';
+    }
+
+    document.getElementById('edit-date').addEventListener('change', loadEditTimes);
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('edit-modal')) closeEditModal();
+    });
+    document.getElementById('my-name').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loadMyReservations();
+    });
+</script>
+
+</body>
+</html>

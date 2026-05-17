@@ -1,10 +1,17 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationUpdateRequest;
+import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -33,27 +40,108 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReservationResponse> readAllByName(String name) {
+        List<Reservation> reservations = reservationRepository.findAllByName(name);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
+    }
+
     public void removeById(Long id) {
-        reservationRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 예약 ID가 없습니다."));
+        Reservation reservation = getReservation(id);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
         reservationRepository.deleteById(id);
     }
 
-    public ReservationResponse register(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾고자 하는 예약 시간 ID가 없습니다."));
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾고자 하는 테마 ID가 없습니다."));
+    public void cancelByIdAndName(Long id, String username) {
+        Reservation reservation = getReservation(id);
+        validateOwner(username, reservation);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
+        reservationRepository.deleteById(id);
+    }
 
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId())) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약입니다.");
+    private void validateOwner(String username, Reservation reservation) {
+        if (!reservation.getName().equals(username)) {
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_NOT_OWNER);
         }
+    }
 
-        Reservation reservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
+    public ReservationResponse register(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = getReservationTime(reservationRequest.timeId());
+        Theme theme = getTheme(reservationRequest.themeId());
+
+        validatePastRegister(reservationRequest.date(), reservationTime);
+        validateDuplicate(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+
+        Reservation savedReservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
                 reservationRequest.timeId(),
                 reservationRequest.themeId(), reservationTime, theme);
-        return ReservationResponse.from(reservation);
+        return ReservationResponse.from(savedReservation);
     }
+
+    public ReservationResponse update(Long id, String username, ReservationUpdateRequest reservationUpdateRequest) {
+        Reservation reservation = getReservation(id);
+        validateOwner(username, reservation);
+        validatePastUpdate(reservation.getDate(), reservation.getTime());
+
+        ReservationTime reservationTime = getReservationTime(reservationUpdateRequest.timeId());
+        validatePastUpdate(reservationUpdateRequest.date(), reservationTime);
+        validateDuplicateExceptSelf(reservationUpdateRequest.date(), reservationUpdateRequest.timeId(),
+                reservation.getTheme().getId(), reservation.getId());
+
+        Reservation updated = reservationRepository.update(id, reservationUpdateRequest.date(),
+                reservationUpdateRequest.timeId());
+        return ReservationResponse.from(updated);
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND)
+        );
+    }
+
+    private ReservationTime getReservationTime(Long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
+    }
+
+    private boolean isOverDateAndTime(LocalDate date, ReservationTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservation = LocalDateTime.of(date, time.getStartAt());
+
+        return now.isAfter(reservation);
+    }
+
+    private void validatePastUpdate(LocalDate date, ReservationTime time) {
+        if (isOverDateAndTime(date, time)) {
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_PAST_UPDATE);
+        }
+    }
+
+    private void validatePastRegister(LocalDate date, ReservationTime time) {
+        if (isOverDateAndTime(date, time)) {
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_PAST_DATE);
+        }
+    }
+
+    private void validateDuplicate(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date,
+                timeId,
+                themeId)) {
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
+    private void validateDuplicateExceptSelf(LocalDate date, Long timeId, Long themeId, Long reservationId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndReservationIdNot(date, timeId, themeId,
+                reservationId)) {
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
+        }
+    }
+
 }

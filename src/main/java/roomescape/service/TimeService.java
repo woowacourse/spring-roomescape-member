@@ -1,11 +1,16 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
@@ -31,28 +36,33 @@ public class TimeService {
     public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, LocalDate date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         return times.stream()
+                .filter(time -> !isPastTime(date, time))
                 .map(TimeResponse::from)
                 .collect(Collectors.toList());
     }
 
     public void removeById(Long id) {
         timeRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 시간 ID가 없습니다.")
+                () -> new NotFoundException(ErrorCode.TIME_NOT_FOUND)
         );
-
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 현재 예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new UnprocessableEntityException(ErrorCode.TIME_HAS_RESERVATIONS);
         }
-
         timeRepository.deleteById(id);
     }
 
     public TimeResponse register(TimeRequest timeRequest) {
-        if (timeRepository.existsByStartAt(timeRequest.startAt())) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
+        if (timeRequest.startAt().getMinute() != 0) {
+            throw new UnprocessableEntityException(ErrorCode.TIME_NOT_ON_THE_HOUR);
         }
-
+        if (timeRepository.existsByStartAt(timeRequest.startAt())) {
+            throw new ConflictException(ErrorCode.TIME_DUPLICATED);
+        }
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
+    }
+
+    private boolean isPastTime(LocalDate date, ReservationTime time) {
+        return LocalDateTime.now().isAfter(LocalDateTime.of(date, time.getStartAt()));
     }
 }
