@@ -109,7 +109,7 @@ class ThemeServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> themeService.deleteTheme(time.getId()))
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
                 .isInstanceOf(RoomEscapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(ThemeErrorCode.RESERVATION_EXIST_ON_THEME);
