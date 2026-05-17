@@ -14,17 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.PastDateTimeException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.exception.ReservationAccessDeniedException;
-import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
-import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
 
 @Transactional
@@ -70,7 +68,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -84,7 +82,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -124,7 +122,7 @@ class ReservationServiceTest {
         reservationService.save(reservationRequest);
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(ReservationDuplicatedException.class);
+                .isInstanceOf(DuplicatedException.class);
     }
 
     @Test
@@ -224,7 +222,7 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.save(reservationRequest);
 
         assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), "봉구스"))
-                .isInstanceOf(ReservationAccessDeniedException.class);
+                .isInstanceOf(AccessDeniedException.class);
 
         assertThat(reservationService.findAll()).contains(reservation);
     }
@@ -232,7 +230,7 @@ class ReservationServiceTest {
     @Test
     void 없는_예약을_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> reservationService.deleteById(999L))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -247,7 +245,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(ReservationPastDateTimeException.class);
+                .isInstanceOf(PastDateTimeException.class);
     }
 
     @Test

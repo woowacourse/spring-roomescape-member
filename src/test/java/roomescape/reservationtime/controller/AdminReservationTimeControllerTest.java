@@ -19,7 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.NotFoundException;
 
 @Transactional
 @AutoConfigureMockMvc
@@ -56,7 +57,9 @@ class AdminReservationTimeControllerTest {
     void 존재하지_않는_예약_시간을_삭제하면_404를_응답한다() throws Exception {
         mockMvc.perform(delete("/admin/times/{id}", 999))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(containsString(ReservationTimeNotFoundException.MESSAGE)));
+                .andExpect(jsonPath("$.message").value(containsString(
+                        NotFoundException.clientMessage(DomainType.RESERVATION_TIME)
+                )));
     }
 
     @ParameterizedTest(name = "{0}은 예약 시간 형식이 아니다")

@@ -14,9 +14,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.InUseException;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
-import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -44,7 +45,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationTimeDuplicatedException(reservationTime.getStartAt());
+            throw new DuplicatedException(DomainType.RESERVATION_TIME, reservationTime.getStartAt());
         }
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -89,7 +90,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new ReservationTimeInUseException(id);
+            throw new InUseException(DomainType.RESERVATION_TIME, id);
         }
     }
 

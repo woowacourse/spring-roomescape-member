@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.InUseException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -21,8 +24,6 @@ import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeInUseException;
-import roomescape.theme.exception.ThemeNotFoundException;
 
 @JdbcTest
 @Import({JdbcThemeRepository.class, JdbcReservationTimeRepository.class, JdbcReservationRepository.class})
@@ -56,7 +57,7 @@ class JdbcThemeRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         Theme foundTheme = themeRepository.findById(savedTheme.getId())
-                .orElseThrow(() -> new ThemeNotFoundException(savedTheme.getId()));
+                .orElseThrow(() -> new NotFoundException(DomainType.THEME, savedTheme.getId()));
 
         assertThat(foundTheme.getId()).isEqualTo(savedTheme.getId());
         assertThat(foundTheme.getName()).isEqualTo(theme.getName());
@@ -108,7 +109,7 @@ class JdbcThemeRepositoryTest {
         reservationRepository.save(reservation);
 
         assertThatThrownBy(() -> themeRepository.deleteById(theme.getId()))
-                .isInstanceOf(ThemeInUseException.class);
+                .isInstanceOf(InUseException.class);
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")

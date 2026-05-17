@@ -28,9 +28,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.exception.ReservationAccessDeniedException;
-import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.entity.Theme;
@@ -194,7 +195,9 @@ class ReservationControllerTest {
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() throws Exception {
         mockMvc.perform(delete("/reservations/{id}?name={name}", 999, "밀란"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(containsString(ReservationNotFoundException.MESSAGE)));
+                .andExpect(jsonPath("$.message").value(containsString(
+                        NotFoundException.clientMessage(DomainType.RESERVATION)
+                )));
     }
 
     @Test
@@ -211,7 +214,9 @@ class ReservationControllerTest {
 
         mockMvc.perform(delete("/reservations/{id}?name={name}", id, "봉구스"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(containsString(ReservationAccessDeniedException.MESSAGE)));
+                .andExpect(jsonPath("$.message").value(containsString(
+                        AccessDeniedException.clientMessage(DomainType.RESERVATION.displayName())
+                )));
     }
 
     @Test
@@ -230,7 +235,9 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value(containsString(ReservationDuplicatedException.MESSAGE)));
+                .andExpect(jsonPath("$.message").value(containsString(
+                        DuplicatedException.clientMessage(DomainType.RESERVATION)
+                )));
     }
 
     @ParameterizedTest(name = "{0}은 올바른 예약자 이름이 아니다")

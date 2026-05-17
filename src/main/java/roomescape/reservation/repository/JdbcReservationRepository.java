@@ -13,8 +13,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.theme.entity.Theme;
 
@@ -78,7 +79,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationDuplicatedException(
+            throw new DuplicatedException(
+                    DomainType.RESERVATION,
                     reservation.getDate(),
                     reservation.getTime().getId(),
                     reservation.getTheme().getId()
@@ -111,7 +113,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     reservation.getId()
             );
         } catch (DuplicateKeyException e) {
-            throw new ReservationDuplicatedException(
+            throw new DuplicatedException(
+                    DomainType.RESERVATION,
                     date,
                     reservationTime.getId(),
                     reservation.getTheme().getId()

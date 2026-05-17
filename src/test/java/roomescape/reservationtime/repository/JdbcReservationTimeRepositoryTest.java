@@ -13,13 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.InUseException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
-import roomescape.reservationtime.exception.ReservationTimeInUseException;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -52,7 +53,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(startAt));
 
         ReservationTime foundReservationTime = reservationTimeRepository.findById(reservationTime.getId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationTime.getId()));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION_TIME, reservationTime.getId()));
 
         assertThat(foundReservationTime.getId()).isEqualTo(reservationTime.getId());
         assertThat(foundReservationTime.getStartAt()).isEqualTo(startAt);
@@ -77,8 +78,8 @@ class JdbcReservationTimeRepositoryTest {
         reservationTimeRepository.save(reservationTime(startAt));
 
         assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime(startAt)))
-                .isInstanceOf(ReservationTimeDuplicatedException.class)
-                .hasMessageContaining(ReservationTimeDuplicatedException.MESSAGE);
+                .isInstanceOf(DuplicatedException.class)
+                .hasMessageContaining(DuplicatedException.clientMessage(DomainType.RESERVATION_TIME));
     }
 
     @Test
@@ -126,7 +127,7 @@ class JdbcReservationTimeRepositoryTest {
         reservationRepository.save(reservation);
 
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(reservationTime.getId()))
-                .isInstanceOf(ReservationTimeInUseException.class);
+                .isInstanceOf(InUseException.class);
     }
 
 }

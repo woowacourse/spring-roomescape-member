@@ -13,14 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
 
 @Transactional
@@ -85,7 +84,7 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.findAvailableReservationTimes(
                 LocalDate.of(2026, 5, 10), notFoundThemeId))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -102,7 +101,7 @@ class ReservationTimeServiceTest {
     @Test
     void 없는_예약시간을_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> reservationTimeService.deleteById(999L))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
 }

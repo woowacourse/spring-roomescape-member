@@ -9,53 +9,41 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.reservation.exception.ReservationAccessDeniedException;
-import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
-import roomescape.reservation.exception.ReservationPastDateTimeException;
-import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
-import roomescape.reservationtime.exception.ReservationTimeInUseException;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
-import roomescape.theme.exception.ThemeInUseException;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.InUseException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.PastDateTimeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler({
-            ReservationNotFoundException.class,
-            ReservationTimeNotFoundException.class,
-            ThemeNotFoundException.class
-    })
-    public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage()));
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+        return handleBusinessException(e, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({
-            ReservationDuplicatedException.class,
-            ReservationTimeDuplicatedException.class
-    })
-    public ResponseEntity<ErrorResponse> handleDuplicatedException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(e.getMessage()));
+    @ExceptionHandler(DuplicatedException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatedException(DuplicatedException e) {
+        return handleBusinessException(e, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({
-            ReservationTimeInUseException.class,
-            ThemeInUseException.class
-    })
-    public ResponseEntity<ErrorResponse> handleEntityInUseException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(e.getMessage()));
+    @ExceptionHandler(InUseException.class)
+    public ResponseEntity<ErrorResponse> handleEntityInUseException(InUseException e) {
+        return handleBusinessException(e, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ReservationAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(ReservationAccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(e.getMessage()));
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+        return handleBusinessException(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(PastDateTimeException.class)
+    public ResponseEntity<ErrorResponse> handlePastDateTimeException(PastDateTimeException e) {
+        return handleBusinessException(e, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,12 +64,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("요청 본문 형식이 올바르지 않습니다."));
     }
 
-    @ExceptionHandler(ReservationPastDateTimeException.class)
-    public ResponseEntity<ErrorResponse> handleReservationPastDateTimeException(ReservationPastDateTimeException e) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
     // TODO: 서버 자체 오류는 일단 러프하게 반환
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
@@ -89,6 +71,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("서버 내부 오류가 발생했습니다."));
+    }
+
+    private ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e, HttpStatus status) {
+        log.warn(e.getLogMessage());
+
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(e.getClientMessage()));
     }
 
 }

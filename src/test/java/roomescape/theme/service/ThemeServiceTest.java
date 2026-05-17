@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 
 @Transactional
@@ -61,7 +61,7 @@ class ThemeServiceTest {
     @Test
     void 없는_테마를_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> themeService.deleteById(999L))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")

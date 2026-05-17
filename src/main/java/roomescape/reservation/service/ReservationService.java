@@ -7,18 +7,17 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.AccessDeniedException;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.PastDateTimeException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.exception.ReservationAccessDeniedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
-import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -44,11 +43,11 @@ public class ReservationService {
     @Transactional
     public Reservation save(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION_TIME, request.timeId()));
         validatePastReservation(request.date(), reservationTime.getStartAt());
 
         Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
+                .orElseThrow(() -> new NotFoundException(DomainType.THEME, request.themeId()));
 
         Reservation reservation = Reservation.create(
                 request.name(),
@@ -62,11 +61,11 @@ public class ReservationService {
     @Transactional
     public Reservation update(Long id, ReservationUpdateRequest request) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION, id));
         validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
 
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION_TIME, request.timeId()));
         validatePastReservation(request.date(), reservationTime.getStartAt());
 
         return reservationRepository.update(
@@ -89,29 +88,29 @@ public class ReservationService {
     @Transactional
     public void deleteById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION, id));
         validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
 
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
-            throw new ReservationNotFoundException(id);
+            throw new NotFoundException(DomainType.RESERVATION, id);
         }
     }
 
     @Transactional
     public void deleteByIdAndName(Long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION, id));
 
         if (!reservation.getName().equals(name)) {
-            throw new ReservationAccessDeniedException(id);
+            throw new AccessDeniedException(DomainType.RESERVATION, id);
         }
 
         validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
 
         int affected = reservationRepository.deleteById(id);
         if (affected == 0) {
-            throw new ReservationNotFoundException(id);
+            throw new NotFoundException(DomainType.RESERVATION, id);
         }
     }
 
@@ -120,7 +119,7 @@ public class ReservationService {
         LocalDateTime requestDateTime = LocalDateTime.of(requestDate, requestTime);
 
         if (requestDateTime.isBefore(now)) {
-            throw new ReservationPastDateTimeException(now);
+            throw new PastDateTimeException(DomainType.RESERVATION, now, requestDateTime);
         }
     }
 

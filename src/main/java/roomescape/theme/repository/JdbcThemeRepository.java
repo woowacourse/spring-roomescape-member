@@ -12,8 +12,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.InUseException;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeInUseException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -113,7 +114,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new ThemeInUseException(id);
+            throw new InUseException(DomainType.THEME, id);
         }
     }
 

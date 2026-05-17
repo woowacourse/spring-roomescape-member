@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.NotFoundException;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -50,7 +51,7 @@ public class ThemeService {
     public void deleteById(Long id) {
         int affected = themeRepository.deleteById(id);
         if (affected == 0) {
-            throw new ThemeNotFoundException(id);
+            throw new NotFoundException(DomainType.THEME, id);
         }
     }
 
