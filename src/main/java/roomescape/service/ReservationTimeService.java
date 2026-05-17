@@ -47,14 +47,13 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> read(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime(date, themeId);
-        return reservationTimes.stream()
-                .map(reservationTime -> ReservationTimeResponse.from(
-                        new ReservationTime(
-                                reservationTime.getId(),
-                                reservationTime.getStartAt()
-                        )
-                ))
+        if (date == null && themeId == null) {
+            return reservationTimeQueryingDao.findAllReservationTime().stream()
+                    .map(ReservationTimeResponse::from)
+                    .toList();
+        }
+        return reservationTimeQueryingDao.findAvailableReservationTimes(date, themeId).stream()
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 

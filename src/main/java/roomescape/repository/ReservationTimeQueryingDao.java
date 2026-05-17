@@ -42,14 +42,14 @@ public class ReservationTimeQueryingDao {
         }
     }
 
-    public List<ReservationTime> findAllReservationTime(LocalDate date, Long themeId) {
-        if (date == null && themeId == null) {
-            String sql = """
-                   select t.id, t.start_at from reservation_time as t
-                   """;
-            return jdbcTemplate.query(sql, reservationTimeRowMapper);
-        }
+    public List<ReservationTime> findAllReservationTime() {
+        String sql = """
+               select t.id, t.start_at from reservation_time as t
+               """;
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+    }
 
+    public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
                 select t.id, t.start_at from reservation_time as t
                 left join reservation as r on t.id = r.time_id
