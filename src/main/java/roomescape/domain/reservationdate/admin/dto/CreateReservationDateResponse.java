@@ -1,4 +1,4 @@
-package roomescape.domain.reservationdate.dto;
+package roomescape.domain.reservationdate.admin.dto;
 
 import java.time.LocalDate;
 import roomescape.domain.reservationdate.ReservationDate;
