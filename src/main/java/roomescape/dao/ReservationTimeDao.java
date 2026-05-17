@@ -50,12 +50,12 @@ public class ReservationTimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservationTime.getStartAt().toString());
+            preparedStatement.setString(1, reservationTime.startAt().toString());
 
             return preparedStatement;
         }, keyHolder);
         long newId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new ReservationTime(newId, reservationTime.getStartAt());
+        return new ReservationTime(newId, reservationTime.startAt());
     }
 
     public void deleteById(Long id) {

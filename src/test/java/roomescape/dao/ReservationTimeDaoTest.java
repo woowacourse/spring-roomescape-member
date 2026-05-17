@@ -26,7 +26,7 @@ class ReservationTimeDaoTest {
         ReservationTime newReservationTime = new ReservationTime(LocalTime.parse("10:00"));
 
         //when
-        boolean hasThatTime = reservationTimeDao.existsByStartAt(newReservationTime.getStartAt());
+        boolean hasThatTime = reservationTimeDao.existsByStartAt(newReservationTime.startAt());
 
         //then
         assertThat(hasThatTime).isTrue();
@@ -43,8 +43,8 @@ class ReservationTimeDaoTest {
 
         // then
         assertThat(times).hasSize(2);
-        assertThat(times.get(0).getStartAt()).isEqualTo(LocalTime.parse("10:00"));
-        assertThat(times.get(1).getStartAt()).isEqualTo(LocalTime.parse("12:00"));
+        assertThat(times.get(0).startAt()).isEqualTo(LocalTime.parse("10:00"));
+        assertThat(times.get(1).startAt()).isEqualTo(LocalTime.parse("12:00"));
     }
 
     @Test

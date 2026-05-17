@@ -2,18 +2,16 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 
-import lombok.Getter;
-
-@Getter
-public class Reservation {
+public record Reservation(
+        Long id,
+        String name,
+        LocalDate date,
+        ReservationTime time,
+        Theme theme
+) {
 
     private static final int MIN_NAME_LENGTH = 2;
     private static final int MAX_NAME_LENGTH = 10;
-    private final Long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
-    private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
@@ -29,11 +27,11 @@ public class Reservation {
     }
 
     public Long getTimeId() {
-        return time.getId();
+        return time.id();
     }
 
     public Long getThemeId() {
-        return theme.getId();
+        return theme.id();
     }
 
     private void validateNameFormat(String name) {

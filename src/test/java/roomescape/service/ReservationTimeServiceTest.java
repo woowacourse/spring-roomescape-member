@@ -71,7 +71,7 @@ class ReservationTimeServiceTest {
         Theme savedTheme = themeDao.save(theme);
         Reservation reservation = new Reservation("pobi", LocalDate.parse("2030-05-02"), savedTime, savedTheme);
         reservationDao.save(reservation);
-        Long savedId = savedTime.getId();
+        Long savedId = savedTime.id();
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedId))
@@ -83,13 +83,13 @@ class ReservationTimeServiceTest {
     void 시간을_저장하고_조회한다() {
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         List<ReservationTime> times = reservationTimeService.findAll();
-        assertThat(times.getFirst().getId()).isEqualTo(savedTime.getId());
+        assertThat(times.getFirst().id()).isEqualTo(savedTime.id());
     }
 
     @Test
     void 시간을_저장하고_삭제한다() {
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeService.deleteById(savedTime.getId());
+        reservationTimeService.deleteById(savedTime.id());
         assertThat(reservationTimeService.findAll()).hasSize(0);
     }
 }

@@ -50,7 +50,7 @@ public class ThemeService {
     }
 
     public Theme save(Theme theme) {
-        if (themeDao.existsByName(theme.getName())) {
+        if (themeDao.existsByName(theme.name())) {
             throw new DuplicatedResourceException("이미 존재하는 테마 이름입니다.", "DUPLICATED_TIME");
         }
         return themeDao.save(theme);
@@ -75,7 +75,7 @@ public class ThemeService {
     }
 
     private boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds, LocalDate date) {
-        return !reservedTimeIds.contains(reservationTime.getId()) && !isPastDateTime(date, reservationTime);
+        return !reservedTimeIds.contains(reservationTime.id()) && !isPastDateTime(date, reservationTime);
     }
 
     private boolean isPastDateTime(LocalDate date, ReservationTime reservationTime) {
@@ -83,7 +83,7 @@ public class ThemeService {
     }
 
     private boolean isTodayAndPastTime(LocalDate date, ReservationTime reservationTime) {
-        return date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
+        return date.isEqual(LocalDate.now()) && reservationTime.startAt()
                 .isBefore(LocalTime.now());
     }
 }

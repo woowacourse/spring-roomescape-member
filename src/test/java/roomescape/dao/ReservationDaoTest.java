@@ -49,13 +49,13 @@ class ReservationDaoTest {
         // when
         List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(
                 targetDate,
-                targetTheme.getId()
+                targetTheme.id()
         );
 
         // then
         assertThat(timeIds)
-                .containsExactlyInAnyOrder(targetTime1.getId(), targetTime2.getId())
-                .doesNotContain(otherDateTime.getId(), otherThemeTime.getId());
+                .containsExactlyInAnyOrder(targetTime1.id(), targetTime2.id())
+                .doesNotContain(otherDateTime.id(), otherThemeTime.id());
     }
 
     @Test
@@ -67,8 +67,8 @@ class ReservationDaoTest {
         reservationDao.save(new Reservation("맥스", date, reservationTime, theme));
 
         //when
-        boolean hasAlreadyReservation = reservationDao.hasDuplicateReservation(date, reservationTime.getId(),
-                theme.getId());
+        boolean hasAlreadyReservation = reservationDao.hasDuplicateReservation(date, reservationTime.id(),
+                theme.id());
 
         //then
         assertThat(hasAlreadyReservation).isTrue();

@@ -11,8 +11,8 @@ public record ReservationTimeResponse(
 ) {
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt()
+                reservationTime.id(),
+                reservationTime.startAt()
         );
     }
 }

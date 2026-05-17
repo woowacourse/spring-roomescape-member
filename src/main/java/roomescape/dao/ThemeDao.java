@@ -79,14 +79,14 @@ public class ThemeDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnail());
+            ps.setString(1, theme.name());
+            ps.setString(2, theme.description());
+            ps.setString(3, theme.thumbnail());
             return ps;
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(id, theme.name(), theme.description(), theme.thumbnail());
     }
 
     public void deleteById(Long id) {

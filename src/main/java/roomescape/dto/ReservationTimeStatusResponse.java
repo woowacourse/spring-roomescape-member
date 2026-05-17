@@ -15,8 +15,8 @@ public record ReservationTimeStatusResponse(
     public static ReservationTimeStatusResponse of(ReservationTime reservationTime, boolean available) {
 
         return new ReservationTimeStatusResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt(),
+                reservationTime.id(),
+                reservationTime.startAt(),
                 available
         );
     }

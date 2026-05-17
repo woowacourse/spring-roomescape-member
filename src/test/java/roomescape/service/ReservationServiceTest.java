@@ -60,14 +60,14 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
-                savedTheme.getId());
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(),
+                savedTheme.id());
 
         //when
         List<Reservation> reservations = reservationService.findAll();
 
         //then
-        assertThat(reservations.getFirst().getId()).isEqualTo(savedReservation.getId());
+        assertThat(reservations.getFirst().id()).isEqualTo(savedReservation.id());
     }
 
     @Test
@@ -75,11 +75,11 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
-                savedTheme.getId());
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(),
+                savedTheme.id());
 
         //when
-        reservationService.deleteByIdFromAdmin(savedReservation.getId());
+        reservationService.deleteByIdFromAdmin(savedReservation.id());
 
         //then
         assertThat(reservationService.findAll()).hasSize(0);
@@ -90,14 +90,14 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(), savedTheme.getId());
+        reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.id(), savedTheme.id());
 
         //when & then
         assertThatThrownBy(() -> reservationService.save(
                 "피노",
                 LocalDate.of(2030, 5, 6),
-                savedTime.getId(),
-                savedTheme.getId()))
+                savedTime.id(),
+                savedTheme.id()))
                 .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재하는 예약");
     }
@@ -110,8 +110,8 @@ class ReservationServiceTest {
         ReservationTime reservationTimeEleven = reservationTimeService.save(
                 new ReservationTime(LocalTime.parse("11:00")));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen.getId(), theme.getId());
-        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven.getId(), theme.getId());
+        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeTen.id(), theme.id());
+        reservationService.save(pobi, LocalDate.of(2026, 6, 1), reservationTimeEleven.id(), theme.id());
 
         //when
         List<Reservation> reservations = reservationService.findByName(pobi);
@@ -131,7 +131,7 @@ class ReservationServiceTest {
                 new Reservation(pobi, localDate, reservationTimeTen, theme));
 
         //when && then
-        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.getId()))
+        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.id()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("과거");
     }
@@ -148,10 +148,10 @@ class ReservationServiceTest {
         LocalDate newDate = LocalDate.of(2031, 1, 1);
 
         //when
-        reservationService.update(savedReservation.getId(), newDate, reservationTimeTen.getId(), theme.getId());
+        reservationService.update(savedReservation.id(), newDate, reservationTimeTen.id(), theme.id());
 
         //then
-        assertThat(reservationService.findByName(pobi).getFirst().getDate())
+        assertThat(reservationService.findByName(pobi).getFirst().date())
                 .isEqualTo(LocalDate.of(2031, 1, 1));
     }
 
@@ -168,8 +168,8 @@ class ReservationServiceTest {
 
         //when && then
         assertThatThrownBy(
-                () -> reservationService.update(savedReservation.getId(), newDate, reservationTimeTen.getId(),
-                        theme.getId()))
+                () -> reservationService.update(savedReservation.id(), newDate, reservationTimeTen.id(),
+                        theme.id()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("과거 예약");
     }
@@ -190,10 +190,10 @@ class ReservationServiceTest {
 
         //when && then
         assertThatThrownBy(() -> reservationService.update(
-                savedReservation.getId(),
+                savedReservation.id(),
                 newDate,
-                reservationTimeTen.getId(),
-                theme.getId()))
+                reservationTimeTen.id(),
+                theme.id()))
                 .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재");
     }
@@ -208,5 +208,23 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.update(fakeId, newDate, 1L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("존재하지 않습니다");
+    }
+
+    @Test
+    void 같은값으로_업데이트_할_시_성공() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2030, 1, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+
+        //when
+        reservationService.update(savedReservation.id(), localDate, reservationTimeTen.id(), theme.id());
+
+        //then
+        Reservation updatedReservation = reservationDao.findById(savedReservation.id()).get();
+        assertThat(updatedReservation.date()).isEqualTo(localDate);
     }
 }

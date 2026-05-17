@@ -68,8 +68,8 @@ public class ReservationDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
 
-            preparedStatement.setString(1, reservation.getName());
-            preparedStatement.setString(2, reservation.getDate().toString());
+            preparedStatement.setString(1, reservation.name());
+            preparedStatement.setString(2, reservation.date().toString());
             preparedStatement.setLong(3, reservation.getTimeId());
             preparedStatement.setLong(4, reservation.getThemeId());
 
@@ -77,8 +77,8 @@ public class ReservationDao {
         }, keyHolder);
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(),
+                reservation.theme());
     }
 
     public List<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
@@ -179,11 +179,24 @@ public class ReservationDao {
         String sql = """
                 SELECT EXISTS(SELECT 1 FROM reservation 
                               WHERE date = ?
-                               and time_id = ?
+                                and time_id = ?
                                 and theme_id = ?
                     )
                 """;
         Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    public boolean hasDuplicateReservationForUpdate(LocalDate date, Long timeId, Long themeId, Long id) {
+        String sql = """
+                SELECT EXISTS(SELECT 1 FROM reservation 
+                              WHERE date = ?
+                                and time_id = ?
+                                and theme_id = ?
+                                and id != ?
+                    )
+                """;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, id);
         return Boolean.TRUE.equals(exists);
     }
 }

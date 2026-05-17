@@ -35,8 +35,8 @@ public class ReservationService {
             throw new DuplicatedResourceException("이미 존재하는 예약입니다.", "DUPLICATED_RESERVATION");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);
+        validatePastReservation(date, time, "예약");
 
-        validatePastReservation(date, timeId, "예약");
         Theme theme = themeDao.findById(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
@@ -49,11 +49,11 @@ public class ReservationService {
     public void update(Long id, LocalDate newDate, Long newTimeId, Long newThemeId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
-        validatePastReservation(reservation.getDate(), reservation.getTimeId(), "변경");
+        validatePastReservation(reservation.date(), reservation.time(), "변경");
 
         ReservationTime reservationTime = reservationTimeDao.findById(newTimeId);
-        validatePastReservation(newDate, reservationTime.getId(), "변경");
-        validateHasDuplicateReservation(newDate, newTimeId, newThemeId);
+        validatePastReservation(newDate, reservationTime, "변경");
+        validateHasDuplicateReservation(newDate, newTimeId, newThemeId, id);
         reservationDao.updateReservation(id, newDate, newTimeId, newThemeId);
     }
 
@@ -65,16 +65,16 @@ public class ReservationService {
     public void deleteByIdFromMember(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
-        validatePastReservation(reservation.getDate(), reservation.getTimeId(), "삭제");
+        validatePastReservation(reservation.date(), reservation.time(), "삭제");
         reservationDao.deleteById(id);
     }
 
     private boolean isTodayButBeforeTime(LocalDate date, ReservationTime time) {
-        return date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
+        return date.isEqual(LocalDate.now()) && time.startAt().isBefore(LocalTime.now());
     }
 
-    private void validateHasDuplicateReservation(LocalDate newDate, Long newTimeId, Long newThemeId) {
-        if (reservationDao.hasDuplicateReservation(newDate, newTimeId, newThemeId)) {
+    private void validateHasDuplicateReservation(LocalDate newDate, Long newTimeId, Long newThemeId, Long id) {
+        if (reservationDao.hasDuplicateReservationForUpdate(newDate, newTimeId, newThemeId, id)) {
             throw new DuplicatedResourceException("이미 존재하는 예약입니다.", "DUPLICATED_RESERVATION");
         }
     }
@@ -86,9 +86,8 @@ public class ReservationService {
         }
     }
 
-    private void validatePastReservation(LocalDate date, Long timeId, String action) {
-        ReservationTime time = reservationTimeDao.findById(timeId);
-        if (date.isBefore(LocalDate.now()) || isTodayButBeforeTime(date, time)) {
+    private void validatePastReservation(LocalDate date, ReservationTime reservationTime, String action) {
+        if (date.isBefore(LocalDate.now()) || isTodayButBeforeTime(date, reservationTime)) {
             throw new IllegalArgumentException("과거 예약은 " + action + "할 수 없습니다.");
         }
     }
