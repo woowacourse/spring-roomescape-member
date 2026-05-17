@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum AdminErrorCode implements ErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED,
-        "권한이 없는 사용자입니다.", "관리자 토큰을 다시 입력해주세요."),
+        "인증 정보가 누락되었거나 유효하지 않습니다.", "X-ADMIN-TOKEN 헤더의 유효성 및 관리자 권한 여부를 확인하십시오."),
     ;
 
     private final HttpStatus httpStatus;

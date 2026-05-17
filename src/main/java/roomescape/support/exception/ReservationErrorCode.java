@@ -6,16 +6,16 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ReservationErrorCode implements ErrorCode {
     INVALID_RESERVATION_NAME(HttpStatus.BAD_REQUEST,
-        "이름은 비어 있을 수 없습니다.", "예약자 이름을 입력해 주세요."),
+        "예약자 성명 데이터가 유효하지 않습니다.", "요청 바디의 name 필드 유효성 제약 조건을 확인하십시오."),
     INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST,
-        "날짜는 필수입니다.", "방문하실 날짜를 선택해 주세요."),
+        "예약 날짜 식별자 혹은 데이터가 누락되었습니다.", "dateId 필드 포함 여부 및 데이터 형식을 확인하십시오."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND,
-        "존재하지 않는 예약건 입니다.", "예약 번호가 정확한지 확인해 주세요."),
+        "지정한 식별자에 해당하는 예약 엔티티를 찾을 수 없습니다.", "요청한 예약 ID의 유효성 및 DB 존재 여부를 확인하십시오."),
     RESERVATION_CANNOT_CANCEL(HttpStatus.BAD_REQUEST,
-        "당일 및 지난 예약은 취소할 수 없습니다.",
-        "취소는 방문 전날 자정까지만 가능합니다. 도움이 필요하시면 고객센터로 문의해 주세요."),
+        "비즈니스 제약 조건에 의해 취소가 불가능한 상태입니다. (당일 혹은 과거 예약)",
+        "예약 취소 정책(방문 전날 자정) 준수 여부 및 도메인 상태를 확인하십시오."),
     RESERVATION_DUPLICATED(HttpStatus.CONFLICT,
-        "이미 예약이 완료된 시간대입니다.", "다른 시간대나 다른 테마를 선택하여 다시 시도해 주세요.");
+        "동일한 시간대에 중복된 예약 엔티티가 존재합니다.", "데이터베이스의 예약 현황을 확인하고 중복 요청 여부를 검토하십시오.");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ReservationDateErrorCode implements ErrorCode {
     RESERVATION_DATE_NOT_EXIST(HttpStatus.NOT_FOUND,
-        "존재하지 않는 날짜 입니다.", "날짜 목록 확인 후, 유효한 날짜를 선택해 주세요."),
+        "지정한 식별자에 해당하는 예약 날짜 엔티티를 찾을 수 없습니다.", "요청한 날짜 ID의 유효성 및 DB 존재 여부를 확인하십시오."),
     RESERVATION_DATE_IN_USE(HttpStatus.CONFLICT,
-        "이미 예약이 존재하는 날짜는 삭제할 수 없습니다.",
-        "해당 날짜에 연결된 예약들을 먼저 취소하거나 변경한 뒤 다시 삭제해 주세요."),
+        "외래 키 제약 조건으로 인해 삭제가 불가능합니다. (해당 날짜를 참조하는 예약 존재)", "해당 날짜와 연관된 예약 엔티티들을 먼저 처리하십시오."),
     INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST,
-        "날짜는 비어 있을 수 없습니다.", "날짜를 입력해 주세요. (형식: yyyy-MM-dd"),
+        "예약 날짜 데이터가 유효하지 않거나 누락되었습니다.", "playDay 필드의 데이터 형식(yyyy-MM-dd) 및 유효성을 확인하십시오."),
     RESERVATION_DATE_DUPLICATED(HttpStatus.CONFLICT,
-        "이미 등록된 날짜입니다.", "목록에 없는 날짜만 등록이 가능합니다."),
+        "동일한 날짜 값을 가진 엔티티가 이미 존재합니다.", "데이터베이스의 중복 데이터 여부를 확인하십시오."),
     ;
 
     private final HttpStatus httpStatus;

@@ -23,7 +23,7 @@ class GlobalExceptionHandlerTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getStatusCode().value()).isEqualTo(405);
             softly.assertThat(response.getBody().code()).isEqualTo("METHOD_NOT_ALLOWED");
-            softly.assertThat(response.getBody().message()).isEqualTo("지원하지 않는 HTTP 메서드입니다.");
+            softly.assertThat(response.getBody().message()).isEqualTo("해당 엔드포인트에서 지원하지 않는 HTTP 메서드입니다.");
         });
     }
 
@@ -40,7 +40,7 @@ class GlobalExceptionHandlerTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getStatusCode().value()).isEqualTo(400);
             softly.assertThat(response.getBody().code()).isEqualTo("INVALID_RESERVATION_NAME");
-            softly.assertThat(response.getBody().message()).isEqualTo("이름은 비어 있을 수 없습니다.");
+            softly.assertThat(response.getBody().message()).isEqualTo("예약자 성명 데이터가 유효하지 않습니다.");
         });
     }
 
@@ -57,7 +57,7 @@ class GlobalExceptionHandlerTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getStatusCode().value()).isEqualTo(500);
             softly.assertThat(response.getBody().code()).isEqualTo("INTERNAL_SERVER_ERROR");
-            softly.assertThat(response.getBody().message()).isEqualTo("서버 내부 오류가 발생했습니다");
+            softly.assertThat(response.getBody().message()).isEqualTo("처리되지 않은 서버 내부 오류가 발생했습니다.");
         });
     }
 }
