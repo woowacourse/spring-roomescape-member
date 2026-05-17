@@ -92,13 +92,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         String sql = """
                 DELETE FROM reservation_time
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.update(sql, id) == 1;
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

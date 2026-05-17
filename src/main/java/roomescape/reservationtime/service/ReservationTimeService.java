@@ -52,9 +52,7 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new ConflictException("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
         }
-        if (!reservationTimeRepository.deleteById(id)) {
-            throw new NotFoundException("삭제할 예약 시간이 존재하지 않습니다. 예약 시간 목록을 확인해주세요.");
-        }
+        reservationTimeRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)

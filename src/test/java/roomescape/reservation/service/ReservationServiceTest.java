@@ -127,12 +127,13 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약을 삭제하면 예외가 발생한다.")
-    public void delete_fail_whenReservationNotFound() {
-        // when, then
-        assertThatThrownBy(() -> reservationService.delete(NOT_FOUND_ID))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+    @DisplayName("존재하지 않는 예약 삭제를 요청해도 성공한다.")
+    public void delete_success_whenReservationNotFound() {
+        // when
+        reservationService.delete(NOT_FOUND_ID);
+
+        // then
+        assertThat(reservationService.findAll()).isEmpty();
     }
 
     @Test
@@ -158,6 +159,16 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), OTHER_NAME))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 취소를 요청해도 성공한다.")
+    public void cancel_success_whenReservationNotFound() {
+        // when
+        reservationService.cancel(NOT_FOUND_ID, NAME);
+
+        // then
+        assertThat(reservationService.findAll()).isEmpty();
     }
 
     @Test

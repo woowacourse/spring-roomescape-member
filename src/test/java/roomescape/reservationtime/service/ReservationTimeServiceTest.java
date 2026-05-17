@@ -91,12 +91,13 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간을 삭제하면 예외가 발생한다.")
-    public void delete_fail_whenReservationTimeNotFound() {
-        // when, then
-        assertThatThrownBy(() -> reservationTimeService.delete(37L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("삭제할 예약 시간이 존재하지 않습니다. 예약 시간 목록을 확인해주세요.");
+    @DisplayName("존재하지 않는 예약 시간 삭제를 요청해도 성공한다.")
+    public void delete_success_whenReservationTimeNotFound() {
+        // when
+        reservationTimeService.delete(37L);
+
+        // then
+        assertThat(reservationTimeService.findAll()).isEmpty();
     }
 
     @Test

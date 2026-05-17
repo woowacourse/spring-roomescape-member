@@ -15,6 +15,7 @@ import roomescape.theme.repository.ThemeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -87,20 +88,24 @@ public class ReservationService {
 
     @Transactional
     public void cancel(Long id, String name) {
-        Reservation reservation = findByIdAndName(id, name);
+        Optional<Reservation> foundReservation = reservationRepository.findById(id);
+        if (foundReservation.isEmpty()) {
+            return;
+        }
+
+        Reservation reservation = foundReservation.get();
+        if (!reservation.isReservedBy(name)) {
+            throw new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+        }
         if (reservation.isPast(LocalDateTime.now())) {
             throw new InvalidRequestException("이미 지난 예약은 취소할 수 없습니다.");
         }
-        if (!reservationRepository.deleteById(id)) {
-            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
-        }
+        reservationRepository.deleteById(reservation.getId());
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationRepository.deleteById(id)) {
-            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
-        }
+        reservationRepository.deleteById(id);
     }
 
     private ReservationTime findTime(Long timeId) {
@@ -111,11 +116,6 @@ public class ReservationService {
     private Theme findTheme(Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요."));
-    }
-
-    private Reservation findByIdAndName(Long id, String name) {
-        return reservationRepository.findByIdAndName(id, name)
-                .orElseThrow(() -> new NotFoundException("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요."));
     }
 
     private Reservation findReservationByIdAndName(Long id, String name) {

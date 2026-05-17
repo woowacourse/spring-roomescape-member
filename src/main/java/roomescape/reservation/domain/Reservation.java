@@ -90,6 +90,10 @@ public class Reservation {
         return time.toLocalDateTime(date).isBefore(now);
     }
 
+    public boolean isReservedBy(String name) {
+        return Objects.equals(this.name, name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

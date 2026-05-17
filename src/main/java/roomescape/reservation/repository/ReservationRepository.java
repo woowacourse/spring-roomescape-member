@@ -11,6 +11,8 @@ public interface ReservationRepository {
 
     List<Reservation> findByName(String name);
 
+    Optional<Reservation> findById(Long id);
+
     Optional<Reservation> findByIdAndName(Long id, String name);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
@@ -25,5 +27,5 @@ public interface ReservationRepository {
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
-    boolean deleteById(Long id);
+    void deleteById(Long id);
 }
