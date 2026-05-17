@@ -25,3 +25,5 @@ CREATE TABLE reservation (
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     CONSTRAINT uk_reservation_date_time_theme UNIQUE (date, time_id, theme_id)
 );
+
+CREATE INDEX idx_reservation_name ON reservation(name)
