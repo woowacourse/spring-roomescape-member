@@ -55,7 +55,7 @@ public class ScheduleService {
         if (scheduleRepository.deleteById(scheduleId) <= 1) {
             return;
         }
-        throw new ScheduleDeleteFailedException(ErrorCode.RESERVATION_DELETE_FAILED);
+        throw new ScheduleDeleteFailedException(ErrorCode.SCHEDULE_DELETE_FAILED);
     }
 
     public void validateTimeDeletable(long timeId) {

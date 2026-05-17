@@ -21,7 +21,8 @@ public enum ErrorCode {
     SCHEDULE_TIME_IN_USE("SCHEDULE_TIME_409", "해당 시간(%d번)을 사용하는 일정이 있어 삭제할 수 없습니다."),
     SCHEDULE_THEME_IN_USE("SCHEDULE_THEME_409", "해당 테마(%d번)를 사용하는 일정이 있어 삭제할 수 없습니다."),
     PAST_SCHEDULE("PAST_SCHEDULE_400", "이미 지난 예약이거나 날짜/시간은 처리할 수 없습니다."),
-    SCHEDULE_ALREADY_EXIST("SCHEDULE_409", "이미 존재하는 스케줄 입니다"),
+    SCHEDULE_ALREADY_EXIST("SCHEDULE_409", "이미 존재하는 스케줄 입니다."),
+    SCHEDULE_IN_USE("SCHEDULE_409", "%d번 스케줄이 사용중 입니다."),
 
     // ReservationTime
     RESERVATIONTIME_NOT_FOUND("RESERVATIONTIME_404", "시간(%d번)이 존재하지 않습니다."),

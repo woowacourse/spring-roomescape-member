@@ -1,12 +1,15 @@
 package roomescape.schedule.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.schedule.ScheduleInUseException;
 import roomescape.schedule.Schedule;
 
 import java.time.LocalDate;
@@ -106,13 +109,17 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public int deleteById(long id) {
-        String sql = "DELETE FROM schedule WHERE id = :id";
+    public int deleteById(long scheduleId) {
+        String sql = "DELETE FROM schedule WHERE id = :scheduleId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
+                .addValue("scheduleId", scheduleId);
 
-        return template.update(sql, params);
+        try {
+            return template.update(sql, params);
+        } catch (DataIntegrityViolationException e) {
+            throw new ScheduleInUseException(ErrorCode.SCHEDULE_IN_USE, scheduleId);
+        }
     }
 
     @Override
