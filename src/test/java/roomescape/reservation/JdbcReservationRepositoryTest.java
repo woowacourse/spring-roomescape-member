@@ -105,10 +105,9 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정이름을 기준으로 해당이름을 가진 예약을 삭제할 수 있다.")
     void deleteByIdAndName_테스트() {
         // when
-        int affectedRow = reservationRepository.deleteByIdAndName(1, "a");
+        reservationRepository.deleteByIdAndName(1, "a");
 
         // then
-        assertThat(affectedRow).isEqualTo(1);
         assertThat(reservationRepository.findAllDetails())
                 .extracting(ReservationDetailProjection::id)
                 .doesNotContain(1L);
@@ -118,10 +117,9 @@ class JdbcReservationRepositoryTest {
     @DisplayName("이름이 일치하지 않으면 예약은 삭제되지 않는다.")
     void deleteByIdAndName_이름불일치_테스트() {
         // when
-        int affectedRow = reservationRepository.deleteByIdAndName(1, "x");
+        reservationRepository.deleteByIdAndName(1, "x");
 
         // then
-        assertThat(affectedRow).isEqualTo(0);
         assertThat(reservationRepository.findAllDetails())
                 .extracting(ReservationDetailProjection::id)
                 .contains(1L);

@@ -6,7 +6,6 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.schedule.PastScheduleException;
 import roomescape.exception.schedule.ScheduleAlreadyExistsException;
-import roomescape.exception.schedule.ScheduleDeleteFailedException;
 import roomescape.exception.schedule.ScheduleNotFoundException;
 import roomescape.exception.schedule.ScheduleThemeInUseException;
 import roomescape.exception.schedule.ScheduleTimeInUseException;
@@ -52,10 +51,7 @@ public class ScheduleService {
     }
 
     public void deleteById(long scheduleId) {
-        if (scheduleRepository.deleteById(scheduleId) <= 1) {
-            return;
-        }
-        throw new ScheduleDeleteFailedException(ErrorCode.SCHEDULE_DELETE_FAILED);
+        scheduleRepository.deleteById(scheduleId);
     }
 
     public void validateTimeDeletable(long timeId) {

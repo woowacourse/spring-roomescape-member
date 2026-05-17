@@ -130,14 +130,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteByIdAndName(long id, String name) {
+    public void deleteByIdAndName(long id, String name) {
         String sql = "DELETE FROM reservation WHERE id = :id AND name = :name";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("name", name);
 
-        return template.update(sql, params);
+        template.update(sql, params);
     }
 
     @Override

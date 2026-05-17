@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.schedule.PastScheduleException;
-import roomescape.exception.schedule.ScheduleDeleteFailedException;
 import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -78,43 +77,13 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("삭제 결과가 0이면 예외가 발생하지 않는다.")
-    void deleteById_테스트_1() {
-        // given
-        when(scheduleRepository.deleteById(1L)).thenReturn(0);
+    @DisplayName("스케줄 삭제를 요청한다.")
+    void deleteById_테스트() {
+        // when
+        scheduleService.deleteById(1L);
 
-        // when, then
-        assertThatCode(() -> scheduleService.deleteById(1L))
-                .doesNotThrowAnyException();
+        // then
         verify(scheduleRepository).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("삭제 결과가 1이면 예외가 발생하지 않는다.")
-    void deleteById_테스트_2() {
-        when(scheduleRepository.deleteById(1L)).thenReturn(1);
-
-        assertThatCode(() -> scheduleService.deleteById(1L))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("삭제 결과가 2이면 예외가 발생한다.")
-    void delete_테스트_3() {
-        when(scheduleRepository.deleteById(1L)).thenReturn(2);
-
-        assertThatThrownBy(() -> scheduleService.deleteById(1L))
-                .isInstanceOf(ScheduleDeleteFailedException.class);
-        verify(scheduleRepository).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("없는 id의 스케줄로 삭제요청이 들어와도 예외가 발생하지 않는다.")
-    void deleteById_테스트_4() {
-        when(scheduleRepository.deleteById(999L)).thenReturn(0);
-
-        assertThatCode(() -> scheduleService.deleteById(999L))
-                .doesNotThrowAnyException();
     }
 
     @Test

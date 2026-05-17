@@ -17,7 +17,7 @@ public interface ReservationRepository {
 
     List<ReservationDetailProjection> findDetailsByName(String name);
 
-    int deleteByIdAndName(long id, String name);
+    void deleteByIdAndName(long id, String name);
 
     Optional<ReservationDetailProjection> findDetailByIdAndName(long reservationId, String name);
 

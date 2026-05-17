@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
-import roomescape.exception.reservation.ReservationInternalServerErrorException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.exception.schedule.PastScheduleException;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
@@ -48,7 +47,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Test
-    @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 0이면 예외가 발생하지 않는다.")
+    @DisplayName("이름 기준 예약 삭제에 성공한다.")
     void deleteByIdAndName_테스트_1() {
         // given
         long reservationId = 1L;
@@ -59,10 +58,8 @@ class ReservationServiceTest {
                 new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
                 new TimeInformation(7L, LocalTime.of(8, 0))
         );
-        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
-        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
-        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(0);
+        when(reservationRepository.findDetailByIdAndName(reservationId, name))
+                .thenReturn(Optional.of(reservationDetail));
 
         // when, then
         assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
@@ -75,58 +72,20 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 1이면 예외가 발생하지 않는다.")
+    @DisplayName("없는 예약 삭제 요청은 성공 처리한다.")
     void deleteByIdAndName_테스트_2() {
         // given
-        long reservationId = 1L;
+        long reservationId = 999L;
         String name = "a";
-        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
-                reservationId, name,
-                LocalDate.of(2026, 5, 5),
-                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
-                new TimeInformation(7L, LocalTime.of(8, 0))
-        );
 
-        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
-        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
-        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(1);
+        when(reservationRepository.findDetailByIdAndName(reservationId, name))
+                .thenReturn(Optional.empty());
 
         // when, then
         assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
                 .doesNotThrowAnyException();
         verify(reservationRepository).findDetailByIdAndName(reservationId, name);
-        verify(scheduleService).validateNotPastDate(reservationDetail.date());
-        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        verify(reservationRepository).deleteByIdAndName(reservationId, name);
-    }
-
-    @Test
-    @DisplayName("이름 기준 예약 삭제 시 삭제 건수가 2 이상이면 예외가 발생한다.")
-    void deleteByIdAndName_테스트_3() {
-        // given
-        long reservationId = 1L;
-        String name = "a";
-        ReservationDetailProjection reservationDetail = new ReservationDetailProjection(
-                reservationId, name,
-                LocalDate.of(2026, 5, 5),
-                new ThemeFindResponse(1L, "testTheme", "testDescription", "testUrl"),
-                new TimeInformation(7L, LocalTime.of(8, 0))
-        );
-
-        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
-        doNothing().when(scheduleService).validateNotPastDate(reservationDetail.date());
-        doNothing().when(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        when(reservationRepository.deleteByIdAndName(reservationId, name)).thenReturn(2);
-
-        // when, then
-        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
-                .isInstanceOf(ReservationInternalServerErrorException.class);
-
-        verify(reservationRepository).findDetailByIdAndName(reservationId, name);
-        verify(scheduleService).validateNotPastDate(reservationDetail.date());
-        verify(scheduleService).validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
-        verify(reservationRepository).deleteByIdAndName(reservationId, name);
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
     }
 
     @Test

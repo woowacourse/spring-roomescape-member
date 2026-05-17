@@ -57,9 +57,8 @@ class JdbcScheduleRepositoryTest {
     void 스케줄_삭제_레포지토리_테스트() {
         Schedule savedSchedule = repository.save(new Schedule(null, LocalDate.of(2026, 5, 8), 3L, 4L));
 
-        int deletedRows = repository.deleteById(savedSchedule.getId());
+        repository.deleteById(savedSchedule.getId());
 
-        assertThat(deletedRows).isEqualTo(1);
         assertThat(repository.findById(savedSchedule.getId())).isEmpty();
     }
 

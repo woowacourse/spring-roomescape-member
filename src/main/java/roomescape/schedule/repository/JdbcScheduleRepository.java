@@ -109,14 +109,14 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public int deleteById(long scheduleId) {
+    public void deleteById(long scheduleId) {
         String sql = "DELETE FROM schedule WHERE id = :scheduleId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("scheduleId", scheduleId);
 
         try {
-            return template.update(sql, params);
+            template.update(sql, params);
         } catch (DataIntegrityViolationException e) {
             throw new ScheduleInUseException(ErrorCode.SCHEDULE_IN_USE, scheduleId);
         }

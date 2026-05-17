@@ -19,7 +19,7 @@ public interface ScheduleRepository {
 
     List<Schedule> findAll();
 
-    int deleteById(long id);
+    void deleteById(long id);
 
     Optional<Long> findThemeIdById(long id);
 

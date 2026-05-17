@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
-import roomescape.exception.reservation.ReservationInternalServerErrorException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.exception.reservation.ReservationUpdateEmptyRequestException;
 import roomescape.exception.reservation.ReservationUpdateFailedException;
@@ -46,7 +45,7 @@ public class ReservationService {
             return;
         }
         validateNotPast(reservationDetail);
-        validateDeleteSuccessful(reservationId, name);
+        reservationRepository.deleteByIdAndName(reservationId, name);
     }
 
     public List<ReservationDetailFindResponse> findDetailsByName(String name) {
@@ -98,13 +97,6 @@ public class ReservationService {
         if (reservationRepository.existsByScheduleIdAndIdNot(scheduleId, reservationId)) {
             throw new ReservationAlreadyExistsException(ErrorCode.RESERVATION_ALREADY_EXIST, scheduleId);
         }
-    }
-
-    private void validateDeleteSuccessful(long reservationId, String name) {
-        if (reservationRepository.deleteByIdAndName(reservationId, name) <= 1) {
-            return;
-        }
-        throw new ReservationInternalServerErrorException(ErrorCode.RESERVATION_DELETE_FAILED);
     }
 
     private void validateReservationAlreadyExistsNot(long scheduleId) {
