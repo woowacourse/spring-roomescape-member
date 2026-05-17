@@ -31,6 +31,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse create(ReservationTimeCreateRequest reservationTimeReq) {
+        if (reservationTimeQueryingDao.existsByStartAt(reservationTimeReq.getStartAt())) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
+
         Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
         return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }

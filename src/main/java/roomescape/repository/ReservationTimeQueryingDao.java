@@ -76,4 +76,17 @@ public class ReservationTimeQueryingDao {
         Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
         return count != null && count > 0;
     }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation_time as r
+                WHERE r.start_at = :start_at
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("start_at", startAt);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
 }
