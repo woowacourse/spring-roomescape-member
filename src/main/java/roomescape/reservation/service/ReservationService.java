@@ -85,7 +85,7 @@ public class ReservationService {
         reservationDao.delete(id, name);
     }
 
-    private static void validateReservationOwnerAndTime(String name, LocalDateTime now, Reservation reservation) {
+    private void validateReservationOwnerAndTime(String name, LocalDateTime now, Reservation reservation) {
         if (!reservation.getName().equals(name)) {
             throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
         }
