@@ -121,4 +121,30 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // then
         assertThat(find).isEmpty();
     }
+
+    @Test
+    void 예약을_수정한다() {
+        // given
+        Reservation saved = reservationRepository.save(
+                Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime)
+        );
+
+        Reservation updated = new Reservation(
+                saved.getId(),
+                "아루",
+                LocalDate.now().plusDays(2),
+                theme,
+                reservationTime
+        );
+
+        // when
+        reservationRepository.update(updated);
+
+        // then
+        Optional<Reservation> find = reservationRepository.findById(saved.getId());
+
+        assertThat(find).isPresent();
+        assertThat(find.get().getName()).isEqualTo("아루");
+        assertThat(find.get().getDate()).isEqualTo(LocalDate.now().plusDays(2));
+    }
 }

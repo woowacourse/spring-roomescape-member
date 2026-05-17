@@ -84,4 +84,22 @@ public class JdbcReservationRepository implements ReservationRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public void update(Reservation reservation) {
+        String sql = """
+        UPDATE reservation
+        SET name = ?, date = ?, theme_id = ?, time_id = ?
+        WHERE id = ?
+        """;
+
+        jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                Date.valueOf(reservation.getDate()),
+                reservation.getTheme().getId(),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
+    }
 }

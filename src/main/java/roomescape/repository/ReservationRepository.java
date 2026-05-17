@@ -16,4 +16,6 @@ public interface ReservationRepository {
     List<Reservation> findAll();
 
     Optional<Reservation> findById(long id);
+
+    void update(Reservation reservation);
 }

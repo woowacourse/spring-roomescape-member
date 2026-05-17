@@ -50,4 +50,9 @@ public class FakeReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(long id) {
         return Optional.ofNullable(storage.get(id));
     }
+
+    @Override
+    public void update(Reservation reservation) {
+        storage.put(reservation.getId(), reservation);
+    }
 }

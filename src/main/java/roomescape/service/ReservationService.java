@@ -37,12 +37,14 @@ public class ReservationService {
         return ReservationResult.from(saved);
     }
 
+    @Transactional
     public ReservationResult change(long id, ReservationCommand command) {
         Reservation reservation = findReservationWithThrow(id);
         ReservationTime time = findTimeWithThrow(command.timeId());
         validateAlreadyReservation(command.date(), reservation.getTheme(), time);
 
         reservation.update(command.date(), time);
+        reservationRepository.update(reservation);
 
         return ReservationResult.from(reservation);
     }
