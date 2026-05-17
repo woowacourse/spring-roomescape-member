@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.common.exception.AccessDeniedException;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.common.payload.ErrorResponse;
 import roomescape.reservation.exception.PastReservationNotAllowedException;
-import roomescape.reservation.exception.ReservationAccessDeniedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ReservationAccessDeniedException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleReservationAccessDenied(ReservationAccessDeniedException e) {
+    public ErrorResponse handleReservationAccessDenied(AccessDeniedException e) {
         return new ErrorResponse(e.getMessage());
     }
 
