@@ -16,9 +16,6 @@ import roomescape.domain.ReservationTime;
 @Import(JdbcTemplateReservationTimeRepository.class)
 class JdbcTemplateReservationTimeRepositoryTest {
 
-    private static final long THEME_ID = 1L;
-    private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
@@ -93,49 +90,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
         assertThat(exists).isFalse();
     }
 
-    @Test
-    @DisplayName("예약이 존재하는 경우 예약 시간 삭제를 할 수 없다")
-    void existsTime_WhenReservationAlreadyExist() {
-        long timeId = addReservedTime();
-
-        boolean exists = reservationTimeRepository.existsReservationByTimeId(timeId);
-
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    @DisplayName("예약이 존재하지 않는 경우 예약 시간 삭제를 할 수 있다")
-    void notExistsTime_WhenReservationDoesNotExist() {
-        long timeId = addTime(DEFAULT_START_AT);
-
-        boolean exists = reservationTimeRepository.existsReservationByTimeId(timeId);
-
-        assertThat(exists).isFalse();
-    }
-
     private long addTime(LocalTime startAt) {
         return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
-    }
-
-    private long addReservedTime() {
-        long timeId = addTime(DEFAULT_START_AT);
-        addTheme();
-        addReservation(timeId);
-
-        return timeId;
-    }
-
-    private void addTheme() {
-        jdbcTemplate.update("""
-                INSERT INTO theme (id, name, description, thumbnail_url)
-                VALUES (?, '우주 정거장', '우주 정거장에서 탈출하세요.', 'https://picsum.photos/seed/theme1/400/300')
-                """, THEME_ID);
-    }
-
-    private void addReservation(long timeId) {
-        jdbcTemplate.update("""
-                INSERT INTO reservation (name, date, time_id, theme_id)
-                VALUES ('브라운', '2026-05-03', ?, ?)
-                """, timeId, THEME_ID);
     }
 }

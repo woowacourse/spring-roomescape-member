@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +25,9 @@ class ReservationTimeServiceTest {
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Mock
+    private ReservationRepository reservationRepository;
+
     @InjectMocks
     private ReservationTimeService reservationTimeService;
 
@@ -31,7 +35,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 경우 예약 시간을 삭제할 수 없다")
     void throwException_WhenReservationAlreadyExist() {
         given(reservationTimeRepository.existsById(TIME_ID)).willReturn(true);
-        given(reservationTimeRepository.existsReservationByTimeId(TIME_ID)).willReturn(true);
+        given(reservationRepository.existsByTimeId(TIME_ID)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(TIME_ID))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
@@ -44,7 +48,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하지 않는 경우 예약 시간을 삭제한다")
     void deleteReservationTime_WhenReservationDoesNotExist() {
         given(reservationTimeRepository.existsById(TIME_ID)).willReturn(true);
-        given(reservationTimeRepository.existsReservationByTimeId(TIME_ID)).willReturn(false);
+        given(reservationRepository.existsByTimeId(TIME_ID)).willReturn(false);
 
         reservationTimeService.deleteReservationTime(TIME_ID);
 

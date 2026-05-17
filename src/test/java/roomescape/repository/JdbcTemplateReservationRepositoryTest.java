@@ -161,6 +161,24 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약 시간에 예약이 존재하는지 확인한다")
+    void existsByTimeId() {
+        addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        boolean exists = reservationRepository.existsByTimeId(TIME_ID);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("예약 시간에 예약이 없으면 존재하지 않는다고 판단한다")
+    void notExistsByTimeId() {
+        boolean exists = reservationRepository.existsByTimeId(TIME_ID);
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
     @DisplayName("같은 날짜, 같은 시간, 같은 테마의 예약이 존재하면 중복 예약으로 판단한다")
     void existsReservation() {
         LocalDate date = LocalDate.of(2026, 5, 3);

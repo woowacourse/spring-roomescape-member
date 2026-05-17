@@ -14,6 +14,4 @@ public interface ReservationTimeRepository {
     Optional<ReservationTime> findById(Long id);
 
     boolean existsById(Long id);
-
-    boolean existsReservationByTimeId(Long timeId);
 }

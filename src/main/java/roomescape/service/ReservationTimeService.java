@@ -5,15 +5,21 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTime saveReservationTime(ReservationTime reservationTime) {
@@ -38,7 +44,7 @@ public class ReservationTimeService {
     }
 
     private void validateReservationTimeNotInUse(Long id) {
-        if (reservationTimeRepository.existsReservationByTimeId(id)) {
+        if (reservationRepository.existsByTimeId(id)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
     }
