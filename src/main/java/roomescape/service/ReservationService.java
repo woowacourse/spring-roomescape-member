@@ -119,7 +119,7 @@ public class ReservationService {
 
         validateCancellationDate(LocalDateTime.of(requestDTO.date(), time.getStartAt()));
 
-        int deletedRows = reservationRepository.deleteByNameAndDateAndTimeIdAndThemeId(
+        int deletedRows = reservationRepository.deleteReservationWith(
                 requestDTO.name(),
                 requestDTO.date(),
                 requestDTO.timeId(),
@@ -151,7 +151,7 @@ public class ReservationService {
     }
 
     private void validateNotDuplicated(LocalDate date, ReservationTime time, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+        if (reservationRepository.existsReservationWith(
                 date,
                 time.getId(),
                 theme.getId()

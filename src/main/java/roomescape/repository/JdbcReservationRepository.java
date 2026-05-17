@@ -157,7 +157,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteByNameAndDateAndTimeIdAndThemeId(
+    public int deleteReservationWith(
             String name,
             LocalDate date,
             Long timeId,
@@ -183,14 +183,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeId(Long timeId) {
+    public boolean existReservationByTimeId(Long timeId) {
         String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsReservationWith(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation

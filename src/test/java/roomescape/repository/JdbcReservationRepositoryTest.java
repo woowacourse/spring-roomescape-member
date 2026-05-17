@@ -170,7 +170,7 @@ class JdbcReservationRepositoryTest {
         Reservation saved = reservationRepository.save(reservation);
 
         // when
-        reservationRepository.deleteByNameAndDateAndTimeIdAndThemeId(
+        reservationRepository.deleteReservationWith(
                 saved.getName(),
                 saved.getDate(),
                 saved.getTimeId(),

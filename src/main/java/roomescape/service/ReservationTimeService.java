@@ -51,7 +51,7 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.existByTimeId(id)) {
+        if (reservationRepository.existReservationByTimeId(id)) {
             throw new ReservationTimeInUseException("예약 시간 삭제 실패 (사용 중): " + id);
         }
         if (reservationTimeRepository.findById(id).isEmpty()) {
