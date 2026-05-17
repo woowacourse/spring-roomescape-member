@@ -95,8 +95,7 @@ public class ReservationService {
     @Transactional
     public void deleteByIdAndName(Long id, String name) {
         Reservation reservation = getById(id);
-
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.isOwner(name)) {
             throw new AccessDeniedException(DomainType.RESERVATION, id);
         }
 

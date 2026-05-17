@@ -266,7 +266,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), DEFAULT_RESERVATION_NAME))
                 .isInstanceOf(AccessDeniedException.class);
-
         assertThat(reservationService.findAll()).contains(reservation);
     }
 
