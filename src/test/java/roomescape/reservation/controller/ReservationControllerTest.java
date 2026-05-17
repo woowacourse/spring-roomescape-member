@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AccessDeniedException;
 import roomescape.common.exception.DomainType;
@@ -42,6 +43,16 @@ import roomescape.theme.service.ThemeService;
 @SpringBootTest
 class ReservationControllerTest {
 
+    private static final String RESERVATION_NAME = "봉구스";
+    private static final String OTHER_RESERVATION_NAME = "밀란";
+    private static final String THEME_NAME = "테마";
+    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+    private static final LocalDate NEXT_RESERVATION_DATE = LocalDate.of(2026, 5, 11);
+    private static final LocalDate INVALID_RESERVATION_DATE = LocalDate.of(2023, 8, 5);
+    private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
+    private static final LocalTime UPDATED_START_AT = LocalTime.of(11, 0);
+    private static final int NOT_FOUND_ID = 999;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -56,34 +67,39 @@ class ReservationControllerTest {
 
     @Test
     void 예약을_추가한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
 
-        mockMvc.perform(post("/reservations")
+        // when
+        ResultActions result = mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/reservations/")))
-                .andExpect(jsonPath("$.name").value("밀란"))
-                .andExpect(jsonPath("$.date").value("2026-05-10"))
+                .andExpect(jsonPath("$.name").value(RESERVATION_NAME))
+                .andExpect(jsonPath("$.date").value(DEFAULT_RESERVATION_DATE.toString()))
                 .andExpect(jsonPath("$.time.id").value(reservationTime.getId()))
                 .andExpect(jsonPath("$.theme.id").value(theme.getId()));
     }
 
     @Test
     void 예약을_수정한다() throws Exception {
-        ReservationTime reservationTime1 = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        ReservationTime reservationTime2 = reservationTimeService.save(reservationTimeRequest(LocalTime.of(11, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
-        LocalDate reservationDate = LocalDate.of(2026, 5, 10);
+        // given
+        ReservationTime reservationTime1 = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        ReservationTime reservationTime2 = reservationTimeService.save(reservationTimeRequest(UPDATED_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
+        LocalDate reservationDate = DEFAULT_RESERVATION_DATE;
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
+                RESERVATION_NAME,
                 reservationDate,
                 reservationTime1.getId(),
                 theme.getId()
@@ -95,106 +111,126 @@ class ReservationControllerTest {
                 reservationTime2.getId()
         );
 
-        mockMvc.perform(patch("/reservations/{id}/schedule", id)
+        // when
+        ResultActions result = mockMvc.perform(patch("/reservations/{id}/schedule", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isOk())
+                        .content(objectMapper.writeValueAsString(updateRequest)));
+
+        // then
+        result.andExpect(status().isOk())
                 .andExpect(header().string("Location", containsString("/reservations/" + id)))
-                .andExpect(jsonPath("$.name").value("밀란"))
+                .andExpect(jsonPath("$.name").value(RESERVATION_NAME))
                 .andExpect(jsonPath("$.date").value(reservationDate.plusDays(1).toString()))
                 .andExpect(jsonPath("$.time.id").value(reservationTime2.getId().intValue()));
     }
 
     @Test
     void 예약_목록을_조회한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         postReservation(request);
 
-        mockMvc.perform(get("/admin/reservations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].name", hasItem("밀란")))
-                .andExpect(jsonPath("$[*].date", hasItem("2026-05-10")))
+        // when
+        ResultActions result = mockMvc.perform(get("/admin/reservations"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].name", hasItem(RESERVATION_NAME)))
+                .andExpect(jsonPath("$[*].date", hasItem(DEFAULT_RESERVATION_DATE.toString())))
                 .andExpect(jsonPath("$[*].time.id", hasItem(reservationTime.getId().intValue())))
                 .andExpect(jsonPath("$[*].theme.runtime", hasItem(60)));
     }
 
     @Test
     void 예약을_삭제한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         int id = postReservation(request);
 
-        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "밀란"))
-                .andExpect(status().isNoContent());
+        // when
+        ResultActions deleteResult = mockMvc.perform(delete("/reservations/{id}?name={name}", id, RESERVATION_NAME));
+        ResultActions findResult = mockMvc.perform(get("/admin/reservations"));
 
-        mockMvc.perform(get("/admin/reservations"))
-                .andExpect(status().isOk())
+        // then
+        deleteResult.andExpect(status().isNoContent());
+        findResult.andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(0));
     }
 
     @Test
     void 예약을_id와_이름으로_삭제한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request1 = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Map<String, Object> request2 = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 11),
+                RESERVATION_NAME,
+                NEXT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         int id = postReservation(request1);
         postReservation(request2);
 
-        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "밀란"))
-                .andExpect(status().isNoContent());
+        // when
+        ResultActions deleteResult = mockMvc.perform(delete("/reservations/{id}?name={name}", id, RESERVATION_NAME));
+        ResultActions findResult = mockMvc.perform(get("/admin/reservations"));
 
-        mockMvc.perform(get("/admin/reservations"))
-                .andExpect(status().isOk())
+        // then
+        deleteResult.andExpect(status().isNoContent());
+        findResult.andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1));
     }
 
     @Test
     void 이름으로_예약들을_조회한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         postReservation(request);
 
-        mockMvc.perform(get("/reservations?name={name}", "밀란")
+        // when
+        ResultActions result = mockMvc.perform(get("/reservations?name={name}", RESERVATION_NAME)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].name", hasItem("밀란")));
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].name", hasItem(RESERVATION_NAME)));
     }
 
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() throws Exception {
-        mockMvc.perform(delete("/reservations/{id}?name={name}", 999, "밀란"))
-                .andExpect(status().isNotFound())
+        // when
+        ResultActions result = mockMvc.perform(delete("/reservations/{id}?name={name}", NOT_FOUND_ID, RESERVATION_NAME));
+
+        // then
+        result.andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString(
                         NotFoundException.clientMessage(DomainType.RESERVATION)
                 )));
@@ -202,18 +238,22 @@ class ReservationControllerTest {
 
     @Test
     void 다른_이름으로_예약을_삭제하면_403을_응답한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         int id = postReservation(request);
 
-        mockMvc.perform(delete("/reservations/{id}?name={name}", id, "봉구스"))
-                .andExpect(status().isForbidden())
+        // when
+        ResultActions result = mockMvc.perform(delete("/reservations/{id}?name={name}", id, OTHER_RESERVATION_NAME));
+
+        // then
+        result.andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(containsString(
                         AccessDeniedException.clientMessage(DomainType.RESERVATION.displayName())
                 )));
@@ -221,20 +261,24 @@ class ReservationControllerTest {
 
     @Test
     void 날짜_시간_테마가_같은_예약을_등록요청하면_409를_응답한다() throws Exception {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         postReservation(request);
 
-        mockMvc.perform(post("/reservations")
+        // when
+        ResultActions result = mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict())
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(containsString(
                         DuplicatedException.clientMessage(DomainType.RESERVATION)
                 )));
@@ -246,12 +290,16 @@ class ReservationControllerTest {
             String name,
             String expectedMessage
     ) throws Exception {
-        Map<String, Object> request = reservationRequestBody(name, LocalDate.of(2023, 8, 5), 1L, 1L);
+        // given
+        Map<String, Object> request = reservationRequestBody(name, INVALID_RESERVATION_DATE, 1L, 1L);
 
-        mockMvc.perform(post("/reservations")
+        // when
+        ResultActions result = mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(containsString(expectedMessage)));
     }
 

@@ -17,9 +17,17 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStep3Test {
 
+    private static final String ADMIN_TIME_START_AT = "10:00";
+    private static final String RESERVATION_TIME_START_AT = "12:00";
+    private static final String THEME_NAME = "테마A";
+    private static final String THEME_DESCRIPTION = "테마A란...";
+    private static final String THEME_THUMBNAIL_URL = "https://example.com/themes/theme-1.png";
+    private static final String RESERVATION_NAME = "브라운";
+    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+
     @Test
     void 시간_관리_API() {
-        Map<String, Object> params = reservationTimeRequestBody("10:00");
+        Map<String, Object> params = reservationTimeRequestBody(ADMIN_TIME_START_AT);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -42,7 +50,7 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
-        Map<String, Object> reservationTime = reservationTimeRequestBody("12:00");
+        Map<String, Object> reservationTime = reservationTimeRequestBody(RESERVATION_TIME_START_AT);
 
         Integer reservationTimeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -53,7 +61,7 @@ public class MissionStep3Test {
                 .extract()
                 .path("id");
 
-        Map<String, Object> theme = themeRequestBody("테마A", "테마A란...", "https://example.com/themes/theme-1.png");
+        Map<String, Object> theme = themeRequestBody(THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL_URL);
 
         Integer themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -65,8 +73,8 @@ public class MissionStep3Test {
                 .path("id");
 
         Map<String, Object> reservation = reservationRequestBody(
-                "브라운",
-                LocalDate.of(2026, 5, 10),
+                RESERVATION_NAME,
+                RESERVATION_DATE,
                 reservationTimeId.longValue(),
                 themeId.longValue()
         );

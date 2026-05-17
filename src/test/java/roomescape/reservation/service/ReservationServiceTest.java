@@ -29,6 +29,17 @@ import roomescape.theme.service.ThemeService;
 @SpringBootTest
 class ReservationServiceTest {
 
+    private static final String DEFAULT_RESERVATION_NAME = "봉구스";
+    private static final String OTHER_RESERVATION_NAME = "밀란";
+    private static final String DEFAULT_THEME_NAME = "테마";
+    private static final String FIRST_THEME_NAME = "테마1";
+    private static final String SECOND_THEME_NAME = "테마2";
+    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+    private static final LocalDate NEXT_RESERVATION_DATE = LocalDate.of(2026, 5, 11);
+    private static final LocalDate PAST_RESERVATION_DATE = LocalDate.of(2001, 5, 1);
+    private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
+    private static final Long NOT_FOUND_ID = 999L;
+
     @Autowired
     private ReservationService reservationService;
 
@@ -40,17 +51,20 @@ class ReservationServiceTest {
 
     @Test
     void 예약요청을_올바르게_저장하는지_확인하는_테스트() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
 
+        // when
         Reservation reservation = reservationService.save(reservationRequest);
 
+        // then
         assertThat(reservation.getName()).isEqualTo(reservationRequest.name());
         assertThat(reservation.getDate()).isEqualTo(reservationRequest.date());
         assertThat(reservation.getTime().getId()).isEqualTo(reservationRequest.timeId());
@@ -59,79 +73,90 @@ class ReservationServiceTest {
 
     @Test
     void 없는_예약시간_id를_입력하면_에러를_던진다() {
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 6),
-                999L,
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
+                NOT_FOUND_ID,
                 theme.getId()
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 없는_테마_id를_입력하면_에러를_던진다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
-                999L
+                NOT_FOUND_ID
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 같은_날짜_같은_시간_다른_테마는_예약이_가능하다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme1 = themeService.save(themeRequest("테마1"));
-        Theme theme2 = themeService.save(themeRequest("테마2"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme1 = themeService.save(themeRequest(FIRST_THEME_NAME));
+        Theme theme2 = themeService.save(themeRequest(SECOND_THEME_NAME));
         ReservationRequest reservationRequest1 = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme1.getId()
         );
         ReservationRequest reservationRequest2 = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme2.getId()
         );
         Reservation reservation1 = reservationService.save(reservationRequest1);
         Reservation reservation2 = reservationService.save(reservationRequest2);
 
+        // when
         List<Reservation> reservations = reservationService.findAll();
+
+        // then
         assertThat(reservations).contains(reservation1, reservation2);
     }
 
     @Test
     void 이미_있는_예약을_다시_생성하면_에러를_던진다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         reservationService.save(reservationRequest);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(DuplicatedException.class);
     }
 
     @Test
     void 예약_수정을_올바르게_수행하는_테스트() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
-        LocalDate date1 = LocalDate.of(2026, 5, 10);
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
+        LocalDate date1 = DEFAULT_RESERVATION_DATE;
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
+                DEFAULT_RESERVATION_NAME,
                 date1,
                 reservationTime.getId(),
                 theme.getId()
@@ -139,71 +164,83 @@ class ReservationServiceTest {
         Reservation savedReservation = reservationService.save(reservationRequest);
 
         LocalDate date2 = date1.plusDays(1);
+
+        // when
         Reservation updateReservation = reservationService.update(
                 savedReservation.getId(),
                 reservationupdateRequest(date2, reservationTime.getId())
         );
 
+        // then
         assertThat(updateReservation.getDate()).isEqualTo(date2);
         assertThat(updateReservation.getTime().getId()).isEqualTo(reservationTime.getId());
     }
 
     @Test
     void 예약목록을_올바르게_조회하는지_확인하는_테스트() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Reservation reservation = reservationService.save(reservationRequest);
 
+        // when
         List<Reservation> reservations = reservationService.findAll();
 
+        // then
         assertThat(reservations).contains(reservation);
     }
 
     @Test
     void 예약을_올바르게_삭제하는지_확인하는_테스트() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2026, 5, 10),
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Reservation reservation = reservationService.save(reservationRequest);
 
+        // when
         reservationService.deleteById(reservation.getId());
 
+        // then
         List<Reservation> reservations = reservationService.findAll();
         assertThat(reservations).doesNotContain(reservation);
     }
 
     @Test
     void 예약을_id와_이름으로_올바르게_삭제하는지_확인하는_테스트() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest1 = reservationRequest(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                OTHER_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         ReservationRequest reservationRequest2 = reservationRequest(
-                "밀란",
-                LocalDate.of(2026, 5, 11),
+                OTHER_RESERVATION_NAME,
+                NEXT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Reservation reservation = reservationService.save(reservationRequest1);
         Reservation sameNameReservation = reservationService.save(reservationRequest2);
 
+        // when
         reservationService.deleteByIdAndName(reservation.getId(), reservation.getName());
 
+        // then
         List<Reservation> reservations = reservationService.findAll();
         assertThat(reservations).doesNotContain(reservation);
         assertThat(reservations).contains(sameNameReservation);
@@ -211,17 +248,19 @@ class ReservationServiceTest {
 
     @Test
     void 예약_id와_이름이_일치하지_않으면_삭제하지_않는다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                OTHER_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Reservation reservation = reservationService.save(reservationRequest);
 
-        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), "봉구스"))
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservation.getId(), DEFAULT_RESERVATION_NAME))
                 .isInstanceOf(AccessDeniedException.class);
 
         assertThat(reservationService.findAll()).contains(reservation);
@@ -229,39 +268,45 @@ class ReservationServiceTest {
 
     @Test
     void 없는_예약을_삭제하면_에러를_던진다() {
-        assertThatThrownBy(() -> reservationService.deleteById(999L))
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteById(NOT_FOUND_ID))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 지난_날짜와_시간으로_예약하면_에러를_던진다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "봉구스",
-                LocalDate.of(2001, 5, 1),
+                DEFAULT_RESERVATION_NAME,
+                PAST_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(PastDateTimeException.class);
     }
 
     @Test
     void 이름으로_예약들을_조회한다() {
-        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
-        Theme theme = themeService.save(themeRequest("테마"));
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
-                "밀란",
-                LocalDate.of(2026, 5, 10),
+                OTHER_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
                 reservationTime.getId(),
                 theme.getId()
         );
         Reservation savedReservation = reservationService.save(reservationRequest);
 
-        List<Reservation> reservations = reservationService.findAllByName("밀란");
+        // when
+        List<Reservation> reservations = reservationService.findAllByName(OTHER_RESERVATION_NAME);
 
+        // then
         assertThat(reservations).contains(savedReservation);
     }
 

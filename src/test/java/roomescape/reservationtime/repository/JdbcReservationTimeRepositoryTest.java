@@ -29,6 +29,16 @@ import roomescape.theme.repository.ThemeRepository;
 @Import({JdbcReservationTimeRepository.class, JdbcReservationRepository.class, JdbcThemeRepository.class})
 class JdbcReservationTimeRepositoryTest {
 
+    private static final String RESERVATION_NAME = "밀란";
+    private static final String THEME_NAME = "테마";
+    private static final LocalDate AVAILABLE_DATE = LocalDate.of(2026, 5, 6);
+    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+    private static final LocalTime DEFAULT_START_AT = LocalTime.of(11, 0);
+    private static final LocalTime SECOND_START_AT = LocalTime.of(14, 0);
+    private static final LocalTime FIRST_AVAILABLE_START_AT = LocalTime.of(10, 0);
+    private static final LocalTime SECOND_AVAILABLE_START_AT = LocalTime.of(13, 0);
+    private static final LocalTime THIRD_AVAILABLE_START_AT = LocalTime.of(16, 0);
+
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
@@ -40,53 +50,63 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_저장하는_테스트() {
-        LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(startAt));
+        // when
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(DEFAULT_START_AT));
 
+        // then
         assertThat(reservationTime.getId()).isPositive();
-        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
+        assertThat(reservationTime.getStartAt()).isEqualTo(DEFAULT_START_AT);
     }
 
     @Test
     void 예약_시간을_조회하는_테스트() {
-        LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(startAt));
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(DEFAULT_START_AT));
 
+        // when
         ReservationTime foundReservationTime = reservationTimeRepository.findById(reservationTime.getId())
                 .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION_TIME, reservationTime.getId()));
 
+        // then
         assertThat(foundReservationTime.getId()).isEqualTo(reservationTime.getId());
-        assertThat(foundReservationTime.getStartAt()).isEqualTo(startAt);
+        assertThat(foundReservationTime.getStartAt()).isEqualTo(DEFAULT_START_AT);
     }
 
     @Test
     void 모든_예약_시간을_조회하는_테스트() {
+        // given
         ReservationTime reservationTime1 = reservationTimeRepository.save(
-                reservationTime(LocalTime.of(11, 0)));
+                reservationTime(DEFAULT_START_AT));
         ReservationTime reservationTime2 = reservationTimeRepository.save(
-                reservationTime(LocalTime.of(14, 0)));
+                reservationTime(SECOND_START_AT));
 
+        // when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
+        // then
         assertThat(reservationTimes).contains(reservationTime1, reservationTime2);
     }
 
     @Test
     void 이미_등록된_예약_시간을_저장하면_예외가_발생한다() {
-        LocalTime startAt = LocalTime.of(11, 0);
+        // given
+        reservationTimeRepository.save(reservationTime(DEFAULT_START_AT));
 
-        reservationTimeRepository.save(reservationTime(startAt));
-
-        assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime(startAt)))
+        // when & then
+        assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime(DEFAULT_START_AT)))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessageContaining(DuplicatedException.clientMessage(DomainType.RESERVATION_TIME));
     }
 
     @Test
     void 예약_시간을_삭제하는_테스트() {
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(16, 0)));
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(THIRD_AVAILABLE_START_AT));
+
+        // when
         reservationTimeRepository.deleteById(reservationTime.getId());
 
+        // then
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         assertThat(reservationTimes)
@@ -96,23 +116,24 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 특정_날짜와_테마에_예약_가능한_시간을_조회하는_테스트() {
-        LocalDate date = LocalDate.of(2026, 5, 6);
-
+        // given
         ReservationTime reservationTime1 = reservationTimeRepository.save(
-                reservationTime(LocalTime.of(10, 0)));
+                reservationTime(FIRST_AVAILABLE_START_AT));
         ReservationTime reservationTime2 = reservationTimeRepository.save(
-                reservationTime(LocalTime.of(13, 0)));
+                reservationTime(SECOND_AVAILABLE_START_AT));
         ReservationTime reservationTime3 = reservationTimeRepository.save(
-                reservationTime(LocalTime.of(16, 0)));
+                reservationTime(THIRD_AVAILABLE_START_AT));
 
-        Theme theme = themeRepository.save(theme("테마"));
+        Theme theme = themeRepository.save(theme(THEME_NAME));
 
-        Reservation reservation = reservation("밀란", date, reservationTime1, theme);
+        Reservation reservation = reservation(RESERVATION_NAME, AVAILABLE_DATE, reservationTime1, theme);
         reservationRepository.save(reservation);
 
+        // when
         List<ReservationTime> availableTimes =
-                reservationTimeRepository.findAvailableTimesByDateAndThemeId(date, theme.getId());
+                reservationTimeRepository.findAvailableTimesByDateAndThemeId(AVAILABLE_DATE, theme.getId());
 
+        // then
         assertThat(availableTimes)
                 .extracting(ReservationTime::getId)
                 .containsExactly(reservationTime2.getId(), reservationTime3.getId());
@@ -120,12 +141,13 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약이_참조하는_예약시간은_삭제할_수_없다() {
-        LocalDate date = LocalDate.of(2026, 5, 10);
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(theme("테마"));
-        Reservation reservation = reservation("밀란", date, reservationTime, theme);
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(FIRST_AVAILABLE_START_AT));
+        Theme theme = themeRepository.save(theme(THEME_NAME));
+        Reservation reservation = reservation(RESERVATION_NAME, RESERVATION_DATE, reservationTime, theme);
         reservationRepository.save(reservation);
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(reservationTime.getId()))
                 .isInstanceOf(InUseException.class);
     }

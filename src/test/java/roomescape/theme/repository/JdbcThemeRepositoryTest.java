@@ -29,6 +29,16 @@ import roomescape.theme.entity.Theme;
 @Import({JdbcThemeRepository.class, JdbcReservationTimeRepository.class, JdbcReservationRepository.class})
 class JdbcThemeRepositoryTest {
 
+    private static final String DEFAULT_THEME_NAME = "테마";
+    private static final String FIRST_THEME_NAME = "테마1";
+    private static final String SECOND_THEME_NAME = "테마2";
+    private static final String RESERVATION_NAME = "밀란";
+    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+    private static final LocalDate POPULAR_TODAY = LocalDate.of(2026, 5, 8);
+    private static final LocalTime RESERVATION_START_AT = LocalTime.of(10, 0);
+    private static final Long NOT_FOUND_ID = 999L;
+    private static final int POPULAR_LIMIT = 10;
+
     @Autowired
     private ThemeRepository themeRepository;
 
@@ -40,10 +50,13 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장하는_테스트() {
-        Theme theme = theme("테마");
+        // given
+        Theme theme = theme(DEFAULT_THEME_NAME);
 
+        // when
         Theme savedTheme = themeRepository.save(theme);
 
+        // then
         assertThat(savedTheme.getId()).isPositive();
         assertThat(savedTheme.getName()).isEqualTo(theme.getName());
         assertThat(savedTheme.getDescription()).isEqualTo(theme.getDescription());
@@ -53,12 +66,15 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_조회하는_테스트() {
-        Theme theme = theme("테마");
+        // given
+        Theme theme = theme(DEFAULT_THEME_NAME);
         Theme savedTheme = themeRepository.save(theme);
 
+        // when
         Theme foundTheme = themeRepository.findById(savedTheme.getId())
                 .orElseThrow(() -> new NotFoundException(DomainType.THEME, savedTheme.getId()));
 
+        // then
         assertThat(foundTheme.getId()).isEqualTo(savedTheme.getId());
         assertThat(foundTheme.getName()).isEqualTo(theme.getName());
         assertThat(foundTheme.getDescription()).isEqualTo(theme.getDescription());
@@ -68,32 +84,44 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마_존재여부를_확인하는_테스트() {
-        Theme theme = themeRepository.save(theme("테마"));
+        // given
+        Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
 
-        assertThat(themeRepository.existsById(theme.getId())).isTrue();
-        assertThat(themeRepository.existsById(999L)).isFalse();
+        // when
+        boolean existsTheme = themeRepository.existsById(theme.getId());
+        boolean existsNotFoundTheme = themeRepository.existsById(NOT_FOUND_ID);
+
+        // then
+        assertThat(existsTheme).isTrue();
+        assertThat(existsNotFoundTheme).isFalse();
     }
 
     @Test
     void 모든_테마를_조회하는_테스트() {
-        Theme theme1 = theme("테마1");
-        Theme theme2 = theme("테마2");
+        // given
+        Theme theme1 = theme(FIRST_THEME_NAME);
+        Theme theme2 = theme(SECOND_THEME_NAME);
 
         Theme savedTheme1 = themeRepository.save(theme1);
         Theme savedTheme2 = themeRepository.save(theme2);
 
+        // when
         List<Theme> themes = themeRepository.findAll();
 
+        // then
         assertThat(themes).contains(savedTheme1, savedTheme2);
     }
 
     @Test
     void 테마를_삭제하는_테스트() {
-        Theme theme = theme("테마");
+        // given
+        Theme theme = theme(DEFAULT_THEME_NAME);
         Theme savedTheme = themeRepository.save(theme);
 
+        // when
         themeRepository.deleteById(savedTheme.getId());
 
+        // then
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes)
                 .extracting(Theme::getId)
@@ -102,12 +130,13 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 예약이_참조하는_테마는_삭제할_수_없다() {
-        LocalDate date = LocalDate.of(2026, 5, 10);
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(theme("테마"));
-        Reservation reservation = reservation("밀란", date, reservationTime, theme);
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(RESERVATION_START_AT));
+        Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
+        Reservation reservation = reservation(RESERVATION_NAME, RESERVATION_DATE, reservationTime, theme);
         reservationRepository.save(reservation);
 
+        // when & then
         assertThatThrownBy(() -> themeRepository.deleteById(theme.getId()))
                 .isInstanceOf(InUseException.class);
     }
@@ -115,11 +144,13 @@ class JdbcThemeRepositoryTest {
     @Sql("/create_dummies_for_popular_themes.sql")
     @Test
     void 최근_1주_동안_인기있는_테마를_조회하는_테스트() {
-        LocalDate today = LocalDate.of(2026, 5, 8);
-        LocalDate start = today.minusDays(7);
+        // given
+        LocalDate start = POPULAR_TODAY.minusDays(7);
 
-        List<Theme> themes = themeRepository.findPopularThemes(start, today, 10);
+        // when
+        List<Theme> themes = themeRepository.findPopularThemes(start, POPULAR_TODAY, POPULAR_LIMIT);
 
+        // then
         assertThat(themes).hasSize(5);
         assertThat(themes)
                 .extracting(Theme::getName)
