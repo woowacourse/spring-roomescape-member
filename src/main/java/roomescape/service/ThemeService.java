@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +7,9 @@ import roomescape.domain.Theme;
 import roomescape.exception.ResourceInUseException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,6 +40,7 @@ public class ThemeService {
     @Transactional
     public void removeTheme(long themeId) {
         try {
+            findThemeById(themeId);
             themeRepository.deleteById(themeId);
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("테마");
@@ -47,7 +49,7 @@ public class ThemeService {
 
     @Transactional
     public void putTheme(long id, String name, String description, String thumbnailUrl) {
-        themeRepository.findById(id);
+        findThemeById(id);
         themeRepository.update(new Theme(id, name, description, thumbnailUrl));
     }
 

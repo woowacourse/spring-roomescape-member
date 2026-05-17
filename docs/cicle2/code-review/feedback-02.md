@@ -88,21 +88,21 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+### 4. 검증의 우선 순위
 
->
+> `수정 대상이 존재하는 지`와 `수정하려는 값이 유효한 지` 중 어떤 순서로 검증할지 기준을 잡아보면 좋겠습니다.
 
 - 의도/기준/생각
-  - 
+    - 객체 생성을 뒤로 미루려던 생각 + 중복 시간대 만든김에 한번에 싹 집어넣는 편의주의 콤비네이션
 
 ---
 
-###                         
+### 5. 잘못된 호출 수정
 
->
+> optional 값이 제대로 활용되지 않고 있어요 👀
 
 - 의도/기준/생각
-  - 
+    - 4번 피드백을 사전 방비했을 기회를 이렇게
 
 ---
 
@@ -136,7 +136,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -145,7 +145,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -154,7 +154,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -163,7 +163,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -172,7 +172,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -181,7 +181,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -190,7 +190,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 
@@ -199,7 +199,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                         
+###                               
 
 >
 

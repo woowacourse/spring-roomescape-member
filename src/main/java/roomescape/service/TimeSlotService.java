@@ -47,6 +47,7 @@ public class TimeSlotService {
     @Transactional
     public void removeTime(long timeId) {
         try {
+            findTimeSlotById(timeId);
             timeSlotRepository.deleteById(timeId);
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("예약 시간");
@@ -55,14 +56,15 @@ public class TimeSlotService {
 
     @Transactional
     public void putTime(long id, LocalTime startAt) {
+        findTimeSlotById(id);
         checkDuplicatedStartAt(startAt);
         timeSlotRepository.update(new TimeSlot(id, startAt));
     }
 
     @Transactional
     public void patchTime(long id, LocalTime startAt) {
-        checkDuplicatedStartAt(startAt);
         TimeSlot timeSlot = findTimeSlotById(id);
+        checkDuplicatedStartAt(startAt);
         timeSlot.changeTime(startAt);
         timeSlotRepository.update(timeSlot);
     }
