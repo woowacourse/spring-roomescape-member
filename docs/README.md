@@ -19,6 +19,7 @@
 │
 ├── 트랜잭션 흐름
 │   ├── @Transactional (프록시 기반)
+│   ├── ThreadLocal → TransactionSynchronizationManager → 커넥션 바인딩
 │   ├── 셀프 인보케이션 문제
 │   ├── @Async와 트랜잭션 전파
 │   ├── readOnly = true 실제 효과 (락 생략, Undo Log 생략, Dirty Checking 생략)
@@ -43,13 +44,34 @@
 
 ## 학습 로그
 
-| # | 주제 | 링크 |
-|---|---|---|
-| 01 | Spring MVC — @RestController, @ResponseBody | [log_01.md](log_01.md) |
-| 02 | Controller 테스트 (MockMvc vs RestAssuredMockMvc) | [log_02.md](log_02.md) |
-| 03 | 동시성 — INSERT 경쟁 조건과 해결 전략 | [log_03.md](log_03.md) |
-| 04 | JPA 영속성 / @Transactional | [log_04.md](log_04.md) |
-| 05 | 트랜잭션 격리 수준 | [log_05.md](log_05.md) |
-| 06 | MVCC / 낙관적 락 / 비관적 락 선택 기준 | [log_06.md](log_06.md) |
-| 07 | @Transactional(readOnly = true) 실제 효과 | [log_07.md](log_07.md) |
-| 08 | JDBC 낙관적 락 직접 구현 | [log_08.md](log_08.md) |
+> 각 사이클의 시작 의문을 중심으로 묶었다. 새 주제를 시작하기 전 관련 묶음을 먼저 읽는다.
+
+---
+
+### Spring MVC 흐름
+
+| # | 의문 | 주제 | 링크 |
+|---|---|---|---|
+| 01 | @RestController는 정확히 어떤 역할인가? | Spring MVC — @RestController, @ResponseBody | [log_01.md](log_01.md) |
+| 02 | 컨트롤러 테스트는 어떻게 작성해야 하는가? | Controller 테스트 (MockMvc vs RestAssuredMockMvc) | [log_02.md](log_02.md) |
+
+---
+
+### 동시성 흐름
+
+| # | 의문 | 주제 | 링크 |
+|---|---|---|---|
+| 03 | INSERT할 때도 동시성 이슈가 생길 수 있지 않나? | 동시성 — INSERT 경쟁 조건과 해결 전략 | [log_03.md](log_03.md) |
+| 05 | 격리 수준이란 무엇이고 왜 4단계인가? | 트랜잭션 격리 수준 | [log_05.md](log_05.md) |
+| 06 | Repeatable Read가 어떻게 동작하는가? (MVCC) | MVCC / 낙관적 락 / 비관적 락 선택 기준 | [log_06.md](log_06.md) |
+| 08 | JPA 없이 낙관적 락을 어떻게 구현하는가? | JDBC 낙관적 락 직접 구현 | [log_08.md](log_08.md) |
+
+---
+
+### 트랜잭션 흐름
+
+| # | 의문 | 주제 | 링크 |
+|---|---|---|---|
+| 04 | 레이지 로딩과 @Transactional은 어떤 관계인가? | JPA 영속성 / @Transactional | [log_04.md](log_04.md) |
+| 07 | readOnly = true는 단순히 쓰기만 막는 건가? | @Transactional(readOnly = true) 실제 효과 | [log_07.md](log_07.md) |
+| 09 | 커넥션이 쓰레드에 바인딩된다는 게 어떻게 가능한가? | ThreadLocal과 트랜잭션 커넥션 바인딩 | [log_09.md](log_09.md) |
