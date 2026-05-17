@@ -10,10 +10,12 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -22,8 +24,16 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
+    @LocalServerPort
+    private int port;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     void 예약_정상_생성_확인_테스트() {
@@ -240,7 +250,7 @@ class ReservationControllerTest {
             .body(params)
             .when().patch("/reservation/" + reservationId)
             .then().log().all()
-            .statusCode(200);
+            .statusCode(204);
 
         String date = jdbcTemplate.queryForObject(
             "SELECT date FROM reservation WHERE id = ?", String.class, reservationId
