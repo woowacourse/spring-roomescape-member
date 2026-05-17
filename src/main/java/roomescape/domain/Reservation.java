@@ -6,7 +6,7 @@ import java.util.Objects;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 import roomescape.exception.NotAcceptableReservationException;
 
 @Getter
@@ -114,7 +114,7 @@ public class Reservation {
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_RESERVATION,
                     "예약엔 날짜가 존재해야 합니다."
             );
@@ -123,7 +123,7 @@ public class Reservation {
 
     private static void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_RESERVATION,
                     "예약엔 시간이 존재해야 합니다."
             );
@@ -153,7 +153,7 @@ public class Reservation {
 
     private void validateId(EntityId id) {
         if (id == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_RESERVATION,
                     "예약엔 식별자가 존재해야 합니다."
             );
@@ -162,7 +162,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_RESERVATION,
                     "예약엔 이름이 존재해야 합니다."
             );
@@ -171,7 +171,7 @@ public class Reservation {
 
     private void validateTheme(EntityId themeId) {
         if (themeId == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_RESERVATION,
                     "예약엔 테마가 존재해야 합니다."
             );

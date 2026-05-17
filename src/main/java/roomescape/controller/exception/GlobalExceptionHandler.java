@@ -15,7 +15,7 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InUseEntityException;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 import roomescape.exception.NotAcceptableReservationException;
 
 
@@ -33,8 +33,8 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(InvalidInputException exception) {
+    @ExceptionHandler(InvalidDomainStateException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(InvalidDomainStateException exception) {
         log.warn("[Bad Request]", exception);
         ErrorResponse response = new ErrorResponse(exception.getMessage(), exception.getErrorCode());
 

@@ -3,7 +3,7 @@ package roomescape.domain;
 import com.github.f4b6a3.uuid.UuidCreator;
 import java.util.UUID;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 
 public final class EntityId {
 
@@ -25,7 +25,7 @@ public final class EntityId {
 
     private void validateValueExist(Object value) {
         if (value == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_ID,
                     "EntityId는 빈 값을 지닐 수 없습니다."
             );

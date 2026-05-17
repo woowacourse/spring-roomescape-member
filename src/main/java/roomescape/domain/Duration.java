@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 
 public record Duration(
         LocalDate startDate,
@@ -15,13 +15,13 @@ public record Duration(
 
     private void validateNotNull(LocalDate startDate, LocalDate endDate) {
         if (startDate == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_DURATION,
                     "시작일이 필요합니다."
             );
         }
         if (endDate == null) {
-            throw new InvalidInputException(
+            throw new InvalidDomainStateException(
                     ErrorCode.INVALID_DURATION,
                     "종료일이 필요합니다."
             );
@@ -34,7 +34,7 @@ public record Duration(
                     + " startDate = " + startDate
                     + " endDate = " + endDate;
 
-            throw new InvalidInputException(ErrorCode.INVALID_DURATION, message);
+            throw new InvalidDomainStateException(ErrorCode.INVALID_DURATION, message);
         }
     }
 }

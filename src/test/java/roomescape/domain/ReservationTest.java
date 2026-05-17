@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 import roomescape.exception.NotAcceptableReservationException;
 
 class ReservationTest {
@@ -32,7 +32,7 @@ class ReservationTest {
                 DEFAULT_DATE,
                 DEFAULT_TIME,
                 DEFAULT_THEME_ID
-        )).isInstanceOf(InvalidInputException.class)
+        )).isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("예약엔 식별자가 존재해야 합니다.");
     }
 
@@ -48,7 +48,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME_ID
-            )).isInstanceOf(InvalidInputException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
 
@@ -60,7 +60,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME_ID
-            )).isInstanceOf(InvalidInputException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
     }
@@ -127,7 +127,7 @@ class ReservationTest {
                 DEFAULT_DATE,
                 DEFAULT_TIME,
                 null
-        )).isInstanceOf(InvalidInputException.class)
+        )).isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("예약엔 테마가 존재해야 합니다.");
     }
 

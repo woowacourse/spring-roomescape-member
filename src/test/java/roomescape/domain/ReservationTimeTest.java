@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 
 class ReservationTimeTest {
 
@@ -15,7 +15,7 @@ class ReservationTimeTest {
         assertThatThrownBy(() -> new ReservationTime(
                 null,
                 LocalTime.NOON
-        )).isInstanceOf(InvalidInputException.class)
+        )).isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("예약 시간엔 식별자가 존재해야 합니다.");
     }
 
@@ -24,7 +24,7 @@ class ReservationTimeTest {
         assertThatThrownBy(() -> new ReservationTime(
                 DEFAULT_ID,
                 null
-        )).isInstanceOf(InvalidInputException.class)
+        )).isInstanceOf(InvalidDomainStateException.class)
                 .hasMessage("예약 시간엔 시간 정보가 존재해야 합니다.");
     }
 }

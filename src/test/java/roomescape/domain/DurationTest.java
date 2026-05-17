@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.InvalidDomainStateException;
 
 class DurationTest {
 
@@ -21,7 +21,7 @@ class DurationTest {
             assertThatThrownBy(() -> new Duration(
                     null,
                     DEFAULT_END_DATE
-            )).isInstanceOf(InvalidInputException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("시작일이 필요합니다.");
         }
 
@@ -30,7 +30,7 @@ class DurationTest {
             assertThatThrownBy(() -> new Duration(
                     DEFAULT_START_DATE,
                     null
-            )).isInstanceOf(InvalidInputException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("종료일이 필요합니다.");
         }
     }
@@ -67,7 +67,7 @@ class DurationTest {
             assertThatThrownBy(() -> new Duration(
                     startDate,
                     earlierEndDate
-            )).isInstanceOf(InvalidInputException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessageContaining("시작일은 종료일과 같거나 앞서야 합니다.");
         }
     }
