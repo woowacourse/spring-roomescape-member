@@ -95,7 +95,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusiness(BusinessException e) {
         log.warn("비즈니스 규칙 위반 [{}]: {}", e.getStatus(), e.getMessage());
-        return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getStatus().name(), e.getMessage()));
+        return ResponseEntity.status(e.getStatus()).body(ErrorResponse.from(e.getErrorCode()));
     }
 
     @ExceptionHandler(Exception.class)

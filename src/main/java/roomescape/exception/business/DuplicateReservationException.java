@@ -1,10 +1,10 @@
 package roomescape.exception.business;
 
-import org.springframework.http.HttpStatus;
+import roomescape.exception.ErrorCode;
 
 public class DuplicateReservationException extends BusinessException {
 
-    public DuplicateReservationException(String message) {
-        super(HttpStatus.CONFLICT, message);
+    public DuplicateReservationException() {
+        super(ErrorCode.DUPLICATE_RESERVATION);
     }
 }

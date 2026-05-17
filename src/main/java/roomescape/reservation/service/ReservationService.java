@@ -3,10 +3,10 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.business.BusinessException;
 import roomescape.exception.business.DuplicateReservationException;
 import roomescape.exception.business.PastTimeCancelException;
@@ -49,7 +49,7 @@ public class ReservationService {
         Theme theme = themeService.getById(request.themeId());
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new DuplicateReservationException("이미 예약된 시간입니다.");
+            throw new DuplicateReservationException();
         }
 
         Reservation saved = reservationRepository.save(reservationFactory.create(request.name(), request.date(), time, theme));
@@ -66,7 +66,7 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         Reservation reservation = getById(id);
         if (reservation.isPast()) {
-            throw new PastTimeCancelException("이미 지난 예약은 취소할 수 없습니다.");
+            throw new PastTimeCancelException();
         }
         reservationRepository.deleteById(id);
     }
@@ -75,7 +75,7 @@ public class ReservationService {
     public ReservationResponse updateReservation(Long id, ReservationUpdateRequest request) {
         Reservation reservation = getById(id);
         if (reservation.isPast()) {
-            throw new PastTimeCancelException("이미 지난 예약은 변경할 수 없습니다.");
+            throw new BusinessException(ErrorCode.PAST_RESERVATION_UPDATE);
         }
 
         ReservationTime newTime = reservationTimeService.getById(request.timeId());
@@ -83,10 +83,10 @@ public class ReservationService {
 
         Reservation changed = reservation.reschedule(newDate, newTime);
         if (changed.isPast()) {
-            throw new PastTimeReservationException("이미 지난 시간으로 변경할 수 없습니다.");
+            throw new PastTimeReservationException();
         }
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(newDate, request.timeId(), reservation.getTheme().getId())) {
-            throw new DuplicateReservationException("이미 예약된 시간입니다.");
+            throw new DuplicateReservationException();
         }
 
         reservationRepository.update(id, newDate, request.timeId());
@@ -96,6 +96,6 @@ public class ReservationService {
     @NonNull
     private Reservation getById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 }

@@ -3,7 +3,8 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
-import roomescape.exception.business.PastTimeReservationException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -26,7 +27,7 @@ public class ReservationFactory {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
         }
         if (LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new PastTimeReservationException("이미 지난 시간에는 예약할 수 없습니다.");
+            throw new BusinessException(ErrorCode.PAST_TIME_CREATE);
         }
         if (theme == null) {
             throw new IllegalArgumentException("테마는 필수입니다.");

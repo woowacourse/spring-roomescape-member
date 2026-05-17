@@ -37,11 +37,15 @@
 | Http Status | Error Code | Message | 발생 상황 |
 | :--- | :--- | :--- | :--- |
 | 400 Bad Request | `INVALID_INPUT` | 입력값이 올바르지 않습니다. | 빈 이름 등 유효성 검사 실패, 잘못된 인자 |
-| 400 Bad Request | `BAD_REQUEST` | 지나간 날짜/시간은 예약할 수 없습니다. | 현재 시간보다 이전 시간을 예약/변경하려는 경우 |
-| 400 Bad Request | `BAD_REQUEST` | 이미 지난 예약은 취소할 수 없습니다. | 현재 시간보다 이전의 예약을 취소하려는 경우 |
-| 404 Not Found | `NOT_FOUND` | 존재하지 않는 예약입니다. | 존재하지 않는 예약 ID로 조회/변경/취소 요청 |
-| 409 Conflict | `CONFLICT` | 이미 예약된 시간입니다. | 같은 날짜, 시간, 테마에 예약이 존재하는 경우 |
-| 409 Conflict | `CONFLICT` | 예약이 존재하는 시간은 삭제할 수 없습니다. | 예약이 있는 시간 슬롯을 삭제하려는 경우 |
+| 400 Bad Request | `PAST_TIME_CREATE` | 이미 지난 시간에는 예약할 수 없습니다. | 현재 시간보다 이전 시간으로 예약 생성 시 |
+| 400 Bad Request | `PAST_RESERVATION_CANCEL` | 이미 지난 예약은 취소할 수 없습니다. | 이미 지난 예약을 취소하려는 경우 |
+| 400 Bad Request | `PAST_RESERVATION_UPDATE` | 이미 지난 예약은 변경할 수 없습니다. | 이미 지난 예약을 변경하려는 경우 |
+| 400 Bad Request | `PAST_TIME_RESERVATION` | 이미 지난 시간으로 변경할 수 없습니다. | 변경하려는 날짜·시간이 현재보다 이전인 경우 |
+| 404 Not Found | `RESERVATION_NOT_FOUND` | 존재하지 않는 예약입니다. | 존재하지 않는 예약 ID로 조회/변경/취소 요청 |
+| 404 Not Found | `TIME_NOT_FOUND` | 존재하지 않는 시간대입니다. | 존재하지 않는 시간 ID로 요청 |
+| 404 Not Found | `THEME_NOT_FOUND` | 존재하지 않는 테마입니다. | 존재하지 않는 테마 ID로 요청 |
+| 409 Conflict | `DUPLICATE_RESERVATION` | 이미 예약된 시간입니다. | 같은 날짜, 시간, 테마에 예약이 존재하는 경우 |
+| 409 Conflict | `TIME_HAS_RESERVATION` | 예약이 존재하는 시간은 삭제할 수 없습니다. | 예약이 있는 시간 슬롯을 삭제하려는 경우 |
 | 500 Internal Server Error | `INTERNAL_SERVER_ERROR` | 일시적인 오류가 발생했습니다. | 예상치 못한 서버 오류 |
 
 ### API 명세

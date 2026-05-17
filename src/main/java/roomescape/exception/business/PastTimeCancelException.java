@@ -1,10 +1,10 @@
 package roomescape.exception.business;
 
-import org.springframework.http.HttpStatus;
+import roomescape.exception.ErrorCode;
 
 public class PastTimeCancelException extends BusinessException {
 
-    public PastTimeCancelException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+    public PastTimeCancelException() {
+        super(ErrorCode.PAST_RESERVATION_CANCEL);
     }
 }
