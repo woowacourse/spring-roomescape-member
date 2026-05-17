@@ -55,4 +55,17 @@ public class ThemeService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Theme getById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(DomainType.THEME, id));
+    }
+
+    @Transactional(readOnly = true)
+    public void validateExists(Long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new NotFoundException(DomainType.THEME, id);
+        }
+    }
+
 }

@@ -9,20 +9,20 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.ThemeService;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ThemeService themeService;
 
     public ReservationTimeService(
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ThemeService themeService
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+        this.themeService = themeService;
     }
 
     @Transactional
@@ -38,10 +38,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
-        boolean isExistTheme = themeRepository.existsById(themeId);
-        if (!isExistTheme) {
-            throw new NotFoundException(DomainType.THEME, themeId);
-        }
+        themeService.validateExists(themeId);
 
         return reservationTimeRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
@@ -52,6 +49,12 @@ public class ReservationTimeService {
         if (affected == 0) {
             throw new NotFoundException(DomainType.RESERVATION_TIME, id);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationTime getById(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(DomainType.RESERVATION_TIME, id));
     }
 
 }
