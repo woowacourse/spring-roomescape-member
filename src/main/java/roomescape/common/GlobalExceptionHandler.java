@@ -43,6 +43,12 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("존재하지 않는 요청입니다.");
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return new ErrorResponse("API 메서드가 잘못되었습니다.");
+    }
+
     @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleDuplicatedException(DuplicatedException e) {
@@ -51,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceInUseException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleInUse(ResourceInUseException e) {
+    public ErrorResponse handleResourceInUseException(ResourceInUseException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -102,12 +108,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return new ErrorResponse("입력 형식이 잘못되었습니다.");
-    }
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        return new ErrorResponse("API 메서드가 잘못되었습니다.");
     }
 
     @ExceptionHandler(Exception.class)
