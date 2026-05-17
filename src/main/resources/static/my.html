@@ -2,29 +2,103 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>RoomEscape — 내 예약</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="style.css" rel="stylesheet">
     <style>
-        .user-layout { min-height: 100vh; display: flex; flex-direction: column; }
-        .top-nav { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 0 36px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-        .top-nav-logo { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #5b7fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .user-main { flex: 1; max-width: 800px; margin: 0 auto; padding: 40px 24px; width: 100%; }
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
-        .res-item { background: var(--bg-input); padding: 16px; border-radius: var(--radius); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .res-info { display: flex; flex-direction: column; gap: 4px; }
-        .res-actions { display: flex; gap: 8px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); width: 400px; max-width: 90%; }
+        .user-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 36px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5b7fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-main {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .res-item {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .res-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .res-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            width: 400px;
+            max-width: 90%;
+        }
     </style>
 </head>
 <body>
 <div class="user-layout">
     <nav class="top-nav">
-        <div class="top-nav-logo" style="cursor:pointer;" onclick="location.href='/'">🔐 RoomEscape</div>
+        <div class="top-nav-logo" onclick="location.href='/'" style="cursor:pointer;">🔐 RoomEscape</div>
         <div class="top-nav-links">
-            <a href="/" class="btn btn-ghost btn-sm">예약하기</a>
+            <a class="btn btn-ghost btn-sm" href="/">예약하기</a>
         </div>
     </nav>
 
@@ -34,11 +108,11 @@
             <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 24px;">
                 <div class="form-group" style="flex:1;">
                     <label>사용자 ID</label>
-                    <input type="number" id="user-id" placeholder="사용자 ID를 입력하세요">
+                    <input id="user-id" placeholder="사용자 ID를 입력하세요" type="number">
                 </div>
                 <button class="btn btn-primary" onclick="loadMyReservations()">조회</button>
             </div>
-            
+
             <div id="reservation-list">
                 <div class="empty-state"><p>사용자 ID를 입력하고 조회해주세요.</p></div>
             </div>
@@ -51,22 +125,23 @@
     <div class="modal-content">
         <h3>예약 변경</h3>
         <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">새로운 날짜와 시간을 선택하세요.</p>
-        
-        <input type="hidden" id="mod-res-id">
-        <input type="hidden" id="mod-theme-id">
-        
+
+        <input id="mod-res-id" type="hidden">
+        <input id="mod-theme-id" type="hidden">
+
         <div class="form-group">
             <label>날짜</label>
-            <input type="date" id="mod-date" onchange="loadModTimes()">
+            <input id="mod-date" onchange="loadModTimes()" type="date">
         </div>
-        
+
         <div class="form-group" style="margin-top: 16px;">
             <label>시간</label>
-            <select id="mod-time" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: white;">
+            <select class="form-control" id="mod-time"
+                    style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: white;">
                 <option value="">날짜를 먼저 선택하세요</option>
             </select>
         </div>
-        
+
         <div style="display: flex; gap: 8px; margin-top: 24px; justify-content: flex-end;">
             <button class="btn btn-ghost" onclick="closeModal()">취소</button>
             <button class="btn btn-primary" onclick="submitModify()">변경 저장</button>
@@ -88,7 +163,7 @@
     }
 
     async function api(method, url, body) {
-        const opts = { method, headers: { 'Content-Type': 'application/json' } };
+        const opts = {method, headers: {'Content-Type': 'application/json'}};
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(url, opts);
         if (!res.ok) {
@@ -97,7 +172,8 @@
             try {
                 const json = JSON.parse(text);
                 if (json.message) errorMsg = json.message;
-            } catch(e) {}
+            } catch (e) {
+            }
             throw new Error(errorMsg || `HTTP ${res.status}`);
         }
         if (res.status === 204) return null;
@@ -111,17 +187,17 @@
             toast('사용자 ID를 입력해주세요.', 'error');
             return;
         }
-        
+
         const container = document.getElementById('reservation-list');
         container.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
-        
+
         try {
             const res = await api('GET', `/reservations/my?userId=${userId}`);
             if (!res || res.length === 0) {
                 container.innerHTML = '<div class="empty-state"><p>예약 내역이 없습니다.</p></div>';
                 return;
             }
-            
+
             container.innerHTML = res.map(r => `
                 <div class="res-item">
                     <div class="res-info">
@@ -169,12 +245,12 @@
         const date = document.getElementById('mod-date').value;
         const themeId = document.getElementById('mod-theme-id').value;
         const select = document.getElementById('mod-time');
-        
+
         if (!date) {
             select.innerHTML = '<option value="">날짜를 선택하세요</option>';
             return;
         }
-        
+
         select.innerHTML = '<option value="">로딩 중...</option>';
         try {
             const data = await api('GET', `/themes/${themeId}/times?date=${date}`);
@@ -195,14 +271,14 @@
         const userId = document.getElementById('user-id').value;
         const date = document.getElementById('mod-date').value;
         const timeId = document.getElementById('mod-time').value;
-        
+
         if (!date || !timeId) {
             toast('날짜와 시간을 모두 선택해주세요.', 'error');
             return;
         }
-        
+
         try {
-            await api('PATCH', `/reservations/${resId}?userId=${userId}`, { date, timeId: Number(timeId) });
+            await api('PATCH', `/reservations/${resId}?userId=${userId}`, {date, timeId: Number(timeId)});
             toast('예약이 변경되었습니다.', 'success');
             closeModal();
             loadMyReservations();

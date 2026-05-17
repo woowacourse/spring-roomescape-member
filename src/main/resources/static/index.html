@@ -363,7 +363,8 @@
             try {
                 const json = JSON.parse(text);
                 if (json.message) errorMsg = json.message;
-            } catch(e) {}
+            } catch (e) {
+            }
             throw new Error(errorMsg || `HTTP ${res.status}`);
         }
         const ct = res.headers.get('Content-Type') || '';
