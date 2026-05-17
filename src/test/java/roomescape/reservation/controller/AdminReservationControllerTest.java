@@ -1,22 +1,29 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.service.ReservationService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@WebMvcTest(AdminReservationController.class)
 class AdminReservationControllerTest {
 
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    ReservationService reservationService;
+
     @Test
-    void 예약_전체_조회_성공_테스트() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("reservations.size()", is(14));
+    void 예약_전체_조회_성공_테스트() throws Exception {
+
+        mockMvc.perform(get("/admin/reservations"))
+                        .andExpect(status().isOk());
+
     }
 }

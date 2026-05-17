@@ -3,6 +3,8 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservationTime.domain.ReservationTime;
 
 public class Reservation {
@@ -62,10 +64,10 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()){
-            throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_NAME);
         }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 이름은 %d자를 초과할 수 없습니다".formatted(MAX_NAME_LENGTH));
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_NAME);
         }
     }
 }

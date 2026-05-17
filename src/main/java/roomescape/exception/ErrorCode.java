@@ -18,6 +18,8 @@ public enum ErrorCode {
     RESERVATION_CONFLICT(HttpStatus.CONFLICT, "해당 시간에 이미 예약이 존재합니다."),
     RESERVATION_UPDATE_TO_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "과거 시간으로 변경할 수 없습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
+    INVALID_RESERVATION_NAME(HttpStatus.BAD_REQUEST, "이름 형식이 잘못되었습니다."),
+    INVALID_THEME_NAME(HttpStatus.BAD_REQUEST, "테마 이름 형식이 잘못되었습니다."),
 
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 형식이 잘못되었습니다.");
 
