@@ -1,8 +1,10 @@
 package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -110,5 +112,73 @@ class ReservationTest {
         assertThatThrownBy(() -> reservation.updateDateAndTime(LocalDate.of(2026, 5, 6), 1L, LocalTime.of(10, 0)))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("동일한 날짜와 시간으로 변경할 수 없습니다.");
+    }
+
+    @DisplayName("현재 시간 이후의 예약이면 예약이 가능합니다.")
+    @Test
+    void validate_reservable_future() {
+        LocalDateTime now = LocalDateTime.of(2026, 5, 17, 10, 0);
+        Reservation reservation = Reservation.builder()
+                .id(1L)
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 17))
+                .themeId(1L)
+                .timeId(1L)
+                .startAt(LocalTime.of(11, 0))
+                .build();
+
+        assertDoesNotThrow(() -> reservation.validateReservable(now));
+    }
+
+    @DisplayName("현재 시간보다 이전 시간으로 예약 시 예외 발생을 테스트합니다.")
+    @Test
+    void validate_reservable_past_exception() {
+        LocalDateTime now = LocalDateTime.of(2026, 5, 17, 10, 0);
+        Reservation reservation = Reservation.builder()
+                .id(1L)
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 17))
+                .themeId(1L)
+                .timeId(1L)
+                .startAt(LocalTime.of(9, 0))
+                .build();
+
+        assertThatThrownBy(() -> reservation.validateReservable(now))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+    }
+
+    @DisplayName("현재 시간 이후의 예약이면 삭제가 가능합니다.")
+    @Test
+    void validate_deletable_future() {
+        LocalDateTime now = LocalDateTime.of(2026, 5, 17, 10, 0);
+        Reservation reservation = Reservation.builder()
+                .id(1L)
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 17))
+                .themeId(1L)
+                .timeId(1L)
+                .startAt(LocalTime.of(11, 0))
+                .build();
+
+        assertDoesNotThrow(() -> reservation.validateDeletable(now));
+    }
+
+    @DisplayName("이미 지나간 예약 삭제 시 예외 발생을 테스트합니다.")
+    @Test
+    void validate_deletable_past_exception() {
+        LocalDateTime now = LocalDateTime.of(2026, 5, 17, 10, 0);
+        Reservation reservation = Reservation.builder()
+                .id(1L)
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 17))
+                .themeId(1L)
+                .timeId(1L)
+                .startAt(LocalTime.of(9, 0))
+                .build();
+
+        assertThatThrownBy(() -> reservation.validateDeletable(now))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("이미 지나간 예약은 삭제할 수 없습니다.");
     }
 }
