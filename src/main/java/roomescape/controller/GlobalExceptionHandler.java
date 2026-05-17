@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(RoomEscapeException.class)
-    public ResponseEntity<ErrorResponse> dataAccessExceptionHandle(RoomEscapeException e) {
-        log.error("도메인 관련 오류가 발생했습니다.", e);
+    public ResponseEntity<ErrorResponse> roomEscapeExceptionHandle(RoomEscapeException e) {
+        log.info("도메인 관련 오류가 발생했습니다.", e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(ErrorResponse.create(e.getMessage()));
     }
@@ -29,14 +29,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException e) {
-        log.error("입력 값 검증 중 예외가 발생했습니다.", e);
+        log.info("입력 값 검증 중 예외가 발생했습니다.", e);
         return ErrorResponse.create(e.getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse httpRequestMethodNotSupportedExceptionHandle(HttpRequestMethodNotSupportedException e) {
-        log.error("지원하지 않는 HTTP 메서드입니다.", e);
+        log.info("지원하지 않는 HTTP 메서드입니다.", e);
         return ErrorResponse.create(e.getMessage());
     }
 
