@@ -34,19 +34,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getReservations();
-        List<ReservationResponse> reservationResponses = ReservationResponse.fromAll(reservations);
-        return ResponseEntity.ok().body(reservationResponses);
-    }
-
-    @GetMapping(params = "userName")
-    public ResponseEntity<List<ReservationResponse>> getUserReservations(
+    public ResponseEntity<List<ReservationResponse>> getReservations(
             @Size(min = 2, max = 10)
             @Pattern(regexp = "^[a-zA-Z가-힣]+$")
-            @RequestParam String userName
+            @RequestParam(required = false) String userName
     ) {
-        List<Reservation> reservations = reservationService.getUserReservations(userName);
+        List<Reservation> reservations = reservationService.getReservations(userName);
         List<ReservationResponse> reservationResponses = ReservationResponse.fromAll(reservations);
         return ResponseEntity.ok().body(reservationResponses);
     }

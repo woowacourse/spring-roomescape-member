@@ -19,12 +19,39 @@ import org.springframework.test.context.jdbc.Sql;
 public class ReservationControllerTest {
 
     @Test
-    void 예약_조회시_성공하면_200을_반환한다() {
+    void 예약_조회시_userName이_없으면_200을_반환한다() {
         RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    void 예약_조회시_userName이_있으면_해당_이름의_예약만_반환한다() {
+        createDefaultTimes();
+        createDefaultThemes();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("name", "브라운", "timeId", 1L)))
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("name", "정콩이", "timeId", 2L)))
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations?userName=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].name", is("브라운"));
     }
 
     @Test
@@ -305,26 +332,6 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("RESERVATION400_001"));
-    }
-
-    @Test
-    void 사용자가_자신의_이름으로_예약을_조회하면_200을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
-
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations?userName=브라운")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
     @Test

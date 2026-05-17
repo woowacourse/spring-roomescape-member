@@ -31,11 +31,10 @@ public class ReservationService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public List<Reservation> getReservations() {
-        return reservationDao.findAllReservations();
-    }
-
-    public List<Reservation> getUserReservations(String userName) {
+    public List<Reservation> getReservations(String userName) {
+        if (userName == null) {
+            return reservationDao.findAllReservations();
+        }
         return reservationDao.findAllReservationsByUserName(userName);
     }
 
