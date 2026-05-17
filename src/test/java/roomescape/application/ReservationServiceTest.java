@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
 import roomescape.reservation.infra.ThemeRepository;
 import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -153,5 +155,30 @@ public class ReservationServiceTest {
                 .isEqualTo(ReservationErrorCode.DUPLICATE_RESERVATION);
 
         verify(reservationRepository).save(any(Reservation.class));
+    }
+
+    @Test
+    void 이름으로_예약_목록을_조회할_수_있다() {
+        String requestName = "kim";
+        List<Reservation> reservations = List.of(
+                new Reservation(1L, "kim", LocalDate.of(2026, 5, 5),
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "세기의 도둑", "설명", "thumb")),
+                new Reservation(2L, "kim", LocalDate.of(2026, 5, 5),
+                        new ReservationTime(2L, LocalTime.of(11, 0)),
+                        new Theme(1L, "세기의 도둑", "설명", "thumb"))
+        );
+
+        when(reservationRepository.findByName("kim")).thenReturn(reservations);
+
+        List<ReservationFindResponse> responses = reservationService.findByName(requestName);
+
+        assertThat(responses).hasSize(2);
+        assertThat(responses)
+                .extracting(ReservationFindResponse::name)
+                .containsExactly("kim", "kim");
+        assertThat(responses)
+                .extracting(response -> response.time().time())
+                .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
     }
 }

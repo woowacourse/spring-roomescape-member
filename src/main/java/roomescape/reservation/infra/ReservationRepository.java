@@ -9,6 +9,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findByName(String name);
+
     void deleteById(Long id);
 
     List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);

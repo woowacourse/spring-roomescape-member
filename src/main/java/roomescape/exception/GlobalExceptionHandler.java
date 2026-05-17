@@ -1,10 +1,12 @@
 package roomescape.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,8 +48,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
-        FieldError fieldError = ex.getBindingResult().getFieldError();
-        String message = (fieldError == null) ? CommonErrorCode.INVALID_INPUT_VALUE.getMessage() : fieldError.getDefaultMessage();
+        return ResponseEntity.status(CommonErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(makeValidationErrorResponse(ex.getBindingResult().getFieldError()));
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindException(BindException ex) {
+        return ResponseEntity.status(CommonErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(makeValidationErrorResponse(ex.getBindingResult().getFieldError()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream()
+                .findFirst()
+                .map(constraintViolation -> constraintViolation.getMessage())
+                .orElse(CommonErrorCode.INVALID_INPUT_VALUE.getMessage());
         return ResponseEntity.status(CommonErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
                 .body(makeErrorResponse(CommonErrorCode.INVALID_INPUT_VALUE, message));
     }
@@ -110,6 +126,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .code(errorCode.name())
                 .message(message)
                 .build();
+    }
+
+    private ErrorResponse makeValidationErrorResponse(FieldError fieldError) {
+        String message = (fieldError == null) ? CommonErrorCode.INVALID_INPUT_VALUE.getMessage() : fieldError.getDefaultMessage();
+        return makeErrorResponse(CommonErrorCode.INVALID_INPUT_VALUE, message);
     }
 
     /**

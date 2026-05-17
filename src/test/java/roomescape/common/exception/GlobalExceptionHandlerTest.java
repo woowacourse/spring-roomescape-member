@@ -50,13 +50,23 @@ public class GlobalExceptionHandlerTest {
     void Valid_검증_실패시_올바른_예외_응답을_반환한다() throws Exception {
         mockMvc.perform(post("/test/validation-error")
                         .contentType(APPLICATION_JSON)
-                        .content("""
+                .content("""
                                 {
                                   "name": ""
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("INVALID_INPUT_VALUE"));
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT_VALUE"))
+                .andExpect(jsonPath("$.message").value("공백일 수 없습니다"));
+    }
+
+    @Test
+    void ModelAttribute_검증_실패시_올바른_예외_응답을_반환한다() throws Exception {
+        mockMvc.perform(get("/test/model-attribute-validation-error")
+                        .queryParam("name", ""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT_VALUE"))
+                .andExpect(jsonPath("$.message").value("공백일 수 없습니다"));
     }
 
     @RestController
@@ -76,8 +86,13 @@ public class GlobalExceptionHandlerTest {
         String validate(@RequestBody @Valid TestRequest request) {
             return request.name();
         }
+
+        @GetMapping("/test/model-attribute-validation-error")
+        String validateModelAttribute(@Valid TestRequest request) {
+            return request.name();
+        }
     }
 
-    record TestRequest(@NotBlank String name) {
+    record TestRequest(@NotBlank(message = "공백일 수 없습니다") String name) {
     }
 }

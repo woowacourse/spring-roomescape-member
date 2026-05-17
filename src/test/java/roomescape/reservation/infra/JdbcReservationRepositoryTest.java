@@ -78,6 +78,22 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    void 이름으로_예약_목록을_조회할_수_있다() {
+        List<Reservation> reservations = reservationRepository.findByName("kim");
+
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations)
+                .extracting(Reservation::getName)
+                .containsExactly("kim", "kim");
+        assertThat(reservations)
+                .extracting(Reservation::getDate)
+                .containsExactly(LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 5));
+        assertThat(reservations)
+                .extracting(Reservation::getTimeId)
+                .containsExactly(1L, 2L);
+    }
+
+    @Test
     void 중복된_예약은_DB_유니크_제약으로_저장에_실패한다() {
         Reservation reservation = new Reservation(null, "브라운", LocalDate.of(2026, 5, 5),
                 new ReservationTime(1L, LocalTime.of(10, 0)),

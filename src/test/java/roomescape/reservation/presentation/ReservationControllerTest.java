@@ -69,6 +69,31 @@ public class ReservationControllerTest {
     }
 
     @Test
+    void 이름으로_본인_예약_목록을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .queryParam("name", "kim")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", is("kim"))
+                .body("[1].name", is("kim"))
+                .body("[0].time.time", is("10:00"))
+                .body("[1].time.time", is("11:00"));
+    }
+
+    @Test
+    void 이름이_비어있으면_본인_예약_목록_조회에_실패한다() {
+        RestAssured.given().log().all()
+                .queryParam("name", "")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT_VALUE"))
+                .body("message", is("공백일 수 없습니다"));
+    }
+
+    @Test
     void 예약_추가_및_삭제() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

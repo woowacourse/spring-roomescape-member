@@ -52,16 +52,13 @@ public class ReservationService {
 
     public List<ReservationFindResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> new ReservationFindResponse(
-                        reservation.getId(),
-                        reservation.getName(),
-                        reservation.getDate(),
-                        new TimeInformation(
-                                reservation.getTimeId(),
-                                reservation.getStartAt()
-                        ),
-                        reservation.getThemeId()
-                ))
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<ReservationFindResponse> findByName(String name) {
+        return reservationRepository.findByName(name).stream()
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -77,5 +74,18 @@ public class ReservationService {
         if (reservationDateTime.isBefore(now)) {
             throw new BusinessException(ReservationErrorCode.RESERVATION_DATE_TIME_EXPIRED);
         }
+    }
+
+    private ReservationFindResponse toResponse(Reservation reservation) {
+        return new ReservationFindResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                new TimeInformation(
+                        reservation.getTimeId(),
+                        reservation.getStartAt()
+                ),
+                reservation.getThemeId()
+        );
     }
 }
