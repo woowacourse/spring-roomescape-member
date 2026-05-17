@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.EmptyNameException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
@@ -79,16 +78,6 @@ class BusinessExceptionHandlerTest {
         @Test
         void PastDateReservationException을_422로_변환한다() throws Exception {
             Mockito.doThrow(new PastDateReservationException("test"))
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isUnprocessableEntity());
-        }
-
-        @DisplayName("EmptyNameException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
-        @Test
-        void EmptyNameException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(new EmptyNameException())
                     .when(testController).throwException();
 
             mockMvc.perform(get("/exception-handling-test"))

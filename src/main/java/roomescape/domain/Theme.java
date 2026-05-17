@@ -11,6 +11,7 @@ public class Theme {
     private final Long runningTime;
 
     public Theme(Long id, String name, String description, String imageUrl) {
+        validate(name, description, imageUrl);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -50,5 +51,29 @@ public class Theme {
                 ", description='" + description + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
+    }
+
+    private void validate(String name, String description, String imageUrl) {
+        validateName(name);
+        validateDescription(description);
+        validateImageUrl(imageUrl);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+        }
+    }
+
+    private void validateDescription(String description) {
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("테마 설명은 필수입니다.");
+        }
+    }
+
+    private void validateImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("테마 이미지는 필수입니다.");
+        }
     }
 }

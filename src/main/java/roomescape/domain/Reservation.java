@@ -1,8 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import org.springframework.util.StringUtils;
-import roomescape.exception.EmptyNameException;
 
 public class Reservation {
 
@@ -13,9 +11,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (!StringUtils.hasText(name)) {
-            throw new EmptyNameException();
-        }
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -28,6 +24,8 @@ public class Reservation {
     }
 
     public void changeDateAndTime(LocalDate date, ReservationTime time) {
+        validateDate(date);
+        validateTime(time);
         this.date = date;
         this.time = time;
     }
@@ -69,5 +67,36 @@ public class Reservation {
                 ", time=" + time +
                 ", theme=" + theme +
                 '}';
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 필수입니다.");
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
     }
 }
