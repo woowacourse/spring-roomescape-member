@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -48,11 +48,27 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteThemeById(Long id) {
+    public boolean existsById(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = :id)";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = :name)";
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
+    public int deleteThemeById(Long id) {
         final String sql = "DELETE FROM theme WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
-        jdbcTemplate.update(sql, parameters);
+        return jdbcTemplate.update(sql, parameters);
     }
 
     @Override
@@ -63,7 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, parameters, this::mapTheme);
             return Optional.ofNullable(theme);
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }

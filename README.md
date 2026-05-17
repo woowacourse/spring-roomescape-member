@@ -5,474 +5,71 @@
 <h1 align="middle">방탈출 예약 서비스</h1>
 
 ![Static Badge](https://img.shields.io/badge/Java-21-green)
-![Static Badge](https://img.shields.io/badge/Version-1.0.0-red)
+![Static Badge](https://img.shields.io/badge/Version-1.1.0-red)
 
 우아한테크코스 BE 레벨 2 방탈출 예약 서비스를 구현한 저장소입니다.
 
 ## 목차
 
 - [API 명세서](#api-명세서)
-  - [관리자 예약 생성](#관리자-예약-생성)
-  - [관리자 예약 조회](#관리자-예약-조회)
-  - [관리자 예약 삭제](#관리자-예약-삭제)
-  - [관리자 시간 조회](#관리자-시간-조회)
-  - [관리자 시간 생성](#관리자-시간-생성)
-  - [관리자 시간 삭제](#관리자-시간-삭제)
-  - [관리자 테마 추가](#관리자-테마-추가)
-  - [관리자 테마 삭제](#관리자-테마-삭제)
-  - [사용자 예약 생성](#사용자-예약-생성)
-  - [사용자 테마 조회](#사용자-테마-조회)
-  - [사용자 예약 가능한 시간 조회](#사용자-예약-가능한-시간-조회)
-  - [사용자 예약 생성](#사용자-예약-생성)
-  - [사용자 인기 테마 조회](#사용자-인기-테마-조회)
+    - [관리자 API](#관리자-API)
 - [클라이언트 기능](#클라이언트-기능)
-  - [공통(사용자)](#공통\(사용자\))
-    - [인기 테마 조회 기능](#인기-테마-조회-기능)
-    - [전체 테마 조회 기능](#전체-테마-조회-기능)
-    - [예약 생성 기능](#예약-생성-기능)
-  - [관리자](#관리자)
-    - [예약 추가 기능](#예약-추가-기능)
-    - [예약 관리 기능](#예약-관리-기능)
-    - [테마 관리 기능](#테마-관리-기능)
-    - [시간 추가 및 관리 기능](#시간-추가-및-관리-기능)
+    - [공통](#공통)
+        - [입장 기능](#입장-기능)
+    - [사용자](#사용자)
+        - [인기 테마 조회 기능](#인기-테마-조회-기능)
+        - [전체 테마 조회 기능](#전체-테마-조회-기능)
+        - [예약 생성 기능](#예약-생성-기능)
+        - [내 예약 관리 기능](#내-예약-관리-기능)
+    - [관리자](#관리자)
+        - [예약 추가 기능](#예약-추가-기능)
+        - [예약 관리 기능](#예약-관리-기능)
+        - [테마 관리 기능](#테마-관리-기능)
+        - [시간 추가 및 관리 기능](#시간-추가-및-관리-기능)
 
 ## API 명세서
 
-### 관리자 예약 생성
-
-#### URL
-
-```http
-POST /api/admin/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "name": "서여",
-  "date": "2026-05-04",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "name": "서여",
-  "date": "2026-05-04",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-### 관리자 예약 조회
-
-#### URL
-
-```http
-GET /api/admin/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "name": "브라운",
-    "date": "2026-05-04",
-    "time": {
-      "id": 2,
-      "startAt": "12:00"
-    },
-    "theme": {
-      "id": 1,
-      "name": "피온피온",
-      "description": "설명",
-      "imageUrl": "https://roomescape.com/images/themes/ring-banner.png"
-    }
-  },
-  {
-    "id": 2,
-    "name": "네오",
-    "date": "2026-05-06",
-    "time": {
-      "id": 2,
-      "startAt": "12:00"
-    },
-    "theme": {
-      "id": 1,
-      "name": "피온피온",
-      "description": "설명",
-      "imageUrl": "https://roomescape.com/images/themes/prison-banner.png"
-    }
-  }
-]
-```
-
-### 관리자 예약 삭제
-
-#### URL
-
-```http
-DELETE /api/admin/reservations/{id}
-```
-
-#### Path Variables
-
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 예약 ID | 1  |
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 204 No Content
-
-없음
-
-### 관리자 시간 조회
-
-#### URL
-
-```http
-GET /api/admin/times
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "startAt": "10:00"
-  },
-  {
-    "id": 2,
-    "startAt": "11:00"
-  }
-]
-```
-
-### 관리자 시간 생성
-
-#### URL
-
-```http
-POST /api/admin/times
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "startAt": "20:30"
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "startAt": "20:30"
-}
-```
-
-### 관리자 시간 삭제
-
-#### URL
-
-```http
-DELETE /api/admin/times/{id}
-```
-
-#### Path Variables
-
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 시간 ID | 1  |
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 204 No Content
-
-없음
-
-### 관리자 테마 추가
-
-#### URL
-
-```http
-POST /api/admin/themes
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "name": "브라운",
-  "description": "테마 설명",
-  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "name": "브라운",
-  "description": "테마 설명",
-  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-}
-```
-
-### 관리자 테마 삭제
-
-#### URL
-
-```http
-DELETE /api/admin/themes/{id}
-```
-
-#### Path Variables
-
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 테마 ID | 1  |
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 204 No Content
-
-없음
-
-### 사용자 예약 생성
-
-#### URL
-
-```http
-POST /api/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-### 사용자 테마 조회
-
-#### URL
-
-```http
-GET /api/themes
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "name": "링",
-    "description": "이것은 링 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/ring.png"
-  },
-  {
-    "id": 2,
-    "name": "감옥",
-    "description": "이것은 감옥 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-  }
-]
-```
-
-### 사용자 예약 가능한 시간 조회
-
-#### URL
-
-```http
-GET /api/times?date={date}&themeId={themeId}
-```
-
-#### Query Parameters
-
-| 파라미터명   | 필수 여부 | 타입     | 설명        | 예시         |
-|---------|-------|--------|-----------|------------|
-| date    | 필수    | Date   | 예약할 날짜    | 2026-05-12 |
-| themeId | 필수    | BigInt | 예약할 테마 ID | 1          |
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "startAt": "20:30"
-  },
-  {
-    "id": 2,
-    "startAt": "22:30"
-  }
-]
-```
-
-
-### 사용자 인기 테마 조회
-
-#### URL
-
-```http
-GET /api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
-```
-
-#### Query Parameters
-
-| 파라미터명     | 필수 여부   | 타입     | 설명        | 예시         |
-|-----------|---------|--------|-----------|------------|
-| startDate | 필수      | Date   | 조회 시작 날짜  | 2026-05-03 |
-| endDate   | 필수      | Date   | 조회 종료 날짜  | 2026-05-10 |
-| limit     | 필수      | BigInt | 조회할 테마 개수 | 10         |
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "name": "링",
-    "description": "이것은 링 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/ring.png"
-  },
-  {
-    "id": 2,
-    "name": "감옥",
-    "description": "이것은 감옥 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-  }
-]
-```
+상세 요청/응답 예시와 오류 응답은 [상세 API 명세서](docs/API_SPEC.md)를 참고합니다.
+
+### 관리자 API
+
+| API   | Method | Path                           | 성공 응답          | 주요 실패 응답      | 상세                               |
+|-------|--------|--------------------------------|----------------|---------------|----------------------------------|
+| 예약 생성 | POST   | `/api/admin/reservations`      | 201 Created    | 400, 409, 422 | [상세](docs/API_SPEC.md#관리자-예약-생성) |
+| 예약 조회 | GET    | `/api/admin/reservations`      | 200 OK         | -             | [상세](docs/API_SPEC.md#관리자-예약-조회) |
+| 예약 삭제 | DELETE | `/api/admin/reservations/{id}` | 204 No Content | 400, 404      | [상세](docs/API_SPEC.md#관리자-예약-삭제) |
+| 시간 조회 | GET    | `/api/admin/times`             | 200 OK         | -             | [상세](docs/API_SPEC.md#관리자-시간-조회) |
+| 시간 생성 | POST   | `/api/admin/times`             | 201 Created    | 400, 409      | [상세](docs/API_SPEC.md#관리자-시간-생성) |
+| 시간 삭제 | DELETE | `/api/admin/times/{id}`        | 204 No Content | 400, 404, 409 | [상세](docs/API_SPEC.md#관리자-시간-삭제) |
+| 테마 추가 | POST   | `/api/admin/themes`            | 201 Created    | 400, 409      | [상세](docs/API_SPEC.md#관리자-테마-추가) |
+| 테마 삭제 | DELETE | `/api/admin/themes/{id}`       | 204 No Content | 400, 404, 409 | [상세](docs/API_SPEC.md#관리자-테마-삭제) |
+
+| API         | Method | Path                                                                        | 성공 응답          | 주요 실패 응답                | 상세                                      |
+|-------------|--------|-----------------------------------------------------------------------------|----------------|-------------------------|-----------------------------------------|
+| 테마 조회       | GET    | `/api/themes`                                                               | 200 OK         | -                       | [상세](docs/API_SPEC.md#사용자-테마-조회)        |
+| 예약 조회       | GET    | `/api/reservations`                                                         | 200 OK         | 400                     | [상세](docs/API_SPEC.md#사용자-예약-조회)        |
+| 예약 생성       | POST   | `/api/reservations`                                                         | 201 Created    | 400, 409, 422           | [상세](docs/API_SPEC.md#사용자-예약-생성)        |
+| 예약 수정       | PATCH  | `/api/reservations/{id}`                                                    | 204 No Content | 400, 403, 404, 409, 422 | [상세](docs/API_SPEC.md#사용자-예약-수정)        |
+| 예약 취소       | DELETE | `/api/reservations/{id}`                                                    | 204 No Content | 400, 403, 404, 422      | [상세](docs/API_SPEC.md#사용자-예약-취소)        |
+| 예약 가능 시간 조회 | GET    | `/api/times?date={date}&themeId={themeId}`                                  | 200 OK         | 400, 422                | [상세](docs/API_SPEC.md#사용자-예약-가능한-시간-조회) |
+| 인기 테마 조회    | GET    | `/api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}` | 200 OK         | 400, 422                | [상세](docs/API_SPEC.md#사용자-인기-테마-조회)     |
 
 ## 클라이언트 기능
 
-### 공통(사용자)
+### 공통
+
+#### 입장 기능
+
+사용자 이름과 역할을 입력하고, 적절한 페이지로 이동합니다.
+
+<img alt="이용자 정보 입력" src="https://github.com/user-attachments/assets/3f1ea831-06ab-40ac-97a8-0f60689dcf03" />
+
+### 사용자
 
 #### 인기 테마 조회 기능
 
 지난 1주간 등록된 예약 중 가장 많이 등록된 대상 테마를 조회합니다.
-(예시: 2026년 5월 5일에 조회 -> 검색 범위는 2026년 4월 29일부터 2026년 5월 4일) 
+(예시: 2026년 5월 5일에 조회 -> 검색 범위는 2026년 4월 29일부터 2026년 5월 4일)
 
 <img alt="인기 테마 조회" src="https://github.com/user-attachments/assets/da440d2b-318b-48ff-85fd-4b1b03cb1866" />
 
@@ -487,6 +84,12 @@ GET /api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
 테마를 선택하고, 정해진 예약 폼에 맞춰 예약합니다.
 
 <img alt="예약 생성" src="https://github.com/user-attachments/assets/18155750-0c47-4979-9aec-481afeab4b06" />
+
+#### 내 예약 관리 기능
+
+내 예약 목록을 조회하고, 수정 및 취소를 수행합니다.
+
+<img alt="내 예약 관리" src="https://github.com/user-attachments/assets/5b11bd36-5016-4b58-87c7-376b700920a3" />
 
 ### 관리자
 

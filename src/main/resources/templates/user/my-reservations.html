@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 예약 조회</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">Roomescape</a>
+    <div class="navbar-nav">
+      <a class="nav-link" href="#" onclick="openThemes(); return false;">테마예약</a>
+      <a class="nav-link active" href="/my-reservations">내 예약</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <div class="mx-auto" style="max-width: 960px;">
+    <h3 class="mb-4">내 예약 조회</h3>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <label for="name" class="form-label">예약자 이름</label>
+        <div class="input-group">
+          <input type="text" id="name" class="form-control" placeholder="예약자 이름을 입력하세요" readonly>
+          <button type="button" class="btn btn-primary" onclick="loadMyReservations()">조회</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+        <tr>
+          <th>테마</th>
+          <th>날짜</th>
+          <th>시간</th>
+          <th style="width: 160px;">관리</th>
+        </tr>
+        </thead>
+        <tbody id="myReservationList">
+        <tr>
+          <td colspan="4" class="text-center text-muted">이름을 입력하고 조회해주세요.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+  function getVal(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.error(`ID가 '${id}'인 요소를 찾을 수 없습니다.`);
+      return null;
+    }
+    return el.value;
+  }
+
+  async function parseErrorMessage(response) {
+    try {
+      const errorData = await response.json();
+      const details = Array.isArray(errorData.errors) ? errorData.errors : [];
+      if (details.length > 0) {
+        return details.map(error => error.message).join('\n');
+      }
+      return errorData.message || '알 수 없는 오류';
+    } catch (error) {
+      return '알 수 없는 오류';
+    }
+  }
+
+  function reservationNameHeader() {
+    return encodeURIComponent(getVal('name'));
+  }
+
+  function openThemes() {
+    const name = getVal('name');
+    if (!name) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
+    location.href = '/themes';
+  }
+
+  function todayString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const date = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${date}`;
+  }
+
+  async function loadMyReservations() {
+    const name = getVal('name');
+    if (!name) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/reservations', {
+        headers: { 'Reservation-Name': reservationNameHeader() }
+      });
+
+      if (!response.ok) {
+        alert('예약 조회 실패: ' + await parseErrorMessage(response));
+        return;
+      }
+
+      const reservations = await response.json();
+      renderReservations(reservations);
+    } catch (error) {
+      console.error('예약 조회 중 오류:', error);
+    }
+  }
+
+  function renderReservations(reservations) {
+    const list = document.getElementById('myReservationList');
+    if (!list) return;
+
+    if (reservations.length === 0) {
+      list.innerHTML = '<tr><td colspan="4" class="text-center text-muted">예약 내역이 없습니다.</td></tr>';
+      return;
+    }
+
+    list.innerHTML = reservations.map(reservation => `
+      <tr>
+        <td>${reservation.theme.name}</td>
+        <td>
+          <input type="date"
+                 id="date-${reservation.id}"
+                 class="form-control form-control-sm"
+                 value="${reservation.date}"
+                 min="${todayString()}"
+                 data-previous-date="${reservation.date}"
+                 onchange="handleReservationDateChange(${reservation.id}, ${reservation.theme.id})">
+        </td>
+        <td>
+          <select id="time-${reservation.id}" class="form-select form-select-sm">
+            <option value="${reservation.time.id}">${reservation.time.startAt}</option>
+          </select>
+        </td>
+        <td>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="updateReservation(${reservation.id})">수정</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteReservation(${reservation.id})">취소</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function handleReservationDateChange(reservationId, themeId) {
+    const dateInput = document.getElementById(`date-${reservationId}`);
+    if (!dateInput) return;
+
+    const selectedDate = dateInput.value;
+    const previousDate = dateInput.dataset.previousDate;
+
+    if (selectedDate < todayString()) {
+      alert('지난 시점으로는 변경할 수 없습니다.');
+      dateInput.value = previousDate;
+      return;
+    }
+
+    dateInput.dataset.previousDate = selectedDate;
+    await loadTimesForReservation(reservationId, themeId);
+  }
+
+  async function loadTimesForReservation(reservationId, themeId) {
+    const date = getVal(`date-${reservationId}`);
+    if (!date || !themeId) return;
+
+    try {
+      const response = await fetch(`/api/times?date=${date}&themeId=${themeId}`);
+      if (!response.ok) {
+        alert('예약 가능 시간 조회 실패: ' + await parseErrorMessage(response));
+        return;
+      }
+
+      const times = await response.json();
+      const timeSelect = document.getElementById(`time-${reservationId}`);
+      if (!timeSelect) return;
+
+      if (times.length === 0) {
+        timeSelect.innerHTML = '<option value="">예약 가능한 시간이 없습니다</option>';
+        return;
+      }
+
+      timeSelect.innerHTML = times.map(time => `<option value="${time.id}">${time.startAt}</option>`).join('');
+    } catch (error) {
+      console.error('예약 가능 시간 조회 중 오류:', error);
+    }
+  }
+
+  async function updateReservation(id) {
+    const date = getVal(`date-${id}`);
+    const timeId = getVal(`time-${id}`);
+    if (!date || !timeId) {
+      alert('변경할 날짜와 시간을 선택해주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/reservations/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Reservation-Name': reservationNameHeader()
+        },
+        body: JSON.stringify({ date, timeId })
+      });
+
+      if (response.ok) {
+        alert('예약이 수정되었습니다.');
+        await loadMyReservations();
+        return;
+      }
+
+      alert('예약 수정 실패: ' + await parseErrorMessage(response));
+    } catch (error) {
+      console.error('예약 수정 중 오류:', error);
+    }
+  }
+
+  async function deleteReservation(id) {
+    if (!confirm('예약을 취소하시겠습니까?')) return;
+
+    try {
+      const response = await fetch(`/api/reservations/${id}`, {
+        method: 'DELETE',
+        headers: { 'Reservation-Name': reservationNameHeader() }
+      });
+
+      if (response.ok) {
+        alert('예약이 취소되었습니다.');
+        await loadMyReservations();
+        return;
+      }
+
+      alert('예약 취소 실패: ' + await parseErrorMessage(response));
+    } catch (error) {
+      console.error('예약 취소 중 오류:', error);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const name = localStorage.getItem('roomescapeVisitorName');
+    if (name) {
+      document.getElementById('name').value = name;
+      loadMyReservations();
+      return;
+    }
+    alert('사용자 이름을 입력해주세요.');
+    location.href = '/';
+  });
+</script>
+</body>
+</html>

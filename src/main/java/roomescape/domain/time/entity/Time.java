@@ -13,20 +13,20 @@ public class Time {
         this.startAt = startAt;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
-
     public static Time create(LocalTime startAt) {
         return new Time(null, startAt);
     }
 
     public static Time reconstruct(Long id, LocalTime startAt) {
         return new Time(id, startAt);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 
     @Override
@@ -42,4 +42,9 @@ public class Time {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    public boolean isPast(LocalTime nowTime) {
+        return this.startAt.isBefore(nowTime);
+    }
+
 }

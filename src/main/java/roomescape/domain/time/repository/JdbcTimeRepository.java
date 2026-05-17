@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -53,16 +53,24 @@ public class JdbcTimeRepository implements TimeRepository {
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, parameters, this::mapTime));
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public void deleteTimeById(Long id) {
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
+        SqlParameterSource parameters = new MapSqlParameterSource("startAt", startAt);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
+    public int deleteTimeById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(sql, parameters);
+        return jdbcTemplate.update(sql, parameters);
     }
 
     private Time mapTime(ResultSet resultSet, int rowNum) throws SQLException {

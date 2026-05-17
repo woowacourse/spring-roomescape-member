@@ -10,7 +10,9 @@
   <form id="resForm" class="mt-4">
     <div class="mb-3">
       <label>이름</label>
-      <input type="text" id="name" class="form-control" required>
+      <div class="input-group">
+        <input type="text" id="name" class="form-control" required readonly>
+      </div>
     </div>
     <div class="mb-3">
       <label class="form-label">선택한 테마</label>
@@ -22,7 +24,7 @@
     </div>
     <div class="mb-3">
       <label>날짜</label>
-      <input type="date" id="date" class="form-control" onchange="loadTimes()" required>
+      <input type="date" id="date" class="form-control" data-previous-date="" onchange="handleDateChange()" required>
     </div>
     <div class="mb-3">
       <label>시간</label>
@@ -44,9 +46,42 @@
     return el.value;
   }
 
+  async function parseErrorMessage(response) {
+    try {
+      const errorData = await response.json();
+      const details = Array.isArray(errorData.errors) ? errorData.errors : [];
+      if (details.length > 0) {
+        return details.map(error => error.message).join('\n');
+      }
+      return errorData.message || '알 수 없는 오류';
+    } catch (error) {
+      return '알 수 없는 오류';
+    }
+  }
+
+  function todayString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const date = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${date}`;
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const themeIdFromUrl = urlParams.get('themeId');
+    const savedName = localStorage.getItem('roomescapeVisitorName');
+    const dateInput = document.getElementById('date');
+
+    dateInput.min = todayString();
+
+    if (!savedName) {
+      alert('사용자 이름을 입력해주세요.');
+      location.href = '/';
+      return;
+    }
+
+    document.getElementById('name').value = savedName;
 
     if (!themeIdFromUrl) {
       alert('잘못된 접근입니다.');
@@ -75,6 +110,21 @@
       console.error('테마 정보를 불러오는데 실패했습니다:', error);
     }
   });
+
+  async function handleDateChange() {
+    const dateInput = document.getElementById('date');
+    const selectedDate = dateInput.value;
+    const previousDate = dateInput.dataset.previousDate;
+
+    if (selectedDate < todayString()) {
+      alert('지난 시점으로는 예약할 수 없습니다.');
+      dateInput.value = previousDate;
+      return;
+    }
+
+    dateInput.dataset.previousDate = selectedDate;
+    await loadTimes();
+  }
 
   async function loadTimes() {
     const date = getVal('date');
@@ -122,14 +172,22 @@
 
       if (response.ok) {
         alert('예약이 완료되었습니다!');
-        location.href = '/';
+        goToMyReservations();
       } else {
-        const errorData = await response.json();
-        alert('예약 실패: ' + (errorData.message || '알 수 없는 오류'));
+        alert('예약 실패: ' + await parseErrorMessage(response));
       }
     } catch (error) {
       console.error("전송 중 오류:", error);
     }
+  }
+
+  function goToMyReservations() {
+    const name = getVal('name');
+    if (!name) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
+    location.href = '/my-reservations';
   }
 </script>
 </body>

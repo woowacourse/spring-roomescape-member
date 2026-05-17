@@ -1,15 +1,19 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.global.error.exception.BusinessException;
+import roomescape.global.error.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -33,7 +37,7 @@ class TimeServiceTest {
         this.themeRepository = new FakeThemeRepository();
         this.timeRepository = new FakeTimeRepository();
         this.reservationRepository = new FakeReservationRepository();
-        this.timeService = new TimeService(reservationRepository, timeRepository);
+        this.timeService = new TimeService(reservationRepository, themeRepository, timeRepository);
     }
 
     @Nested
@@ -100,13 +104,17 @@ class TimeServiceTest {
             ));
 
             reservationRepository.save(
-                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
+                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
+                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
+                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
             reservationRepository.save(
-                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
+                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
@@ -114,10 +122,38 @@ class TimeServiceTest {
                 TimeResponseDto.from(time3), TimeResponseDto.from(time4));
 
             // when
-            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
+            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0));
 
             // then
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("요청한 테마 id가 존재하지 않는 경우 예외가 발생한다.")
+        void 실패1() {
+            LocalDate date = LocalDate.of(2026, 5, 10);
+            Long wrongThemeId = 1L;
+
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, wrongThemeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0)))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.COMMON_INVALID_REQUEST);
+        }
+
+        @Test
+        @DisplayName("지난 날짜로 요청한 경우 예외가 발생한다.")
+        void 실패2() {
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 url"));
+            LocalDate date = LocalDate.of(2025, 1, 1);
+            Long themeId = theme.getId();
+
+            assertThatThrownBy(() -> timeService.getAvailableTimes(date, themeId,
+                LocalDateTime.of(2026, 1, 1, 0, 0)))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_INVALID_DATE);
         }
     }
 
@@ -142,6 +178,18 @@ class TimeServiceTest {
                 () -> assertEquals(List.of(actual), timeService.getTimes())
             );
         }
+
+        @Test
+        @DisplayName("저장하려는 시간이 이미 존재하는 경우 예외가 발생한다.")
+        void 실패() {
+            timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
+
+            assertThatThrownBy(() -> timeService.saveTime(request))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_DUPLICATE);
+        }
     }
 
     @Nested
@@ -165,6 +213,32 @@ class TimeServiceTest {
                 () -> assertEquals(1, actual.size()),
                 () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
             );
+        }
+
+        @Test
+        @DisplayName("주어진 아이디를 참조하는 예약이 존재하는 경우 예외가 발생한다.")
+        void 실패() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 Url"));
+            reservationRepository.save(
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme,
+                    LocalDateTime.of(2026, 1, 1, 0, 0)));
+
+            assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 시간 id인 경우 예외가 발생한다.")
+        void 실패2() {
+            Long wrongId = 99999L;
+
+            assertThatThrownBy(() -> timeService.deleteTimeById(wrongId))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.TIME_NOT_FOUND);
         }
     }
 }
