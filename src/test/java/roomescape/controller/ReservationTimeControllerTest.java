@@ -14,6 +14,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -81,8 +82,8 @@ class ReservationTimeControllerTest {
     void 전체_예약_시간을_조회한다() {
         // given
         List<ReservationTime> times = List.of(
-            new ReservationTime(1L, "12:30"),
-            new ReservationTime(2L, "14:30"));
+            new ReservationTime(1L, LocalTime.of(12, 30)),
+            new ReservationTime(2L, LocalTime.of(14, 30)));
 
         List<ReservationTimeResponse> expectedResponse = times.stream()
             .map(ReservationTimeResponse::from)
@@ -159,7 +160,7 @@ class ReservationTimeControllerTest {
         LocalDate date = LocalDate.parse("2026-05-05");
 
         ReservationTime availableTime = reservationTime();
-        ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
+        ReservationTime impossibleTime = new ReservationTime(2L, LocalTime.of(14, 30));
         List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
         List<ReservationTime> availableTimes = List.of(availableTime);
         AvailableReservationTimesResponse expected = AvailableReservationTimesResponse.of(
@@ -235,7 +236,7 @@ class ReservationTimeControllerTest {
     }
 
     private ReservationTime reservationTime() {
-        return new ReservationTime(TIME_ID, "12:30");
+        return new ReservationTime(TIME_ID, LocalTime.of(12, 30));
     }
 
     private ReservationTimeRequest requestDtoFrom(ReservationTime time) {

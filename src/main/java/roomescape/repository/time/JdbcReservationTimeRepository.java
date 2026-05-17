@@ -2,6 +2,7 @@ package roomescape.repository.time;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (rs, rowNum) ->
         new ReservationTime(
             rs.getLong("id"),
-            rs.getString("start_at"));
+            LocalTime.parse(rs.getString("start_at"), TIME_FORMATTER));
 
     private final JdbcTemplate template;
 

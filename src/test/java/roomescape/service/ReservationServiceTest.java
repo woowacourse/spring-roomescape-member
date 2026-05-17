@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,7 @@ import roomescape.repository.time.ReservationTimeRepository;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:00");
+    private static final ReservationTime SAVED_TIME = new ReservationTime(1L, LocalTime.of(12, 0));
     private static final Theme SAVED_THEME = new Theme(3L, new ThemeName("name"), "description",
         ThemeImageUrl.defaultImageUrl());
     private static final MemberName NAME = new MemberName("name");
@@ -168,7 +169,7 @@ class ReservationServiceTest {
         Reservation reservation = new Reservation(
             1L, new MemberName("n"),
             new ReservationLocalDate(LocalDate.now().plusDays(1)),
-            new ReservationTime(1L, "12:00"),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
             SAVED_THEME
         );
         when(reservationRepository.findById(anyLong()))
@@ -208,7 +209,7 @@ class ReservationServiceTest {
             1L,
             new MemberName("n"),
             new ReservationLocalDate(LocalDate.now().plusDays(1)),
-            new ReservationTime(1L, "12:00"),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
             new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
         );
 
@@ -234,7 +235,7 @@ class ReservationServiceTest {
             1L,
             new MemberName("n"),
             new ReservationLocalDate(LocalDate.now().minusDays(1)),
-            new ReservationTime(1L, "12:00"),
+            new ReservationTime(1L, LocalTime.of(12, 0)),
             new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
         );
 
@@ -277,7 +278,7 @@ class ReservationServiceTest {
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
         LocalDate date = LocalDate.now().minusDays(1L);
-        ReservationTime availableTime2 = new ReservationTime(2L, "14:00");
+        ReservationTime availableTime2 = new ReservationTime(2L, LocalTime.of(14, 0));
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));

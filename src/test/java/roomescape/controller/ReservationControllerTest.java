@@ -14,6 +14,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,7 @@ import roomescape.service.ReservationService;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
-    private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
+    private static final ReservationTime TIME = new ReservationTime(1L, LocalTime.of(12, 0));
     private static final Theme THEME = new Theme(1L, new ThemeName("name"), "description",
         ThemeImageUrl.defaultImageUrl());
     private static final MemberName NAME = new MemberName("name");

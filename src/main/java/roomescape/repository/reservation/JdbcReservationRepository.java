@@ -3,6 +3,8 @@ package roomescape.repository.reservation;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,7 +32,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getDate("res_date").toLocalDate()),
             new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getString("time_value")),
+                LocalTime.parse(rs.getString("time_value"), DateTimeFormatter.ofPattern("HH:mm"))),
             new Theme(
                 rs.getLong("theme_id"),
                 new ThemeName(

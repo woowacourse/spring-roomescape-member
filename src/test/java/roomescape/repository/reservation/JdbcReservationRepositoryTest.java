@@ -84,8 +84,8 @@ class JdbcReservationRepositoryTest {
     @Test
     void 전체_예약_목록을_조회한다() {
         // given
-        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
-        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(13, 0)));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(10, 0)));
 
         Theme savedTheme = themeRepository.createTheme(THEME);
 
@@ -109,8 +109,8 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약자_이름으로_예약_목록을_조회한다() {
         // given
-        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
-        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(13, 0)));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(10, 0)));
 
         Theme savedTheme = themeRepository.createTheme(THEME);
 
@@ -135,8 +135,8 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약자_이름으로_된_예약이_없다면_빈_목록을_반환한다() {
         // given
-        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
-        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(13, 0)));
+        ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(10, 0)));
 
         Theme savedTheme = themeRepository.createTheme(THEME);
 
@@ -328,8 +328,8 @@ class JdbcReservationRepositoryTest {
         @Test
         void 오늘_이후의_예약이라도_다른_시간이면_FALSE를_반환한다() {
             // given
-            ReservationTime savedTime = timeRepository.createReservationTime(new ReservationTime("12:00"));
-            ReservationTime otherTime = timeRepository.createReservationTime(new ReservationTime("13:00"));
+            ReservationTime savedTime = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(12, 0)));
+            ReservationTime otherTime = timeRepository.createReservationTime(new ReservationTime(LocalTime.of(13, 0)));
 
             Theme savedTheme = themeRepository.createTheme(THEME);
 

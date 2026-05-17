@@ -3,6 +3,7 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import roomescape.domain.vo.ThemeName;
 
 class ReservationTest {
 
-    private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
+    private static final ReservationTime TIME = new ReservationTime(1L, LocalTime.of(12, 0));
     private static final Theme THEME = new Theme(1L, new ThemeName("테마"), "설명", ThemeImageUrl.defaultImageUrl());
 
     @Test
