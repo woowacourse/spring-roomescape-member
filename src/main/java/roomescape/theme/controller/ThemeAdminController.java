@@ -2,25 +2,23 @@ package roomescape.theme.controller;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.request.ThemeActiveUpdateDto;
-import roomescape.theme.dto.request.ThemeSaveDto;
-import roomescape.theme.dto.response.PopularThemeDetailDto;
-import roomescape.theme.dto.response.ThemeDetailDto;
+import roomescape.theme.controller.dto.request.ThemeActiveUpdateDto;
+import roomescape.theme.controller.dto.request.ThemeSaveDto;
+import roomescape.theme.controller.dto.response.PopularThemeDetailDto;
+import roomescape.theme.controller.dto.response.ThemeDetailDto;
 import roomescape.theme.service.ThemeService;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class ThemeAdminController {
 
     private final ThemeService themeService;
-
-    public ThemeAdminController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {
@@ -46,7 +44,7 @@ public class ThemeAdminController {
     }
 
     @PatchMapping("/themes/{id}")
-    public ResponseEntity<ThemeDetailDto> updateThemeStatus(@PathVariable Long id, @RequestBody ThemeActiveUpdateDto dto) {
+    public ResponseEntity<ThemeDetailDto> updateThemeStatus(@PathVariable Long id, @Validated @RequestBody ThemeActiveUpdateDto dto) {
         Theme theme = themeService.updateStatus(id, dto.isActive());
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);
         return ResponseEntity.ok(responseData);

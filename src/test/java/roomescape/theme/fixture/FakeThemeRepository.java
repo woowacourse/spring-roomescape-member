@@ -17,7 +17,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         autoIncrement();
-        Theme savedTheme = Theme.load(autoIncrement, theme.name(), theme.description(), theme.thumbnailUrl(), theme.isActive());
+        Theme savedTheme = Theme.load(autoIncrement, theme.getName(), theme.getDescription(), theme.getThumbnailUrl(), theme.isActive());
         themes.add(savedTheme);
         return savedTheme;
     }
@@ -38,7 +38,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public boolean updateStatus(Theme theme) {
         boolean isActive = theme.isActive();
-        Optional<Theme> target = findById(theme.id());
+        Optional<Theme> target = findById(theme.getId());
         if (target.isEmpty()) {
             return false;
         }
@@ -54,7 +54,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         return themes.stream()
-                .filter(theme -> theme.id().equals(id))
+                .filter(theme -> theme.getId().equals(id))
                 .findFirst();
     }
 
@@ -62,7 +62,7 @@ public class FakeThemeRepository implements ThemeRepository {
     public List<Theme> findByIsActive(boolean isActive) {
         return themes.stream()
                 .filter(theme -> theme.isActive() == isActive)
-                .sorted(Comparator.comparing(Theme::name))
+                .sorted(Comparator.comparing(Theme::getName))
                 .toList();
     }
 

@@ -2,6 +2,7 @@ package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_ALREADY_EXISTS;
 import static roomescape.time.fixture.ReservationTimeFixture.saveDto;
 
 import java.time.LocalTime;
@@ -12,7 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.controller.dto.request.ReservationTimeSaveDto;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.fixture.FakeReservationTimeRepository;
 import roomescape.time.fixture.ReservationTimeFixture;
 
@@ -64,12 +66,12 @@ class ReservationTimeServiceTest {
     void register_already_exist() {
         // given
         ReservationTime saved = save(ReservationTimeFixture.time15());
-        ReservationTimeSaveDto duplicatedCommand = saveDto(saved.startAt());
+        ReservationTimeSaveDto duplicatedCommand = saveDto(saved.getStartAt());
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.register(duplicatedCommand))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다.");
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage(TIME_ALREADY_EXISTS.getMessage());
     }
 
     @Test
@@ -79,10 +81,10 @@ class ReservationTimeServiceTest {
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.activeTime15());
 
         // when
-        reservationTimeService.updateStatus(saved.id(), false);
+        reservationTimeService.updateStatus(saved.getId(), false);
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.id()).get().isActive())
+        assertThat(reservationTimeRepository.findById(saved.getId()).get().isActive())
                 .isFalse();
     }
 
@@ -93,10 +95,10 @@ class ReservationTimeServiceTest {
         ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.activeTime15());
 
         // when
-        reservationTimeService.updateStatus(saved.id(), true);
+        reservationTimeService.updateStatus(saved.getId(), true);
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.id()).get().isActive())
+        assertThat(reservationTimeRepository.findById(saved.getId()).get().isActive())
                 .isTrue();
     }
 

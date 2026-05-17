@@ -52,7 +52,7 @@ class ReservationDateRepositoryTest {
         ReservationDate saved = save(ReservationDateFixture.oneWeekLater());
 
         // when
-        ReservationDate actual = reservationDateRepository.findById(saved.id()).get();
+        ReservationDate actual = reservationDateRepository.findById(saved.getId()).get();
 
         // then
         Assertions.assertThat(actual)
@@ -99,7 +99,7 @@ class ReservationDateRepositoryTest {
         reservationDateRepository.updateStatus(saved);
 
         // then
-        Assertions.assertThat(reservationDateRepository.findById(saved.id()).get().isActive())
+        Assertions.assertThat(reservationDateRepository.findById(saved.getId()).get().isActive())
                 .isTrue();
     }
 
@@ -114,8 +114,22 @@ class ReservationDateRepositoryTest {
         reservationDateRepository.updateStatus(saved);
 
         // then
-        Assertions.assertThat(reservationDateRepository.findById(saved.id()).get().isActive())
+        Assertions.assertThat(reservationDateRepository.findById(saved.getId()).get().isActive())
                 .isFalse();
+    }
+
+    @Test
+    @DisplayName("이미 등록된 날짜인 지 확인할 수 있다.")
+    void existsByDate() {
+        // given
+        ReservationDate saved = save(ReservationDateFixture.activeOneWeekLater());
+
+        // when
+        boolean result = reservationDateRepository.existsByDate(saved.getDate());
+
+        // then
+        Assertions.assertThat(result)
+                .isTrue();
     }
 
     private List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {

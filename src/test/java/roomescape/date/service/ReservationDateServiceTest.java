@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
 
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_ALREADY_EXISTS;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 
 class ReservationDateServiceTest {
 
@@ -52,7 +55,7 @@ class ReservationDateServiceTest {
         ReservationDate saved = reservationDateRepository.save(ReservationDateFixture.oneWeekLater());
 
         // when
-        ReservationDate actual = reservationDateService.readDate(saved.id());
+        ReservationDate actual = reservationDateService.readDate(saved.getId());
 
         // then
         Assertions.assertThat(actual)
@@ -68,8 +71,8 @@ class ReservationDateServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationDateService.readDate(deregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("등록되지 않은 예약날짜입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -95,7 +98,7 @@ class ReservationDateServiceTest {
         // then
         assertThat(registered)
                 .usingRecursiveComparison()
-                .isEqualTo(reservationDateRepository.findById(registered.id()).get());
+                .isEqualTo(reservationDateRepository.findById(registered.getId()).get());
     }
 
     @Test
@@ -106,8 +109,22 @@ class ReservationDateServiceTest {
 
         // when  & then
         Assertions.assertThatThrownBy(() -> reservationDateService.updateStatus(deregisteredId, false))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("등록되지 않은 예약날짜입니다.");
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("이미 등록된 날짜를 또 등록하면 예외가 발생한다.")
+    void existsByDate_duplicated_date() {
+        // given
+        ReservationDate date = ReservationDateFixture.oneWeekLater();
+        reservationDateRepository.save(date);
+        LocalDate duplicatedDate = date.getDate();
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationDateService.register(duplicatedDate))
+                .isInstanceOf(ReservationDateException.class)
+                .hasMessage(DATE_ALREADY_EXISTS.getMessage());
     }
 
     private List<ReservationDate> saveAll(List<ReservationDate> dates) {

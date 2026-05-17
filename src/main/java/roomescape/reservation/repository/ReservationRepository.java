@@ -25,4 +25,6 @@ public interface ReservationRepository {
 
     boolean updateStatus(Reservation reservation);
 
+    boolean updateSchedule(Reservation reservation);
+
 }

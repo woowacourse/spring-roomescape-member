@@ -3,7 +3,8 @@ package roomescape.reservation.fixture;
 import roomescape.date.domain.ReservationDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.controller.dto.request.ReservationSaveDto;
+import roomescape.reservation.service.dto.ReservationSaveCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -29,40 +30,40 @@ public class ReservationFixture {
         return reservation;
     }
 
-    public static ReservationSaveDto saveDto(
+    public static ReservationSaveCommand toCommand(
             String name,
             ReservationDate date,
             ReservationTime time,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, date.id(), time.id(), theme.id());
+        return new ReservationSaveCommand(name, date.getId(), time.getId(), theme.getId());
     }
 
-    public static ReservationSaveDto saveDto(
+    public static ReservationSaveCommand toCommand(
             String name,
             ReservationDate date,
             Long timeId,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, date.id(), timeId, theme.id());
+        return new ReservationSaveCommand(name, date.getId(), timeId, theme.getId());
     }
 
-    public static ReservationSaveDto saveDto(
+    public static ReservationSaveDto toCommand(
             String name,
             Long dateId,
             ReservationTime time,
             Theme theme
     ) {
-        return new ReservationSaveDto(name, dateId, time.id(), theme.id());
+        return new ReservationSaveDto(name, dateId, time.getId(), theme.getId());
     }
 
-    public static ReservationSaveDto saveDto(
+    public static ReservationSaveCommand toCommand(
             String name,
             ReservationDate date,
             ReservationTime time,
             Long themeId
     ) {
-        return new ReservationSaveDto(name, date.id(), time.id(), themeId);
+        return new ReservationSaveCommand(name, date.getId(), time.getId(), themeId);
     }
 
 }

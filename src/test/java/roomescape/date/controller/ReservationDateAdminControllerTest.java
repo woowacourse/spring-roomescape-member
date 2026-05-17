@@ -1,6 +1,8 @@
 package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_ALREADY_EXISTS;
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_IS_NULL;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
 import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -69,6 +72,23 @@ class ReservationDateAdminControllerTest {
     }
 
     @Test
+    @DisplayName("이미 등록된 날짜를 또 등록하면 예외가 발생한다.")
+    void create_duplicated_date() {
+        createReservationDate(date);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", date);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/dates")
+                .then().log().all()
+                .statusCode(HttpStatus.CONFLICT.value())
+                .body("message", is(DATE_ALREADY_EXISTS.getMessage()));
+    }
+
+    @Test
     @DisplayName("예약 날짜를 생성한 뒤 조회한다.")
     void createAndGetReservationDates() {
         Map<String, String> params = new HashMap<>();
@@ -99,7 +119,8 @@ class ReservationDateAdminControllerTest {
                 .body(params)
                 .when().post("/admin/dates")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(DATE_IS_NULL.getHttpStatus().value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test

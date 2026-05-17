@@ -1,36 +1,41 @@
 package roomescape.reservation.service;
 
+import static roomescape.date.exception.ReservationDateErrorInformation.DATE_NOT_FOUND;
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.RESERVATION_ALREADY_BOOKED;
+import static roomescape.reservation.exception.ReservaitonErrorInformation.RESERVATION_NOT_FOUND;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
+import static roomescape.time.exception.ReservationTimeErrorInformation.TIME_NOT_FOUND;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.exception.ReservationDateException;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.service.dto.ReservationChangeCommand;
+import roomescape.reservation.service.dto.ReservationSaveCommand;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationDateRepository reservationDateRepository;
     private final ThemeRepository themeRepository;
-
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ReservationDateRepository reservationDateRepository, ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationDateRepository = reservationDateRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public List<Reservation> readAll() {
         return reservationRepository.findAll();
@@ -41,55 +46,93 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation reserve(ReservationSaveDto dto) {
-        ReservationTime reservationTime = getReservationTime(dto.timeId());
-        ReservationDate reservationDate = getReservationDate(dto.dateId());
-        Theme theme = getTheme(dto.themeId());
+    public Reservation reserve(ReservationSaveCommand command) {
+        ReservationTime reservationTime = getReservationTime(command.timeId());
+        reservationTime.validateIsInactive();
 
-        validateNotAlreadyBookedByOthers(reservationDate.id(), reservationTime.id(), theme);
-        validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
+        ReservationDate reservationDate = getReservationDate(command.dateId());
+        reservationDate.validateIsInactive();
+
+        Theme theme = getTheme(command.themeId());
+        theme.validateIsInactive();
+
+        validateNotAlreadyBookedByOthers(reservationDate.getId(), reservationTime.getId(), theme.getId());
         return reservationRepository.save(
-                Reservation.create(dto.name(), reservationDate, reservationTime, theme)
+                Reservation.create(command.name(), reservationDate, reservationTime, theme)
         );
     }
 
     @Transactional
-    public Reservation cancel(Long id) {
+    public Reservation cancelByManager(Long id) {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);
         return reservation;
     }
 
+    @Transactional
+    public Reservation cancel(Long id, String requesterName) {
+        Reservation reservation = getReservation(id);
+        reservation.cancel(requesterName);
+        reservationRepository.updateStatus(reservation);
+        return reservation;
+    }
+
+    @Transactional
+    public Reservation changeSchedule(ReservationChangeCommand command) {
+        Reservation reservation = getReservation(command.id());
+        ReservationTime newTime = getReservationTime(command.timeId());
+        newTime.validateIsInactive();
+
+        ReservationDate newDate = getReservationDate(command.dateId());
+        newDate.validateIsInactive();
+
+        validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
+
+        reservation.changeSchedule(command.requesterName(), newDate, newTime);
+        reservationRepository.updateSchedule(reservation);
+        return reservation;
+    }
+
+    @Transactional
+    public Reservation changeScheduleByManager(ReservationChangeCommand command) {
+        Reservation reservation = getReservation(command.id());
+        ReservationTime newTime = getReservationTime(command.timeId());
+        newTime.validateIsInactive();
+
+        ReservationDate newDate = getReservationDate(command.dateId());
+        newDate.validateIsInactive();
+
+        validateNotAlreadyBookedByOthers(command.dateId(), command.timeId(), reservation.getTheme().getId());
+
+        reservation.changeScheduleByManager(newDate, newTime);
+        reservationRepository.updateSchedule(reservation);
+        return reservation;
+    }
+
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeException(TIME_NOT_FOUND));
     }
 
     private ReservationDate getReservationDate(Long dateId) {
         return reservationDateRepository.findById(dateId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 날짜입니다."));
+                .orElseThrow(() -> new ReservationDateException(DATE_NOT_FOUND));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new ThemeException(THEME_NOT_FOUND));
     }
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new ReservationException(RESERVATION_NOT_FOUND));
     }
 
-    private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.id())) {
-            throw new IllegalArgumentException("해당 날짜/시간/테마는 이미 예약되었습니다.");
-        }
-    }
-
-    private void validateUserHasNoReservationAtSameTime(String name, ReservationDate date, ReservationTime time) {
-        if (reservationRepository.existsByNameAndDateAndTime(name, date.id(), time.id())) {
-            throw new IllegalArgumentException("동일한 날짜와 시간에 예약이 존재합니다.");
+    private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, themeId)) {
+            throw new ReservationException(RESERVATION_ALREADY_BOOKED);
         }
     }
 

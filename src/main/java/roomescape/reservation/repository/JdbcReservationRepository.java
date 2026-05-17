@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.name = :name
-                ORDER BY d.date ASC, t.start_at ASC
+                ORDER BY d.date DESC , t.start_at ASC
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource("name", name);
@@ -143,19 +143,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date_id", reservation.date().id())
-                .addValue("time_id", reservation.time().id())
-                .addValue("theme_id", reservation.theme().id())
-                .addValue("status", reservation.status().name());
+                .addValue("name", reservation.getName())
+                .addValue("date_id", reservation.getDate().getId())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("status", reservation.getStatus().name());
         Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Reservation.load(
                 savedId,
-                reservation.name(),
-                reservation.date(),
-                reservation.time(),
-                reservation.theme(),
-                reservation.status()
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getStatus()
         );
     }
 
@@ -167,6 +167,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE date_id = :date_id
                     AND time_id = :time_id
                     AND theme_id = :theme_id
+                    AND status = 'RESERVED'
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date_id", dateId)
@@ -222,10 +223,26 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean updateStatus(Reservation reservation) {
         String sql = "UPDATE RESERVATION SET status = :status WHERE id = :id ";
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", reservation.id())
-                .addValue("status", reservation.status().name());
+                .addValue("id", reservation.getId())
+                .addValue("status", reservation.getStatus().name());
         int updatedCount = jdbcTemplate.update(sql, params);
         return updatedCount > 0;
     }
 
+    @Override
+    public boolean updateSchedule(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date_id = :dateId,
+                    time_id = :timeId
+                WHERE id = :id
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("dateId", reservation.getDate().getId())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("id", reservation.getId());
+
+        int updatedCount = jdbcTemplate.update(sql, params);
+        return updatedCount > 0;
+    }
 }

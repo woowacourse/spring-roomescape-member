@@ -28,4 +28,17 @@ public class ReservationApiFixture {
                 .path("id");
     }
 
+    public static void cancelReservation(Integer reservationId, String requesterName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", requesterName);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/member/reservations/" + reservationId + "/cancel")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+
 }

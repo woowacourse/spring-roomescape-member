@@ -30,4 +30,16 @@ public class ThemeApiFixture {
                 .path("id");
     }
 
+    public static void updateThemeStatus(Integer themeId, boolean isActive) {
+        Map<String, Object> updateActive = new HashMap<>();
+        updateActive.put("isActive", isActive);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateActive)
+                .when().patch("/admin/themes/" + themeId)
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }

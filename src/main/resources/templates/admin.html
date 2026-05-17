@@ -162,6 +162,31 @@
             </table>
         </article>
     </section>
+
+    <!-- 예약 변경 모달 -->
+    <div id="reschedule-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>예약 변경</h2>
+                <button type="button" class="close-button" onclick="closeRescheduleModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <section class="step-section">
+                    <h2 style="font-size: 18px; margin-bottom: 16px;"><span style="color: #d2b44c; margin-right: 8px;">01.</span> 날짜 선택</h2>
+                    <div id="reschedule-date-list" class="date-list" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                </section>
+
+                <section class="form-group" style="margin-top: 32px;">
+                    <h2 style="font-size: 18px; margin-bottom: 16px;"><span style="color: #d2b44c; margin-right: 8px;">02.</span> 시간 선택</h2>
+                    <div id="reschedule-time-list" class="time-list" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;"></div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="secondary-button" onclick="closeRescheduleModal()">취소</button>
+                <button type="button" class="submit-button" style="width: auto; padding: 0 24px;" onclick="submitReschedule()">변경 확정</button>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script th:src="@{/js/admin.js}"></script>

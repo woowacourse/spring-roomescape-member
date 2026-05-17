@@ -1,6 +1,7 @@
 package roomescape.theme.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.theme.exception.ThemeErrorInformation.*;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 
 import io.restassured.RestAssured;
@@ -88,7 +89,8 @@ class ThemeAdminControllerTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(NAME_IS_NULL.getHttpStatus().value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -104,7 +106,8 @@ class ThemeAdminControllerTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(DESCRIPTION_IS_NULL.getHttpStatus().value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test
@@ -120,7 +123,8 @@ class ThemeAdminControllerTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(THUMBNAIL_URL_IS_NULL.getHttpStatus().value())
+                .body("message", is("요청 값 검증에 실패했습니다."));
     }
 
     @Test

@@ -3,21 +3,22 @@ package roomescape.time.service;
 import java.time.LocalTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.controller.dto.request.ReservationTimeSaveDto;
+import roomescape.time.exception.ReservationTimeException;
 import roomescape.time.repository.ReservationTimeRepository;
+
+import static roomescape.time.exception.ReservationTimeErrorInformation.*;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
-    }
 
     public List<ReservationTime> readAll() {
         return reservationTimeRepository.findAll();
@@ -44,18 +45,18 @@ public class ReservationTimeService {
 
     private void validateIsUpdated(boolean isUpdated) {
         if (!isUpdated) {
-            throw new IllegalArgumentException("활성화/비활성화 상태 변경에 실패했습니다.");
+            throw new ReservationTimeException(TIME_STATUS_UPDATE_FAILED);
         }
     }
 
     private ReservationTime getReservationTime(Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeException(TIME_NOT_FOUND));
     }
 
     private void validateDuplicateTimeExist(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
+            throw new ReservationTimeException(TIME_ALREADY_EXISTS);
         }
     }
 

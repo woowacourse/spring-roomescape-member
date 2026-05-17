@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.theme.exception.ThemeErrorInformation.THEME_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.fixture.FakeThemeRepository;
 import roomescape.theme.fixture.ThemeFixture;
 
@@ -55,7 +57,7 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
-        Theme actual = themeService.readTheme(savedTheme.id());
+        Theme actual = themeService.readTheme(savedTheme.getId());
 
         // then
         assertThat(actual)
@@ -71,8 +73,8 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.readTheme(unregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage(THEME_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -84,7 +86,7 @@ class ThemeServiceTest {
                 ThemeFixture.activeTheme("나테마"),
                 ThemeFixture.activeTheme("가테마"))
         );
-        Collections.sort(themes, Comparator.comparing(Theme::name));
+        Collections.sort(themes, Comparator.comparing(Theme::getName));
 
         // when
         List<Theme> actual = themeService.readActiveThemes();
@@ -115,7 +117,7 @@ class ThemeServiceTest {
         // then
         assertThat(registeredTheme)
                 .usingRecursiveComparison()
-                .isEqualTo(themeService.readTheme(registeredTheme.id()));
+                .isEqualTo(themeService.readTheme(registeredTheme.getId()));
     }
 
     @Test
@@ -125,10 +127,10 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
-        themeService.updateStatus(savedTheme.id(), true);
+        themeService.updateStatus(savedTheme.getId(), true);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeRepository.findById(savedTheme.getId()).get().isActive())
                 .isTrue();
     }
 
@@ -140,10 +142,10 @@ class ThemeServiceTest {
         Theme savedTheme = themeRepository.save(ThemeFixture.activeTheme());
 
         // when
-        themeService.updateStatus(savedTheme.id(), false);
+        themeService.updateStatus(savedTheme.getId(), false);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeRepository.findById(savedTheme.getId()).get().isActive())
                 .isFalse();
     }
 
