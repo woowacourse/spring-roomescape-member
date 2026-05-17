@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.AvailableTimeResponse;
 
 @Repository
 public class ThemeDao {
@@ -23,8 +23,8 @@ public class ThemeDao {
             rs.getString("thumbnail_url")
     );
 
-    private final RowMapper<AvailableReservationTimeResponse> availableReservationTimeRowMapper =
-            (rs, rowNum) -> new AvailableReservationTimeResponse(
+    private final RowMapper<AvailableTimeResponse> availableReservationTimeRowMapper =
+            (rs, rowNum) -> new AvailableTimeResponse(
                     rs.getLong("id"),
                     rs.getObject("start_at", LocalTime.class),
                     rs.getBoolean("available")
@@ -67,7 +67,7 @@ public class ThemeDao {
     }
 
 
-    public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
+    public List<AvailableTimeResponse> findAvailableTimeById(long themeId, String date) {
             final String sql = """
                     SELECT                                                                                                                                                                                                         \s
                           rt.id,                                                                                                                                                                                                     \s

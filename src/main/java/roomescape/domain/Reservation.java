@@ -9,10 +9,10 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final ReservationTime time;
+    private final Time time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -42,7 +42,7 @@ public class Reservation {
         }
     }
 
-    private void validateTime(ReservationTime time) {
+    private void validateTime(Time time) {
         if (time == null) {
             throw new CustomException(ErrorCode.RESERVATION_TIME_NULL);
         }
@@ -66,7 +66,7 @@ public class Reservation {
         return date;
     }
 
-    public ReservationTime getTime() {
+    public Time getTime() {
         return time;
     }
 

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.TimeRequest;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 
@@ -36,7 +36,7 @@ class AdminTimeServiceTest {
     @Test
     void 시간_추가_예외_테스트(){
         LocalTime startAt = LocalTime.of(10,0,0);
-        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
+        TimeRequest request = new TimeRequest(startAt);
         assertThatThrownBy(() -> adminTimeService.save(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.ALREADY_EXISTS_TIME.getMessage());

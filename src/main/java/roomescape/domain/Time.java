@@ -5,11 +5,11 @@ import java.time.LocalTime;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 
-public class ReservationTime {
+public class Time {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public Time(Long id, LocalTime startAt) {
         validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;

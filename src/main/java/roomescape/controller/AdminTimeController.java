@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import roomescape.service.AdminTimeService;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeResponse;
 
 @RequestMapping(("/admin/times"))
 @RestController
@@ -32,13 +32,13 @@ public class AdminTimeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<ReservationTimeResponse> getTimes() {
+    public List<TimeResponse> getTimes() {
         return adminTimeService.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createTime(@Valid @RequestBody ReservationTimeRequest request) {
-        final ReservationTimeResponse response = adminTimeService.save(request);
+    public ResponseEntity<TimeResponse> createTime(@Valid @RequestBody TimeRequest request) {
+        final TimeResponse response = adminTimeService.save(request);
         final URI location = URI.create("/times/" + response.id());
         return ResponseEntity.created(location).body(response);
     }

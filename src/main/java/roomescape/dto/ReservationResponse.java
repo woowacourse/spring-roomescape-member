@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.Time;
 import roomescape.domain.Theme;
 
 public record ReservationResponse(
@@ -19,7 +19,7 @@ public record ReservationResponse(
         LocalTime time) {
     public static ReservationResponse from(Reservation reservation) {
         Theme theme = reservation.getTheme();
-        ReservationTime time = reservation.getTime();
+        Time time = reservation.getTime();
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getDate(),

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.NotBlank;
-import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -44,7 +44,7 @@ public class ThemeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/available-times")
-    public List<AvailableReservationTimeResponse> getReservationTimes(
+    public List<AvailableTimeResponse> getReservationTimes(
             @PathVariable long id,
             @NotBlank(message = "날짜를 입력해주세요.")
             @RequestParam String date) {
