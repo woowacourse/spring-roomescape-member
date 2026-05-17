@@ -6,7 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
+import roomescape.service.dto.AvailableTimeSlot;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,19 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
         String sql = "SELECT id, start_at FROM time_slot where start_at = ?";
         List<TimeSlot> timeSlots = jdbcTemplate.query(sql, rowMapper(), startAt);
         return Optional.ofNullable(DataAccessUtils.singleResult(timeSlots));
+    }
+
+    @Override
+    public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate date) {
+        String sql = """
+                SELECT t.id, t.start_at, r.id IS NULL AS is_available
+                FROM time_slot t
+                LEFT JOIN reservation r 
+                ON t.id = r.time_id 
+                       AND r.theme_id = ?
+                       AND r.date = ?
+                """;
+        return jdbcTemplate.query(sql, availableTimeSlotRowMapper(), themeId, date);
     }
 
     @Override
@@ -75,6 +90,13 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
         return (rs, rowNum) -> new TimeSlot(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
+        );
+    }
+
+    private RowMapper<AvailableTimeSlot> availableTimeSlotRowMapper() {
+        return (rs, rowNum) -> new AvailableTimeSlot(
+                new TimeSlot(rs.getLong("id"), rs.getObject("start_at", LocalTime.class)),
+                rs.getBoolean("is_available")
         );
     }
 }

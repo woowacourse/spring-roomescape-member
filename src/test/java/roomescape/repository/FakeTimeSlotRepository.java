@@ -1,7 +1,9 @@
 package roomescape.repository;
 
 import roomescape.domain.TimeSlot;
+import roomescape.service.dto.AvailableTimeSlot;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,11 @@ public class FakeTimeSlotRepository implements TimeSlotRepository {
     @Override
     public Optional<TimeSlot> findById(long id) {
         return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate date) {
+        return List.of();
     }
 
     @Override

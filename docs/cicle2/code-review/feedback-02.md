@@ -21,7 +21,74 @@
 
 ---
 
-###                 
+### 3. 데이터 처리/계산 위치의 적절성
+
+> 현재 규모에서는 전체 시간 목록과 예약된 시간 id를 각각 조회한 뒤 자바에서 조합하는 방식도  
+> 충분히 이해하기 쉽다고 생각하긴 하는데 예약 가능 여부가 DB의 예약 데이터에서 결정되는 값이라면,  
+> 이 책임을 자바에서 계산할지 SQL에서 계산할지 비교해보면 좋은 학습이 될 것 같습니다.
+
+- 의도/기준/생각
+    - 인기 테마와 동일 한 상황
+    - 자바에서?
+        - 할일 많아지고 스코프 추가시마다 다 로직 추가해줄거?
+    - DB에서?
+        - 사실상 한 번의 쿼리로 싹 조회해서 매핑만 해주면 끝
+    - 비교는?
+        - 도와줘요 제미나이
+
+`JAVA`
+
+```java
+public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
+    validateThemeExists(themeId);
+    List<TimeSlot> allTimes = timeSlotRepository.findAll();
+    List<Long> reservedIds = reservationRepository.findByThemeIdAndDate(themeId, date);
+    return mapToAvailableSlots(allTimes, reservedIds);
+}
+
+private void validateThemeExists(long themeId) {
+    if (!themeRepository.existsById(themeId)) {
+        throw new ThemeNotFoundException();
+    }
+}
+
+private List<AvailableTimeSlot> mapToAvailableSlots(List<TimeSlot> times, List<Long> reserved) {
+    return times.stream()
+            .map(time -> new AvailableTimeSlot(time, reserved.contains(time.getId())))
+            .toList();
+}
+```
+
+`DB`
+
+```java
+public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
+    validateThemeExists(themeId);
+    return timeSlotRepository.findAvailableTimeSlots(themeId, date);
+}
+
+private void validateThemeExists(long themeId) {
+    if (!themeRepository.existsById(themeId)) {
+        throw new ThemeNotFoundException();
+    }
+}
+
+// Repository
+public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate date) {
+    String sql = """
+            SELECT t.id, t.time, r.id IS NOT NULL AS booked
+            FROM time_slot t
+            LEFT JOIN reservation r ON t.id = r.time_id AND r.theme_id = ? AND r.date = ?
+            """;
+    return jdbcTemplate.query(sql, availableTimeSlotMapper(), themeId, date);
+}
+```
+
+기존 코드가 있다보니 코드는 좀 길어보이지만..
+
+---
+
+###                         
 
 >
 
@@ -30,16 +97,7 @@
 
 ---
 
-###                 
-
->
-
-- 의도/기준/생각
-  - 
-
----
-
-###                 
+###                         
 
 >
 
@@ -78,7 +136,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -87,7 +145,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -96,7 +154,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -105,7 +163,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -114,7 +172,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -123,7 +181,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -132,7 +190,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
@@ -141,7 +199,7 @@
 
 ---
 
-###                 
+###                         
 
 >
 
