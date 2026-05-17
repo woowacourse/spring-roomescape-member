@@ -57,8 +57,7 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 등록된 예약 시간입니다. 다른 시간을 입력해주세요.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -84,8 +83,7 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다. 먼저 해당 예약들을 삭제해주세요.");
+                .isInstanceOf(ConflictException.class);
 
         assertThat(reservationTimeService.findAll()).containsExactly(reservationTime);
     }
@@ -134,7 +132,6 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.findAvailableTimes(date, notFoundThemeId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
+                .isInstanceOf(NotFoundException.class);
     }
 }

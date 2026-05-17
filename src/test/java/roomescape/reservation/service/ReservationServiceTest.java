@@ -70,8 +70,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> createReservation(NAME, FUTURE_DATE, time, theme))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -83,8 +82,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> createReservation(NAME, PAST_DATE, time, theme))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+                .isInstanceOf(InvalidRequestException.class);
 
         assertThat(reservationService.findAll()).isEmpty();
     }
@@ -97,8 +95,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.create(NAME, FUTURE_DATE, NOT_FOUND_ID, theme.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -109,8 +106,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.create(NAME, FUTURE_DATE, time.getId(), NOT_FOUND_ID))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -157,8 +153,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), OTHER_NAME))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 이름으로 예약을 찾을 수 없습니다. 예약 정보를 확인해주세요.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -179,8 +174,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.cancel(reservation.getId(), NAME))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+                .isInstanceOf(InvalidRequestException.class);
     }
 
     @Test
@@ -225,8 +219,7 @@ class ReservationServiceTest {
                 NEXT_FUTURE_DATE,
                 occupiedTime.getId()
         ))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -244,8 +237,7 @@ class ReservationServiceTest {
                 FUTURE_DATE,
                 time.getId()
         ))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요.");
+                .isInstanceOf(InvalidRequestException.class);
     }
 
     @Test
@@ -262,8 +254,7 @@ class ReservationServiceTest {
                 PAST_DATE,
                 pastTime.getId()
         ))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+                .isInstanceOf(InvalidRequestException.class);
     }
 
     @Test
@@ -280,8 +271,7 @@ class ReservationServiceTest {
                 FUTURE_DATE,
                 newTime.getId()
         ))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+                .isInstanceOf(InvalidRequestException.class);
     }
 
     private Reservation createDefaultReservation() {

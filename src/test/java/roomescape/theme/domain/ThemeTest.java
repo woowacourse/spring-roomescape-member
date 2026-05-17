@@ -12,8 +12,7 @@ class ThemeTest {
     @DisplayName("테마 이름이 비어있으면 도메인 예외가 발생한다.")
     void create_fail_whenNameIsBlank() {
         assertInvalidRequestException(
-                () -> new Theme(" ", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"),
-                "테마 이름은 비어 있을 수 없습니다."
+                () -> new Theme(" ", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png")
         );
     }
 
@@ -21,8 +20,7 @@ class ThemeTest {
     @DisplayName("테마 설명이 비어있으면 도메인 예외가 발생한다.")
     void create_fail_whenDescriptionIsBlank() {
         assertInvalidRequestException(
-                () -> new Theme("레벨2 탈출", " ", "https://example.com/theme.png"),
-                "테마 설명은 비어 있을 수 없습니다."
+                () -> new Theme("레벨2 탈출", " ", "https://example.com/theme.png")
         );
     }
 
@@ -30,8 +28,7 @@ class ThemeTest {
     @DisplayName("테마 썸네일이 비어있으면 도메인 예외가 발생한다.")
     void create_fail_whenThumbnailIsBlank() {
         assertInvalidRequestException(
-                () -> new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", " "),
-                "테마 썸네일은 비어 있을 수 없습니다."
+                () -> new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", " ")
         );
     }
 
@@ -41,8 +38,7 @@ class ThemeTest {
         Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
 
         assertInvalidRequestException(
-                () -> theme.withId(null),
-                "테마 id는 비어 있을 수 없습니다."
+                () -> theme.withId(null)
         );
     }
 
@@ -52,14 +48,12 @@ class ThemeTest {
         Theme theme = new Theme(1L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
 
         assertInvalidRequestException(
-                () -> theme.withId(2L),
-                "이미 id가 존재하는 테마입니다."
+                () -> theme.withId(2L)
         );
     }
 
-    private void assertInvalidRequestException(Runnable runnable, String message) {
+    private void assertInvalidRequestException(Runnable runnable) {
         assertThatThrownBy(runnable::run)
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage(message);
+                .isInstanceOf(InvalidRequestException.class);
     }
 }

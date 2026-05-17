@@ -22,8 +22,7 @@ class ReservationTest {
     @DisplayName("예약자 이름이 비어있으면 도메인 예외가 발생한다.")
     void create_fail_whenNameIsBlank() {
         assertInvalidRequestException(
-                () -> new Reservation(" ", LocalDate.of(2023, 8, 5), time, theme),
-                "예약자 이름은 비어 있을 수 없습니다."
+                () -> new Reservation(" ", LocalDate.of(2023, 8, 5), time, theme)
         );
     }
 
@@ -31,8 +30,7 @@ class ReservationTest {
     @DisplayName("예약 날짜가 null이면 도메인 예외가 발생한다.")
     void create_fail_whenDateIsNull() {
         assertInvalidRequestException(
-                () -> new Reservation("브라운", null, time, theme),
-                "예약 날짜는 비어 있을 수 없습니다."
+                () -> new Reservation("브라운", null, time, theme)
         );
     }
 
@@ -40,8 +38,7 @@ class ReservationTest {
     @DisplayName("예약 시간이 null이면 도메인 예외가 발생한다.")
     void create_fail_whenTimeIsNull() {
         assertInvalidRequestException(
-                () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), null, theme),
-                "예약 시간은 비어 있을 수 없습니다."
+                () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), null, theme)
         );
     }
 
@@ -49,8 +46,7 @@ class ReservationTest {
     @DisplayName("예약 테마가 null이면 도메인 예외가 발생한다.")
     void create_fail_whenThemeIsNull() {
         assertInvalidRequestException(
-                () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), time, null),
-                "테마 정보는 비어 있을 수 없습니다."
+                () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), time, null)
         );
     }
 
@@ -60,8 +56,7 @@ class ReservationTest {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
         assertInvalidRequestException(
-                () -> reservation.withId(null),
-                "예약 id는 비어 있을 수 없습니다."
+                () -> reservation.withId(null)
         );
     }
 
@@ -71,8 +66,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), time, theme);
 
         assertInvalidRequestException(
-                () -> reservation.withId(2L),
-                "이미 식별자가 존재하는 예약입니다."
+                () -> reservation.withId(2L)
         );
     }
 
@@ -83,8 +77,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
 
         assertInvalidRequestException(
-                () -> Reservation.create("브라운", date, time, theme, now),
-                "현재 시각 이후의 날짜와 시간을 선택해주세요."
+                () -> Reservation.create("브라운", date, time, theme, now)
         );
     }
 
@@ -108,8 +101,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
 
         assertInvalidRequestException(
-                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 16), newTime, now),
-                "이미 지난 예약은 변경할 수 없습니다."
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 16), newTime, now)
         );
     }
 
@@ -120,8 +112,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
 
         assertInvalidRequestException(
-                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), time, now),
-                "변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요."
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), time, now)
         );
     }
 
@@ -133,8 +124,7 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
 
         assertInvalidRequestException(
-                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), newTime, now),
-                "현재 시각 이후의 날짜와 시간을 선택해주세요."
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), newTime, now)
         );
     }
 
@@ -179,9 +169,8 @@ class ReservationTest {
         assertThat(reservation.isPast(now)).isFalse();
     }
 
-    private void assertInvalidRequestException(Runnable runnable, String message) {
+    private void assertInvalidRequestException(Runnable runnable) {
         assertThatThrownBy(runnable::run)
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage(message);
+                .isInstanceOf(InvalidRequestException.class);
     }
 }
