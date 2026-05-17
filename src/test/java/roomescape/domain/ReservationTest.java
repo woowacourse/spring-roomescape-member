@@ -64,6 +64,46 @@ class ReservationTest {
     }
 
     @Nested
+    class Update {
+
+        @Test
+        @DisplayName("날짜와 시간을 변경한다")
+        void updatesDateAndTime() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+            Time newTime = new Time(2L, NOW.plusHours(2).toLocalTime());
+
+            reservation.update(NOW.toLocalDate().plusDays(1), newTime);
+
+            assertThat(reservation.getDate()).isEqualTo(NOW.toLocalDate().plusDays(1));
+            assertThat(reservation.getTime()).isEqualTo(newTime);
+        }
+    }
+
+    @Nested
+    class IsActive {
+
+        @Test
+        @DisplayName("BOOKED 상태이면 true를 반환한다")
+        void returnsTrueWhenBooked() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+
+            assertThat(reservation.isActive()).isTrue();
+        }
+
+        @Test
+        @DisplayName("CANCELED 상태이면 false를 반환한다")
+        void returnsFalseWhenCanceled() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+            reservation.cancel(NOW);
+
+            assertThat(reservation.isActive()).isFalse();
+        }
+    }
+
+    @Nested
     class Cancel {
 
         @Test

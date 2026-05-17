@@ -115,6 +115,57 @@ class ReservationServiceTest {
     }
 
     @Nested
+    class FindActiveById {
+
+        @Test
+        @DisplayName("BOOKED 예약을 조회한다")
+        void returnsActiveReservation() {
+            Reservation saved = reservationService.create(requestDto1);
+
+            assertThat(reservationService.findActiveById(saved.getId())).isEqualTo(saved);
+        }
+
+        @Test
+        @DisplayName("CANCELED 예약을 조회하면 예외를 반환한다")
+        void throwsWhenCanceled() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+            reservationService.cancel(saved.getId());
+
+            assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class FindAllByName {
+
+        @Test
+        @DisplayName("이름으로 활성 예약 목록을 조회한다")
+        void returnsActiveReservationsByName() {
+            reservationService.create(requestDto1);
+
+            assertThat(reservationService.findAllByName(requestDto1.name())).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("취소된 예약은 반환하지 않는다")
+        void excludesCanceledReservations() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+            reservationService.cancel(saved.getId());
+
+            assertThat(reservationService.findAllByName("유저")).isEmpty();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 이름이면 빈 목록을 반환한다")
+        void returnsEmptyWhenNameNotFound() {
+            assertThat(reservationService.findAllByName("없는이름")).isEmpty();
+        }
+    }
+
+    @Nested
     class UpdateByUser {
 
         @Test
