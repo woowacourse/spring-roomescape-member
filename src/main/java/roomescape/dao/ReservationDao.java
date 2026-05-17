@@ -154,6 +154,7 @@ public class ReservationDao {
                 reservation.getTheme());
     }
 
+    @Transactional
     public Reservation update(Long id, LocalDate date, Long timeId) {
         jdbcTemplate.update(
                 """
