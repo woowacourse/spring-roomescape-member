@@ -42,19 +42,16 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<?> createReservation(@Valid @RequestBody ReservationRequest request) {
-        try {
-            Reservation reservation = reservationService.addReservation(
-                    request.name(),
-                    request.date(),
-                    request.timeId(),
-                    request.themeId(),
-                    LocalDateTime.now()
-            );
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 불가");
-        }
+        Reservation reservation = reservationService.addReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));
     }
 
     @PatchMapping("/reservations/{id}")
