@@ -19,7 +19,6 @@ import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.dto.ReservationUpdateDtoDateAndTimeIdOnly;
 import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.EmptyNameException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastDateCancellationException;
 import roomescape.exception.PastDateModificationException;
@@ -74,7 +73,8 @@ class ReservationServiceTest {
     @DisplayName("비어 있는 이름에 대한 예약은 거부한다")
     @ParameterizedTest(name = "이름이 {0}이면 예외를 던진다")
     @NullAndEmptySource
-    void 이름이_비어_있는_요청에는_EmptyNameException_예외를_던진다(String emptyName) {
+    @ValueSource(strings = {" ", "  "})
+    void 이름이_비어_있는_요청에는_IllegalArgumentException_예외를_던진다(String emptyName) {
         ReservationRequestDTO emptyNameRequest = new ReservationRequestDTO(
                 emptyName,
                 LocalDate.now().plusDays(1),
@@ -83,7 +83,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.reserve(emptyNameRequest))
-                .isExactlyInstanceOf(EmptyNameException.class);
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("중복된 예약은 거부한다")
@@ -344,5 +344,21 @@ class ReservationServiceTest {
                         added.time().id()
                 )
         ));
+    }
+
+    @DisplayName("수정 요청 시 데이터가 누락되면 IllegalArgumentException을 던진다")
+    @Sql("/initialize_theme_and_time.sql")
+    @Test
+    void 수정_요청_시_데이터가_누락되면_IllegalArgumentException을_던진다() {
+        // given
+        ReservationResponseDTO added = reservationService.reserve(new ReservationRequestDTO(
+                "루드비코", LocalDate.now().plusDays(1), 1L, 1L
+        ));
+
+        // when and then
+        assertThatThrownBy(() -> reservationService.update(
+                added.id(),
+                new ReservationUpdateDtoDateAndTimeIdOnly(null, null)
+        )).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

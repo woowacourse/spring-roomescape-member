@@ -29,9 +29,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponseDTO addReservationTime(ReservationTimeRequestDTO reservationTimeRequest) {
-        ReservationTime reservationTime = ReservationTime.withoutId(
-                LocalTime.parse(reservationTimeRequest.startAt())
-        );
+        ReservationTime reservationTime = ReservationTime.withoutId(reservationTimeRequest.startAt());
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponseDTO.from(savedTime);

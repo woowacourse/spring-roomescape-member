@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -48,6 +49,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
     }
 
     public Long getTimeId() {
