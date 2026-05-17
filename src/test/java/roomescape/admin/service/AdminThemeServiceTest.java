@@ -9,24 +9,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.doamin.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminThemeServiceTest {
 
     @Autowired
-    private AdminThemeService adminThemeService;
+    private ThemeService themeService;
 
     @Autowired
     private ThemeRepository themeRepository;
 
     @DisplayName("관리자는 테마를 저장할 수 있다.")
     @Test
-    void saveTheme() {
-        Theme savedTheme = adminThemeService.saveTheme(
+    void save() {
+        Theme savedTheme = themeService.save(
                 "감옥 탈출",
                 "철통 보안 감옥에서 탈출하라!",
                 "https://image.test/prison.png"
@@ -47,8 +47,8 @@ class AdminThemeServiceTest {
     @Test
     void deleteTheme() {
         // test-data.sql 기준 theme_id=4 존재
-        adminThemeService.deleteTheme(4L);
+        themeService.deleteTheme(5L);
 
-        assertThat(themeRepository.findById(4L)).isEmpty();
+        assertThat(themeRepository.findById(5L)).isEmpty();
     }
 }

@@ -12,9 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.doamin.Theme;
+import roomescape.reservation.service.exception.ReservationChangeException;
+import roomescape.reservation.service.exception.ReservationCreateException;
+import roomescape.reservation.service.exception.ReservationNotFoundException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -60,8 +61,7 @@ class ReservationServiceTest {
                 999L,
                 1L
         ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(ReservationCreateException.class);
     }
 
     @DisplayName("존재하지 않는 테마로 예약을 생성하면 예외가 발생한다.")
@@ -75,8 +75,7 @@ class ReservationServiceTest {
                 1L,
                 999L
         ))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .isInstanceOf(ReservationCreateException.class);
     }
 
     @DisplayName("아이디로 예약을 조회할 수 있다.")
@@ -85,7 +84,7 @@ class ReservationServiceTest {
         // test-data.sql 기준:
         // 김철수 / CURRENT_DATE + 7 / time_id=3 / theme_id=1
         List<Reservation> reservations =
-                reservationService.getReservationsByUsername("김철수");
+                reservationService.getMyReservations("김철수");
 
         Reservation targetReservation = reservations.stream()
                 .filter(reservation -> reservation.getDate()
@@ -103,15 +102,14 @@ class ReservationServiceTest {
     @Test
     void getReservationFailByMissingReservation() {
         assertThatThrownBy(() -> reservationService.getReservation(999999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @DisplayName("사용자 이름으로 예약 목록을 조회한다.")
     @Test
-    void getReservationsByUsername() {
+    void getMyReservations() {
         List<Reservation> result =
-                reservationService.getReservationsByUsername("김철수");
+                reservationService.getMyReservations("김철수");
 
         // test-data.sql 기준:
         // 과거 2건 + 미래 2건
@@ -120,5 +118,98 @@ class ReservationServiceTest {
         assertThat(result)
                 .extracting(Reservation::getName)
                 .containsOnly("김철수");
+    }
+
+    @DisplayName("사용자는 본인의 예약을 삭제할 수 있다.")
+    @Test
+    void deleteMyReservation() {
+        Reservation reservation = reservationService.getMyReservations("김철수").getFirst();
+
+        reservationService.deleteMyReservation(reservation.getId(), "김철수");
+
+        assertThatThrownBy(() -> reservationService.getReservation(reservation.getId()))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("사용자는 다른 사람의 예약을 삭제할 수 없다.")
+    @Test
+    void deleteMyReservationFailByOtherUser() {
+        Reservation reservation = reservationService.getMyReservations("김철수").getFirst();
+
+        assertThatThrownBy(() -> reservationService.deleteMyReservation(reservation.getId(), "이영희"))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("사용자는 본인 예약의 날짜와 시간을 변경할 수 있다.")
+    @Test
+    void changeMyReservationDateTime() {
+        Reservation reservation = reservationService.getMyReservations("김철수").stream()
+                .filter(it -> it.getDate().isEqual(LocalDate.now().plusDays(7)))
+                .findFirst()
+                .orElseThrow();
+        LocalDate changeDate = LocalDate.now().plusDays(8);
+
+        Reservation changedReservation = reservationService.changeMyReservationDateTime(
+                reservation.getId(),
+                "김철수",
+                changeDate,
+                4L
+        );
+
+        assertThat(changedReservation.getId()).isEqualTo(reservation.getId());
+        assertThat(changedReservation.getDate()).isEqualTo(changeDate);
+        assertThat(changedReservation.getTime().getId()).isEqualTo(4L);
+        assertThat(changedReservation.getTheme()).isEqualTo(reservation.getTheme());
+    }
+
+    @DisplayName("사용자는 다른 사람 예약의 날짜와 시간을 변경할 수 없다.")
+    @Test
+    void changeMyReservationDateTimeFailByOtherUser() {
+        Reservation reservation = reservationService.getMyReservations("김철수").stream()
+                .filter(it -> it.getDate().isEqual(LocalDate.now().plusDays(7)))
+                .findFirst()
+                .orElseThrow();
+
+        assertThatThrownBy(() -> reservationService.changeMyReservationDateTime(
+                reservation.getId(),
+                "이영희",
+                LocalDate.now().plusDays(8),
+                4L
+        ))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("사용자는 이미 예약된 날짜와 시간으로 변경할 수 없다.")
+    @Test
+    void changeMyReservationDateTimeFailByDuplicate() {
+        Reservation reservation = reservationService.getMyReservations("김철수").stream()
+                .filter(it -> it.getDate().isEqual(LocalDate.now().plusDays(7)))
+                .findFirst()
+                .orElseThrow();
+
+        assertThatThrownBy(() -> reservationService.changeMyReservationDateTime(
+                reservation.getId(),
+                "김철수",
+                LocalDate.now().plusDays(6),
+                1L
+        ))
+                .isInstanceOf(ReservationChangeException.class);
+    }
+
+    @DisplayName("사용자는 날짜와 시간이 변경되지 않은 예약 변경 요청을 할 수 없다.")
+    @Test
+    void changeMyReservationDateTimeFailByNotChanged() {
+        Reservation reservation = reservationService.getMyReservations("김철수").stream()
+                .filter(it -> it.getDate().isEqual(LocalDate.now().plusDays(7)))
+                .findFirst()
+                .orElseThrow();
+
+        assertThatThrownBy(() -> reservationService.changeMyReservationDateTime(
+                reservation.getId(),
+                "김철수",
+                reservation.getDate(),
+                reservation.getTime().getId()
+        ))
+                .isInstanceOf(ReservationChangeException.class);
     }
 }

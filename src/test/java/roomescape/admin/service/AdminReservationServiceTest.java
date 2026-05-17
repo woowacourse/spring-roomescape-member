@@ -10,21 +10,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.service.ReservationService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminReservationServiceTest {
 
     @Autowired
-    private AdminReservationService adminReservationService;
+    private ReservationService reservationService;
 
     @DisplayName("관리자는 전체 예약 내역을 조회할 수 있다.")
     @Test
     void getAllReservations() {
         List<Reservation> result =
-                adminReservationService.getAllReservations();
+                reservationService.getAllReservations();
 
         // test-data.sql 기준:
         // 과거 인기 집계용 14건

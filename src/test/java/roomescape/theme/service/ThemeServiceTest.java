@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.doamin.Theme;
@@ -46,14 +45,15 @@ class ThemeServiceTest {
     void getAllThemes() {
         List<Theme> result = themeService.getAllThemes();
 
-        assertThat(result).hasSize(4);
+        assertThat(result).hasSize(5);
         assertThat(result)
                 .extracting(Theme::getName)
                 .containsExactlyInAnyOrder(
                         "공포의 저택",
                         "우주 정거장",
                         "마법사의 연구실",
-                        "탐정 사무소"
+                        "탐정 사무소",
+                        "탐정 사무소2"
                 );
     }
 

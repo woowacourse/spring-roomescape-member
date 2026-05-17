@@ -23,7 +23,15 @@ class AdminReservationControllerTest {
                 .statusCode(200);
     }
 
-
-
+    @DisplayName("관리자는 예약을 삭제할 수 있다.")
+    @Test
+    void adminReservationDeleteApi() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .pathParam("id", 1)
+                .when().delete("/admin/reservations/{id}")
+                .then().log().all()
+                .statusCode(204);
+    }
 
 }

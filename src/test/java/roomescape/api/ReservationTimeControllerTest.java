@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -74,5 +75,59 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", equalTo(13));
+    }
+
+
+    @DisplayName("API - 예약이 존재하는 시간을 삭제할 수 없다.")
+    @Test
+    void apiReservationTimeDeleteWithExistingReservation() {
+        final String createStartAt = "23:00";
+        final Map<String,Object> params = new HashMap<>();
+        params.put("startAt", createStartAt);
+
+        final long timeId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .body("startAt", equalTo(createStartAt))
+                .extract()
+                .jsonPath()
+                .getLong("id");
+
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", LocalDate.now().plusDays(1).toString());
+        reservationParams.put("timeId", timeId);
+        reservationParams.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/" + timeId)
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @DisplayName("API - 이미 존재하는 시간을 등록할 수 없다.")
+    @Test
+    void apiReservationTimeCreateDuplicate() {
+        final String createStartAt = "10:00";
+        final Map<String,Object> params = new HashMap<>();
+        params.put("startAt", createStartAt);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(409);
     }
 }

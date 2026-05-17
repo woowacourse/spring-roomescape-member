@@ -195,7 +195,7 @@
     autocomplete="off"
   />
 
-  <button class="btn-primary" onclick="enter()">입장하기</button>
+  <button class="btn-primary" id="enterButton" onclick="enter()">입장하기</button>
   <a href="/admin.html" class="admin-link">관리자 페이지로 이동 →</a>
 </div>
 
@@ -222,16 +222,48 @@
     if (e.key === 'Enter') enter();
   });
 
-  function enter() {
+  function getErrorMessage(errorBody, fallback) {
+    if (!errorBody) return fallback;
+    if (Array.isArray(errorBody.details) && errorBody.details.length) {
+      return errorBody.details.join('\n');
+    }
+    return errorBody.message || fallback;
+  }
+
+  async function enter() {
     const name = document.getElementById('username').value.trim();
     const err = document.getElementById('error');
     if (!name) {
+      err.textContent = '이름을 입력해주세요.';
       err.style.display = 'block';
       return;
     }
     err.style.display = 'none';
-    localStorage.setItem('username', name);
-    window.location.href = '/user.html';
+
+    const button = document.getElementById('enterButton');
+    button.disabled = true;
+    button.textContent = '입장 중...';
+
+    try {
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name })
+      });
+      const body = res.status === 204 ? null : await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(getErrorMessage(body, '로그인에 실패했습니다.'));
+      }
+
+      localStorage.setItem('username', name);
+      window.location.href = '/user.html';
+    } catch (e) {
+      err.textContent = e.message || '로그인에 실패했습니다.';
+      err.style.display = 'block';
+      button.disabled = false;
+      button.textContent = '입장하기';
+    }
   }
 </script>
 </body>

@@ -30,4 +30,12 @@ public class ThemeService {
     public List<ThemeTimeAvailability> getThemeTimeAvailability(long themId, LocalDate date) {
         return themeTimeQueryRepository.findThemeAvailableTime(themId, date);
     }
+
+    public Theme save(String name, String description, String thumbnailUrl) {
+        return themeRepository.save(Theme.of(name, description, thumbnailUrl));
+    }
+
+    public void deleteTheme(long id) {
+        themeRepository.delete(id);
+    }
 }

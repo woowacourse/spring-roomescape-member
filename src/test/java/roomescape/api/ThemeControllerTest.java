@@ -2,8 +2,6 @@ package roomescape.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,14 +26,10 @@ class ThemeControllerTest {
     @Test
     @DisplayName("API - Top 10 테마 조회")
     void apiTop10ThemesRetrieve() {
-        Map<String,Object> params = new HashMap<>();
-        params.put("condition", "popular");
-        params.put("size", "10");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .params(params)
-                .when().get("/themes")
+                .queryParam("limit", 10)
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200);
     }

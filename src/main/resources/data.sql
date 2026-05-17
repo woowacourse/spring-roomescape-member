@@ -18,7 +18,7 @@ INSERT INTO theme (name, description, thumbnail_url) VALUES ('공포의 저택',
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('우주 정거장', '고장난 우주 정거장에서 살아남아라. 산소가 30분 후면 바닥난다!', 'https://picsum.photos/seed/spacestation/400/250');
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('마법사의 연구실', '미친 마법사의 연구실에서 탈출하라. 다음 실험 대상이 되기 전에!', 'https://picsum.photos/seed/wizard/400/250');
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('탐정 사무소', '살인 사건의 유일한 용의자가 되었다. 진범을 찾아 무죄를 증명하라.', 'https://picsum.photos/seed/detective/400/250');
-
+INSERT INTO theme (name, description, thumbnail_url) VALUES ('탐정 사무소2', '살인 사건의 유일한 용의자가 되었다. 진범을 찾아 무죄를 증명하라.', 'https://picsum.photos/seed/detective/400/250');
 -- Reservations for popular theme ranking (range: today-7 ~ today-1)
 -- 기준: 오늘이 2026-05-11이면 집계 범위는 2026-05-04 ~ 2026-05-10
 
