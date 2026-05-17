@@ -17,7 +17,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<ReservationTime> rowMapper = (resultSet, rowColumn) -> ReservationTime.of(
+    private final RowMapper<ReservationTime> rowMapper = (resultSet, rowColumn) -> ReservationTime.restore(
             resultSet.getLong("id"),
             resultSet.getTime("start_at").toLocalTime(),
             resultSet.getTime("finish_at").toLocalTime()
@@ -36,7 +36,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("start_at", time.getStartAt())
                 .addValue("finish_at", time.getFinishAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return ReservationTime.of(id, time.getStartAt(), time.getFinishAt());
+        return ReservationTime.restore(id, time.getStartAt(), time.getFinishAt());
     }
 
     @Override

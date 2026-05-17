@@ -14,22 +14,8 @@ public class ReservationTime {
         this.finishAt = finishAt;
     }
 
-    public static ReservationTime of(Long id, LocalTime startAt, LocalTime finishAt) {
+    public static ReservationTime restore(Long id, LocalTime startAt, LocalTime finishAt) {
         return new ReservationTime(id, startAt, finishAt);
-    }
-
-    public static ReservationTime of(LocalTime startAt, LocalTime finishAt) {
-        validate(startAt, finishAt);
-        return new ReservationTime(null, startAt, finishAt);
-    }
-
-    private static void validate(LocalTime startAt, LocalTime finishAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("시작 시간은 필수입니다.");
-        }
-        if (finishAt == null) {
-            throw new IllegalArgumentException("종료 시간은 필수입니다.");
-        }
     }
 
     public Long getId() {

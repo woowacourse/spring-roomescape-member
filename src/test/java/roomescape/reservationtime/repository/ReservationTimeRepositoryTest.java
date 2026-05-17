@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.ReservationTimeFactory;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -19,10 +20,13 @@ class ReservationTimeRepositoryTest {
     @Autowired
     private ReservationTimeRepository timeRepository;
 
+    @Autowired
+    private ReservationTimeFactory reservationTimeFactory;
+
     @Test
     @DisplayName("시간 저장 성공")
     void 시간_저장_성공() {
-        ReservationTime saved = timeRepository.save(ReservationTime.of(LocalTime.of(20, 0), LocalTime.of(21, 0)));
+        ReservationTime saved = timeRepository.save(reservationTimeFactory.create(LocalTime.of(20, 0), LocalTime.of(21, 0)));
         assertThat(saved.getId()).isNotNull();
     }
 
@@ -48,7 +52,7 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("시간 삭제 성공")
     void 시간_삭제_성공() {
-        ReservationTime saved = timeRepository.save(ReservationTime.of(LocalTime.of(20, 0), LocalTime.of(21, 0)));
+        ReservationTime saved = timeRepository.save(reservationTimeFactory.create(LocalTime.of(20, 0), LocalTime.of(21, 0)));
         timeRepository.deleteById(saved.getId());
 
         assertThat(timeRepository.findAll()).hasSize(3);

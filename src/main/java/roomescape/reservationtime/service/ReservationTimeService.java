@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.ReservationTimeFactory;
 import roomescape.reservationtime.dto.TimeRequest;
 import roomescape.reservationtime.dto.TimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -17,9 +18,11 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
+    private final ReservationTimeFactory reservationTimeFactory;
 
-    public ReservationTimeService(ReservationTimeRepository timeRepository) {
+    public ReservationTimeService(ReservationTimeRepository timeRepository, ReservationTimeFactory reservationTimeFactory) {
         this.timeRepository = timeRepository;
+        this.reservationTimeFactory = reservationTimeFactory;
     }
 
     public ReservationTime getById(Long id) {
@@ -29,7 +32,7 @@ public class ReservationTimeService {
 
     @Transactional
     public TimeResponse createTime(TimeRequest request) {
-        ReservationTime time = ReservationTime.of(request.startAt(), request.finishAt());
+        ReservationTime time = reservationTimeFactory.create(request.startAt(), request.finishAt());
         ReservationTime saved = timeRepository.save(time);
         return TimeResponse.of(saved);
     }
