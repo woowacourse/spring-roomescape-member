@@ -37,25 +37,11 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
-
-        reservationRepository.findByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())
-                .ifPresent(reservation -> {
-                    throw new ReservationDuplicatedException(request.date(), request.timeId(), request.themeId());
-                });
-
-        if (isPastDateTime(LocalDateTime.of(request.date(), reservationTime.getStartAt()))) {
-            throw new PastReservationNotAllowedException();
-        }
-
-        Reservation reservation = Reservation.of(
-                request.name(),
-                request.date(),
-                reservationTime,
-                theme);
+        String name = request.name();
+        Long timeId = request.timeId();
+        Long themeId = request.themeId();
+        LocalDate date = request.date();
+        Reservation reservation = createReservation(name, timeId, themeId, date);
         return reservationRepository.save(reservation);
     }
 
@@ -100,11 +86,8 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTimeOrDefault(request, reservation);
         Theme theme = getThemeOrDefault(request, reservation);
 
-        if (isPastDateTime(LocalDateTime.of(date, reservationTime.getStartAt()))) {
-            throw new PastReservationNotAllowedException();
-        }
+        Reservation updatedReservation = createReservation(name, reservationTime.getId(), theme.getId(), date);
 
-        Reservation updatedReservation = Reservation.of(id, reservation.getName(), date, reservationTime, theme);
         return reservationRepository.update(updatedReservation);
     }
 
@@ -113,6 +96,30 @@ public class ReservationService {
             throw new ReservationAccessDeniedException();
         }
     }
+
+    private Reservation createReservation(String name, Long timeId, Long themeId, LocalDate date) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(timeId));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeNotFoundException(themeId));
+
+        LocalDateTime localDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
+        if (isPastDateTime(localDateTime)) {
+            throw new PastReservationNotAllowedException();
+        }
+
+        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .ifPresent(reservation -> {
+                    throw new ReservationDuplicatedException(date, timeId, themeId);
+                });
+
+        return Reservation.of(
+                name,
+                date,
+                reservationTime,
+                theme);
+    }
+
 
     private LocalDate getDateOrDefault(ReservationUpdateRequest request, Reservation reservation) {
         if (request.date() == null) {
