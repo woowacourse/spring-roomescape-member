@@ -80,13 +80,9 @@ public class ReservationService {
         validateChangeReservationTime(findTime);
         validateChangeDuplicateReservation(date, timeId, reservation.getTheme().getId());
 
-        return reservationRepository.save(new Reservation(
-                reservation.getId(),
-                reservation.getName(),
-                date,
-                findTime.get(),
-                reservation.getTheme()
-        ));
+        reservation.changeDateTime(date, findTime.get());
+
+        return reservationRepository.save(reservation);
     }
 
     private boolean isMyReservation(Reservation reservation, String username) {

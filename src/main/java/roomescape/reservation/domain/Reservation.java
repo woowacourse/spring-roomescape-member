@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.theme.doamin.Theme;
@@ -10,10 +9,10 @@ import roomescape.theme.doamin.Theme;
 @EqualsAndHashCode(of = "id")
 public class Reservation {
     private final Long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
-    private final Theme theme;
+    private String name;
+    private LocalDate date;
+    private ReservationTime time;
+    private Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time);
@@ -38,5 +37,16 @@ public class Reservation {
         if (time == null) {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
         }
+    }
+
+    public void changeDateTime(LocalDate date, ReservationTime time) {
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        this.date = date;
+        this.time = time;
     }
 }
