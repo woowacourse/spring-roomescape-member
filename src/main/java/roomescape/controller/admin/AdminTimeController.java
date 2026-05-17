@@ -50,6 +50,6 @@ public class AdminTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
         timeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
