@@ -22,14 +22,24 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    runtimeOnly 'com.h2database:h2'
-
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.rest-assured:rest-assured:5.3.1'
+    testImplementation 'io.rest-assured:rest-assured'
+
+    // 추가 항목===============================================================
+
+    // jdbc & h2
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    runtimeOnly "com.h2database:h2"
+
+    // spring validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     //lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 }
 
 test {

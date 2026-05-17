@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -32,64 +32,36 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme AS t ON rt.theme_id = t.id
             """;
 
-    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
-        Theme theme = Theme.of(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_url")
-        );
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> Reservation.of(
+            resultSet.getLong("id"),
+            resultSet.getString("reservation_name"),
+            resultSet.getDate("date").toLocalDate(),
+            resultSet.getLong("time_id")
+    );
 
-        ReservationTime reservationTime = ReservationTime.of(
-                resultSet.getLong("time_id"),
-                resultSet.getTime("start_at").toLocalTime(),
-                theme
-        );
-
-        return Reservation.of(
-                resultSet.getLong("id"),
-                resultSet.getString("reservation_name"),
-                resultSet.getDate("date").toLocalDate(),
-                reservationTime
-        );
-    };
+    private static final RowMapper<ReservationResult> reservationResultRowMapper = (resultSet, rowNum) -> ReservationResult.from(
+            Reservation.of(
+                    resultSet.getLong("id"),
+                    resultSet.getString("reservation_name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getLong("time_id")
+            ),
+            ReservationTime.of(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime(),
+                    roomescape.theme.domain.Theme.of(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail_url")
+                    )
+            )
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public List<Reservation> findAll() {
-        String sql = RESERVATION_BASE_SELECT;
-        return jdbcTemplate.query(sql, reservationRowMapper);
-    }
-
-    @Override
-    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        final String sql = """
-                SELECT rt.id AS time_id
-                FROM reservation AS r
-                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                WHERE rt.theme_id = ? AND r.date = ?
-                """;
-
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                themeId,
-                Date.valueOf(date)
-        );
-    }
-
-    @Override
-    public Optional<Reservation> findById(final long id) {
-        String sql = RESERVATION_BASE_SELECT + "WHERE r.id = ?";
-
-        return jdbcTemplate.query(sql, reservationRowMapper, id)
-                .stream()
-                .findFirst();
     }
 
     @Override
@@ -107,7 +79,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
-            preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(3, reservation.getTimeId());
             return preparedStatement;
         }, keyHolder);
 
@@ -120,6 +92,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public int update(final Reservation reservation) {
+        final String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+
+        return jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTimeId(),
+                reservation.getId()
+        );
+    }
+
+    @Override
     public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
 
@@ -129,6 +113,54 @@ public class JdbcReservationRepository implements ReservationRepository {
                 Date.valueOf(date),
                 timeId
         ));
+    }
+
+    @Override
+    public boolean existsByTimeId(final long timeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                timeId
+        ));
+    }
+
+    @Override
+    public boolean existsByThemeId(final long themeId) {
+        final String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation AS r
+                    INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                    WHERE rt.theme_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                themeId
+        ));
+    }
+
+    @Override
+    public List<ReservationResult> findAll() {
+        return jdbcTemplate.query(RESERVATION_BASE_SELECT, reservationResultRowMapper);
+    }
+
+    @Override
+    public List<ReservationResult> findAllByName(final String name) {
+        String sql = RESERVATION_BASE_SELECT + "WHERE r.name = ?";
+        return jdbcTemplate.query(sql, reservationResultRowMapper, name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(final long id) {
+        String sql = RESERVATION_BASE_SELECT + "WHERE r.id = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
 }

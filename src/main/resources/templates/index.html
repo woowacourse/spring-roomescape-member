@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>방탈출 예약 시작</title>
+    <style>
+        :root { --bg: #f7f3ea; --card: #fffdf8; --line: #d8cbb4; --text: #2f2418; --point: #0e7490; --point-dark: #155e75; --muted: rgba(47,36,24,.72); }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; display: grid; place-items: center; font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif; background: radial-gradient(circle at top left, rgba(239,179,102,.35), transparent 30%), linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%); color: var(--text); }
+        .card { width: min(560px, calc(100% - 40px)); background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 32px; box-shadow: 0 20px 44px rgba(47,36,24,.12); }
+        .eyebrow { display: inline-flex; width: fit-content; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.75); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+        h1 { margin: 18px 0 10px; font-size: clamp(34px, 7vw, 56px); line-height: 1; }
+        p { margin: 0 0 22px; color: var(--muted); line-height: 1.6; }
+        form { display: grid; gap: 14px; }
+        label { display: grid; gap: 8px; font-weight: 700; }
+        input, button, a { border-radius: 14px; font: inherit; }
+        input { border: 1px solid var(--line); padding: 14px 16px; }
+        button { border: 0; padding: 14px 16px; background: var(--point); color: white; cursor: pointer; font-weight: 800; }
+        button:hover { background: var(--point-dark); }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+        .actions a { text-decoration: none; color: var(--text); background: rgba(255,255,255,.72); border: 1px solid var(--line); padding: 12px 14px; }
+        .hint { margin-top: 14px; font-size: 14px; }
+        code { display: inline-block; padding: 3px 7px; border-radius: 8px; background: rgba(47,36,24,.07); color: var(--muted); }
+    </style>
+</head>
+<body>
+<main class="card">
+    <span class="eyebrow">ROOM ESCAPE</span>
+    <h1>예약을 시작할게요</h1>
+    <p>현재 별도 로그인/회원 검증이 없으므로 먼저 사용할 이름을 저장합니다. 저장된 이름은 예약 생성, 내 예약 현황 조회, 예약 취소 요청의 기준이 됩니다.</p>
+
+    <form id="user-form">
+        <label>사용자 이름 <input autocomplete="name" id="user-name" placeholder="예: 쿠다" required type="text"></label>
+        <button type="submit">이 이름으로 예약하기</button>
+    </form>
+
+    <p class="hint">브라우저에 저장된 이름으로 <code>Authorization: Bearer 이름</code> 헤더를 만들어 예약 API를 호출합니다.</p>
+
+    <nav class="actions">
+        <a th:href="@{/pages/user/reservations}">저장된 이름으로 바로 예약 페이지</a>
+        <a th:href="@{/pages/admin/themes}">관리자 페이지</a>
+    </nav>
+</main>
+
+<script>
+    const STORAGE_KEY = 'roomescape.userName';
+    const userNameInput = document.querySelector('#user-name');
+    const savedName = localStorage.getItem(STORAGE_KEY);
+
+    if (savedName) {
+        userNameInput.value = savedName;
+    }
+
+    document.querySelector('#user-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = userNameInput.value.trim();
+        if (!name) {
+            userNameInput.focus();
+            return;
+        }
+        localStorage.setItem(STORAGE_KEY, name);
+        location.href = '/pages/user/reservations';
+    });
+</script>
+</body>
+</html>

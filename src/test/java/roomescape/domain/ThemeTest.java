@@ -6,13 +6,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.InValidThemeException;
+import roomescape.theme.exception.ThemeValidationException;
 
 class ThemeTest {
 
     @Test
     @DisplayName("정상 테마 생성")
-    void createNew_Success() {
+    void createNew_success() {
         // given
         String name = "미술관의 밤";
         String description = "추리 테마";
@@ -30,9 +30,9 @@ class ThemeTest {
 
     @Test
     @DisplayName("테마 이름이 비어 있으면 예외")
-    void validate_BlankName_ThrowsException() {
+    void validate_BlankName_throws() {
         assertThatThrownBy(() -> Theme.createNew(" ", "설명", "https://example.com/theme.png"))
-                .isInstanceOf(InValidThemeException.class);
+                .isInstanceOf(ThemeValidationException.class);
     }
 
 }

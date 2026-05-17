@@ -1,17 +1,19 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -20,6 +22,7 @@ import roomescape.theme.repository.JdbcThemeRepository;
 @RoomescapeRepositoryTest
 class JdbcReservationTimeRepositoryTest {
 
+    private JdbcReservationRepository jdbcReservationRepository;
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
     private JdbcThemeRepository jdbcThemeRepository;
 
@@ -28,30 +31,14 @@ class JdbcReservationTimeRepositoryTest {
 
     @BeforeEach
     void setup() {
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
     @Test
-    @DisplayName("예약 시간 전체 조회")
-    void reservationTime_findAll_test() {
-        //given & when
-        LocalTime time = LocalTime.parse("11:00");
-        Theme theme = createTheme("미술관의 밤");
-
-        ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
-        jdbcReservationTimeRepository.save(nonIdReservationTime);
-
-        Optional<ReservationTime> reservationTime = jdbcReservationTimeRepository.findAll()
-                .stream()
-                .findFirst();
-        //then
-        assertThat(reservationTime).isNotEmpty();
-    }
-
-    @Test
     @DisplayName("예약 시간 저장")
-    void reservationTime_save_test() {
+    void reservationTime_save_success() {
         //given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
@@ -67,7 +54,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("테마 예약 시간 전체 조회")
-    void reservationTime_theme_time_finaAll_test() {
+    void reservationTime_theme_time_finaAll_success() {
         //given
         Theme theme = createTheme("미술관의 밤");
         ReservationTime nonIdReservationTime1 = ReservationTime.createNew(LocalTime.parse("11:00"), theme);
@@ -85,7 +72,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간 저장 예외")
-    void save_duplicate_test() {
+    void save_whenDuplicate_throws() {
         //given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
@@ -94,26 +81,48 @@ class JdbcReservationTimeRepositoryTest {
         jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
 
         //then
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
-        });
+        assertThatThrownBy(() -> jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme)))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    @DisplayName("예약 가능 시간 조회")
+    void reservationTime_findAvailableTimes_success() {
+        //given
+        LocalTime time1 = LocalTime.parse("11:00");
+        LocalTime time2 = LocalTime.parse("13:00");
+        Theme theme = createTheme("미술관의 밤");
+        ReservationTime reservationTime1 = jdbcReservationTimeRepository.save(ReservationTime.createNew(time1, theme));
+        ReservationTime reservationTime2 = jdbcReservationTimeRepository.save(ReservationTime.createNew(time2, theme));
+
+        jdbcReservationRepository.save(
+                Reservation.createNew("쿠다", java.time.LocalDate.now().plusDays(1), reservationTime1.getId())
+        );
+
+        // when
+        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableTimes(
+                LocalDate.now().plusDays(1), theme.getId());
+
+        // then
+        assertThat(availableTimes).hasSize(1);
+        assertThat(availableTimes.getFirst()).isEqualTo(reservationTime2);
     }
 
     @Test
     @DisplayName("예약 시간 삭제")
-    void reservationTime_delete_test() {
+    void reservationTime_delete_success() {
         // given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
         ReservationTime nonIdReservationTime = ReservationTime.createNew(time, theme);
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(nonIdReservationTime);
-        int beforeSize = jdbcReservationTimeRepository.findAll().size();
+        int beforeSize = jdbcReservationTimeRepository.findAllByThemeId(theme.getId()).size();
 
         // when
         jdbcReservationTimeRepository.deleteById(reservationTime.getId());
 
         // then
-        int afterSize = jdbcReservationTimeRepository.findAll().size();
+        int afterSize = jdbcReservationTimeRepository.findAllByThemeId(theme.getId()).size();
 
         assertThat(afterSize).isEqualTo(beforeSize - 1);
     }

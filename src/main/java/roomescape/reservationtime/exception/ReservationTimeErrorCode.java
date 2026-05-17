@@ -4,8 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum ReservationTimeErrorCode {
+    RESERVATION_TIME_CONSTRAINT("예약이 존재하는 시간은 삭제할 수 없습니다."),
     RESERVATION_TIME_START_AT_NOT_NULL("예약 시간은 비어있을 수 없습니다."),
-    RESERVATION_TIME_DUPLICATE("예약 시간은 중복 생성이 불가능합니다."),
+    RESERVATION_TIME_DUPLICATE("같은 테마 내 같은 시작 시간은 중복될 수 없습니다."),
     RESERVATION_TIME_NOT_FOUND("찾는 예약 시간이 없습니다.");
 
     private final String message;

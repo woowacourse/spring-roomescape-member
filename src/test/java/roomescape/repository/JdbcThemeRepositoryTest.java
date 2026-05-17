@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
@@ -38,7 +39,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 저장")
-    void theme_save_test() {
+    void theme_save_success() {
         // given
         Theme theme = Theme.createNew("미술관의 밤", "추리 테마", "https://example.com/theme.png");
 
@@ -53,7 +54,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 전체 조회")
-    void theme_findAll_test() {
+    void theme_findAll_success() {
         // given
         createTheme("미술관의 밤");
 
@@ -66,7 +67,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 이름 중복 저장 예외")
-    void theme_save_duplicate_test() {
+    void theme_save_whenDuplicate_throws() {
         // given
         createTheme("미술관의 밤");
 
@@ -74,11 +75,14 @@ class JdbcThemeRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () ->
                 jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png"))
         );
+        assertThatThrownBy(
+                () -> jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png")))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     @DisplayName("테마 삭제")
-    void theme_delete_test() {
+    void theme_delete_success() {
         // given
         Theme saved = createTheme("미술관의 밤");
         int beforeSize = jdbcThemeRepository.findAll().size();
@@ -92,8 +96,8 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("최근 기간 기준 인기 테마를 예약 수 순서대로 조회한다")
-    void findPopularThemes_test() {
+    @DisplayName("최근 기간 기준 인기 테마 예약 수 순서대로 조회")
+    void findPopularThemes_success() {
         // given
         LocalDate referenceDate = LocalDate.parse("2026-05-06");
         Theme firstTheme = createTheme("미술관의 밤");
@@ -110,15 +114,18 @@ class JdbcThemeRepositoryTest {
                 ReservationTime.createNew(LocalTime.parse("12:00"), thirdTheme)
         );
 
-        jdbcReservationRepository.save(Reservation.createNew("쿠다", referenceDate.minusDays(1), firstThemeTime));
-        jdbcReservationRepository.save(Reservation.createNew("아루", referenceDate.minusDays(2), firstThemeTime));
-        jdbcReservationRepository.save(Reservation.createNew("도기", referenceDate.minusDays(3), firstThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", referenceDate.minusDays(1), firstThemeTime.getId()));
+        jdbcReservationRepository.save(Reservation.createNew("아루", referenceDate.minusDays(2), firstThemeTime.getId()));
+        jdbcReservationRepository.save(Reservation.createNew("도기", referenceDate.minusDays(3), firstThemeTime.getId()));
 
-        jdbcReservationRepository.save(Reservation.createNew("포비", referenceDate.minusDays(1), secondThemeTime));
-        jdbcReservationRepository.save(Reservation.createNew("솔라", referenceDate.minusDays(2), secondThemeTime));
+        jdbcReservationRepository.save(
+                Reservation.createNew("포비", referenceDate.minusDays(1), secondThemeTime.getId()));
+        jdbcReservationRepository.save(
+                Reservation.createNew("솔라", referenceDate.minusDays(2), secondThemeTime.getId()));
 
-        jdbcReservationRepository.save(Reservation.createNew("레오", referenceDate.minusDays(1), thirdThemeTime));
-        jdbcReservationRepository.save(Reservation.createNew("오래된예약", referenceDate.minusDays(10), thirdThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("레오", referenceDate.minusDays(1), thirdThemeTime.getId()));
+        jdbcReservationRepository.save(
+                Reservation.createNew("오래된예약", referenceDate.minusDays(10), thirdThemeTime.getId()));
 
         // when
         List<Theme> popularThemes = jdbcThemeRepository.findPopularThemes(7, 2, referenceDate);
@@ -130,8 +137,8 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("오늘 예약은 인기 테마 집계에서 제외한다")
-    void findPopularThemes_excludeTodayReservation() {
+    @DisplayName("오늘 예약 인기 테마 집계 제외")
+    void findPopularThemes_excludeTodayReservation_success() {
         // given
         LocalDate today = LocalDate.parse("2026-11-08");
 
@@ -148,18 +155,18 @@ class JdbcThemeRepositoryTest {
 
         // 집계 대상
         jdbcReservationRepository.save(
-                Reservation.createNew("쿠다", LocalDate.parse("2026-11-07"), firstThemeTime)
+                Reservation.createNew("쿠다", LocalDate.parse("2026-11-07"), firstThemeTime.getId())
         );
         jdbcReservationRepository.save(
-                Reservation.createNew("아루", LocalDate.parse("2026-11-06"), firstThemeTime)
+                Reservation.createNew("아루", LocalDate.parse("2026-11-06"), firstThemeTime.getId())
         );
 
         // 제외 대상
         jdbcReservationRepository.save(
-                Reservation.createNew("포비", today, secondThemeTime)
+                Reservation.createNew("포비", today, secondThemeTime.getId())
         );
         jdbcReservationRepository.save(
-                Reservation.createNew("피케이", LocalDate.parse("2026-10-08"), secondThemeTime)
+                Reservation.createNew("피케이", LocalDate.parse("2026-10-08"), secondThemeTime.getId())
         );
 
         // when
@@ -168,12 +175,12 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(popularThemes).hasSize(1);
-        assertThat(popularThemes.get(0).getId()).isEqualTo(firstTheme.getId());
+        assertThat(popularThemes.getFirst().getId()).isEqualTo(firstTheme.getId());
     }
 
     @Test
     @DisplayName("테마 이름 존재 여부 확인")
-    void theme_existsByName_test() {
+    void theme_existsByName_success() {
         // given
         createTheme("미술관의 밤");
 
