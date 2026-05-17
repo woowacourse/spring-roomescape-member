@@ -1,25 +1,19 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidOwnershipException;
-import roomescape.exception.PastReservationControlException;
-import roomescape.exception.PastTimeException;
-import roomescape.exception.ReservationNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
-import roomescape.exception.TimeSlotNotFoundException;
+import roomescape.exception.*;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -70,7 +64,8 @@ public class ReservationService {
         existsAndModifiableReservation(id, userName);
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         Reservation reservation = new Reservation(
-                id, transientReservation.getName(),
+                id,
+                transientReservation.getName(),
                 transientReservation.getDate(),
                 transientReservation.getTimeSlot(),
                 transientReservation.getTheme()
@@ -81,30 +76,23 @@ public class ReservationService {
 
     @Transactional
     public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
-        Reservation existing = findReservationById(id);
-        LocalDateTime now = LocalDateTime.now();
-        existing.validateModifiable(userName, now);
-        Reservation patched = existing.reschedule(
+        Reservation reservation = findReservationById(id);
+        reservation.validateModifiable(userName);
+        validNotPast(reservation.getDate(), reservation.getTimeSlot().getStartAt());
+        reservation.reschedule(
                 name,
                 date,
                 findOptionalTime(timeId),
-                findOptionalTheme(themeId),
-                now
+                findOptionalTheme(themeId)
         );
-        validDuplicatedReservation(patched);
-        reservationRepository.update(patched);
+        validDuplicatedReservation(reservation);
+        reservationRepository.update(reservation);
     }
 
     private void existsAndModifiableReservation(long id, String userName) {
         Reservation existingReservation = findReservationById(id);
-        validOwnership(existingReservation.getName(), userName);
+        existingReservation.validateModifiable(userName);
         validNotPast(existingReservation.getDate(), existingReservation.getTimeSlot().getStartAt());
-    }
-
-    private void validOwnership(String ownerName, String requesterName) {
-        if (!ownerName.equals(requesterName)) {
-            throw new InvalidOwnershipException();
-        }
     }
 
     private void validNotPast(LocalDate date, LocalTime time) {

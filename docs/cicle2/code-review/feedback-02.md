@@ -136,7 +136,16 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+### 8. 도메인 객체 불변 해제
+
+> 어떤 경우에는 새 객체를 반환하고, 어떤 경우에는 상태를 직접 변경하는 방식이 적절하다고 생각하셨는지 궁금해요
+
+- 의도/기준/생각
+    - 소프트 딜리트의 잘못된? 허튼? 구현 시도
+
+---
+
+###                                
 
 >
 
@@ -145,7 +154,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+###                                
 
 >
 
@@ -154,7 +163,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+###                                
 
 >
 
@@ -163,7 +172,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+###                                
 
 >
 
@@ -172,7 +181,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+###                                
 
 >
 
@@ -181,7 +190,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
+###                                
 
 >
 
@@ -190,16 +199,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                               
-
->
-
-- 의도/기준/생각
-  - 
-
----
-
-###                               
+###                                
 
 >
 
