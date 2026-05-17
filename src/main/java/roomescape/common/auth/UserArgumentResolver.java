@@ -7,23 +7,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.GlobalErrorCode;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-import static roomescape.common.exception.GlobalErrorCode.INVALID_AUTHENTICATION_HEADER;
+import static roomescape.common.exception.GlobalErrorCode.INVALID_GUEST_NAME_HEADER;
 
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    // 추후 로그인 도입시 변경
-//    public static final String AUTHORIZATION_HEADER = "Authorization";
-//    public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
-
-    public static final String AUTHORIZATION_HEADER = "X-Guest-Name";
-    public static final String AUTHORIZATION_HEADER_PREFIX = "Guest";
-
+    public static final String GUEST_NAME_HEADER = "X-Guest-Name";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -33,24 +26,28 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(
             MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        String authorization = getAuthorizationHeader(webRequest);
+        return getName(authorization);
+    }
 
-        String authorization = webRequest.getHeader(AUTHORIZATION_HEADER);
+    private static String getAuthorizationHeader(NativeWebRequest webRequest) {
+        String authorization = webRequest.getHeader(GUEST_NAME_HEADER);
 
-        if(authorization == null || authorization.isBlank() || !authorization.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
-            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
+        if(authorization == null || authorization.isBlank()) {
+            throw new DomainException(INVALID_GUEST_NAME_HEADER);
         }
+        return authorization;
+    }
 
-        String name = authorization.substring(AUTHORIZATION_HEADER_PREFIX.length()).trim();
-
-        if(name.isBlank()) {
-            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
-        }
-
+    private static String getName(String authorization) {
         String decode;
         try {
-            decode = URLDecoder.decode(name, StandardCharsets.UTF_8);
+            decode = URLDecoder.decode(authorization.trim(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new DomainException(INVALID_AUTHENTICATION_HEADER);
+            throw new DomainException(INVALID_GUEST_NAME_HEADER);
+        }
+        if(decode.isBlank()) {
+            throw new DomainException(INVALID_GUEST_NAME_HEADER);
         }
         return decode;
     }

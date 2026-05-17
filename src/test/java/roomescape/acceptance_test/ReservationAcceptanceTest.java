@@ -25,8 +25,7 @@ import java.time.LocalTime;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER;
-import static roomescape.common.auth.UserArgumentResolver.AUTHORIZATION_HEADER_PREFIX;
+import static roomescape.common.auth.UserArgumentResolver.GUEST_NAME_HEADER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -176,7 +175,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + reservationRequest.guestName())
+                .header(GUEST_NAME_HEADER, reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -220,7 +219,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", targetReservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + targetReservationRequest.guestName())
+                .header(GUEST_NAME_HEADER, targetReservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -256,7 +255,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + reservationRequest.guestName())
+                .header(GUEST_NAME_HEADER, reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -290,7 +289,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + reservationRequest.guestName())
+                .header(GUEST_NAME_HEADER, reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -329,7 +328,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", myReservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + otherReservation.guestName())
+                .header(GUEST_NAME_HEADER, otherReservation.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -354,7 +353,7 @@ public class ReservationAcceptanceTest {
 
         given().log().all()
                 .pathParam("id", reservationId)
-                .header(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_PREFIX + " " + guestName)
+                .header(GUEST_NAME_HEADER, guestName)
                 .when()
                 .delete("/reservations/{id}")
                 .then().log().all()
