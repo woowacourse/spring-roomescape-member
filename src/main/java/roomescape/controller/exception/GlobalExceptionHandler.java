@@ -33,18 +33,6 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler({
-            IllegalArgumentException.class,
-            IllegalStateException.class
-    })
-    public ResponseEntity<ErrorResponse> handleDefaultBadRequest(Exception exception) {
-        log.warn("[Bad Request]", exception);
-        ErrorResponse response = new ErrorResponse(exception.getMessage(), ErrorCode.BAD_REQUEST);
-
-        return ResponseEntity.badRequest()
-                .body(response);
-    }
-
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(InvalidInputException exception) {
         log.warn("[Bad Request]", exception);
