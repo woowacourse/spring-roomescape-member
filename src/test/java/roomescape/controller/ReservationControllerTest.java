@@ -123,7 +123,7 @@ class ReservationControllerTest extends ControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", LocalDate.now().minusDays(1).toString());
-        params.put("timeId", 1);
+        params.put("timeId", 2);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()

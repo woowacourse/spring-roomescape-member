@@ -4,7 +4,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
@@ -13,6 +12,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.service.dto.ReservationPage;
 import roomescape.service.exception.ReservationTimeNotFoundException;
 import roomescape.service.exception.ThemeNotFoundException;
 
@@ -47,23 +47,21 @@ public class ReservationService {
     public Reservation update(long id, LocalDate date, long timeId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
-        ReservationTime newTime = reservationTimeDao.findById(timeId)
+        ReservationTime time = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
-        Reservation updated = reservation.withUpdated(date, newTime, LocalDateTime.now(clock));
+        reservation.withUpdated(date, time, LocalDateTime.now(clock));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
-        return reservationDao.update(updated.getId(), date, timeId);
+        return reservationDao.update(reservation.getId(), date, timeId);
     }
 
     @Transactional
     public void delete(long id) {
-        Optional<Reservation> found = reservationDao.findById(id);
-        if (found.isEmpty()) {
-            return;
-        }
-        found.get().validateCancellable(LocalDateTime.now(clock));
-        reservationDao.delete(id);
+        reservationDao.findById(id).ifPresent(reservation -> {
+            reservation.validateCancellable(LocalDateTime.now(clock));
+            reservationDao.delete(id);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -72,12 +70,10 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAll(int page, int size) {
-        return reservationDao.findAll(page, size);
+    public ReservationPage findAllWithCount(int page, int size) {
+        List<Reservation> reservations = reservationDao.findAll(page, size);
+        long totalCount = reservationDao.count();
+        return new ReservationPage(reservations, totalCount);
     }
 
-    @Transactional(readOnly = true)
-    public long countAll() {
-        return reservationDao.count();
-    }
 }

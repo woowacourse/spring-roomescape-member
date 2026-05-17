@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.reservation.AdminReservationResponse;
 import roomescape.controller.dto.reservation.AdminReservationsResponse;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationPage;
 
 @RequestMapping("/admin/reservations")
 @RestController
@@ -23,11 +24,10 @@ public class AdminReservationController {
     public ResponseEntity<AdminReservationsResponse> getAllReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        List<AdminReservationResponse> reservations = reservationService.findAll(page, size)
-                .stream()
+        ReservationPage result = reservationService.findAllWithCount(page, size);
+        List<AdminReservationResponse> responses = result.reservations().stream()
                 .map(r -> AdminReservationResponse.from(r, r.getTheme()))
                 .toList();
-        long totalCount = reservationService.countAll();
-        return ResponseEntity.ok(new AdminReservationsResponse(reservations, totalCount, page, size));
+        return ResponseEntity.ok(new AdminReservationsResponse(responses, result.totalCount(), page, size));
     }
 }

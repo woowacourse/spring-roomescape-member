@@ -35,12 +35,12 @@
   - `ReservationService.java:41` — `null`을 직접 전달하는 대신 id 파라미터 없는 `create` 오버로드 추가
   - 기존 `create(Long id, ...)` 는 DAO 복원용으로 유지
 
-- [ ] **6. 동작을 담은 변수명 개선**
+- [x] **6. 동작을 담은 변수명 개선**
   - `ReservationService.java:60` — `found` → `ifPresent`로 변수 제거
   - `ReservationService.java:51` — `updated` → 변수 제거, `reservation.getId()` 직접 사용
   - `ReservationTimeDao.java:35` — `results` → `times`
 
-- [ ] **7. `findAll`과 `countAll`을 단일 트랜잭션으로 묶기**
+- [x] **7. `findAll`과 `countAll`을 단일 트랜잭션으로 묶기**
   - `AdminReservationController.java:26,30` — 두 호출이 별개 트랜잭션이라 그 사이 예약 추가/삭제 시 count와 data 불일치 발생
   - 서비스에서 `findAllWithCount(page, size)` 하나로 합쳐 `@Transactional(readOnly = true)` 안에서 처리
 

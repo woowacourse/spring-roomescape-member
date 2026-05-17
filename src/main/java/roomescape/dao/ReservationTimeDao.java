@@ -33,9 +33,8 @@ public class ReservationTimeDao {
     }
 
     public Optional<ReservationTime> findById(long id) {
-        List<ReservationTime> results = jdbcTemplate.query(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?", timeRowMapper, id);
-        return results.stream().findFirst();
+        return jdbcTemplate.query(
+                "SELECT id, start_at FROM reservation_time WHERE id = ?", timeRowMapper, id).stream().findFirst();
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
