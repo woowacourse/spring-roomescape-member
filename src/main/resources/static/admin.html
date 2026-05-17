@@ -368,6 +368,54 @@
       text-transform: uppercase;
       margin: 28px 0 16px;
     }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding: 0 4px;
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pagination-label {
+      font-size: 13px;
+      color: var(--text);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .btn-page {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-page:hover:not(:disabled) {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .btn-page:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -418,6 +466,15 @@
       </thead>
       <tbody id="res-tbody"></tbody>
     </table>
+  </div>
+
+  <div class="pagination" id="res-pagination" style="display:none">
+    <span class="pagination-info" id="res-total-info"></span>
+    <div class="pagination-controls">
+      <button class="btn-page" id="res-prev" onclick="loadReservations(resPage - 1)">← 이전</button>
+      <span class="pagination-label" id="res-page-label"></span>
+      <button class="btn-page" id="res-next" onclick="loadReservations(resPage + 1)">다음 →</button>
+    </div>
   </div>
 
   <div class="empty-state" id="res-empty" style="display:none">
@@ -513,14 +570,19 @@
 
   // ── Reservations ──────────────────────────────────────────────
 
-  async function loadReservations() {
+  const RES_SIZE = 20;
+  let resPage = 0;
+
+  async function loadReservations(page = 0) {
+    resPage = page;
     document.getElementById('res-loading').style.display = 'flex';
     document.getElementById('res-table-wrap').style.display = 'none';
+    document.getElementById('res-pagination').style.display = 'none';
     document.getElementById('res-empty').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/admin/reservations`);
-      const list = await res.json();
+      const res = await fetch(`${API}/admin/reservations?page=${page}&size=${RES_SIZE}`);
+      const { reservations: list, totalCount } = await res.json();
 
       document.getElementById('res-loading').style.display = 'none';
 
@@ -542,6 +604,13 @@
         </tr>
       `).join('');
       document.getElementById('res-table-wrap').style.display = 'block';
+
+      const totalPages = Math.ceil(totalCount / RES_SIZE);
+      document.getElementById('res-total-info').textContent = `전체 ${totalCount}건`;
+      document.getElementById('res-page-label').textContent = `${page + 1} / ${totalPages} 페이지`;
+      document.getElementById('res-prev').disabled = page === 0;
+      document.getElementById('res-next').disabled = page >= totalPages - 1;
+      document.getElementById('res-pagination').style.display = 'flex';
     } catch (e) {
       document.getElementById('res-loading').style.display = 'none';
       showToast('예약 목록을 불러올 수 없습니다.', 'error');
@@ -553,14 +622,8 @@
     try {
       const res = await fetch(`${API}/reservations/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
-      document.getElementById(`admin-res-${id}`)?.remove();
       showToast('예약이 삭제되었습니다.');
-
-      const rows = document.querySelectorAll('#res-tbody tr');
-      if (!rows.length) {
-        document.getElementById('res-table-wrap').style.display = 'none';
-        document.getElementById('res-empty').style.display = 'block';
-      }
+      loadReservations(resPage);
     } catch (e) {
       showToast('삭제에 실패했습니다.', 'error');
     }
@@ -575,7 +638,7 @@
 
     try {
       const res = await fetch(`${API}/themes`);
-      const themes = await res.json();
+      const { themes } = await res.json();
 
       document.getElementById('themes-loading').style.display = 'none';
 
@@ -661,7 +724,7 @@
 
     try {
       const res = await fetch(`${API}/times`);
-      const times = await res.json();
+      const { times } = await res.json();
 
       document.getElementById('times-loading').style.display = 'none';
 
@@ -729,7 +792,7 @@
   async function ensureStandardTimes() {
     try {
       const res = await fetch(`${API}/times`);
-      const existing = await res.json();
+      const { times: existing } = await res.json();
       const existingTimes = new Set(existing.map(t => t.startAt));
 
       const standard = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];

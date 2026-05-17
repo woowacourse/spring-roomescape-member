@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationTimeRequest;
-import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.controller.dto.request.ReservationTimeRequest;
+import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.controller.dto.response.ReservationTimesResponse;
 import roomescape.service.ReservationTimeService;
 
 @RequestMapping("/times")
@@ -24,19 +26,19 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
-        final List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+    public ResponseEntity<ReservationTimesResponse> getTimes() {
+        List<ReservationTimeResponse> responses = reservationTimeService.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ReservationTimesResponse(responses));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createTime(@RequestBody ReservationTimeRequest request) {
-        final ReservationTimeResponse response = ReservationTimeResponse.from(
+    public ResponseEntity<ReservationTimeResponse> createTime(@Valid @RequestBody ReservationTimeRequest request) {
+        ReservationTimeResponse response = ReservationTimeResponse.from(
                 reservationTimeService.save(request.startAt()));
-        final URI location = URI.create("/times/" + response.id());
+        URI location = URI.create("/times/" + response.id());
         return ResponseEntity.created(location).body(response);
     }
 

@@ -35,7 +35,7 @@ class AdminThemeControllerTest extends ControllerTest {
         params.put("description", "공포의 폐병원");
         params.put("thumbnailUrl", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
 
-        final String location = RestAssured.given().log().all()
+        String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/themes")
@@ -44,7 +44,7 @@ class AdminThemeControllerTest extends ControllerTest {
                 .extract()
                 .header("Location");
 
-        final long id = Long.parseLong(location.split("/")[2]);
+        long id = Long.parseLong(location.split("/")[2]);
 
         RestAssured.given().log().all()
                 .pathParam("id", id)
@@ -53,14 +53,14 @@ class AdminThemeControllerTest extends ControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("예약에 사용 중인 테마 삭제하면 400")
+    @DisplayName("예약에 사용 중인 테마 삭제하면 409")
     @Test
     void 예약에_사용중인_테마_삭제하면_400() {
         RestAssured.given().log().all()
                 .pathParam("id", 1)
                 .when().delete("/admin/themes/{id}")
                 .then().log().all()
-                .statusCode(400)
-                .body(equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
+                .statusCode(409)
+                .body("message", equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
     }
 }

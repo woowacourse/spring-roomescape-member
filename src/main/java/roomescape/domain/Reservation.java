@@ -1,27 +1,47 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
 
 public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final LocalDate createdAt;
+    private final LocalDateTime createdAt;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
-        if (createdAt != null && date.isBefore(createdAt)) {
-            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
-        }
+    private Reservation(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        validateFields(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.createdAt = createdAt;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation create(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, createdAt, time, theme);
+    }
+
+    public static Reservation create(String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        validateNotPast(date, time, createdAt);
+        return new Reservation(null, name, date, createdAt, time, theme);
+    }
+
+    public Reservation withUpdated(LocalDate date, ReservationTime newTime, LocalDateTime now) {
+        validateNotPast(date, newTime, now);
+        return new Reservation(id, name, date, this.createdAt, newTime, theme);
+    }
+
+    public void validateCancellable(LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -34,6 +54,10 @@ public class Reservation {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public ReservationTime getTime() {
@@ -63,18 +87,24 @@ public class Reservation {
         return Objects.hash(name, date, time, theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validateFields(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
+            throw new InvalidInputException("예약자 이름은 비어있을 수 없습니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new InvalidInputException("예약 날짜는 필수입니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+            throw new InvalidInputException("예약 시간은 필수입니다.");
         }
         if (theme == null) {
-            throw new IllegalArgumentException("테마는 필수입니다.");
+            throw new InvalidInputException("테마는 필수입니다.");
+        }
+    }
+
+    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
     }
 }

@@ -4,13 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.InvalidInputException;
+import roomescape.domain.exception.PastReservationException;
 
 class ReservationTest {
 
     private final ReservationTime time;
     private final Theme theme;
+    private final LocalDateTime createdAt = LocalDateTime.of(2023, 8, 1, 0, 0);
 
     public ReservationTest() {
         this.time = new ReservationTime(1L, LocalTime.of(15, 40));
@@ -20,7 +24,7 @@ class ReservationTest {
 
     @Test
     void 예약_생성() {
-        Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, time, theme);
+        Reservation reservation = Reservation.create(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, time, theme);
 
         assertThat(reservation.getId()).isEqualTo(1L);
         assertThat(reservation.getName()).isEqualTo("브라운");
@@ -30,48 +34,81 @@ class ReservationTest {
 
     @Test
     void 이름이_null이면_예외() {
-        assertThatThrownBy(() -> new Reservation(1L, null, LocalDate.of(2023, 8, 5), null, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Reservation.create(1L, null, LocalDate.of(2023, 8, 5), createdAt, time, theme))
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 이름이_공백이면_예외() {
-        assertThatThrownBy(() -> new Reservation(1L, "   ", LocalDate.of(2023, 8, 5), null, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Reservation.create(1L, "   ", LocalDate.of(2023, 8, 5), createdAt, time, theme))
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 날짜가_null이면_예외() {
-        assertThatThrownBy(() -> new Reservation(1L, "브라운", null, null, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Reservation.create(1L, "브라운", null, createdAt, time, theme))
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 시간이_null이면_예외() {
-        assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, null, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Reservation.create(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, null, theme))
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     void 과거_날짜로_예약하면_예외() {
-        LocalDate today = LocalDate.of(2026, 5, 10);
-        LocalDate yesterday = today.minusDays(1);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
+        LocalDate yesterday = now.toLocalDate().minusDays(1);
 
-        assertThatThrownBy(() -> new Reservation(null, "브라운", yesterday, today, time, theme))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> Reservation.create("브라운", yesterday, now, time, theme))
+                .isInstanceOf(PastReservationException.class)
                 .hasMessage("과거 날짜로는 예약할 수 없습니다.");
     }
 
     @Test
-    void createdAt이_null이면_과거_날짜_검증_스킵() {
-        assertThat(new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, time, theme))
+    void 원래_createdAt_기준으로_과거여도_생성_가능() {
+        LocalDateTime originalCreatedAt = LocalDateTime.of(2023, 7, 1, 0, 0);
+        LocalDate pastDate = LocalDate.of(2023, 8, 5);
+
+        assertThat(Reservation.create(1L, "브라운", pastDate, originalCreatedAt, time, theme))
                 .isNotNull();
     }
 
     @Test
+    void withUpdated_과거_날짜면_예외() {
+        Reservation reservation = Reservation.create(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
+        LocalDate pastDate = now.toLocalDate().minusDays(1);
+
+        assertThatThrownBy(() -> reservation.withUpdated(pastDate, time, now))
+                .isInstanceOf(PastReservationException.class);
+    }
+
+    @Test
+    void validateCancellable_지난_예약이면_예외() {
+        Reservation reservation = Reservation.create(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
+
+        assertThatThrownBy(() -> reservation.validateCancellable(now))
+                .isInstanceOf(PastReservationException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+    }
+
+    @Test
+    void validateCancellable_미래_예약은_취소_가능() {
+        LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
+        LocalDate futureDate = now.toLocalDate().plusDays(1);
+        LocalDateTime futureCreatedAt = LocalDateTime.of(2026, 5, 1, 0, 0);
+        Reservation reservation = Reservation.create(1L, "브라운", futureDate, futureCreatedAt, time, theme);
+
+        reservation.validateCancellable(now);
+    }
+
+    @Test
     void id가_같으면_같은_예약() {
-        Reservation a = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, time, theme);
-        Reservation b = new Reservation(1L, "다른이름", LocalDate.of(2024, 1, 1), null, time, theme);
+        Reservation a = Reservation.create(1L, "브라운", LocalDate.of(2023, 8, 5), createdAt, time, theme);
+        Reservation b = Reservation.create(1L, "다른이름", LocalDate.of(2023, 8, 5), createdAt, time, theme);
 
         assertThat(a).isEqualTo(b);
     }
@@ -79,16 +116,16 @@ class ReservationTest {
     @Test
     void id가_없으면_필드로_비교() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        Reservation a = new Reservation(null, "브라운", date, null, time, theme);
-        Reservation b = new Reservation(null, "브라운", date, null, time, theme);
+        Reservation a = Reservation.create(null, "브라운", date, createdAt, time, theme);
+        Reservation b = Reservation.create(null, "브라운", date, createdAt, time, theme);
 
         assertThat(a).isEqualTo(b);
     }
 
     @Test
     void id가_없고_필드가_다르면_다른_예약() {
-        Reservation a = new Reservation(null, "브라운", LocalDate.of(2023, 8, 5), null, time, theme);
-        Reservation b = new Reservation(null, "다른이름", LocalDate.of(2023, 8, 5), null, time, theme);
+        Reservation a = Reservation.create(null, "브라운", LocalDate.of(2023, 8, 5), createdAt, time, theme);
+        Reservation b = Reservation.create(null, "다른이름", LocalDate.of(2023, 8, 5), createdAt, time, theme);
 
         assertThat(a).isNotEqualTo(b);
     }

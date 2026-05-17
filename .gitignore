@@ -37,3 +37,6 @@ out/
 .vscode/
 
 .claude/
+_bmad
+_bmad-output
+design-artifacts

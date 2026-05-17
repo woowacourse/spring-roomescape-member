@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.AvailableReservationTimeResponse;
-import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.response.AvailableReservationTimeResponse;
+import roomescape.controller.dto.response.AvailableReservationTimesResponse;
+import roomescape.controller.dto.response.ThemeResponse;
+import roomescape.controller.dto.response.ThemesResponse;
 import roomescape.service.ThemeService;
 
 @RequestMapping("/themes")
@@ -23,35 +25,35 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        final List<ThemeResponse> responses = themeService.getAllThemes()
+    public ResponseEntity<ThemesResponse> getAllThemes() {
+        List<ThemeResponse> responses = themeService.getAllThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ThemesResponse(responses));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+    public ResponseEntity<ThemesResponse> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
-        final LocalDate today = LocalDate.now();
-        final LocalDate startDate = today.minusDays(7);
-        final LocalDate endDate = today.minusDays(1);
-        final List<ThemeResponse> responses = themeService.getPopularThemes(size, startDate, endDate)
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
+        List<ThemeResponse> responses = themeService.getPopularThemes(size, startDate, endDate)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ThemesResponse(responses));
     }
 
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(
+    public ResponseEntity<AvailableReservationTimesResponse> getReservationTimes(
             @PathVariable long id,
             @RequestParam LocalDate date) {
-        final List<AvailableReservationTimeResponse> responses = themeService.getAvailableTimes(id, date)
+        List<AvailableReservationTimeResponse> responses = themeService.getAvailableTimes(id, date)
                 .stream()
                 .map(AvailableReservationTimeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new AvailableReservationTimesResponse(responses));
     }
 }
