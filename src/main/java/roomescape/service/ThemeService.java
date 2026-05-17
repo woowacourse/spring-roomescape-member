@@ -64,8 +64,15 @@ public class ThemeService {
 
     @Transactional
     public void deleteTheme(Long id) {
+        validateThemeExists(id);
         validateRemovableTheme(id);
         themeRepository.delete(id);
+    }
+
+    private void validateThemeExists(Long id) {
+        themeRepository.findById(id).orElseThrow(
+                () -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND)
+        );
     }
 
     private void validateRemovableTheme(Long id) {

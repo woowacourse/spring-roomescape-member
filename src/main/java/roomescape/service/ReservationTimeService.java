@@ -49,8 +49,15 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(Long id) {
+        validateReservationTimeExists(id);
         validateRemovableReservationTime(id);
         reservationTimeRepository.delete(id);
+    }
+
+    private void validateReservationTimeExists(Long id) {
+        reservationTimeRepository.findById(id).orElseThrow(
+                () -> new RoomEscapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND)
+        );
     }
 
     private void validateRemovableReservationTime(Long id) {
