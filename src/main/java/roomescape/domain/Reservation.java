@@ -82,19 +82,19 @@ public class Reservation {
     }
 
     public void validateCancelableByCustomer(final LocalDate today) {
-        if (!canChangeByCustomer(today)) {
+        if (!isBeforeReservationDate(today)) {
             throw new ReservationCancellationException();
         }
     }
 
     public void validateModifiableByCustomer(final LocalDate today) {
-        if (!canChangeByCustomer(today)) {
+        if (!isBeforeReservationDate(today)) {
             throw new ReservationModificationException();
         }
     }
 
-    private boolean canChangeByCustomer(final LocalDate today) {
-        return date.isAfter(today);
+    private boolean isBeforeReservationDate(final LocalDate today) {
+        return today.isBefore(date);
     }
 
     private void validateRequiredValues(final LocalDate date, final ReservationTime time) {

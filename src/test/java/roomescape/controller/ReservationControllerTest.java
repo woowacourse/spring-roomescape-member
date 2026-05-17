@@ -306,7 +306,7 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
-    void 예약일_당일에는_사용자가_예약을_수정할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약을_수정할_수_없다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
@@ -326,7 +326,7 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
-    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약을_취소할_수_없다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-01", "1", "1");

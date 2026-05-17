@@ -210,7 +210,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약일_당일에는_사용자가_예약_일정을_수정할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약_일정을_수정할_수_없다() {
         // given
         reservationRepository.add(Reservation.of(
                 1L,
@@ -277,7 +277,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약을_취소할_수_없다() {
         // given
         reservationRepository.add(Reservation.of(
                 1L,

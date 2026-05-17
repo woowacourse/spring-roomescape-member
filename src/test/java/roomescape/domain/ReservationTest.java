@@ -98,7 +98,7 @@ class ReservationTest {
     }
 
     @Test
-    void 예약일_당일에는_사용자가_예약을_취소할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약을_취소할_수_없다() {
         Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
@@ -126,7 +126,7 @@ class ReservationTest {
     }
 
     @Test
-    void 예약일_당일에는_사용자가_예약을_변경할_수_없다() {
+    void 예약일_당일에는_예약_시작_전이어도_사용자가_예약을_변경할_수_없다() {
         Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
