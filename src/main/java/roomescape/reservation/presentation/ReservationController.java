@@ -51,8 +51,15 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id){
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Void> delete(
+            @RequestParam @NotBlank(message = "공백일 수 없습니다") String name) {
+        reservationService.delete(name);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

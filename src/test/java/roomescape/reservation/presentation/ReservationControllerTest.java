@@ -180,4 +180,38 @@ public class ReservationControllerTest {
                 .body("code", is("DUPLICATE_RESERVATION"))
                 .body("message", is("해당 날짜와 시간, 테마에는 이미 예약이 존재합니다."));
     }
+
+    @Test
+    void 사용자_예약_추가_및_이름으로_삭제() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2026-05-06");
+        reservation.put("timeId", 2);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(10));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10));
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(9));
+    }
 }

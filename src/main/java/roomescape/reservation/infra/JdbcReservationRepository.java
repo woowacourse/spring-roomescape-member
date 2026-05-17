@@ -117,6 +117,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public void deleteByName(String name) {
+        String sql = "DELETE FROM reservation WHERE name = :name";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name);
+
+        template.update(sql, params);
+    }
+
+    @Override
     public List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
         String sql = "SELECT time_id " +
                 "FROM reservation " +

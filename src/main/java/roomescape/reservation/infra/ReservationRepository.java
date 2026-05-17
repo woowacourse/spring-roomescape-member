@@ -13,5 +13,7 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
+    void deleteByName(String name);
+
     List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
 }

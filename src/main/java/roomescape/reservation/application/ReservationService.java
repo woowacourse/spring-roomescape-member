@@ -67,6 +67,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public void delete(String name) {
+        reservationRepository.deleteByName(name);
+    }
+
     private void validateReservationDateTime(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
         LocalDateTime now = LocalDateTime.now(clock);
