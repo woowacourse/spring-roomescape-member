@@ -56,8 +56,8 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다. 예약을 확인해주세요."));
 
-        reservation.validateCancelable(LocalDateTime.now());
-        reservationRepository.delete(id);
+        Long cancelId = reservation.getCancelId(LocalDateTime.now());
+        reservationRepository.delete(cancelId);
     }
 
     private ReservationTime findReservationTime(Long timeId) {

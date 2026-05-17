@@ -155,7 +155,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.from(PAST_DATE_TIME), time, theme);
 
         // when & then
-        assertThatThrownBy(() -> reservation.validateCancelable(FUTURE_DATE_TIME))
+        assertThatThrownBy(() -> reservation.getCancelId(FUTURE_DATE_TIME))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage("지난 예약은 취소할 수 없습니다. 현재 이후의 예약을 선택해주세요.");
     }

@@ -61,7 +61,12 @@ public class Reservation {
         return new Reservation(this.id, this.name, updateDate, updateTime, this.theme);
     }
 
-    public void validateCancelable(LocalDateTime now) {
+    public Long getCancelId(LocalDateTime now) {
+        validateCancelable(now);
+        return this.id;
+    }
+
+    private void validateCancelable(LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.getStartAt());
         if (isPast(reservationDateTime, now)) {
             throw new UnprocessableException("지난 예약은 취소할 수 없습니다. 현재 이후의 예약을 선택해주세요.");
