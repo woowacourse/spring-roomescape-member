@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> add(@RequestBody ReservationRequestDTO request) {
+    public ResponseEntity<Void> add(@Valid @RequestBody ReservationRequestDTO request) {
         ReservationResponseDTO saved = reservationService.addReservation(request);
         return ResponseEntity
                 .created(URI.create("/reservations/" + saved.id()))
@@ -63,7 +64,7 @@ public class ReservationController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> delete(@ModelAttribute ReservationRequestDTO request) {
+    public ResponseEntity<Void> delete(@Valid @ModelAttribute ReservationRequestDTO request) {
         reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(request);
         return ResponseEntity
                 .noContent()

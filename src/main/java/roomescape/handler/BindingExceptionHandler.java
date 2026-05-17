@@ -4,6 +4,7 @@ import jakarta.annotation.Priority;
 import java.util.List;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,8 +21,26 @@ public class BindingExceptionHandler {
                 .body(e.getBody());
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ProblemDetail> handleBindingException(MethodArgumentNotValidException e) {
+        List<ValidationError> errors = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> new ValidationError(
+                        error.getField(),
+                        error.getRejectedValue(),
+                        error.getDefaultMessage()
+                ))
+                .toList();
+
+        ProblemDetail body = e.getBody();
+        body.setProperty("errors", errors);
+
+        return ResponseEntity
+                .status(e.getStatusCode())
+                .body(body);
+    }
+
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ProblemDetail> handlerConstraintViolationException(HandlerMethodValidationException e) {
+    public ResponseEntity<ProblemDetail> handleConstraintViolationException(HandlerMethodValidationException e) {
         List<ValidationError> errors = extractValidationErrors(e);
         e.getBody().setProperty("errors", errors);
         return ResponseEntity

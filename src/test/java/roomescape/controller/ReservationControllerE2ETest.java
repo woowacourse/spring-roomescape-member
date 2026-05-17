@@ -12,13 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import java.util.stream.Stream;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerE2ETest {
 
@@ -65,7 +69,7 @@ class ReservationControllerE2ETest {
         @Test
         void 지난_시점을_예약하면_422를_응답한다() {
             Map<String, Object> requestBodyWithPastDateTime = Map.of(
-                    "name", "",
+                    "name", "루드비코",
                     "date", PAST_DATE,
                     "timeId", 1,
                     "themeId", 1
@@ -79,23 +83,17 @@ class ReservationControllerE2ETest {
                     .statusCode(422);
         }
 
-        @DisplayName("비어 있는 이름으로 예약하면 422 Unprocessable Entity를 응답한다")
+        @DisplayName("예약 생성 시 필수 파라미터가 누락되면 400 Bad Request를 응답한다")
         @Sql("/initialize_theme_and_time.sql")
-        @Test
-        void 비어_있는_이름으로_예약하면_422를_응답한다() {
-            Map<String, Object> requestBodyWithEmptyName = Map.of(
-                    "name", "",
-                    "date", FUTURE_DATE,
-                    "timeId", 1,
-                    "themeId", 1
-            );
-
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("provideInvalidReservationRequests")
+        void 필수_파라미터가_누락되면_400을_응답한다(String description, Map<String, Object> invalidRequest) {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(requestBodyWithEmptyName)
+                    .body(invalidRequest)
                     .when().post("/api/reservations")
                     .then().log().all()
-                    .statusCode(422);
+                    .statusCode(400);
         }
 
         @DisplayName("같은 날짜/시간/테마로 중복 예약하면 409 Conflict를 응답한다")
@@ -143,6 +141,16 @@ class ReservationControllerE2ETest {
                     .then().log().all()
                     .statusCode(422);
         }
+
+        private static Stream<Arguments> provideInvalidReservationRequests() {
+            return Stream.of(
+                    Arguments.of("name 누락 (빈 문자열)", Map.of("name", "", "date", FUTURE_DATE, "timeId", 1, "themeId", 1)),
+                    Arguments.of("name 필드 완전 누락", Map.of("date", FUTURE_DATE, "timeId", 1, "themeId", 1)),
+                    Arguments.of("date 누락", Map.of("name", "루드비코", "timeId", 1, "themeId", 1)),
+                    Arguments.of("timeId 누락", Map.of("name", "루드비코", "date", FUTURE_DATE, "themeId", 1)),
+                    Arguments.of("themeId 누락", Map.of("name", "루드비코", "date", FUTURE_DATE, "timeId", 1))
+            );
+        }
     }
 
     @Nested
@@ -180,6 +188,7 @@ class ReservationControllerE2ETest {
                     .then().log().all()
                     .statusCode(400);
         }
+
     }
 
     @Nested
@@ -237,7 +246,27 @@ class ReservationControllerE2ETest {
                     .then().log().all()
                     .statusCode(404);
         }
-    }
+
+        @DisplayName("예약 취소 시 필수 파라미터가 누락되면 400 Bad Request를 응답한다")
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("provideInvalidCancellationRequests")
+        void 예약_취소_시_필수_파라미터가_누락되면_400을_응답한다(String description, Map<String, Object> invalidQueryParams) {
+            RestAssured.given().log().all()
+                    .queryParams(invalidQueryParams)
+                    .when().delete("/api/reservations")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        private static Stream<Arguments> provideInvalidCancellationRequests() {
+            return Stream.of(
+                    Arguments.of("name 누락", Map.of("date", "2026-05-18", "timeId", 1, "themeId", 1)),
+                    Arguments.of("date 누락", Map.of("name", "루드비코", "timeId", 1, "themeId", 1)),
+                    Arguments.of("timeId 누락", Map.of("name", "루드비코", "date", "2026-05-18", "themeId", 1)),
+                    Arguments.of("themeId 누락", Map.of("name", "루드비코", "date", "2026-05-18", "timeId", 1))
+            );
+        }
+        }
 
     @Nested
     class 예약_변경_케이스 {
