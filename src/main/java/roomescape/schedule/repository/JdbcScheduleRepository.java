@@ -123,30 +123,6 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public Optional<Long> findThemeIdById(long scheduleId) {
-        String sql = "SELECT theme_id FROM schedule WHERE id = :scheduleId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", scheduleId);
-
-        return template.query(sql, params, (resultSet, rowNum) -> resultSet.getLong("theme_id"))
-                .stream()
-                .findFirst();
-    }
-
-    @Override
-    public Optional<Long> findTimeIdById(long scheduleId) {
-        String sql = "SELECT time_id FROM schedule WHERE id = :scheduleId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", scheduleId);
-
-        return template.query(sql, params, (resultSet, rowNum) -> resultSet.getLong("time_id"))
-                .stream()
-                .findFirst();
-    }
-
-    @Override
     public boolean existsAlreadySchedule(LocalDate date, long themeId, long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM schedule WHERE date = :date AND time_id = :timeId AND theme_id = :themeId)";
 

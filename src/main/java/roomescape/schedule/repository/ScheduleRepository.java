@@ -21,9 +21,5 @@ public interface ScheduleRepository {
 
     void deleteById(long id);
 
-    Optional<Long> findThemeIdById(long id);
-
-    Optional<Long> findTimeIdById(long id);
-
     boolean existsAlreadySchedule(LocalDate date, long themeId, long timeId);
 }
