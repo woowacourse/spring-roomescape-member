@@ -43,7 +43,7 @@ public class ThemeService {
     }
 
     public PageThemesResponse read(int page, int size) {
-        List<ThemeResponse> themesResponse = themeRepository.findAll(page, size).stream()
+        List<ThemeResponse> themesResponse = themeRepository.findAll(page, size + 1).stream()
                 .map(ThemeResponse::from)
                 .toList();
 
@@ -52,7 +52,7 @@ public class ThemeService {
             themesResponse = themesResponse.subList(0, size);
         }
 
-        return PageThemesResponse.from(themesResponse, page, size, hasNext);
+        return PageThemesResponse.from(themesResponse, page, themesResponse.size(), hasNext);
     }
 
     @Transactional

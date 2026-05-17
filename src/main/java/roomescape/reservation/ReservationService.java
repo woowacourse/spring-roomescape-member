@@ -66,7 +66,7 @@ public class ReservationService {
             reservationsResponse = reservationsResponse.subList(0, size);
         }
 
-        return PageReservationsResponse.from(reservationsResponse, page, size, hasNext);
+        return PageReservationsResponse.from(reservationsResponse, page, reservationsResponse.size(), hasNext);
     }
 
     public ReservationsResponse readByUserName(String userName) {
