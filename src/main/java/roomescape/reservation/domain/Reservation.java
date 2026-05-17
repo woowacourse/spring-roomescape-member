@@ -60,7 +60,7 @@ public class Reservation {
             Theme theme,
             LocalDateTime now
     ) {
-        if (this.status != ReservationStatus.RESERVED) {
+        if (!isReserved()) {
             throw new BusinessRuleViolationException("이미 취소되었거나 완료된 예약은 수정할 수 없습니다.");
         }
 
@@ -69,22 +69,36 @@ public class Reservation {
         return updated;
     }
 
-    public void validateCanCancel() {
-        if (this.status == ReservationStatus.CANCELED) {
-            throw new BusinessRuleViolationException("이미 취소된 예약입니다.");
+    public Reservation convertStatusByCurrentTime(LocalDateTime now) {
+        if (isReserved() && isCompleted(now)) {
+            return new Reservation(this.id, this.name, this.date, this.time, this.theme, ReservationStatus.COMPLETED);
         }
 
-        if (this.status == ReservationStatus.COMPLETED) {
+        return this;
+    }
+
+    public boolean isCanceled() {
+        return this.status == ReservationStatus.CANCELED;
+    }
+
+    public void validateCanCancel(LocalDateTime now) {
+        if (isCompleted(now)) {
             throw new BusinessRuleViolationException("이미 이용 완료된 예약은 취소할 수 없습니다.");
         }
     }
 
-    private void validateNotPast(LocalDateTime now) {
-        validateNotNull(now, "현재 시각은 반드시 입력해야 합니다.");
-        validateNotNull(time.getStartAt(), "예약 시간의 startAt은 반드시 입력해야 합니다.");
+    private boolean isReserved() {
+        return this.status == ReservationStatus.RESERVED;
+    }
 
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
+    private boolean isCompleted(LocalDateTime now) {
+        validateNotNull(now, "현재 시각은 반드시 입력해야 합니다.");
+        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.getStartAt());
+        return !reservationDateTime.isAfter(now);
+    }
+
+    private void validateNotPast(LocalDateTime now) {
+        if (isCompleted(now)) {
             throw new BusinessRuleViolationException("과거 시각으로는 예약할 수 없습니다.");
         }
     }

@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public class ReservationTime {
 
-    private static final int UNIT = 30;
+    private static final int TIME_UNIT_MINUTES = 30;
 
     private final Long id;
     private final LocalTime startAt;
@@ -24,7 +24,7 @@ public class ReservationTime {
     }
 
     private static void validateStartAtUnit(LocalTime startAt) {
-        if (startAt.getMinute() % UNIT != 0) {
+        if (startAt.getMinute() % TIME_UNIT_MINUTES != 0) {
             throw new BusinessRuleViolationException("예약은 30분 단위로 입력해야 합니다.");
         }
     }

@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class ReservationTest {
 
@@ -24,6 +23,7 @@ class ReservationTest {
     private final Theme theme = new Theme(1L, "테마", "설명", "url");
     private final LocalDateTime today = LocalDateTime.now();
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
+    private final LocalDate pastDate = LocalDate.now().minusDays(1);
 
     @Nested
     @DisplayName("생성 및 이름 검증 테스트")
@@ -62,7 +62,6 @@ class ReservationTest {
     }
 
     @Nested
-    @DisplayName("create 팩토리는")
     class CreateFactoryTest {
 
         @Test
@@ -75,10 +74,6 @@ class ReservationTest {
         @Test
         @DisplayName("과거 일시로 생성하면 invariant 위반으로 예외가 발생한다.")
         void createFailWhenPast() {
-            // given
-            LocalDate pastDate = today.toLocalDate().minusDays(1);
-
-            // when & then
             assertThatThrownBy(() -> Reservation.create("브라운", pastDate, reservationTime, theme, today))
                     .isInstanceOf(BusinessRuleViolationException.class);
         }
@@ -113,29 +108,18 @@ class ReservationTest {
             Reservation reservation = new Reservation(1L, "브라운", futureDate, reservationTime, theme, ReservationStatus.RESERVED);
 
             // when & then
-            assertThatCode(reservation::validateCanCancel)
+            assertThatCode(() -> reservation.validateCanCancel(today))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        @DisplayName("이미 취소된 예약은 통과할 수 없다.")
-        void alreadyCanceled() {
+        @DisplayName("시간이 지난 예약은 통과할 수 없다.")
+        void pastDateCanceled() {
             // given
-            Reservation reservation = new Reservation(1L, "브라운", futureDate, reservationTime, theme, ReservationStatus.CANCELED);
+            Reservation reservation = new Reservation(1L, "브라운", pastDate, reservationTime, theme, ReservationStatus.RESERVED);
 
             // when & then
-            assertThatThrownBy(reservation::validateCanCancel)
-                    .isInstanceOf(BusinessRuleViolationException.class);
-        }
-
-        @Test
-        @DisplayName("이미 완료된 예약은 당연히 통과할 수 없다.")
-        void alreadyCompleted() {
-            // given
-            Reservation reservation = new Reservation(1L, "브라운", futureDate, reservationTime, theme, ReservationStatus.COMPLETED);
-
-            // when & then
-            assertThatThrownBy(reservation::validateCanCancel)
+            assertThatThrownBy(() -> reservation.validateCanCancel(today))
                     .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
@@ -174,6 +158,36 @@ class ReservationTest {
             // when & then
             assertThatThrownBy(() -> reservation.update("브라운", futureDate, reservationTime, theme, today))
                     .isInstanceOf(BusinessRuleViolationException.class);
+        }
+    }
+
+    @Nested
+    class convertStatusTest {
+
+        @Test
+        @DisplayName("시간이 지난 예약에 대해서 COMPLETED로 예약 상태가 변경된다.")
+        void convertCompleted() {
+            // given
+            Reservation reservation = new Reservation(1L, "브라운", pastDate, reservationTime, theme, ReservationStatus.RESERVED);
+
+            // when
+            Reservation updatedStatusReservation = reservation.convertStatusByCurrentTime(today);
+
+            // then
+            assertThat(updatedStatusReservation.getStatus()).isEqualTo(ReservationStatus.COMPLETED);
+        }
+
+        @Test
+        @DisplayName("CANCELED된 예약은 시간이 지나도 CANCELED 상태로 유지된다.")
+        void alreadyCompleted() {
+            // given
+            Reservation reservation = new Reservation(1L, "브라운", futureDate, reservationTime, theme, ReservationStatus.CANCELED);
+
+            // when
+            Reservation updatedStatusReservation = reservation.convertStatusByCurrentTime(today);
+
+            // then
+            assertThat(updatedStatusReservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
     }
 }

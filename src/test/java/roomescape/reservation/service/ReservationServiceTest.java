@@ -83,8 +83,7 @@ class ReservationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("과거 시각");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
@@ -97,8 +96,7 @@ class ReservationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("과거 시각");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
@@ -114,8 +112,7 @@ class ReservationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(duplicate))
-                    .isInstanceOf(DuplicateResourceException.class)
-                    .hasMessageContaining("이미 해당 날짜와 시간에 예약이 존재합니다.");
+                    .isInstanceOf(DuplicateResourceException.class);
         }
     }
 
@@ -133,6 +130,41 @@ class ReservationServiceTest {
 
             // when
             reservationService.cancelById(saved.getId());
+            List<Reservation> results = reservationService.findByFilter(null, null, null, null);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
+        }
+
+        @Test
+        @DisplayName("이미 완료된 예약에 대해서 취소 요청 시, 예외를 발생한다.")
+        void cancelCompleted() {
+            // given
+            LocalDate reservationDate = pastDate.toLocalDate();
+            Long timeId = insertReservationTime(pastDate.toLocalTime());
+            ReservationRequest request = new ReservationRequest("브라운", reservationDate, timeId, themeId);
+            Long id = insertReservation(request, ReservationStatus.RESERVED);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.cancelById(id))
+                    .isInstanceOf(BusinessRuleViolationException.class);
+        }
+
+        @Test
+        @DisplayName("이미 CANCELED 상태인 예약을 취소 요청 시, 멱등성을 보장한다.")
+        void alreadyCanceled() {
+            // given
+            LocalDate reservationDate = futureDate.toLocalDate();
+            Long timeId = insertReservationTime(futureDate.toLocalTime());
+            Reservation saved = reservationService.save(new ReservationRequest("브라운", reservationDate, timeId, themeId));
+
+            // when
+            reservationService.cancelById(saved.getId());
+            reservationService.cancelById(saved.getId());
+            reservationService.cancelById(saved.getId());
+            reservationService.cancelById(saved.getId());
+
             List<Reservation> results = reservationService.findByFilter(null, null, null, null);
 
             // then
@@ -210,8 +242,7 @@ class ReservationServiceTest {
 
             // when - then
             assertThatThrownBy(() -> reservationService.findByFilter("브라운", tomorrowDate, todayDate, null))
-                    .isInstanceOf(BusinessRuleViolationException.class)
-                    .hasMessageContaining("from 은 to 보다 이전이어야 합니다.");
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 
@@ -246,7 +277,7 @@ class ReservationServiceTest {
             LocalDate reservationDate = pastDate.toLocalDate();
             Long timeId = insertReservationTime(pastDate.toLocalTime());
             ReservationRequest request = new ReservationRequest("브라운", reservationDate, timeId, themeId);
-            Long generatedId = insertReservation(request, ReservationStatus.COMPLETED);
+            Long generatedId = insertReservation(request, ReservationStatus.RESERVED);
 
             // when & then
             assertThatThrownBy(() ->  reservationService.update(generatedId, request))

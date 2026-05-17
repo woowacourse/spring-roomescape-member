@@ -7,6 +7,7 @@ import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
@@ -58,21 +59,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelById(Long id) {
-        getById(id).validateCanCancel();
-        reservationRepository.cancelById(id);
-    }
-
-    @Transactional
     public Reservation update(Long id, ReservationRequest request) {
         Reservation existing = getById(id);
         ReservationTime time = reservationTimeService.getById(request.timeId());
         Theme theme = themeService.getById(request.themeId());
 
-        if (reservationRepository.existsByDateAndTimeIdAndThemeIdExcluding(
-                request.date(), request.timeId(), request.themeId(), id)) {
-            throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
-        }
+        validateDuplicateReservationExcludingSelf(id, request);
 
         Reservation updated = existing.update(
                 request.name(),
@@ -86,9 +78,23 @@ public class ReservationService {
         return updated;
     }
 
+    @Transactional
+    public void cancelById(Long id) {
+        Reservation reservation = getById(id);
+        if (reservation.isCanceled()) {
+            return;
+        }
+
+        reservation.validateCanCancel(LocalDateTime.now());
+        reservationRepository.updateStatus(id, ReservationStatus.CANCELED);
+    }
+
     public List<Reservation> findByFilter(String name, LocalDate from, LocalDate to, Long themeId) {
         validatePeriodOrder(from, to);
-        return reservationRepository.findByFilter(name, from, to, themeId, LocalDateTime.now());
+        List<Reservation> reservations = reservationRepository.findByFilter(name, from, to, themeId);
+        return reservations.stream()
+                .map(reservation -> reservation.convertStatusByCurrentTime(LocalDateTime.now()))
+                .toList();
     }
 
     private void validatePeriodOrder(LocalDate from, LocalDate to) {
@@ -98,17 +104,29 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndStatus(
+                date,
+                timeId,
+                themeId,
+                ReservationStatus.RESERVED)
+        ) {
             throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }
 
-    @Transactional
-    public int completeExpiredReservations() {
-        return reservationRepository.completeAllPastReservations(LocalDateTime.now());
+    private void validateDuplicateReservationExcludingSelf(Long id, ReservationRequest request) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndStatusExcludingSelf(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                id,
+                ReservationStatus.RESERVED)
+        ) {
+            throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
     }
 
-    public Reservation getById(Long id) {
+    private Reservation getById(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 예약이 존재하지 않습니다. ID: " + id));
     }
