@@ -20,7 +20,7 @@ public class TimeController {
         this.timeService = timeService;
     }
 
-    @GetMapping(params = {"themeId", "date"})
+    @GetMapping
     public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@RequestParam Long themeId,
                                                                       @RequestParam LocalDate date) {
         List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);

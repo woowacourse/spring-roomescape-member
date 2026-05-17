@@ -6,7 +6,7 @@ public enum ErrorCode {
     THEME_DUPLICATED("이미 존재하는 테마입니다."),
     THEME_NOT_FOUND("존재하지 않는 테마입니다."),
     THEME_HAS_RESERVATIONS("예약이 존재하는 테마는 삭제할 수 없습니다."),
-    THEME_NAME_BLANK("테마 이름은 빈값일 수 없습니다. "),
+    THEME_NAME_BLANK("테마 이름은 빈값일 수 없습니다."),
     THEME_NAME_LENGTH_INVALID("테마 이름은 20자 이하입니다."),
     THEME_DESCRIPTION_BLANK("테마 설명은 빈값일 수 없습니다."),
     THEME_DESCRIPTION_LENGTH_INVALID("테마 설명 길이는 1000자 이하입니다."),
