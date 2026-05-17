@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ResourceNotFoundException;
 
 @Repository
 public class ReservationTimeDao {
@@ -30,7 +31,7 @@ public class ReservationTimeDao {
                             LocalTime.parse(resultSet.getString("start_at"))
                     ), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 시간입니다.");
+            throw new ResourceNotFoundException("존재하지 않는 시간입니다.", "RESOURCE_NOT_FOUND");
         }
     }
 
@@ -49,12 +50,12 @@ public class ReservationTimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservationTime.getStartAt().toString());
+            preparedStatement.setString(1, reservationTime.startAt().toString());
 
             return preparedStatement;
         }, keyHolder);
         long newId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new ReservationTime(newId, reservationTime.getStartAt());
+        return new ReservationTime(newId, reservationTime.startAt());
     }
 
     public void deleteById(Long id) {
@@ -64,7 +65,7 @@ public class ReservationTimeDao {
 
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, startAt.toString());
+        return Boolean.TRUE.equals(exists);
     }
 }

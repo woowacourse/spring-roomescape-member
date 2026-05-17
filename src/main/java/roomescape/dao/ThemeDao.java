@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResult;
+import roomescape.exception.ResourceNotFoundException;
 
 @Repository
 public class ThemeDao {
@@ -31,7 +32,7 @@ public class ThemeDao {
                             resultSet.getString("thumbnail")
                     ), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
+            throw new ResourceNotFoundException("존재하지 않는 테마입니다.", "RESOURCE_NOT_FOUND");
         }
     }
 
@@ -78,14 +79,14 @@ public class ThemeDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnail());
+            ps.setString(1, theme.name());
+            ps.setString(2, theme.description());
+            ps.setString(3, theme.thumbnail());
             return ps;
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(id, theme.name(), theme.description(), theme.thumbnail());
     }
 
     public void deleteById(Long id) {
@@ -95,7 +96,7 @@ public class ThemeDao {
 
     public boolean existsByName(String name) {
         String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return count != null && count > 0;
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(exists);
     }
 }

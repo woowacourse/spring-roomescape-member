@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResult;
+import roomescape.exception.ResourceNotFoundException;
 
 @JdbcTest
 @Import({ThemeDao.class, ReservationDao.class, ReservationTimeDao.class})
@@ -35,11 +36,11 @@ class ThemeDaoTest {
         Theme savedTheme = themeDao.save(theme);
 
         //when
-        Theme loadTheme = themeDao.findById(savedTheme.getId());
+        Theme loadTheme = themeDao.findById(savedTheme.id());
 
         //then
-        assertThat(loadTheme.getId()).isEqualTo(savedTheme.getId());
-        assertThat(loadTheme.getName()).isEqualTo(savedTheme.getName());
+        assertThat(loadTheme.id()).isEqualTo(savedTheme.id());
+        assertThat(loadTheme.name()).isEqualTo(savedTheme.name());
     }
 
     @Test
@@ -50,7 +51,7 @@ class ThemeDaoTest {
         Theme newTheme = new Theme("공포", "덜무서움", "https://roomescape.com");
 
         //when
-        boolean existName = themeDao.existsByName(newTheme.getName());
+        boolean existName = themeDao.existsByName(newTheme.name());
 
         //then
         assertThat(existName).isTrue();
@@ -77,8 +78,8 @@ class ThemeDaoTest {
 
         //then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).theme().getName()).isEqualTo("공포");
-        assertThat(result.get(1).theme().getName()).isEqualTo("병원");
+        assertThat(result.get(0).theme().name()).isEqualTo("공포");
+        assertThat(result.get(1).theme().name()).isEqualTo("병원");
     }
 
     @Test
@@ -87,8 +88,8 @@ class ThemeDaoTest {
         Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
 
         //when & then
-        assertThatThrownBy(() -> themeDao.findById(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("[ERROR]");
+        assertThatThrownBy(() -> themeDao.findById(theme.id()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("존재하지 않는");
     }
 }

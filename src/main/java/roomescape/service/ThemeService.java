@@ -14,6 +14,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ReservationTimeStatusResponse;
+import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.ResourceDeleteConflicted;
 
 @Service
 public class ThemeService {
@@ -48,15 +50,15 @@ public class ThemeService {
     }
 
     public Theme save(Theme theme) {
-        if (themeDao.existsByName(theme.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+        if (themeDao.existsByName(theme.name())) {
+            throw new DuplicatedResourceException("이미 존재하는 테마 이름입니다.", "DUPLICATED_TIME");
         }
         return themeDao.save(theme);
     }
 
     public void deleteById(Long id) {
         if (reservationDao.existsByThemeId(id)) {
-            throw new IllegalArgumentException("기존 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new ResourceDeleteConflicted("기존 예약이 존재하는 테마는 삭제할 수 없습니다.", "INVALID_DELETE_EXISTS");
         }
         themeDao.deleteById(id);
     }
@@ -73,7 +75,7 @@ public class ThemeService {
     }
 
     private boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds, LocalDate date) {
-        return !reservedTimeIds.contains(reservationTime.getId()) && !isPastDateTime(date, reservationTime);
+        return !reservedTimeIds.contains(reservationTime.id()) && !isPastDateTime(date, reservationTime);
     }
 
     private boolean isPastDateTime(LocalDate date, ReservationTime reservationTime) {
@@ -81,7 +83,7 @@ public class ThemeService {
     }
 
     private boolean isTodayAndPastTime(LocalDate date, ReservationTime reservationTime) {
-        return date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
+        return date.isEqual(LocalDate.now()) && reservationTime.startAt()
                 .isBefore(LocalTime.now());
     }
 }

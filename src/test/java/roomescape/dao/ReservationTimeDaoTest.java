@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ResourceNotFoundException;
 
 @JdbcTest
 @Import({ReservationTimeDao.class})
@@ -25,7 +26,7 @@ class ReservationTimeDaoTest {
         ReservationTime newReservationTime = new ReservationTime(LocalTime.parse("10:00"));
 
         //when
-        boolean hasThatTime = reservationTimeDao.existsByStartAt(newReservationTime.getStartAt());
+        boolean hasThatTime = reservationTimeDao.existsByStartAt(newReservationTime.startAt());
 
         //then
         assertThat(hasThatTime).isTrue();
@@ -42,8 +43,8 @@ class ReservationTimeDaoTest {
 
         // then
         assertThat(times).hasSize(2);
-        assertThat(times.get(0).getStartAt()).isEqualTo(LocalTime.parse("10:00"));
-        assertThat(times.get(1).getStartAt()).isEqualTo(LocalTime.parse("12:00"));
+        assertThat(times.get(0).startAt()).isEqualTo(LocalTime.parse("10:00"));
+        assertThat(times.get(1).startAt()).isEqualTo(LocalTime.parse("12:00"));
     }
 
     @Test
@@ -53,7 +54,7 @@ class ReservationTimeDaoTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeDao.findById(3L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("[ERROR]");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("존재하지 않는");
     }
 }

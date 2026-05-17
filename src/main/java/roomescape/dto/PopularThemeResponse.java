@@ -11,10 +11,10 @@ public record PopularThemeResponse(
 ) {
     public static PopularThemeResponse of(Theme theme, int reservationCount) {
         return new PopularThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail(),
+                theme.id(),
+                theme.name(),
+                theme.description(),
+                theme.thumbnail(),
                 reservationCount
         );
     }

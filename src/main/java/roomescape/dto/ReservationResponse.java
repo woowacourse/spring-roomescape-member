@@ -13,11 +13,11 @@ public record ReservationResponse(
 ) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme())
+                reservation.id(),
+                reservation.name(),
+                reservation.date(),
+                ReservationTimeResponse.from(reservation.time()),
+                ThemeResponse.from(reservation.theme())
         );
     }
 }

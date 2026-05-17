@@ -10,6 +10,9 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.PastResourceAccessException;
+import roomescape.exception.ResourceNotFoundException;
 
 @Service
 public class ReservationService {
@@ -30,31 +33,65 @@ public class ReservationService {
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
         if (reservationDao.hasDuplicateReservation(date, timeId, themeId)) {
-            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
+            throw new DuplicatedResourceException("이미 존재하는 예약입니다.", "DUPLICATED_RESERVATION");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);
-
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
-        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("지난 시간은 예약할 수 없습니다.");
-        }
+        validatePastReservation(date, time, "예약");
 
         Theme theme = themeDao.findById(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
     }
 
-    public void deleteById(Long id) {
+    public List<Reservation> findByName(String name) {
+        return reservationDao.findByName(name);
+    }
+
+    public Reservation update(Long id, LocalDate newDate, Long newTimeId, Long newThemeId) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
+        validatePastReservation(reservation.date(), reservation.time(), "변경");
+
+        ReservationTime reservationTime = reservationTimeDao.findById(newTimeId);
+        validatePastReservation(newDate, reservationTime, "변경");
+        validateHasDuplicateReservation(newDate, newTimeId, newThemeId, id);
+        reservationDao.updateReservation(id, newDate, newTimeId, newThemeId);
+
+        return reservationDao.findById(id).orElseThrow();
+    }
+
+    public void deleteByIdFromAdmin(Long id) {
         validateHasReservation(id);
         reservationDao.deleteById(id);
+    }
+
+    public void deleteByIdFromMember(Long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
+        validatePastReservation(reservation.date(), reservation.time(), "삭제");
+        reservationDao.deleteById(id);
+    }
+
+    private boolean isTodayButBeforeTime(LocalDate date, ReservationTime time) {
+        return date.isEqual(LocalDate.now()) && time.startAt().isBefore(LocalTime.now());
+    }
+
+    private void validateHasDuplicateReservation(LocalDate newDate, Long newTimeId, Long newThemeId, Long id) {
+        if (reservationDao.hasDuplicateReservationForUpdate(newDate, newTimeId, newThemeId, id)) {
+            throw new DuplicatedResourceException("이미 존재하는 예약입니다.", "DUPLICATED_RESERVATION");
+        }
     }
 
     private void validateHasReservation(Long id) {
         boolean hasReservation = reservationDao.existsById(id);
         if (!hasReservation) {
-            throw new IllegalArgumentException("존재하지 않는 예약이라 삭제할 수 없습니다.");
+            throw new ResourceNotFoundException("존재하지 않는 예약이라 삭제할 수 없습니다.", "RESOURCE_NOT_FOUND");
+        }
+    }
+
+    private void validatePastReservation(LocalDate date, ReservationTime reservationTime, String action) {
+        if (date.isBefore(LocalDate.now()) || isTodayButBeforeTime(date, reservationTime)) {
+            throw new PastResourceAccessException("과거 예약은 " + action + "할 수 없습니다.", "INVALID_PAST_RESERVATION_ACCESS");
         }
     }
 }
