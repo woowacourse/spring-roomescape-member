@@ -66,7 +66,7 @@ class ReservationTimeTest {
         time.deactivate();
 
         // then
-        assertThat(time.getStatus()).isEqualTo(TimeStatus.INACTIVE);
+        assertThat(time.isActive()).isFalse();
     }
 
     @Test
@@ -91,7 +91,7 @@ class ReservationTimeTest {
         time.activate();
 
         // then
-        assertThat(time.getStatus()).isEqualTo(TimeStatus.ACTIVE);
+        assertThat(time.isActive()).isTrue();
     }
 
     @Test

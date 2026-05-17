@@ -46,4 +46,8 @@ public class ReservationTime {
         }
         this.status = TimeStatus.ACTIVE;
     }
+
+    public boolean isActive() {
+        return this.status == TimeStatus.ACTIVE;
+    }
 }

@@ -13,4 +13,8 @@ public class ReservationTimeFixture {
     public static ReservationTime createWithTime(LocalTime time) {
         return new ReservationTime(1L, time, TimeStatus.ACTIVE);
     }
+
+    public static ReservationTime createInactive() {
+        return new ReservationTime(1L, LocalTime.of(10, 0), TimeStatus.INACTIVE);
+    }
 }

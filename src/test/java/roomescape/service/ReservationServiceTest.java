@@ -140,9 +140,7 @@ class ReservationServiceTest {
     @Test
     void 비활성화된_테마_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
         // given: 테마 ID가 등록되지 않음
-        Theme theme = ThemeFixture.createDefaultTheme();
-        theme.deactivate();
-        themeRepository.save(theme);
+        themeRepository.save(ThemeFixture.createdInactive());
         ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when & then: EntityNotFoundException 발생 확인
@@ -167,6 +165,19 @@ class ReservationServiceTest {
         // given: 테마 ID는 등록되고 시간 ID가 등록되지 않음
         ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
         themeRepository.save(ThemeFixture.createDefaultTheme());
+
+        // when & then: EntityNotFoundException 발생 확인
+        assertThatThrownBy(() -> reservationService.reserve(command))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 시간 정보입니다.");
+    }
+
+    @Test
+    void 비활성화_된_시간_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
+        // given: 테마 ID는 등록되고 시간 ID가 등록되지 않음
+        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
+        themeRepository.save(ThemeFixture.createDefaultTheme());
+        reservationTimeRepository.save(ReservationTimeFixture.createInactive());
 
         // when & then: EntityNotFoundException 발생 확인
         assertThatThrownBy(() -> reservationService.reserve(command))

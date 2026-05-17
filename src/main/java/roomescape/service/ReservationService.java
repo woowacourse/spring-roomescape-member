@@ -87,6 +87,7 @@ public class ReservationService {
 
     private ReservationTime findTimeWithThrow(Long timeId) {
         return reservationTimeRepository.findById(timeId)
+                .filter(ReservationTime::isActive)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
     }
 
