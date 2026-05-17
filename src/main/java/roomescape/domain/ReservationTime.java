@@ -27,10 +27,10 @@ public class ReservationTime {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID는 필수값입니다.");
+            throw new IllegalStateException("ID는 필수값입니다.");
         }
         if (id < 1) {
-            throw new IllegalArgumentException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
+            throw new IllegalStateException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
         }
     }
 
