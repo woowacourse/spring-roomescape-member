@@ -1,8 +1,6 @@
 package roomescape.time;
 
-
 import java.time.LocalTime;
-import roomescape.exception.InvalidStateException;
 
 public class ReservationTime {
 
@@ -29,7 +27,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidStateException("예약 시간은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
         }
     }
 }
