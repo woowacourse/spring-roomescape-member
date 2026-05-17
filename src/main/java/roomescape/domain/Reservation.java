@@ -40,15 +40,13 @@ public class Reservation {
     }
 
     public void validateCreate(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
+        if (time.isReservationBefore(now, date)) {
             throw new IllegalArgumentException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 
     public void validateCancel(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
+        if (getTime().isReservationBefore(now, date)) {
             throw new IllegalArgumentException("지난 예약은 취소 불가능합니다.");
         }
     }
