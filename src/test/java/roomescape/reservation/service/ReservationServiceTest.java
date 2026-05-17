@@ -67,7 +67,7 @@ class ReservationServiceTest {
 
         // then
         assertThat(createdId).isEqualTo(100L);
-        verify(reservationRepository).create(any(Reservation.class)); // create가 호출되었는지 검증
+        verify(reservationRepository).create(any(Reservation.class));
     }
 
     @Test
