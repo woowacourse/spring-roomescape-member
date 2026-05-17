@@ -85,7 +85,7 @@ class ReservationControllerTest {
         body.put("timeId", 2);
 
         mockMvc.perform(put("/api/reservations/1")
-                        .header("X-User-Name", "동키")
+                        .header("User-Name", "동키")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isOk());
@@ -97,7 +97,7 @@ class ReservationControllerTest {
         willDoNothing().given(reservationService).delete(1L, "동키");
 
         mockMvc.perform(delete("/api/reservations/1")
-                        .header("X-User-Name", decodeUserName))
+                        .header("User-Name", decodeUserName))
                 .andExpect(status().isNoContent());
     }
 
@@ -127,7 +127,7 @@ class ReservationControllerTest {
                 .given(reservationService).delete(anyLong(), anyString());
 
         mockMvc.perform(delete("/api/reservations/1")
-                        .header("X-User-Name", "그해"))
+                        .header("User-Name", "그해"))
                 .andExpect(status().isForbidden());
     }
 }

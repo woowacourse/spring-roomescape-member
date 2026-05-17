@@ -55,7 +55,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> update(
             @PathVariable long id,
             @RequestBody @Valid ReservationRequest reservationRequest,
-            @RequestHeader("X-User-Name") String userName
+            @RequestHeader("User-Name") String userName
     ) {
         String decodeUserName = URLDecoder.decode(userName, StandardCharsets.UTF_8);
         return ResponseEntity.status(HttpStatus.OK)
@@ -65,7 +65,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable long id,
-            @RequestHeader("X-User-Name") String userName
+            @RequestHeader("User-Name") String userName
     ) {
         String decodeUserName = URLDecoder.decode(userName, StandardCharsets.UTF_8);
         reservationService.delete(id, decodeUserName);

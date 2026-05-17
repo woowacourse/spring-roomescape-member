@@ -83,8 +83,8 @@ window.api = (function () {
         },
 
         createReservation: (payload) => postJson('/api/reservations', payload),
-        deleteReservation: (id, userName) => del('/api/reservations/' + id, {'X-User-Name': encodeURIComponent(userName)}),
-        updateReservation: (id, payload, userName) => putJson('/api/reservations/' + id, payload, {'X-User-Name': encodeURIComponent(userName)}),
+        deleteReservation: (id, userName) => del('/api/reservations/' + id, {'User-Name': encodeURIComponent(userName)}),
+        updateReservation: (id, payload, userName) => putJson('/api/reservations/' + id, payload, {'User-Name': encodeURIComponent(userName)}),
         deleteReservationByAdmin: (id) => del('/api/admin/reservations/' + id),
 
         listTimes: async () => {
