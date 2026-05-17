@@ -1,6 +1,7 @@
 package roomescape.domain.vo;
 
 import java.time.LocalDate;
+import roomescape.exception.DomainViolationException;
 
 public record ReservationLocalDate(LocalDate value) {
 
@@ -12,7 +13,7 @@ public record ReservationLocalDate(LocalDate value) {
 
     private static void validateAfterToday(LocalDate date) {
         if (!date.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("오늘 이후의 날짜만 선택할 수 있습니다.");
+            throw new DomainViolationException("오늘 이후의 날짜만 선택할 수 있습니다.");
         }
     }
 

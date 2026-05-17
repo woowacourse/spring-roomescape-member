@@ -2,6 +2,7 @@ package roomescape.domain.vo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import roomescape.exception.DomainViolationException;
 
 public record ThemeImageUrl(
     String value
@@ -17,14 +18,14 @@ public record ThemeImageUrl(
 
     private void validateNotBlank(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("빈 문자열은 테마명으로 사용할 수 없습니다.");
+            throw new DomainViolationException("빈 문자열은 테마명으로 사용할 수 없습니다.");
         }
     }
 
     private void validatePattern(String value) {
         Matcher matcher = PATTERN.matcher(value);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("올바른 이미지 URL 형식이 아닙니다.");
+            throw new DomainViolationException("올바른 이미지 URL 형식이 아닙니다.");
         }
     }
 

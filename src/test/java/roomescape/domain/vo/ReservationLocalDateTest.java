@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.DomainViolationException;
 
 class ReservationLocalDateTest {
 
@@ -29,7 +30,7 @@ class ReservationLocalDateTest {
 
         // when & then
         assertThatThrownBy(() -> ReservationLocalDate.createForSave(today))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DomainViolationException.class)
             .hasMessage("오늘 이후의 날짜만 선택할 수 있습니다.");
     }
 
@@ -40,7 +41,7 @@ class ReservationLocalDateTest {
 
         // when & then
         assertThatThrownBy(() -> ReservationLocalDate.createForSave(yesterday))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(DomainViolationException.class)
             .hasMessage("오늘 이후의 날짜만 선택할 수 있습니다.");
     }
 

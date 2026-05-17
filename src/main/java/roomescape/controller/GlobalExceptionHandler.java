@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.exception.DomainViolationException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.ErrorResponse;
 import roomescape.exception.RoomEscapeException;
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(RoomEscapeException e) {
         printWarnStatus(e);
         return parseOf(e.getCode());
+    }
+
+    @ExceptionHandler(DomainViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDomainViolation(DomainViolationException e) {
+        printErrorStatus(e);
+        return parseOf(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
