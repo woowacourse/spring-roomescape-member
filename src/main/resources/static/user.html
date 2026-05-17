@@ -646,6 +646,9 @@
       <div class="booking-step" id="booking-step-4">
         <div class="confirm-box">
           <h3 id="confirm-box-title">예약 확인</h3>
+          <div class="confirm-row" id="confirm-id-row" style="display:none">
+            <span>예약 번호</span><span id="confirm-id">-</span>
+          </div>
           <div class="confirm-row">
             <span>테마</span><span id="confirm-theme">-</span>
           </div>
@@ -658,7 +661,7 @@
           <div class="confirm-row">
             <span>예약자</span><span id="confirm-name">-</span>
           </div>
-          <div class="btn-row" style="margin-top:20px">
+          <div class="btn-row" id="confirm-actions" style="margin-top:20px">
             <button class="btn btn-accent" onclick="submitReservation()" id="submit-reservation-btn">예약 확정</button>
             <button class="btn btn-ghost" onclick="goToStep(3)">← 뒤로</button>
           </div>
@@ -829,8 +832,12 @@
     document.getElementById('booking-desc').textContent = editing
       ? '예약할 날짜와 시간을 다시 선택하세요.'
       : '테마를 선택하고 원하는 날짜와 시간을 예약하세요.';
-    document.getElementById('submit-reservation-btn').textContent = editing ? '수정 완료' : '예약 확정';
     document.getElementById('confirm-box-title').textContent = editing ? '수정 확인' : '예약 확인';
+    document.getElementById('confirm-id-row').style.display = 'none';
+    document.getElementById('confirm-actions').innerHTML = `
+      <button class="btn btn-accent" onclick="submitReservation()" id="submit-reservation-btn">${editing ? '수정 완료' : '예약 확정'}</button>
+      <button class="btn btn-ghost" onclick="goToStep(3)">← 뒤로</button>
+    `;
   }
 
   async function getThemes() {
@@ -926,10 +933,34 @@
   }
 
   function goToStep4() {
-    document.getElementById('confirm-theme').textContent = selectedTheme.name;
-    document.getElementById('confirm-date').textContent = formatDate(selectedDate);
-    document.getElementById('confirm-time').textContent = selectedTime?.startAt || '-';
-    document.getElementById('confirm-name').textContent = username;
+    renderReservationSummary({
+      themeName: selectedTheme.name,
+      date: selectedDate,
+      time: selectedTime?.startAt || '-',
+      name: username
+    });
+    document.getElementById('confirm-id-row').style.display = 'none';
+    goToStep(4);
+  }
+
+  function renderReservationSummary(reservation) {
+    document.getElementById('confirm-theme').textContent = reservation.themeName;
+    document.getElementById('confirm-date').textContent = formatDate(reservation.date);
+    document.getElementById('confirm-time').textContent = reservation.time;
+    document.getElementById('confirm-name').textContent = reservation.name || username;
+  }
+
+  function showReservationComplete(reservation) {
+    document.getElementById('booking-title').textContent = '예약 완료';
+    document.getElementById('booking-desc').textContent = '예약이 정상적으로 등록되었습니다.';
+    document.getElementById('confirm-box-title').textContent = '예약 완료';
+    document.getElementById('confirm-id').textContent = reservation.id;
+    document.getElementById('confirm-id-row').style.display = 'flex';
+    renderReservationSummary(reservation);
+    document.getElementById('confirm-actions').innerHTML = `
+      <button class="btn btn-accent" onclick="switchSection('my')">내 예약 보기</button>
+      <button class="btn btn-ghost" onclick="switchSection('booking')">새 예약하기</button>
+    `;
     goToStep(4);
   }
 
@@ -952,13 +983,15 @@
 
       if (isEditing) {
         await fetchEmpty(`${API}/reservations/${editingReservationId}`, request, '예약 수정에 실패했습니다.');
+        showToast('예약이 수정되었습니다!');
+        resetBookingState();
+        switchSection('my');
       } else {
-        await fetchJson(`${API}/reservations`, request, '예약에 실패했습니다.');
+        const reservation = await fetchJson(`${API}/reservations`, request, '예약에 실패했습니다.');
+        showToast('예약이 완료되었습니다!');
+        showReservationComplete(reservation);
+        resetBookingState();
       }
-
-      showToast(isEditing ? '예약이 수정되었습니다!' : '예약이 완료되었습니다!');
-      resetBookingState();
-      switchSection('my');
     } catch (e) {
       showToast(e.message, 'error');
       recoverReservationFlow(e);
