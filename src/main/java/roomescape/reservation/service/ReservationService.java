@@ -41,41 +41,35 @@ public class ReservationService {
         ReservationTime time = findTime(timeId);
         Theme theme = findTheme(themeId);
 
-        Reservation reservation = new Reservation(name, date, time, theme);
-        if (reservation.isPast(LocalDateTime.now())) {
-            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
-        }
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
-                reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId()
+        if (reservationRepository.existsConflict(
+                date,
+                time.getId(),
+                theme.getId()
         )) {
             throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
         }
+
+        Reservation reservation = Reservation.create(name, date, time, theme, LocalDateTime.now());
 
         return reservationRepository.save(reservation);
     }
 
     @Transactional
     public Reservation updateDateTime(Long id, String name, LocalDate date, Long timeId) {
+        LocalDateTime now = LocalDateTime.now();
         Reservation reservation = findReservationByIdAndName(id, name);
-        if (reservation.isPast(LocalDateTime.now())) {
-            throw new InvalidRequestException("이미 지난 예약은 변경할 수 없습니다.");
-        }
-
         ReservationTime time = findTime(timeId);
-        if (time.toLocalDateTime(date).isBefore(LocalDateTime.now())) {
-            throw new InvalidRequestException("현재 시각 이후의 날짜와 시간을 선택해주세요.");
-        }
-        Reservation changedReservation = reservation.changeDateTime(date, time);
 
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
-                changedReservation.getDate(),
-                changedReservation.getTime().getId(),
-                changedReservation.getTheme().getId()
+        if (reservationRepository.existsConflictExcluding(
+                date,
+                time.getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
         )) {
             throw new ConflictException("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
         }
+
+        Reservation changedReservation = reservation.changeDateTime(date, time, now);
 
         return reservationRepository.update(changedReservation)
                 .orElseThrow(() -> new NotFoundException("변경할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요."));

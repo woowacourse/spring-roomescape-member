@@ -77,6 +77,82 @@ class ReservationTest {
     }
 
     @Test
+    @DisplayName("과거 날짜와 시간으로 예약을 생성하면 예외가 발생한다.")
+    void create_fail_whenReservationDateTimeIsBeforeNow() {
+        LocalDate date = LocalDate.of(2026, 5, 15);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
+
+        assertInvalidRequestException(
+                () -> Reservation.create("브라운", date, time, theme, now),
+                "현재 시각 이후의 날짜와 시간을 선택해주세요."
+        );
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간이 기준 시각보다 이후이면 예약을 생성한다.")
+    void create_success_whenReservationDateTimeIsAfterNow() {
+        LocalDate date = LocalDate.of(2026, 5, 15);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
+
+        Reservation reservation = Reservation.create("브라운", date, time, theme, now);
+
+        assertThat(reservation.getDate()).isEqualTo(date);
+        assertThat(reservation.getTime()).isEqualTo(time);
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 변경하면 예외가 발생한다.")
+    void changeDateTime_fail_whenReservationIsPast() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(11, 0));
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 11, 0);
+
+        assertInvalidRequestException(
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 16), newTime, now),
+                "이미 지난 예약은 변경할 수 없습니다."
+        );
+    }
+
+    @Test
+    @DisplayName("현재 예약과 같은 날짜와 시간으로 변경하면 예외가 발생한다.")
+    void changeDateTime_fail_whenSameDateTime() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
+
+        assertInvalidRequestException(
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), time, now),
+                "변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요."
+        );
+    }
+
+    @Test
+    @DisplayName("과거 날짜와 시간으로 예약을 변경하면 예외가 발생한다.")
+    void changeDateTime_fail_whenNewDateTimeIsPast() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 16), time, theme);
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(9, 0));
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 10, 0);
+
+        assertInvalidRequestException(
+                () -> reservation.changeDateTime(LocalDate.of(2026, 5, 15), newTime, now),
+                "현재 시각 이후의 날짜와 시간을 선택해주세요."
+        );
+    }
+
+    @Test
+    @DisplayName("현재 시각 이후의 날짜와 시간으로 예약을 변경한다.")
+    void changeDateTime_success_whenNewDateTimeIsFuture() {
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(11, 0));
+        LocalDate newDate = LocalDate.of(2026, 5, 16);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 15, 9, 0);
+
+        Reservation changedReservation = reservation.changeDateTime(newDate, newTime, now);
+
+        assertThat(changedReservation.getDate()).isEqualTo(newDate);
+        assertThat(changedReservation.getTime()).isEqualTo(newTime);
+    }
+
+    @Test
     @DisplayName("예약 날짜와 시간이 기준 시각보다 이전이면 과거 예약이다.")
     void isPastAt_success_whenReservationDateTimeIsBeforeNow() {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 15), time, theme);
