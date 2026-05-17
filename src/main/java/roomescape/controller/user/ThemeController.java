@@ -56,8 +56,10 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<Theme> themes = themeService.findPopularThemes(Period.lastWeek(clock));
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam("startDate") LocalDate startDate,
+            @RequestParam("endDate") LocalDate endDate) {
+        List<Theme> themes = themeService.findPopularThemes(new Period(startDate, endDate));
 
         return ResponseEntity.ok(ThemeResponse.from(themes));
     }

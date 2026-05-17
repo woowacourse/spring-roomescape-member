@@ -119,10 +119,17 @@ Response `200 OK`
 ### 인기 테마 조회
 
 ```http
-GET /themes/popular
+GET /themes/popular?startDate=2026-05-10&endDate=2026-05-16
 ```
 
-최근 1주(오늘 기준 7일 전 ~ 1일 전)의 예약을 집계해 상위 10개를 반환한다.
+지정한 기간(`startDate` ~ `endDate`, 양 끝 포함)의 예약을 집계해 상위 10개를 반환한다.
+
+쿼리 파라미터
+
+| 이름          | 필수 | 설명                                |
+|-------------|----|-----------------------------------|
+| `startDate` | 필수 | 집계 시작 날짜 (포함, `yyyy-MM-dd`)       |
+| `endDate`   | 필수 | 집계 끝 날짜 (포함, `yyyy-MM-dd`)        |
 
 Response `200 OK`
 
@@ -142,6 +149,14 @@ Response `200 OK`
   }
 ]
 ```
+
+Error Response
+
+| 상태                | `code`                | 조건                                |
+|-------------------|-----------------------|-----------------------------------|
+| `400 Bad Request` | `OMITTED_QUERY_PARAM` | `startDate` 또는 `endDate` 누락       |
+| `400 Bad Request` | `INVALID_PATH`        | 날짜 형식이 `yyyy-MM-dd`가 아님           |
+| `400 Bad Request` | `INVALID_PERIOD`      | `endDate`가 `startDate`보다 앞선 경우    |
 
 ---
 
