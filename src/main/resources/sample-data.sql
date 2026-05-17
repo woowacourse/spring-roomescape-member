@@ -1,10 +1,10 @@
 -- 예약 시간
-INSERT INTO reservation_time (start_at, end_at) VALUES ('10:00:00', '11:30:00');
-INSERT INTO reservation_time (start_at, end_at) VALUES ('12:00:00', '13:30:00');
-INSERT INTO reservation_time (start_at, end_at) VALUES ('14:00:00', '15:30:00');
-INSERT INTO reservation_time (start_at, end_at) VALUES ('16:00:00', '17:30:00');
-INSERT INTO reservation_time (start_at, end_at) VALUES ('18:00:00', '19:30:00');
-INSERT INTO reservation_time (start_at, end_at) VALUES ('20:00:00', '21:30:00');
+INSERT INTO reservation_time (start_at) VALUES ('10:00:00');
+INSERT INTO reservation_time (start_at) VALUES ('12:00:00');
+INSERT INTO reservation_time (start_at) VALUES ('14:00:00');
+INSERT INTO reservation_time (start_at) VALUES ('16:00:00');
+INSERT INTO reservation_time (start_at) VALUES ('18:00:00');
+INSERT INTO reservation_time (start_at) VALUES ('20:00:00');
 
 -- 테마
 INSERT INTO theme (name, description, thumbnail_url) VALUES (

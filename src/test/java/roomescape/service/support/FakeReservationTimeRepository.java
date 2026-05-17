@@ -30,8 +30,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         savedTime = newReservationTime;
         ReservationTime savedTimeWithId = ReservationTime.of(
                 1L,
-                newReservationTime.getStartAt(),
-                newReservationTime.getEndAt()
+                newReservationTime.getStartAt()
         );
         times.add(savedTimeWithId);
         return savedTimeWithId;

@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     start_at TIME NOT NULL,
-    end_at TIME NOT NULL,
     PRIMARY KEY (id)
 );
 

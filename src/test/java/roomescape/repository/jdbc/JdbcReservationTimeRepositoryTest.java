@@ -32,23 +32,19 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_저장하고_조회한다() {
-        ReservationTime reservationTime = ReservationTime.create(
-                LocalTime.of(10, 0),
-                LocalTime.of(10, 30)
-        );
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(10, 0));
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
         Optional<ReservationTime> foundTime = reservationTimeRepository.findById(savedTime.getId());
         assertThat(foundTime).isPresent();
         assertThat(foundTime.get().getStartAt()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(foundTime.get().getEndAt()).isEqualTo(LocalTime.of(10, 30));
     }
 
     @Test
     void 예약_시간_목록을_id_순서로_조회한다() {
-        ReservationTime firstTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0), LocalTime.of(10, 30)));
-        ReservationTime secondTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0), LocalTime.of(11, 30)));
+        ReservationTime firstTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime secondTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
 
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
@@ -66,7 +62,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제한다() {
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
 
         boolean deleted = reservationTimeRepository.delete(savedTime.getId());
 
@@ -83,7 +79,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 해당_시간에_예약이_있으면_예약_시간을_삭제할_수_없다() {
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
                 "링",

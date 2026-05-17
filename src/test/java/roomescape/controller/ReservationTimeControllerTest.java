@@ -45,8 +45,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(Map.of(
-                        "startAt", "10:00",
-                        "endAt", "10:30"
+                        "startAt", "10:00"
                 ))
                 .when().post("/times")
                 .then().log().all()
@@ -68,22 +67,20 @@ class ReservationTimeControllerTest {
 
     @Test
     @Sql("/clear.sql")
-    void 예약_종료_시간을_입력하지_않으면_400을_응답한다() {
+    void 예약_시작_시간을_입력하지_않으면_400을_응답한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(Map.of(
-                        "startAt", "10:00"
-                ))
+                .body(Map.of())
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", org.hamcrest.Matchers.is("예약 종료 시간을 입력해야 합니다."));
+                .body("message", org.hamcrest.Matchers.is("예약 시작 시간을 입력해야 합니다."));
     }
 
     @Test
     @Sql("/clear.sql")
     void 해당_시간에_예약이_있으면_예약_시간_삭제시_409를_응답한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
 

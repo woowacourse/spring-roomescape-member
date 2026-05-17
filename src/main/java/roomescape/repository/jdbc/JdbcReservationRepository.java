@@ -44,7 +44,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.theme_id AS theme_id,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
-                    t.end_at AS time_end_at,
                     h.name AS theme_name,
                     h.description AS theme_description,
                     h.thumbnail_url AS theme_thumbnail_url
@@ -69,7 +68,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.theme_id AS theme_id,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
-                    t.end_at AS time_end_at,
                     h.name AS theme_name,
                     h.description AS theme_description,
                     h.thumbnail_url AS theme_thumbnail_url
@@ -95,7 +93,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.theme_id AS theme_id,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
-                    t.end_at AS time_end_at,
                     h.name AS theme_name,
                     h.description AS theme_description,
                     h.thumbnail_url AS theme_thumbnail_url
@@ -242,8 +239,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     ) throws SQLException {
         final ReservationTime reservationTime = ReservationTime.of(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("time_start_at").toLocalTime(),
-                resultSet.getTime("time_end_at").toLocalTime()
+                resultSet.getTime("time_start_at").toLocalTime()
         );
 
         final Theme theme = Theme.of(

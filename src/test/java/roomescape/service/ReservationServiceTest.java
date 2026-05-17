@@ -56,7 +56,7 @@ class ReservationServiceTest {
     @Test
     void 예약을_생성한다() {
         // given
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0)));
         themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
 
         // when
@@ -77,14 +77,14 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
         reservationRepository.add(Reservation.of(
                 2L,
                 "제임스",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(2L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 
@@ -99,7 +99,7 @@ class ReservationServiceTest {
     @Test
     void 현재_이전_시간으로_예약하면_예외가_발생한다() {
         // given
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0)));
         themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
 
         // when & then
@@ -121,7 +121,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_테마로_예약하면_예외가_발생한다() {
         // given
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0)));
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(
@@ -137,10 +137,10 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
-        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(11, 0)));
 
         // when
         ReservationResponse response = reservationService.updateByCustomer(
@@ -160,7 +160,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
         // given
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0)));
 
         // when & then
         assertThatThrownBy(() -> reservationService.updateByCustomer(
@@ -177,7 +177,7 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 
@@ -196,10 +196,10 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(2L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0)));
 
         // when & then
         assertThatThrownBy(() -> reservationService.updateByCustomer(
@@ -216,10 +216,10 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 5, 8),
-                ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(1L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
-        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0), LocalTime.of(12, 30)));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0)));
 
         // when & then
         assertThatThrownBy(() -> reservationService.updateByCustomer(
@@ -236,10 +236,10 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 5, 8),
-                ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(1L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
-        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0), LocalTime.of(12, 30)));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(12, 0)));
 
         // when
         ReservationResponse response = reservationService.updateByAdmin(
@@ -283,7 +283,7 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 5, 8),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 
@@ -299,7 +299,7 @@ class ReservationServiceTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 5, 8),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 

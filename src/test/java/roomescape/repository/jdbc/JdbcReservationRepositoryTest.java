@@ -40,12 +40,12 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_저장하고_조회한다() {
-        insertReservationTime("10:00", "10:30");
+        insertReservationTime("10:00");
         insertTheme("링", "공포 테마", "http:~");
         Reservation reservation = Reservation.create(
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~"),
                 LocalDateTime.of(2026, 8, 5, 9, 0)
         );
@@ -66,7 +66,7 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = Reservation.create(
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(999L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(999L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~"),
                 LocalDateTime.of(2026, 8, 5, 9, 0)
         );
@@ -77,7 +77,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_id로_조회한다() {
-        insertReservationTime("10:00", "10:30");
+        insertReservationTime("10:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
@@ -89,8 +89,8 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_수정한다() {
-        insertReservationTime("10:00", "10:30");
-        insertReservationTime("11:00", "11:30");
+        insertReservationTime("10:00");
+        insertReservationTime("11:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
@@ -98,7 +98,7 @@ class JdbcReservationRepositoryTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 6),
-                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(2L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 
@@ -111,22 +111,22 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
-        insertReservationTime("10:00", "10:30");
+        insertReservationTime("10:00");
         insertTheme("링", "공포 테마", "http:~");
 
         assertThatThrownBy(() -> reservationRepository.update(Reservation.of(
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ))).isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
     void 이미_존재하는_예약으로_수정하면_예외가_발생한다() {
-        insertReservationTime("10:00", "10:30");
-        insertReservationTime("11:00", "11:30");
+        insertReservationTime("10:00");
+        insertReservationTime("11:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
         insertReservation("제임스", "2026-08-05", 2L, 1L);
@@ -135,14 +135,14 @@ class JdbcReservationRepositoryTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(2L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(2L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ))).isInstanceOf(ReservationAlreadyExistsException.class);
     }
 
     @Test
     void 존재하지_않는_예약_시간으로_수정하면_예외가_발생한다() {
-        insertReservationTime("10:00", "10:30");
+        insertReservationTime("10:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
@@ -150,15 +150,15 @@ class JdbcReservationRepositoryTest {
                 1L,
                 "브라운",
                 LocalDate.of(2026, 8, 5),
-                ReservationTime.of(999L, LocalTime.of(11, 0), LocalTime.of(11, 30)),
+                ReservationTime.of(999L, LocalTime.of(11, 0)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ))).isInstanceOf(ReservationOptionChangedException.class);
     }
 
     @Test
     void 예약자_이름으로_예약_목록을_조회한다() {
-        insertReservationTime("10:00", "10:30");
-        insertReservationTime("11:00", "11:30");
+        insertReservationTime("10:00");
+        insertReservationTime("11:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("초코칩", "2026-08-05", 1L, 1L);
         insertReservation("재키", "2026-08-05", 2L, 1L);
@@ -171,7 +171,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_삭제한다() {
-        insertReservationTime("10:00", "10:30");
+        insertReservationTime("10:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
@@ -189,8 +189,8 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 날짜와_테마에_따른_예약_시간_상태를_조회한다() {
-        insertReservationTime("10:00", "10:30");
-        insertReservationTime("11:00", "11:30");
+        insertReservationTime("10:00");
+        insertReservationTime("11:00");
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
@@ -207,11 +207,10 @@ class JdbcReservationRepositoryTest {
     }
 
 
-    private void insertReservationTime(final String startAt, final String endAt) {
+    private void insertReservationTime(final String startAt) {
         jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)",
-                startAt,
-                endAt
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                startAt
         );
     }
 

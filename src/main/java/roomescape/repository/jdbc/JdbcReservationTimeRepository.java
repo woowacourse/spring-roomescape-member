@@ -29,7 +29,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         final String sql = """
-                SELECT id, start_at, end_at
+                SELECT id, start_at
                 FROM reservation_time
                 ORDER BY id
                 """;
@@ -42,7 +42,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(final Long timeId) {
         final String sql = """
-                SELECT id, start_at, end_at
+                SELECT id, start_at
                 FROM reservation_time
                 WHERE id = ?
                 """;
@@ -68,8 +68,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return ReservationTime.of(
                 newTimeId,
-                newReservationTime.getStartAt(),
-                newReservationTime.getEndAt()
+                newReservationTime.getStartAt()
         );
     }
 
@@ -89,8 +88,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {
         final String sql = """
-                INSERT INTO reservation_time (start_at, end_at)
-                VALUES (?, ?)
+                INSERT INTO reservation_time (start_at)
+                VALUES (?)
                 """;
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -102,7 +101,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             );
 
             preparedStatement.setTime(1, reservationTimeEntity.startAt());
-            preparedStatement.setTime(2, reservationTimeEntity.endAt());
 
             return preparedStatement;
         }, keyHolder);
@@ -121,16 +119,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private ReservationTime mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         return ReservationTime.of(
                 resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime(),
-                resultSet.getTime("end_at").toLocalTime()
+                resultSet.getTime("start_at").toLocalTime()
         );
     }
 
     private ReservationTimeEntity toEntity(final ReservationTime reservationTime) {
         return new ReservationTimeEntity(
                 reservationTime.getId(),
-                Time.valueOf(reservationTime.getStartAt()),
-                Time.valueOf(reservationTime.getEndAt())
+                Time.valueOf(reservationTime.getStartAt())
         );
     }
 }

@@ -28,8 +28,7 @@ class ReservationTimeServiceTest {
         // when
         ReservationTimeResponse response = reservationTimeService.create(
                 new ReservationTimeCreateRequest(
-                        LocalTime.of(10, 0),
-                        LocalTime.of(10, 30)
+                        LocalTime.of(10, 0)
                 )
         );
 
