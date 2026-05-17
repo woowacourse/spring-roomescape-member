@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
@@ -113,14 +112,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void update(Theme theme) {
         String sql = "update theme set name = ?, description = ?, thumbnail_url = ? where id = ?";
-        int updatedCount = jdbcTemplate.update(sql,
+        jdbcTemplate.update(
+                sql,
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailUrl(),
-                theme.getId());
-
-        if (updatedCount == 0) {
-            throw new ResourceNotFoundException("수정하려는 테마가 존재하지 않습니다. (ID: " + theme.getId() + ")");
-        }
+                theme.getId()
+        );
     }
 }

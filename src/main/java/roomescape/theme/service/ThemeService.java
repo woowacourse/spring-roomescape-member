@@ -65,15 +65,9 @@ public class ThemeService {
 
     @Transactional
     public Theme update(Long id, ThemeRequest request) {
-        Theme theme = getById(id);
-
-        if (!theme.getName().equals(request.name())) {
-            validateDuplicateName(request);
-        }
-
-        Theme updatedTheme = theme.update(request.name(), request.description(), request.thumbnailUrl());
+        validateDuplicateName(request);
+        Theme updatedTheme = getById(id).update(request.name(), request.description(), request.thumbnailUrl());
         themeRepository.update(updatedTheme);
-
         return updatedTheme;
     }
 
