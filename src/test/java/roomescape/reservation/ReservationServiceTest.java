@@ -1,0 +1,389 @@
+package roomescape.reservation;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.EscapeRoomException;
+import roomescape.reservation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.dto.request.ReservationUpdateRequest;
+import roomescape.reservation.dto.response.ReservationSaveResponse;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.projection.ReservationDetailProjection;
+import roomescape.schedule.ScheduleService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ReservationServiceTest {
+
+    @Mock
+    private ReservationRepository reservationRepository;
+
+    @Mock
+    private ScheduleService scheduleService;
+
+    @InjectMocks
+    private ReservationService reservationService;
+
+    private ReservationDetailProjection createReservationDetailProjection(
+            Long id,
+            String name,
+            LocalDate date,
+            Long themeId,
+            Long timeId,
+            LocalTime startAt
+    ) {
+        return new ReservationDetailProjection(
+                id,
+                name,
+                date,
+                themeId,
+                "themeName",
+                "themeDescription",
+                "themeThumbnailUrl",
+                timeId,
+                startAt
+        );
+    }
+
+    @Test
+    @DisplayName("이름 기준 예약 삭제에 성공한다.")
+    void deleteByIdAndName_테스트_1() {
+        // given
+        long reservationId = 1L;
+        String name = "a";
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 5), 1L, 7L, LocalTime.of(8, 0));
+        when(reservationRepository.findDetailByIdAndName(reservationId, name))
+                .thenReturn(Optional.of(reservationDetail));
+
+        // when, then
+        assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .doesNotThrowAnyException();
+
+        verify(reservationRepository).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("없는 예약 삭제 요청은 성공 처리한다.")
+    void deleteByIdAndName_테스트_2() {
+        // given
+        long reservationId = 999L;
+        String name = "a";
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name))
+                .thenReturn(Optional.empty());
+
+        // when, then
+        assertThatCode(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .doesNotThrowAnyException();
+
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 예약날짜가 과거인 경우 삭제 시도 시 예외가 발생한다.")
+    void deleteByIdAndName_테스트_3() {
+        long reservationId = 1L;
+        String name = "a";
+
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doThrow(EscapeRoomException.class)
+                .when(scheduleService)
+                .validateNotPastDate(reservationDetail.date());
+
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(EscapeRoomException.class);
+
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 예약날짜가 오늘과 같지만 시간이 과거시간인 경우 삭제 시도 시 예외가 발생한다.")
+    void deleteByIdAndName_테스트_4() {
+        long reservationId = 1L;
+        String name = "a";
+
+        ReservationDetailProjection reservationDetail = createReservationDetailProjection(
+                reservationId, name, LocalDate.of(2026, 5, 13), 1L, 1L, LocalTime.of(10, 0));
+
+        when(reservationRepository.findDetailByIdAndName(reservationId, name)).thenReturn(Optional.of(reservationDetail));
+        doThrow(EscapeRoomException.class)
+                .when(scheduleService)
+                .validateNotPastTime(reservationDetail.date(), reservationDetail.getTime());
+
+        assertThatThrownBy(() -> reservationService.deleteByIdAndName(reservationId, name))
+                .isInstanceOf(EscapeRoomException.class);
+
+        verify(reservationRepository, never()).deleteByIdAndName(reservationId, name);
+    }
+
+    @Test
+    @DisplayName("스케줄이 존재하고 해당 스케줄에 예약이 존재하지 않는다면 해당 스케줄로 예약을 변경할 수 있다.")
+    void update_성공_레포지토리_테스트() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 5),
+                4L
+        );
+
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 5), 4L, 3L, LocalTime.of(12, 0));
+        Reservation updatedReservation = new Reservation(4L, "d", 4L);
+
+        when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 5), 4L, 4L)).thenReturn(4L);
+        when(reservationRepository.existsByScheduleIdAndIdNot(4L, 4L)).thenReturn(false);
+        when(reservationRepository.updateScheduleByIdAndName(4L, "d", 4L)).thenReturn(1);
+        when(reservationRepository.findByIdAndName(4L, "d")).thenReturn(Optional.of(updatedReservation));
+
+        // when
+        ReservationSaveResponse response = reservationService.update(request, 4L, "d");
+
+        // then
+        assertThat(response.id()).isEqualTo(4L);
+        assertThat(response.name()).isEqualTo("d");
+        assertThat(response.scheduleId()).isEqualTo(4L);
+        verify(reservationRepository).updateScheduleByIdAndName(4L, "d", 4L);
+    }
+
+    @Test
+    @DisplayName("스케줄이 존재하지만 해당 스케줄을 가진 다른 예약이 있을 경우 예외가 발생한다.")
+    void update_실패_레포지토리_테스트1() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 5),
+                2L
+        );
+
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
+
+        when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 5), 2L, 2L)).thenReturn(2L);
+        when(reservationRepository.existsByScheduleIdAndIdNot(2L, 4L)).thenReturn(true);
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(EscapeRoomException.class);
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("내 이름으로 된 예약이 아닌데 변경을 시도할 시 예외가 발생한다.")
+    void update_실패_레포지토리_테스트2() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 5),
+                4L
+        );
+        when(reservationRepository.findDetailByIdAndName(4L, "x")).thenReturn(Optional.empty());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "x"))
+                .isInstanceOf(EscapeRoomException.class);
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("없는 스케줄로 예약을 변경하려고 시도할 경우 예외가 발생한다.")
+    void update_실패_레포지토리_테스트3() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 7),
+                5L
+        );
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                4L, "d", LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
+
+        when(reservationRepository.findDetailByIdAndName(4L, "d")).thenReturn(Optional.of(oldReservation));
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 7), 5L, 2L))
+                .thenThrow(new IllegalArgumentException("해당 조건을 가진 일정이 없습니다. date: 2026-05-07timeid: 5themeId: 2"));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 조건을 가진 일정이 없습니다. date: 2026-05-07timeid: 5themeId: 2");
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("과거 날짜의 예약을 변경하려할 경우 변경에 실패한다.")
+    void update_실패_레포지토리_테스트4() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 7),
+                5L
+        );
+        long oldReservationId = 4L;
+        String oldReservationName = "d";
+
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                oldReservationId, oldReservationName, LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
+
+        when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastDate(oldReservation.date());
+
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(reservationRepository).findDetailByIdAndName(anyLong(), anyString());
+        verify(scheduleService).validateNotPastDate(any(LocalDate.class));
+        verify(scheduleService, never()).validateNotPastTime(any(LocalDate.class), any(LocalTime.class));
+        verify(scheduleService, never()).findScheduleIdByDateAndTimeIdAndThemeId(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).existsByScheduleIdAndIdNot(anyLong(), anyLong());
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("날짜는 오늘날짜와 같지만 과거시간으로 변경하려할 경우 변경에 실패한다.")
+    void update_실패_레포지토리_테스트5() {
+        // given
+        ReservationUpdateRequest request = new ReservationUpdateRequest(
+                LocalDate.of(2026, 5, 7),
+                5L
+        );
+        long oldReservationId = 4L;
+        String oldReservationName = "d";
+
+        ReservationDetailProjection oldReservation = createReservationDetailProjection(
+                oldReservationId, oldReservationName, LocalDate.of(2026, 5, 6), 2L, 2L, LocalTime.of(11, 0));
+
+        when(reservationRepository.findDetailByIdAndName(oldReservationId, oldReservationName)).thenReturn(Optional.of(oldReservation));
+        doNothing().when(scheduleService).validateNotPastDate(oldReservation.date());
+        doThrow(IllegalStateException.class).when(scheduleService).validateNotPastTime(oldReservation.date(), oldReservation.getTime());
+
+        assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(reservationRepository).findDetailByIdAndName(anyLong(), anyString());
+        verify(scheduleService).validateNotPastDate(any(LocalDate.class));
+        verify(scheduleService).validateNotPastTime(any(LocalDate.class), any(LocalTime.class));
+        verify(scheduleService, never()).findScheduleIdByDateAndTimeIdAndThemeId(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).existsByScheduleIdAndIdNot(anyLong(), anyLong());
+        verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("예약 저장 성공 테스트")
+    void save_성공_테스트() {
+        // given
+        ReservationSaveRequest body = new ReservationSaveRequest(
+                "테스트",
+                LocalDate.of(2026, 5, 5),
+                4L,
+                4L
+        );
+        long scheduleId = 4L;
+        Reservation savedReservation = new Reservation(5L, "테스트", scheduleId);
+
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId);
+        when(reservationRepository.existsByScheduleId(scheduleId)).thenReturn(false);
+        doNothing().when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(savedReservation);
+
+        // when
+        ReservationSaveResponse response = reservationService.save(body);
+
+        // then
+        assertThat(response.id()).isEqualTo(5L);
+        assertThat(response.name()).isEqualTo("테스트");
+        assertThat(response.scheduleId()).isEqualTo(4L);
+
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).existsByScheduleId(scheduleId);
+        verify(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).save(any(Reservation.class));
+    }
+
+    @Test
+    @DisplayName("예약 요청이 들어왔을 때 스케줄 검증이 되지 않는다면 예외가 발생한다.")
+    void save_실패_테스트_1() {
+        // given
+        ReservationSaveRequest body = new ReservationSaveRequest(
+                "테스트",
+                LocalDate.of(2026, 5, 5),
+                4L,
+                4L
+        );
+        doThrow(new EscapeRoomException(ErrorCode.PAST_SCHEDULE))
+                .when(scheduleService)
+                .validateSchedule(body.date(), body.timeId(), body.themeId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.save(body))
+                .isInstanceOf(EscapeRoomException.class);
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
+        verify(reservationRepository, never()).save(any(Reservation.class));
+    }
+
+    @Test
+    @DisplayName("특정 스케줄을 가진 다른 예약이 존재할 경우 예외가 발생한다.")
+    void save_실패_테스트_2() {
+        // given
+        ReservationSaveRequest body = new ReservationSaveRequest(
+                "테스트",
+                LocalDate.of(2026, 5, 5),
+                1L,
+                1L
+        );
+        long scheduleId = 1L;
+
+        doNothing().when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        when(scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())).thenReturn(scheduleId);
+        when(reservationRepository.existsByScheduleId(scheduleId)).thenReturn(true);
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.save(body))
+                .isInstanceOf(EscapeRoomException.class);
+
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository).existsByScheduleId(scheduleId);
+        verify(reservationRepository, never()).save(any(Reservation.class));
+    }
+
+    @Test
+    @DisplayName("특정 스케줄이 존재하지 않는다면 예외가 발생한다.")
+    void save_실패_테스트_3() {
+        // given
+        ReservationSaveRequest body = new ReservationSaveRequest(
+                "테스트",
+                LocalDate.of(2026, 5, 11),
+                99L,
+                99L
+        );
+
+        doThrow(IllegalStateException.class).when(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.save(body))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
+        verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        verify(reservationRepository, never()).existsByScheduleId(anyLong());
+        verify(reservationRepository, never()).save(any(Reservation.class));
+    }
+}

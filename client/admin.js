@@ -21,9 +21,13 @@ async function api(path, options = {}) {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-  if (!response.ok) throw new Error(`요청 실패: ${response.status}`);
   if (response.status === 204) return null;
-  return response.json();
+  const body = await response.json();
+  if (!response.ok || body.success === false) {
+    const message = body?.error?.message || `요청 실패: ${response.status}`;
+    throw new Error(message);
+  }
+  return body.data;
 }
 
 function confirmAction({ title, message, okLabel = "확인", okDanger = false }) {
@@ -67,9 +71,26 @@ function showResultModal({ title, message, isError = false }) {
   });
 }
 
+async function showErrorModal(title, error) {
+  const message = error?.message || "알 수 없는 오류가 발생했습니다.";
+  setStatus(message, true);
+  await showResultModal({
+    title,
+    message,
+    isError: true,
+  });
+}
+
 function renderThemeList(themes) {
   const list = document.getElementById("theme-list");
   list.innerHTML = "";
+  if (!themes.length) {
+    const li = document.createElement("li");
+    li.className = "empty-message";
+    li.textContent = "조회된 테마가 없습니다.";
+    list.appendChild(li);
+    return;
+  }
   themes.forEach((theme) => {
     const li = document.createElement("li");
     li.innerHTML = `<strong>#${theme.id} ${theme.name}</strong> - ${theme.description}`;
@@ -80,6 +101,13 @@ function renderThemeList(themes) {
 function renderReservationList(reservations) {
   const list = document.getElementById("reservation-list");
   list.innerHTML = "";
+  if (!reservations.length) {
+    const li = document.createElement("li");
+    li.className = "empty-message";
+    li.textContent = "조회된 예약이 없습니다.";
+    list.appendChild(li);
+    return;
+  }
   reservations.forEach((reservation) => {
     const li = document.createElement("li");
     li.innerHTML = `#${reservation.id} ${reservation.name} / ${reservation.date} / ${reservation.time.time} / themeId=${reservation.theme?.id}`;
@@ -90,6 +118,13 @@ function renderReservationList(reservations) {
 function renderTimeList(times) {
   const list = document.getElementById("time-list");
   list.innerHTML = "";
+  if (!times.length) {
+    const li = document.createElement("li");
+    li.className = "empty-message";
+    li.textContent = "조회된 시간 슬롯이 없습니다.";
+    list.appendChild(li);
+    return;
+  }
   times.forEach((time) => {
     const li = document.createElement("li");
     li.innerHTML = `#${time.id} ${time.startAt}`;
@@ -100,6 +135,13 @@ function renderTimeList(times) {
 function renderScheduleList(schedules) {
   const list = document.getElementById("schedule-list");
   list.innerHTML = "";
+  if (!schedules.length) {
+    const li = document.createElement("li");
+    li.className = "empty-message";
+    li.textContent = "조회된 스케줄이 없습니다.";
+    list.appendChild(li);
+    return;
+  }
   schedules.forEach((schedule) => {
     const li = document.createElement("li");
     li.innerHTML = `#${schedule.id} / ${schedule.date} / timeId=${schedule.time_id} / themeId=${schedule.theme_id}`;
@@ -118,7 +160,7 @@ async function loadTimes() {
 }
 
 async function loadSchedules() {
-  const schedules = await api("/schedule");
+  const schedules = await api("/schedules");
   renderScheduleList(schedules);
 }
 
@@ -168,7 +210,19 @@ document.getElementById("theme-refresh").addEventListener("click", async () => {
     renderThemeList(themes);
     setStatus("테마 목록 조회 완료");
   } catch (error) {
-    setStatus(error.message, true);
+    await showErrorModal("테마 목록 조회 실패", error);
+  }
+});
+
+document.getElementById("theme-by-date-form-admin").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const date = document.getElementById("theme-by-date").value;
+    const themes = await api(`/themes?date=${date}`);
+    renderThemeList(themes);
+    setStatus(`날짜(${date}) 기준 테마 조회 완료`);
+  } catch (error) {
+    await showErrorModal("날짜별 테마 조회 실패", error);
   }
 });
 
@@ -250,9 +304,10 @@ document.getElementById("reservation-delete-form").addEventListener("submit", as
   e.preventDefault();
   try {
     const id = document.getElementById("reservation-delete-id").value;
+    const name = document.getElementById("reservation-delete-name").value;
     const confirmed = await confirmAction({
       title: "예약 삭제 확인",
-      message: `예약 ID ${id}를 삭제할까요?`,
+      message: `예약 ID ${id} / 예약자 ${name} 예약을 삭제할까요?`,
       okLabel: "삭제",
       okDanger: true,
     });
@@ -261,7 +316,7 @@ document.getElementById("reservation-delete-form").addEventListener("submit", as
       return;
     }
 
-    await api(`/reservations/${id}`, { method: "DELETE" });
+    await api(`/reservations/${id}?name=${encodeURIComponent(name)}`, { method: "DELETE" });
     await loadReservations();
     setStatus(`예약 #${id} 삭제 완료`);
     e.target.reset();
@@ -284,7 +339,7 @@ document.getElementById("reservation-refresh").addEventListener("click", async (
     await loadReservations();
     setStatus("예약 목록 조회 완료");
   } catch (error) {
-    setStatus(error.message, true);
+    await showErrorModal("예약 목록 조회 실패", error);
   }
 });
 
@@ -330,7 +385,7 @@ document.getElementById("time-refresh").addEventListener("click", async () => {
     await loadTimes();
     setStatus("시간 슬롯 조회 완료");
   } catch (error) {
-    setStatus(error.message, true);
+    await showErrorModal("시간 슬롯 조회 실패", error);
   }
 });
 
@@ -383,7 +438,7 @@ document.getElementById("schedule-form").addEventListener("submit", async (e) =>
       return;
     }
 
-    await api("/schedule", {
+    await api("/schedules", {
       method: "POST",
       body: JSON.stringify({
         date,
@@ -422,7 +477,7 @@ document.getElementById("schedule-delete-form").addEventListener("submit", async
       return;
     }
 
-    await api(`/schedule/${id}`, { method: "DELETE" });
+    await api(`/schedules/${id}`, { method: "DELETE" });
     await loadSchedules();
     setStatus(`스케줄 #${id} 삭제 완료`);
     e.target.reset();
@@ -445,7 +500,19 @@ document.getElementById("schedule-refresh").addEventListener("click", async () =
     await loadSchedules();
     setStatus("스케줄 목록 조회 완료");
   } catch (error) {
-    setStatus(error.message, true);
+    await showErrorModal("스케줄 목록 조회 실패", error);
+  }
+});
+
+document.getElementById("schedule-find-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const id = document.getElementById("schedule-find-id").value;
+    const schedule = await api(`/schedules/${id}`);
+    renderScheduleList([schedule]);
+    setStatus(`스케줄 #${id} 단건 조회 완료`);
+  } catch (error) {
+    await showErrorModal("스케줄 단건 조회 실패", error);
   }
 });
 
@@ -453,6 +520,7 @@ function setTodayDefault() {
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById("reservation-date").value = today;
   document.getElementById("schedule-date").value = today;
+  document.getElementById("theme-by-date").value = today;
 }
 
 setTodayDefault();
