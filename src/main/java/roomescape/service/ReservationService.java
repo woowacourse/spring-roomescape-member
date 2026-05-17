@@ -41,8 +41,11 @@ public class ReservationService {
     public ReservationResult change(long id, ReservationCommand command) {
         Reservation reservation = findReservationWithThrow(id);
         ReservationTime time = findTimeWithThrow(command.timeId());
-        validateAlreadyReservation(command.date(), reservation.getTheme(), time);
+        if (reservation.isSameTime(command.date(), time)) {
+            return ReservationResult.from(reservation);
+        }
 
+        validateAlreadyReservation(command.date(), reservation.getTheme(), time);
         reservation.update(command.date(), time);
         reservationRepository.update(reservation);
 

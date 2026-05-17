@@ -73,4 +73,8 @@ public class Reservation {
             throw new IllegalArgumentException("이미 지난 예약입니다.");
         }
     }
+
+    public boolean isSameTime(LocalDate date, ReservationTime time) {
+        return this.date.isEqual(date) && this.time.equals(time);
+    }
 }

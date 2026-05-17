@@ -56,4 +56,10 @@ public class ReservationFixture {
         ReservationTime time = ReservationTimeFixture.createDefault();
         return Reservation.createNew(name, date, theme, time);
     }
+
+    public static Reservation createWithNameAndDate(String name, LocalDate date) {
+        Theme theme = ThemeFixture.createThemeWithId();
+        ReservationTime time = ReservationTimeFixture.createDefault();
+        return Reservation.createNew(name, date, theme, time);
+    }
 }

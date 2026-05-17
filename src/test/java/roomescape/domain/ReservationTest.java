@@ -95,4 +95,30 @@ class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이전 날짜로 예약 할 수 없습니다.");
     }
+
+    @Test
+    void 같은_날짜와_시간이면_true를_반환한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Reservation reservation = Reservation.createNew("이프", date, theme, reservationTime);
+
+        // when
+        boolean result = reservation.isSameTime(date, reservationTime);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 날짜나_시간이_다르면_false를_반환한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Reservation reservation = Reservation.createNew("이프", date, theme, reservationTime);
+
+        ReservationTime anotherTime = new ReservationTime(2L, LocalTime.of(15, 0), TimeStatus.ACTIVE);
+
+        // when & then
+        assertThat(reservation.isSameTime(date.plusDays(1), reservationTime)).isFalse();
+        assertThat(reservation.isSameTime(date, anotherTime)).isFalse();
+    }
 }
