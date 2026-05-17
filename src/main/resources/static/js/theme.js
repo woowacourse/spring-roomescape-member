@@ -92,7 +92,7 @@ function saveTheme() {
   })
     .then(res => {
       if (res.status === 201) return res.json();
-      throw new Error('테마 추가 실패');
+      return res.json().then(b => { throw new Error(b.message || '테마 추가에 실패했습니다.'); });
     })
     .then(theme => {
       const grid = document.getElementById('theme-grid');
@@ -100,18 +100,20 @@ function saveTheme() {
       grid.appendChild(buildAdminCard(theme));
       closeForm();
     })
-    .catch(err => alert(err.message));
+    .catch(err => showToast(err.message));
 }
 
 function deleteTheme(id, cardEl) {
   if (!confirm('이 테마를 삭제하시겠습니까?')) return;
-  fetch(`${THEME_API}/${id}`, { method: 'DELETE' })
+  fetch(`${THEME_API}/${id}`, {method: 'DELETE'})
     .then(res => {
       if (res.status === 204) {
         cardEl.remove();
         const grid = document.getElementById('theme-grid');
         if (!grid.children.length) document.getElementById('theme-empty').classList.remove('d-none');
+        return;
       }
+      return res.json().then(b => { throw new Error(b.message || '삭제에 실패했습니다.'); });
     })
-    .catch(err => console.error('삭제 실패:', err));
+    .catch(err => showToast(err.message));
 }

@@ -1,18 +1,29 @@
 package roomescape.theme.controller;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminThemeControllerTest {
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     private Map<String, String> themeBody() {
         return Map.of("name", "테마5", "description", "설명", "imageUrl", "https://image.com");
@@ -26,7 +37,8 @@ class AdminThemeControllerTest {
                 .body(themeBody())
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("name", equalTo("테마5"));
     }
 
     @Test

@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationFactory;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationRepositoryTest {
 
@@ -25,11 +26,14 @@ class ReservationRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private ReservationFactory reservationFactory;
+
     @Test
     @DisplayName("예약 저장 성공")
     void 예약_저장_성공() {
         Reservation saved = reservationRepository.save(
-                Reservation.of("현미밥", LocalDate.now().plusDays(1),
+                reservationFactory.create("현미밥", LocalDate.now().plusDays(1),
                         timeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get()));
         assertThat(saved.getId()).isNotNull();
@@ -38,8 +42,8 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("예약 삭제 성공")
     void 예약_삭제_성공() {
-        reservationRepository.deleteById(1L);
+        reservationRepository.deleteById(11L);
 
-        assertThat(timeRepository.findAvailableByDateAndThemeId(LocalDate.of(2026, 5, 10), 1L)).hasSize(3);
+        assertThat(timeRepository.findAvailableByDateAndThemeId(LocalDate.of(2099, 12, 1), 1L)).hasSize(2);
     }
 }

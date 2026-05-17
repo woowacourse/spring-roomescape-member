@@ -1,4 +1,4 @@
-const POPULAR_API = '/themes/top?limit=10';
+const POPULAR_API = '/themes/top/10';
 
 document.addEventListener('DOMContentLoaded', fetchPopularThemes);
 
