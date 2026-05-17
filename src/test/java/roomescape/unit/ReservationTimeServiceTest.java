@@ -1,6 +1,7 @@
-package roomescape.service;
+package roomescape.unit;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import roomescape.exception.BusinessException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
+import roomescape.service.ReservationTimeService;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -37,6 +39,7 @@ class ReservationTimeServiceTest {
     ReservationTimeService reservationTimeService;
 
     @Test
+    @DisplayName("예약 시간을 생성할 수 있다.")
     void 시간_생성_성공() {
         // given
         LocalTime time = LocalTime.of(10, 0);
@@ -53,6 +56,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 생성할 때 이미 존재하는 시간인 경우 에러가 발생한다.")
     void 시간_생성_에러_중복_시간() {
         // given
         LocalTime time = LocalTime.of(10, 0);
@@ -67,14 +71,16 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간 목록을 조회할 수 있다.")
     void 시간_조회_성공() {
         // given
         LocalTime time = LocalTime.of(10, 0);
         ReservationTime reservationTime = new ReservationTime(1L, time);
 
-        // when
         when(reservationTimeQueryingDao.findAllReservationTime(null, null))
                 .thenReturn(List.of(reservationTime));
+
+        // when
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.read(null, null);
 
         // then
@@ -82,6 +88,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 수정할 수 있다.")
     void 시간_수정_성공() {
         // given
         Long reservationTimeId = 1L;
@@ -103,6 +110,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 수정할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 시간_수정_에러_시간_없음() {
         // given
         Long reservationTimeId = 1L;
@@ -117,6 +125,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 삭제할 수 있다.")
     void 시간_삭제_성공() {
         // given
         Long reservationTimeId = 1L;
@@ -135,6 +144,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 삭제할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 시간_삭제_에러_존재하지_않는_시간() {
         // given
         Long reservationTimeId = 1L;
@@ -148,6 +158,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 삭제할 때 예약이 있는 시간인 경우 에러가 발생한다.")
     void 시간_삭제_에러_예약이_있는_시간() {
         // given
         Long reservationTimeId = 1L;
@@ -161,5 +172,4 @@ class ReservationTimeServiceTest {
         // when && then
         Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.delete(reservationTimeId));
     }
-
 }

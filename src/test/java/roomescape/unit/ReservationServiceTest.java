@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.unit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +15,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.BusinessException;
 import roomescape.repository.*;
+import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,7 +91,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 이름에 특수문자가 포함된 경우 에러를 발생한다.")
+    @DisplayName("예약을 생성할 때 이름에 특수문자가 포함된 경우 에러가 발생한다.")
     void 예약_생성_에러_이름_특수문자() {
         // given
         ReservationCreateRequest request = new ReservationCreateRequest("브라운!", date, reservationTimeId, themeId);
@@ -112,7 +113,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 존재하지 않는 예약 시간인 경우 에러를 발생한다.")
+    @DisplayName("예약을 생성할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_예약시간_없음() {
         // given
         ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
@@ -127,7 +128,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 존재하지 않는 테마인 경우 에러를 발생한다.")
+    @DisplayName("예약을 생성할 때 존재하지 않는 테마인 경우 에러가 발생한다.")
     void 예약_생성_에러_테마_없음() {
         // given
         ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
@@ -145,7 +146,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 현재보다 이전의 날짜를 예약하는 경우 에러를 발생한다.")
+    @DisplayName("예약을 생성할 때 현재보다 이전의 날짜인 경우 에러가 발생한다.")
     void 예약_생성_에러_과거_날짜_예약() {
         // given
         ReservationCreateRequest request = new ReservationCreateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
@@ -163,7 +164,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 이미 예약된 시간인 경우 에러를 발생한다.")
+    @DisplayName("예약을 생성할 때 이미 예약된 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_이미_예약() {
         // given
         ReservationCreateRequest request = new ReservationCreateRequest(name, date, reservationTimeId, themeId);
@@ -184,7 +185,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 현재보다 과거인 시간 예약 시 에러가 발생한다.")
+    @DisplayName("예약을 생성할 때 현재보다 과거인 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_과거_시간_예약() {
         // given
         Long reservationTimeId2 = 2L;
@@ -218,7 +219,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 때 현재 시간 예약 시 에러가 발생한다.")
+    @DisplayName("예약을 생성할 때 현재 시간인 경우 에러가 발생한다.")
     void 예약_생성_에러_현재_시간_예약() {
         // given
         Long reservationTimeId2 = 2L;
@@ -252,7 +253,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 데이터가 존재하는 경우 예약 조회할 수 있다.")
+    @DisplayName("예약을 조회할 수 있다.")
     void 예약_조회_성공() {
         // given
         when(reservationQueryingDao.findReservationById(reservationId))
@@ -268,7 +269,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 데이터가 존재하지 않는 경우 에러를 발생한다.")
+    @DisplayName("예약을 조회할 때 존재하지 않는 예약인 경우 에러가 발생한다.")
     void 예약_조회_에러() {
         // given
         when(reservationQueryingDao.findReservationById(reservationId))
@@ -279,7 +280,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 데이터들이 존재하는 경우 목록 조회할 수 있다.")
+    @DisplayName("예약 목록을 조회할 수 있다.")
     void 예약_목록_조회_성공() {
         // given
         Long reservationId2 = 2L;
@@ -336,7 +337,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 이름에 특수문자가 포함된 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 이름에 특수문자가 포함된 경우 에러가 발생한다.")
     void 예약_수정_에러_이름_특수문자() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest("은오!", date, reservationTimeId, themeId);
@@ -358,7 +359,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 현재보다 이전의 날짜를 예약하는 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 현재보다 이전의 날짜인 경우 에러가 발생한다.")
     void 예약_수정_에러_과거_날짜_예약() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
@@ -370,7 +371,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 존재하지 않는 예약인 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 존재하지 않는 예약인 경우 에러가 발생한다.")
     void 예약_수정_에러_예약_없음() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
@@ -385,7 +386,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 존재하지 않는 예약 시간인 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
     void 예약_수정_에러_예약시간_없음() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
@@ -402,7 +403,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 존재하지 않는 테마인 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 존재하지 않는 테마인 경우 에러가 발생한다.")
     void 예약_수정_에러_테마_없음() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
@@ -422,7 +423,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 중복 데이터가 있는 경우 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 이미 예약된 시간인 경우 에러가 발생한다.")
     void 예약_수정_에러_중복_데이터() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
@@ -445,7 +446,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 수정 후 에러가 존재하지 않으면 에러를 발생한다.")
+    @DisplayName("예약을 수정할 때 수정 후 조회되지 않는 경우 에러가 발생한다.")
     void 예약_수정_에러_수정_후_예약_없음() {
         // given
         ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(name, date, reservationTimeId, themeId);
@@ -470,7 +471,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 수정할 때 현재보다 과거인 시간 예약 시 에러가 발생한다.")
+    @DisplayName("예약을 수정할 때 현재보다 과거인 시간인 경우 에러가 발생한다.")
     void 예약_수정_에러_과거_시간_예약() {
         // given
         LocalDateTime createdAt2 = LocalDateTime.now().minusDays(10);
@@ -500,7 +501,6 @@ class ReservationServiceTest {
         when(reservationQueryingDao.findReservationById(reservationId))
                 .thenReturn(Optional.of(reservation2));
 
-
         // when && then
         Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
     }
@@ -520,7 +520,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약을 삭제할 경우 에러를 발생한다.")
+    @DisplayName("예약을 삭제할 때 존재하지 않는 예약인 경우 에러가 발생한다.")
     void 예약_삭제_에러() {
         // given
         when(reservationQueryingDao.existsById(reservationTimeId))
