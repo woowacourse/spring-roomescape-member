@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
@@ -58,9 +58,10 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
         themeRepository.save(theme);
 
-        // when & then
+        // when & then: 무결성 위반 예외를 비즈니스 예외로 변경
         assertThatThrownBy(() -> themeRepository.save(theme))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DuplicateEntityException.class)
+                .hasMessageContaining("이미 존재하는 테마 정보입니다.");
     }
 
     @Test

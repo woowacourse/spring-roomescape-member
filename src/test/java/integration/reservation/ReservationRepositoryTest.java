@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -55,9 +55,10 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         Reservation second = Reservation.createNew("아루", LocalDate.now().plusDays(1), theme, reservationTime);
         reservationRepository.save(first);
 
-        // when & then: 서비스 로직 없이 DB의 UK Constraint 확인
+        // when & then: DB의 UK Constraint 발생 후 비즈니스 예외로 변환
         assertThatThrownBy(() -> reservationRepository.save(second))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DuplicateEntityException.class)
+                .hasMessageContaining("이미 예약이 존재하는 시간입니다");
     }
 
     @Test
