@@ -26,24 +26,23 @@ public class ReservationService {
     }
 
     public List<Reservation> findAll() {
-        return reservationDao.selectAll();
+        return reservationDao.findAll();
     }
 
     public List<Reservation> findByName(String name) {
-        return reservationDao.selectByName(name);
+        return reservationDao.findByName(name);
     }
 
     public Reservation addReservation(String name, LocalDate date, Long timeId, Long themeId, LocalDateTime now) {
-
-        if (!reservationTimeDao.existsById(timeId)) {
-            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
-        }
 
         if (!themeDao.existsById(themeId)) {
             throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
         }
 
-        ReservationTime time = reservationTimeDao.selectById(timeId);
+        ReservationTime time = reservationTimeDao.findById(timeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND)
+        );
+
         Reservation reservation = new Reservation(name, date, time, themeId);
 
         if (reservation.isPast(now)) {
@@ -60,8 +59,11 @@ public class ReservationService {
     }
 
     public void update(Long id, String name, LocalDate date, Long timeId, LocalDateTime now) {
-        Reservation reservation = reservationDao.selectById(id);
-        ReservationTime time = reservationTimeDao.selectById(timeId);
+        Reservation reservation = reservationDao.findById(id).orElseThrow(
+                () -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND)
+        );
+        ReservationTime time = reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         LocalDateTime requestDateTime = LocalDateTime.of(date, time.getStartAt());
         if (requestDateTime.isBefore(now)) {
@@ -78,7 +80,9 @@ public class ReservationService {
     }
 
     public void delete(Long id, String name, LocalDateTime now) {
-        Reservation reservation = reservationDao.selectById(id);
+        Reservation reservation = reservationDao.findById(id).orElseThrow(
+                () -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND)
+        );
 
         validateReservationOwnerAndTime(name, now, reservation);
         reservationDao.delete(id, name);

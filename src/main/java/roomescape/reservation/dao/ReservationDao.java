@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,7 +37,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> selectAll() {
+    public List<Reservation> findAll() {
         String sql = """
                         select r.id as reservation_id,
                             r.name,
@@ -51,7 +52,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Reservation> selectByName(String name) {
+    public List<Reservation> findByName(String name) {
         String sql = """
                         select r.id as reservation_id,
                             r.name,
@@ -67,7 +68,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, name);
     }
 
-    public Reservation selectById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as reservation_id,
                             r.name,
@@ -80,7 +81,12 @@ public class ReservationDao {
                         on r.time_id = t.id
                         WHERE r.id =  ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public boolean isAvailable(Long themeId, LocalDate date, Long timeId) {

@@ -21,7 +21,7 @@ public class ReservationTimeDaoTest {
 
         Long themeId = 2L;
         LocalDate date = LocalDate.parse("2026-05-05");
-        List<TimeAvailability> availableTimes = reservationTimeDao.selectByThemeIdAndDate(themeId, date);
+        List<TimeAvailability> availableTimes = reservationTimeDao.findByThemeIdAndDate(themeId, date);
 
         assertThat(availableTimes.size()).isEqualTo(11);
         assertThat(availableTimes.getFirst().available()).isFalse();

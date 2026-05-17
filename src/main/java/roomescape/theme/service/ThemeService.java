@@ -25,7 +25,8 @@ public class ThemeService {
     }
 
     public Theme findById(Long id) {
-        return themeDao.selectById(id);
+        return themeDao.selectById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public List<Theme> findByTrend(LocalDate from, LocalDate to, int limit) {

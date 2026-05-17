@@ -37,11 +37,11 @@ public class AdminThemeDaoTest {
 
     @Test
     void 테마_단일_조회_테스트() {
-        Theme firstTheme = themeDao.selectById(1L);
+        Theme firstTheme = themeDao.selectById(1L).orElseThrow();
         assertThat(firstTheme.getName()).isEqualTo("은하수");
 
-        Theme secoundTheme = themeDao.selectById(2L);
-        assertThat(secoundTheme.getName()).isEqualTo("지구");
+        Theme secondTheme = themeDao.selectById(2L).orElseThrow();
+        assertThat(secondTheme.getName()).isEqualTo("지구");
     }
 
     @Test

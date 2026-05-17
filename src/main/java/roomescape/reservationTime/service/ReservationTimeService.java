@@ -23,11 +23,11 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> findAll() {
-        return timeDao.selectAll();
+        return timeDao.findAll();
     }
 
     public List<TimeAvailability> findByThemeIdAndDate(Long themeId, LocalDate date) {
-        return timeDao.selectByThemeIdAndDate(themeId, date);
+        return timeDao.findByThemeIdAndDate(themeId, date);
     }
 
     public ReservationTime addReservationTime(LocalTime startAt) {

@@ -39,7 +39,7 @@ public class ReservationDaoTest {
     @Test
     void 이름으로_예약_조회_테스트() {
         String name = "도우너";
-        List<Reservation> expected = reservationDao.selectByName(name);
+        List<Reservation> expected = reservationDao.findByName(name);
 
         String sql =
                 """

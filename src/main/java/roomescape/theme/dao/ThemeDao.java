@@ -2,6 +2,8 @@ package roomescape.theme.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -37,10 +39,14 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Theme selectById(Long id) {
+    public Optional<Theme> selectById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Theme> selectByTrend(LocalDate from, LocalDate to, int limit) {

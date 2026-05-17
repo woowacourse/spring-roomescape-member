@@ -39,8 +39,7 @@ public class AdminThemeController {
     @GetMapping("/themes/{id}")
     public ResponseEntity<AdminThemeResponse> readById(@PathVariable Long id) {
         Theme theme = themeService.findById(id);
-        AdminThemeResponse adminThemeResponse = AdminThemeResponse.from(theme);
-        return ResponseEntity.ok(adminThemeResponse);
+        return ResponseEntity.ok(AdminThemeResponse.from(theme));
     }
 
     @PostMapping("/themes")
