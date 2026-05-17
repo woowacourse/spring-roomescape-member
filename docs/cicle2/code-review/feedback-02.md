@@ -145,7 +145,18 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
+### 9. 컨트롤러 HTTP Response 테스트 추가
+
+> 컨트롤러 테스트는 성공 케이스 중심으로 작성되어 있고, 서비스 테스트에서 정책 실패 케이스를 많이 검증하고 있는데,  
+> 사이클2에서는 정책 위반이 실제 HTTP 응답으로 어떻게 내려가는가도 중요하다고 생각합니다.  
+> 서비스 예외가 ProblemDetail 응답으로 잘 변환되는지 대표적인 실패 케이스를 컨트롤러나 통합 테스트에서 고정해보면 어떨까요?
+
+- 의도/기준/생각
+    - 실패 케이스 - 예외 응답 검증용 테스트 케이스 추
+
+---
+
+###                                    
 
 >
 
@@ -154,7 +165,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
+###                                    
 
 >
 
@@ -163,7 +174,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
+###                                    
 
 >
 
@@ -172,7 +183,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
+###                                    
 
 >
 
@@ -181,7 +192,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
+###                                    
 
 >
 
@@ -190,16 +201,7 @@ public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate da
 
 ---
 
-###                                
-
->
-
-- 의도/기준/생각
-  - 
-
----
-
-###                                
+###                                    
 
 >
 

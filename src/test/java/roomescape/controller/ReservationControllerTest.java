@@ -1,22 +1,12 @@
 package roomescape.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,7 +17,20 @@ import roomescape.controller.dto.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.InvalidOwnershipException;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.service.ReservationService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -42,6 +45,47 @@ class ReservationControllerTest {
     private ReservationService reservationService;
 
     @Test
+    @DisplayName("전체 예약을 조회하고 200 상태 코드를 반환한다.")
+    void getReservations() throws Exception {
+        given(reservationService.allReservations())
+                .willReturn(List.of(createMockReservation()));
+
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("식별자를 통해 단건 예약을 조회하고 200 상태 코드를 반환한다.")
+    void getReservationById() throws Exception {
+        given(reservationService.findReservationById(anyLong()))
+                .willReturn(createMockReservation());
+
+        mockMvc.perform(get("/reservations/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("브라운"));
+    }
+
+    @Test
+    @DisplayName("필수 쿼리 파라미터(userName) 누락 시 400 상태 코드를 반환한다.")
+    void missingRequestParam() throws Exception {
+        mockMvc.perform(delete("/reservations/1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("JSON 형식이 잘못된 경우 400 상태 코드를 반환한다.")
+    void malformedJsonRequest() throws Exception {
+        String invalidJson = "{\"name\": \"브라운\", \"date\": \"잘못된날짜포맷\"}";
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("BAD_REQUEST_FORMAT"));
+    }
+
+    @Test
     @DisplayName("유효한 데이터로 예약을 생성하고 201 상태 코드와 Location 헤더를 반환한다.")
     void createReservation() throws Exception {
         ReservationRequest request = new ReservationRequest("브라운", LocalDate.now(), 1L, 1L);
@@ -54,12 +98,14 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 데이터로 예약 생성 시 400 상태 코드를 반환한다.")
+    @DisplayName("DTO 검증 실패 시 400 예외와 ProblemDetail 포맷을 반환한다.")
     void createReservationWithInvalidData() throws Exception {
         ReservationRequest request = new ReservationRequest("", LocalDate.now(), 1L, 1L);
 
         performPost("/reservations", request)
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_REQUEST_BODY"))
+                .andExpect(jsonPath("$.errors").isArray());
     }
 
     @Test
@@ -71,6 +117,17 @@ class ReservationControllerTest {
 
         performPut("/reservations/1", "브라운", request)
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 자원 요청 시 404 예외와 커스텀 코드를 반환한다.")
+    void findNonExistentReservation() throws Exception {
+        given(reservationService.findReservationById(anyLong()))
+                .willThrow(new ReservationNotFoundException(999L));
+
+        performPut("/reservations/999", "브라운", new ReservationPutRequest("네오", LocalDate.now(), 1L, 1L))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("RESERVATION_NOT_FOUND"));
     }
 
     @Test
@@ -89,6 +146,50 @@ class ReservationControllerTest {
     void deleteReservation() throws Exception {
         performDelete("/reservations/1", "브라운")
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("권한이 없는 예약 제어 시 403 예외와 커스텀 코드를 반환한다.")
+    void deleteWithoutOwnership() throws Exception {
+        doThrow(new InvalidOwnershipException())
+                .when(reservationService).removeReservation(anyLong(), any());
+
+        performDelete("/reservations/1", "해커")
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("INVALID_OWNERSHIP"));
+    }
+
+    @Test
+    @DisplayName("도메인 검증 실패(IllegalArgument) 시 400 상태 코드를 반환한다.")
+    void createReservationIllegalArgument() throws Exception {
+        given(reservationService.saveReservation(any(), any(), any(), any()))
+                .willThrow(new IllegalArgumentException("테스트용 에러 메시지"));
+
+        performPost("/reservations", new ReservationRequest("브라운", LocalDate.now(), 1L, 1L))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_DOMAIN_STATE"));
+    }
+
+    @Test
+    @DisplayName("데이터 중복 발생(DuplicateKey) 시 409 상태 코드를 반환한다.")
+    void createReservationDuplicateKey() throws Exception {
+        given(reservationService.saveReservation(any(), any(), any(), any()))
+                .willThrow(new DuplicateKeyException("중복 데이터 발생"));
+
+        performPost("/reservations", new ReservationRequest("브라운", LocalDate.now(), 1L, 1L))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_KEY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("데이터 무결성 위반(DataIntegrity) 시 400 상태 코드를 반환한다.")
+    void createReservationDataIntegrity() throws Exception {
+        given(reservationService.saveReservation(any(), any(), any(), any()))
+                .willThrow(new DataIntegrityViolationException("외래키 위반"));
+
+        performPost("/reservations", new ReservationRequest("브라운", LocalDate.now(), 1L, 1L))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("DATA_INTEGRITY_VIOLATION"));
     }
 
     private ResultActions performPost(String url, Object request) throws Exception {
