@@ -215,17 +215,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                         rs.getString("theme_description"),
                         rs.getString("theme_thumbnail_url")
                 ),
-                toStatue(rs.getString("status"))
+                toStatus(rs.getString("status"))
         );
     }
 
-    private ReservationStatus toStatue(String statue) {
+    private ReservationStatus toStatus(String statue) {
         return switch (statue) {
             case "PENDING" -> PendingStatus.getInstance();
             case "CONFIRMED" -> ConfirmedStatus.getInstance();
             case "COMPLETED" -> CompletedStatus.getInstance();
             case "CANCELLED" -> CancelledStatus.getInstance();
-            default -> throw new IllegalArgumentException("DB에서 존재하지 않는 예약 상태입니다.");
+            default -> throw new IllegalArgumentException("존재하지 않는 예약 상태입니다.");
         };
     }
 }
