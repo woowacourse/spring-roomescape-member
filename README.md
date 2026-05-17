@@ -484,7 +484,7 @@ erDiagram
 - **ReservationService**
 - [x] DB 이중조회 해결
 - [ ] 도메인 커스텀 예외 생성
-- [ ] 자기 자신이 중복으로 검증되는지 테스트 생성
+- [x] 자기 자신이 중복으로 검증되는지 테스트 생성
 
 
 - **ReservationServiceTest**
