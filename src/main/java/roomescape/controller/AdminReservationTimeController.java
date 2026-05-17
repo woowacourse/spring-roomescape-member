@@ -52,7 +52,8 @@ public class AdminReservationTimeController {
     @Operation(summary = "예약 시간 삭제", description = "ID로 예약 시간 슬롯을 삭제합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "예약 시간 삭제 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 시간 ID")
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 시간 ID"),
+            @ApiResponse(responseCode = "409", description = "해당 시간에 예약이 존재하여 삭제 불가")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(

@@ -55,7 +55,7 @@ public class AdminReservationController {
     @Operation(summary = "예약 생성", description = "새로운 예약을 생성합니다. 동일 날짜·시간·테마의 중복 예약은 불가합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "예약 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "중복 예약 오류")
+            @ApiResponse(responseCode = "409", description = "중복 예약 오류")
     })
     @PostMapping
     public ResponseEntity<Void> createReservation(@RequestBody CreateReservationRequest createReservationRequest) {
