@@ -43,7 +43,7 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<TimeResponse>> getReservations(
-        @RequestParam LocalDate date, @RequestParam @NotBlank @Size(max = 100) Long themeId
+        @RequestParam LocalDate date, @RequestParam Long themeId
     ) {
         List<TimeResponse> responses = reservationService.getReservations(date, themeId);
         return ResponseEntity.ok(responses);
@@ -51,7 +51,7 @@ public class ReservationController {
 
     @GetMapping("/reservations/mine")
     public ResponseEntity<MyReservationsResponse> getMyReservations(
-        @RequestParam String name
+        @RequestParam @NotBlank @Size(max = 100) String name
     ) {
         MyReservationsResponse response = reservationService.getMyReservations(name);
         return ResponseEntity.ok(response);
