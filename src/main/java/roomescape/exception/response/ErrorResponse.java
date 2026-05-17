@@ -9,4 +9,9 @@ public record ErrorResponse(
     public ErrorResponse(ErrorCode errorCode) {
         this(errorCode.getCode(), errorCode.getMessage());
     }
+
+    public ErrorResponse(String exceptionCode, String message) {
+        this.exceptionCode = exceptionCode;
+        this.message = message;
+    }
 }

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -90,19 +91,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         if (!isAlreadyLogged(exception)) {
             log.warn("스프링 기본 예외 처리: path={}, status={}, exception={}, message={}",
-                    getPath(request), statusCode.value(), exception.getClass().getSimpleName(), exception.getMessage());
+                    getPath(request),
+                    statusCode.value(),
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage());
         }
-        return super.handleExceptionInternal(exception, body, headers, statusCode, request);
-    }
-
-    private String getPath(WebRequest request) {
-        return request.getDescription(false).replace("uri=", "");
+        return ResponseEntity
+                .status(statusCode)
+                .body(new ErrorResponse(HttpStatus.valueOf(statusCode.value()).name(), exception.getMessage()));
     }
 
     private boolean isAlreadyLogged(Exception exception) {
         return exception instanceof MethodArgumentNotValidException
                 || exception instanceof HttpMessageNotReadableException
                 || exception instanceof TypeMismatchException;
+    }
+
+    private String getPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
     }
 
     @ExceptionHandler(RoomescapeException.class)
