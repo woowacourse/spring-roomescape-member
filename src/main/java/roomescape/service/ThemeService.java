@@ -58,7 +58,7 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         if (reservationDao.existsByThemeId(id)) {
-            throw new ResourceDeleteConflicted("기존 예약이 존재하는 테마는 삭제할 수 없습니다.", "DUPLICATED_TIME");
+            throw new ResourceDeleteConflicted("기존 예약이 존재하는 테마는 삭제할 수 없습니다.", "INVALID_DELETE_EXISTS");
         }
         themeDao.deleteById(id);
     }

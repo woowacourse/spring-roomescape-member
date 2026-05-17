@@ -7,6 +7,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.ResourceDeleteConflicted;
 
 @Service
 public class ReservationTimeService {
@@ -38,7 +39,7 @@ public class ReservationTimeService {
     private void validateHasTime(Long id) {
         boolean hasReservation = reservationDao.existsByTimeId(id);
         if (hasReservation) {
-            throw new IllegalArgumentException("예약이 존재해 삭제할 수 없습니다");
+            throw new ResourceDeleteConflicted("예약이 존재해 삭제할 수 없습니다", "INVALID_DELETE_EXISTS");
         }
     }
 }
