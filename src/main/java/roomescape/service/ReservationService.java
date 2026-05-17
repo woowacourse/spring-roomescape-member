@@ -40,6 +40,11 @@ public class ReservationService {
         }
     }
 
+    public ReservationResponse findById(long id) {
+        Reservation reservation = reservationDao.findById(id);
+        return ReservationResponse.from(reservation);
+    }
+
     public List<ReservationResponse> findAllByName(String username) {
         return reservationDao.findByUserName(username).stream()
                 .map(ReservationResponse::from)

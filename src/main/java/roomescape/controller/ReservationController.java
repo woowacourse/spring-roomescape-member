@@ -1,8 +1,10 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +33,21 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse createReservation(@Valid @RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         LocalDateTime now = LocalDateTime.now();
-        return reservationService.save(now, request);
+        ReservationResponse response = reservationService.save(now, request);
+        URI location = URI.create("/reservations/" + response.id());
+        return ResponseEntity
+                .created(location)
+                .body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ReservationResponse getReservation(
+            @PathVariable long id
+    ) {
+        return reservationService.findById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
