@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.dto.ErrorResponse;
 import roomescape.dto.FieldErrorResponse;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableEntityException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -57,12 +60,40 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(RoomescapeException.class)
-    public ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException e, HttpServletRequest request) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e, HttpServletRequest request) {
         ErrorCode error = e.getErrorCode();
         ErrorResponse errorResponse = new ErrorResponse(
                 error.getCode(), request.getRequestURI(), error.getMessage()
         );
-        return ResponseEntity.status(error.getStatus()).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e, HttpServletRequest request) {
+        ErrorCode error = e.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(
+                error.getCode(), request.getRequestURI(), error.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(UnprocessableEntityException.class)
+    public ResponseEntity<ErrorResponse> handleUnprocessableEntityException(UnprocessableEntityException e,
+                                                                            HttpServletRequest request) {
+        ErrorCode error = e.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(
+                error.getCode(), request.getRequestURI(), error.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e, HttpServletRequest request) {
+        ErrorCode error = e.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(
+                error.getCode(), request.getRequestURI(), error.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
