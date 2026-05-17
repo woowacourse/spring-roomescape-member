@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "INVALID_RESERVATION_DATE": "예약 날짜가 선택되지 않았습니다. 방문하실 날짜를 목록에서 선택해 주세요.",
         "RESERVATION_NOT_FOUND": "조회 요청하신 예약 내역을 찾을 수 없습니다. 예약 번호를 다시 확인해 주세요.",
         "RESERVATION_CANNOT_CANCEL": "예약 취소/변경이 불가능한 상태입니다. 취소는 방문 전날 자정까지만 가능하니 예약 정책을 확인해 주세요.",
+        "RESERVATION_CANNOT_UPDATE": "예약 변경이 불가능한 상태입니다. 변경은 방문 전날 자정까지만 가능하니 예약 정책을 확인해 주세요.",
         "RESERVATION_DUPLICATED": "선택하신 시간대에 이미 다른 예약이 존재합니다. 다른 시간이나 테마를 선택해 주세요.",
 
         "RESERVATION_DATE_DUPLICATED": "이미 시스템에 등록된 날짜입니다. 목록에 없는 새로운 날짜를 등록해 주세요.",
