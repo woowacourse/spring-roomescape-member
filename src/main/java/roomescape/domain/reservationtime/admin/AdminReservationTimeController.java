@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservationtime.ReservationTimeService;
+import roomescape.domain.reservationtime.admin.dto.CreateTimeRequest;
+import roomescape.domain.reservationtime.admin.dto.CreateTimeResponse;
+import roomescape.domain.reservationtime.admin.dto.ReservationTimeResponse;
 import roomescape.support.auth.AdminRequestValidator;
 
 @RestController
