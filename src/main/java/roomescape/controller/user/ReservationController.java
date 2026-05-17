@@ -47,12 +47,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam String name) {
+    public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam(required = false) String name) {
         return ResponseEntity.ok(reservationService.findByName(name));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteByName(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }

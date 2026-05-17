@@ -88,8 +88,8 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<ReservationRow> findByName(String name) {
-        return Optional.empty();
+    public List<ReservationRow> findByName(String name) {
+        return List.of();
     }
 
     @Override
