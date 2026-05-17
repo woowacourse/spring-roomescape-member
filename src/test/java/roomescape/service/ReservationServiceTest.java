@@ -58,7 +58,7 @@ class ReservationServiceTest {
 
     @DisplayName("지나간 날짜/시간에 대한 예약은 거부한다")
     @Test
-    void 지나간_시점에_대한_예약_요청에는_PastDateBookingException_예외를_던진다() {
+    void 지나간_시점에_대한_예약_요청에는_PastDateReservationException_예외를_던진다() {
         ReservationRequestDTO outdatedRequest = new ReservationRequestDTO(
                 "sample",
                 LocalDate.now().minusDays(1),
@@ -203,7 +203,7 @@ class ReservationServiceTest {
     @DisplayName("사용자가 본인의 예약의 날짜나 시간을 변경한다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 얘약_id가_일치하는_예약의_날짜나_시간을_변경하고_ReservationResponseDTO를_리턴한다() {
+    void 예약_id가_일치하는_예약의_날짜나_시간을_변경하고_ReservationResponseDTO를_리턴한다() {
         // given
         ReservationResponseDTO added = reservationService.reserve(new ReservationRequestDTO(
                 "루드비코", LocalDate.now().plusDays(1), 1L, 1L
@@ -233,7 +233,7 @@ class ReservationServiceTest {
     @DisplayName("과거 시점으로 변경할 수는 없다")
     @Sql("/initialize_theme_and_time.sql")
     @Test
-    void 과거_시점으로_변경하면_PastDateBookingException을_던진다() {
+    void 과거_시점으로_변경하면_PastDateReservationException을_던진다() {
         // given
         ReservationResponseDTO added = reservationService.reserve(new ReservationRequestDTO(
                 "루드비코", LocalDate.now().plusDays(1), 1L, 1L
