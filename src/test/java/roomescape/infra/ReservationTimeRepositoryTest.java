@@ -18,11 +18,11 @@ import roomescape.repository.ReservationTimeRepository;
 })
 class ReservationTimeRepositoryTest {
 
-    @Autowired
-    private ReservationTimeRepository timeRepository;
-
     private static final LocalTime TEN = LocalTime.of(10, 0);
     private static final LocalTime TWELVE = LocalTime.of(12, 0);
+
+    @Autowired
+    private ReservationTimeRepository timeRepository;
 
     @Test
     void 예약시간을_저장한다() {

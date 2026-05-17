@@ -22,6 +22,8 @@ import roomescape.repository.ThemeRepository;
 @SpringBootTest
 class ReservationTimeServiceTest {
 
+    private static final LocalTime TEN = LocalTime.of(10, 0);
+
     @Autowired
     private ReservationTimeService reservationTimeService;
 
@@ -30,8 +32,6 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    private static final LocalTime TEN = LocalTime.of(10, 0);
 
     @Test
     void 예약시간을_추가한다() {

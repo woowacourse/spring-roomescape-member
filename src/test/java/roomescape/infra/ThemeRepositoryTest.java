@@ -19,12 +19,12 @@ import roomescape.repository.ThemeRepository;
 })
 class ThemeRepositoryTest {
 
-    @Autowired
-    private ThemeRepository themeRepository;
-
     private static final String THEME_NAME = "방탈출 제목";
     private static final String THEME_DESCRIPTION = "방탈출 설명";
     private static final String THEME_THUMBNAIL = "thumbnail.png";
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     void 테마를_저장한다() {

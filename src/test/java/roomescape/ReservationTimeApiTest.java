@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,9 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeApiTest {
+
+    public static final String FUTURE_FIRST_DATE = LocalDate.now().plusDays(1).toString();
+    public static final String FUTURE_SECOND_DATE = LocalDate.now().plusDays(2).toString();
 
     @Test
     void 시간_조회_빈목록() {
@@ -104,7 +108,7 @@ class ReservationTimeApiTest {
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times?date=" + FUTURE_FIRST_DATE + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -117,7 +121,7 @@ class ReservationTimeApiTest {
         createTime("11:00");
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times?date=" + FUTURE_FIRST_DATE + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
@@ -129,10 +133,10 @@ class ReservationTimeApiTest {
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
         Integer reservedTimeId = createTime("10:00");
         createTime("11:00");
-        createReservation("브라운", "2026-08-05", reservedTimeId, themeId);
+        createReservation("브라운", FUTURE_FIRST_DATE, reservedTimeId, themeId);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times?date=" + FUTURE_FIRST_DATE + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
@@ -145,10 +149,10 @@ class ReservationTimeApiTest {
         Integer themeA = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
         Integer themeB = createTheme("추리", "단서를 찾아라", "https://example.com/mystery.jpg");
         Integer timeId = createTime("10:00");
-        createReservation("브라운", "2026-08-05", timeId, themeB);
+        createReservation("브라운", FUTURE_FIRST_DATE, timeId, themeB);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeA)
+                .when().get("/times?date=" + FUTURE_FIRST_DATE + "&themeId=" + themeA)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -159,10 +163,10 @@ class ReservationTimeApiTest {
     void 가용_시간_조회_다른_날짜의_예약은_영향_없음() {
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
         Integer timeId = createTime("10:00");
-        createReservation("브라운", "2026-08-05", timeId, themeId);
+        createReservation("브라운", FUTURE_FIRST_DATE, timeId, themeId);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-06&themeId=" + themeId)
+                .when().get("/times?date=" + FUTURE_SECOND_DATE + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))

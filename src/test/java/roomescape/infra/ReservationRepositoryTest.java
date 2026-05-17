@@ -26,6 +26,11 @@ import roomescape.repository.ThemeRepository;
 })
 class ReservationRepositoryTest {
 
+    private static final LocalDate FUTURE_SECOND_DATE = LocalDate.now().plusDays(2);
+    private static final LocalDate FUTURE_THIRD_DATE = LocalDate.now().plusDays(3);
+    private static final LocalTime TEN = LocalTime.of(10, 0);
+    private static final LocalTime TWELVE = LocalTime.of(12, 0);
+
     @Autowired
     private ReservationRepository reservationRepository;
 
@@ -41,7 +46,7 @@ class ReservationRepositoryTest {
         Theme theme = createTheme();
 
         Long saveId = reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-15"), reservationTime, theme));
+                "브라운", FUTURE_THIRD_DATE, reservationTime, theme));
 
         Optional<Reservation> reservation = reservationRepository.findById(saveId);
 
@@ -49,23 +54,23 @@ class ReservationRepositoryTest {
 
         assertThat(reservation.get().getId()).isNotNull();
         assertThat(reservation.get().getName()).isEqualTo("브라운");
-        assertThat(reservation.get().getDate()).isEqualTo(LocalDate.parse("2026-05-15"));
+        assertThat(reservation.get().getDate()).isEqualTo(FUTURE_THIRD_DATE);
         assertThat(reservation.get().getTime().getId()).isEqualTo(reservationTime.getId());
         assertThat(reservation.get().getTheme().getId()).isEqualTo(theme.getId());
     }
 
     @Test
     void 모든_예약을_날짜_내림차순_시간_오름차순으로_조회한다() {
-        ReservationTime tenClock = createReservationTime(LocalTime.of(10, 0));
-        ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
+        ReservationTime tenClock = createReservationTime(TEN);
+        ReservationTime twelveClock = createReservationTime(TWELVE);
         Theme theme = createTheme();
 
         reservationRepository.save(new Reservation(
-                "브리", LocalDate.parse("2026-05-15"), tenClock, theme));
+                "브리", FUTURE_SECOND_DATE, tenClock, theme));
         reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-16"), twelveClock, theme));
+                "브라운", FUTURE_THIRD_DATE, twelveClock, theme));
         reservationRepository.save(new Reservation(
-                "브리", LocalDate.parse("2026-05-16"), tenClock, theme));
+                "브리", FUTURE_THIRD_DATE, tenClock, theme));
 
         List<Reservation> reservations = reservationRepository.findAll();
 
@@ -73,21 +78,21 @@ class ReservationRepositoryTest {
 
         Reservation firstResult = reservations.getFirst();
         assertThat(firstResult.getName()).isEqualTo("브리");
-        assertThat(firstResult.getDate()).isEqualTo(LocalDate.parse("2026-05-16"));
+        assertThat(firstResult.getDate()).isEqualTo(FUTURE_THIRD_DATE);
         assertThat(firstResult.getTime().getId()).isEqualTo(tenClock.getId());
         assertThat(firstResult.getTheme().getId()).isEqualTo(theme.getId());
     }
 
     @Test
     void 예약_id에_맞는_예약을_조회한다() {
-        ReservationTime tenClock = createReservationTime(LocalTime.of(10, 0));
-        ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
+        ReservationTime tenClock = createReservationTime(TEN);
+        ReservationTime twelveClock = createReservationTime(TWELVE);
         Theme theme = createTheme();
 
         reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-16"), twelveClock, theme));
+                "브라운", FUTURE_THIRD_DATE, twelveClock, theme));
         Long findId = reservationRepository.save(new Reservation(
-                "브리", LocalDate.parse("2026-05-16"), tenClock, theme));
+                "브리", FUTURE_THIRD_DATE, tenClock, theme));
 
         Optional<Reservation> reservation = reservationRepository.findById(findId);
 
@@ -95,16 +100,16 @@ class ReservationRepositoryTest {
 
         assertThat(reservation.get().getId()).isNotNull();
         assertThat(reservation.get().getName()).isEqualTo("브리");
-        assertThat(reservation.get().getDate()).isEqualTo(LocalDate.parse("2026-05-16"));
+        assertThat(reservation.get().getDate()).isEqualTo(FUTURE_THIRD_DATE);
         assertThat(reservation.get().getTime().getId()).isEqualTo(tenClock.getId());
         assertThat(reservation.get().getTheme().getId()).isEqualTo(theme.getId());
     }
 
     @Test
     void 날짜_테마에_따른_예약_id_조회() {
-        LocalDate findDate = LocalDate.parse("2026-05-16");
-        ReservationTime tenClock = createReservationTime(LocalTime.of(10, 0));
-        ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
+        LocalDate findDate = FUTURE_THIRD_DATE;
+        ReservationTime tenClock = createReservationTime(TEN);
+        ReservationTime twelveClock = createReservationTime(TWELVE);
         Theme findTheme = createTheme();
 
         Long firstSaveId = reservationRepository.save(new Reservation(
@@ -112,7 +117,7 @@ class ReservationRepositoryTest {
         Long secondSaveId = reservationRepository.save(new Reservation(
                 "브리", findDate, tenClock, findTheme));
         Long thirdSaveId = reservationRepository.save(new Reservation(
-                "브리", LocalDate.parse("2026-05-15"), tenClock, findTheme));
+                "브리", FUTURE_THIRD_DATE, tenClock, findTheme));
 
         Set<Long> findReservationsId = reservationRepository.findReservedTimeIdsByDateAndThemeId(findDate,
                 findTheme.getId());
@@ -125,11 +130,11 @@ class ReservationRepositoryTest {
 
     @Test
     void 시간_id_존재여부() {
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();
 
         reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-15"), reservationTime, theme));
+                "브라운", FUTURE_THIRD_DATE, reservationTime, theme));
 
         assertThat(reservationRepository.existsByTimeId(reservationTime.getId())).isTrue();
         assertThat(reservationRepository.existsByTimeId(2L)).isFalse();
@@ -137,11 +142,11 @@ class ReservationRepositoryTest {
 
     @Test
     void 테마_id_존재여부() {
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();
 
         reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-15"), reservationTime, theme));
+                "브라운", FUTURE_THIRD_DATE, reservationTime, theme));
 
         assertThat(reservationRepository.existsByThemeId(theme.getId())).isTrue();
         assertThat(reservationRepository.existsByThemeId(2L)).isFalse();
@@ -149,8 +154,8 @@ class ReservationRepositoryTest {
 
     @Test
     void 날짜_시간_테마_id가_존재한다() {
-        LocalDate findDate = LocalDate.parse("2026-05-16");
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+        LocalDate findDate = FUTURE_THIRD_DATE;
+        ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();
 
         reservationRepository.save(new Reservation(
@@ -161,11 +166,11 @@ class ReservationRepositoryTest {
 
     @Test
     void 예약을_삭제한다() {
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();
 
         Long saveId = reservationRepository.save(new Reservation(
-                "브라운", LocalDate.parse("2026-05-15"), reservationTime, theme));
+                "브라운", FUTURE_SECOND_DATE, reservationTime, theme));
         reservationRepository.deleteById(saveId);
 
         assertThat(reservationRepository.findById(saveId)).isEmpty();

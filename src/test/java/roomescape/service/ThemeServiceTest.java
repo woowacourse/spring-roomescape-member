@@ -23,6 +23,10 @@ import roomescape.repository.ReservationTimeRepository;
 @SpringBootTest
 class ThemeServiceTest {
 
+    private static final String THEME_NAME = "방탈출 제목";
+    private static final String THEME_DESCRIPTION = "방탈출 설명";
+    private static final String THEME_THUMBNAIL = "thumbnail.png";
+
     @Autowired
     private ThemeService themeService;
 
@@ -31,10 +35,6 @@ class ThemeServiceTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    private static final String THEME_NAME = "방탈출 제목";
-    private static final String THEME_DESCRIPTION = "방탈출 설명";
-    private static final String THEME_THUMBNAIL = "thumbnail.png";
 
     @Test
     void 테마를_추가한다() {
