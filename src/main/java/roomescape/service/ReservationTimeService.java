@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -35,7 +36,13 @@ public class ReservationTimeService {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
         }
 
-        Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
+        Long generatedId;
+        try {
+            generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
+
         return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
 
