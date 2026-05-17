@@ -15,8 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.time.ReservationTimeService;
 
 @WebMvcTest(AdminReservationTimeController.class)
@@ -63,11 +62,11 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
-    void 존재하지_않는_예약시간_삭제시_404() throws Exception {
-        willThrow(new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND))
-                .given(reservationTimeService).delete(0L);
+    void 사용_중인_예약시간_삭제시_409() throws Exception {
+        willThrow(new AlreadyInUseException("예약 시간에 해당하는 예약이 있습니다."))
+                .given(reservationTimeService).delete(1L);
 
-        mockMvc.perform(delete("/api/admin/times/0"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/admin/times/1"))
+                .andExpect(status().isConflict());
     }
 }

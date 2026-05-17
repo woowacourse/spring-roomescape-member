@@ -5,15 +5,14 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.ReservationTimesResponse;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -25,6 +24,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = new ReservationTime(
                 reservationTimeRequest.startAt()
@@ -34,22 +34,23 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(saved);
     }
 
-    public List<ReservationTimeResponse> read() {
-        return reservationTimeRepository.findAll().stream()
+    public ReservationTimesResponse read() {
+        List<ReservationTimeResponse> reservationTimesResponse = reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+
+        return ReservationTimesResponse.from(reservationTimesResponse);
     }
 
+    @Transactional
     public void delete(Long id) {
-        reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         if (reservationRepository.existsByTimeId(id)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
+            throw new AlreadyInUseException("예약 시간에 해당하는 예약이 있습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTimeResponse> readAvailableTimes(Long themeId, LocalDate date) {
+    public ReservationTimesResponse readAvailableTimes(Long themeId, LocalDate date) {
 
         List<LocalTime> reservedTimes = reservationRepository.findByThemeAndDate(themeId, date).stream()
                 .map(m -> m.getTime().getStartAt())
@@ -59,6 +60,9 @@ public class ReservationTimeService {
                 .filter(r -> !reservedTimes.contains(r.getStartAt()))
                 .toList();
 
-        return availableTimes.stream().map(ReservationTimeResponse::from).toList();
+        List<ReservationTimeResponse> reservationTimesResponse = availableTimes.stream()
+                .map(ReservationTimeResponse::from).toList();
+
+        return ReservationTimesResponse.from(reservationTimesResponse);
     }
 }

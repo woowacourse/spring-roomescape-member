@@ -15,15 +15,15 @@
 
     async function reloadAll() {
         try {
-            const [reservations, themes, times] = await Promise.all([
+            const [resResult, themesResult, times] = await Promise.all([
                 api.listReservations(null, resPage, PAGE_SIZE),
                 api.listThemes(themePage, PAGE_SIZE),
                 api.listTimes()
             ]);
-            hasMoreRes = reservations.length === PAGE_SIZE;
-            hasMoreThemes = themes.length === PAGE_SIZE;
-            renderReservations(reservations);
-            renderThemes(themes);
+            hasMoreRes = resResult.hasNext;
+            hasMoreThemes = themesResult.hasNext;
+            renderReservations(resResult.items);
+            renderThemes(themesResult.items);
             renderTimes(times);
         } catch (e) {
             modal.alert({title: '데이터 로드 실패', message: e.message});
@@ -82,17 +82,17 @@
         if (resPage > 0) {
             document.getElementById('res-prev').addEventListener('click', async () => {
                 resPage--;
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = items.length === PAGE_SIZE;
-                renderReservations(items);
+                const result = await api.listReservations(null, resPage, PAGE_SIZE);
+                hasMoreRes = result.hasNext;
+                renderReservations(result.items);
             });
         }
         if (hasMoreRes) {
             document.getElementById('res-next').addEventListener('click', async () => {
                 resPage++;
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = items.length === PAGE_SIZE;
-                renderReservations(items);
+                const result = await api.listReservations(null, resPage, PAGE_SIZE);
+                hasMoreRes = result.hasNext;
+                renderReservations(result.items);
             });
         }
     }
@@ -146,17 +146,17 @@
         if (themePage > 0) {
             document.getElementById('theme-prev').addEventListener('click', async () => {
                 themePage--;
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = items.length === PAGE_SIZE;
-                renderThemes(items);
+                const result = await api.listThemes(themePage, PAGE_SIZE);
+                hasMoreThemes = result.hasNext;
+                renderThemes(result.items);
             });
         }
         if (hasMoreThemes) {
             document.getElementById('theme-next').addEventListener('click', async () => {
                 themePage++;
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = items.length === PAGE_SIZE;
-                renderThemes(items);
+                const result = await api.listThemes(themePage, PAGE_SIZE);
+                hasMoreThemes = result.hasNext;
+                renderThemes(result.items);
             });
         }
     }
@@ -196,9 +196,13 @@
 
     async function onDelete(kind, id) {
         const map = {
-            reservation: {title: '예약 폐기', msg: '이 예약을 폐기하면 복구할 수 없습니다.', call: api.deleteReservation},
-            theme: {title: '사건 폐기', msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.', call: api.deleteTheme},
-            time: {title: '시간 슬롯 폐기', msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: api.deleteTime}
+            reservation: {
+                title: '예약 폐기',
+                msg: '이 예약을 폐기하면 복구할 수 없습니다.',
+                call: (id) => api.deleteReservationByAdmin(id)
+            },
+            theme: {title: '사건 폐기', msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.', call: (id) => api.deleteTheme(id)},
+            time: {title: '시간 슬롯 폐기', msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: (id) => api.deleteTime(id)}
         };
         const m = map[kind];
         const ok = await modal.confirm({title: m.title, message: m.msg, okText: '폐기 확정', danger: true});
@@ -206,17 +210,17 @@
         try {
             await m.call(id);
             if (kind === 'reservation') {
-                const items = await api.listReservations(null, resPage, PAGE_SIZE);
-                if (items.length === 0 && resPage > 0) resPage--;
+                const check = await api.listReservations(null, resPage, PAGE_SIZE);
+                if (check.items.length === 0 && resPage > 0) resPage--;
                 const refetched = await api.listReservations(null, resPage, PAGE_SIZE);
-                hasMoreRes = refetched.length === PAGE_SIZE;
-                renderReservations(refetched);
+                hasMoreRes = refetched.hasNext;
+                renderReservations(refetched.items);
             } else if (kind === 'theme') {
-                const items = await api.listThemes(themePage, PAGE_SIZE);
-                if (items.length === 0 && themePage > 0) themePage--;
+                const check = await api.listThemes(themePage, PAGE_SIZE);
+                if (check.items.length === 0 && themePage > 0) themePage--;
                 const refetched = await api.listThemes(themePage, PAGE_SIZE);
-                hasMoreThemes = refetched.length === PAGE_SIZE;
-                renderThemes(refetched);
+                hasMoreThemes = refetched.hasNext;
+                renderThemes(refetched.items);
             } else {
                 const times = await api.listTimes();
                 renderTimes(times);
@@ -241,10 +245,10 @@
         try {
             await api.createTheme(payload);
             e.target.reset();
-            themePage = 0; // 등록 후 첫 페이지로
-            const items = await api.listThemes(0, PAGE_SIZE);
-            hasMoreThemes = items.length === PAGE_SIZE;
-            renderThemes(items);
+            themePage = 0;
+            const result = await api.listThemes(0, PAGE_SIZE);
+            hasMoreThemes = result.hasNext;
+            renderThemes(result.items);
         } catch (err) {
             modal.alert({title: '등록 실패', message: err.message});
         }

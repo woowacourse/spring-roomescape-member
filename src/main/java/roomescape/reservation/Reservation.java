@@ -1,12 +1,15 @@
 package roomescape.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.ForbiddenException;
+import roomescape.exception.InvalidStateException;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
 
 public class Reservation {
 
-    private Long id;
+    private final Long id;
     private final String userName;
     private final Theme theme;
     private final LocalDate date;
@@ -43,6 +46,18 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public void validateNotPast(LocalDateTime now) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(now)) {
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
+    }
+
+    public void validateOwner(String userName) {
+        if (!this.userName.equals(userName)) {
+            throw new ForbiddenException("본인의 예약만 변경•삭제할 수 있습니다.");
+        }
     }
 
     private void validate(String userName, Theme theme, LocalDate date, ReservationTime time) {

@@ -15,8 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.theme.ThemeService;
 
 @WebMvcTest(AdminThemeController.class)
@@ -66,11 +65,11 @@ class AdminThemeControllerTest {
     }
 
     @Test
-    void 존재하지_않는_테마_삭제시_404() throws Exception {
-        willThrow(new RoomescapeException(ErrorCode.THEME_NOT_FOUND))
-                .given(themeService).delete(0L);
+    void 사용_중인_테마_삭제시_409() throws Exception {
+        willThrow(new AlreadyInUseException("테마에 해당하는 예약이 있습니다."))
+                .given(themeService).delete(1L);
 
-        mockMvc.perform(delete("/api/admin/themes/0"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/admin/themes/1"))
+                .andExpect(status().isConflict());
     }
 }
