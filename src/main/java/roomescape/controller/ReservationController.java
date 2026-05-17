@@ -37,7 +37,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Void> add(@Valid @RequestBody ReservationRequestDTO request) {
         ReservationResponseDTO saved = reservationService.addReservation(request);
-        return ResponseEntity.created(URI.create("/reservations/" + saved.id())).build();
+        return ResponseEntity.created(URI.create("/api/reservations/" + saved.id())).build();
     }
 
     @GetMapping("/{id}")

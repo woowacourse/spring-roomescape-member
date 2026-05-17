@@ -29,7 +29,7 @@ public class AdminReservationTimeController {
     @PostMapping("/times")
     public ResponseEntity<Void> add(@Valid @RequestBody ReservationTimeRequestDTO request) {
         ReservationTimeResponseDTO saved = reservationTimeService.addReservationTime(request);
-        return ResponseEntity.created(URI.create("/times/" + saved.id())).build();
+        return ResponseEntity.created(URI.create("/api/times/" + saved.id())).build();
     }
 
     @DeleteMapping("/times/{id}")
