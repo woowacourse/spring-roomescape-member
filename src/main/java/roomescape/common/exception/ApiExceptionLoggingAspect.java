@@ -31,11 +31,32 @@ public class ApiExceptionLoggingAspect {
             return;
         }
 
-        log.error("Exception in API: URI:{}, StatusCode:{}, Error Code:{}, ErrorMessage:{}",
+        logError(joinPoint, responseEntity, errorResponse, request);
+    }
+
+    private void logError(JoinPoint joinPoint, ResponseEntity<?> responseEntity, ErrorResponse errorResponse, HttpServletRequest request) {
+        if (responseEntity.getStatusCode().is5xxServerError()) {
+            logServerError(responseEntity, errorResponse, request, findThrowable(joinPoint.getArgs()));
+            return;
+        }
+        logClientError(responseEntity, errorResponse, request, errorResponse.getMessage());
+    }
+
+    private static void logServerError(ResponseEntity<?> responseEntity, ErrorResponse errorResponse, HttpServletRequest request, Throwable exception) {
+        log.error("Exception in API: URI:{}, StatusCode:{}, Error Code:{}, ErrorMessage: {}",
                 request.getMethod() + " " + request.getRequestURI(),
                 responseEntity.getStatusCode(),
                 errorResponse.getCode(),
-                errorResponse.getMessage() != null ? errorResponse.getMessage() : errorResponse.getMessages());
+                exception.getMessage(),
+                exception);
+    }
+
+    private static void logClientError(ResponseEntity<?> responseEntity, ErrorResponse errorResponse, HttpServletRequest request, String errorMessage) {
+        log.info("Exception in API: URI: {}, StatusCode: {}, Error Code: {}, ErrorMessage: {}",
+                request.getMethod() + " " + request.getRequestURI(),
+                responseEntity.getStatusCode(),
+                errorResponse.getCode(),
+                errorMessage);
     }
 
     private HttpServletRequest findHttpServletRequest(Object[] args) {
@@ -46,4 +67,14 @@ public class ApiExceptionLoggingAspect {
         }
         return null;
     }
+
+    private Throwable findThrowable(Object[] args) {
+        for (Object arg : args) {
+            if (arg instanceof Throwable throwable) {
+                return throwable;
+            }
+        }
+        return null;
+    }
+
 }
