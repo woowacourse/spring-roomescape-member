@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorResponse.httpStatus()).body(errorResponse);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(
             CustomException customException, HttpServletRequest httpServletRequest
     ) {
@@ -49,7 +51,7 @@ public class GlobalExceptionHandler {
     ) {
         ErrorResponse errorResponse = new ErrorResponseBuilder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
-                .errorMessage(methodArgumentNotValidException.getMessage())
+                .errorMessage("요청값이 잘못됐습니다.")
                 .apiUrl(httpServletRequest.getRequestURI())
                 .timeStamp(LocalDateTime.now())
                 .traceId(MDC.get("traceId"))
