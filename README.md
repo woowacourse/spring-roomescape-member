@@ -17,14 +17,16 @@
 ### 테마
 
 * 테마는 이름, 설명, 썸네일 이미지 URL을 필수로 가진다.
-* 관리자는 테마를 추가하거나 삭제할 수 있다.
-* 삭제된 테마는 사용자용 전체 테마 목록에서 제외된다.
-* 테마를 삭제해도 기존 예약 데이터는 유지된다.
+* 관리자는 테마를 추가하거나 비활성화할 수 있다.
+  * 비활성화된 테마는 사용자용 전체 테마 목록에서 제외된다.
+  * 기존 예약 데이터는 유지되며 관리자 화면에서 조회 가능하다.
 
 ### 예약 시간
 
 * 예약 시간은 `startAt`으로 관리한다.
-* 관리자는 예약 시간을 추가하거나 삭제할 수 있다.
+* 관리자는 예약 시간을 추가하거나 비활성화할 수 있다.
+  * 비활성화된 예약 시간은 신규 예약 가능 목록에서 제외된다.
+  * 기존 예약과 연결된 예약 시간 정보는 유지되어 관리자 화면에서 조회 가능하다.
 * 테마별 예약 가능 여부 조회 시 각 예약 시간의 예약 가능 상태를 함께 반환한다.
 
 ## API 공통 규칙
@@ -273,12 +275,13 @@ role: ADMIN
 }
 ```
 
-#### 테마 삭제
+#### 테마 활성화 및 비활성화
 
 **Request**
 
 ```http
-DELETE /api/admin/themes/1 HTTP/1.1
+PATCH /api/admin/times/{id}/activate HTTP/1.1
+PATCH /api/admin/times/{id}/deactivate HTTP/1.1
 role: ADMIN
 ```
 
@@ -418,12 +421,13 @@ role: ADMIN
 }
 ```
 
-#### 예약 시간 삭제
+#### 예약 시간 활성화 및 비활성화
 
 **Request**
 
 ```http
-DELETE /api/admin/times/1 HTTP/1.1
+PATCH /api/admin/times/1/activate HTTP/1.1
+PATCH /api/admin/times/1/deactivate HTTP/1.1
 role: ADMIN
 ```
 
