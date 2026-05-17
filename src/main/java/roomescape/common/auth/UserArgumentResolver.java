@@ -19,8 +19,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 //    public static final String AUTHORIZATION_HEADER = "Authorization";
 //    public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer";
 
-    public static final String AUTHORIZATION_HEADER = "CustomAuth";
-    public static final String AUTHORIZATION_HEADER_PREFIX = "Temp";
+    public static final String AUTHORIZATION_HEADER = "X-Guest-Name";
+    public static final String AUTHORIZATION_HEADER_PREFIX = "Guest";
 
 
     @Override
