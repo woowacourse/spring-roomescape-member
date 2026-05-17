@@ -5,7 +5,27 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+
 class GlobalExceptionHandlerTest {
+
+    @Test
+    void 지원하지_않는_HTTP_메서드_예외를_405_에러_응답으로_변환한다() {
+        // given
+        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
+        HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("POST");
+
+        // when
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpRequestMethodNotSupportedException(
+            exception);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(response.getStatusCode().value()).isEqualTo(405);
+            softly.assertThat(response.getBody().code()).isEqualTo("METHOD_NOT_ALLOWED");
+            softly.assertThat(response.getBody().message()).isEqualTo("지원하지 않는 HTTP 메서드입니다.");
+        });
+    }
 
     @Test
     void RoomescapeException을_에러_응답으로_변환한다() {
