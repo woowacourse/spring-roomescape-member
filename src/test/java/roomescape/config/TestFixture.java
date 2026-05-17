@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
@@ -91,6 +92,18 @@ public final class TestFixture {
                 "date", date.toString(),
                 "timeId", timeId
         );
+    }
+
+    public static LocalDate futureReservationDate(Clock clock) {
+        return LocalDate.now(clock).plusDays(2);
+    }
+
+    public static LocalDate nextReservationDate(Clock clock) {
+        return futureReservationDate(clock).plusDays(1);
+    }
+
+    public static LocalDate pastReservationDate(Clock clock) {
+        return LocalDate.now(clock).minusDays(1);
     }
 
 }

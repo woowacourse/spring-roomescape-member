@@ -2,11 +2,15 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.config.TestFixture.futureReservationDate;
+import static roomescape.config.TestFixture.nextReservationDate;
+import static roomescape.config.TestFixture.pastReservationDate;
 import static roomescape.config.TestFixture.reservationRequest;
 import static roomescape.config.TestFixture.reservationTimeRequest;
 import static roomescape.config.TestFixture.reservationupdateRequest;
 import static roomescape.config.TestFixture.themeRequest;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -34,11 +38,11 @@ class ReservationServiceTest {
     private static final String DEFAULT_THEME_NAME = "테마";
     private static final String FIRST_THEME_NAME = "테마1";
     private static final String SECOND_THEME_NAME = "테마2";
-    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2026, 5, 10);
-    private static final LocalDate NEXT_RESERVATION_DATE = LocalDate.of(2026, 5, 11);
-    private static final LocalDate PAST_RESERVATION_DATE = LocalDate.of(2001, 5, 1);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
     private static final Long NOT_FOUND_ID = 999L;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ReservationService reservationService;
@@ -56,7 +60,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -77,7 +81,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 NOT_FOUND_ID,
                 theme.getId()
         );
@@ -93,7 +97,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 NOT_FOUND_ID
         );
@@ -111,13 +115,13 @@ class ReservationServiceTest {
         Theme theme2 = themeService.save(themeRequest(SECOND_THEME_NAME));
         ReservationRequest reservationRequest1 = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme1.getId()
         );
         ReservationRequest reservationRequest2 = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme2.getId()
         );
@@ -138,7 +142,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -154,7 +158,7 @@ class ReservationServiceTest {
         // given
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
-        LocalDate date1 = DEFAULT_RESERVATION_DATE;
+        LocalDate date1 = futureReservationDate(clock);
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
                 date1,
@@ -183,7 +187,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -203,7 +207,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -224,13 +228,13 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest1 = reservationRequest(
                 OTHER_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
         ReservationRequest reservationRequest2 = reservationRequest(
                 OTHER_RESERVATION_NAME,
-                NEXT_RESERVATION_DATE,
+                nextReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -253,7 +257,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 OTHER_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -280,7 +284,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 DEFAULT_RESERVATION_NAME,
-                PAST_RESERVATION_DATE,
+                pastReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -297,7 +301,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 OTHER_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );

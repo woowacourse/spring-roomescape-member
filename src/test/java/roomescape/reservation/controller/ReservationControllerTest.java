@@ -9,12 +9,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.config.TestFixture.futureReservationDate;
+import static roomescape.config.TestFixture.nextReservationDate;
 import static roomescape.config.TestFixture.reservationRequestBody;
 import static roomescape.config.TestFixture.reservationTimeRequest;
 import static roomescape.config.TestFixture.reservationUpdateRequestBody;
 import static roomescape.config.TestFixture.themeRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
@@ -46,12 +49,12 @@ class ReservationControllerTest {
     private static final String RESERVATION_NAME = "봉구스";
     private static final String OTHER_RESERVATION_NAME = "밀란";
     private static final String THEME_NAME = "테마";
-    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2026, 5, 10);
-    private static final LocalDate NEXT_RESERVATION_DATE = LocalDate.of(2026, 5, 11);
-    private static final LocalDate INVALID_RESERVATION_DATE = LocalDate.of(2023, 8, 5);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
     private static final LocalTime UPDATED_START_AT = LocalTime.of(11, 0);
     private static final int NOT_FOUND_ID = 999;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,23 +73,24 @@ class ReservationControllerTest {
         // given
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         Theme theme = themeService.save(themeRequest(THEME_NAME));
+        LocalDate reservationDate = futureReservationDate(clock);
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                reservationDate,
                 reservationTime.getId(),
                 theme.getId()
         );
 
         // when
         ResultActions result = mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
         result.andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/reservations/")))
                 .andExpect(jsonPath("$.name").value(RESERVATION_NAME))
-                .andExpect(jsonPath("$.date").value(DEFAULT_RESERVATION_DATE.toString()))
+                .andExpect(jsonPath("$.date").value(reservationDate.toString()))
                 .andExpect(jsonPath("$.time.id").value(reservationTime.getId()))
                 .andExpect(jsonPath("$.theme.id").value(theme.getId()));
     }
@@ -97,7 +101,7 @@ class ReservationControllerTest {
         ReservationTime reservationTime1 = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         ReservationTime reservationTime2 = reservationTimeService.save(reservationTimeRequest(UPDATED_START_AT));
         Theme theme = themeService.save(themeRequest(THEME_NAME));
-        LocalDate reservationDate = DEFAULT_RESERVATION_DATE;
+        LocalDate reservationDate = futureReservationDate(clock);
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
                 reservationDate,
@@ -113,8 +117,8 @@ class ReservationControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(patch("/reservations/{id}/schedule", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)));
 
         // then
         result.andExpect(status().isOk())
@@ -129,9 +133,10 @@ class ReservationControllerTest {
         // given
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
         Theme theme = themeService.save(themeRequest(THEME_NAME));
+        LocalDate reservationDate = futureReservationDate(clock);
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                reservationDate,
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -143,7 +148,7 @@ class ReservationControllerTest {
         // then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].name", hasItem(RESERVATION_NAME)))
-                .andExpect(jsonPath("$[*].date", hasItem(DEFAULT_RESERVATION_DATE.toString())))
+                .andExpect(jsonPath("$[*].date", hasItem(reservationDate.toString())))
                 .andExpect(jsonPath("$[*].time.id", hasItem(reservationTime.getId().intValue())))
                 .andExpect(jsonPath("$[*].theme.runtime", hasItem(60)));
     }
@@ -155,7 +160,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -178,13 +183,13 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request1 = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
         Map<String, Object> request2 = reservationRequestBody(
                 RESERVATION_NAME,
-                NEXT_RESERVATION_DATE,
+                nextReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -208,7 +213,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -216,8 +221,8 @@ class ReservationControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(get("/reservations?name={name}", RESERVATION_NAME)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
         result.andExpect(status().isOk())
@@ -227,7 +232,8 @@ class ReservationControllerTest {
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() throws Exception {
         // when
-        ResultActions result = mockMvc.perform(delete("/reservations/{id}?name={name}", NOT_FOUND_ID, RESERVATION_NAME));
+        ResultActions result = mockMvc.perform(
+                delete("/reservations/{id}?name={name}", NOT_FOUND_ID, RESERVATION_NAME));
 
         // then
         result.andExpect(status().isNotFound())
@@ -243,7 +249,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -266,7 +272,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         Map<String, Object> request = reservationRequestBody(
                 RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -274,8 +280,8 @@ class ReservationControllerTest {
 
         // when
         ResultActions result = mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
         result.andExpect(status().isConflict())
@@ -286,17 +292,14 @@ class ReservationControllerTest {
 
     @ParameterizedTest(name = "{0}은 올바른 예약자 이름이 아니다")
     @CsvSource(value = {"'':예약자 이름은 필수입니다.", "12345678901:예약자 이름은 10자 이하입니다."}, delimiter = ':')
-    void 예약을_추가할_때_이름이_올바르지_않으면_400과_예외_메시지를_응답한다(
-            String name,
-            String expectedMessage
-    ) throws Exception {
+    void 예약을_추가할_때_이름이_올바르지_않으면_400과_예외_메시지를_응답한다(String name, String expectedMessage) throws Exception {
         // given
-        Map<String, Object> request = reservationRequestBody(name, INVALID_RESERVATION_DATE, 1L, 1L);
+        Map<String, Object> request = reservationRequestBody(name, futureReservationDate(clock), 1L, 1L);
 
         // when
         ResultActions result = mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
         // then
         result.andExpect(status().isBadRequest())

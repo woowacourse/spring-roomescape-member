@@ -2,11 +2,12 @@ package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.config.TestFixture.futureReservationDate;
 import static roomescape.config.TestFixture.reservationRequest;
 import static roomescape.config.TestFixture.reservationTimeRequest;
 import static roomescape.config.TestFixture.themeRequest;
 
-import java.time.LocalDate;
+import java.time.Clock;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,6 @@ class ReservationTimeServiceTest {
 
     private static final String RESERVATION_NAME = "밀란";
     private static final String THEME_NAME = "테마";
-    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
     private static final LocalTime FIRST_START_AT = LocalTime.of(11, 1);
     private static final LocalTime SECOND_START_AT = LocalTime.of(11, 2);
     private static final LocalTime THIRD_START_AT = LocalTime.of(11, 3);
@@ -36,6 +36,9 @@ class ReservationTimeServiceTest {
     private static final LocalTime AVAILABLE_START_AT = LocalTime.of(11, 5);
     private static final LocalTime DELETE_START_AT = LocalTime.of(11, 6);
     private static final Long NOT_FOUND_ID = 999L;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -81,7 +84,7 @@ class ReservationTimeServiceTest {
         Theme theme = themeService.save(themeRequest(THEME_NAME));
         ReservationRequest reservationRequest = reservationRequest(
                 RESERVATION_NAME,
-                RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime1.getId(),
                 theme.getId()
         );
@@ -101,8 +104,10 @@ class ReservationTimeServiceTest {
     @Test
     void 존재하지_않는_테마의_예약가능시간을_조회하면_에러를_던진다() {
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.findAvailableReservationTimes(RESERVATION_DATE, NOT_FOUND_ID))
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> reservationTimeService.findAvailableReservationTimes(
+                futureReservationDate(clock),
+                NOT_FOUND_ID
+        )).isInstanceOf(NotFoundException.class);
     }
 
     @Test

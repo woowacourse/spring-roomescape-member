@@ -2,10 +2,12 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.config.TestFixture.futureReservationDate;
 import static roomescape.config.TestFixture.reservation;
 import static roomescape.config.TestFixture.reservationTime;
 import static roomescape.config.TestFixture.theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.common.exception.DomainType;
 import roomescape.common.exception.InUseException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.config.FixedClockTestConfig;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -26,18 +29,24 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 
 @JdbcTest
-@Import({JdbcThemeRepository.class, JdbcReservationTimeRepository.class, JdbcReservationRepository.class})
+@Import({
+        JdbcThemeRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcReservationRepository.class,
+        FixedClockTestConfig.class
+})
 class JdbcThemeRepositoryTest {
 
     private static final String DEFAULT_THEME_NAME = "테마";
     private static final String FIRST_THEME_NAME = "테마1";
     private static final String SECOND_THEME_NAME = "테마2";
     private static final String RESERVATION_NAME = "밀란";
-    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
-    private static final LocalDate POPULAR_TODAY = LocalDate.of(2026, 5, 8);
     private static final LocalTime RESERVATION_START_AT = LocalTime.of(10, 0);
     private static final Long NOT_FOUND_ID = 999L;
     private static final int POPULAR_LIMIT = 10;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -133,7 +142,7 @@ class JdbcThemeRepositoryTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(RESERVATION_START_AT));
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
-        Reservation reservation = reservation(RESERVATION_NAME, RESERVATION_DATE, reservationTime, theme);
+        Reservation reservation = reservation(RESERVATION_NAME, futureReservationDate(clock), reservationTime, theme);
         reservationRepository.save(reservation);
 
         // when & then
@@ -145,10 +154,11 @@ class JdbcThemeRepositoryTest {
     @Test
     void 최근_1주_동안_인기있는_테마를_조회하는_테스트() {
         // given
-        LocalDate start = POPULAR_TODAY.minusDays(7);
+        LocalDate today = LocalDate.now(clock);
+        LocalDate start = today.minusDays(7);
 
         // when
-        List<Theme> themes = themeRepository.findPopularThemes(start, POPULAR_TODAY, POPULAR_LIMIT);
+        List<Theme> themes = themeRepository.findPopularThemes(start, today, POPULAR_LIMIT);
 
         // then
         assertThat(themes).hasSize(5);

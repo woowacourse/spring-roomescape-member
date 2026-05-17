@@ -1,15 +1,17 @@
 package roomescape;
 
 import static org.hamcrest.core.Is.is;
+import static roomescape.config.TestFixture.futureReservationDate;
 import static roomescape.config.TestFixture.reservationRequestBody;
 import static roomescape.config.TestFixture.reservationTimeRequestBody;
 import static roomescape.config.TestFixture.themeRequestBody;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
+import java.time.Clock;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -23,7 +25,9 @@ public class MissionStep3Test {
     private static final String THEME_DESCRIPTION = "테마A란...";
     private static final String THEME_THUMBNAIL_URL = "https://example.com/themes/theme-1.png";
     private static final String RESERVATION_NAME = "브라운";
-    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
+
+    @Autowired
+    private Clock clock;
 
     @Test
     void 시간_관리_API() {
@@ -74,7 +78,7 @@ public class MissionStep3Test {
 
         Map<String, Object> reservation = reservationRequestBody(
                 RESERVATION_NAME,
-                RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTimeId.longValue(),
                 themeId.longValue()
         );

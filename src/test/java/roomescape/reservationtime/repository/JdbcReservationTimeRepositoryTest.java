@@ -2,10 +2,12 @@ package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.config.TestFixture.futureReservationDate;
 import static roomescape.config.TestFixture.reservation;
 import static roomescape.config.TestFixture.reservationTime;
 import static roomescape.config.TestFixture.theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import roomescape.common.exception.DomainType;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.InUseException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.config.FixedClockTestConfig;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -26,18 +29,24 @@ import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @JdbcTest
-@Import({JdbcReservationTimeRepository.class, JdbcReservationRepository.class, JdbcThemeRepository.class})
+@Import({
+        JdbcReservationTimeRepository.class,
+        JdbcReservationRepository.class,
+        JdbcThemeRepository.class,
+        FixedClockTestConfig.class
+})
 class JdbcReservationTimeRepositoryTest {
 
     private static final String RESERVATION_NAME = "밀란";
     private static final String THEME_NAME = "테마";
-    private static final LocalDate AVAILABLE_DATE = LocalDate.of(2026, 5, 6);
-    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 10);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(11, 0);
     private static final LocalTime SECOND_START_AT = LocalTime.of(14, 0);
     private static final LocalTime FIRST_AVAILABLE_START_AT = LocalTime.of(10, 0);
     private static final LocalTime SECOND_AVAILABLE_START_AT = LocalTime.of(13, 0);
     private static final LocalTime THIRD_AVAILABLE_START_AT = LocalTime.of(16, 0);
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -126,12 +135,13 @@ class JdbcReservationTimeRepositoryTest {
 
         Theme theme = themeRepository.save(theme(THEME_NAME));
 
-        Reservation reservation = reservation(RESERVATION_NAME, AVAILABLE_DATE, reservationTime1, theme);
+        LocalDate reservationDate = futureReservationDate(clock);
+        Reservation reservation = reservation(RESERVATION_NAME, reservationDate, reservationTime1, theme);
         reservationRepository.save(reservation);
 
         // when
         List<ReservationTime> availableTimes =
-                reservationTimeRepository.findAvailableTimesByDateAndThemeId(AVAILABLE_DATE, theme.getId());
+                reservationTimeRepository.findAvailableTimesByDateAndThemeId(reservationDate, theme.getId());
 
         // then
         assertThat(availableTimes)
@@ -144,7 +154,7 @@ class JdbcReservationTimeRepositoryTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(FIRST_AVAILABLE_START_AT));
         Theme theme = themeRepository.save(theme(THEME_NAME));
-        Reservation reservation = reservation(RESERVATION_NAME, RESERVATION_DATE, reservationTime, theme);
+        Reservation reservation = reservation(RESERVATION_NAME, futureReservationDate(clock), reservationTime, theme);
         reservationRepository.save(reservation);
 
         // when & then

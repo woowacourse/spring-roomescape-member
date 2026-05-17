@@ -1,10 +1,13 @@
 package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.config.TestFixture.futureReservationDate;
+import static roomescape.config.TestFixture.nextReservationDate;
 import static roomescape.config.TestFixture.reservation;
 import static roomescape.config.TestFixture.reservationTime;
 import static roomescape.config.TestFixture.theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.config.FixedClockTestConfig;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
@@ -21,16 +25,22 @@ import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @JdbcTest
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import({
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class,
+        FixedClockTestConfig.class
+})
 class JdbcReservationRepositoryTest {
 
     private static final String DEFAULT_RESERVATION_NAME = "밀란";
     private static final String OTHER_RESERVATION_NAME = "봉구스";
     private static final String DEFAULT_THEME_NAME = "테마";
-    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2026, 5, 10);
-    private static final LocalDate NEXT_RESERVATION_DATE = LocalDate.of(2026, 5, 11);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(10, 0);
     private static final LocalTime UPDATED_START_AT = LocalTime.of(11, 0);
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -46,9 +56,10 @@ class JdbcReservationRepositoryTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(DEFAULT_START_AT));
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
+        LocalDate reservationDate = futureReservationDate(clock);
         Reservation reservation = reservation(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                reservationDate,
                 reservationTime,
                 theme
         );
@@ -59,7 +70,7 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(savedReservation.getId()).isPositive();
         assertThat(savedReservation.getName()).isEqualTo(DEFAULT_RESERVATION_NAME);
-        assertThat(savedReservation.getDate()).isEqualTo(DEFAULT_RESERVATION_DATE);
+        assertThat(savedReservation.getDate()).isEqualTo(reservationDate);
         assertThat(savedReservation.getTime()).isEqualTo(reservationTime);
         assertThat(savedReservation.getTheme()).isEqualTo(theme);
     }
@@ -69,9 +80,11 @@ class JdbcReservationRepositoryTest {
         // given
         ReservationTime reservationTime1 = reservationTimeRepository.save(reservationTime(DEFAULT_START_AT));
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
+        LocalDate reservationDate = futureReservationDate(clock);
+        LocalDate updateDate = nextReservationDate(clock);
         Reservation reservation = reservation(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                reservationDate,
                 reservationTime1,
                 theme
         );
@@ -82,14 +95,14 @@ class JdbcReservationRepositoryTest {
         // when
         Reservation updatedReservation = reservationRepository.update(
                 savedReservation,
-                NEXT_RESERVATION_DATE,
+                updateDate,
                 reservationTime2
         );
 
         // then
         assertThat(updatedReservation.getId()).isPositive();
         assertThat(updatedReservation.getName()).isEqualTo(DEFAULT_RESERVATION_NAME);
-        assertThat(updatedReservation.getDate()).isEqualTo(NEXT_RESERVATION_DATE);
+        assertThat(updatedReservation.getDate()).isEqualTo(updateDate);
         assertThat(updatedReservation.getTime()).isEqualTo(reservationTime2);
         assertThat(updatedReservation.getTheme()).isEqualTo(theme);
     }
@@ -101,11 +114,10 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
         Reservation reservation = reservation(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime,
                 theme
         );
-
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // when
@@ -122,11 +134,10 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
         Reservation reservation = reservation(
                 DEFAULT_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime,
                 theme
         );
-
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // when
@@ -144,7 +155,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.save(theme(DEFAULT_THEME_NAME));
         Reservation reservation = reservation(
                 OTHER_RESERVATION_NAME,
-                DEFAULT_RESERVATION_DATE,
+                futureReservationDate(clock),
                 reservationTime,
                 theme);
         Reservation savedReservation = reservationRepository.save(reservation);
