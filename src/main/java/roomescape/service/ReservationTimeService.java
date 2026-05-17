@@ -30,7 +30,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime createReservationTime(LocalTime time) {
         Long id = reservationTimeDao.insertWithKeyHolder(time);
-        return ReservationTime.withId(id, time);
+        return new ReservationTime(id, time);
     }
 
     @Transactional

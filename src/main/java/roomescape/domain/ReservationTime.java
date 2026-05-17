@@ -7,16 +7,9 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime time) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = time;
-    }
-
-    public static ReservationTime withId(Long id, LocalTime time) {
-        return new ReservationTime(
-                id,
-                time
-        );
+        this.startAt = startAt;
     }
 
     public Long getId() {
