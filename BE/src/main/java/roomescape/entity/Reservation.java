@@ -29,6 +29,14 @@ public record Reservation(
         return new Reservation(id, name, date, time, theme);
     }
 
+    public Long timeId() {
+        return time.id();
+    }
+
+    public Long themeId() {
+        return theme.id();
+    }
+
     public void checkOwnership(String name) {
         if (!this.name.equals(name)) {
             throw new ForbiddenException(ErrorCode.FORBIDDEN);
@@ -36,7 +44,7 @@ public record Reservation(
     }
 
     public boolean isConflict(Long timeId, Long excludeId) {
-        boolean isSameTime = this.time.id().equals(timeId);
+        boolean isSameTime = this.timeId().equals(timeId);
         boolean isSameReservation = this.id != null && this.id.equals(excludeId);
         return isSameTime && !isSameReservation;
     }
@@ -51,7 +59,7 @@ public record Reservation(
 
     public void validateUniqueness(List<Reservation> others) {
         boolean isDuplicated = others.stream()
-                .anyMatch(other -> other.isConflict(this.time.id(), this.id));
+                .anyMatch(other -> other.isConflict(this.timeId(), this.id));
 
         if (isDuplicated) {
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);

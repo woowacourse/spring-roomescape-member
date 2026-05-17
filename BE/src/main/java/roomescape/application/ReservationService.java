@@ -45,8 +45,8 @@ public class ReservationService {
     private void validateReservationUniqueness(Reservation reservation) {
         boolean isAlreadyExist = reservationRepository.existsByDateAndTimeIdAndThemeId(
                 reservation.date(),
-                reservation.time().id(),
-                reservation.theme().id()
+                reservation.timeId(),
+                reservation.themeId()
         );
 
         if (isAlreadyExist) {
