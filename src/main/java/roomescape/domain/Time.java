@@ -28,7 +28,7 @@ public class Time {
     public boolean isReservationBefore(LocalDateTime dateTime, LocalDate reservationDate) {
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, startAt);
 
-        return dateTime.isBefore(reservationDateTime);
+        return reservationDateTime.isBefore(dateTime);
     }
 
     @Override
