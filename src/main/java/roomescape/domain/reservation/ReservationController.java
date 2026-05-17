@@ -1,10 +1,13 @@
 package roomescape.domain.reservation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +21,7 @@ import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.MyReservationsResponse;
 import roomescape.domain.reservationtime.dto.TimeResponse;
 
+@Validated
 @RestController
 public class ReservationController {
 
@@ -37,7 +41,7 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<TimeResponse>> getReservations(
-        @RequestParam LocalDate date, @RequestParam Long themeId
+        @RequestParam LocalDate date, @RequestParam @NotBlank @Size(max = 100) Long themeId
     ) {
         List<TimeResponse> responses = reservationService.getReservations(date, themeId);
         return ResponseEntity.ok(responses);
