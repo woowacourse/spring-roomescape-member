@@ -212,6 +212,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count != null && count > 0;
     }
 
+    @Override
+    public boolean existReservationByThemeId(Long themeId) {
+        String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
     private static RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> {
             ReservationTime time = new ReservationTime(

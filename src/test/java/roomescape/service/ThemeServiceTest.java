@@ -11,7 +11,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.ThemeInUseException;
 import roomescape.repository.JdbcThemeRepository;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Import({JdbcThemeRepository.class,
@@ -90,5 +93,13 @@ class ThemeServiceTest {
         themeService.deleteTheme(addedTheme.id());
 
         assertThat(themeService.findAllThemes()).isEmpty();
+    }
+
+    @DisplayName("예약이 존재하는 테마를 삭제하면 ThemeInUseException을 던진다")
+    @Sql("/data.sql")
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_ThemeInUseException을_던진다() {
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isExactlyInstanceOf(ThemeInUseException.class);
     }
 }

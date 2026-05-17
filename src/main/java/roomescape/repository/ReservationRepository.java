@@ -24,4 +24,6 @@ public interface ReservationRepository {
     int deleteReservationWith(String name, LocalDate date, Long timeId, Long themeId);
 
     boolean existReservationByTimeId(Long timeId);
+
+    boolean existReservationByThemeId(Long themeId);
 }

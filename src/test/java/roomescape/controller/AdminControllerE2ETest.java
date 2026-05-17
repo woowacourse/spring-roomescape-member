@@ -115,4 +115,15 @@ class AdminControllerE2ETest {
                 .then().log().all()
                 .statusCode(422);
     }
+
+    @DisplayName("예약이 존재하는 테마 삭제 요청 시 409 Conflict를 응답한다")
+    @Sql("/data.sql")
+    @Test
+    void 삭제하려는_테마에_대한_예약이_존재한다면_409를_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }
