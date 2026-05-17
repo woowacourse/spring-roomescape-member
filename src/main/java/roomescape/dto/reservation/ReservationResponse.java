@@ -2,28 +2,27 @@ package roomescape.dto.reservation;
 
 import java.time.format.DateTimeFormatter;
 import roomescape.domain.Reservation;
-import roomescape.dto.reservationTime.ReservationTimeResponse;
-import roomescape.dto.theme.ThemeResponse;
 
 public record ReservationResponse(
     Long id,
     String name,
     String date,
-    ReservationTimeResponse time,
-    ThemeResponse theme
+    String startAt,
+    ThemeSummary theme
 ) {
 
-    public static ReservationResponse from(Reservation reservation) {
-        String name = reservation.getName().value();
-        String date = reservation.getDateValue().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        ReservationTimeResponse time = ReservationTimeResponse.from(reservation.getTime());
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
+    public record ThemeSummary(Long id, String name) {}
+
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
             reservation.getId(),
-            name,
-            date,
-            time,
-            ThemeResponse.from(reservation.getTheme())
+            reservation.getNameValue(),
+            reservation.getDateValue().format(DATE_FORMATTER),
+            reservation.getTime().getStartAt().format(TIME_FORMATTER),
+            new ThemeSummary(reservation.getThemeId(), reservation.getTheme().getNameValue())
         );
     }
 }

@@ -16,15 +16,10 @@
     "id": 1,
     "name": "코로구",
     "date": "2026-05-04",
-    "time": {
-      "id": 1,
-      "startAt": "12:30"
-    },
+    "startAt": "12:30",
     "theme": {
       "id": 5,
-      "name": "공포",
-      "description": "짱무섭",
-      "imageUrl": "..."
+      "name": "공포"
     }
   }
 ]
@@ -291,6 +286,7 @@
 | `TIME_NOT_FOUND`                    | 404     | 존재하지 않는 시간                                       |
 | `THEME_NOT_FOUND`                   | 404     | 존재하지 않는 테마                                       |
 | `DUPLICATED_RESERVATION`            | 409     | 같은 날짜, 시간, 테마 예약이 이미 존재                          |
+| `RESERVATION_CONCURRENT_MODIFICATION` | 409   | 동시 요청 충돌로 예약 수정 실패                               |
 | `PAST_DATE_RESERVATION`             | 422     | 요청한 날짜 자체가 과거 (생성, 변경 공통)                        |
 | `PAST_RESERVATION_UPDATE`           | 422     | 이미 지난 예약 변경 시도                                   |
 | `PAST_RESERVATION_CANCEL`           | 422     | 이미 지난 예약 취소 시도                                   |
@@ -361,15 +357,10 @@
     "id": 1,
     "name": "코로구",
     "date": "2026-05-04",
-    "time": {
-      "id": 1,
-      "startAt": "12:30"
-    },
+    "startAt": "12:30",
     "theme": {
       "id": 5,
-      "name": "공포",
-      "description": "짱무섭",
-      "imageUrl": "..."
+      "name": "공포"
     }
   }
 ]
