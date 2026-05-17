@@ -2,7 +2,7 @@ package roomescape.common.exception;
 
 import java.time.LocalDateTime;
 
-public class PastDateTimeException extends BusinessException {
+public final class PastDateTimeException extends BusinessException {
 
     public PastDateTimeException(DomainType domainType, LocalDateTime now, LocalDateTime request) {
         super(clientMessage(domainType.displayName()),

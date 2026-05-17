@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class AccessDeniedException extends BusinessException {
+public final class AccessDeniedException extends BusinessException {
 
     public AccessDeniedException(DomainType domainType, Long id) {
         super(clientMessage(domainType.displayName()),

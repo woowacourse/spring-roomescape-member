@@ -3,7 +3,7 @@ package roomescape.common.exception;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class DuplicatedException extends BusinessException {
+public final class DuplicatedException extends BusinessException {
 
     public DuplicatedException(DomainType domainType, LocalDate date, Long timeId, Long themeId) {
         super(clientMessage(domainType),

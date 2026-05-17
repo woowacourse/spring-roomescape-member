@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class NotFoundException extends BusinessException {
+public final class NotFoundException extends BusinessException {
 
     public NotFoundException(DomainType domainType, Long id) {
         super(clientMessage(domainType),

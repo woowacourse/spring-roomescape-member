@@ -64,7 +64,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("요청 본문 형식이 올바르지 않습니다."));
     }
 
-    // TODO: 서버 자체 오류는 일단 러프하게 반환
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         log.error("Unexpected server error", e);

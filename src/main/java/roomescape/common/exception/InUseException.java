@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class InUseException extends BusinessException {
+public final class InUseException extends BusinessException {
 
     public InUseException(DomainType domainType, Long id) {
         super(clientMessage(domainType.displayName()),

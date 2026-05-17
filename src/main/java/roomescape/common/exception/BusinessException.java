@@ -17,11 +17,11 @@ public abstract class BusinessException extends RuntimeException {
         this.logMessage = logMessage;
     }
 
-    public String getClientMessage() {
+    public final String getClientMessage() {
         return clientMessage;
     }
 
-    public String getLogMessage() {
+    public final String getLogMessage() {
         return logMessage;
     }
 
