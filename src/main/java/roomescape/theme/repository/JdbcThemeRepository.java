@@ -18,7 +18,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.of(
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.restore(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -39,7 +39,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("description", theme.getDescription())
                 .addValue("image_url", theme.getImageUrl());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return Theme.of(id, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        return Theme.restore(id, theme.getName(), theme.getDescription(), theme.getImageUrl());
     }
 
     @Override

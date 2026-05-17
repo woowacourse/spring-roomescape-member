@@ -15,8 +15,8 @@ import roomescape.theme.domain.Theme;
 class ReservationTest {
 
     private final ReservationFactory factory = new ReservationFactory();
-    private final ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(11, 0));
-    private final Theme theme = Theme.of(1L, "테마1", "설명", "https://image.com");
+    private final ReservationTime time = ReservationTime.restore(1L, LocalTime.of(10, 0), LocalTime.of(11, 0));
+    private final Theme theme = Theme.restore(1L, "테마1", "설명", "https://image.com");
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
 
     @Test

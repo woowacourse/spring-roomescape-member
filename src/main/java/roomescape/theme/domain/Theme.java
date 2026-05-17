@@ -13,25 +13,8 @@ public class Theme {
         this.imageUrl = imageUrl;
     }
 
-    public static Theme of(Long id, String name, String description, String imageUrl) {
+    public static Theme restore(Long id, String name, String description, String imageUrl) {
         return new Theme(id, name, description, imageUrl);
-    }
-
-    public static Theme of(String name, String description, String imageUrl) {
-        validate(name, description, imageUrl);
-        return new Theme(null, name, description, imageUrl);
-    }
-
-    private static void validate(String name, String description, String imageUrl) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 필수입니다.");
-        }
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 필수입니다.");
-        }
-        if (imageUrl == null || imageUrl.isBlank()) {
-            throw new IllegalArgumentException("테마 이미지 URL은 필수입니다.");
-        }
     }
 
     public Long getId() {

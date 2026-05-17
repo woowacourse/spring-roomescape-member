@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeFactory;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -18,8 +19,11 @@ class ThemeRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private ThemeFactory themeFactory;
+
     private Theme 테마() {
-        return Theme.of("테마5", "설명", "https://image.com");
+        return themeFactory.create("테마5", "설명", "https://image.com");
     }
 
     @Test

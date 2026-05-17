@@ -23,12 +23,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            ReservationTime.of(
+            ReservationTime.restore(
                     resultSet.getLong("time_id"),
                     resultSet.getTime("time_start_at").toLocalTime(),
                     resultSet.getTime("time_finish_at").toLocalTime()
             ),
-            Theme.of(
+            Theme.restore(
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),
