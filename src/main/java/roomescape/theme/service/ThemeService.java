@@ -1,7 +1,9 @@
 package roomescape.theme.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.theme.dto.*;
 import roomescape.theme.model.Theme;
@@ -31,8 +33,16 @@ public class ThemeService {
         return themeRepository.create(theme);
     }
 
+    @Transactional
     public void delete(Long id) {
-        themeRepository.delete(id);
+        try {
+            int deletedRows = themeRepository.delete(id);
+            if (deletedRows == 0) {
+                throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException(ErrorCode.THEME_IN_USE);
+        }
     }
 
     public PopularThemesResponse findPopularThemes(String sort, int limit, int days) {

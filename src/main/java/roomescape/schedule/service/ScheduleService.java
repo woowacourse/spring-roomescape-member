@@ -1,5 +1,6 @@
 package roomescape.schedule.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BadRequestException;
@@ -69,7 +70,11 @@ public class ScheduleService {
 
     @Transactional
     public void delete(Long scheduleId) {
-        scheduleRepository.delete(scheduleId);
+        try {
+            scheduleRepository.delete(scheduleId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException(ErrorCode.SCHEDULE_IN_USE);
+        }
     }
 
     private void validateOpeningTime(LocalDateTime startAt) {

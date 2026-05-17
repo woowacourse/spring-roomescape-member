@@ -3,11 +3,15 @@ package roomescape.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -120,16 +124,35 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createErrorResponse(ex.getErrorCode());
     }
 
+    @ExceptionHandler(BadSqlGrammarException.class)
+    public ResponseEntity<ErrorResponse> handleBadSqlGrammarException(BadSqlGrammarException ex) {
+        log.error("[CRITICAL] SQL 문법 오류 발생 (SQL: {}): {}", ex.getSql(), ex.getMessage(), ex);
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CannotGetJdbcConnectionException.class)
+    public ResponseEntity<ErrorResponse> handleCannotGetJdbcConnectionException(CannotGetJdbcConnectionException ex) {
+        log.error("[CRITICAL] DB 커넥션 획득 실패 : {}", ex.getMessage(), ex);
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(QueryTimeoutException.class)
+    public ResponseEntity<ErrorResponse> handleQueryTimeoutException(QueryTimeoutException ex) {
+        log.error("[CRITICAL] DB 쿼리 실행 타임아웃 발생 : {}", ex.getMessage(), ex);
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException ex) {
+        log.error("[CRITICAL] 세분화되지 않은 예기치 못한 DB 에러 발생 : {}", ex.getMessage(), ex);
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("[CRITICAL] 예상치 못한 서버 내부 에러 발생!", ex);
         // 슬랙 연동
-        return ResponseEntity.internalServerError().body(
-                new ErrorResponse(
-                        "INTERNAL_SERVER_ERROR",
-                        "서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
-                )
-        );
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponse(ErrorCode errorCode) {

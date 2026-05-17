@@ -1,7 +1,9 @@
 package roomescape.user.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.user.dto.UserRequest;
 import roomescape.user.dto.UserResponse;
@@ -23,9 +25,13 @@ public class UserService {
 
     @Transactional
     public UserResponse create(UserRequest request) {
-        User user = new User(request.name(), DEFAULT);
-        Long id = userRepository.create(user);
-        return UserResponse.from(new User(id, request.name(), DEFAULT));
+        try {
+            User user = new User(request.name(), DEFAULT);
+            Long id = userRepository.create(user);
+            return UserResponse.from(new User(id, request.name(), DEFAULT));
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException(ErrorCode.DUPLICATE_USER_NAME);
+        }
     }
 
     public User findByName(String name) {

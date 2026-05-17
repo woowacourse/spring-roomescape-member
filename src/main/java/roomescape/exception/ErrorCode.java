@@ -18,8 +18,12 @@ public enum ErrorCode {
     DUPLICATE_SCHEDULE_TIME(HttpStatus.CONFLICT, "해당 시간에 이미 다른 스케줄이 존재합니다. 다른 시간을 선택해주세요."),
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "가입되지 않은 유저입니다. 로그인을 다시 확인해주세요."),
+    DUPLICATE_USER_NAME(HttpStatus.CONFLICT, "이미 사용 중인 이름입니다. 다른 이름을 입력해주세요."),
     // Theme
-    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다. 목록에서 테마를 다시 선택해주세요.");
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다. 목록에서 테마를 다시 선택해주세요."),
+    THEME_IN_USE(HttpStatus.CONFLICT, "해당 테마를 사용하는 스케줄이 존재하여 삭제할 수 없습니다. 스케줄을 먼저 처리해주세요."),
+    // Server
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "예상치 못한 서버 내부 에러가 발생했습니다. 관리자에게 문의해주세요.");
 
     private final HttpStatus status;
     private final String message;
