@@ -478,7 +478,7 @@ erDiagram
 
 
 - **GlobalExceptionHandler**
-- [ ] `e.printStackTrace()` 대신 로거 활용
+- [x] `e.printStackTrace()` 대신 로거 활용
 
 
 - **ReservationService**

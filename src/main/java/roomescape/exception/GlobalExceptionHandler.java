@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -63,7 +65,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handlerException(Exception e) {
-        e.printStackTrace();
+        log.error("예상치 못한 에러 발생!", e);
+
         return ResponseEntity.internalServerError().body(new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "SERVER_ERROR",
