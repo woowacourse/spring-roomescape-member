@@ -18,18 +18,20 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import roomescape.availability.service.AvailabilityService;
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
 import roomescape.holiday.domain.Holiday;
-import roomescape.holiday.exception.HolidayNotFoundException;
+import roomescape.holiday.exception.HolidayException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.service.TimeService;
 
 @WebMvcTest(RoomescapePageController.class)
@@ -56,7 +58,7 @@ class RoomescapePageControllerTest {
     private void stubDashboardData() {
         Theme theme = new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L);
         Mockito.when(reservationService.getAll()).thenReturn(List.of(
-                new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, "10:00", "11:00"), theme)
+                new Reservation("브라운", LocalDate.of(2026, 5, 6), reservationTime(1L, "10:00", "11:00"), theme)
                         .withId(1L)
         ));
         Mockito.when(themeService.getAll()).thenReturn(List.of(
@@ -66,13 +68,13 @@ class RoomescapePageControllerTest {
                 theme
         ));
         Mockito.when(timeService.findAll()).thenReturn(List.of(
-                new ReservationTime(1L, "10:00", "11:00")
+                reservationTime(1L, "10:00", "11:00")
         ));
         Mockito.when(holidayService.getAll()).thenReturn(List.of(
                 new Holiday(1L, LocalDate.of(2026, 5, 7))
         ));
         Mockito.when(availabilityService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(
-                new ReservationTime(1L, "10:00", "11:00")
+                reservationTime(1L, "10:00", "11:00")
         ));
     }
 
@@ -124,7 +126,7 @@ class RoomescapePageControllerTest {
     @Test
     void createReservation_redirectsWithSafeFailureMessage() throws Exception {
         Mockito.when(reservationService.create(Mockito.any(ReservationSaveServiceDto.class)))
-                .thenThrow(new IllegalArgumentException("중복 예약은 불가합니다."));
+                .thenThrow(new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION));
 
         mockMvc.perform(post("/dashboard/reservations")
                         .param("name", "브라운")
@@ -132,12 +134,12 @@ class RoomescapePageControllerTest {
                         .param("themeId", "1")
                         .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요."));
+                .andExpect(flash().attribute("errorMessage", "이미 예약된 시간입니다."));
     }
 
     @Test
     void deleteTheme_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new ThemeNotFoundException(99L))
+        Mockito.doThrow(new ThemeException(ErrorCode.THEME_NOT_FOUND))
                 .when(themeService).deleteById(99L);
 
         mockMvc.perform(post("/dashboard/themes/99/delete"))
@@ -148,31 +150,50 @@ class RoomescapePageControllerTest {
 
     @Test
     void deleteTime_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new TimeNotFoundException(12L))
+        Mockito.doThrow(new TimeException(ErrorCode.TIME_NOT_FOUND))
                 .when(timeService).deleteById(12L);
 
         mockMvc.perform(post("/dashboard/times/12/delete"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "삭제할 시간 슬롯을 찾지 못했습니다."));
+                .andExpect(flash().attribute("errorMessage", "예약 시간이 존재하지 않습니다."));
     }
 
     @Test
     void cancelReservation_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new ReservationNotFoundException(21L))
+        Mockito.doThrow(new ReservationException(ErrorCode.RESERVATION_NOT_FOUND))
                 .when(reservationService).cancel(21L);
 
         mockMvc.perform(post("/dashboard/reservations/21/cancel"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "취소할 예약을 찾지 못했습니다."));
+                .andExpect(flash().attribute("errorMessage", "예약이 존재하지 않습니다."));
     }
 
     @Test
     void deleteHoliday_redirectsWithSafeFailureMessage() throws Exception {
-        Mockito.doThrow(new HolidayNotFoundException(7L))
+        Mockito.doThrow(new HolidayException(ErrorCode.HOLIDAY_NOT_FOUND))
                 .when(holidayService).delete(7L);
 
         mockMvc.perform(post("/dashboard/holidays/7/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("errorMessage", "삭제할 휴일을 찾지 못했습니다."));
+    }
+
+    @Test
+    void createReservation_예상못한오류는_공통문구를_보여준다() throws Exception {
+        Mockito.when(reservationService.create(Mockito.any(ReservationSaveServiceDto.class)))
+                .thenThrow(new RuntimeException("boom"));
+
+        mockMvc.perform(post("/dashboard/reservations")
+                        .param("name", "브라운")
+                        .param("date", "2026-05-06")
+                        .param("themeId", "1")
+                        .param("timeId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard/reservations"))
+                .andExpect(flash().attribute("errorMessage", "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }

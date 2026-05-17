@@ -1,38 +1,49 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
-import roomescape.time.service.TimeService;
+import roomescape.reservation.service.dto.ReservationUpdateServiceDto;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.service.TimeService;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeRepository themeRepository;
     private final HolidayService holidayService;
+    private final Clock clock;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
             TimeService timeService,
             ThemeRepository themeRepository,
-            HolidayService holidayService
+            HolidayService holidayService,
+            Clock clock
     ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeRepository = themeRepository;
         this.holidayService = holidayService;
+        this.clock = clock;
     }
 
     @Override
@@ -40,57 +51,130 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Override
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
+    }
 
     @Override
+    @Transactional
     public Reservation create(ReservationSaveServiceDto reservation) {
-        ReservationTime time = findTime(reservation.timeId());
+        ReservationTime time = timeService.findById(reservation.timeId());
         Theme theme = findTheme(reservation.themeId());
-        Long themeId = theme.getId();
         LocalDate date = reservation.date();
-        if (holidayService.isHoliday(reservation.date())) {
-            throw new IllegalArgumentException("휴일은 예약이 불가합니다.");
-        }
-        validateDuplicatedReservation(themeId, time, date);
+
+        validatePastReservation(date, time);
+        validateHoliday(date);
+        validateDuplicatedReservation(theme.getId(), time, date);
+
         Reservation newReservation = new Reservation(
                 reservation.name(),
-                reservation.date(),
+                date,
                 time,
                 theme
         );
         return reservationRepository.save(newReservation);
     }
 
+    private void validatePastReservation(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
+            throw new ReservationException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED,
+                    "Past reservation is not allowed. date=%s, timeId=%d, startAt=%s"
+                            .formatted(date, time.getId(), time.getStartAt()));
+        }
+    }
+
+    private void validateHoliday(LocalDate date) {
+        if (holidayService.isHoliday(date)) {
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+                    "Reservation is not allowed on holiday. date=%s".formatted(date));
+        }
+    }
+
     private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
-        if (isAlreadyReserved(themeId, time, date)) {
-            throw new IllegalArgumentException("중복 예약은 불가합니다.");
+        if (reservationRepository.isDuplicated(themeId, time, date)) {
+            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION,
+                    "Duplicated reservation exists. themeId=%d, timeId=%d, date=%s"
+                            .formatted(themeId, time.getId(), date));
         }
-    }
-
-    private boolean isAlreadyReserved(Long themeId, ReservationTime time, LocalDate date) {
-        return reservationRepository.isDuplicated(themeId, time, date);
-    }
-
-    private ReservationTime findTime(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
-        }
-        return timeService.findById(timeId);
     }
 
     private Theme findTheme(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException("테마는 필수입니다.");
-        }
-        if (!themeRepository.existsById(themeId)) {
-            throw new IllegalArgumentException("테마가 존재하지 않습니다. id=" + themeId);
-        }
-        return themeRepository.findById(themeId);
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                        "Theme not found. themeId=%d".formatted(themeId)));
     }
 
     @Override
+    @Transactional
+    public Reservation update(ReservationUpdateServiceDto dto) {
+        Reservation existing = reservationRepository.findById(dto.id())
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found. reservationId=%d".formatted(dto.id())));
+        validateOwner(existing, dto.requesterName());
+
+        ReservationTime newTime = timeService.findById(dto.timeId());
+        Theme newTheme = findTheme(dto.themeId());
+        validatePastReservation(dto.date(), newTime);
+        validateHoliday(dto.date());
+        validateDuplicatedReservation(dto.id(), newTheme.getId(), newTime, dto.date());
+
+        reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
+        return reservationRepository.findById(dto.id())
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found after update. reservationId=%d".formatted(dto.id())));
+    }
+
+    private void validateDuplicatedReservation(Long reservationId, Long themeId,
+            ReservationTime time, LocalDate date) {
+        if (reservationRepository.isDuplicatedExcludingId(reservationId, themeId, time, date)) {
+            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION,
+                    "Duplicated reservation exists during update. reservationId=%d, themeId=%d, timeId=%d, date=%s"
+                            .formatted(reservationId, themeId, time.getId(), date));
+        }
+    }
+
+    @Override
+    @Transactional
     public void cancel(Long id) {
         if (!reservationRepository.deleteById(id)) {
-            throw new ReservationNotFoundException(id);
+            throw new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                    "Reservation not found. reservationId=%d".formatted(id));
+        }
+    }
+
+    @Override
+    @Transactional
+    public void cancel(Long id, String requesterName) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationException(ErrorCode.RESERVATION_NOT_FOUND,
+                        "Reservation not found. reservationId=%d".formatted(id)));
+        validateOwner(reservation, requesterName);
+        validatePastCancel(reservation);
+        reservationRepository.deleteById(id);
+    }
+
+    private void validateOwner(Reservation reservation, String requesterName) {
+        if (requesterName == null || requesterName.isBlank()) {
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+                    "Requester name is required. reservationId=%d".formatted(reservation.getId()));
+        }
+        if (!reservation.getName().equals(requesterName)) {
+            throw new ReservationException(ErrorCode.RESERVATION_OWNER_MISMATCH,
+                    "Reservation owner mismatch. reservationId=%d, owner=%s, requester=%s"
+                            .formatted(reservation.getId(), reservation.getName(), requesterName));
+        }
+    }
+
+    private void validatePastCancel(Reservation reservation) {
+        LocalDate date = reservation.getDate();
+        ReservationTime time = reservation.getTime();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
+            throw new ReservationException(ErrorCode.PAST_RESERVATION_CANCEL_NOT_ALLOWED,
+                    "Past reservation cannot be canceled. reservationId=%d, date=%s, timeId=%d, startAt=%s"
+                            .formatted(reservation.getId(), date, time.getId(), time.getStartAt()));
         }
     }
 }

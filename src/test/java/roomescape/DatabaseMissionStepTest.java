@@ -66,7 +66,7 @@ public class DatabaseMissionStepTest {
 
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", timeId, 1L
+                "브라운", "2099-08-05", timeId, 1L
         );
 
         List<?> reservations = RestAssured.given().log().all()
@@ -107,7 +107,7 @@ public class DatabaseMissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 

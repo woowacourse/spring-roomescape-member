@@ -17,7 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.TimeRepository;
@@ -55,8 +56,10 @@ class AvailabilityServiceImplTest {
         when(themeRepository.existsById(999L)).thenReturn(false);
 
         assertThatThrownBy(() -> availabilityService.getAvailableTimes(999L, date))
-                .isInstanceOf(ThemeNotFoundException.class)
-                .hasMessage("테마가 존재하지 않습니다. id=999");
+                .isInstanceOf(ThemeException.class)
+                .hasMessage("Theme not found while finding available times. themeId=999")
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_NOT_FOUND);
 
         verifyNoInteractions(timeRepository, holidayRepository, reservationRepository);
     }
@@ -81,9 +84,9 @@ class AvailabilityServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(2L));
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00"),
-                new ReservationTime(3L, "14:00", "16:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00"),
+                reservationTime(3L, "14:00", "16:00")
         );
         when(timeRepository.findAll()).thenReturn(allTimes);
 
@@ -94,6 +97,22 @@ class AvailabilityServiceImplTest {
     }
 
     @Test
+    void getAvailableTimes_모든시간이_예약되어있으면_빈리스트() {
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        when(themeRepository.existsById(1L)).thenReturn(true);
+        when(holidayRepository.existsByDate(date)).thenReturn(false);
+        when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(1L, 2L));
+
+        List<ReservationTime> allTimes = List.of(
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00")
+        );
+        when(timeRepository.findAll()).thenReturn(allTimes);
+
+        assertThat(availabilityService.getAvailableTimes(1L, date)).isEmpty();
+    }
+
+    @Test
     void getAvailableTimes_예약이없으면_전체시간을_반환한다() {
         LocalDate date = LocalDate.of(2026, 5, 6);
         when(themeRepository.existsById(1L)).thenReturn(true);
@@ -101,12 +120,16 @@ class AvailabilityServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(Collections.emptyList());
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                reservationTime(1L, "10:00", "12:00"),
+                reservationTime(2L, "12:00", "14:00")
         );
         when(timeRepository.findAll()).thenReturn(allTimes);
 
         assertThat(availabilityService.getAvailableTimes(1L, date))
                 .isEqualTo(allTimes);
+    }
+
+    private ReservationTime reservationTime(Long id, String startAt, String endAt) {
+        return new ReservationTime(id, ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     }
 }

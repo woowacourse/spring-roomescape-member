@@ -7,15 +7,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.error.ErrorCode;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.TimeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final ThemeRepository themeRepository;
@@ -39,10 +42,6 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     public List<ReservationTime> getAvailableTimes(Long themeId, LocalDate date) {
         validateThemeExists(themeId);
 
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
-        }
-
         if (holidayRepository.existsByDate(date)) {
             return List.of();
         }
@@ -56,7 +55,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     private void validateThemeExists(Long themeId) {
         if (themeId == null || !themeRepository.existsById(themeId)) {
-            throw new ThemeNotFoundException(themeId);
+            throw new ThemeException(ErrorCode.THEME_NOT_FOUND,
+                    "Theme not found while finding available times. themeId=%s".formatted(themeId));
         }
     }
 }

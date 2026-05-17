@@ -4,22 +4,30 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.TimeNotFoundException;
+import roomescape.time.exception.TimeException;
 import roomescape.time.repository.TimeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeServiceImpl implements TimeService {
   private final TimeRepository timeRepository;
+  private final ReservationRepository reservationRepository;
 
-  public TimeServiceImpl(TimeRepository timeRepository) {
+  public TimeServiceImpl(TimeRepository timeRepository, ReservationRepository reservationRepository) {
     this.timeRepository = timeRepository;
+    this.reservationRepository = reservationRepository;
   }
 
   @Override
+  @Transactional
   public ReservationTime create(String startAt, String endAt) {
-    ReservationTime time = new ReservationTime(startAt, endAt);
+    ReservationTime time = new ReservationTime(ReservationTime.parse(startAt), ReservationTime.parse(endAt));
     return timeRepository.save(time.getStartAt(), time.getEndAt());
   }
 
@@ -31,25 +39,33 @@ public class TimeServiceImpl implements TimeService {
   @Override
   public ReservationTime findById(Long id) {
     return timeRepository.findById(id)
-        .orElseThrow(() -> new TimeNotFoundException(id));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND,
+            "Reservation time not found. timeId=%d".formatted(id)));
   }
 
   @Override
   public ReservationTime findByStartAt(String startAt) {
     if (startAt == null || startAt.isBlank()) {
-      throw new IllegalArgumentException("예약 시간은 필수입니다.");
+      throw new RoomescapeException(ErrorCode.INVALID_REQUEST,
+          "Reservation time startAt is required.");
     }
     LocalTime startTime = ReservationTime.parse(startAt);
     return timeRepository.findByStartAt(startTime)
-        .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다. startAt=" + startAt));
+        .orElseThrow(() -> new TimeException(ErrorCode.TIME_NOT_FOUND,
+            "Reservation time not found. startAt=%s".formatted(startTime)));
   }
 
   @Override
+  @Transactional
   public void deleteById(Long id) {
-    boolean deleted = timeRepository.deleteById(id);
-    if (!deleted) {
-      throw new TimeNotFoundException(id);
+    if (!timeRepository.existsById(id)) {
+      throw new TimeException(ErrorCode.TIME_NOT_FOUND,
+          "Reservation time not found. timeId=%d".formatted(id));
     }
+    if (reservationRepository.existsByTimeId(id)) {
+      throw new TimeException(ErrorCode.RESERVED_TIME_DELETE_NOT_ALLOWED,
+          "Reservation time is in use. timeId=%d".formatted(id));
+    }
+    timeRepository.deleteById(id);
   }
-
 }

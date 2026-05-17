@@ -1,7 +1,10 @@
 package roomescape.holiday.repository;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -9,26 +12,22 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.holiday.domain.Holiday;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 @Repository
-public class JdbcHolidayRepository implements HolidayRepository{
+public class JdbcHolidayRepository implements HolidayRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert themeInsert;
+    private final SimpleJdbcInsert holidayInsert;
 
     public JdbcHolidayRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.themeInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.holidayInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("holiday")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Holiday save(Holiday holiday) {
-        Number id = themeInsert.executeAndReturnKey(new MapSqlParameterSource()
+        Number id = holidayInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("date", holiday.date()));
         return holiday.withId(id.longValue());
     }
@@ -38,7 +37,7 @@ public class JdbcHolidayRepository implements HolidayRepository{
         return jdbcTemplate.query(
                 """
                         SELECT h.id, h.date
-                        FROM holiday h 
+                        FROM holiday h
                         """,
                 new HolidayRowMapper()
         );

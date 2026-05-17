@@ -1,11 +1,9 @@
 package roomescape.holiday.repository;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.holiday.domain.Holiday;
 
 import java.time.LocalDate;
@@ -13,9 +11,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
+@Import(JdbcHolidayRepository.class)
 class JdbcHolidayRepositoryTest {
 
     @Autowired
@@ -31,7 +28,7 @@ class JdbcHolidayRepositoryTest {
         Holiday holiday = new Holiday(1L, LocalDate.of(2026, 5, 6));
         Holiday saved = holidayRepository.save(holiday);
 
-        assertThat(saved.id()).isEqualTo(1L);
+        assertThat(saved.id()).isPositive();
         assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 6));
     }
 
@@ -48,8 +45,13 @@ class JdbcHolidayRepositoryTest {
         List<Holiday> results = holidayRepository.findAll();
 
         assertThat(results).hasSize(3);
-        assertThat(results.getFirst().id()).isEqualTo(1L);
-        assertThat(results.getFirst().date()).isEqualTo(LocalDate.of(2026, 5, 6));
+        assertThat(results)
+                .extracting(Holiday::date)
+                .containsExactlyInAnyOrder(
+                        LocalDate.of(2026, 5, 6),
+                        LocalDate.of(2026, 6, 6),
+                        LocalDate.of(2026, 7, 6)
+                );
     }
 
     @Test

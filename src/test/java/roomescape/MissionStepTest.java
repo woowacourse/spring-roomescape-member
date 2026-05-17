@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,6 +21,9 @@ public class MissionStepTest {
 
     @LocalServerPort
     int port;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +68,7 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 
@@ -81,7 +87,7 @@ public class MissionStepTest {
             .body("size()", is(1));
 
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
+            .when().delete("/reservations/1?name=브라운")
             .then().log().all()
             .statusCode(204);
 
@@ -134,7 +140,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation1 = new HashMap<>();
         reservation1.put("name", "브라운");
-        reservation1.put("date", "2023-08-05");
+        reservation1.put("date", "2099-08-05");
         reservation1.put("themeId", 1);
         reservation1.put("timeId", 1);
 
@@ -148,7 +154,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation2 = new HashMap<>();
         reservation2.put("name", "초코");
-        reservation2.put("date", "2023-08-05");
+        reservation2.put("date", "2099-08-05");
         reservation2.put("themeId", 2);
         reservation2.put("timeId", 1);
 
@@ -170,11 +176,11 @@ public class MissionStepTest {
     @Test
     void 없는_예약_삭제시_404_에러_응답() {
         RestAssured.given().log().all()
-            .when().delete("/reservations/999")
+            .when().delete("/reservations/999?name=아무개")
             .then().log().all()
             .statusCode(404)
-            .body("code", is("RESERVATION_NOT_FOUND"))
-            .body("message", is("예약이 존재하지 않습니다. id=999"));
+            .body("code", is("R001"))
+            .body("message", is("예약이 존재하지 않습니다."));
     }
 
     @Test
@@ -227,7 +233,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -251,7 +257,7 @@ public class MissionStepTest {
     void 예약_시간이_없으면_400_에러_응답() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -260,8 +266,351 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("INVALID_REQUEST"))
-                .body("message", is("예약 시간은 필수입니다."));
+                .body("code", is("C001"))
+                .body("message", containsString("timeId"));
+    }
+
+    @Test
+    void 예약_필수값이_여러개_없으면_필드별_400_에러_응답() {
+        Map<String, Object> reservation = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("C001"))
+                .body("message", containsString("name"))
+                .body("message", containsString("date"))
+                .body("message", containsString("themeId"))
+                .body("message", containsString("timeId"));
+    }
+
+
+    @Test
+    void 지난_날짜_시간_예약은_거부한다() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2020-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("R003"))
+                .body("message", is("지난 날짜와 시간으로 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 같은_날짜_시간_테마_중복_예약은_거부한다() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("R002"))
+                .body("message", is("이미 예약된 시간입니다."));
+    }
+
+    @Test
+    void 이름으로_내_예약_목록을_조회한다() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation1 = new HashMap<>();
+        reservation1.put("name", "브라운");
+        reservation1.put("date", "2099-08-05");
+        reservation1.put("themeId", 1);
+        reservation1.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation1)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].name", is("브라운"));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=초코")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    void 타인의_예약을_취소하려하면_403_에러_응답() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?name=초코")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("R005"))
+                .body("message", is("본인의 예약만 취소·변경할 수 있습니다."));
+    }
+
+    @Test
+    void 지난_예약을_취소하려하면_400_에러_응답() {
+        createThemeAndTime();
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "tester1", "2020-01-01", 1L, 1L
+        );
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?name=tester1")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("R004"))
+                .body("message", is("이미 지난 예약은 취소할 수 없습니다."));
+    }
+
+    @Test
+    void 예약_날짜와_시간과_테마를_변경한다() {
+        createThemeAndTime();
+
+        Map<String, String> theme2 = new HashMap<>();
+        theme2.put("name", "테마2");
+        theme2.put("description", "설명2");
+        theme2.put("imageUrl", "https://example.com/theme2.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme2)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> time2 = new HashMap<>();
+        time2.put("startAt", "14:00");
+        time2.put("endAt", "17:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time2)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("name", "브라운");
+        updateRequest.put("date", "2099-09-10");
+        updateRequest.put("timeId", 2);
+        updateRequest.put("themeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("date", is("2099-09-10"))
+                .body("time.id", is(2))
+                .body("theme.name", is("테마2"));
+    }
+
+    @Test
+    void 타인의_예약을_변경하려하면_403_에러_응답() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("name", "초코");
+        updateRequest.put("date", "2099-09-10");
+        updateRequest.put("timeId", 1);
+        updateRequest.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("R005"))
+                .body("message", is("본인의 예약만 취소·변경할 수 있습니다."));
+    }
+
+    @Test
+    void 과거_날짜로_예약_변경시_400_에러_응답() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("name", "브라운");
+        updateRequest.put("date", "2020-01-01");
+        updateRequest.put("timeId", 1);
+        updateRequest.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("R003"))
+                .body("message", is("지난 날짜와 시간으로 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 이미_예약된_시간으로_변경시_409_에러_응답() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation1 = new HashMap<>();
+        reservation1.put("name", "브라운");
+        reservation1.put("date", "2099-08-05");
+        reservation1.put("themeId", 1);
+        reservation1.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation1)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> time2 = new HashMap<>();
+        time2.put("startAt", "14:00");
+        time2.put("endAt", "17:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time2)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> reservation2 = new HashMap<>();
+        reservation2.put("name", "초코");
+        reservation2.put("date", "2099-08-05");
+        reservation2.put("themeId", 1);
+        reservation2.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation2)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        // 브라운의 예약을 초코의 예약과 동일한 날짜·시간으로 변경 시도
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("name", "브라운");
+        updateRequest.put("date", "2099-08-05");
+        updateRequest.put("timeId", 2);
+        updateRequest.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("R002"))
+                .body("message", is("이미 예약된 시간입니다."));
+    }
+
+    private void createThemeAndTime() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "테마");
+        theme.put("description", "설명");
+        theme.put("imageUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
+        time.put("endAt", "16:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
     }
 
 }
