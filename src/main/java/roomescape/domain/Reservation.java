@@ -49,7 +49,7 @@ public class Reservation {
             ReservationTime time,
             EntityId themeId
     ) {
-        validateFutureReservation(date, time);
+        validateFuture(date, time);
 
         boolean defaultCanceled = false;
 
@@ -87,7 +87,7 @@ public class Reservation {
 
     public Reservation updateDateAndTime(LocalDate date, ReservationTime time) {
         validateUpdatable();
-        validateFutureReservation(date, time);
+        validateFuture(date, time);
 
         return new Reservation(
                 this.id,
@@ -130,7 +130,7 @@ public class Reservation {
         }
     }
 
-    private static void validateFutureReservation(LocalDate date, ReservationTime time) {
+    private static void validateFuture(LocalDate date, ReservationTime time) {
         if (isNotFuture(date, time)) {
             throw new NotAcceptableReservationException(
                     ErrorCode.PAST_RESERVATION,
