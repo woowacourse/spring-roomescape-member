@@ -48,7 +48,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
-            assertThatCode(() -> reservation.validateCancel(NOW))
+            assertThatCode(() -> reservation.cancelIfValid(NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -58,7 +58,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
-            assertThatThrownBy(() -> reservation.validateCancel(NOW))
+            assertThatThrownBy(() -> reservation.cancelIfValid(NOW))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

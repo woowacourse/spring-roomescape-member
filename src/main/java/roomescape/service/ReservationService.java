@@ -66,8 +66,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
         LocalDateTime now = LocalDateTime.now();
-        reservation.validateCancel(now);
-        reservation.cancel(now);
+        reservation.cancelIfValid(now);
         reservationDao.update(reservation);
     }
 

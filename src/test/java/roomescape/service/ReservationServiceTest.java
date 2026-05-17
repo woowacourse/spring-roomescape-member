@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -143,9 +144,11 @@ class ReservationServiceTest {
         @Test
         @DisplayName("이름으로 활성 예약 목록을 조회한다")
         void returnsActiveReservationsByName() {
-            reservationService.create(requestDto1);
+            Reservation saved = reservationService.create(requestDto1);
 
-            assertThat(reservationService.findAllByName(requestDto1.name())).hasSize(1);
+            List<Reservation> result = reservationService.findAllByName(requestDto1.name());
+
+            assertThat(result).containsExactly(saved);
         }
 
         @Test

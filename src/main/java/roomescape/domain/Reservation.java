@@ -38,10 +38,11 @@ public class Reservation {
         }
     }
 
-    public void validateCancel(LocalDateTime now) {
+    public void cancelIfValid(LocalDateTime now) {
         if (getTime().isReservationBefore(now, date)) {
             throw new IllegalArgumentException("지난 예약은 취소 불가능합니다.");
         }
+        cancel(now);
     }
 
     public void cancel(LocalDateTime now) {

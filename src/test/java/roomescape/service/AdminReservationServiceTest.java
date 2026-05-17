@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,8 +59,10 @@ class AdminReservationServiceTest {
         savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
         savedTheme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
         savedTheme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        requestDto1 = new ReservationRequestDto("유저1", LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId());
-        requestDto2 = new ReservationRequestDto("유저2", LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId());
+        requestDto1 = new ReservationRequestDto("유저1", LocalDate.now().plusDays(1), savedTime1.getId(),
+                savedTheme1.getId());
+        requestDto2 = new ReservationRequestDto("유저2", LocalDate.now().plusDays(2), savedTime2.getId(),
+                savedTheme2.getId());
     }
 
     @Nested
@@ -75,24 +80,26 @@ class AdminReservationServiceTest {
         @Test
         @DisplayName("페이지 크기만큼 예약 목록을 반환한다")
         void returnsPagedReservations() {
-            adminReservationService.createByAdmin(requestDto1);
-            adminReservationService.createByAdmin(requestDto2);
+            List<Reservation> saved = new ArrayList<>();
+            saved.add(adminReservationService.createByAdmin(requestDto1));
+            saved.add(adminReservationService.createByAdmin(requestDto2));
+            Collections.reverse(saved);
 
             PageResponse<Reservation> result = adminReservationService.findAll(0, 10);
 
-            assertThat(result.content()).hasSize(2);
-            assertThat(result.totalElements()).isEqualTo(2);
+            assertThat(result.content()).isEqualTo(saved);
+            assertThat(result.totalElements()).isEqualTo(saved.size());
         }
 
         @Test
         @DisplayName("size보다 데이터가 많으면 size만큼만 반환한다")
         void returnsOnlySizeItems() {
             adminReservationService.createByAdmin(requestDto1);
-            adminReservationService.createByAdmin(requestDto2);
+            Reservation saved2 = adminReservationService.createByAdmin(requestDto2);
 
             PageResponse<Reservation> result = adminReservationService.findAll(0, 1);
 
-            assertThat(result.content()).hasSize(1);
+            assertThat(result.content()).isEqualTo(List.of(saved2));
             assertThat(result.totalElements()).isEqualTo(2);
             assertThat(result.totalPages()).isEqualTo(2);
         }
