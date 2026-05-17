@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.business.BusinessException;
 import roomescape.theme.dto.ThemeResponse;
 
@@ -48,6 +49,8 @@ class ThemeServiceTest {
     @DisplayName("존재하지 않는 id로 테마 조회 시 예외 발생")
     void getById_없으면_예외() {
         assertThatThrownBy(() -> themeService.getById(999L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND))
+                .hasMessage(ErrorCode.THEME_NOT_FOUND.getMessage());
     }
 }

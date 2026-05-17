@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.dto.TimeRequest;
 import roomescape.reservationtime.dto.TimeResponse;
@@ -64,6 +65,17 @@ class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 id로 시간 조회 시 예외 발생")
     void getById_없으면_예외() {
         assertThatThrownBy(() -> reservationTimeService.getById(999L))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.TIME_NOT_FOUND))
+                .hasMessage(ErrorCode.TIME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간은 삭제할 수 없다")
+    void 예약_있는_시간_삭제_불가() {
+        assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.TIME_HAS_RESERVATION))
+                .hasMessage(ErrorCode.TIME_HAS_RESERVATION.getMessage());
     }
 }

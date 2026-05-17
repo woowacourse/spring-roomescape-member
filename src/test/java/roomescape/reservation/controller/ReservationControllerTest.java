@@ -47,7 +47,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("errorCode", equalTo("BAD_REQUEST"));
+                .body("errorCode", equalTo("PAST_TIME_CREATE"));
     }
 
     @Test
@@ -59,7 +59,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(409)
-                .body("errorCode", equalTo("CONFLICT"));
+                .body("errorCode", equalTo("DUPLICATE_RESERVATION"));
     }
 
     @Test
@@ -71,7 +71,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(404)
-                .body("errorCode", equalTo("NOT_FOUND"));
+                .body("errorCode", equalTo("TIME_NOT_FOUND"));
     }
 
     @Test
@@ -83,7 +83,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(404)
-                .body("errorCode", equalTo("NOT_FOUND"));
+                .body("errorCode", equalTo("THEME_NOT_FOUND"));
     }
 
     @Test
@@ -108,7 +108,7 @@ class ReservationControllerTest {
                 .when().patch("/reservations/1")
                 .then().log().all()
                 .statusCode(400)
-                .body("errorCode", equalTo("BAD_REQUEST"));
+                .body("errorCode", equalTo("PAST_RESERVATION_UPDATE"));
     }
 
     @Test
@@ -127,6 +127,6 @@ class ReservationControllerTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(400)
-                .body("errorCode", equalTo("BAD_REQUEST"));
+                .body("errorCode", equalTo("PAST_RESERVATION_CANCEL"));
     }
 }

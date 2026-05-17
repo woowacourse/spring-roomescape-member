@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.business.PastTimeReservationException;
+import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -54,7 +54,7 @@ class ReservationTest {
     @DisplayName("과거 날짜면 예외 발생")
     void 과거_날짜_예외() {
         assertThatThrownBy(() -> factory.create("현미밥", LocalDate.now().minusDays(1), time, theme))
-                .isInstanceOf(PastTimeReservationException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test

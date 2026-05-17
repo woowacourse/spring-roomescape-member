@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.business.BusinessException;
 import roomescape.exception.business.PastTimeCancelException;
-import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationUpdateRequest;
@@ -40,7 +40,9 @@ class ReservationServiceTest {
     void 존재하지_않는_timeId_예외() {
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("현미밥", LocalDate.now().plusDays(1), 999L, 1L)))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.TIME_NOT_FOUND))
+                .hasMessage(ErrorCode.TIME_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -48,7 +50,9 @@ class ReservationServiceTest {
     void 존재하지_않는_themeId_예외() {
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("현미밥", LocalDate.now().plusDays(1), 1L, 999L)))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND))
+                .hasMessage(ErrorCode.THEME_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -65,7 +69,9 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 예약은 취소할 수 없다")
     void 과거_예약_취소_불가() {
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
-                .isInstanceOf(PastTimeCancelException.class);
+                .isInstanceOf(PastTimeCancelException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.PAST_RESERVATION_CANCEL))
+                .hasMessage(ErrorCode.PAST_RESERVATION_CANCEL.getMessage());
     }
 
     @Test
@@ -81,7 +87,9 @@ class ReservationServiceTest {
     void 과거_예약_수정_불가() {
         assertThatThrownBy(() -> reservationService.updateReservation(
                 1L, new ReservationUpdateRequest(LocalDate.of(2099, 12, 2), 2L)))
-                .isInstanceOf(PastTimeCancelException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.PAST_RESERVATION_UPDATE))
+                .hasMessage(ErrorCode.PAST_RESERVATION_UPDATE.getMessage());
     }
 
     @Test
@@ -89,7 +97,9 @@ class ReservationServiceTest {
     void 새시간_과거면_수정_불가() {
         assertThatThrownBy(() -> reservationService.updateReservation(
                 11L, new ReservationUpdateRequest(LocalDate.now().minusDays(1), 2L)))
-                .isInstanceOf(PastTimeReservationException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.PAST_TIME_RESERVATION))
+                .hasMessage(ErrorCode.PAST_TIME_RESERVATION.getMessage());
     }
 
     @Test
@@ -97,6 +107,8 @@ class ReservationServiceTest {
     void 중복_예약_수정_불가() {
         assertThatThrownBy(() -> reservationService.updateReservation(
                 12L, new ReservationUpdateRequest(LocalDate.of(2099, 12, 1), 1L)))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException) e).getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_RESERVATION))
+                .hasMessage(ErrorCode.DUPLICATE_RESERVATION.getMessage());
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.business.BusinessException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeFactory;
 import roomescape.theme.dto.AdminThemeRequest;
@@ -37,6 +39,9 @@ public class AdminThemeService {
 
     @Transactional
     public void deleteTheme(Long id) {
+        if (themeRepository.existsReservationByThemeId(id)) {
+            throw new BusinessException(ErrorCode.THEME_HAS_RESERVATION);
+        }
         themeRepository.deleteById(id);
     }
 }
