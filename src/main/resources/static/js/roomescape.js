@@ -1,6 +1,5 @@
 const API_BASE = "";
-    const CUSTOM_AUTH_HEADER = "CustomAuth";
-    const CUSTOM_AUTH_PREFIX = "Temp";
+    const GUEST_NAME_HEADER = "X-Guest-Name";
     const DEMO_DATE = "2026-05-06";
     const DEFAULT_DATE = todayDate();
     const PAGE = document.body.dataset.page || "user";
@@ -18,10 +17,10 @@ const API_BASE = "";
         { id: 1, guestName: "guest-8", date: "2026-05-05", themeId: 1, timeId: 1 },
         { id: 2, guestName: "guest-9", date: "2026-05-05", themeId: 1, timeId: 2 },
         { id: 3, guestName: "guest-10", date: "2026-05-05", themeId: 1, timeId: 3 },
-        { id: 4, guestName: "guest-18", date: "2026-05-05", themeId: 2, timeId: 1 },
-        { id: 5, guestName: "guest-19", date: "2026-05-05", themeId: 2, timeId: 2 },
-        { id: 6, guestName: "guest-56", date: "2026-05-06", themeId: 11, timeId: 1 },
-        { id: 7, guestName: "guest-57", date: "2026-05-06", themeId: 11, timeId: 2 }
+        { id: 4, guestName: "guest-18", date: "2027-05-05", themeId: 2, timeId: 1 },
+        { id: 5, guestName: "guest-19", date: "2027-05-05", themeId: 2, timeId: 2 },
+        { id: 6, guestName: "guest-56", date: "2027-05-06", themeId: 11, timeId: 1 },
+        { id: 7, guestName: "guest-57", date: "2027-05-06", themeId: 11, timeId: 2 }
       ],
       selectedThemeId: null,
       selectedTimeId: null,
@@ -171,11 +170,14 @@ const API_BASE = "";
       return thumbnail;
     }
 
-    async function getJson(path) {
+    async function getJson(path, headers = {}) {
       const controller = new AbortController();
       const timer = window.setTimeout(() => controller.abort(), 5000);
       const response = await fetch(`${API_BASE}${path}`, {
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json",
+          ...headers
+        },
         signal: controller.signal
       }).finally(() => window.clearTimeout(timer));
       if (!response.ok) {
@@ -228,9 +230,9 @@ const API_BASE = "";
       }
     }
 
-    function customAuthHeaders(guestName) {
+    function guestNameHeaders(guestName) {
       return {
-        [CUSTOM_AUTH_HEADER]: `${CUSTOM_AUTH_PREFIX} ${encodeURIComponent(guestName)}`
+        [GUEST_NAME_HEADER]: encodeURIComponent(guestName)
       };
     }
 
@@ -744,7 +746,7 @@ const API_BASE = "";
 
       try {
         const reservations = state.mode === "live"
-          ? (await getJson(`/reservations?guestName=${encodeURIComponent(guestName)}`)).reservations || []
+          ? (await getJson("/reservations/me", guestNameHeaders(guestName))).reservations || []
           : state.demoReservations.filter((reservation) => reservation.guestName === guestName);
 
         renderLookupReservations(reservations);
@@ -820,7 +822,7 @@ const API_BASE = "";
 
       try {
         if (state.mode === "live") {
-          await deleteJson(`/reservations/${id}`, customAuthHeaders(authorizationName));
+          await deleteJson(`/reservations/${id}`, guestNameHeaders(authorizationName));
         } else {
           cancelDemoReservation(id, authorizationName);
           state.demoReservations = removeReservation(state.demoReservations, id);
@@ -859,7 +861,7 @@ const API_BASE = "";
 
       try {
         const editedReservation = state.mode === "live"
-          ? await patchJson(`/reservations/${reservationId}`, payload, customAuthHeaders(authorizationName))
+          ? await patchJson(`/reservations/${reservationId}`, payload, guestNameHeaders(authorizationName))
           : editDemoReservation(reservationId, payload, authorizationName);
 
         if (state.mode === "demo") {

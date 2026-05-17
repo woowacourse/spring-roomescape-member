@@ -36,8 +36,8 @@ public class ReservationController {
                 .body(ReservationResponse.from(reservation));
     }
 
-    @GetMapping
-    public ResponseEntity<ReservationListResponse> getListByGuestName(@RequestParam("guestName") String guestName) {
+    @GetMapping("/me")
+    public ResponseEntity<ReservationListResponse> getListByGuestName(@CurrentUser String guestName) {
 
         List<Reservation> reservations = reservationService.findByGuestName(guestName);
 

@@ -16,28 +16,24 @@ public class ErrorResponse {
     private final List<String> messages;
     private final LocalDateTime timeStamp;
 
-    private ErrorResponse(String path, String code, String message, List<String> messages, LocalDateTime timeStamp) {
+    private ErrorResponse(String path, String code, String message, List<String> messages) {
         this.path = path;
         this.code = code;
         this.message = message;
         this.messages = messages;
-        this.timeStamp = timeStamp;
-    }
-
-    public static ErrorResponse of(String path, ErrorPolicy errorCode) {
-        return new ErrorResponse(path, errorCode.code(), errorCode.message(), null, LocalDateTime.now());
+        this.timeStamp = LocalDateTime.now();
     }
 
     public static ErrorResponse of(String path, String code, String message) {
-        return new ErrorResponse(path, code, message, null, LocalDateTime.now());
+        return new ErrorResponse(path, code, message, null);
     }
 
     public static ErrorResponse of(String path, String message) {
-        return new ErrorResponse(path, null, message, null, LocalDateTime.now());
+        return of(path, null, message);
     }
 
-    public static ErrorResponse of(String path, ErrorPolicy errorCode, List<String> messages) {
+    public static ErrorResponse of(String path, String code, List<String> messages) {
         List<String> copiedMessages = List.copyOf(messages);
-        return new ErrorResponse(path, errorCode.code(), null, copiedMessages, LocalDateTime.now());
+        return new ErrorResponse(path, code, null, copiedMessages);
     }
 }

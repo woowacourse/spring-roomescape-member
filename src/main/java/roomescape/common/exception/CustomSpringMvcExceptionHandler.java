@@ -35,7 +35,7 @@ public class CustomSpringMvcExceptionHandler {
 
         return ResponseEntity
                 .status(VALIDATION_ERROR.status())
-                .body(ErrorResponse.of(pathFrom(request), VALIDATION_ERROR, messages));
+                .body(ErrorResponse.of(pathFrom(request), VALIDATION_ERROR.code(), messages));
     }
 
     private static List<String> getErrorMessages(MethodArgumentNotValidException exception) {

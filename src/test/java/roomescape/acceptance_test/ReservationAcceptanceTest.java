@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.common.auth.UserArgumentResolver;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
@@ -122,9 +123,9 @@ public class ReservationAcceptanceTest {
         createScenario3Fixture(guestName);
 
         given().log().all()
-                .queryParam("guestName", guestName)
+                .header(GUEST_NAME_HEADER, guestName)
                 .when()
-                .get("/reservations")
+                .get("/reservations/me")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.guestName", hasItem(guestName));
@@ -360,9 +361,9 @@ public class ReservationAcceptanceTest {
                 .statusCode(204);
 
         given().log().all()
-                .queryParam("guestName", guestName)
+                .header(GUEST_NAME_HEADER, guestName)
                 .when()
-                .get("/reservations")
+                .get("/reservations/me")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.id", not(hasItem(reservationId)));

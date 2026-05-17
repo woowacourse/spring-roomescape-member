@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import roomescape.common.exception.GlobalErrorCode;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
@@ -42,6 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.common.auth.UserArgumentResolver.GUEST_NAME_HEADER;
+import static roomescape.common.exception.GlobalErrorCode.INVALID_GUEST_NAME_HEADER;
+import static roomescape.common.exception.GlobalErrorCode.VALIDATION_ERROR;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {
@@ -163,19 +166,18 @@ class ReservationControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.message").value("요청 본문 형식이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.code").value(VALIDATION_ERROR.code()));
     }
 
     @Test
-    @DisplayName("예약자 이름 쿼리 파라미터가 없으면 에러 응답을 반환한다.")
+    @DisplayName("예약자 이름 헤더가 없으면 에러 응답을 반환한다.")
     public void getListByGuestName_fail1() throws Exception {
         // when then
-        mockMvc.perform(get("/reservations"))
+        mockMvc.perform(get("/reservations/me"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.message").value("guestName 파라미터는 필수입니다."));
+                .andExpect(jsonPath("$.code").value(INVALID_GUEST_NAME_HEADER.code()))
+                .andExpect(jsonPath("$.message").value(INVALID_GUEST_NAME_HEADER.message()));
     }
 
     @Test
@@ -193,8 +195,8 @@ class ReservationControllerTest {
 
         // when then
         MvcResult result = mockMvc.perform(
-                        get("/reservations")
-                                .param("guestName", guestName))
+                        get("/reservations/me")
+                                .header(GUEST_NAME_HEADER, guestName))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -303,8 +305,7 @@ class ReservationControllerTest {
                                 .header(GUEST_NAME_HEADER, "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.message").value("요청 본문 형식이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.code").value(VALIDATION_ERROR.code()));
     }
 
     @Test
@@ -321,8 +322,7 @@ class ReservationControllerTest {
                                 .header(GUEST_NAME_HEADER, "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.message").value("id 값의 타입이 올바르지 않습니다."));
+                .andExpect(jsonPath("$.code").value(VALIDATION_ERROR.code()));
     }
 
     @Test

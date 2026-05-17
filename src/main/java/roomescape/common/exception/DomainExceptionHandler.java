@@ -16,7 +16,7 @@ public class DomainExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException exception, HttpServletRequest request) {
         ErrorPolicy errorCode = exception.getErrorPolicy();
 
-        ErrorResponse errorResponse = ErrorResponse.of(request.getRequestURI(), errorCode);
+        ErrorResponse errorResponse = ErrorResponse.of(request.getRequestURI(), errorCode.code(), errorCode.message());
 
         return ResponseEntity
                 .status(errorCode.status())
@@ -25,7 +25,7 @@ public class DomainExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllUncaughtException(Exception exception, HttpServletRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.of(request.getRequestURI(), INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = ErrorResponse.of(request.getRequestURI(), INTERNAL_SERVER_ERROR.code(), INTERNAL_SERVER_ERROR.message());
         exception.printStackTrace();
         return ResponseEntity
                 .internalServerError()
