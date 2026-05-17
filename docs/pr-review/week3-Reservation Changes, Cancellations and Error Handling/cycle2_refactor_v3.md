@@ -44,7 +44,7 @@
   - `AdminReservationController.java:26,30` — 두 호출이 별개 트랜잭션이라 그 사이 예약 추가/삭제 시 count와 data 불일치 발생
   - 서비스에서 `findAllWithCount(page, size)` 하나로 합쳐 `@Transactional(readOnly = true)` 안에서 처리
 
-- [ ] **8. `AppConfig` 개선**
+- [x] **8. `AppConfig` 개선**
   - 이름: `Clock` 빈 하나만 등록하므로 `AppConfig` → `ClockConfig` 또는 `TimeConfig`로 변경
   - 타임존: `Clock.systemDefaultZone()` → `Clock.system(ZoneId.of("Asia/Seoul"))` — 서버 환경에 따라 타임존이 달라지지 않도록 명시적으로 고정
 
