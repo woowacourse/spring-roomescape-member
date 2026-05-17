@@ -45,7 +45,7 @@ class ReservationServiceTest {
                 savedTheme.getId());
 
         //when
-        List<Reservation> reservations = reservationService.findAll(0, 20);
+        List<Reservation> reservations = reservationService.find(null, 0, 20);
 
         //then
         assertThat(reservations.getFirst().getId()).isEqualTo(savedReservation.getId());
@@ -63,7 +63,7 @@ class ReservationServiceTest {
         reservationService.deleteById(savedReservation.getId());
 
         //then
-        assertThat(reservationService.findAll(0, 20)).hasSize(0);
+        assertThat(reservationService.find(null, 0, 20)).hasSize(0);
     }
 
     @Test

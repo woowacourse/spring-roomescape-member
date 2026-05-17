@@ -38,11 +38,7 @@ public class ReservationController {
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
-
-        if (name != null) {
-            return ReservationResponses.from(reservationService.findByName(name, page, size));
-        }
-        return ReservationResponses.from(reservationService.findAll(page, size));
+        return ReservationResponses.from(reservationService.find(name, page, size));
     }
 
     @PostMapping("/reservations")

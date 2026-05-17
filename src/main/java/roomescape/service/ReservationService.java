@@ -32,12 +32,11 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<Reservation> findAll(int page, int size) {
-        return reservationDao.findAll(page, size);
-    }
-
-    public List<Reservation> findByName(String name, int page, int size) {
-        if (name == null || name.isBlank()) {
+    public List<Reservation> find(String name, int page, int size) {
+        if (name == null) {
+            return reservationDao.findAll(page, size);
+        }
+        if (name.isBlank()) {
             throw new InvalidInputException("예약자 이름은 필수입니다.");
         }
         return reservationDao.findByName(name, page, size);
