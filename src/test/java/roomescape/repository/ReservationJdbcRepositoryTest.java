@@ -29,8 +29,8 @@ class ReservationJdbcRepositoryTest {
         Long themeId = insertTheme("공포");
         Long timeId = insertTime("10:00");
         Reservation reservation = new Reservation(
-                null, "브라운", new Theme(themeId, null, null, null),
-                LocalDate.of(2026, 5, 6), new ReservationTime(timeId, null));
+                null, "브라운", new Theme(themeId, "공포", "설명", "https://thumbnail.url"),
+                LocalDate.of(2026, 5, 6), new ReservationTime(timeId, LocalTime.of(10, 0)));
 
         Long id = repository.save(reservation);
 
@@ -88,9 +88,9 @@ class ReservationJdbcRepositoryTest {
 
         int affected = repository.update(new Reservation(
                 reservationId, "브라운",
-                new Theme(themeB, null, null, null),
+                new Theme(themeB, "B", "설명", "https://thumbnail.url"),
                 LocalDate.of(2026, 6, 2),
-                new ReservationTime(time2, null)));
+                new ReservationTime(time2, LocalTime.of(11, 0))));
 
         assertThat(affected).isEqualTo(1);
         Reservation found = repository.findById(reservationId).orElseThrow();

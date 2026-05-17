@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import roomescape.exception.InvalidDomainException;
 
 public class ReservationTime {
 
@@ -8,8 +9,15 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validate(LocalTime startAt) {
+        if (startAt == null) {
+            throw new InvalidDomainException("예약 시간은 필수입니다.");
+        }
     }
 
     public ReservationTime withId(Long id) {

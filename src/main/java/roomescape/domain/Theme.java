@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.InvalidDomainException;
+
 public class Theme {
 
     private final Long id;
@@ -8,10 +10,23 @@ public class Theme {
     private final String thumbnailImageUrl;
 
     public Theme(Long id, String name, String description, String thumbnailImageUrl) {
+        validate(name, description, thumbnailImageUrl);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailImageUrl = thumbnailImageUrl;
+    }
+
+    private void validate(String name, String description, String thumbnailImageUrl) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidDomainException("테마 이름은 비어있을 수 없습니다.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new InvalidDomainException("테마 설명은 비어있을 수 없습니다.");
+        }
+        if (thumbnailImageUrl == null || thumbnailImageUrl.isBlank()) {
+            throw new InvalidDomainException("테마 썸네일 이미지 URL은 비어있을 수 없습니다.");
+        }
     }
 
     public Theme withId(Long id) {
