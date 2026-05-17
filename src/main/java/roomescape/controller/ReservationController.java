@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.reservation.ReservationRequest;
-import roomescape.controller.dto.reservation.ReservationResponse;
-import roomescape.controller.dto.reservation.ReservationUpdateRequest;
-import roomescape.controller.dto.reservation.ReservationsResponse;
+import roomescape.controller.dto.request.ReservationRequest;
+import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.controller.dto.request.ReservationUpdateRequest;
+import roomescape.controller.dto.response.ReservationsResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 

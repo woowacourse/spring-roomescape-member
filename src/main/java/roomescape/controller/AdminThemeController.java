@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.theme.ThemeRequest;
+import roomescape.controller.dto.request.ThemeRequest;
 import roomescape.service.ThemeService;
 
 @RequestMapping("/admin/themes")

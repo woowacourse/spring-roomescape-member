@@ -4,7 +4,7 @@
 
 ## ✅ 리팩토링 할 것 목록
 
-- [ ] **1. DTO 패키지를 도메인별(reservation/time/theme)에서 request/response 기준으로 재편**
+- [x] **1. DTO 패키지를 도메인별(reservation/time/theme)에서 request/response 기준으로 재편**
 
 - [x] **2. `queryForObject` nullable 반환값 NPE 방어 처리 — `Objects.requireNonNullElse(count, 0)` 적용**
   - `ReservationDao.java:52` — `count()` 반환 시 auto-unboxing

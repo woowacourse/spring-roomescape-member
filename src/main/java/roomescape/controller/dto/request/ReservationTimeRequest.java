@@ -1,4 +1,4 @@
-package roomescape.controller.dto.time;
+package roomescape.controller.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
