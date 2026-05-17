@@ -143,7 +143,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     reservation.getId()
             );
 
-            if (updatedCount == 0) {
+            if (!hasUpdatedReservation(updatedCount)) {
                 throw new ReservationNotFoundException();
             }
 
@@ -153,6 +153,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (DataIntegrityViolationException exception) {
             throw new ReservationOptionChangedException(exception);
         }
+    }
+
+    private static boolean hasUpdatedReservation(final int updatedCount) {
+        return updatedCount > 0;
     }
 
     @Override
