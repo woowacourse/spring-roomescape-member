@@ -230,10 +230,10 @@ class ReservationControllerE2ETest {
                     .statusCode(422);
         }
 
-        @DisplayName("존재하지 않는 예약 취소를 요청하면 404 Not Found를 응답한다")
+        @DisplayName("존재하지 않는 예약 취소를 요청하면 422 Unprocessable Entity를 응답한다")
         @Sql("/data.sql")
         @Test
-        void 존재하지_않는_예약_취소를_요청하면_404를_응답한다() {
+        void 존재하지_않는_예약_취소를_요청하면_422를_응답한다() {
             RestAssured.given().log().all()
                     .when().delete(
                             requestParamFormat.formatted(
@@ -244,7 +244,7 @@ class ReservationControllerE2ETest {
                             )
                     )
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(422);
         }
 
         @DisplayName("예약 취소 시 필수 파라미터가 누락되면 400 Bad Request를 응답한다")
@@ -305,9 +305,9 @@ class ReservationControllerE2ETest {
                     .statusCode(204);
         }
 
-        @DisplayName("존재하지 않는 예약의 변경을 요청하면 404 Not Found를 응답한다")
+        @DisplayName("존재하지 않는 예약의 변경을 요청하면 422 Unprocessable Entity를 응답한다")
         @Test
-        void 존재하지_않는_예약의_변경을_요청하면_404를_응답한다() {
+        void 존재하지_않는_예약의_변경을_요청하면_422를_응답한다() {
             Map<String, Object> requestBody = Map.of(
                     "date", LocalDate.now().plusDays(1),
                     "timeId", 1L
@@ -318,13 +318,13 @@ class ReservationControllerE2ETest {
                     .body(requestBody)
                     .when().patch("api/reservations/" + Long.MAX_VALUE)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(422);
         }
 
-        @DisplayName("존재하지 않는 예약 시간으로 변경을 요청하면 404 Not Found를 응답한다")
+        @DisplayName("존재하지 않는 예약 시간으로 변경을 요청하면 422 Unprocessable Entity를 응답한다")
         @Sql("/data.sql")
         @Test
-        void 존재하지_않는_예약_시간으로_변경을_요청하면_404를_응답한다() {
+        void 존재하지_않는_예약_시간으로_변경을_요청하면_422를_응답한다() {
             Map<String, Object> requestBody = Map.of(
                     "date", LocalDate.now().plusDays(1),
                     "timeId", Long.MAX_VALUE
@@ -335,7 +335,7 @@ class ReservationControllerE2ETest {
                     .body(requestBody)
                     .when().patch("api/reservations/" + 1L)
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(422);
         }
 
         @DisplayName("과거 시점으로 변경을 요청하면 422 Unprocessable Entity를 응답한다")

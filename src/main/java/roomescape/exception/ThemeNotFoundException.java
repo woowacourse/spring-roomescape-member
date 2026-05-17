@@ -15,7 +15,7 @@ public class ThemeNotFoundException extends BusinessException {
 
     @Override
     public HttpStatusCode getStatusCode() {
-        return HttpStatus.NOT_FOUND;
+        return HttpStatus.UNPROCESSABLE_ENTITY;
     }
 
     @Override

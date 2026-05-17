@@ -67,14 +67,14 @@ class AdminControllerE2ETest {
                 .statusCode(409);
     }
 
-    @DisplayName("존재하지 않는 예약 시간 삭제 요청 시 404 Not Found를 응답한다")
+    @DisplayName("존재하지 않는 예약 시간 삭제 요청 시 422 Unprocessable Entity를 응답한다")
     @Test
-    void 삭제하려는_예약_시간이_존재하지_않는다면_404를_응답한다() {
+    void 삭제하려는_예약_시간이_존재하지_않는다면_422를_응답한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(422);
     }
 
     @DisplayName("테마를 생성한다")
@@ -106,13 +106,13 @@ class AdminControllerE2ETest {
                 .statusCode(204);
     }
 
-    @DisplayName("존재하지 않는 테마 삭제 요청 시 404 Not Found를 응답한다")
+    @DisplayName("존재하지 않는 테마 삭제 요청 시 422 Unprocessable Entity를 응답한다")
     @Test
-    void 삭제하려는_테마가_존재하지_않는다면_404를_응답한다() {
+    void 삭제하려는_테마가_존재하지_않는다면_422를_응답한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(422);
     }
 }

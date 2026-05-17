@@ -15,7 +15,7 @@ public class ReservationNotFoundException extends BusinessException {
 
     @Override
     public HttpStatusCode getStatusCode() {
-        return HttpStatus.NOT_FOUND;
+        return HttpStatus.UNPROCESSABLE_ENTITY;
     }
 
     @Override

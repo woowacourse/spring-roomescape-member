@@ -29,30 +29,6 @@ class BusinessExceptionHandlerTest {
     private TestController testController;
 
     @Nested
-    class 예외를_404_Not_Found로_변환한다 {
-
-        @DisplayName("ReservationTimeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
-        @Test
-        void ReservationTimeNotFoundException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(new ReservationTimeNotFoundException("test"))
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isNotFound());
-        }
-
-        @DisplayName("ThemeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
-        @Test
-        void ThemeNotFoundException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(new ThemeNotFoundException("test"))
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isNotFound());
-        }
-    }
-
-    @Nested
     class 예외를_409_Conflict로_변환한다 {
 
         @DisplayName("ReservationTimeInUseException이 발생하면 409 Conflict로 변환하여 응답한다")
@@ -78,6 +54,26 @@ class BusinessExceptionHandlerTest {
 
     @Nested
     class 예외를_422_Unprocessable_Entity로_변환한다 {
+
+        @DisplayName("ReservationTimeNotFoundException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
+        @Test
+        void ReservationTimeNotFoundException을_422로_변환한다() throws Exception {
+            Mockito.doThrow(new ReservationTimeNotFoundException("test"))
+                    .when(testController).throwException();
+
+            mockMvc.perform(get("/exception-handling-test"))
+                    .andExpect(status().isUnprocessableEntity());
+        }
+
+        @DisplayName("ThemeNotFoundException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
+        @Test
+        void ThemeNotFoundException을_422로_변환한다() throws Exception {
+            Mockito.doThrow(new ThemeNotFoundException("test"))
+                    .when(testController).throwException();
+
+            mockMvc.perform(get("/exception-handling-test"))
+                    .andExpect(status().isUnprocessableEntity());
+        }
 
         @DisplayName("PastDateReservationException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
         @Test
