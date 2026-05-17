@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Duration;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 @Repository
 public class ReservationRepository {
@@ -32,7 +34,7 @@ public class ReservationRepository {
     }
 
     public Reservation persist(Reservation reservation) {
-        EntityId timeId = reservation.getTimeId();
+        EntityId timeId = reservation.getTime().id();
         EntityId themeId = reservation.getThemeId();
 
         simpleJdbcInsert.execute(Map.of(
@@ -48,17 +50,19 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        String findSql = "SELECT id, name, date, canceled, time_id, theme_id"
-                + " FROM reservation r";
+        String findSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
+                + " FROM reservation r"
+                + " JOIN reservation_time rt ON r.time_id = rt.id";
 
         return jdbcTemplate.query(findSql, reservationRowMapper());
     }
 
     public Optional<Reservation> findById(EntityId reservationId) {
         try {
-            String findSql = "SELECT id, name, date, canceled, time_id, theme_id"
+            String findSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
                     + " FROM reservation r"
-                    + " WHERE id = ?";
+                    + " JOIN reservation_time rt ON r.time_id = rt.id"
+                    + " WHERE r.id = ?";
 
             Reservation reservation = jdbcTemplate.queryForObject(
                     findSql,
@@ -73,9 +77,10 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findByName(String name) {
-        String findSql = "SELECT id, name, date, canceled, time_id, theme_id"
+        String findSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
                 + " FROM reservation r"
-                + " WHERE name = ?";
+                + " JOIN reservation_time rt ON r.time_id = rt.id"
+                + " WHERE r.name = ?";
 
         return jdbcTemplate.query(
                 findSql,
@@ -85,9 +90,10 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findBetweenDuration(Duration duration) {
-        String findSql = "SELECT id, name, date, canceled, time_id, theme_id"
+        String findSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
                 + " FROM reservation r"
-                + " WHERE date BETWEEN ? AND ?";
+                + " JOIN reservation_time rt ON r.time_id = rt.id"
+                + " WHERE r.date BETWEEN ? AND ?";
 
         return jdbcTemplate.query(
                 findSql,
@@ -98,9 +104,10 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findNotCanceledByDateAndThemeId(LocalDate date, EntityId themeId) {
-        String findSql = "SELECT id, name, date, canceled, time_id, theme_id"
+        String findSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
                 + " FROM reservation r"
-                + " WHERE date = ? AND theme_id = ? AND canceled = false";
+                + " JOIN reservation_time rt ON r.time_id = rt.id"
+                + " WHERE r.date = ? AND r.theme_id = ? AND r.canceled = false";
 
         return jdbcTemplate.query(
                 findSql,
@@ -164,7 +171,7 @@ public class ReservationRepository {
     public Reservation updateDateAndTimeId(
             Reservation reservation,
             LocalDate date,
-            EntityId timeId
+            ReservationTime time
     ) {
         String updateSql = "UPDATE reservation"
                 + " SET date = ?, time_id = ?"
@@ -173,18 +180,11 @@ public class ReservationRepository {
         jdbcTemplate.update(
                 updateSql,
                 date,
-                timeId.getValueAsUuid(),
+                time.id().getValueAsUuid(),
                 reservation.getId().getValueAsUuid()
         );
 
-        return Reservation.retrieve(
-                reservation.getId(),
-                reservation.getName(),
-                date,
-                reservation.isCanceled(),
-                timeId,
-                reservation.getThemeId()
-        );
+        return reservation.updateDateAndTime(date, time);
     }
 
     public Reservation updateCanceled(
@@ -218,14 +218,20 @@ public class ReservationRepository {
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> Reservation.retrieve(
-                readEntityId(resultSet, "id"),
-                resultSet.getString("name"),
-                resultSet.getObject("date", LocalDate.class),
-                resultSet.getBoolean("canceled"),
-                readEntityId(resultSet, "time_id"),
-                readEntityId(resultSet, "theme_id")
-        );
+        return (resultSet, rowNum) -> {
+            EntityId timeId = readEntityId(resultSet, "time_id");
+            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            ReservationTime time = new ReservationTime(timeId, startAt);
+
+            return Reservation.retrieve(
+                    readEntityId(resultSet, "id"),
+                    resultSet.getString("name"),
+                    resultSet.getObject("date", LocalDate.class),
+                    resultSet.getBoolean("canceled"),
+                    time,
+                    readEntityId(resultSet, "theme_id")
+            );
+        };
     }
 
     private EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {

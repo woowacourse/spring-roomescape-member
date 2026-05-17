@@ -24,14 +24,13 @@ public class ReservationResponseMapper {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.isCanceled(),
-                reservation.getTimeId().getValueAsString(),
+                reservation.getTime().id().getValueAsString(),
                 reservation.getThemeId().getValueAsString()
         );
     }
 
     public ReservationDetailResponse mapToDetailResponse(
-            AssembledReservation assembledReservation,
-            boolean cancelable
+            AssembledReservation assembledReservation
     ) {
         Reservation reservation = assembledReservation.reservation();
         ReservationTimeResponse time = timeResponseMapper.map(assembledReservation.time());
@@ -42,7 +41,7 @@ public class ReservationResponseMapper {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.isCanceled(),
-                cancelable,
+                reservation.isCancelable(),
                 time,
                 theme
         );

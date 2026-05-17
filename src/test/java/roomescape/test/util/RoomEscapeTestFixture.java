@@ -47,14 +47,14 @@ public class RoomEscapeTestFixture {
             EntityId.random(),
             "A reservation name",
             LocalDate.now().plusYears(1),
-            TIME_IN_USE.id(),
+            TIME_IN_USE,
             THEME_IN_USE.id()
     );
     public static final Reservation LATER_RESERVATION = Reservation.create(
             EntityId.random(),
             "B reservation name",
             LocalDate.now().plusYears(2),
-            TIME_IN_USE.id(),
+            TIME_IN_USE,
             THEME_IN_USE.id()
     );
 
@@ -114,7 +114,7 @@ public class RoomEscapeTestFixture {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.isCanceled(),
-                reservation.getTimeId(),
+                reservation.getTime().id(),
                 reservation.getThemeId()
         );
     }
