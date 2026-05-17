@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.PastResourceAccessException;
 import roomescape.exception.ResourceNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -121,22 +122,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 과거는_삭제_불가() {
-        //given
-        String pobi = "포비";
-        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
-        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        LocalDate localDate = LocalDate.of(2026, 5, 1);
-        Reservation savedReservation = reservationDao.save(
-                new Reservation(pobi, localDate, reservationTimeTen, theme));
-
-        //when && then
-        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.id()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("과거");
-    }
-
-    @Test
     void 예약_날짜_시간_수정_성공() {
         //given
         String pobi = "포비";
@@ -156,6 +141,38 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 과거_예약은_생성_실패() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2000, 1, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+
+        //when && then
+        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.id()))
+                .isInstanceOf(PastResourceAccessException.class)
+                .hasMessageContaining("과거");
+    }
+
+    @Test
+    void 과거_예약은_삭제_실패() {
+        //given
+        String pobi = "포비";
+        ReservationTime reservationTimeTen = reservationTimeService.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
+        LocalDate localDate = LocalDate.of(2026, 5, 1);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(pobi, localDate, reservationTimeTen, theme));
+
+        //when && then
+        assertThatThrownBy(() -> reservationService.deleteByIdFromMember(savedReservation.id()))
+                .isInstanceOf(PastResourceAccessException.class)
+                .hasMessageContaining("과거");
+    }
+
+    @Test
     void 과거_예약은_수정_실패() {
         //given
         String pobi = "포비";
@@ -170,7 +187,7 @@ class ReservationServiceTest {
         assertThatThrownBy(
                 () -> reservationService.update(savedReservation.id(), newDate, reservationTimeTen.id(),
                         theme.id()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastResourceAccessException.class)
                 .hasMessageContaining("과거 예약");
     }
 

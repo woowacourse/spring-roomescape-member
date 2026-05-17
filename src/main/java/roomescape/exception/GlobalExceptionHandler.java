@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,9 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
-import roomescape.exception.DuplicatedResourceException;
-import roomescape.exception.ResourceDeleteConflicted;
-import roomescape.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,6 +50,16 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(PastResourceAccessException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseEntity<ErrorResponse> handlerPastAccessException(PastResourceAccessException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                e.getCode(),
+                e.getMessage()
+        ));
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handlerException(Exception e) {
@@ -61,6 +68,5 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "SERVER_ERROR",
                 "서버 내부에 문제가 발생했습니다"));
-
     }
 }

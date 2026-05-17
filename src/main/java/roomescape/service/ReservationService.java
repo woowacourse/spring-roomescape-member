@@ -11,6 +11,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.PastResourceAccessException;
 import roomescape.exception.ResourceNotFoundException;
 
 @Service
@@ -88,7 +89,7 @@ public class ReservationService {
 
     private void validatePastReservation(LocalDate date, ReservationTime reservationTime, String action) {
         if (date.isBefore(LocalDate.now()) || isTodayButBeforeTime(date, reservationTime)) {
-            throw new IllegalArgumentException("과거 예약은 " + action + "할 수 없습니다.");
+            throw new PastResourceAccessException("과거 예약은 " + action + "할 수 없습니다.", "INVALID_PAST_RESERVATION_ACCESS");
         }
     }
 }
