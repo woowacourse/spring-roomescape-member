@@ -94,7 +94,7 @@ class ReservationControllerTest {
             .body(params)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(409);
+            .statusCode(422);
     }
 
     @Test
@@ -335,7 +335,7 @@ class ReservationControllerTest {
             .body(params)
             .when().patch("/reservation/" + reservationId)
             .then().log().all()
-            .statusCode(409);
+            .statusCode(422);
     }
 
     private Long insertTheme(String name) {
