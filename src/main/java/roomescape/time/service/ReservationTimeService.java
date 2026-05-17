@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.domain.ReservationTime;
@@ -49,7 +50,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
-        return reservationTimeRepository.findAvailableTimes(themeId, date);
+        return reservationTimeRepository.findAvailableTimes(themeId, date, ReservationStatus.CANCELED);
     }
 
     public ReservationTime getById(Long id) {
