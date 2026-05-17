@@ -37,7 +37,7 @@ public class ReservationTimeService {
     public void deleteReservationTime(Long id) {
         try {
             int deleteCount = reservationTimeDao.delete(id);
-            validateDelete(deleteCount);
+            validateDeleted(deleteCount);
         } catch (DataIntegrityViolationException e) {
             throw new ReservationTimeInUseException();
         }
@@ -48,7 +48,7 @@ public class ReservationTimeService {
         return AvailableTimeResponse.fromAll(reservationTimeBooleanMap);
     }
 
-    private void validateDelete(int deleteCount) {
+    private void validateDeleted(int deleteCount) {
         if (deleteCount == 0) {
             throw new ReservationTimeNotFoundException();
         }

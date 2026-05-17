@@ -30,7 +30,7 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         try {
             int deleteCount = themeDao.delete(id);
-            validateDelete(deleteCount);
+            validateDeleted(deleteCount);
         } catch (DataIntegrityViolationException e) {
             throw new ThemeInUseException();
         }
@@ -44,7 +44,7 @@ public class ThemeService {
         return themeDao.findPopularThemes(from, to);
     }
 
-    private void validateDelete(int deleteCount) {
+    private void validateDeleted(int deleteCount) {
         if (deleteCount == 0) {
             throw new ThemeNotFoundException();
         }
