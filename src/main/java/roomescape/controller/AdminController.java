@@ -63,7 +63,7 @@ public class AdminController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponseDTO> add(@RequestBody ThemeRequestDTO request) {
+    public ResponseEntity<ThemeResponseDTO> add(@Valid @RequestBody ThemeRequestDTO request) {
         ThemeResponseDTO saved = themeService.addTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + saved.id())).build();
     }
