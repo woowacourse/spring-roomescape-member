@@ -29,7 +29,7 @@ public record ReservationRequest(
         @NotNull(message = "테마를 선택해 주세요.")
         Long themeId
 ) {
-    public Reservation toReservation(ReservationTime reservationTime, Theme theme, Clock clock) {
-        return Reservation.createFutureReservation(name, date, reservationTime, theme, LocalDateTime.now(clock));
+    public Reservation toReservation(ReservationTime reservationTime, Theme theme, LocalDateTime dateTime) {
+        return Reservation.createFutureReservation(name, date, reservationTime, theme, dateTime);
     }
 }

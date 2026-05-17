@@ -38,8 +38,9 @@ public class ReservationService {
     public ReservationResponse create(ReservationRequest request) {
         ReservationTime reservationTime = getTime(request.timeId());
         Theme theme = getTheme(request.themeId());
+        LocalDateTime currentDateTime = LocalDateTime.now(clock);
 
-        Reservation reservation = request.toReservation(reservationTime, theme, clock);
+        Reservation reservation = request.toReservation(reservationTime, theme, currentDateTime);
         validateUniqueReservation(theme.getId(), reservation.getDate(), reservationTime.getId());
 
         Reservation savedReservation = reservationDao.save(reservation);
