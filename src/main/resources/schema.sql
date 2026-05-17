@@ -25,3 +25,5 @@ CREATE TABLE IF NOT EXISTS reservation (
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     UNIQUE (date, time_id, theme_id)
 );
+
+CREATE INDEX idx_reservation_name ON reservation (name);
