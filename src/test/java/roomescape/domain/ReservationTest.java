@@ -273,6 +273,26 @@ class ReservationTest {
 
             assertThat(reservation.isCancelable()).isFalse();
         }
+
+        @Test
+        void 이미_취소된_예약은_취소_불가능하다() {
+            // given
+            Reservation reservation = Reservation.create(
+                    DEFAULT_RESERVATION_ID,
+                    DEFAULT_NAME,
+                    DEFAULT_DATE,
+                    DEFAULT_TIME,
+                    DEFAULT_THEME_ID
+            );
+
+            Reservation canceledReservation = reservation.updateCanceled(true);
+
+            // when
+            boolean cancelable = canceledReservation.isCancelable();
+
+            // then
+            assertThat(cancelable).isFalse();
+        }
     }
 
     @Nested

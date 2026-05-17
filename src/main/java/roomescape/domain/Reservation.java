@@ -201,7 +201,8 @@ public class Reservation {
     }
 
     public boolean isCancelable() {
-        return !isNotFuture(date, time);
+        return !isNotFuture(date, time)
+                && !canceled;
     }
 
     public EntityId getTimeId() {
