@@ -3,7 +3,7 @@ package roomescape.theme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.theme.ThemeAlreadyExistsException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.schedule.ScheduleService;
 import roomescape.theme.dto.request.ThemeSaveRequest;
 import roomescape.theme.dto.response.ThemeFindResponse;
@@ -49,7 +49,7 @@ public class ThemeService {
 
     private void validateAlreadyThemeNot(String themeName) {
         if (themeRepository.existsAlreadyTheme(themeName)) {
-            throw new ThemeAlreadyExistsException(ErrorCode.THEME_ALREADY_EXIST);
+            throw new EscapeRoomException(ErrorCode.THEME_ALREADY_EXIST);
         }
     }
 }

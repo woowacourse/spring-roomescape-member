@@ -6,9 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
-import roomescape.exception.schedule.PastScheduleException;
-import roomescape.exception.theme.ThemeNotFoundException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
@@ -102,7 +100,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(beforeDate, testTimeId, testThemeId))
-                .isInstanceOf(PastScheduleException.class);
+                .isInstanceOf(EscapeRoomException.class);
     }
 
     @Test
@@ -121,7 +119,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(date, testTimeId, testThemeId))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(EscapeRoomException.class);
     }
 
     @Test
@@ -143,7 +141,7 @@ class ScheduleServiceTest {
 
         // when, then
         assertThatThrownBy(() -> scheduleService.validateSchedule(date, testTimeId, testThemeId))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(EscapeRoomException.class);
     }
 
     @Test

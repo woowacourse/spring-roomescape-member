@@ -3,13 +3,7 @@ package roomescape.schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
-import roomescape.exception.schedule.PastScheduleException;
-import roomescape.exception.schedule.ScheduleAlreadyExistsException;
-import roomescape.exception.schedule.ScheduleNotFoundException;
-import roomescape.exception.schedule.ScheduleThemeInUseException;
-import roomescape.exception.schedule.ScheduleTimeInUseException;
-import roomescape.exception.theme.ThemeNotFoundException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.schedule.dto.request.ScheduleSaveRequest;
@@ -56,13 +50,13 @@ public class ScheduleService {
 
     public void validateTimeDeletable(long timeId) {
         if (scheduleRepository.existsByTimeId(timeId)) {
-            throw new ScheduleTimeInUseException(ErrorCode.SCHEDULE_TIME_IN_USE, timeId);
+            throw new EscapeRoomException(ErrorCode.SCHEDULE_TIME_IN_USE, timeId);
         }
     }
 
     public void validateThemeDeletable(long themeId) {
         if (scheduleRepository.existsByThemeId(themeId)) {
-            throw new ScheduleThemeInUseException(ErrorCode.SCHEDULE_THEME_IN_USE, themeId);
+            throw new EscapeRoomException(ErrorCode.SCHEDULE_THEME_IN_USE, themeId);
         }
     }
 
@@ -75,7 +69,7 @@ public class ScheduleService {
 
     public void validateNotPastDate(LocalDate date) {
         if (date.isBefore(LocalDate.now(clock))) {
-            throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
+            throw new EscapeRoomException(ErrorCode.PAST_SCHEDULE);
         }
     }
 
@@ -84,33 +78,33 @@ public class ScheduleService {
         LocalTime currentTime = LocalTime.now(clock);
 
         if (date.isEqual(currentDate) && time.isBefore(currentTime)) {
-            throw new PastScheduleException(ErrorCode.PAST_SCHEDULE);
+            throw new EscapeRoomException(ErrorCode.PAST_SCHEDULE);
         }
     }
 
     private void validateAlreadyExistsNot(LocalDate date, long themeId, long timeId) {
         if (scheduleRepository.existsAlreadySchedule(date, themeId, timeId)) {
-            throw new ScheduleAlreadyExistsException(ErrorCode.SCHEDULE_ALREADY_EXIST);
+            throw new EscapeRoomException(ErrorCode.SCHEDULE_ALREADY_EXIST);
         }
     }
 
     private void getThemeOrThrow(Long themeId) {
         themeRepository.findById(themeId)
-                .orElseThrow(() -> new ThemeNotFoundException(ErrorCode.THEME_NOT_FOUND, themeId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.THEME_NOT_FOUND, themeId));
     }
 
     private ReservationTime getReservationTimeOrThrow(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeNotFoundException(ErrorCode.RESERVATIONTIME_NOT_FOUND, timeId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.RESERVATIONTIME_NOT_FOUND, timeId));
     }
 
     private long getScheduleIdOrThrow(LocalDate date, long timeId, long themeId) {
         return scheduleRepository.findScheduleIdByDateAndTimeIdAndThemeId(date, timeId, themeId)
-                .orElseThrow(() -> new ScheduleNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND_WITH_CONDITION, date, timeId, themeId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.SCHEDULE_NOT_FOUND_WITH_CONDITION, date, timeId, themeId));
     }
 
     private Schedule getScheduleOrElseThrow(long scheduleId) {
         return scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND, scheduleId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.SCHEDULE_NOT_FOUND, scheduleId));
     }
 }

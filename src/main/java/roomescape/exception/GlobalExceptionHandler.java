@@ -16,8 +16,8 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(errorCode.getCode(), errorCode.getMessage()));
     }
 
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiResponse<?>> handleBaseException(BaseException e) {
+    @ExceptionHandler(EscapeRoomException.class)
+    public ResponseEntity<ApiResponse<?>> handleEscapeRoomException(EscapeRoomException e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ApiResponse.fail(errorCode.getCode(), e.getMessage()));

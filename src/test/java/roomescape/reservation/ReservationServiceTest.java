@@ -6,9 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.reservation.ReservationAlreadyExistsException;
-import roomescape.exception.reservation.ReservationNotFoundException;
-import roomescape.exception.schedule.PastScheduleException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.EscapeRoomException;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
@@ -191,7 +190,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.update(request, 4L, "d"))
-                .isInstanceOf(ReservationAlreadyExistsException.class);
+                .isInstanceOf(EscapeRoomException.class);
         verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
     }
 
@@ -207,7 +206,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.update(request, 4L, "x"))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(EscapeRoomException.class);
         verify(reservationRepository, never()).updateScheduleByIdAndName(anyLong(), anyString(), anyLong());
     }
 
@@ -332,11 +331,13 @@ class ReservationServiceTest {
                 4L,
                 4L
         );
-        doThrow(PastScheduleException.class).when(scheduleService).validateSchedule(body.date(), body.timeId(), body.themeId());
+        doThrow(new EscapeRoomException(ErrorCode.PAST_SCHEDULE))
+                .when(scheduleService)
+                .validateSchedule(body.date(), body.timeId(), body.themeId());
 
         // when, then
         assertThatThrownBy(() -> reservationService.save(body))
-                .isInstanceOf(PastScheduleException.class);
+                .isInstanceOf(EscapeRoomException.class);
         verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
@@ -359,7 +360,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.save(body))
-                .isInstanceOf(ReservationAlreadyExistsException.class);
+                .isInstanceOf(EscapeRoomException.class);
 
         verify(scheduleService).validateSchedule(any(LocalDate.class), anyLong(), anyLong());
         verify(scheduleService).findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());

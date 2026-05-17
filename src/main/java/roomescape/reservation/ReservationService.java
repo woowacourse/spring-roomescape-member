@@ -3,10 +3,7 @@ package roomescape.reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.reservation.ReservationAlreadyExistsException;
-import roomescape.exception.reservation.ReservationNotFoundException;
-import roomescape.exception.reservation.ReservationUpdateEmptyRequestException;
-import roomescape.exception.reservation.ReservationUpdateFailedException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationDetailFindResponse;
@@ -73,35 +70,35 @@ public class ReservationService {
 
     private static void validateReservationUpdated(int affectedRow) {
         if (affectedRow != 1) {
-            throw new ReservationUpdateFailedException(ErrorCode.RESERVATION_UPDATE_FAILED);
+            throw new EscapeRoomException(ErrorCode.RESERVATION_UPDATE_FAILED);
         }
     }
 
     private static void validateNotEmptyUpdateRequest(ReservationUpdateRequest body) {
         if (body.date() == null && body.timeId() == null) {
-            throw new ReservationUpdateEmptyRequestException(ErrorCode.RESERVATION_UPDATE_EMPTY);
+            throw new EscapeRoomException(ErrorCode.RESERVATION_UPDATE_EMPTY);
         }
     }
 
     private Reservation getNewReservationOrThrow(long reservationId, String name) {
         return reservationRepository.findByIdAndName(reservationId, name)
-                .orElseThrow(() -> new ReservationNotFoundException(ErrorCode.RESERVATION_NOT_FOUND_AFTER_UPDATE, name, reservationId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.RESERVATION_NOT_FOUND_AFTER_UPDATE, name, reservationId));
     }
 
     private ReservationDetailProjection getOldReservationDetailOrThrow(long reservationId, String name) {
         return reservationRepository.findDetailByIdAndName(reservationId, name)
-                .orElseThrow(() -> new ReservationNotFoundException(ErrorCode.RESERVATION_NOT_FOUND, name, reservationId));
+                .orElseThrow(() -> new EscapeRoomException(ErrorCode.RESERVATION_NOT_FOUND, name, reservationId));
     }
 
     private void validateDuplicatedReservationNot(long reservationId, long scheduleId) {
         if (reservationRepository.existsByScheduleIdAndIdNot(scheduleId, reservationId)) {
-            throw new ReservationAlreadyExistsException(ErrorCode.RESERVATION_ALREADY_EXIST, scheduleId);
+            throw new EscapeRoomException(ErrorCode.RESERVATION_ALREADY_EXIST, scheduleId);
         }
     }
 
     private void validateReservationAlreadyExistsNot(long scheduleId) {
         if (reservationRepository.existsByScheduleId(scheduleId)) {
-            throw new ReservationAlreadyExistsException(ErrorCode.RESERVATION_ALREADY_EXIST, scheduleId);
+            throw new EscapeRoomException(ErrorCode.RESERVATION_ALREADY_EXIST, scheduleId);
         }
     }
 

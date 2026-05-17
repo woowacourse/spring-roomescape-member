@@ -3,7 +3,7 @@ package roomescape.reservationtime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservationtime.dto.response.AvailableTimeFindResponse;
@@ -56,7 +56,7 @@ public class ReservationTimeService {
 
     private void validateAlreadyTimeNot(LocalTime startAt) {
         if (reservationTimeRepository.existsAlreadyTime(startAt)) {
-            throw new ReservationTimeAlreadyExistsException(ErrorCode.RESERVATIONTIME_ALREADY_EXIST);
+            throw new EscapeRoomException(ErrorCode.RESERVATIONTIME_ALREADY_EXIST);
         }
     }
 }

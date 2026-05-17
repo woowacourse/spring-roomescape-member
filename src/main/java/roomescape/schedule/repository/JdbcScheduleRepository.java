@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.schedule.ScheduleInUseException;
+import roomescape.exception.EscapeRoomException;
 import roomescape.schedule.Schedule;
 
 import java.time.LocalDate;
@@ -118,7 +118,7 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         try {
             template.update(sql, params);
         } catch (DataIntegrityViolationException e) {
-            throw new ScheduleInUseException(ErrorCode.SCHEDULE_IN_USE, scheduleId);
+            throw new EscapeRoomException(ErrorCode.SCHEDULE_IN_USE, scheduleId);
         }
     }
 
