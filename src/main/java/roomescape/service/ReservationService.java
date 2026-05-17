@@ -80,8 +80,8 @@ public class ReservationService {
             throw new PastReservationException("지난 날짜로 변경할 수 없습니다. 오늘 이후 날짜를 선택해 주세요.");
         }
 
-        boolean isDuplicate = reservationDao.isExistsByDateAndTimeIdAndThemeId(
-                request.date(), request.timeId(), reservation.getTheme().getId());
+        boolean isDuplicate = reservationDao.isExistsByDateAndTimeIdAndThemeIdExcludingId(
+                request.date(), request.timeId(), reservation.getTheme().getId(), reservationId);
         if (isDuplicate) {
             throw new DuplicateReservationException("선택하신 날짜·시간·테마에 이미 예약이 있습니다. 다른 시간을 선택해 주세요.");
         }
