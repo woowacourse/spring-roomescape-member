@@ -24,9 +24,7 @@ public class GlobalExceptionHandler {
     ) {
         ErrorCode errorCode = exception.getErrorCode();
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+        return createResponse(errorCode, request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -42,21 +40,16 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .orElse(errorCode.getMessage());
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
+        return createResponse(errorCode, request, message);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException exception,
             HttpServletRequest request
     ) {
         ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+        return createResponse(errorCode, request);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -67,9 +60,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
         String message = "필수 요청 값이 누락되었습니다: " + exception.getParameterName();
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
+        return createResponse(errorCode, request, message);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -80,45 +71,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
         String message = "요청 값의 형식이 올바르지 않습니다: " + exception.getName();
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
-    }
-
-    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
-            HttpMediaTypeNotSupportedException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.UNSUPPORTED_MEDIA_TYPE;
-
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
-    }
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
-            HttpRequestMethodNotSupportedException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
-
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
-    }
-
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
-            NoResourceFoundException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.API_NOT_FOUND;
-
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+        return createResponse(errorCode, request, message);
     }
 
     @ExceptionHandler(DomainException.class)
@@ -128,9 +81,7 @@ public class GlobalExceptionHandler {
     ) {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.of(errorCode, request.getRequestURI(), exception.getMessage()));
+        return createResponse(errorCode, request, exception.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -140,9 +91,36 @@ public class GlobalExceptionHandler {
     ) {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
-        return ResponseEntity
-                .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.of(errorCode, request.getRequestURI(), exception.getMessage()));
+        return createResponse(errorCode, request, exception.getMessage());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+            NoResourceFoundException exception,
+            HttpServletRequest request
+    ) {
+        ErrorCode errorCode = ErrorCode.API_NOT_FOUND;
+
+        return createResponse(errorCode, request);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException exception,
+            HttpServletRequest request
+    ) {
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+
+        return createResponse(errorCode, request);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
+            HttpServletRequest request
+    ) {
+        ErrorCode errorCode = ErrorCode.UNSUPPORTED_MEDIA_TYPE;
+
+        return createResponse(errorCode, request);
     }
 
     @ExceptionHandler(Exception.class)
@@ -152,9 +130,23 @@ public class GlobalExceptionHandler {
     ) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 
+        return createResponse(errorCode, request);
+    }
+
+    private ResponseEntity<ErrorResponse> createResponse(ErrorCode errorCode, HttpServletRequest request) {
         return ResponseEntity
                 .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+    }
+
+    private ResponseEntity<ErrorResponse> createResponse(
+            ErrorCode errorCode,
+            HttpServletRequest request,
+            String message
+    ) {
+        return ResponseEntity
+                .status(toHttpStatus(errorCode))
+                .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
     }
 
     private HttpStatus toHttpStatus(ErrorCode errorCode) {
