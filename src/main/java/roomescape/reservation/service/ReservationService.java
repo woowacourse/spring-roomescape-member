@@ -18,13 +18,11 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final ReservationTimeDao timeDao;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,ThemeDao themeDao, ReservationTimeDao timeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.timeDao = timeDao;
     }
 
     public List<Reservation> findAll() {
@@ -45,7 +43,7 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
         }
 
-        ReservationTime time = timeDao.selectById(timeId);
+        ReservationTime time = reservationTimeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);
 
         if (reservation.isPast(now)) {
@@ -63,7 +61,7 @@ public class ReservationService {
 
     public void update(Long id, String name, LocalDate date, Long timeId, LocalDateTime now) {
         Reservation reservation = reservationDao.selectById(id);
-        ReservationTime time = timeDao.selectById(timeId);
+        ReservationTime time = reservationTimeDao.selectById(timeId);
 
         if (date.isBefore(now.toLocalDate()) || (date.equals(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
             throw new BusinessException(ErrorCode.RESERVATION_UPDATE_TO_PAST);
