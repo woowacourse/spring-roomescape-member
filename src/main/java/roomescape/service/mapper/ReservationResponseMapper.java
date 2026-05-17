@@ -24,7 +24,7 @@ public class ReservationResponseMapper {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.isCanceled(),
-                reservation.getTime().id().getValueAsString(),
+                reservation.getTimeId().getValueAsString(),
                 reservation.getThemeId().getValueAsString()
         );
     }

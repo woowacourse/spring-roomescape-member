@@ -114,7 +114,7 @@ public class RoomEscapeTestFixture {
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.isCanceled(),
-                reservation.getTime().id(),
+                reservation.getTimeId(),
                 reservation.getThemeId()
         );
     }

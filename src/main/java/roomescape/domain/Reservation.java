@@ -204,6 +204,10 @@ public class Reservation {
         return !isNotFuture(date, time);
     }
 
+    public EntityId getTimeId() {
+        return time.id();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

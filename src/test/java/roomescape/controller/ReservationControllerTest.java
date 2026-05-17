@@ -348,7 +348,7 @@ class ReservationControllerTest {
 
             Map<String, Object> updateRequest = new HashMap<>();
             updateRequest.put("date", FASTER_RESERVATION.getDate().toString());
-            updateRequest.put("timeId", FASTER_RESERVATION.getTime().id().getValueAsString());
+            updateRequest.put("timeId", FASTER_RESERVATION.getTimeId().getValueAsString());
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)

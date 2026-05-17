@@ -55,7 +55,7 @@ public class ReservationTimeService {
     ) {
         List<Reservation> existReservations = reservationRepository.findNotCanceledByDateAndThemeId(date, themeId);
         Set<EntityId> usedTimeIds = existReservations.stream()
-                .map(reservation -> reservation.getTime().id())
+                .map(Reservation::getTimeId)
                 .collect(Collectors.toUnmodifiableSet());
 
         List<ReservationTime> allTimes = timeRepository.findAll();

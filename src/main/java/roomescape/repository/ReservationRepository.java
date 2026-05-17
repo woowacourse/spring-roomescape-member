@@ -34,7 +34,7 @@ public class ReservationRepository {
     }
 
     public Reservation persist(Reservation reservation) {
-        EntityId timeId = reservation.getTime().id();
+        EntityId timeId = reservation.getTimeId();
         EntityId themeId = reservation.getThemeId();
 
         simpleJdbcInsert.execute(Map.of(
