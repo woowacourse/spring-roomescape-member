@@ -10,23 +10,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.fixture.ThemeFixture;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeResult;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.reservationtime.application.service.ReservationTimeQueryService;
-import roomescape.reservationtime.infra.JdbcAvailableTimeDao;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
 
-@JdbcTest
-@Import({
-        ReservationTimeQueryService.class,
-        JdbcReservationTimeRepository.class,
-        JdbcAvailableTimeDao.class
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class ReservationTimeQueryServiceTest {
 
     @Autowired

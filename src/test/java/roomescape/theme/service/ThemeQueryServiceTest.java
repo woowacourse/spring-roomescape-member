@@ -12,24 +12,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.theme.application.dto.PopularThemeResult;
 import roomescape.theme.application.service.ThemeQueryService;
-import roomescape.theme.infra.JdbcPopularThemeDao;
-import roomescape.theme.infra.JdbcThemeRepository;
 
-@JdbcTest
-@Import({
-        ThemeQueryService.class,
-        JdbcThemeRepository.class,
-        JdbcPopularThemeDao.class
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class ThemeQueryServiceTest {
 
     private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 5, 6);

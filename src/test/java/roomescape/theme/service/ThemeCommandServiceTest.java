@@ -10,24 +10,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
-import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.theme.application.service.ThemeCommandService;
-import roomescape.theme.infra.JdbcThemeRepository;
 
-@JdbcTest
-@Import({
-        ThemeCommandService.class,
-        JdbcThemeRepository.class,
-        JdbcReservationRepository.class
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class ThemeCommandServiceTest {
 
     @Autowired

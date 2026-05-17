@@ -13,10 +13,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.ConflictException;
@@ -26,19 +26,11 @@ import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
 import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.application.service.ReservationCommandService;
-import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
-import roomescape.theme.infra.JdbcThemeRepository;
 
-@JdbcTest
-@Import({
-        ReservationCommandService.class,
-        JdbcReservationRepository.class,
-        JdbcThemeRepository.class,
-        JdbcReservationTimeRepository.class
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 class ReservationCommandServiceTest {
 
     private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 1, 1);

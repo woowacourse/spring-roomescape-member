@@ -10,25 +10,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
-import roomescape.reservation.infra.JdbcReservationRepository;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
-import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservationtime.application.service.ReservationTimeCommandService;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
 
-@JdbcTest
-@Import({
-        ReservationTimeCommandService.class,
-        JdbcReservationTimeRepository.class,
-        JdbcReservationRepository.class
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class ReservationTimeCommandServiceTest {
 
     @Autowired
