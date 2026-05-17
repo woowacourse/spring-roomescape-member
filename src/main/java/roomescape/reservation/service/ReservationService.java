@@ -63,8 +63,9 @@ public class ReservationService {
         Reservation reservation = reservationDao.selectById(id);
         ReservationTime time = reservationTimeDao.selectById(timeId);
 
-        if (date.isBefore(now.toLocalDate()) || (date.equals(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
-            throw new BusinessException(ErrorCode.RESERVATION_UPDATE_TO_PAST);
+        LocalDateTime requestDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (requestDateTime.isBefore(now)) {
+            throw new BusinessException(ErrorCode.RESERVATION_CREATE_TO_PAST);
         }
 
         validateReservationOwnerAndTime(name, now, reservation);
@@ -84,7 +85,7 @@ public class ReservationService {
     }
 
     private void validateReservationOwnerAndTime(String name, LocalDateTime now, Reservation reservation) {
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.isOwnerBy(name)) {
             throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
         }
 

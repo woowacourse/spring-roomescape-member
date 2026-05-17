@@ -56,6 +56,10 @@ public class Reservation {
         return false;
     }
 
+    public boolean isOwnerBy(String name) {
+        return name.equals(this.name);
+    }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()){
             throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
