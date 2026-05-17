@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.PastReservationException;
 
 @Getter
@@ -66,35 +67,35 @@ public class Reservation {
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
+            throw new InvalidInputException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
         }
 
         if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
+            throw new InvalidInputException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
         }
     }
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new InvalidInputException("예약 날짜는 필수입니다.");
         }
     }
 
     private static void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+            throw new InvalidInputException("예약 시간은 필수입니다.");
         }
     }
 
     private static void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("테마는 필수입니다.");
+            throw new InvalidInputException("테마는 필수입니다.");
         }
     }
 
     private static void validateNow(LocalDateTime now) {
         if (now == null) {
-            throw new IllegalArgumentException("현재 시각은 필수입니다.");
+            throw new InvalidInputException("현재 시각은 필수입니다.");
         }
     }
 

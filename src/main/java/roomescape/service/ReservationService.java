@@ -13,6 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 
@@ -37,7 +38,7 @@ public class ReservationService {
 
     public List<Reservation> findByName(String name, int page, int size) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
+            throw new InvalidInputException("예약자 이름은 필수입니다.");
         }
         return reservationDao.findByName(name, page, size);
     }

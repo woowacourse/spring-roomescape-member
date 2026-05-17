@@ -267,8 +267,8 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("INVALID_FORMAT"))
-                .body("message", is("입력 형식이 올바르지 않습니다. 날짜(yyyy-MM-dd)와 시간(HH:mm) 형식을 확인해주세요."));
+                .body("code", is("INVALID_REQUEST_BODY"))
+                .body("message", is("요청 본문을 읽을 수 없습니다. JSON 형식과 각 필드의 타입을 확인해주세요."));
     }
 
     @Test
@@ -784,7 +784,7 @@ public class MissionStepTest {
                 .when().patch("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(400)
-                .body("code", is("INVALID_FORMAT"));
+                .body("code", is("INVALID_REQUEST_BODY"));
     }
 
 }

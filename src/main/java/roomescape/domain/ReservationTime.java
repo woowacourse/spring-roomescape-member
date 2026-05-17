@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import lombok.Getter;
+import roomescape.exception.InvalidInputException;
 
 @Getter
 public class ReservationTime {
@@ -33,19 +34,19 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+            throw new InvalidInputException("예약 시간은 필수입니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new InvalidInputException("예약 날짜는 필수입니다.");
         }
     }
 
     private void validateNow(LocalDateTime now) {
         if (now == null) {
-            throw new IllegalArgumentException("현재 시각은 필수입니다.");
+            throw new InvalidInputException("현재 시각은 필수입니다.");
         }
     }
 }

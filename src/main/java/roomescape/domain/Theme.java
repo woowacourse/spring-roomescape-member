@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import lombok.Getter;
+import roomescape.exception.InvalidInputException;
 
 @Getter
 public class Theme {
@@ -27,19 +28,19 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+            throw new InvalidInputException("테마 이름은 필수입니다.");
         }
     }
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 필수입니다.");
+            throw new InvalidInputException("테마 설명은 필수입니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("테마 썸네일은 필수입니다.");
+            throw new InvalidInputException("테마 썸네일은 필수입니다.");
         }
     }
 }
