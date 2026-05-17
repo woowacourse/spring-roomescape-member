@@ -24,28 +24,28 @@ INSERT INTO reservation_time (start_at) VALUES
 ('15:00'), ('16:00'), ('17:00'), ('18:00'), ('19:00'),
 ('20:00'), ('21:00'), ('22:00'), ('23:00');
 
--- [1위 타겟] 테마 5 (폐쇄 병동 404호) : 총 6건 (5월 1일~3일 집중)
+-- [1위 타겟] 테마 5 (폐쇄 병동 404호) : 총 6건
 INSERT INTO reservation (username, date, time_id, theme_id) VALUES
-('윤기', '2026-05-01', 1, 5),
-('매트', '2026-05-01', 2, 5),
-('토리', '2026-05-02', 3, 5),
-('브라운', '2026-05-02', 4, 5),
-('제이슨', '2026-05-03', 5, 5),
-('워니', '2026-05-03', 6, 5);
+('윤기', DATEADD('DAY', -5, CURRENT_DATE), 1, 5),
+('매트', DATEADD('DAY', -5, CURRENT_DATE), 2, 5),
+('토리', DATEADD('DAY', -4, CURRENT_DATE), 3, 5),
+('브라운', DATEADD('DAY', -4, CURRENT_DATE), 4, 5),
+('제이슨', DATEADD('DAY', -3, CURRENT_DATE), 5, 5),
+('워니', DATEADD('DAY', -3, CURRENT_DATE), 6, 5);
 
--- [2위 타겟] 테마 2 (루팡의 예고장) : 총 4건 (5월 3일~5일 집중)
+-- [2위 타겟] 테마 2 (루팡의 예고장)
 INSERT INTO reservation (username, date, time_id, theme_id) VALUES
-('루팡1', '2026-05-03', 7, 2),
-('루팡2', '2026-05-04', 8, 2),
-('루팡3', '2026-05-04', 9, 2),
-('루팡4', '2026-05-05', 10, 2),
-('루팡4', '2026-05-09', 8, 2),
-('루팡4', '2026-05-09', 9, 2),
-('루팡4', '2026-05-09', 10, 2);
+('루팡1', DATEADD('DAY', -3, CURRENT_DATE), 7, 2),
+('루팡2', DATEADD('DAY', -2, CURRENT_DATE), 8, 2),
+('루팡3', DATEADD('DAY', -2, CURRENT_DATE), 9, 2),
+('루팡4', DATEADD('DAY', -1, CURRENT_DATE), 10, 2),
+('루팡4', DATEADD('DAY', 3, CURRENT_DATE), 8, 2),
+('루팡4', DATEADD('DAY', 3, CURRENT_DATE), 9, 2),
+('루팡4', DATEADD('DAY', 3, CURRENT_DATE), 10, 2);
 
--- [기타] 데이터 분산 (5월 1일~5일 골고루)
+-- [기타] 데이터 분산
 INSERT INTO reservation (username, date, time_id, theme_id) VALUES
-('포비', '2026-05-01', 1, 1),
-('준이', '2026-05-02', 2, 3),
-('공원', '2026-05-04', 3, 4),
-('구바', '2026-05-05', 4, 6);
+('포비', DATEADD('DAY', -5, CURRENT_DATE), 1, 1),
+('준이', DATEADD('DAY', -4, CURRENT_DATE), 2, 3),
+('공원', DATEADD('DAY', -2, CURRENT_DATE), 3, 4),
+('구바', DATEADD('DAY', -1, CURRENT_DATE), 4, 6);

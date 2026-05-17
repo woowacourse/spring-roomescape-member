@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.TimeRequest;
+import roomescape.exception.RoomescapeException;
 
 @SpringBootTest
 @Transactional
@@ -17,35 +18,43 @@ public class TimeServiceTest {
 
     @Test
     public void 존재하지_않는_시간를_삭제하는경우_예외가_발생한다() {
-        // then
         Assertions.assertThatThrownBy(() -> timeService.removeById(-1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
     void 존재하는_시간을_삭제하는_경우_삭제된다() {
-        // then
         Assertions.assertThatCode(() -> timeService.removeById(11L))
                 .doesNotThrowAnyException();
     }
 
     @Test
+    void 존재하는_시간인데_그_시간에_예약이_존재하는_경우_삭제되지_않는다() {
+        Assertions.assertThatCode(() -> timeService.removeById(2L))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
     public void 존재하지_않는_시간에_대한_추가는_정상동작된다() {
-        // given
         TimeRequest timeRequest = new TimeRequest(LocalTime.of(8, 0));
 
-        // when
         Assertions.assertThatCode(() -> timeService.register(timeRequest))
                 .doesNotThrowAnyException();
     }
 
     @Test
     public void 이미_있는_시간에_대한_추가하는_예외가_발생한다() {
-        // given
         TimeRequest timeRequest = new TimeRequest(LocalTime.of(10, 0));
 
-        // when
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 정각이_아닌_시간을_등록하는_경우_예외가_발생한다() {
+        TimeRequest timeRequest = new TimeRequest(LocalTime.of(10, 30));
+
+        Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
+                .isInstanceOf(RoomescapeException.class);
     }
 }

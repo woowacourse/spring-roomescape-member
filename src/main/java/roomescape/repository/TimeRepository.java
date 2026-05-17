@@ -26,7 +26,7 @@ public class TimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
@@ -45,22 +45,22 @@ public class TimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public ReservationTime save(LocalTime startAt) {
+    public ReservationTime save(ReservationTime reservationTime) {
         String sql = "insert into reservation_time(start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setObject(1, startAt);
+            ps.setObject(1, reservationTime.startAt());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select * from reservation_time where id = ?";
+        String sql = "select id, start_at from reservation_time where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {

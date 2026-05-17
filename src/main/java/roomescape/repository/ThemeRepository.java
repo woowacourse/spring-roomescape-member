@@ -32,22 +32,22 @@ public class ThemeRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setObject(2, theme.getDescription());
-            ps.setObject(3, theme.getUrl());
+            ps.setString(1, theme.name());
+            ps.setObject(2, theme.description());
+            ps.setObject(3, theme.url());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getUrl());
+        return new Theme(id, theme.name(), theme.description(), theme.url());
     }
 
-    public int deleteById(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM THEME WHERE ID = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM THEME WHERE ID = ?";
+        String sql = "SELECT id, name, description, url FROM THEME WHERE ID = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -56,11 +56,11 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM THEME";
+        String sql = "SELECT id, name, description, url FROM THEME";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, int limit) {
+    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, long limit) {
         String sql = """
                 SELECT
                     t.id,
@@ -75,5 +75,10 @@ public class ThemeRepository {
                 limit ?;
                 """;
         return jdbcTemplate.query(sql, themeRowMapper, lastWeekDate, currentDate, limit);
+    }
+
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM THEME WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }

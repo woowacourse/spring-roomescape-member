@@ -2,18 +2,18 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.dto.ThemeAllResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
-
-    private final static int RANKS_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -30,30 +30,30 @@ public class ThemeService {
     }
 
     public void removeById(Long id) {
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
+        if (!themeRepository.existsById(id)) {
+            throw new RoomescapeException(ErrorCode.THEME_NOT_FOUND);
         }
-        int deleteCnt = themeRepository.deleteById(id);
-        if (deleteCnt == 0) {
-            throw new IllegalArgumentException("존재하지 않는 테마의 ID 입니다.");
-        }
+        reservationRepository.deleteByThemeId(id);
+        themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> readAll() {
+    public ThemeAllResponse readAll() {
         List<Theme> themes = themeRepository.findAll();
-        return themes.stream()
+        List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new ThemeAllResponse(responses);
     }
 
-    public List<ThemeResponse> readRanks() {
+    public ThemeAllResponse readRanks(Long limit) {
         LocalDate currentDay = LocalDate.now().minusDays(1);
         LocalDate lastWeekDay = LocalDate.now().minusWeeks(1);
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
-                lastWeekDay.toString(),
-                RANKS_LIMIT_COUNT);
-        return themes.stream()
+                lastWeekDay.toString(), limit);
+
+        List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new ThemeAllResponse(responses);
     }
 }

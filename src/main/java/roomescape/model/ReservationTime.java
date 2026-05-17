@@ -1,34 +1,43 @@
 package roomescape.model;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import roomescape.dto.TimeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    public static ReservationTime from(TimeResponse timeResponse) {
-        return new ReservationTime(timeResponse.id(), timeResponse.startAt());
+    public static ReservationTime withValidate(Long id, LocalTime startAt) {
+        validateStartAt(startAt);
+        return new ReservationTime(id, startAt);
     }
 
-    private void validateStartAt(LocalTime startAt) {
+    private static void validateStartAt(LocalTime startAt) {
         if (startAt.getMinute() != 0) {
-            throw new IllegalArgumentException("[ERROR] 방탈출의 시작 시간은 정각이어야 합니다.");
+            throw new RoomescapeException(ErrorCode.TIME_WRONG_STARTAT);
         }
     }
 
-    public Long getId() {
+    public boolean isPast(LocalDateTime now) {
+        return startAt.getHour() <= now.getHour();
+    }
+
+    public boolean isValid() {
+        return startAt.getMinute() == 0;
+    }
+
+    public Long id() {
         return id;
     }
 
-    public LocalTime getStartAt() {
+    public LocalTime startAt() {
         return startAt;
     }
-
 }

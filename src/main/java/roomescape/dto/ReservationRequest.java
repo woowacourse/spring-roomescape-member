@@ -1,18 +1,12 @@
 package roomescape.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-    private static final int MIN_NAME_LENGTH = 2;
-    private static final int MAX_NAME_LENGTH = 20;
-
-    public ReservationRequest {
-        validateName(name);
-    }
-
-    private static void validateName(String name) {
-        if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 사용자 이름은 "+MIN_NAME_LENGTH+ "이상 "+MAX_NAME_LENGTH+"자 이하입니다.");
-        }
-    }
+public record ReservationRequest(
+        @NotBlank(message = "이름은 빈 값일 수 없습니다.") String name,
+        @NotNull(message = "날짜는 빈 값일 수 없습니다.") LocalDate date,
+        @NotNull(message = "timeId는 빈 값일 수 없습니다.") Long timeId,
+        @NotNull(message = "themeId는 빈 값일 수 없습니다.") Long themeId) {
 }
