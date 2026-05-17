@@ -11,6 +11,12 @@ public abstract class BusinessException extends RuntimeException {
         this.logMessage = logMessage;
     }
 
+    protected BusinessException(String clientMessage, String logMessage, Throwable cause) {
+        super(clientMessage, cause);
+        this.clientMessage = clientMessage;
+        this.logMessage = logMessage;
+    }
+
     public String getClientMessage() {
         return clientMessage;
     }

@@ -90,7 +90,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new InUseException(DomainType.RESERVATION_TIME, id);
+            throw new InUseException(DomainType.RESERVATION_TIME, id, e);
         }
     }
 

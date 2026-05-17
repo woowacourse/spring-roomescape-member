@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e, HttpStatus status) {
-        log.warn(e.getLogMessage());
+        log.warn(e.getLogMessage(), e);
 
         return ResponseEntity.status(status)
                 .body(new ErrorResponse(e.getClientMessage()));
