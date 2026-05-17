@@ -9,6 +9,7 @@ import roomescape.exception.AlreadyInUseException;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.InvalidStateException;
 import roomescape.exception.NotFoundException;
+import roomescape.reservation.dto.PageReservationsResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -55,12 +56,17 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public ReservationsResponse read(int page, int size) {
-        List<ReservationResponse> reservationsResponse = reservationRepository.findAll(page, size).stream()
+    public PageReservationsResponse read(int page, int size) {
+        List<ReservationResponse> reservationsResponse = reservationRepository.findAll(page, size + 1).stream()
                 .map(ReservationResponse::from)
                 .toList();
 
-        return ReservationsResponse.from(reservationsResponse);
+        boolean hasNext = reservationsResponse.size() > size;
+        if (hasNext) {
+            reservationsResponse = reservationsResponse.subList(0, size);
+        }
+
+        return PageReservationsResponse.from(reservationsResponse, page, size, hasNext);
     }
 
     public ReservationsResponse readByUserName(String userName) {
