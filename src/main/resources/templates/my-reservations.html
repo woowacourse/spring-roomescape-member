@@ -480,8 +480,8 @@
         <p class="step-num">Step 01</p>
         <h2 class="step-title">예약자 이름을 입력하세요</h2>
         <div class="search-row">
-            <input class="s-input" id="name-input" maxlength="20" placeholder="이름을 입력하세요" type="text"
-                   onkeydown="if(event.key==='Enter') search()">
+            <input class="s-input" id="name-input" maxlength="20" onkeydown="if(event.key==='Enter') search()" placeholder="이름을 입력하세요"
+                   type="text">
             <button class="btn-primary" onclick="search()">조회</button>
         </div>
     </div>
@@ -500,12 +500,12 @@
         <h2 class="m-title" id="ch-theme">—</h2>
         <p class="m-info" id="ch-info">—</p>
         <label class="m-label">새 날짜</label>
-        <input id="ch-date" type="date" oninput="loadChangeTimes(this.value)">
+        <input id="ch-date" oninput="loadChangeTimes(this.value)" type="date">
         <label class="m-label">새 시간</label>
         <div class="time-grid" id="ch-time-grid"><p class="msg">날짜를 선택하세요</p></div>
         <div class="m-actions">
             <button class="btn-g" onclick="closeChange()">닫기</button>
-            <button class="btn-s" id="ch-confirm" disabled onclick="doChange()">변경 확정</button>
+            <button class="btn-s" disabled id="ch-confirm" onclick="doChange()">변경 확정</button>
         </div>
     </div>
 </div>

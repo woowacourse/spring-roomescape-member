@@ -27,13 +27,6 @@ public class Reservation {
         return new Reservation(null, name, date, time, theme);
     }
 
-    public Reservation update(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
-        Name updatedName = Optional.ofNullable(name).map(Name::new).orElse(this.name);
-        LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
-        validate(updatedDate, time, now);
-        return new Reservation(this.id, updatedName, updatedDate, time, theme);
-    }
-
     private static void validate(LocalDate date, Time time, LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {
@@ -44,6 +37,13 @@ public class Reservation {
         if (date.isAfter(maxAvailableDate)) {
             throw new IllegalArgumentException("예약은 현재로부터 최대 14일 이내만 가능합니다.");
         }
+    }
+
+    public Reservation update(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+        Name updatedName = Optional.ofNullable(name).map(Name::new).orElse(this.name);
+        LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
+        validate(updatedDate, time, now);
+        return new Reservation(this.id, updatedName, updatedDate, time, theme);
     }
 
     @Override

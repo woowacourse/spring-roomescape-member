@@ -5,7 +5,6 @@ import roomescape.dao.row.ReservationRow;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface ReservationDao extends CommonDao<ReservationRow> {
     boolean existsByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date);
