@@ -95,7 +95,7 @@ public class ReservationService {
             throw new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND);
         }
         ReservationTime newTime = reservationTimeRepository.findById(newRequest.timeId())
-            .orElseThrow();
+            .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
         newTime.validateIfTimePast(newRequest.date());
         validateDuplicateReservation(newRequest.date(), newRequest.timeId(), theme.getId());
     }
