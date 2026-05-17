@@ -8,14 +8,21 @@ import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
@@ -31,6 +38,11 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
+        boolean isExistTheme = themeRepository.existsById(themeId);
+        if (!isExistTheme) {
+            throw new ThemeNotFoundException(themeId);
+        }
+
         return reservationTimeRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 

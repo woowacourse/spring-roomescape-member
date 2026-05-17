@@ -66,6 +66,14 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    void 테마_존재여부를_확인하는_테스트() {
+        Theme theme = themeRepository.save(theme("테마"));
+
+        assertThat(themeRepository.existsById(theme.getId())).isTrue();
+        assertThat(themeRepository.existsById(999L)).isFalse();
+    }
+
+    @Test
     void 모든_테마를_조회하는_테스트() {
         Theme theme1 = theme("테마1");
         Theme theme2 = theme("테마2");

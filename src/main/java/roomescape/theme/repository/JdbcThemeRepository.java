@@ -33,6 +33,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                     Duration.ofMinutes(rs.getLong("runtime"))
             );
 
+    @Override
+    public boolean existsById(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
 
     @Override
     public Theme save(Theme theme) {

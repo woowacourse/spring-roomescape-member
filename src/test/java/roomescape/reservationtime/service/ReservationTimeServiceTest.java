@@ -20,6 +20,7 @@ import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
 
 @Transactional
@@ -76,6 +77,15 @@ class ReservationTimeServiceTest {
 
         assertThat(reservationTimes).doesNotContain(reservation.getTime());
         assertThat(reservationTimes).contains(reservationTime2);
+    }
+
+    @Test
+    void 존재하지_않는_테마의_예약가능시간을_조회하면_에러를_던진다() {
+        Long notFoundThemeId = 999L;
+
+        assertThatThrownBy(() -> reservationTimeService.findAvailableReservationTimes(
+                LocalDate.of(2026, 5, 10), notFoundThemeId))
+                .isInstanceOf(ThemeNotFoundException.class);
     }
 
     @Test
