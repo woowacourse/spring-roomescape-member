@@ -125,7 +125,7 @@ public class ReservationService {
     }
 
     private void validateCreateDuplicateReservation(LocalDate date, long timeId, long themeId) {
-        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+        reservationRepository.findByThemeIdAndDateAndTimeId(date, timeId, themeId)
                 .ifPresent(reservation -> {
                     throw new ReservationCreateException(RESERVATION_ALREADY_RESERVED);
                 });
@@ -154,7 +154,7 @@ public class ReservationService {
     }
 
     private void validateChangeDuplicateReservation(LocalDate date, long timeId, long themeId) {
-        reservationRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+        reservationRepository.findByThemeIdAndDateAndTimeId(date, timeId, themeId)
                 .ifPresent(reservation -> {
                     throw new ReservationChangeException(RESERVATION_ALREADY_RESERVED);
                 });

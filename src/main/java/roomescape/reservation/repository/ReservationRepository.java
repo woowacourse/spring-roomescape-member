@@ -160,7 +160,7 @@ public class ReservationRepository {
         }
     }
 
-    public Optional<Reservation> findByDateAndTimeIdAndThemeId(
+    public Optional<Reservation> findByThemeIdAndDateAndTimeId(
             LocalDate date,
             long timeId,
             long themeId
@@ -177,12 +177,12 @@ public class ReservationRepository {
                     th.description AS theme_description, 
                     th.thumbnail_url AS theme_thumbnail
                 FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                WHERE r.theme_id = ? AND r.date = ? AND r.time_id = ? 
                 """;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, date, timeId, themeId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, themeId, date, timeId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
