@@ -223,6 +223,17 @@ GET /api/reservations/{id} HTTP/1.1
 GET /api/reservations?name={name}&page=<optional>&size=<optional> HTTP/1.1
 ```
 
+**Query Parameters**
+
+| Parameter | Type    | Default | Description |
+|-----------|---------|---------|-------------|
+| name      | String  | -       | 예약자 이름 |
+| page      | Integer | 1       | 1 이하이거나 잘못된 형식일 경우 기본값 적용 |
+| size      | Integer | 20      | 1 이하이거나 잘못된 형식일 경우 기본값 적용 (최대 100) |
+
+- `page`, `size`가 누락되거나 잘못된 형식인 경우 기본값으로 보정됩니다.
+- `size`가 최대 허용 범위를 초과하면 최대값으로 제한됩니다.
+
 **Response**
 
 ```json

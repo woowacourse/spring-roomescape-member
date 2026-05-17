@@ -12,6 +12,7 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int MAX_PAGE_SIZE = 100;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -34,7 +35,7 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
             if (size <= 0) {
                 return DEFAULT_PAGE_SIZE;
             }
-            return size;
+            return Math.min(MAX_PAGE_SIZE, size);
         } catch (NumberFormatException | NullPointerException e) {
             return DEFAULT_PAGE_SIZE;
         }
