@@ -12,7 +12,7 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(CustomException e) {
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), errorCode.getStatus());
         return ResponseEntity
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e
     ) {
         ErrorCode errorCode = ErrorCode.COMMON_BAD_REQUEST;

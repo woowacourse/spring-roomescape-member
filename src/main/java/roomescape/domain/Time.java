@@ -18,7 +18,7 @@ public class Time {
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
             throw new CustomException(
-                    ErrorCode.RESERVATION_TIME_START_AT_NULL
+                    ErrorCode.TIME_START_AT_NULL
             );
         }
     }

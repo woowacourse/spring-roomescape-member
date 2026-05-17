@@ -17,7 +17,6 @@ public class Reservation {
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
-        validateName(name);
 
         this.id = id;
         this.name = name;

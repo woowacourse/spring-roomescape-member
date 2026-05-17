@@ -23,7 +23,7 @@ public class AdminTimeService {
     public TimeResponse save(TimeRequest request) {
         try {
             Long id = timeDao.save(request.startAt());
-            Time saved = timeDao.findById(id);
+            Time saved = new Time(id,request.startAt());
             return TimeResponse.from(saved);
         } catch(DuplicateKeyException e){
             throw new CustomException(ErrorCode.ALREADY_EXISTS_TIME);

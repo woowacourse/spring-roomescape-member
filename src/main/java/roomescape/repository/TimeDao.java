@@ -39,10 +39,6 @@ public class TimeDao {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", timeRowMapper);
     }
 
-    public Time findByTime(LocalTime time) {
-        return jdbcTemplate.queryForObject("select id, start_at from reservation_time where id = ?", timeRowMapper, time);
-    }
-
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
