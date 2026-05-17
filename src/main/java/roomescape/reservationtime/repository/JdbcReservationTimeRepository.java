@@ -41,7 +41,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String query = "select * from reservation_time";
+        String query = "select * from reservation_time ORDER BY start_at ASC";
         return jdbcTemplate.query(query, rowMapper);
     }
 
@@ -58,6 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 FROM reservation_time rt
                 LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?
                 WHERE r.id IS NULL
+                ORDER BY rt.start_at ASC
                 """;
         return jdbcTemplate.query(query, rowMapper, date, themeId);
     }

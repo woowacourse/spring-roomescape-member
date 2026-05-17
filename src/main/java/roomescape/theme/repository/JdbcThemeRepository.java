@@ -50,7 +50,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String query = "select * from theme";
+        String query = "select * from theme ORDER BY id ASC";
         return jdbcTemplate.query(query, rowMapper);
     }
 
@@ -83,7 +83,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAllByIds(List<Long> ids) {
         String placeholders = ids.stream().map(id -> "?").collect(Collectors.joining(", "));
-        String query = "SELECT id, name, description, image_url FROM theme WHERE id IN (" + placeholders + ")";
+        String query = "SELECT id, name, description, image_url FROM theme WHERE id IN (" + placeholders + ") ORDER BY id ASC";
         return jdbcTemplate.query(query, rowMapper, ids.toArray());
     }
 }
