@@ -3,6 +3,7 @@ package roomescape.reservation.application.service;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
@@ -40,8 +41,15 @@ public class ReservationCommandService {
         reservation.validateReservable(LocalDateTime.now(clock));
         validateDuplicateReservation(reservation);
 
+        Reservation savedReservation;
+        try {
+            savedReservation = reservationRepository.save(reservation);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
+
         return ReservationResult.from(
-                reservationRepository.save(reservation),
+                savedReservation,
                 ThemeResult.from(theme),
                 ReservationTimeResult.from(time)
         );
