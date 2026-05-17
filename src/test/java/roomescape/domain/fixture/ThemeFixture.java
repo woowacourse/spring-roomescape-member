@@ -2,17 +2,20 @@ package roomescape.domain.fixture;
 
 import roomescape.domain.Theme;
 
-public class ThemeFixture {
+public final class ThemeFixture {
+
+    private ThemeFixture() {
+    }
 
     public static Theme createDefaultTheme() {
-        return new Theme("공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png");
+        return Theme.create("공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png");
     }
 
     public static Theme createThemeWithId() {
-        return new Theme(1L, "공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png", true);
+        return Theme.restore(1L, "공포테마", "어마무시한 공포 테마입니다.", "https://image.com/image.png", true);
     }
 
-    public static Theme createThemeWithImageUrl(String imageUrl) {
-        return new Theme("공포테마", "어마무시한 공포 테마입니다.", imageUrl);
+    public static Theme createTheme(String name, String description, String thumbnailImageUrl) {
+        return Theme.create(name, description, thumbnailImageUrl);
     }
 }

@@ -7,8 +7,11 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -26,35 +29,62 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, theme_id, time_id, status) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTheme().getId());
             ps.setLong(4, reservation.getTime().getId());
+            ps.setString(5, reservation.getStatus().name());
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-        return new Reservation(id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTheme(),
-                reservation.getTime());
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return Reservation.restore(id, reservation.getName(), reservation.getDate(), reservation.getTheme(),
+                reservation.getTime(), reservation.getStatus());
     }
 
     @Override
-    public void deleteById(Long id) {
-        int affectedRow = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    public void update(Reservation reservation) {
+        String sql = """
+                    UPDATE reservation
+                    SET name = ?, date = ?, theme_id = ?, time_id = ?, status = ?
+                    WHERE id=?
+                """;
+
+        int affectedRow = jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(),
+                reservation.getTheme().getId(), reservation.getTime().getId(), reservation.getStatus().toString(),
+                reservation.getId());
+
         if (affectedRow == 0) {
-            throw new EntityNotFoundException("존재하지 않는 예약 정보입니다.");
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
         }
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+    public Optional<Reservation> findById(Long id) {
+        try {
+            String sql = """
+                    SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date, r.status AS res_status,
+                           rt.id AS time_id, rt.start_at AS time_start, rt.is_active AS time_active,
+                           t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active AS theme_active
+                    FROM reservation r
+                    JOIN reservation_time rt ON r.time_id = rt.id
+                    JOIN theme t ON r.theme_id = t.id
+                    WHERE r.id = ?
+                    """;
+
+            Reservation reservation = jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean existsReservedReservation(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ? AND status = 'RESERVED')";
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }
@@ -63,9 +93,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByPaging(int page, int size) {
         int offset = page * size;
         String sql = """
-                    SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date,
-                           rt.id AS time_id, rt.start_at AS time_start,
-                           t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active
+                    SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date, r.status AS res_status,
+                           rt.id AS time_id, rt.start_at AS time_start, rt.is_active AS time_active,
+                           t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active AS theme_active
                     FROM reservation r
                     JOIN reservation_time rt ON r.time_id = rt.id
                     JOIN theme t ON r.theme_id = t.id
@@ -76,13 +106,36 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Set<Long> findReservedTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
+    public Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = """
                 SELECT time_id
                 FROM reservation
-                WHERE theme_id = ? AND date = ?
+                WHERE theme_id = ? AND date = ? AND status = 'RESERVED' 
                 """;
 
         return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, themeId, date));
+    }
+
+    @Override
+    public boolean existsReservedReservationByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ? AND status = 'RESERVED')";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(result);
+    }
+
+    @Override
+    public List<Reservation> findAllByUserName(String name) {
+        String sql = """
+                    SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date, r.status AS res_status,
+                           rt.id AS time_id, rt.start_at AS time_start, rt.is_active AS time_active,
+                           t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active AS theme_active
+                    FROM reservation r
+                    JOIN reservation_time rt ON r.time_id = rt.id
+                    JOIN theme t ON r.theme_id = t.id
+                    WHERE r.name = ?
+                    ORDER BY r.id DESC
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, name);
     }
 }

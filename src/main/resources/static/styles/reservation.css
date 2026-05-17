@@ -1,5 +1,5 @@
 .reservation-page {
-  max-width: 560px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 40px 24px 80px;
 }
@@ -128,4 +128,121 @@ select {
 .btn-submit:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.reservation-list-section {
+  margin-top: 32px;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.lookup-form {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  gap: 10px;
+}
+
+.btn-inline,
+.btn-secondary,
+.btn-danger {
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.btn-inline {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text-secondary);
+  padding: 9px 10px;
+}
+
+.btn-danger {
+  background: #fff5f5;
+  color: var(--danger);
+  padding: 9px 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.reservation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reservation-table th {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.reservation-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 10px;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.reservation-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.empty-row td {
+  color: var(--text-tertiary);
+  padding: 28px;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  border-radius: 6px;
+  background: #ebf3ff;
+  color: var(--accent);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.modify-controls {
+  display: grid;
+  grid-template-columns: 136px 80px 96px 56px;
+  gap: 6px;
+  align-items: center;
+}
+
+.modify-date,
+.modify-time {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-primary);
+  padding: 9px 10px;
+}
+
+@media (max-width: 720px) {
+  .lookup-form {
+    grid-template-columns: 1fr;
+  }
+
+  .modify-controls {
+    grid-template-columns: 1fr;
+    min-width: 160px;
+  }
 }

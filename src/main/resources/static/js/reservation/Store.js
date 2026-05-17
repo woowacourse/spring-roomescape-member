@@ -1,14 +1,23 @@
 import { getSearchParam } from "../common/helpers.js";
-import { createReservation, fetchThemes, fetchThemeSlots } from "./api.js";
+import {
+  cancelReservation,
+  createReservation,
+  fetchReservationsByName,
+  fetchThemes,
+  fetchThemeSlots,
+  modifyReservation
+} from "./api.js";
 
 export default class Store {
   constructor() {
     this.themes = [];
     this.slots = [];
+    this.reservations = [];
     this.selectedThemeId = getSearchParam("themeId") || "";
     this.selectedDate = "";
     this.selectedTimeId = null;
     this.name = "";
+    this.lookupName = "";
   }
 
   async loadThemes() {
@@ -38,6 +47,10 @@ export default class Store {
     this.name = name.trim();
   }
 
+  setLookupName(name) {
+    this.lookupName = name.trim();
+  }
+
   setSelectedTimeId(timeId) {
     this.selectedTimeId = timeId;
   }
@@ -53,5 +66,26 @@ export default class Store {
       themeId: Number(this.selectedThemeId),
       timeId: this.selectedTimeId
     });
+  }
+
+  async loadReservationsByName() {
+    if (!this.lookupName) {
+      this.reservations = [];
+      return;
+    }
+
+    this.reservations = await fetchReservationsByName(this.lookupName);
+  }
+
+  loadSlotsFor(themeId, date) {
+    return fetchThemeSlots(themeId, date);
+  }
+
+  cancelReservation(id, name) {
+    return cancelReservation(id, { name });
+  }
+
+  modifyReservation(id, payload) {
+    return modifyReservation(id, payload);
   }
 }

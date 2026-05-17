@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.global.exception.EntityNotFoundException;
 import roomescape.service.BaseIntegrationTest;
 
@@ -32,7 +33,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     void 시간을_저장하고_ID로_조회한다() {
         // given
         LocalTime reservationStartTime = LocalTime.of(10, 0);
-        ReservationTime time = new ReservationTime(reservationStartTime);
+        ReservationTime time = ReservationTime.create(reservationStartTime);
 
         // when
         ReservationTime saved = reservationTimeRepository.save(time);
@@ -47,7 +48,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     void 같은_시간으로_저장하면_참조_무결성_예외가_발생한다() {
         // given
         LocalTime reservationStartTime = LocalTime.of(10, 0);
-        ReservationTime time = new ReservationTime(reservationStartTime);
+        ReservationTime time = ReservationTime.create(reservationStartTime);
         reservationTimeRepository.save(time);
 
         // when & then
@@ -56,45 +57,58 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 시간을_삭제한다() {
+    void 시간을_수정한다() {
         // given
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime saved = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
 
         // when
-        reservationTimeRepository.deleteById(saved.getId());
+        ReservationTime deactivatedTime = saved.deactivate();
+        reservationTimeRepository.update(deactivatedTime);
+        ReservationTime time = reservationTimeRepository.findById(saved.getId()).get();
 
         // then
-        assertThat(reservationTimeRepository.findById(saved.getId())).isEmpty();
+        assertThat(time.isActive()).isFalse();
     }
 
     @Test
-    void 삭제할_시간이_존재하지_않으면_예외가_발생한다() {
+    void 수정할_시간이_존재하지_않으면_예외가_발생한다() {
         // given
-        Long nonexistentId = 999L;
+        ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(nonexistentId))
+        assertThatThrownBy(() -> reservationTimeRepository.update(time))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 시간 정보입니다.");
     }
 
     @Test
-    void 특정_시간이_존재하는지_확인한다() {
+    void 활성화된_특정_시간이_존재하는지_확인한다() {
         // given
         LocalTime targetTime = LocalTime.of(10, 0);
-        reservationTimeRepository.save(new ReservationTime(targetTime));
+        reservationTimeRepository.save(ReservationTime.create(targetTime));
 
         // when & then
         LocalTime otherTime = LocalTime.of(11, 0);
-        assertThat(reservationTimeRepository.existsByStartAt(targetTime)).isTrue();
-        assertThat(reservationTimeRepository.existsByStartAt(otherTime)).isFalse();
+        assertThat(reservationTimeRepository.existsActiveByStartAt(targetTime)).isTrue();
+        assertThat(reservationTimeRepository.existsActiveByStartAt(otherTime)).isFalse();
+    }
+
+    @Test
+    void 비활성화된_시간은_활성화된_특정_시간_존재_여부에서_제외한다() {
+        // given
+        LocalTime targetTime = LocalTime.of(10, 0);
+        ReservationTime saved = reservationTimeRepository.save(ReservationTime.create(targetTime));
+        reservationTimeRepository.update(saved.deactivate());
+
+        // when & then
+        assertThat(reservationTimeRepository.existsActiveByStartAt(targetTime)).isFalse();
     }
 
     @Test
     void 모든_시간_목록을_조회한다() {
         // given
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
 
         // when
         List<ReservationTime> times = reservationTimeRepository.findAllByPaging(0, 10);

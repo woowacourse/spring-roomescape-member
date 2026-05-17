@@ -1,19 +1,31 @@
 package roomescape.web.controller.user;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.net.URI;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
+import roomescape.web.dto.reservation.ReservationCancelRequest;
+import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
+import roomescape.web.dto.reservation.ReservationResponses;
+import roomescape.web.dto.theme.ReservationTimeStatusResponses;
 
 @RestController
 @RequestMapping("/api/reservations")
+@Validated
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -26,5 +38,45 @@ public class ReservationController {
         URI location = URI.create("/api/reservations/" + response.id());
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<ReservationResponses> getReservationsByUser(@RequestParam String name) {
+        ReservationResponses response = new ReservationResponses(reservationService.getReservationsByUser(name));
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("themes/{id}/times")
+    public ResponseEntity<ReservationTimeStatusResponses> getReservationStatusByTheme(
+            @PathVariable
+            @Positive(message = "테마 조회 식별자는 양수여야 합니다.") Long id,
+            @RequestParam LocalDate date
+    ) {
+        ReservationTimeStatusResponses response = new ReservationTimeStatusResponses(
+                reservationService.getReservationStatusByTheme(id, date));
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(
+            @PathVariable
+            @Positive(message = "예약 식별자는 양수여야 합니다.") Long id,
+            @Valid @RequestBody ReservationCancelRequest request
+    ) {
+        reservationService.cancel(id, request);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/modify")
+    public ResponseEntity<Void> modify(
+            @PathVariable
+            @Positive(message = "예약 식별자는 양수여야 합니다.") Long id,
+            @Valid @RequestBody ReservationModifyRequest request
+    ) {
+        reservationService.modify(id, request);
+        return ResponseEntity.noContent().build();
     }
 }

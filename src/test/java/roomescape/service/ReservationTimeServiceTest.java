@@ -8,8 +8,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.fixture.ReservationFixture;
+import roomescape.domain.fixture.ReservationTimeFixture;
+import roomescape.domain.fixture.ThemeFixture;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.ForbiddenException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.web.dto.reservationTime.ReservationTimeRequest;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
@@ -17,66 +24,96 @@ import roomescape.web.dto.reservationTime.ReservationTimeResponse;
 class ReservationTimeServiceTest {
 
     private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
+        this.reservationRepository = new FakeReservationRepository();
         this.reservationTimeRepository = new FakeReservationTimeRepository();
-        this.reservationTimeService = new ReservationTimeService(this.reservationTimeRepository);
+        this.reservationTimeService = new ReservationTimeService(this.reservationTimeRepository,
+                this.reservationRepository);
     }
 
     @Test
     void 새로운_예약_시간을_정상적으로_등록한다() {
-        // given: 새로운 예약 시간 정보가 주어짐
+        // given
         LocalTime startAt = LocalTime.of(10, 0);
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
-        // when: 시간을 등록함
+        // when
         ReservationTimeResponse response = reservationTimeService.register(request);
 
-        // then: 새로운 ID를 발급해서 반환
-        assertThat(response)
-                .extracting(ReservationTimeResponse::id, ReservationTimeResponse::startAt)
+        // then
+        assertThat(response).extracting(ReservationTimeResponse::id, ReservationTimeResponse::startAt)
                 .containsExactly(1L, startAt);
     }
 
     @Test
     void 이미_등록된_시간으로_등록을_시도하면_예외가_발생한다() {
-        // given: 10시 예약 시간이 이미 등록되어 있음
+        // given
         LocalTime startAt = LocalTime.of(10, 0);
-        reservationTimeRepository.save(new ReservationTime(startAt));
+        reservationTimeRepository.save(ReservationTime.create(startAt));
 
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
-        // when & then: 중복된 시간 등록 시 DuplicateEntityException 발생
-        assertThatThrownBy(() -> reservationTimeService.register(request))
-                .isInstanceOf(DuplicateEntityException.class)
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.register(request)).isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 등록된 예약 시간 입니다.");
     }
 
     @Test
-    void 식별자를_이용해_예약_시간을_삭제한다() {
-        // given: 삭제할 예약 시간이 저장되어 있음
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Long id = saved.getId();
+    void 비활성화된_시간과_같은_시간으로_다시_등록할_수_있다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        ReservationTime saved = reservationTimeRepository.save(ReservationTime.create(startAt));
+        reservationTimeRepository.update(saved.deactivate());
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
-        // when: 해당 ID로 삭제를 요청함
-        reservationTimeService.remove(id);
+        // when
+        ReservationTimeResponse response = reservationTimeService.register(request);
 
-        // then: 전체 조회 시 해당 데이터가 존재하지 않음
-        assertThat(reservationTimeRepository.findAllByPaging(0, 10)).isEmpty();
+        // then
+        assertThat(response).extracting(ReservationTimeResponse::id, ReservationTimeResponse::startAt)
+                .containsExactly(2L, startAt);
     }
 
     @Test
     void 모든_예약_시간_목록을_조회한다() {
-        // given: 10시와 11시 예약 시간이 저장되어 있음
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        // given
+        reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+        reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
 
-        // when: 전체 조회를 요청함
+        // when
         List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimesByPaging(0, 10);
 
-        // then: 저장된 2개의 시간 정보가 반환됨
+        // then
         assertThat(responses).hasSize(2);
+    }
+
+    @Test
+    void 예약_시간을_비활성화한다() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+
+        // when
+        reservationTimeService.deactivate(time.getId());
+        ReservationTime inactiveTime = reservationTimeRepository.findById(time.getId()).get();
+
+        // then
+        assertThat(inactiveTime.isActive()).isFalse();
+    }
+
+    @Test
+    void 비활성화하려는_시간에_예약이_존재하면_예외가_발생한다() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+        Theme theme = ThemeFixture.createThemeWithId();
+        reservationRepository.save(ReservationFixture.createDefaultReservationWithName("바니", theme, time));
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deactivate(time.getId())).isInstanceOf(
+                ForbiddenException.class);
+
     }
 }

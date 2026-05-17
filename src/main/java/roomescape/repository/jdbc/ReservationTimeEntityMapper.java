@@ -5,10 +5,9 @@ import roomescape.domain.ReservationTime;
 
 public final class ReservationTimeEntityMapper {
 
-    public static final RowMapper<ReservationTime> RESERVATION_TIME_MAPPER = (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
-    );
+    public static final RowMapper<ReservationTime> RESERVATION_TIME_MAPPER = (rs, rowNum) -> ReservationTime.restore(
+            rs.getLong("id"), rs.getTime("start_at").toLocalTime(), rs.getBoolean("is_active"));
 
-    private ReservationTimeEntityMapper() {}
+    private ReservationTimeEntityMapper() {
+    }
 }

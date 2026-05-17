@@ -55,7 +55,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
         }
         latch.await();
 
-        // then: DB에 예약이 딱 하나만 있어야 하고, DataIntergrityViolation 예외가 한 번 발생해야 됨.
+        // then
         assertThat(reservationService.getAllReservationsByPaging(0, 10)).hasSize(1);
         assertThat(errorCount.get()).isEqualTo(1);
     }

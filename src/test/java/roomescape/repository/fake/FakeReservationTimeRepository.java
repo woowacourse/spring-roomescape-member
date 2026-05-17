@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
-import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -17,19 +16,24 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        ReservationTime saved = new ReservationTime(
+        ReservationTime saved = ReservationTime.restore(
                 counter.getAndIncrement(),
-                reservationTime.getStartAt()
+                reservationTime.getStartAt(),
+                reservationTime.isActive()
         );
         reservationTimes.add(saved);
         return saved;
     }
 
     @Override
-    public void deleteById(Long id) {
-        boolean deleted = reservationTimes.removeIf(time -> time.getId().equals(id));
-        if (!deleted) {
-            throw new EntityNotFoundException("존재하지 않는 시간 정보입니다.");
+    public void update(ReservationTime reservationTime) {
+        for (int i = 0; i < reservationTimes.size(); i++) {
+            ReservationTime savedTime = reservationTimes.get(i);
+
+            if (savedTime.getId().equals(reservationTime.getId())) {
+                reservationTimes.set(i, reservationTime);
+                return;
+            }
         }
     }
 
@@ -41,10 +45,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAt(LocalTime time) {
+    public boolean existsActiveByStartAt(LocalTime time) {
         return reservationTimes.stream()
                 .anyMatch(reservationTime
-                        -> reservationTime.getStartAt().equals(time));
+                        -> reservationTime.getStartAt().equals(time) && reservationTime.isActive());
     }
 
     @Override

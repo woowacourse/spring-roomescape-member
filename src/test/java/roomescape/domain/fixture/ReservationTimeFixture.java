@@ -3,9 +3,12 @@ package roomescape.domain.fixture;
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 
-public class ReservationTimeFixture {
+public final class ReservationTimeFixture {
+
+    private ReservationTimeFixture() {
+    }
 
     public static ReservationTime createDefaultReservationTime() {
-        return new ReservationTime(1L, LocalTime.of(10, 0));
+        return ReservationTime.restore(1L, LocalTime.of(10, 0), true);
     }
 }

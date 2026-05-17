@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.ValidationException;
 
 class ThemeTest {
 
@@ -20,9 +21,9 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/horror.png";
 
         // when
-        Theme theme = new Theme(name, description, thumbnailImageUrl);
+        Theme theme = Theme.create(name, description, thumbnailImageUrl);
 
-        // then: 기본 생성 시 삭제되지 않은 상태이다.
+        // then
         assertThat(theme)
                 .extracting(Theme::getName, Theme::getDescription, Theme::getThumbnailImageUrl, Theme::isActive)
                 .containsExactly(name, description, thumbnailImageUrl, true);
@@ -37,8 +38,8 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/test.png";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(invalidName, description, thumbnailImageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> Theme.create(invalidName, description, thumbnailImageUrl))
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("이름은 필수 값입니다.");
     }
 
@@ -51,8 +52,8 @@ class ThemeTest {
         String thumbnailImageUrl = "https://image.com/test.png";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, invalidDescription, thumbnailImageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> Theme.create(name, invalidDescription, thumbnailImageUrl))
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("설명은 필수 값입니다.");
     }
 
@@ -61,42 +62,30 @@ class ThemeTest {
             "null",
             "''",
             "' '",
-            "문자열",                       // 순수 문자열
-            "ftp://image.com/test.png",   // 다른 프로토콜 스킴
-            "htts://image.com/test.png"   // 오탈자
+            "문자열",
+            "ftp://image.com/test.png",
+            "htts://image.com/test.png"
     }, nullValues = "null")
-    void 썸네일_이미지_주소_검증_통합_테스트(String invalidUrl) {
+    void 썸네일_이미지_주소가_올바른_URL_형식이_아니면_예외가_발생한다(String invalidUrl) {
         // given
         String name = "테마 이름";
         String description = "설명";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, description, invalidUrl))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> Theme.create(name, description, invalidUrl))
+                .isInstanceOf(ValidationException.class)
                 .hasMessage("올바른 이미지 주소 형식이 아닙니다. url=" + invalidUrl);
     }
 
     @Test
-    void 테마를_삭제할_수_있다() {
+    void 테마를_비활성화할_수_있다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
 
         // when
-        theme.deactivate();
+        Theme inactiveTheme = theme.deactivate();
 
         // then
-        assertThat(theme.isActive()).isFalse();
-    }
-
-    @Test
-    void 이미_삭제된_테마를_삭제하면_예외가_발생한다() {
-        // given
-        Theme theme = ThemeFixture.createDefaultTheme();
-        theme.deactivate();
-
-        // when & then
-        assertThatThrownBy(theme::deactivate)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 비활성화 된 테마입니다.");
+        assertThat(inactiveTheme.isActive()).isFalse();
     }
 }

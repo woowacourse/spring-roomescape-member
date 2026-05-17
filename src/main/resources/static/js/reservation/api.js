@@ -19,12 +19,34 @@ export function fetchThemes() {
 export function fetchThemeSlots(themeId, date) {
   const searchParams = new URLSearchParams({ date });
 
-  return requestJson(`/api/themes/${themeId}/times?${searchParams.toString()}`).then(unwrapResponses);
+  return requestJson(`/api/reservations/themes/${themeId}/times?${searchParams.toString()}`).then(unwrapResponses);
 }
 
 export function createReservation(payload) {
   return requestJson("/api/reservations", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}
+
+export function fetchReservationsByName(name) {
+  const searchParams = new URLSearchParams({ name });
+
+  return requestJson(`/api/reservations?${searchParams.toString()}`).then(unwrapResponses);
+}
+
+export function cancelReservation(id, payload) {
+  return requestJson(`/api/reservations/${id}/cancel`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}
+
+export function modifyReservation(id, payload) {
+  return requestJson(`/api/reservations/${id}/modify`, {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });

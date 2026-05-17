@@ -1,10 +1,12 @@
 package roomescape.repository.jdbc;
 
 import static roomescape.repository.jdbc.ReservationTimeEntityMapper.RESERVATION_TIME_MAPPER;
+
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,12 +35,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return ps;
         }, keyHolder);
 
-        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
+        return ReservationTime.restore(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                reservationTime.getStartAt(), reservationTime.isActive());
     }
 
     @Override
-    public void deleteById(Long id) {
-        int affectedRow = jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    public void update(ReservationTime reservationTime) {
+        String sql = """
+                    UPDATE reservation_time
+                    SET start_at = ?, is_active = ?
+                    WHERE id=?
+                """;
+        int affectedRow = jdbcTemplate.update(sql,
+                reservationTime.getStartAt(),
+                reservationTime.isActive(),
+                reservationTime.getId()
+        );
+
         if (affectedRow == 0) {
             throw new EntityNotFoundException("존재하지 않는 시간 정보입니다.");
         }
@@ -56,8 +69,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAt(LocalTime time) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+    public boolean existsActiveByStartAt(LocalTime time) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ? AND is_active = 1)";
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, time);
         return Boolean.TRUE.equals(result);
     }

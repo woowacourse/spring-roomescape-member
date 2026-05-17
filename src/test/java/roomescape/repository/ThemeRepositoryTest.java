@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -12,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Theme;
+import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.service.BaseIntegrationTest;
 
 class ThemeRepositoryTest extends BaseIntegrationTest {
@@ -30,7 +31,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     @Test
     void 테마를_저장하고_ID로_조회할_수_있다() {
         // given
-        Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
+        Theme theme = ThemeFixture.createDefaultTheme();
 
         // when
         Theme saved = themeRepository.save(theme);
@@ -42,11 +43,11 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     @Test
     void 활성화된_테마_조회가_있는지_확인한다() {
         // given
-        Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
+        Theme theme = ThemeFixture.createDefaultTheme();
         themeRepository.save(theme);
 
         // when
-        boolean result = themeRepository.isActiveByName("바니의 집");
+        boolean result = themeRepository.isActiveByName(theme.getName());
 
         // then
         assertThat(result).isTrue();
@@ -55,7 +56,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     @Test
     void 활성화된_테마가_있을_때_같은_테마를_추가하면_제약_위반_예외가_발생한다() {
         // given
-        Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
+        Theme theme = ThemeFixture.createDefaultTheme();
         themeRepository.save(theme);
 
         // when & then
@@ -64,42 +65,43 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 비성활화된_같은_테마는_여러개_존재_가능하다() {
+    void 테마_정보를_수정한다() {
         // given
-        Theme first = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);
-        Theme second = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);
-
-        // when & then
-        assertThatCode(() -> {
-            themeRepository.save(first);
-            themeRepository.save(second);
-        }).doesNotThrowAnyException();
-    }
-
-    @Test
-    void 테마_정보가_수정이_된다() {
-        // given
-        Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
+        Theme theme = ThemeFixture.createDefaultTheme();
         Theme savedTheme = themeRepository.save(theme);
-        savedTheme.deactivate();
+        Theme inactiveTheme = savedTheme.deactivate();
 
         // when
-        themeRepository.update(savedTheme);
+        themeRepository.update(inactiveTheme);
 
         // then
-        Optional<Theme> found = themeRepository.findById(savedTheme.getId());
+        Optional<Theme> found = themeRepository.findById(inactiveTheme.getId());
         assertThat(found).isPresent();
         assertThat(found.get().isActive()).isFalse();
     }
 
     @Test
+    void 존재하지_않는_테마_정보를_수정하면_예외가_발생한다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+        theme.deactivate();
+
+        // when & then
+        assertThatThrownBy(() -> themeRepository.update(theme))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
     void 활성화된_테마만_페이징_조건에_맞게_조회한다() {
         // given
-        Theme first = themeRepository.save(new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com"));
-        Theme second = themeRepository.save(new Theme("이프의 집", "이프의 집입니다", "http://image.png/image.com"));
-        Theme inactive = themeRepository.save(new Theme("아루의 집", "아루의 집입니다", "http://image.png/image.com"));
-        inactive.deactivate();
-        themeRepository.update(inactive);
+        Theme first = themeRepository.save(
+                ThemeFixture.createTheme("바니의 집", "바니의 집입니다", "http://image.png/image.com"));
+        Theme second = themeRepository.save(
+                ThemeFixture.createTheme("이프의 집", "이프의 집입니다", "http://image.png/image.com"));
+        Theme inactive = themeRepository.save(
+                ThemeFixture.createTheme("아루의 집", "아루의 집입니다", "http://image.png/image.com"));
+        Theme inactiveTheme = inactive.deactivate();
+        themeRepository.update(inactiveTheme);
 
         // when
         List<Theme> themes = themeRepository.findAllActiveThemesByPaging(1, 1);
@@ -109,19 +111,21 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
                 .containsExactly(second.getId());
 
         assertThat(themes).extracting(Theme::getId)
-                .doesNotContain(inactive.getId(), first.getId());
+                .doesNotContain(inactiveTheme.getId(), first.getId());
     }
 
     @Test
     void 예약이_많은_순서대로_상위_10개의_테마를_조회한다() {
-        // given: 15개 테마가 존재
+        // given
         dataSource.insertThemesByCount(15);
         dataSource.insertTimeByStartToEndWithOneHourRotation(10, 18);
 
-        // 테마1에 예약 3개, 테마 2에 예약 2개, 테마 3에 예약 1개
-        dataSource.insertReservationByTheme(2L, 3);
-        dataSource.insertReservationByTheme(1L, 2);
-        dataSource.insertReservationByTheme(3L, 1);
+        Long mostReservedThemeId = 2L;
+        Long secondReservedThemeId = 1L;
+        Long thirdReservedThemeId = 3L;
+        dataSource.insertReservedReservationByTheme(mostReservedThemeId, 3);
+        dataSource.insertReservedReservationByTheme(secondReservedThemeId, 2);
+        dataSource.insertReservedReservationByTheme(thirdReservedThemeId, 1);
 
         // when
         LocalDate now = LocalDate.now();
@@ -130,9 +134,9 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(popularThemes).hasSize(10);
-        assertThat(popularThemes.get(0).getId()).isEqualTo(2L);
-        assertThat(popularThemes.get(1).getId()).isEqualTo(1L);
-        assertThat(popularThemes.get(2).getId()).isEqualTo(3L);
+        assertThat(popularThemes.get(0).getId()).isEqualTo(mostReservedThemeId);
+        assertThat(popularThemes.get(1).getId()).isEqualTo(secondReservedThemeId);
+        assertThat(popularThemes.get(2).getId()).isEqualTo(thirdReservedThemeId);
     }
 
     @Test
@@ -140,12 +144,13 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         // given
         dataSource.insertThemesByCount(3);
         dataSource.insertTimeByStartToEndWithOneHourRotation(10, 12);
-        dataSource.insertReservation("바니", LocalDate.now(), 2L, 1L);
-        dataSource.insertReservation("이프", LocalDate.now(), 1L, 2L);
+        dataSource.insertReservedReservation("바니", LocalDate.now(), 2L, 1L);
+        dataSource.insertReservedReservation("이프", LocalDate.now(), 1L, 2L);
 
         // when
         LocalDate now = LocalDate.now();
-        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(1), now.plusDays(1), 3);
+        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(1), now.plusDays(1),
+                3);
 
         // then
         assertThat(popularThemes)

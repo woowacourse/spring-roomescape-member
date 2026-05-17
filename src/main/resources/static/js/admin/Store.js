@@ -1,10 +1,8 @@
 import {
-  createReservation,
   createTheme,
   createTime,
-  deleteReservation,
-  deleteTheme,
-  deleteTime,
+  deactivateTime,
+  deactivateTheme,
   fetchReservations,
   fetchThemes,
   fetchTimes
@@ -44,23 +42,15 @@ export default class Store {
     return createTheme(payload);
   }
 
-  removeTheme(id) {
-    return deleteTheme(id);
-  }
-
-  addReservation(payload) {
-    return createReservation(payload);
-  }
-
-  removeReservation(id) {
-    return deleteReservation(id);
+  deactivateTheme(id) {
+    return deactivateTheme(id);
   }
 
   addTime(payload) {
     return createTime(payload);
   }
 
-  removeTime(id) {
-    return deleteTime(id);
+  deactivateTime(id) {
+    return deactivateTime(id);
   }
 }
