@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = exception.getErrorCode();
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
     }
 
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
                 .orElse(errorCode.getMessage());
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
     }
 
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
     }
 
@@ -67,7 +68,7 @@ public class GlobalExceptionHandler {
         String message = "필수 요청 값이 누락되었습니다: " + exception.getParameterName();
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
     }
 
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler {
         String message = "요청 값의 형식이 올바르지 않습니다: " + exception.getName();
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
     }
 
@@ -92,7 +93,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.UNSUPPORTED_MEDIA_TYPE;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
     }
 
@@ -104,7 +105,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
     }
 
@@ -116,7 +117,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.API_NOT_FOUND;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
     }
 
@@ -128,7 +129,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), exception.getMessage()));
     }
 
@@ -140,7 +141,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_INPUT;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), exception.getMessage()));
     }
 
@@ -152,7 +153,20 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+    }
+
+    private HttpStatus toHttpStatus(ErrorCode errorCode) {
+        return switch (errorCode) {
+            case INVALID_INPUT, INVALID_REQUEST_BODY, RESERVATION_PAST_TIME, RESERVATION_ALREADY_PAST ->
+                    HttpStatus.BAD_REQUEST;
+            case UNSUPPORTED_MEDIA_TYPE -> HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+            case METHOD_NOT_ALLOWED -> HttpStatus.METHOD_NOT_ALLOWED;
+            case API_NOT_FOUND, RESERVATION_NOT_FOUND, RESERVATION_TIME_NOT_FOUND, THEME_NOT_FOUND ->
+                    HttpStatus.NOT_FOUND;
+            case RESERVATION_DUPLICATED, RESERVATION_TIME_IN_USE, THEME_IN_USE -> HttpStatus.CONFLICT;
+            case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
     }
 }
