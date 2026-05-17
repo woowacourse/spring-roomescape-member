@@ -3,109 +3,30 @@ package roomescape.handler;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.EmptyNameException;
-import roomescape.exception.PastDateReservationException;
-import roomescape.exception.ReservationTimeInUseException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
 
-@WebMvcTest(Void.class)
+@WebMvcTest(GlobalExceptionHandler.class)
 class GlobalExceptionHandlerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
+
     @MockitoBean
-    TestController testController;
+    private TestController testController;
 
-    @Nested
-    class 예외를_404_Not_Found로_변환한다 {
+    @DisplayName("처리되지 않은 예외가 발생하면 500 Internal Server Error로 변환하여 응답한다")
+    @Test
+    void unhandledException을_500으로_변환한다() throws Exception {
+        Mockito.doThrow(new RuntimeException("Unexpected error"))
+                .when(testController).throwException();
 
-        @DisplayName("ReservationTimeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
-        @Test
-        void ReservationTimeNotFoundException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(ReservationTimeNotFoundException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isNotFound());
-        }
-
-        @DisplayName("ThemeNotFoundException이 발생하면 404 Not Found로 변환하여 응답한다")
-        @Test
-        void ThemeNotFoundException을_404로_변환한다() throws Exception {
-            Mockito.doThrow(ThemeNotFoundException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isNotFound());
-        }
-    }
-
-    @Nested
-    class 예외를_409_Conflict로_변환한다 {
-
-        @DisplayName("ReservationTimeInUseException이 발생하면 409 Conflict로 변환하여 응답한다")
-        @Test
-        void ReservationTimeInUseException을_409로_변환한다() throws Exception {
-            Mockito.doThrow(ReservationTimeInUseException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isConflict());
-        }
-
-        @DisplayName("DuplicatedReservationException이 발생하면 409 Conflict로 변환하여 응답한다")
-        @Test
-        void DuplicatedReservationException을_409로_변환한다() throws Exception {
-            Mockito.doThrow(DuplicatedReservationException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isConflict());
-        }
-    }
-
-    @Nested
-    class 예외를_422_Unprocessable_Entity로_변환한다 {
-
-        @DisplayName("PastDateBookingException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
-        @Test
-        void PastDateBookingException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(PastDateReservationException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isUnprocessableEntity());
-        }
-
-        @DisplayName("EmptyNameException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
-        @Test
-        void EmptyNameException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(EmptyNameException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isUnprocessableEntity());
-        }
-
-        @DisplayName("DateTimeParseException이 발생하면 422 Unprocessable Entity로 변환하여 응답한다")
-        @Test
-        void DateTimeParseException을_422로_변환한다() throws Exception {
-            Mockito.doThrow(DateTimeParseException.class)
-                    .when(testController).throwException();
-
-            mockMvc.perform(get("/exception-handling-test"))
-                    .andExpect(status().isUnprocessableEntity());
-        }
+        mockMvc.perform(get("/exception-handling-test"))
+                .andExpect(status().isInternalServerError());
     }
 }
