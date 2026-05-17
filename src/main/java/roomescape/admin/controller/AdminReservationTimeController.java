@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.service.ReservationTimeService;
 
-@RequestMapping("/admin/Times")
+@RequestMapping("/admin/times")
 @RestController
 @RequiredArgsConstructor
 public class AdminReservationTimeController {
