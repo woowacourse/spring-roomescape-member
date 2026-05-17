@@ -1,5 +1,8 @@
 package roomescape.controller.dto;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -7,21 +10,26 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ThemeRequestTest {
+
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", " "})
     void 이름이_null_또는_blank이면_예외(String name) {
-        // when & then
-        assertThatThrownBy(() -> new ThemeRequest(name, "설명", "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 비어 있을 수 없습니다.");
+        // when
+        Set<ConstraintViolation<ThemeRequest>> result = validator.validate(
+                new ThemeRequest(name, "설명", "썸네일"));
+
+        // then
+        assertThat(result).extracting(ConstraintViolation::getMessage)
+                .containsExactly("name은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -29,10 +37,13 @@ class ThemeRequestTest {
         // given
         String name = "a".repeat(256);
 
-        // when & then
-        assertThatThrownBy(() -> new ThemeRequest(name, "설명", "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 255자를 넘을 수 없습니다.");
+        // when
+        Set<ConstraintViolation<ThemeRequest>> result = validator.validate(
+                new ThemeRequest(name, "설명", "썸네일"));
+
+        // then
+        assertThat(result).extracting(ConstraintViolation::getMessage)
+                .containsExactly("name은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -40,10 +51,13 @@ class ThemeRequestTest {
         // given
         String description = "a".repeat(256);
 
-        // when & then
-        assertThatThrownBy(() -> new ThemeRequest("테마이름", description, "썸네일"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 설명은 255자를 넘을 수 없습니다.");
+        // when
+        Set<ConstraintViolation<ThemeRequest>> result = validator.validate(
+                new ThemeRequest("테마이름", description, "썸네일"));
+
+        // then
+        assertThat(result).extracting(ConstraintViolation::getMessage)
+                .containsExactly("description은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -51,10 +65,13 @@ class ThemeRequestTest {
         // given
         String thumbnail = "a".repeat(256);
 
-        // when & then
-        assertThatThrownBy(() -> new ThemeRequest("테마이름", "설명", thumbnail))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 썸네일 경로는 255자를 넘을 수 없습니다.");
+        // when
+        Set<ConstraintViolation<ThemeRequest>> result = validator.validate(
+                new ThemeRequest("테마이름", "설명", thumbnail));
+
+        // then
+        assertThat(result).extracting(ConstraintViolation::getMessage)
+                .containsExactly("thumbnail는 255자를 넘을 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -64,8 +81,7 @@ class ThemeRequestTest {
         ThemeRequest result = new ThemeRequest("테마이름", description, thumbnail);
 
         // then
-        assertThatCode(() -> new ThemeRequest("테마이름", description, thumbnail))
-                .doesNotThrowAnyException();
+        assertThat(validator.validate(result)).isEmpty();
     }
 
     private static Stream<Arguments> themeParam() {

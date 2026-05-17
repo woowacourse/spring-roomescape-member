@@ -5,10 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.result.TimeAvailabilityResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,11 +20,21 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationValidator reservationValidator;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            ReservationValidator reservationValidator) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.reservationValidator = reservationValidator;
+    }
+
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
     }
 
     public List<Reservation> findAll() {
@@ -33,58 +43,97 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        validateAlreadyReserved(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
-        Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
-    }
-
-    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existWith(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
-        }
+        reservationValidator.validateNotPast(date, time);
+        return createReservation(name, date, timeId, themeId, time);
     }
 
     @Transactional
-    public void delete(Long id) {
-        validateId(id);
+    public Reservation createByAdmin(String name, LocalDate date, Long timeId, Long themeId) {
+        ReservationTime time = findReservationTime(timeId);
+        return createReservation(name, date, timeId, themeId, time);
+    }
+
+    @Transactional
+    public void delete(Long id, String name) {
+        Reservation reservation = findReservation(id);
+        reservationValidator.validateUpdatableReservation(reservation, name);
         reservationRepository.delete(id);
     }
 
-    public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
-
-        return times.stream()
-                .map(time -> new TimeAvailabilityResult(
-                        time.getId(),
-                        time.getStartAt(),
-                        isAvailable(time, reservations)
-                ))
-                .toList();
+    @Transactional
+    public void deleteByAdmin(Long id) {
+        reservationRepository.delete(id);
     }
 
-    private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
-        return reservations.stream()
-                .noneMatch(reservation -> time.equals(reservation.getTime()));
+    @Transactional
+    public Reservation update(Long id, String name, LocalDate date, Long timeId) {
+        Reservation reservation = findReservation(id);
+        reservationValidator.validateUpdatableReservation(reservation, name);
+
+        Reservation updatedReservation = createUpdatedReservation(reservation, date, timeId);
+        reservationValidator.validateUpdatePolicy(reservation, updatedReservation);
+
+        reservationRepository.update(updatedReservation);
+        return findUpdatedReservation(id);
+    }
+
+    private Reservation save(Reservation reservation) {
+        Long id = reservationRepository.insert(reservation);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("생성된 예약을 찾을 수 없습니다."));
+    }
+
+    private Reservation findReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+    }
+
+    private Reservation findUpdatedReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정된 예약을 찾을 수 없습니다."));
     }
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+    }
+
+    private Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
+        reservationValidator.validateAlreadyReserved(date, timeId, themeId);
+        Theme theme = findTheme(themeId);
+
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        return save(reservation);
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
     }
 
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
+    private Reservation createUpdatedReservation(Reservation reservation, LocalDate date, Long timeId) {
+        reservationValidator.validateUpdateValueExists(date, timeId);
+
+        return new Reservation(
+                reservation.getId(),
+                reservation.getName(),
+                resolveUpdateDate(reservation, date),
+                resolveUpdateTime(reservation, timeId),
+                reservation.getTheme());
+    }
+
+    private LocalDate resolveUpdateDate(Reservation reservation, LocalDate date) {
+        if (date != null) {
+            return date;
         }
+        return reservation.getDate();
+    }
+
+    private ReservationTime resolveUpdateTime(Reservation reservation, Long timeId) {
+        if (timeId != null) {
+            return findReservationTime(timeId);
+        }
+        return reservation.getTime();
     }
 }

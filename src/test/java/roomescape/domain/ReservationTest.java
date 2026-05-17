@@ -27,7 +27,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 비어 있을 수 없습니다.");
+                .hasMessage("name은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -40,7 +40,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("name은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -52,7 +52,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "구구", null, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");
+                .hasMessage("date는 비어 있을 수 없습니다.");
         ;
     }
 
@@ -64,7 +64,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "홍길동", date, null, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+                .hasMessage("time은 비어있을 수 없습니다.");
     }
 
     @Test
@@ -75,7 +75,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "홍길동", date, time, null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마는 비어있을 수 없습니다.");
+                .hasMessage("theme는 비어있을 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -91,5 +91,56 @@ class ReservationTest {
 
         // then
         assertThat(result.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void 예약자_이름이_같은지_확인한다() {
+        // given
+        Reservation reservation = reservation("브라운", date, new ReservationTime(1L, startAt));
+
+        // when & then
+        assertThat(reservation.isOwnedBy("브라운")).isTrue();
+        assertThat(reservation.isOwnedBy("구구")).isFalse();
+    }
+
+    @Test
+    void 지난_예약인지_확인한다() {
+        // given
+        Reservation reservation = reservation(
+                "브라운",
+                LocalDate.now().minusDays(1),
+                new ReservationTime(1L, startAt));
+
+        // when & then
+        assertThat(reservation.isPast()).isTrue();
+    }
+
+    @Test
+    void 예약_일정이_같은지_확인한다() {
+        // given
+        ReservationTime time = new ReservationTime(1L, startAt);
+        Reservation reservation = reservation("브라운", date, time);
+        Reservation sameSchedule = reservation("구구", date, time);
+        Reservation differentSchedule = reservation("브라운", date.plusDays(1), time);
+
+        // when & then
+        assertThat(reservation.hasSameSchedule(sameSchedule)).isTrue();
+        assertThat(reservation.hasSameSchedule(differentSchedule)).isFalse();
+    }
+
+    @Test
+    void 예약_시간이_같은지_확인한다() {
+        // given
+        ReservationTime time = new ReservationTime(1L, startAt);
+        Reservation reservation = reservation("브라운", date, time);
+
+        // when & then
+        assertThat(reservation.hasTime(time)).isTrue();
+        assertThat(reservation.hasTime(new ReservationTime(2L, LocalTime.parse("11:00")))).isFalse();
+    }
+
+    private Reservation reservation(String name, LocalDate date, ReservationTime time) {
+        Theme theme = new Theme(null, "테마 이름", "테마 설명", "썸네일");
+        return new Reservation(null, name, date, time, theme);
     }
 }

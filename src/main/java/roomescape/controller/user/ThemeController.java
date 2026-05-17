@@ -1,29 +1,29 @@
-package roomescape.controller;
+package roomescape.controller.user;
 
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.PopularThemeResponse;
-import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.dto.TimeAvailabilityResponse;
-import roomescape.domain.Theme;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationAvailabilityService;
 import roomescape.service.ThemeService;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
-    private final ReservationService reservationService;
+    private final ReservationAvailabilityService reservationAvailabilityService;
 
-    public ThemeController(ThemeService themeService, ReservationService reservationService) {
+    public ThemeController(ThemeService themeService, ReservationAvailabilityService reservationAvailabilityService) {
         this.themeService = themeService;
-        this.reservationService = reservationService;
+        this.reservationAvailabilityService = reservationAvailabilityService;
     }
 
     @GetMapping
@@ -34,25 +34,10 @@ public class ThemeController {
         return ResponseEntity.ok(themes);
     }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
-        Theme theme = themeService.create(
-                request.name(),
-                request.description(),
-                request.thumbnail());
-        return ResponseEntity.created(URI.create("/themes/" + theme.getId()))
-                .body(ThemeResponse.from(theme));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<TimeAvailabilityResponse>> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
-        List<TimeAvailabilityResponse> times = reservationService.findAvailableTime(id, date).stream()
+    public ResponseEntity<List<TimeAvailabilityResponse>> getAvailableTimes(
+            @PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id, @RequestParam("date") LocalDate date) {
+        List<TimeAvailabilityResponse> times = reservationAvailabilityService.findAvailableTime(id, date).stream()
                 .map(TimeAvailabilityResponse::from)
                 .toList();
         return ResponseEntity.ok(times);

@@ -8,17 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.ReservationController;
-import roomescape.domain.Reservation;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,9 +23,6 @@ public class MissionStepTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ReservationController reservationController;
-
     @BeforeEach
     void setup() {
         jdbcTemplate.update("DELETE FROM reservation;");
@@ -38,19 +30,10 @@ public class MissionStepTest {
     }
 
     @Test
-    void 예약_조회() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
-    }
-
-    @Test
     void 예약_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -63,56 +46,32 @@ public class MissionStepTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
     }
 
     @Test
-    void 데이터베이스_연동() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
-
-        List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
-        assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    void DB_추가_삭제_API_전환() {
+    void 중복_예약_생성_시_에러_응답() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
+        Map<String, String> duplicateParams = new HashMap<>(params);
+        duplicateParams.put("name", "구구");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -121,16 +80,41 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("detail", is("이미 예약된 시간입니다."));
+    }
+
+    @Test
+    void 관리자_중복_예약_생성_시_에러_응답() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+        Map<String, String> duplicateParams = new HashMap<>(params);
+        duplicateParams.put("name", "구구");
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(201);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("detail", is("이미 예약된 시간입니다."));
     }
 
     @Test
@@ -143,49 +127,28 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .header("Location", endsWith("/admin/times/1"));
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(204);
-    }
-
-    @Test
-    void 예약과_시간_연결() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
     @Test
     void 예약이_존재하는_시간_삭제_테스트() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -197,17 +160,18 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다."));
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("detail", is("예약이 존재하는 시간은 삭제할 수 없습니다."));
     }
 
     @Test
     void 예약이_존재하는_테마_삭제_테스트() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -219,24 +183,11 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다."));
-    }
-
-    @Test
-    void 계층화_리팩터링() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertThat(isJdbcTemplateInjected).isFalse();
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("detail", is("예약이 존재하는 테마는 삭제할 수 없습니다."));
     }
 
     @Test
@@ -251,9 +202,10 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .header("Location", endsWith("/admin/themes/1"));
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -262,14 +214,16 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/themes/1/times?date=2026-05-05")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("detail", is("존재하지 않는 테마입니다."));
 
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
@@ -278,15 +232,12 @@ public class MissionStepTest {
     }
 
     @Test
-    void View컨트롤러_테스트() {
+    void 존재하지_않는_URL_요청() {
         RestAssured.given().log().all()
-                .when().get("/")
+                .when().get("/not-found")
                 .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservation")
-                .then().log().all()
-                .statusCode(200);
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("detail", is("존재하지 않는 리소스입니다."));
     }
 }

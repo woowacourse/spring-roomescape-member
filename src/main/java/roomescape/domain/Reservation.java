@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -43,30 +44,47 @@ public class Reservation {
         return theme;
     }
 
+    public boolean isOwnedBy(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isPast() {
+        return LocalDateTime.of(date, time.getStartAt())
+                .isBefore(LocalDateTime.now());
+    }
+
+    public boolean hasSameSchedule(Reservation other) {
+        return date.equals(other.date) && time.equals(other.time);
+    }
+
+    public boolean hasTime(ReservationTime time) {
+        return this.time.equals(time);
+    }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("name은 비어 있을 수 없습니다.");
         }
         if (name.length() > 255) {
-            throw new IllegalArgumentException("[ERROR] 이름은 255자를 넘을 수 없습니다.");
+            throw new IllegalArgumentException("name은 255자를 넘을 수 없습니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("date는 비어 있을 수 없습니다.");
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("time은 비어있을 수 없습니다.");
         }
     }
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("[ERROR] 테마는 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("theme는 비어있을 수 없습니다.");
         }
     }
 }

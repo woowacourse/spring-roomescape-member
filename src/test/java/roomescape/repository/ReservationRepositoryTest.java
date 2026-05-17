@@ -77,6 +77,97 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void 이름에_해당하는_예약_목록을_조회한다() {
+        // given
+        ReservationTime time1 = findTimeByStartAt("15:00");
+        ReservationTime time2 = findTimeByStartAt("12:00");
+        Theme theme1 = new Theme(1L, "테마 이름1", "테마 설명1", "썸네일1");
+        Theme theme2 = new Theme(2L, "테마 이름2", "테마 설명2", "썸네일2");
+        reservationRepository.insert(new Reservation(null, "브라운", date, time1, theme1));
+        reservationRepository.insert(new Reservation(null, "브라운", date.plusDays(1), time2, theme2));
+        reservationRepository.insert(new Reservation(null, "구구", date, time2, theme2));
+
+        // when
+        List<Reservation> result = reservationRepository.findByName("브라운");
+
+        // then
+        assertAll(
+                () -> assertThat(result).hasSize(2),
+                () -> assertThat(result).extracting(Reservation::getName)
+                        .containsExactly("브라운", "브라운"),
+                () -> assertThat(result).extracting(Reservation::getDate)
+                        .containsExactly(date, date.plusDays(1)));
+    }
+
+    @Test
+    void 예약의_날짜와_시간을_변경한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("15:00");
+        ReservationTime updateTime = findTimeByStartAt("12:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        Long id = reservationRepository.insert(new Reservation(null, "브라운", date, time, theme));
+        LocalDate updateDate = date.plusDays(1);
+
+        Reservation updatedReservation = new Reservation(id, "브라운", updateDate, updateTime, theme);
+
+        // when
+        int updatedCount = reservationRepository.update(updatedReservation);
+
+        // then
+        Reservation result = reservationRepository.findById(id).get();
+        assertAll(
+                () -> assertThat(updatedCount).isEqualTo(1),
+                () -> assertThat(result.getDate()).isEqualTo(updateDate),
+                () -> assertThat(result.getTime().getId()).isEqualTo(updateTime.getId()),
+                () -> assertThat(result.getTheme().getId()).isEqualTo(theme.getId()));
+    }
+
+    @Test
+    void 날짜_시간_테마에_해당하는_예약이_존재하는지_확인한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("12:00");
+        ReservationTime otherTime = findTimeByStartAt("15:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        reservationRepository.insert(new Reservation(null, "브라운", date, time, theme));
+
+        // when
+        boolean exists = reservationRepository.existsWith(date, time.getId(), theme.getId());
+        boolean notExistsWithOtherDate = reservationRepository.existsWith(date.plusDays(1), time.getId(), theme.getId());
+        boolean notExistsWithOtherTime = reservationRepository.existsWith(date, otherTime.getId(), theme.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(exists).isTrue(),
+                () -> assertThat(notExistsWithOtherDate).isFalse(),
+                () -> assertThat(notExistsWithOtherTime).isFalse());
+    }
+
+    @Test
+    void 테마와_날짜에_해당하는_예약_목록을_조회한다() {
+        // given
+        ReservationTime time1 = findTimeByStartAt("15:00");
+        ReservationTime time2 = findTimeByStartAt("12:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        Theme otherTheme = new Theme(2L, "다른 테마 이름", "다른 테마 설명", "다른 썸네일");
+        reservationRepository.insert(new Reservation(null, "브라운", date, time1, theme));
+        reservationRepository.insert(new Reservation(null, "구구", date, time2, otherTheme));
+        reservationRepository.insert(new Reservation(null, "포비", date.plusDays(1), time2, theme));
+
+        // when
+        List<Reservation> result = reservationRepository.findReservationsByThemeAndDate(theme.getId(), date);
+
+        // then
+        assertAll(
+                () -> assertThat(result).hasSize(1),
+                () -> assertThat(result).extracting(Reservation::getName)
+                        .containsExactly("브라운"),
+                () -> assertThat(result).extracting(Reservation::getDate)
+                        .containsExactly(date),
+                () -> assertThat(result).extracting(reservation -> reservation.getTheme().getId())
+                        .containsExactly(theme.getId()));
+    }
+
+    @Test
     void 테마_id에_해당하는_예약이_존재하는지_확인한다() {
         // given
         ReservationTime time = findTimeByStartAt("15:00");

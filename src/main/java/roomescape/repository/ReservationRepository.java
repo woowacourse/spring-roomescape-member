@@ -68,6 +68,29 @@ public class ReservationRepository {
         return result.stream().findAny();
     }
 
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name as username,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                  ON r.time_id = rt.id
+                INNER JOIN theme as t
+                  ON r.theme_id = t.id
+                WHERE r.name = ?
+                ORDER BY r.id;
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
     public Long insert(Reservation reservation) {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -88,6 +111,17 @@ public class ReservationRepository {
     public int delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public int update(Reservation reservation) {
+        String sql = "UPDATE reservation SET name = ?, date = ?, time_id = ?, theme_id = ? WHERE id = ?;";
+        return jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId());
     }
 
     public List<Reservation> findReservationsByThemeAndDate(Long themeId, LocalDate date) {
@@ -113,7 +147,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, date);
     }
 
-    public boolean existWith(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsWith(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT count(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return count != null && count > 0;

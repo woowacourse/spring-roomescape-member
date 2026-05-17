@@ -3,9 +3,10 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
+import roomescape.exception.ResourceInUseException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.dto.PopularThemeDto;
+import roomescape.repository.result.PopularThemeResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,31 +32,25 @@ public class ThemeService {
         Theme theme = new Theme(null, name, description, thumbnail);
         Long id = themeRepository.insert(theme);
         return themeRepository.findBy(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("생성된 테마를 찾을 수 없습니다."));
     }
 
     @Transactional
     public void delete(Long id) {
-        validateId(id);
         validateDeletable(id);
         themeRepository.delete(id);
     }
 
-    public List<PopularThemeDto> findWeeklyTopTen() {
-        LocalDate startDate = LocalDate.now().minusWeeks(1);
-        LocalDate endDate = startDate.plusDays(6);
+    public List<PopularThemeResult> findWeeklyTopTen() {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusWeeks(1);
+        LocalDate endDate = today.minusDays(1);
         return themeRepository.findPopular(startDate, endDate, 10);
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
     }
 
     private void validateDeletable(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new ResourceInUseException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
     }
 }
