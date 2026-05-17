@@ -34,7 +34,6 @@ public class ReservationTimeService {
         if (timeDao.existsByStartAt(startAt)) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
-        // TODO 예약 시간에 대한 예외 처리 다 했는지 확인
         ReservationTime time = new ReservationTime(startAt);
         return timeDao.insert(time);
     }
