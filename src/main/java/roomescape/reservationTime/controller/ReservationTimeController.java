@@ -28,7 +28,7 @@ public class ReservationTimeController {
         List<ReservationTimeResponse> reservationTimes = timeService.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(new ReservationTimesResponse(reservationTimes, reservationTimes.size()));
+        return ResponseEntity.ok(new ReservationTimesResponse(reservationTimes, reservationTimes.size()));
     }
 
     @GetMapping(value = "/times", params = {"themeId", "date"})
@@ -38,6 +38,6 @@ public class ReservationTimeController {
                 .stream()
                 .map(AvailableTimeResponse::from)
                 .toList();
-        return ResponseEntity.ok().body(availableTimes);
+        return ResponseEntity.ok(availableTimes);
     }
 }
