@@ -3,12 +3,15 @@ package roomescape.domain;
 import java.util.Objects;
 
 public class Theme {
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
-    private final Long id;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        Objects.requireNonNull(name, "테마 이름은 필수값 입니다.");
+        Objects.requireNonNull(description, "테마 설명은 필수값 입니다.");
+        Objects.requireNonNull(thumbnail, "테마 썸네일은 필수값 입니다.");
         this.id = id;
         this.name = name;
         this.description = description;

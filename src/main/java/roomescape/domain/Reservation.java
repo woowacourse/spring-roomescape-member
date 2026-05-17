@@ -11,6 +11,10 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        Objects.requireNonNull(name, "예약자명은 필수값 입니다.");
+        Objects.requireNonNull(date, "예약 날짜는 필수값 입니다.");
+        Objects.requireNonNull(time, "예약 시간은 필수값 입니다.");
+        Objects.requireNonNull(theme, "테마는 필수값 입니다.");
         this.id = id;
         this.name = name;
         this.date = date;
