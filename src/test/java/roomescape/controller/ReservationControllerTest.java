@@ -127,7 +127,7 @@ public class ReservationControllerTest {
                 .when().delete("/api/v1/reservations/1")
                 .then().log().all()
                 .statusCode(404)
-                .body("errorCode", is("RESERVE404_001"));
+                .body("errorCode", is("RESERVATION404_001"));
     }
 
     @Test
