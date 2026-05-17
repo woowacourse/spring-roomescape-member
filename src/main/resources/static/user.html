@@ -1002,9 +1002,8 @@
     try {
       const res = await fetch(`${API}/reservations/${id}`, { method: 'DELETE' });
       if (!res.ok) {
-        const { code } = await res.json();
-        if (code === 'PAST_RESERVATION') showToast('이미 지난 예약은 취소할 수 없습니다.', 'error');
-        else showToast('삭제에 실패했습니다.', 'error');
+        const { message } = await res.json();
+        showToast(message || '삭제에 실패했습니다.', 'error');
         return;
       }
       document.getElementById(`res-${id}`)?.remove();
@@ -1060,10 +1059,8 @@
       });
 
       if (!res.ok) {
-        const { code } = await res.json();
-        if (code === 'PAST_RESERVATION') showToast('과거 날짜나 시간으로는 변경할 수 없습니다.', 'error');
-        else if (code === 'RESERVATION_CONFLICT') showToast('해당 시간은 이미 예약되어 있습니다. 다른 시간을 선택해주세요.', 'error');
-        else showToast('변경에 실패했습니다.', 'error');
+        const { message } = await res.json();
+        showToast(message || '변경에 실패했습니다.', 'error');
         return;
       }
 

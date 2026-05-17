@@ -10,10 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 
 @Service
 public class ReservationService {
@@ -32,9 +33,9 @@ public class ReservationService {
     @Transactional
     public Reservation save(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeDao.findById(themeId)
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
@@ -47,7 +48,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         ReservationTime newTime = reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
         Reservation updated = reservation.withUpdated(date, newTime, LocalDateTime.now(clock));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
             throw new ReservationConflictException("이미 예약된 시간입니다.");

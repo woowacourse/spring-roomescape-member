@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.AvailableTime;
-import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.Theme;
 
 @Service
@@ -43,7 +42,7 @@ public class ThemeService {
     @Transactional
     public void delete(long id) {
         if (reservationDao.existsByThemeId(id)) {
-            throw new InvalidInputException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+            throw new ReservationConflictException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
         }
         themeDao.delete(id);
     }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.ReservationTime;
 
 @Service
@@ -27,7 +26,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime save(LocalTime startAt) {
         if (reservationTimeDao.existsByStartAt(startAt)) {
-            throw new InvalidInputException("이미 존재하는 예약 시간입니다.");
+            throw new ReservationConflictException("이미 존재하는 예약 시간입니다.");
         }
         return reservationTimeDao.save(startAt);
     }
@@ -35,7 +34,7 @@ public class ReservationTimeService {
     @Transactional
     public void delete(long id) {
         if (reservationDao.existsByTimeId(id)) {
-            throw new InvalidInputException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+            throw new ReservationConflictException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.delete(id);
     }

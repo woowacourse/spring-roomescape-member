@@ -62,7 +62,7 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("존재하지 않는 시간으로 예약하면 400")
+    @DisplayName("존재하지 않는 시간으로 예약하면 404")
     @Test
     void 존재하지_않는_시간으로_예약하면_400() {
         Map<String, Object> params = new HashMap<>();
@@ -76,11 +76,11 @@ class ReservationControllerTest extends ControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", equalTo("존재하지 않는 예약 시간입니다."));
     }
 
-    @DisplayName("존재하지 않는 테마로 예약하면 400")
+    @DisplayName("존재하지 않는 테마로 예약하면 404")
     @Test
     void 존재하지_않는_테마로_예약하면_400() {
         Map<String, Object> params = new HashMap<>();
@@ -94,7 +94,7 @@ class ReservationControllerTest extends ControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", equalTo("존재하지 않는 테마입니다."));
     }
 

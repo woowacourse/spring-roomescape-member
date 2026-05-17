@@ -21,7 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.exception.InvalidInputException;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -66,7 +67,7 @@ class ReservationServiceTest {
         given(reservationTimeDao.findById(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.save("브라운", fixedNow.toLocalDate().plusDays(1), 99L, 1L))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(ReservationTimeNotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
@@ -76,7 +77,7 @@ class ReservationServiceTest {
         given(themeDao.findById(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.save("브라운", fixedNow.toLocalDate().plusDays(1), 1L, 99L))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(ThemeNotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 

@@ -19,7 +19,7 @@
   - `withUpdated`는 `now`로 검증하고 `this.createdAt` 보존
   - `ReservationService.java:51` — `withUpdated` 호출부는 변경 없음 (`now` 파라미터 유지)
 
-- [ ] **4. 잘못된 예외 사용 수정**
+- [x] **4. 잘못된 예외 사용 수정**
 
   **404로 변경 (존재하지 않는 리소스)**
   - `ReservationService.java:35` — 존재하지 않는 예약 시간 (save)
@@ -48,7 +48,7 @@
   - 이름: `Clock` 빈 하나만 등록하므로 `AppConfig` → `ClockConfig` 또는 `TimeConfig`로 변경
   - 타임존: `Clock.systemDefaultZone()` → `Clock.system(ZoneId.of("Asia/Seoul"))` — 서버 환경에 따라 타임존이 달라지지 않도록 명시적으로 고정
 
-- [ ] **9. `ErrorResponse`에서 `code` 필드 제거**
+- [x] **9. `ErrorResponse`에서 `code` 필드 제거**
   - 프론트가 `code`로 분기하는 대신 HTTP 상태 코드(200 여부)로 성공/실패 판단
   - 실패 시 서버의 `message`를 그대로 표시 → `code` 불필요
   - `ErrorResponse.java` — `code` 필드 제거

@@ -14,6 +14,8 @@ import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.exception.PastReservationException;
 import roomescape.service.ReservationConflictException;
 import roomescape.service.ReservationNotFoundException;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,25 +25,37 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleInvalidInput(InvalidInputException e) {
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_INPUT", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleReservationNotFound(ReservationNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("RESERVATION_NOT_FOUND", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ReservationTimeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleReservationTimeNotFound(ReservationTimeNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ThemeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleThemeNotFound(ThemeNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(ReservationConflictException.class)
     public ResponseEntity<ErrorResponse> handleReservationConflict(ReservationConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("RESERVATION_CONFLICT", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<ErrorResponse> handlePastReservation(PastReservationException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErrorResponse("PAST_RESERVATION", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -51,25 +65,25 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("유효하지 않은 입력값입니다.");
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_INPUT", message));
+                .body(new ErrorResponse(message));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_FORMAT", "잘못된 요청 형식입니다."));
+                .body(new ErrorResponse("잘못된 요청 형식입니다."));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("NOT_FOUND", "요청한 리소스를 찾을 수 없습니다."));
+                .body(new ErrorResponse("요청한 리소스를 찾을 수 없습니다."));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.warn("예상치 못한 예외 발생: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "서버 오류가 발생했습니다."));
+                .body(new ErrorResponse("서버 오류가 발생했습니다."));
     }
 }

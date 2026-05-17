@@ -53,14 +53,14 @@ class AdminThemeControllerTest extends ControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("예약에 사용 중인 테마 삭제하면 400")
+    @DisplayName("예약에 사용 중인 테마 삭제하면 409")
     @Test
     void 예약에_사용중인_테마_삭제하면_400() {
         RestAssured.given().log().all()
                 .pathParam("id", 1)
                 .when().delete("/admin/themes/{id}")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("message", equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
     }
 }

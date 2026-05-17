@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.exception.InvalidInputException;
+import roomescape.service.ReservationConflictException;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
@@ -34,7 +34,7 @@ class ThemeServiceTest {
         given(reservationDao.existsByThemeId(1L)).willReturn(true);
 
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(ReservationConflictException.class)
                 .hasMessage("예약에 사용 중인 테마는 삭제할 수 없습니다.");
     }
 }

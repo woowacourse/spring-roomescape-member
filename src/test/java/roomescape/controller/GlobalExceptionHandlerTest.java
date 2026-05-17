@@ -25,6 +25,8 @@ import roomescape.domain.exception.InvalidInputException;
 import roomescape.domain.exception.PastReservationException;
 import roomescape.service.ReservationConflictException;
 import roomescape.service.ReservationNotFoundException;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
@@ -51,6 +53,16 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/reservation-not-found")
         void reservationNotFound() {
             throw new ReservationNotFoundException("존재하지 않는 예약입니다.");
+        }
+
+        @GetMapping("/test/reservation-time-not-found")
+        void reservationTimeNotFound() {
+            throw new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다.");
+        }
+
+        @GetMapping("/test/theme-not-found")
+        void themeNotFound() {
+            throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
         }
 
         @GetMapping("/test/conflict")
@@ -81,78 +93,87 @@ class GlobalExceptionHandlerTest {
         }
     }
 
-    @DisplayName("InvalidInputException → 400 INVALID_INPUT")
+    @DisplayName("InvalidInputException → 400")
     @Test
     void invalidInput_400() throws Exception {
         mockMvc.perform(get("/test/invalid-input"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
                 .andExpect(jsonPath("$.message").value("잘못된 입력입니다."));
     }
 
-    @DisplayName("ReservationNotFoundException → 404 RESERVATION_NOT_FOUND")
+    @DisplayName("ReservationNotFoundException → 404")
     @Test
     void reservationNotFound_404() throws Exception {
         mockMvc.perform(get("/test/reservation-not-found"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("RESERVATION_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("존재하지 않는 예약입니다."));
     }
 
-    @DisplayName("ReservationConflictException → 409 RESERVATION_CONFLICT")
+    @DisplayName("ReservationTimeNotFoundException → 404")
+    @Test
+    void reservationTimeNotFound_404() throws Exception {
+        mockMvc.perform(get("/test/reservation-time-not-found"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("존재하지 않는 예약 시간입니다."));
+    }
+
+    @DisplayName("ThemeNotFoundException → 404")
+    @Test
+    void themeNotFound_404() throws Exception {
+        mockMvc.perform(get("/test/theme-not-found"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("존재하지 않는 테마입니다."));
+    }
+
+    @DisplayName("ReservationConflictException → 409")
     @Test
     void conflict_409() throws Exception {
         mockMvc.perform(get("/test/conflict"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.code").value("RESERVATION_CONFLICT"))
                 .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다."));
     }
 
-    @DisplayName("PastReservationException → 422 PAST_RESERVATION")
+    @DisplayName("PastReservationException → 422")
     @Test
     void past_422() throws Exception {
         mockMvc.perform(get("/test/past"))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value("PAST_RESERVATION"))
                 .andExpect(jsonPath("$.message").value("과거 날짜로는 예약할 수 없습니다."));
     }
 
-    @DisplayName("MethodArgumentNotValidException → 400 INVALID_INPUT")
+    @DisplayName("MethodArgumentNotValidException → 400")
     @Test
     void validation_400() throws Exception {
         mockMvc.perform(post("/test/validation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\": \"\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
+                .andExpect(jsonPath("$.message").exists());
     }
 
-    @DisplayName("HttpMessageNotReadableException → 400 INVALID_FORMAT")
+    @DisplayName("HttpMessageNotReadableException → 400")
     @Test
     void malformedJson_400() throws Exception {
         mockMvc.perform(post("/test/validation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("not-json"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("INVALID_FORMAT"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청 형식입니다."));
     }
 
-    @DisplayName("NoResourceFoundException → 404 NOT_FOUND")
+    @DisplayName("NoResourceFoundException → 404")
     @Test
     void noResource_404() throws Exception {
         mockMvc.perform(get("/test/no-resource"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("요청한 리소스를 찾을 수 없습니다."));
     }
 
-    @DisplayName("IllegalArgumentException → 500 SERVER_ERROR (예상치 못한 예외)")
+    @DisplayName("IllegalArgumentException → 500")
     @Test
     void illegalArgument_500() throws Exception {
         mockMvc.perform(get("/test/server-error"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value("SERVER_ERROR"))
                 .andExpect(jsonPath("$.message").value("서버 오류가 발생했습니다."));
     }
 }
