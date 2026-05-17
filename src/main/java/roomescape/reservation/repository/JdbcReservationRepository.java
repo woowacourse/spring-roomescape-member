@@ -19,7 +19,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> Reservation.of(
+    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> Reservation.restore(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
@@ -51,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return Reservation.restore(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override

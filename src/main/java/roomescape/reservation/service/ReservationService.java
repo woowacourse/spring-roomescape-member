@@ -12,6 +12,7 @@ import roomescape.exception.business.DuplicateReservationException;
 import roomescape.exception.business.PastTimeCancelException;
 import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationFactory;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationUpdateRequest;
@@ -28,15 +29,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final ReservationFactory reservationFactory;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeService reservationTimeService,
-            ThemeService themeService
+            ThemeService themeService,
+            ReservationFactory reservationFactory
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.reservationFactory = reservationFactory;
     }
 
     @Transactional
@@ -48,7 +52,7 @@ public class ReservationService {
             throw new DuplicateReservationException("이미 예약된 시간입니다.");
         }
 
-        Reservation saved = reservationRepository.save(Reservation.of(request.name(), request.date(), time, theme));
+        Reservation saved = reservationRepository.save(reservationFactory.create(request.name(), request.date(), time, theme));
         return ReservationResponse.from(saved);
     }
 

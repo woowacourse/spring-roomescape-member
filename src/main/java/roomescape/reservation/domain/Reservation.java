@@ -3,7 +3,6 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
-import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -24,16 +23,9 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation restore(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         return Reservation.builder()
                 .id(id).name(name).date(date).time(time).theme(theme)
-                .build();
-    }
-
-    public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
-        return Reservation.builder()
-                .name(name).date(date).time(time).theme(theme)
                 .build();
     }
 
@@ -45,24 +37,6 @@ public class Reservation {
                 .time(time)
                 .theme(this.theme)
                 .build();
-    }
-
-    private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
-        }
-        if (date == null) {
-            throw new IllegalArgumentException("날짜는 필수입니다.");
-        }
-        if (time == null || time.getId() == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
-        }
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new PastTimeReservationException("이미 지난 시간에는 예약할 수 없습니다.");
-        }
-        if (theme == null) {
-            throw new IllegalArgumentException("테마는 필수입니다.");
-        }
     }
 
     public boolean isPast() {

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationFactory;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -25,11 +26,14 @@ class ReservationRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private ReservationFactory reservationFactory;
+
     @Test
     @DisplayName("예약 저장 성공")
     void 예약_저장_성공() {
         Reservation saved = reservationRepository.save(
-                Reservation.of("현미밥", LocalDate.now().plusDays(1),
+                reservationFactory.create("현미밥", LocalDate.now().plusDays(1),
                         timeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get()));
         assertThat(saved.getId()).isNotNull();
