@@ -9,14 +9,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Transactional
+@JdbcTest
+@Import({
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class
+})
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -105,9 +109,10 @@ class JdbcReservationRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.create(LocalTime.parse("10:00")));
         Theme theme = themeRepository.save(Theme.create("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation reservation = reservationRepository.save(Reservation.create("루드비코", LocalDate.parse("2026-05-06"),
-                reservationTime,
-                theme));
+        Reservation reservation = reservationRepository.save(
+                Reservation.create("루드비코", LocalDate.parse("2026-05-06"),
+                        reservationTime,
+                        theme));
 
         // when
         reservationRepository.delete(reservation.getId());

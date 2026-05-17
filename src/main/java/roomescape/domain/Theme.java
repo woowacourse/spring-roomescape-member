@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
 
 public class Theme {
 
@@ -26,7 +28,7 @@ public class Theme {
     }
 
     public static Theme create(String name, String description, String imageUrl) {
-       return new Theme(null, name, description, imageUrl);
+        return new Theme(null, name, description, imageUrl);
     }
 
     public static Theme of(Long id, String name, String description, String imageUrl) {
@@ -36,43 +38,29 @@ public class Theme {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID는 필수값입니다.");
+            throw new IllegalStateException("ID는 필수값입니다.");
         }
         if (id < 1) {
-            throw new IllegalArgumentException(
-                    String.format("ID는 1 이상의 숫자여야 합니다. (입력값: %d)", id)
-            );
+            throw new IllegalStateException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
         }
     }
 
     private static void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
-        }
-        if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(
-                    String.format("이름은 %d자 이내여야 합니다.", NAME_MAX_LENGTH)
-            );
+        if (name == null || name.isBlank() || name.length() > NAME_MAX_LENGTH) {
+            throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_NAME);
         }
     }
 
     private static void validateDescription(String description) {
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("설명은 필수 입력 사항입니다.");
-        }
-        if (description.length() < DESCRIPTION_MIN_LENGTH) {
-            throw new IllegalArgumentException(
-                    String.format("설명은 최소 %d자 이상 작성해주세요.", DESCRIPTION_MIN_LENGTH)
-            );
+        if (description == null || description.isBlank()
+                || description.length() < DESCRIPTION_MIN_LENGTH) {
+            throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_DESCRIPTION);
         }
     }
 
     private static void validateImageUrl(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
-            throw new IllegalArgumentException("이미지 URL은 필수입니다.");
-        }
-        if (!imageUrl.contains(".")) {
-            throw new IllegalArgumentException("이미지 경로 형식이 아닙니다.");
+        if (imageUrl == null || imageUrl.isBlank() || !imageUrl.contains(".")) {
+            throw new RoomEscapeException(ThemeErrorCode.THEME_INVALID_URL);
         }
     }
 

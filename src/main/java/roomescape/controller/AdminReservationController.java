@@ -9,14 +9,14 @@ import roomescape.dto.ReservationResponseDTO;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/admin")
 public class AdminReservationController {
+
+    private final ReservationService reservationService;
 
     public AdminReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
-
-    private final ReservationService reservationService;
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponseDTO>> readAll() {

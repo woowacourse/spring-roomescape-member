@@ -1,7 +1,10 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.exception.ReservationErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 public class Reservation {
 
@@ -37,39 +40,42 @@ public class Reservation {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID는 필수값입니다.");
+            throw new IllegalStateException("ID는 필수값입니다.");
         }
         if (id < 1) {
-            throw new IllegalArgumentException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
+            throw new IllegalStateException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
         }
     }
 
     private static void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름 입력은 필수입니다.");
-        }
-        if (name.length() > 20) {
-            throw new IllegalArgumentException(
-                    String.format("이름은 %d자 이내여야 합니다.", NAME_MAX_LENGTH)
-            );
+        if (name == null || name.isBlank() || name.length() > NAME_MAX_LENGTH) {
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_NAME);
         }
     }
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_DATE);
         }
     }
 
     private static void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_TIME);
         }
     }
 
     private static void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("테마 입력은 필수입니다.");
+            throw new RoomEscapeException(ReservationErrorCode.INVALID_THEME);
+        }
+    }
+
+    public void validateNotPastTime(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+
+        if (reservationDateTime.isBefore(now)) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_PAST_TIME);
         }
     }
 

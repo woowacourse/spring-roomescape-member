@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,52 +9,75 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.ThemeErrorCode;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
+    private final Clock clock;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+
+    public ThemeService(Clock clock, ThemeRepository themeRepository,
+            ReservationRepository reservationRepository) {
+        this.clock = clock;
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
         Theme theme = Theme.create(request.name(), request.description(), request.imageUrl());
+        validateDuplicateTheme(theme);
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponseDTO.from(savedTheme);
     }
 
-    @Transactional(readOnly = true)
-    public List<ThemeResponseDTO> findAllThemes() {
-        return themeRepository.findAll().stream()
-                .map(ThemeResponseDTO::from)
-                .collect(Collectors.toList());
+    private void validateDuplicateTheme(Theme theme) {
+        if (themeRepository.existByThemeName(theme.getName())) {
+            throw new RoomEscapeException(ThemeErrorCode.THEME_DUPLICATE);
+        }
     }
 
     @Transactional(readOnly = true)
     public ThemeResponseDTO findById(Long id) {
         Theme result = themeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당하는 id의 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND));
         return ThemeResponseDTO.from(result);
     }
 
     @Transactional(readOnly = true)
+    public List<ThemeResponseDTO> findAllThemes() {
+        return themeRepository.findAll().stream().map(ThemeResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ThemeResponseDTO> getPopularThemes(Long weeks, Long limit) {
-        return themeRepository.findPopularThemes(
-                LocalDate.now().minusWeeks(weeks),
-                LocalDate.now(),
-                limit
-        )
-                .stream()
-                .map(ThemeResponseDTO::from)
-                .toList();
+        return themeRepository.findPopularThemes(LocalDate.now(clock).minusWeeks(weeks),
+                LocalDate.now(clock), limit).stream().map(ThemeResponseDTO::from).toList();
     }
 
     @Transactional
     public void deleteTheme(Long id) {
+        validateThemeExists(id);
+        validateRemovableTheme(id);
         themeRepository.delete(id);
+    }
+
+    private void validateThemeExists(Long id) {
+        themeRepository.findById(id).orElseThrow(
+                () -> new RoomEscapeException(ThemeErrorCode.THEME_NOT_FOUND)
+        );
+    }
+
+    private void validateRemovableTheme(Long id) {
+        if (reservationRepository.existByThemeId(id)) {
+            throw new RoomEscapeException(ThemeErrorCode.RESERVATION_EXIST_ON_THEME);
+        }
     }
 }

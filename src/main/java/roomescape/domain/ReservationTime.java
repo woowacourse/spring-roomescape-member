@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.ReservationTimeErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 public class ReservationTime {
 
@@ -25,19 +27,16 @@ public class ReservationTime {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID는 필수값입니다.");
+            throw new IllegalStateException("ID는 필수값입니다.");
         }
         if (id < 1) {
-            throw new IllegalArgumentException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
+            throw new IllegalStateException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
         }
     }
 
     private static void validateStartTime(LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("시작시간은 필수입니다.");
-        }
-        if (startAt.getMinute() != 0) {
-            throw new IllegalArgumentException("예약 시간은 한 시간 단위로만 설정 가능합니다.");
+        if (startAt == null || startAt.getMinute() != 0) {
+            throw new RoomEscapeException(ReservationTimeErrorCode.INVALID_TIME);
         }
     }
 

@@ -41,19 +41,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = "select id, start_at from reservation_time";
-
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> ReservationTime.of(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                )
-        );
-    }
-
-    @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = :id";
 
@@ -69,6 +56,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         );
         return results.stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String sql = "select id, start_at from reservation_time";
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> ReservationTime.of(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))
+                )
+        );
     }
 
     @Override
@@ -106,5 +106,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "delete from reservation_time where id = :id";
         Map<String, Object> params = Map.of("id", id);
         jdbcTemplate.update(sql, params);
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = "select count(*) from reservation_time where start_at = :start_at";
+        Map<String, Object> params = Map.of("start_at", startAt);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
     }
 }

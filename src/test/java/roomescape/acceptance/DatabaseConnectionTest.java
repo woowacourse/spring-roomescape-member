@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,9 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.NONE,
+        properties = "spring.datasource.url=jdbc:h2:mem:database"
+)
 @Transactional
-public class MissionStep2Test {
+public class DatabaseConnectionTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
