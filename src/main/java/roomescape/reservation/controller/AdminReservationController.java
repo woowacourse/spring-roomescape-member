@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class AdminReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<ReservationListResponse> getAllReservations(@ModelAttribute PageRequest pageRequest) {
+    public ResponseEntity<ReservationListResponse> getAllReservations(@ModelAttribute @Valid PageRequest pageRequest) {
         return ResponseEntity.ok(
                 ReservationListResponse.from(reservationService.findAllReservations(pageRequest.page(), pageRequest.size())
                         .stream()

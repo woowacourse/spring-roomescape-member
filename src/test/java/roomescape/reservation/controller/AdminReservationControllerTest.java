@@ -3,6 +3,8 @@ package roomescape.reservation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -22,8 +24,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -106,6 +111,28 @@ class AdminReservationControllerTest {
         then(reservationService)
                 .should()
                 .findAllReservations(2, 2);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0, 20",
+            "1, 0",
+            "1, 21"
+    })
+    @DisplayName("예약 목록을 조회할 때 페이지 요청 검증에 실패하면 에러가 발생한다.")
+    public void getReservationList_fail_when_invalid_page_request(
+            String page, String size
+    ) throws Exception {
+        // when then
+        mockMvc.perform(get("/admin/reservations")
+                        .param("page", page)
+                        .param("size", size))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+
+        then(reservationService).should(never())
+                .findAllReservations(anyInt(), anyInt());
     }
 
     private static void assertReservationsResponse(ReservationListResponse response) {
