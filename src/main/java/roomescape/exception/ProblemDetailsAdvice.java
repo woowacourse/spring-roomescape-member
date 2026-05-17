@@ -21,14 +21,16 @@ public class ProblemDetailsAdvice {
     private final Map<Class<? extends RoomescapeException>, HttpStatus> exceptionHttpStatusMap = new ConcurrentHashMap<>();
 
     public ProblemDetailsAdvice() {
-        exceptionHttpStatusMap.put(ReservationNotFoundException.class, HttpStatus.NOT_FOUND);
-        exceptionHttpStatusMap.put(ThemeNotFoundException.class, HttpStatus.NOT_FOUND);
-        exceptionHttpStatusMap.put(TimeSlotNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(DuplicateReservationException.class, HttpStatus.CONFLICT);
+        exceptionHttpStatusMap.put(DuplicateTimeException.class, HttpStatus.CONFLICT);
         exceptionHttpStatusMap.put(InvalidOwnershipException.class, HttpStatus.FORBIDDEN);
         exceptionHttpStatusMap.put(PastReservationControlException.class, HttpStatus.BAD_REQUEST);
         exceptionHttpStatusMap.put(PastTimeException.class, HttpStatus.BAD_REQUEST);
+        exceptionHttpStatusMap.put(ReservationNotFoundException.class, HttpStatus.NOT_FOUND);
         exceptionHttpStatusMap.put(ResourceInUseException.class, HttpStatus.CONFLICT);
-        exceptionHttpStatusMap.put(DuplicateReservationException.class, HttpStatus.CONFLICT);
+        exceptionHttpStatusMap.put(ThemeNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(TimeSlotNotFoundException.class, HttpStatus.NOT_FOUND);
+        exceptionHttpStatusMap.put(UnauthorizedException.class, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(RoomescapeException.class)
@@ -39,22 +41,25 @@ public class ProblemDetailsAdvice {
         return ResponseEntity.status(status).body(problemDetail);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setProperty("code", "INVALID_DOMAIN_STATE");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<ProblemDetail> handleDuplicateKeyException(DuplicateKeyException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "이미 존재하는 데이터입니다.");
+        problemDetail.setProperty("code", "DUPLICATE_KEY_VIOLATION");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ProblemDetail> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "데이터 무결성 제약조건이 위반되었습니다.");
+        problemDetail.setProperty("code", "DATA_INTEGRITY_VIOLATION");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
-    }
-
-    @ExceptionHandler(DuplicateTimeException.class)
-    public ResponseEntity<ProblemDetail> handleDuplicateTimeException(DuplicateTimeException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
