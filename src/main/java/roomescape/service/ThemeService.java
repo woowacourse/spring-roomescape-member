@@ -7,6 +7,7 @@ import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -18,10 +19,12 @@ public class ThemeService {
 
     private final ThemeQueryingDao themeQueryingDao;
     private final ThemeUpdatingDao themeUpdatingDao;
+    private final ReservationQueryingDao reservationQueryingDao;
 
-    public ThemeService(ThemeQueryingDao themeQueryingDao, ThemeUpdatingDao themeUpdatingDao) {
+    public ThemeService(ThemeQueryingDao themeQueryingDao, ThemeUpdatingDao themeUpdatingDao, ReservationQueryingDao reservationQueryingDao) {
         this.themeQueryingDao = themeQueryingDao;
         this.themeUpdatingDao = themeUpdatingDao;
+        this.reservationQueryingDao = reservationQueryingDao;
     }
 
     @Transactional
@@ -44,10 +47,12 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        int count = themeUpdatingDao.delete(id);
+        themeQueryingDao.findThemeById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
-        if (count == 0) {
-            throw new BusinessException(ErrorCode.THEME_NOT_FOUND);
+        if (reservationQueryingDao.existsReservationByThemeId(id)) {
+            throw new BusinessException(ErrorCode.THEME_DELETE_CONFLICT);
         }
+        themeUpdatingDao.delete(id);
     }
 }

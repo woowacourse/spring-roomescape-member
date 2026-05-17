@@ -90,6 +90,28 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("예약을 생성할 때 이름에 특수문자가 포함된 경우 에러를 발생한다.")
+    void 예약_생성_에러_이름_특수문자() {
+        // given
+        ReservationCreateRequest request = new ReservationCreateRequest("브라운!", date, reservationTimeId, themeId);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(anyLong()))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId)))
+                .thenReturn(Optional.empty());
+
+        when(reservationUpdatingDao.save(any()))
+                .thenReturn(reservationId);
+
+        // when && then
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.create(request));
+    }
+
+    @Test
     @DisplayName("예약을 생성할 때 존재하지 않는 예약 시간인 경우 에러를 발생한다.")
     void 예약_생성_에러_예약시간_없음() {
         // given
@@ -311,6 +333,28 @@ class ReservationServiceTest {
         // then
         Assertions.assertEquals(updateRequest.getDate(), reservationResponse.getDate());
         Assertions.assertEquals(updateRequest.getName(), reservationResponse.getName());
+    }
+
+    @Test
+    @DisplayName("예약을 수정할 때 이름에 특수문자가 포함된 경우 에러를 발생한다.")
+    void 예약_수정_에러_이름_특수문자() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest("은오!", date, reservationTimeId, themeId);
+
+        when(reservationQueryingDao.existsById(reservationId))
+                .thenReturn(true);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(reservationTimeId))
+                .thenReturn(Optional.of(reservationTime));
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(themeId, date, reservationTimeId))
+                .thenReturn(Optional.empty());
+
+        // when && then
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.update(reservationId, updateRequest));
     }
 
     @Test

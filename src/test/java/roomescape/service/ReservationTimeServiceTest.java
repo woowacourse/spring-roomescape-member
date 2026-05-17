@@ -42,11 +42,28 @@ class ReservationTimeServiceTest {
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(time);
 
+        when(reservationTimeQueryingDao.existsByStartAt(time))
+                .thenReturn(false);
+
         // when
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(request);
 
         // then
         Assertions.assertEquals(time, reservationTimeResponse.getStartAt());
+    }
+
+    @Test
+    void 시간_생성_에러_중복_시간() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(time);
+
+        when(reservationTimeQueryingDao.existsByStartAt(time))
+                .thenReturn(true);
+
+        // when && then
+        Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.create(request));
+        verify(reservationTimeUpdatingDao, never()).insert(request);
     }
 
     @Test

@@ -10,6 +10,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.exception.BusinessException;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -25,6 +26,9 @@ class ThemeServiceTest {
 
     @Mock
     ThemeUpdatingDao themeUpdatingDao;
+
+    @Mock
+    ReservationQueryingDao reservationQueryingDao;
 
     @InjectMocks
     ThemeService themeService;
@@ -73,6 +77,8 @@ class ThemeServiceTest {
     void 테마_삭제_성공() {
         // given
         Long themeId = 1L;
+        when(reservationQueryingDao.existsReservationByThemeId(themeId))
+                .thenReturn(false);
         when(themeUpdatingDao.delete(themeId))
                 .thenReturn(1);
 
@@ -83,15 +89,28 @@ class ThemeServiceTest {
         verify(themeUpdatingDao, times(1)).delete(themeId);
     }
 
-
     @Test
     void 테마_삭제_에러_테마_없음() {
         // given
         Long themeId = 1L;
+        when(reservationQueryingDao.existsReservationByThemeId(themeId))
+                .thenReturn(false);
         when(themeUpdatingDao.delete(themeId))
                 .thenReturn(0);
 
         // when && then
         Assertions.assertThrows(BusinessException.class, () -> themeService.delete(themeId));
+    }
+
+    @Test
+    void 테마_삭제_에러_예약이_있는_테마() {
+        // given
+        Long themeId = 1L;
+        when(reservationQueryingDao.existsReservationByThemeId(themeId))
+                .thenReturn(true);
+
+        // when && then
+        Assertions.assertThrows(BusinessException.class, () -> themeService.delete(themeId));
+        verify(themeUpdatingDao, never()).delete(themeId);
     }
 }

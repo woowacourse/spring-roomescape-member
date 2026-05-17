@@ -164,6 +164,20 @@ public class ReservationQueryingDao {
         return count != null && count > 0;
     }
 
+    public boolean existsReservationByThemeId(Long themeId) {
+        String sql = """
+                select count(1)
+                from reservation as r
+                where r.theme_id = :theme_id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("theme_id", themeId);
+
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
+
     public boolean existsById(Long id) {
         String sql = """
                 SELECT count(1)
