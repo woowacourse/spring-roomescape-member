@@ -110,7 +110,7 @@ public class ReservationDao {
                 offset);
     }
 
-    public Reservation findById(Long id) {
+    public Reservation findById(long id) {
         String sql = """
                 SELECT
                     r.id as reservation_id,
@@ -187,7 +187,7 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+    public void updateDateAndTime(long id, LocalDate date, Long timeId) {
         String sql = """
                 UPDATE reservation 
                 SET date = ?, time_id = ? 

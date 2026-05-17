@@ -42,7 +42,7 @@ public class ReservationService {
         return reservationDao.findByName(name, page, size);
     }
 
-    public void cancelById(Long id) {
+    public void cancelById(long id) {
         Reservation reservation = reservationDao.findById(id);
         LocalDateTime now = LocalDateTime.now(clock);
 
@@ -80,7 +80,7 @@ public class ReservationService {
         return reservationDao.save(reservation);
     }
 
-    public Reservation updateDateAndTime(Long id, LocalDate date, Long timeId) {
+    public Reservation updateDateAndTime(long id, LocalDate date, Long timeId) {
         if (!reservationDao.existById(id)) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }

@@ -71,7 +71,7 @@ public class ReservationController {
 
     @PatchMapping("/reservations/{id}")
     public ReservationResponse update(
-            @PathVariable Long id,
+            @PathVariable long id,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
         Reservation reservation = reservationService.updateDateAndTime(
