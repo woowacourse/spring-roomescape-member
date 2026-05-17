@@ -58,7 +58,13 @@ public class AdminThemeControllerTest {
         return Stream.of(
                 Arguments.of("", "설명", "https://asdfsdf.sdfs"),
                 Arguments.of("방탈출1", "", "https://asdfsdf.sdfs"),
-                Arguments.of("방탈출1", "설명", "올바르지않은URL")
+                Arguments.of("방탈출1", "설명", "올바르지않은URL"),
+                Arguments.of("공포의 저택에서 살아남기: 어둠 속의 비밀을 파헤쳐라. 과연 저택에 숨겨진 이야기는?", "설명", "https://asdfsdf.sdfs"),
+                Arguments.of("방탈출1",
+                        "오래된 저택의 깊은 곳에는 아무도 모르는 비밀이 숨겨져 있습니다. 당신은 과연 이 저택의 모든 수수께끼를 풀고 살아서 탈출할 수 있을까요? 시간이 얼마 남지 않았습니다. 지금 바로 방탈출에 참여하세요.",
+                        "https://asdfsdf.sdfs"),
+                Arguments.of("방탈출1", "설명",
+                        "https://example.com/themes/horror-mansion-escape-room-thumbnail-image-very-very-very-long-filename-version.jpg")
         );
     }
 

@@ -15,6 +15,8 @@ import java.time.ZoneOffset;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -63,29 +65,15 @@ public class ReservationControllerTest {
                 .body("name", is("러키"));
     }
 
-    @Test
-    void 예약자_이름이_공백이면_400을_반환한다() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "방탈출마스터홍길동김아무개"})
+    void 예약자_이름이_잘못된_값이면_400을_반환한다(String name) {
         // given
         int timeId = createTime("10:00");
         int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
 
         // when & then
-        createReservation("", LocalDate.now().plusDays(1).toString(), timeId, themeId)
-                .statusCode(400);
-    }
-
-    @Test
-    void 예약_날짜가_null이면_400을_반환한다() {
-        // given
-        int timeId = createTime("10:00");
-        int themeId = createTheme("방탈출1", "설명", "https://asdfsdf.sdfs");
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("name", "브라운", "timeId", timeId, "themeId", themeId))
-                .when().post("/reservations")
-                .then().log().all()
+        createReservation(name, LocalDate.now().plusDays(1).toString(), timeId, themeId)
                 .statusCode(400);
     }
 
