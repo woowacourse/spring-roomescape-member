@@ -1,6 +1,5 @@
 package roomescape.admin;
 
-import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
