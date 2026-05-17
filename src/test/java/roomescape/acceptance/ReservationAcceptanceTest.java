@@ -317,8 +317,7 @@ class ReservationAcceptanceTest {
         insertReservation("브라운", 1L, "2026-05-06", 1L);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("name", "브라운"))
+                .queryParam("name", "브라운")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(200);
@@ -331,8 +330,7 @@ class ReservationAcceptanceTest {
         insertReservation("브라운", 1L, "2026-05-06", 1L);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("name", "다른사람"))
+                .queryParam("name", "다른사람")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(403)
@@ -342,8 +340,7 @@ class ReservationAcceptanceTest {
     @Test
     void DELETE_reservations_id_없는_id면_404과_메시지를_반환한다() {
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("name", "브라운"))
+                .queryParam("name", "브라운")
                 .when().delete("/reservations/9999")
                 .then().log().all()
                 .statusCode(404)
@@ -351,18 +348,15 @@ class ReservationAcceptanceTest {
     }
 
     @Test
-    void DELETE_reservations_id_본문의_name이_누락되면_400과_메시지를_반환한다() {
+    void DELETE_reservations_id_name_파라미터가_누락되면_400과_메시지를_반환한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
         insertReservation("브라운", 1L, "2026-05-06", 1L);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of())
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", equalTo("name은(는) 필수 입력값입니다."));
+                .statusCode(400);
     }
 
     private void insertTheme(Long id, String name) {

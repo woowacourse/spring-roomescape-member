@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.dto.reservation.CancelReservationRequest;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationResponses;
@@ -69,8 +69,8 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelReservation(
             @PathVariable Long id,
-            @Valid @RequestBody CancelReservationRequest request) {
-        reservationService.cancelOwnReservation(id, request.name());
+            @NotBlank @RequestParam String name) {
+        reservationService.cancelOwnReservation(id, name);
         return ResponseEntity.ok().build();
     }
 }

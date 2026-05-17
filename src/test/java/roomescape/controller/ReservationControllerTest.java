@@ -160,8 +160,7 @@ class ReservationControllerTest {
     @Test
     void DELETE_reservations_id_200을_반환하고_서비스에_위임한다() throws Exception {
         mockMvc.perform(delete("/reservations/3")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"브라운\"}"))
+                        .param("name", "브라운"))
                 .andExpect(status().isOk());
 
         verify(reservationService).cancelOwnReservation(3L, "브라운");
@@ -173,8 +172,7 @@ class ReservationControllerTest {
                 .given(reservationService).cancelOwnReservation(9999L, "브라운");
 
         mockMvc.perform(delete("/reservations/9999")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"브라운\"}"))
+                        .param("name", "브라운"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("예약을(를) 찾을 수 없습니다. id=9999"));
     }
@@ -185,8 +183,7 @@ class ReservationControllerTest {
                 .given(reservationService).cancelOwnReservation(1L, "다른사람");
 
         mockMvc.perform(delete("/reservations/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"다른사람\"}"))
+                        .param("name", "다른사람"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value("본인의 예약만 취소 혹은 변경 가능합니다."));
     }
