@@ -17,7 +17,9 @@
 ```
 
 **응답**
-- Status: `200 OK`
+- Status: `201 CREATED`
+- Header:
+  - Location: `/admin/reservations/{id}`
 - Body:
 ```json
 {
@@ -50,7 +52,7 @@
 - URL: `/admin/reservations/{id}`
 
 **응답**
-- Status: `200 OK`
+- Status: `204 NOCONTENT`
 - Body: (없음)
 
 **예외**
@@ -130,7 +132,9 @@
 ```
 
 **응답**
-- Status: `200 OK`
+- Status: `201 CREATED`
+- Header:
+  - Location: `/admin/times/{id}`
 - Body:
 ```json
 {
@@ -151,7 +155,7 @@
 - URL: `/admin/times/{id}`
 
 **응답**
-- Status: `200 OK`
+- Status: `204 NOCONTENT`
 - Body: (없음)
 
 **예외**
@@ -219,7 +223,9 @@
 ```
 
 **응답**
-- Status: `200 OK`
+- Status: `201 CREATED`
+- Header:
+  - Location: `/admin/themes/{id}`
 - Body:
 ```json
 {
@@ -404,7 +410,8 @@
 
 **응답**
 - Status: `201 Created`
-- Header: `Location: /reservations/{id}`
+- Header: 
+  - Location: `/reservations/{id}`
 - Body:
 ```json
 {

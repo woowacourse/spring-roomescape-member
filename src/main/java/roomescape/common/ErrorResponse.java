@@ -105,8 +105,6 @@ public class ErrorResponse {
             public ValidationError build() {
                 return new ValidationError(this);
             }
-
-
         }
     }
 
