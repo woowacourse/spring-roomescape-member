@@ -168,9 +168,9 @@ public class ReservationDAO {
     return jdbcTemplate.query(sql, rowMapper, name);
   }
 
-  public boolean existsByTimeIdAndThemeId(Long timeId, Long themeId) {
-    String sql = "select count(*) from reservation where time_id = ? and theme_id = ?";
-    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId);
+  public boolean existsByTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    String sql = "select count(*) from reservation where date = ? and time_id = ? and theme_id = ?";
+    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
 
     return count != null && count > 0;
   }
