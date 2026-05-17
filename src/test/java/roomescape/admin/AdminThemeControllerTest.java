@@ -1,6 +1,8 @@
 package roomescape.admin;
 
+import static org.mockito.BDDMockito.will;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.theme.ThemeService;
 
 @WebMvcTest(AdminThemeController.class)
@@ -60,5 +63,14 @@ class AdminThemeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 사용_중인_테마_삭제시_409() throws Exception {
+        willThrow(new AlreadyInUseException("테마에 해당하는 예약이 있습니다."))
+                .given(themeService).delete(1L);
+
+        mockMvc.perform(delete("/api/admin/themes/1"))
+                .andExpect(status().isConflict());
     }
 }

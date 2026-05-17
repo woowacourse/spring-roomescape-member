@@ -26,7 +26,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.exception.ForbiddenException;
+import roomescape.exception.InvalidStateException;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.theme.dto.ThemeResponse;
@@ -122,6 +125,25 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 지난_날짜로_예약_변경시_400() throws Exception {
+        willThrow(new InvalidStateException("이미 지난 날짜와 시간입니다."))
+                .given(reservationService).update(anyLong(), any(), anyString());
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("userName", "동키");
+        body.put("themeId", 1);
+        body.put("date", "2020-01-01");
+        body.put("timeId", 1);
+
+        mockMvc.perform(put("/api/reservations/1")
+                        .header("User-Name", "동키")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     void 다른_사용자_예약_삭제_요청시_403() throws Exception {
         willThrow(new ForbiddenException("본인의 예약만 삭제할 수 있습니다."))
                 .given(reservationService).delete(anyLong(), anyString());
@@ -129,5 +151,40 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/api/reservations/1")
                         .header("User-Name", "그해"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void 존재하지_않는_예약_변경시_404() throws Exception {
+        willThrow(new NotFoundException("예약을 찾을 수 없습니다."))
+                .given(reservationService).update(anyLong(), any(), anyString());
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("userName", "동키");
+        body.put("themeId", 1);
+        body.put("date", "2026-05-10");
+        body.put("timeId", 1);
+
+        mockMvc.perform(put("/api/reservations/1")
+                        .header("User-Name", "동키")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 중복_예약_추가시_409() throws Exception {
+        willThrow(new AlreadyInUseException("이미 예약된 테마•날짜•시간입니다."))
+                .given(reservationService).create(any());
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("userName", "동키");
+        reservation.put("themeId", 1);
+        reservation.put("date", "2026-05-10");
+        reservation.put("timeId", 1);
+
+        mockMvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservation)))
+                .andExpect(status().isConflict());
     }
 }
