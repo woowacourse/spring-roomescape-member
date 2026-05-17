@@ -75,19 +75,9 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseBody(ErrorType.BUSINESS, e.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponseBody> handleRuntimeException(RuntimeException e) {
-        log.error("RuntimeException 발생 : ", e);
-        return handleInternalServerError();
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseBody> handleException(Exception e) {
         log.error("Exception 발생 : ", e);
-        return handleInternalServerError();
-    }
-
-    private ResponseEntity<ErrorResponseBody> handleInternalServerError() {
         ErrorResponseBody responseBody = new ErrorResponseBody(ErrorType.SERVER, INTERNAL_SERVER_ERROR_MESSAGE);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(responseBody);
