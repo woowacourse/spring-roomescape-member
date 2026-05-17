@@ -197,4 +197,16 @@ class ReservationServiceTest {
                 .isInstanceOf(DuplicatedResourceException.class)
                 .hasMessageContaining("이미 존재");
     }
+
+    @Test
+    void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
+        //given
+        Long fakeId = 9999L;
+        LocalDate newDate = LocalDate.of(2031, 1, 1);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.update(fakeId, newDate, 1L, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("존재하지 않습니다");
+    }
 }

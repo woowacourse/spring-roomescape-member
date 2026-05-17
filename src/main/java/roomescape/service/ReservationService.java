@@ -37,7 +37,6 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findById(timeId);
 
         validatePastReservation(date, timeId, "예약");
-
         Theme theme = themeDao.findById(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
@@ -48,7 +47,8 @@ public class ReservationService {
     }
 
     public void update(Long id, LocalDate newDate, Long newTimeId, Long newThemeId) {
-        Reservation reservation = reservationDao.findById(id);
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
         validatePastReservation(reservation.getDate(), reservation.getTimeId(), "변경");
 
         ReservationTime reservationTime = reservationTimeDao.findById(newTimeId);
@@ -63,7 +63,8 @@ public class ReservationService {
     }
 
     public void deleteByIdFromMember(Long id) {
-        Reservation reservation = reservationDao.findById(id);
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약이 존재하지 않습니다", "RESERVATION_NOT_FOUND"));
         validatePastReservation(reservation.getDate(), reservation.getTimeId(), "삭제");
         reservationDao.deleteById(id);
     }
@@ -87,7 +88,6 @@ public class ReservationService {
 
     private void validatePastReservation(LocalDate date, Long timeId, String action) {
         ReservationTime time = reservationTimeDao.findById(timeId);
-
         if (date.isBefore(LocalDate.now()) || isTodayButBeforeTime(date, time)) {
             throw new IllegalArgumentException("과거 예약은 " + action + "할 수 없습니다.");
         }

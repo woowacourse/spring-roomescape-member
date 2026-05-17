@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -119,7 +120,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                  SELECT 
                      r.id as reservation_id, 
@@ -139,8 +140,11 @@ public class ReservationDao {
                  WHERE r.id = ?
                  ORDER BY r.date ASC, rt.start_at ASC, th.name ASC
                 """;
-
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void updateReservation(Long id, LocalDate localDate, Long timeId, Long themeId) {

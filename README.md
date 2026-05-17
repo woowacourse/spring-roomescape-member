@@ -473,7 +473,7 @@ erDiagram
 <summary>첫번째 리뷰 후 리팩토링</summary>
 
 - **ReservationDao**
-- [ ] `EmptyResultDataAccessException`이 `Exception.class` 핸들러에 잡혀 500을 반환문제 해결
+- [x] `EmptyResultDataAccessException`이 `Exception.class` 핸들러에 잡혀 500을 반환문제 해결
 - [x] rowMapper 중복 해결
 
 
