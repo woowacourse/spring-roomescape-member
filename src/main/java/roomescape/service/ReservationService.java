@@ -113,10 +113,6 @@ public class ReservationService {
         return reservationRepository.update(reservation);
     }
 
-    public void deleteReservationById(Long id) {
-        reservationRepository.deleteById(id);
-    }
-
     public int deleteReservationByUsernameAndDateAndTimeIdAndThemeId(ReservationRequestDTO requestDTO) {
         ReservationTime time = reservationTimeRepository.findById(requestDTO.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("취소 대상을 위한 시간 조회 실패: " + requestDTO.timeId()));

@@ -57,12 +57,6 @@ public class ReservationController {
                 .build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.deleteReservationById(id);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping
     public ResponseEntity<Void> delete(@Valid @ModelAttribute ReservationRequestDTO request) {
         reservationService.deleteReservationByUsernameAndDateAndTimeIdAndThemeId(request);

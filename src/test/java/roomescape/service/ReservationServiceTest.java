@@ -124,18 +124,6 @@ class ReservationServiceTest {
                 .containsExactlyInAnyOrder(rudevicoReservation, echoReservation);
     }
 
-    @DisplayName("예약을 삭제한다")
-    @Test
-    void 예약의_id로_예약을_삭제한다() {
-        ReservationResponseDTO addedReservation = reservationService.addReservation(
-                new ReservationRequestDTO("루드비코", LocalDate.now().plusDays(1), 1L, 1L)
-        );
-
-        reservationService.deleteReservationById(addedReservation.id());
-
-        assertThat(reservationService.readAllReservation()).isEmpty();
-    }
-
     @DisplayName("사용자가 본인의 예약을 취소한다")
     @Test
     void 사용자_이름과_날짜와_시간과_테마가_일치하는_예약을_취소한다() {
