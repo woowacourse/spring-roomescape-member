@@ -17,7 +17,7 @@ public enum ErrorCode {
 
     // reservation status
     INVALID_PENDING_COMMAND(HttpStatus.UNPROCESSABLE_ENTITY, "대기 중인 예약은 취소나 확인만 가능합니다."),
-    INVALID_CONFIRMED_COMMAND(HttpStatus.UNPROCESSABLE_ENTITY, "확인된 예약은 취소나 확정만 가능합니다."),
+    INVALID_CONFIRMED_COMMAND(HttpStatus.UNPROCESSABLE_ENTITY, "확인된 예약은 취소나 완료만 가능합니다."),
     INVALID_COMPLETED_COMMAND(HttpStatus.UNPROCESSABLE_ENTITY, "예약이 완료되었습니다."),
     INVALID_CANCELLED_COMMAND(HttpStatus.UNPROCESSABLE_ENTITY, "예약이 취소되었습니다."),
 
