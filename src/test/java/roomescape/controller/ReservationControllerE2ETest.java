@@ -266,7 +266,7 @@ class ReservationControllerE2ETest {
                     Arguments.of("themeId 누락", Map.of("name", "루드비코", "date", "2026-05-18", "timeId", 1))
             );
         }
-        }
+    }
 
     @Nested
     class 예약_변경_케이스 {
@@ -284,6 +284,23 @@ class ReservationControllerE2ETest {
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                     .when().patch("api/reservations/" + 24L)
+                    .then().log().all()
+                    .statusCode(204);
+        }
+
+        @DisplayName("변경 사항이 없다면 204 No Content를 응답한다")
+        @Sql("/data.sql")
+        @Test
+        void 업데이트_하려는_값이_기존과_같은_경우_204를_응답한다() {
+            Map<String, Object> requestBody = Map.of(
+                    "date", LocalDate.now().plusDays(1),
+                    "timeId", 1L
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestBody)
+                    .when().patch("api/reservations/" + 23L)
                     .then().log().all()
                     .statusCode(204);
         }
@@ -367,7 +384,7 @@ class ReservationControllerE2ETest {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(requestBody)
-                    .when().patch("api/reservations/" + 24L)
+                    .when().patch("api/reservations/" + 23L)
                     .then().log().all()
                     .statusCode(409);
         }

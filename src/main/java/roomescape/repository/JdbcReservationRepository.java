@@ -132,6 +132,29 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Long> findReservationIdWith(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT id
+                FROM reservation
+                WHERE date = :date
+                AND time_id = :timeId
+                AND theme_id = :themeId
+                """;
+
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+        return namedParameterJdbcTemplate.query(
+                        sql,
+                        parameterSource,
+                        (resultSet, rowNum) -> resultSet.getLong("id")
+                )
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public int update(Reservation reservation) {
         String sql = """
                 UPDATE reservation
@@ -186,24 +209,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existReservationByTimeId(Long timeId) {
         String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return count != null && count > 0;
-    }
-
-    @Override
-    public boolean existsReservationWith(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-                SELECT COUNT(*)
-                FROM reservation
-                WHERE date = :date
-                AND time_id = :timeId
-                AND theme_id = :themeId
-                """;
-
-        SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("timeId", timeId)
-                .addValue("themeId", themeId);
-        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
         return count != null && count > 0;
     }
 

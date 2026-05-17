@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -324,5 +325,24 @@ class ReservationServiceTest {
                         added.time().id()
                 )
         )).isExactlyInstanceOf(DuplicatedReservationException.class);
+    }
+
+    @DisplayName("변경 사항이 없다면 예외를 던지지 않는다")
+    @Sql("/initialize_theme_and_time.sql")
+    @Test
+    void 변경_사항이_없다면_예외를_던지지_않는다() {
+        // given
+        ReservationResponseDTO added = reservationService.reserve(new ReservationRequestDTO(
+                "루드비코", LocalDate.now().plusDays(1), 1L, 1L
+        ));
+
+        // when and then
+        assertThatNoException().isThrownBy(() -> reservationService.update(
+                added.id(),
+                new ReservationUpdateDtoDateAndTimeIdOnly(
+                        added.date(),
+                        added.time().id()
+                )
+        ));
     }
 }

@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -74,7 +75,7 @@ public class ReservationService {
                 );
 
         validateReservationDate(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
-        validateNotDuplicated(reservationRequestDTO.date(), time, theme);
+        validateNotDuplicated(Optional.empty(), reservationRequestDTO.date(), time, theme);
 
         Reservation reservation = Reservation.withoutId(
                 reservationRequestDTO.name(),
@@ -101,15 +102,11 @@ public class ReservationService {
                         new ReservationTimeNotFoundException("수정할 예약 시간을 찾을 수 없음. ID: " + updateDto.timeId())
                 );
 
-        // 현재 예약이 이미 지난 것인지 체크 (수정 불가 사유)
         validateModificationDate(LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()));
-        // 새로 변경하려는 시간이 과거인지 체크 (예약 불가 사유)
         validateReservationDate(LocalDateTime.of(updateDto.date(), reservationTimeForUpdate.getStartAt()));
-
-        validateNotDuplicated(updateDto.date(), reservationTimeForUpdate, theme);
+        validateNotDuplicated(Optional.of(reservationId), updateDto.date(), reservationTimeForUpdate, theme);
 
         reservation.changeDateAndTime(updateDto.date(), reservationTimeForUpdate);
-
         return reservationRepository.update(reservation);
     }
 
@@ -150,13 +147,17 @@ public class ReservationService {
         }
     }
 
-    private void validateNotDuplicated(LocalDate date, ReservationTime time, Theme theme) {
-        if (reservationRepository.existsReservationWith(
-                date,
-                time.getId(),
-                theme.getId()
-        )) {
-            throw new DuplicatedReservationException(date, time.getStartAt(), theme.getName());
-        }
+    private void validateNotDuplicated(
+            Optional<Long> reservationId,
+            LocalDate date,
+            ReservationTime time,
+            Theme theme
+    ) {
+        Optional<Long> found = reservationRepository.findReservationIdWith(date, time.getId(), theme.getId());
+        found.ifPresent((foundId -> {
+            if (reservationId.isEmpty() || !foundId.equals(reservationId.get())) {
+                throw new DuplicatedReservationException(date, time.getStartAt(), theme.getName());
+            }
+        }));
     }
 }
