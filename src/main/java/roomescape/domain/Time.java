@@ -23,18 +23,6 @@ public class Time {
         }
     }
 
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Time time)) return false;
-
-        return Objects.equals(id, time.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
     public Long getId() {
         return id;
     }

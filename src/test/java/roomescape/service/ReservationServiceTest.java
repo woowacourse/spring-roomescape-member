@@ -9,6 +9,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
+import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
 import roomescape.dto.request.ReservationRequestDto;
@@ -31,7 +32,7 @@ import static roomescape.fixture.FakeDatabase.clearAll;
 
 class ReservationServiceTest {
 
-    private static final Clock FIXED_CLOCK = Clock.fixed(
+    private final static Clock FIXED_CLOCK = Clock.fixed(
             Instant.parse("2026-05-10T03:00:00Z"),
             ZoneId.of("Asia/Seoul")
     );
@@ -162,6 +163,21 @@ class ReservationServiceTest {
 
             assertThatThrownBy(() -> reservationService.findById(created.id()))
                     .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 이미_지난_예약이면_삭제할_수_없습니다() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            LocalDate pastDate = TODAY.minusDays(1);
+            ReservationRequestDto request = requestOf("유저1", pastDate, time.id(), theme.id());
+
+            ReservationRow saved = reservationDao.create(
+                    new ReservationRow(null, "유저1", pastDate, time, theme)
+            );
+
+            assertThatThrownBy(() -> reservationService.delete(saved.id()))
+                    .isInstanceOf(ConflictException.class);
         }
 
         @Test

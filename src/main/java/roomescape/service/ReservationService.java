@@ -91,8 +91,12 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationDao.existsById(id)) {
-            throw new NotFoundException(ReservationErrorCode.NOT_FOUND);
+        Reservation reservation = reservationDao.findById(id)
+                .map(ReservationRow::toDomain)
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+
+        if (!reservation.isDeletable(LocalDateTime.now(clock))) {
+            throw new ConflictException(ReservationErrorCode.DUPLICATE);
         }
 
         reservationDao.delete(id);
@@ -123,7 +127,7 @@ public class ReservationService {
         }
 
         Reservation updated = existing.toDomain()
-                .update(reservationUpdate.name(), reservationUpdate.date(), time, theme, LocalDateTime.now(clock));
+                .update(new Name(reservationUpdate.name()), reservationUpdate.date(), time, theme, LocalDateTime.now(clock));
 
         ReservationRow saved = reservationDao.update(ReservationRow.from(updated));
 

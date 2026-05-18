@@ -23,20 +23,6 @@ public class Theme {
         return new Theme(null, name, thumbnailUrl, description);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Theme theme)) {
-            return false;
-        }
-
-        return Objects.equals(id, theme.id);
-    }
-
     public Long getId() {
         return id;
     }

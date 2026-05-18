@@ -4,7 +4,6 @@ import roomescape.domain.vo.Name;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 public class Reservation {
@@ -32,8 +31,8 @@ public class Reservation {
         return new Reservation(id, name, date, time, theme);
     }
 
-    public Reservation update(String name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
-        Name updatedName = Optional.ofNullable(name).map(Name::new).orElse(this.name);
+    public Reservation update(Name name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+        Name updatedName = Optional.ofNullable(name).orElse(this.name);
         LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
 
         Reservation updated = new Reservation(this.id, updatedName, updatedDate, time, theme);
@@ -42,8 +41,7 @@ public class Reservation {
     }
 
     private void validate(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(this.date, this.time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
+        if (isPast(now)) {
             throw new IllegalArgumentException("이미 지난 시각으로는 예약할 수 없습니다.");
         }
 
@@ -51,6 +49,14 @@ public class Reservation {
         if (this.date.isAfter(maxAvailableDate)) {
             throw new IllegalArgumentException("예약은 현재로부터 최대 14일 이내만 가능합니다.");
         }
+    }
+
+    public boolean isDeletable(LocalDateTime now) {
+        return !isPast(now);
+    }
+
+    private boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(this.date, this.time.getStartAt()).isBefore(now);
     }
 
     public Long getId() {
