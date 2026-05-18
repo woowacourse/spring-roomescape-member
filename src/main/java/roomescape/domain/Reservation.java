@@ -55,9 +55,9 @@ public class Reservation {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
-        if (date.isBefore(LocalDate.now())) {
-            throw new CustomException(ErrorCode.RESERVATION_NOT_ALLOWED_DATE);
-        }
+//        if (date.isBefore(LocalDate.now())) {
+//            throw new CustomException(ErrorCode.RESERVATION_NOT_ALLOWED_DATE);
+//        }
         if (time == null) {
             throw new IllegalArgumentException("유효하지 않은 예약 시간대입니다.");
         }

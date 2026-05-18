@@ -112,14 +112,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = createParams(reservation);
         Long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(
-                reservationId,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme(),
-                reservation.getReservationStatus()
-        );
+        return Reservation.of(reservationId, reservation);
     }
 
     private Map<String, Object> createParams(Reservation reservation) {
