@@ -39,20 +39,20 @@ public class ReservationTime {
         return startAt.toLocalDate();
     }
 
-    private boolean isPast() {
-        return startAt.isBefore(LocalDateTime.now());
+    public void validateReservableSchedule() {
+        if (isPast()) {
+            throw PastReservationException.pastReservation();
+        }
     }
 
-    public void validateReservationNotPast() {
+    public void validateUpdatableReservation() {
         if (isPast()) {
             throw PastReservationException.pastUpdate();
         }
     }
 
-    public void validateNotPast() {
-        if (startAt.isBefore(LocalDateTime.now())) {
-            throw PastReservationException.pastReservation();
-        }
+    private boolean isPast() {
+        return startAt.isBefore(LocalDateTime.now());
     }
 
     public void validateNotPastForCancel() {
