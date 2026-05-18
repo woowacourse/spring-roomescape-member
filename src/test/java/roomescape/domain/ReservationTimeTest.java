@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.DomainValidationException;
 
 class ReservationTimeTest {
 
@@ -25,8 +26,8 @@ class ReservationTimeTest {
     @Test
     @DisplayName("시작시간이 null이면 예외가 발생한다")
     void 시작시간이_null이면_예외가_발생한다() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new ReservationTime(1L, null)
         );
         assertEquals("예약 시간은 비어 있을 수 없습니다.", exception.getMessage());

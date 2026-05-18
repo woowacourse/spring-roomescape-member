@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.DomainValidationException;
 
 class ReservationTest {
 
@@ -35,8 +36,8 @@ class ReservationTest {
     @Test
     @DisplayName("이름이 null이면 예외가 발생한다")
     void throwWhenNameIsNull() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new Reservation(1L, null, VALID_DATE, VALID_TIME, VALID_THEME)
         );
         assertEquals("예약자 이름은 비어 있을 수 없습니다.", exception.getMessage());
@@ -46,7 +47,7 @@ class ReservationTest {
     @DisplayName("이름이 빈문자열이면 예외가 발생한다")
     void 이름이_빈문자열이면_예외가_발생한다() {
         assertThrows(
-                IllegalArgumentException.class,
+                DomainValidationException.class,
                 () -> new Reservation(1L, "", VALID_DATE, VALID_TIME, VALID_THEME)
         );
     }
@@ -55,7 +56,7 @@ class ReservationTest {
     @DisplayName("이름이 공백만으로 이루어져 있으면 예외가 발생한다")
     void 이름이_공백만으로_이루어져_있으면_예외가_발생한다() {
         assertThrows(
-                IllegalArgumentException.class,
+                DomainValidationException.class,
                 () -> new Reservation(1L, "   ", VALID_DATE, VALID_TIME, VALID_THEME)
         );
     }
@@ -64,8 +65,8 @@ class ReservationTest {
     @DisplayName("이름이 30자를 초과하면 예외가 발생한다")
     void 이름이_30자를_초과하면_예외가_발생한다() {
         String name = "밥".repeat(31);
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new Reservation(1L, name, VALID_DATE, VALID_TIME, VALID_THEME)
         );
         assertEquals("예약자 이름은 30자를 초과할 수 없습니다.", exception.getMessage());
@@ -74,8 +75,8 @@ class ReservationTest {
     @Test
     @DisplayName("날짜가 null이면 예외가 발생한다")
     void 날짜가_null이면_예외가_발생한다() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new Reservation(1L, "브라운", null, VALID_TIME, VALID_THEME)
         );
         assertEquals("예약 날짜는 비어 있을 수 없습니다.", exception.getMessage());
@@ -84,8 +85,8 @@ class ReservationTest {
     @Test
     @DisplayName("시간이 null이면 예외가 발생한다")
     void 시간이_null이면_예외가_발생한다() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new Reservation(1L, "브라운", VALID_DATE, null, VALID_THEME)
         );
         assertEquals("예약 시간은 비어 있을 수 없습니다.", exception.getMessage());
@@ -94,8 +95,8 @@ class ReservationTest {
     @Test
     @DisplayName("테마가 null이면 예외가 발생한다")
     void 테마가_null이면_예외가_발생한다() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        DomainValidationException exception = assertThrows(
+                DomainValidationException.class,
                 () -> new Reservation(1L, "브라운", VALID_DATE, VALID_TIME, null)
         );
         assertEquals("예약 테마는 비어 있을 수 없습니다.", exception.getMessage());

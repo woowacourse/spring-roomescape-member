@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -61,6 +64,10 @@ class ReservationServiceTest {
                 ReservationConflictException.class,
                 () -> reservationService.create(VALID_COMMAND)
         );
+
+        verify(reservationTimeRepository, times(1)).findById(1L);
+        verify(themeRepository, times(1)).findById(1L);
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(VALID_COMMAND.date(), 1L, 1L);
     }
 
     @Test
@@ -75,6 +82,11 @@ class ReservationServiceTest {
         given(reservationRepository.save(any(Reservation.class))).willReturn(saved);
 
         assertDoesNotThrow(() -> reservationService.create(VALID_COMMAND));
+
+        verify(reservationTimeRepository, times(1)).findById(1L);
+        verify(themeRepository, times(1)).findById(1L);
+        verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeId(VALID_COMMAND.date(), 1L, 1L);
+        verify(reservationRepository, times(1)).save(any(Reservation.class));
     }
 
     @Test
@@ -86,6 +98,9 @@ class ReservationServiceTest {
                 ReservationTimeNotFoundException.class,
                 () -> reservationService.create(VALID_COMMAND)
         );
+
+        verify(reservationTimeRepository, times(1)).findById(1L);
+        verifyNoInteractions(themeRepository, reservationRepository);
     }
 
     @Test
@@ -98,6 +113,10 @@ class ReservationServiceTest {
                 ThemeNotFoundException.class,
                 () -> reservationService.create(VALID_COMMAND)
         );
+
+        verify(reservationTimeRepository, times(1)).findById(1L);
+        verify(themeRepository, times(1)).findById(1L);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -109,6 +128,9 @@ class ReservationServiceTest {
                 ReservationNotFoundException.class,
                 () -> reservationService.delete(1L)
         );
+
+        verify(reservationRepository, times(1)).existsById(1L);
+        verifyNoInteractions(reservationTimeRepository, themeRepository);
     }
 
     @Test
@@ -117,5 +139,9 @@ class ReservationServiceTest {
         given(reservationRepository.existsById(1L)).willReturn(true);
 
         assertDoesNotThrow(() -> reservationService.delete(1L));
+
+        verify(reservationRepository, times(1)).existsById(1L);
+        verify(reservationRepository, times(1)).deleteById(1L);
+        verifyNoInteractions(reservationTimeRepository, themeRepository);
     }
 }
