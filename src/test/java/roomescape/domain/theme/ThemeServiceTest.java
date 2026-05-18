@@ -5,6 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.admin.dto.AdminThemeResponse;
 import roomescape.domain.theme.admin.dto.CreateThemeRequest;
@@ -25,7 +26,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 관리자용_테마_목록을_조회한다() {
+    @DisplayName("관리자용 테마 목록을 조회한다.")
+    void getThemeListForAdmin() {
         // given
         themeRepository.save(Theme.createWithoutId("미스터리", "보예의 미스터리", "theme-url"));
         ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
@@ -44,7 +46,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 사용자용_테마_목록을_조회한다() {
+    @DisplayName("사용자용 테마 목록을 조회한다.")
+    void getThemeListForUser() {
         // given
         themeRepository.save(Theme.createWithoutId("미스터리", "보예의 미스터리", "theme-url"));
         ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
@@ -63,7 +66,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_생성한다() {
+    @DisplayName("테마를 생성한다.")
+    void createTheme() {
         // given
         ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
@@ -86,7 +90,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_삭제한다() {
+    @DisplayName("테마를 삭제한다.")
+    void deleteTheme() {
         // given
         Theme theme = themeRepository.save(
             Theme.createWithoutId("공포", "무섭다", "theme-url")

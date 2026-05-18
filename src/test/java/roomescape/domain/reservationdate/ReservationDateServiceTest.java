@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationdate.admin.dto.AdminReservationDateResponse;
@@ -31,7 +32,8 @@ class ReservationDateServiceTest {
     }
 
     @Test
-    void 예약_날짜를_생성한다() {
+    @DisplayName("예약 날짜를 생성한다.")
+    void createReservationDate() {
         // given
         ReservationDateService reservationDateService = new ReservationDateService(
             reservationRepository,
@@ -53,7 +55,8 @@ class ReservationDateServiceTest {
     }
 
     @Test
-    void 예약_날짜_목록을_조회한다() {
+    @DisplayName("예약 날짜 목록을 조회한다.")
+    void getReservationDateList() {
         // given
         ReservationDate reservationDate = reservationDateRepository.save(
             ReservationDate.createWithoutId(LocalDate.of(2026, 5, 4)));
@@ -74,7 +77,8 @@ class ReservationDateServiceTest {
     }
 
     @Test
-    void 이미_예약이_존재하는_날짜는_삭제할_수_없다() {
+    @DisplayName("이미 예약이 존재하는 날짜는 삭제할 수 없다.")
+    void throwExceptionWhenDeletingDateInUse() {
         // given
         ReservationDate reservationDate = reservationDateRepository.save(
             ReservationDate.createWithoutId(LocalDate.of(2026, 5, 4)));
@@ -98,7 +102,8 @@ class ReservationDateServiceTest {
     }
 
     @Test
-    void 예약이_없는_날짜는_삭제한다() {
+    @DisplayName("예약이 없는 날짜는 삭제한다.")
+    void deleteDateWhenNoReservationExists() {
         // given
         ReservationDate reservationDate = reservationDateRepository.save(
             ReservationDate.createWithoutId(LocalDate.of(2026, 5, 4)));

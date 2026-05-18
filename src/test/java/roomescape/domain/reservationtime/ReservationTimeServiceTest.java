@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationdate.ReservationDate;
@@ -40,7 +41,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약_시간을_생성한다() {
+    @DisplayName("예약 시간을 생성한다.")
+    void createReservationTime() {
         // given
         ReservationTimeService reservationTimeService = createReservationTimeService();
 
@@ -59,7 +61,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약_시간_목록을_조회한다() {
+    @DisplayName("예약 시간 목록을 조회한다.")
+    void getReservationTimeList() {
         // given
         reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
         reservationTimeRepository.save(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
@@ -81,7 +84,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 이미_예약이_존재하는_시간은_삭제할_수_없다() {
+    @DisplayName("이미 예약이 존재하는 시간은 삭제할 수 없다.")
+    void throwExceptionWhenDeletingTimeInUse() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
             ReservationTime.createWithoutId(LocalTime.of(10, 0))
@@ -103,7 +107,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약이_없는_시간은_삭제한다() {
+    @DisplayName("예약이 없는 시간은 삭제한다.")
+    void deleteTimeWhenNoReservationExists() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
             ReservationTime.createWithoutId(LocalTime.of(10, 0))
@@ -118,7 +123,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약_가능_시간을_조회한다() {
+    @DisplayName("예약 가능 시간을 조회한다.")
+    void getReservationTimeAvailability() {
         // given
         ReservationTime firstReservationTime = reservationTimeRepository.save(
             ReservationTime.createWithoutId(LocalTime.of(10, 0))
@@ -155,7 +161,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 존재하지_않는_테마로_예약_가능_시간을_조회할_수_없다() {
+    @DisplayName("존재하지 않는 테마로 예약 가능 시간을 조회할 수 없다.")
+    void throwExceptionWhenThemeDoesNotExistForAvailability() {
         // given
         ReservationDate reservationDate = reservationDateRepository.save(
             ReservationDate.createWithoutId(LocalDate.of(2026, 5, 16))
@@ -169,7 +176,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 존재하지_않는_날짜로_예약_가능_시간을_조회할_수_없다() {
+    @DisplayName("존재하지 않는 날짜로 예약 가능 시간을 조회할 수 없다.")
+    void throwExceptionWhenDateDoesNotExistForAvailability() {
         // given
         Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
         ReservationTimeService reservationTimeService = createReservationTimeService();

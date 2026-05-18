@@ -4,13 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.support.exception.RoomescapeException;
 
 class ThemeTest {
 
     @Test
-    void id가_없는_테마를_생성한다() {
+    @DisplayName("id가 없는 테마를 생성한다.")
+    void createThemeWithoutId() {
         // given
         String name = "미스터리";
         String content = "보예의 미스터리";
@@ -29,7 +31,8 @@ class ThemeTest {
     }
 
     @Test
-    void 이름이_10자를_초과하면_예외가_발생한다() {
+    @DisplayName("이름이 10자를 초과하면 예외가 발생한다.")
+    void throwExceptionWhenNameExceedsTenCharacters() {
         // given
         String name = "공포공포공포공포공포공";
 

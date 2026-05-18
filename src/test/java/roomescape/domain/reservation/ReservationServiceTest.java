@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
@@ -45,7 +46,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하는_예약_시간으로_예약을_생성한다() {
+    @DisplayName("존재하는 예약 시간으로 예약을 생성한다.")
+    void createReservationWithExistingReservationTime() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
@@ -80,7 +82,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약_시간으로_예약을_생성하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성하면 예외가 발생한다.")
+    void throwExceptionWhenCreatingReservationWithNonExistentReservationTime() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationService reservationService = new ReservationService(
@@ -99,7 +102,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_테마로_예약을_생성하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 테마로 예약을 생성하면 예외가 발생한다.")
+    void throwExceptionWhenCreatingReservationWithNonExistentTheme() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -127,7 +131,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_목록을_전체_조회한다() {
+    @DisplayName("예약 목록을 전체 조회한다.")
+    void getAllReservations() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationDate savedReservationDate = reservationDateRepository.save(
@@ -169,7 +174,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자가_이름으로_예약을_조회한다() {
+    @DisplayName("사용자가 이름으로 예약을 조회한다.")
+    void getUserReservationsByName() {
         // given
         String name = "보예짱";
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
@@ -228,7 +234,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘보다_이전_날짜는_예약할_수_없다() {
+    @DisplayName("오늘보다 이전 날짜는 예약할 수 없다.")
+    void throwExceptionWhenCreatingReservationBeforeToday() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -259,7 +266,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘_예약일_경우_현재_시간_이전은_예약할_수_없다() {
+    @DisplayName("오늘 예약일 경우 현재 시간 이전은 예약할 수 없다.")
+    void throwExceptionWhenCreatingReservationBeforeCurrentTimeOnToday() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime beforeNow = reservationTimeRepository.save(
@@ -290,7 +298,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘_예약이지만_현재_시간은_예약할_수_있다() {
+    @DisplayName("오늘 예약이지만 현재 시간은 예약할 수 있다.")
+    void createReservationAtCurrentTimeOnToday() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime nowTime = reservationTimeRepository.save(
@@ -332,7 +341,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 날짜가_오늘_이후이고_현재_시간보다_이전이면_정상_예약_된다() {
+    @DisplayName("날짜가 오늘 이후이고 현재 시간보다 이전이면 정상 예약 된다.")
+    void createReservationAfterTodayEvenIfTimeIsBeforeNow() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -374,7 +384,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 중복된_예약은_예외가_발생한다() {
+    @DisplayName("중복된 예약은 예외가 발생한다.")
+    void throwExceptionWhenCreatingDuplicatedReservation() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
@@ -404,7 +415,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자는_미래_예약을_삭제할_수_있다() {
+    @DisplayName("사용자는 미래 예약을 삭제할 수 있다.")
+    void deleteFutureReservationForUser() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -433,7 +445,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자는_이미_시간이_지난_예약을_삭제할_수_없다() {
+    @DisplayName("사용자는 이미 시간이 지난 예약을 삭제할 수 없다.")
+    void throwExceptionWhenUserDeletesPastTimeReservation() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -461,7 +474,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자는_이미_날짜가_지난_예약을_삭제할_수_없다() {
+    @DisplayName("사용자는 이미 날짜가 지난 예약을 삭제할 수 없다.")
+    void throwExceptionWhenUserDeletesPastDateReservation() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -489,7 +503,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자가_존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+    @DisplayName("사용자가 존재하지 않는 예약을 삭제하면 예외가 발생한다.")
+    void throwExceptionWhenUserDeletesNonExistentReservation() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationService reservationService = new ReservationService(
@@ -507,7 +522,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_날짜와_시간을_수정한다() {
+    @DisplayName("예약 날짜와 시간을 수정한다.")
+    void updateReservationDateAndTime() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime beforeReservationTime = reservationTimeRepository.save(
@@ -552,7 +568,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_시간만_수정한다() {
+    @DisplayName("예약 시간만 수정한다.")
+    void updateReservationTimeOnly() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime beforeReservationTime = reservationTimeRepository.save(
@@ -589,7 +606,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_수정하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 예약을 수정하면 예외가 발생한다.")
+    void throwExceptionWhenUpdatingNonExistentReservation() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationService reservationService = new ReservationService(
@@ -608,7 +626,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약_날짜로_수정하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 예약 날짜로 수정하면 예외가 발생한다.")
+    void throwExceptionWhenUpdatingReservationWithNonExistentDate() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -637,7 +656,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약_시간으로_수정하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 예약 시간으로 수정하면 예외가 발생한다.")
+    void throwExceptionWhenUpdatingReservationWithNonExistentTime() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -666,7 +686,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘보다_이전_날짜로_예약을_수정할_수_없다() {
+    @DisplayName("오늘보다 이전 날짜로 예약을 수정할 수 없다.")
+    void throwExceptionWhenUpdatingReservationToDateBeforeToday() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -698,7 +719,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 오늘_예약을_현재_시간보다_이전으로_수정할_수_없다() {
+    @DisplayName("오늘 예약을 현재 시간보다 이전으로 수정할 수 없다.")
+    void throwExceptionWhenUpdatingReservationToTimeBeforeNowOnToday() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
@@ -730,7 +752,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 중복된_예약으로_수정하면_예외가_발생한다() {
+    @DisplayName("중복된 예약으로 수정하면 예외가 발생한다.")
+    void throwExceptionWhenUpdatingReservationToDuplicatedSchedule() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationTime reservationTime = reservationTimeRepository.save(
