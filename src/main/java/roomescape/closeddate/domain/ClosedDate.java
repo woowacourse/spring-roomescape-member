@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import roomescape.common.exception.DomainValidationException;
 
 public class ClosedDate {
-    private Long id;
-    private LocalDate date;
+    private final Long id;
+    private final LocalDate date;
 
     private ClosedDate(Long id, LocalDate date) {
         validateDate(date);
