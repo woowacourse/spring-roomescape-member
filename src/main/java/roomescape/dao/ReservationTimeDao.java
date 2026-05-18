@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,13 +21,19 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                ), id);
+
+        List<ReservationTime> result = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))
+                ),
+                id
+        );
+
+        return result.stream().findFirst();
     }
 
     public List<ReservationTime> findAll() {

@@ -45,7 +45,7 @@
 - Get은 사용자와 관리자 같이 사용가능하고 Post와 Delete는 관리자에게만 하도록 URL 에서 /admin을 따로 주었다.
 - 단, 사용자가 예약을 생성해야하므로 post/reservations는 /admin을 포함하지 않는다.
 
-## 기능 구현 목록
+## 사이클 1 기능 구현 목록
 
 #### 1단계 - 테마 도메인 추가
 
@@ -95,3 +95,58 @@
 #### 추가
 - [x] data.sql 구현
 - [x] 화면 구현
+
+
+## 사이클2 기능 구현 목록
+
+#### 1단계 - 서비스 정책 적용
+- [x] 지나간 날짜,시간에 대한 예약 생성 불가
+- [x] 같은 날짜+시간+테마에 이미 예약이 중복되어 있으면 중복 예약을 거부
+- [x] 예약이 존재하는 시간은 삭제 불가
+- [x] 유효하지 않은 입력 값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
+
+#### 2단계 - 에러 응답 설계
+#### *에러 상태 코드
+
+| 상황 | 상태 코드 | code |
+  | --- | --- | --- |
+| 유효하지 않은 입력값 | 400 Bad Request | INVALID_INPUT |
+| 잘못된 날짜/시간 형식 | 400 Bad Request | INVALID_FORMAT |
+| 존재하지 않는 리소스 | 404 Not Found | NOT_FOUND |
+| 중복 예약 | 409 Conflict | DUPLICATE_RESERVATION |
+| 예약이 존재하는 시간/테마 삭제 | 409 Conflict | RESOURCE_IN_USE |
+| 지난 날짜/시간 예약 생성 | 422 Unprocessable Entity | PAST_RESERVATION |
+| 예상하지 못한 서버 오류 | 500 Internal Server Error | INTERNAL_SERVER_ERROR | 
+
+
+#### *에러 응답 형식
+
+  ```json
+  {
+    "code": "INVALID_INPUT",
+    "message": "예약자 이름은 필수입니다."
+  }
+  ```
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환
+- [x] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+- [x] 에러 응답 본문에 어떤 정보를 담을지 결정한다.
+- [x] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시
+
+    #### 3단계 - 내 예약 조회/변경/취소
+
+- [x] API 명세 작성
+
+
+      내 예약 조회      GET /reservations?name=맥스      -                         {reservations: [{id, name, date, time, theme}...]}
+      내 예약 취소      DELETE /reservations/{id}        -                         204 No Content
+      내 예약 변경      PATCH /reservations/{id}         {date, timeId}             {id, name, date, time, theme}
+
+
+- [x] 이름으로 내 예약 목록 조회 구현
+- [x] 내 예약 취소 구현
+- [x] 내 예약 날짜/시간 변경 구현
+- [x] 존재하지 않는 예약/시간에 대한 에러 처리
+- [x] 지난 예약 변경/취소 에러 처리
+- [x] 중복 예약 시간으로 변경 시 에러 처리
+- [x] 내 예약 조회/변경/취소 테스트 구현
+- [x] 화면에서 내 예약 조회/변경/취소 및 에러 메시지 표시

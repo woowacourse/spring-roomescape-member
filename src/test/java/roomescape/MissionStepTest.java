@@ -234,4 +234,557 @@ public class MissionStepTest {
                 .statusCode(200)
                 .body("[0].available", is(false));
     }
+
+    @Test
+    void 빈_이름으로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", "2030-05-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("예약자 이름은 필수입니다."));
+    }
+
+    @Test
+    void 잘못된_형식으로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030.05.05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"))
+                .body("message", is("요청 본문을 읽을 수 없습니다. JSON 형식과 각 필드의 타입을 확인해주세요."));
+    }
+
+    @Test
+    void 예약_시간_없이_시간을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("예약 시간은 필수입니다."));
+    }
+
+    @Test
+    void 테마_이름_없이_테마를_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("description", "무서움");
+        params.put("thumbnail", "https://roomescape.com");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"))
+                .body("message", is("테마 이름은 필수입니다."));
+    }
+
+    @Test
+    void 중복_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> duplicateParams = new HashMap<>();
+        duplicateParams.put("name", "피노");
+        duplicateParams.put("date", "2030-08-05");
+        duplicateParams.put("timeId", 1);
+        duplicateParams.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(duplicateParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("이미 존재하는 예약입니다."));
+    }
+
+    @Test
+    void 지난_날짜로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2020-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("PAST_RESERVATION"))
+                .body("message", is("지난 날짜 또는 시간은 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 예약이_존재하는_시간을_삭제하면_실패한다() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "맥스");
+        reservation.put("date", "2030-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("message", is("예약이 존재해 삭제할 수 없습니다"));
+    }
+
+    @Test
+    void 존재하지_않는_예약시간으로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 9999);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("message", is("존재하지 않는 예약 시간입니다."));
+    }
+
+    @Test
+    void 존재하지_않는_테마로_예약을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "맥스");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("message", is("존재하지 않는 테마입니다."));
+    }
+
+    @Test
+    void 중복된_예약_시간을_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION_TIME"))
+                .body("message", is("이미 존재하는 예약시간입니다."));
+    }
+
+    @Test
+    void 중복된_테마_이름으로_테마를_생성하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "공포");
+        params.put("description", "무서운 테마");
+        params.put("thumbnail", "https://roomescape.com/other");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_THEME"))
+                .body("message", is("이미 존재하는 테마 이름입니다."));
+    }
+
+    @Test
+    void 이름으로_내_예약을_조회한다() {
+        Map<String, Object> brownReservation = new HashMap<>();
+        brownReservation.put("name", "브라운");
+        brownReservation.put("date", "2030-08-05");
+        brownReservation.put("timeId", 1);
+        brownReservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(brownReservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("브라운"));
+    }
+
+    @Test
+    void 빈_이름으로_내_예약을_조회하면_실패한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"));
+    }
+
+    @Test
+    void 내_예약을_취소한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=브라운")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(0));
+    }
+
+    @Test
+    void 지난_예약을_취소하면_실패한다() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운",
+                "2020-08-05",
+                1,
+                1
+        );
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("PAST_RESERVATION"))
+                .body("message", is("지난 예약은 취소할 수 없습니다."));
+    }
+
+    @Test
+    void 내_예약의_날짜와_시간을_변경한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(reservationId))
+                .body("name", is("브라운"))
+                .body("date", is("2030-08-06"))
+                .body("time.id", is(1))
+                .body("theme.id", is(1));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하면_실패한다() {
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"));
+    }
+
+    @Test
+    void 존재하지_않는_시간으로_예약을_변경하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"));
+    }
+
+    @Test
+    void 지난_예약을_변경하면_실패한다() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운",
+                "2020-08-05",
+                1,
+                1
+        );
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("PAST_RESERVATION"))
+                .body("message", is("지난 예약은 변경할 수 없습니다."));
+    }
+
+    @Test
+    void 지난_날짜로_예약을_변경하면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2020-08-05");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(422)
+                .body("code", is("PAST_RESERVATION"))
+                .body("message", is("지난 날짜 또는 시간으로 변경할 수 없습니다."));
+    }
+
+    @Test
+    void 이미_예약된_날짜와_시간으로_변경하면_실패한다() {
+        Map<String, Object> firstReservation = new HashMap<>();
+        firstReservation.put("name", "브라운");
+        firstReservation.put("date", "2030-08-05");
+        firstReservation.put("timeId", 1);
+        firstReservation.put("themeId", 1);
+
+        Integer firstReservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(firstReservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> secondReservation = new HashMap<>();
+        secondReservation.put("name", "코니");
+        secondReservation.put("date", "2030-08-06");
+        secondReservation.put("timeId", 1);
+        secondReservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(secondReservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + firstReservationId)
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("이미 존재하는 예약입니다."));
+    }
+
+    @Test
+    void 예약_변경시_날짜가_없으면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"));
+    }
+
+    @Test
+    void 예약_변경시_시간이_없으면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030-08-06");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"));
+    }
+
+    @Test
+    void 예약_변경시_날짜_형식이_잘못되면_실패한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        Integer reservationId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("date", "2030.08.06");
+        updateParams.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
+
 }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>방탈출 예약하기</title>
-  <link rel="stylesheet" href="/style.css?v=3">
+  <link rel="stylesheet" href="/style.css?v=6">
 </head>
 <body>
   <div class="container">
@@ -17,31 +17,81 @@
       </nav>
     </header>
 
-    <section class="glass-card" style="max-width: 600px; margin: 0 auto;">
-      <h2 class="section-title" style="text-align:center; font-size: 1.8rem; margin-bottom: 2rem;">🗓️ 방문하실 테마와 날짜를 골라주세요</h2>
-      <form id="reservation-form">
-        <div class="form-group">
-          <label class="form-label">테마 선택</label>
-          <select id="res-theme" class="form-control" required></select>
+    <div class="page-tabs" aria-label="예약 메뉴">
+      <button type="button" class="page-tab active" data-tab-target="create-reservation">예약하기</button>
+      <button type="button" class="page-tab" data-tab-target="manage-reservation">내 예약 관리</button>
+    </div>
+
+    <main>
+      <section id="create-reservation" class="glass-card reservation-panel tab-panel active">
+        <div class="section-header compact">
+          <div>
+            <h2 class="section-title">예약하기</h2>
+            <p class="section-subtitle">테마와 날짜를 선택하면 가능한 시간만 보여줍니다.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">예약 날짜</label>
-          <input type="date" id="res-date" class="form-control" required>
+
+        <form id="reservation-form">
+          <div class="form-group">
+            <label class="form-label">테마 선택</label>
+            <select id="res-theme" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">예약 날짜</label>
+            <input type="date" id="res-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">예약 시간</label>
+            <select id="res-time" class="form-control" required disabled>
+              <option value="">날짜와 테마를 먼저 선택하세요</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">예약자 이름</label>
+            <input type="text" id="res-name" class="form-control" placeholder="예약자명 (2~10자)" minlength="2" maxlength="10" required>
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top: 1rem;">예약 완료하기</button>
+        </form>
+      </section>
+
+      <section id="manage-reservation" class="glass-card reservation-panel tab-panel">
+        <div class="section-header compact">
+          <div>
+            <h2 class="section-title">내 예약 관리</h2>
+            <p class="section-subtitle">이름으로 예약을 조회하고 변경하거나 취소할 수 있습니다.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">예약 시간</label>
-          <select id="res-time" class="form-control" required disabled>
-            <option value="">날짜와 테마를 먼저 선택하세요</option>
-          </select>
+
+        <form id="my-reservation-form" class="lookup-form">
+          <div class="form-group lookup-input">
+            <label class="form-label">예약자 이름</label>
+            <input type="text" id="my-reservation-name" class="form-control" placeholder="예약자 이름" required>
+          </div>
+          <button type="submit" class="btn-primary lookup-button">조회하기</button>
+        </form>
+
+        <div id="my-reservation-message" class="status-message" style="display:none;"></div>
+
+        <div class="table-wrap">
+          <table class="admin-table reservation-table">
+            <thead>
+              <tr>
+                <th>테마</th>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>작업</th>
+              </tr>
+            </thead>
+            <tbody id="my-reservation-list">
+              <tr>
+                <td colspan="4" class="table-empty">예약자 이름을 입력해 조회해주세요.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="form-group">
-          <label class="form-label">예약자 이름</label>
-          <input type="text" id="res-name" class="form-control" placeholder="예약자명 (2~10자)" minlength="2" maxlength="10" required>
-        </div>
-        <button type="submit" class="btn-primary" style="margin-top: 1rem;">예약 완료하기</button>
-      </form>
-    </section>
+      </section>
+    </main>
   </div>
-  <script src="/reservation.js?v=3"></script>
+  <script src="/reservation.js?v=6"></script>
 </body>
 </html>

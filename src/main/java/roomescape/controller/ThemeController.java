@@ -3,8 +3,16 @@ package roomescape.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ReservationTimeStatusResponse;
@@ -33,7 +41,7 @@ public class ThemeController {
 
     @PostMapping("/admin/themes")
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponse create(@RequestBody ThemeRequest themeRequest) {
+    public ThemeResponse create(@Valid @RequestBody ThemeRequest themeRequest) {
         Theme theme = themeRequest.toEntity();
         Theme savedTheme = themeService.save(theme);
         return ThemeResponse.from(savedTheme);
