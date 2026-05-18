@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 import java.time.LocalTime;
 import java.util.Objects;
@@ -11,9 +12,23 @@ public class ReservationTime {
     @JsonFormat(pattern = "HH:mm")
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    private ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public static ReservationTime from(Long id, LocalTime startAt) {
+        return new ReservationTime(id, startAt);
+    }
+
+    public static ReservationTime from(LocalTime startAt) {
+        return new ReservationTime(null, startAt);
+    }
+
+    public static void validateDeletion(int deleteCount) {
+        if (deleteCount == 0) {
+            throw new ReservationTimeNotFoundException("해당 시간을 찾을 수 없습니다.");
+        }
     }
 
     public Long getId() {

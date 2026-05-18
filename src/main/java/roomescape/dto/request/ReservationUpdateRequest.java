@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record ReservationCreateRequest(
+public record ReservationUpdateRequest(
 
         @NotBlank(message = "예약자 이름은 필수로 입력해야 합니다.")
         String name,

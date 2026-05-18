@@ -1,29 +1,23 @@
 package roomescape.dto.response;
 
 import roomescape.domain.Reservation;
-
-import java.util.List;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record ReservationResponse(
         Long id,
         String name,
         String date,
         ReservationTimeResponse time,
-        Long themeId
+        ThemeResponse theme
 ) {
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation, ReservationTime reservationTime, Theme theme) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().toString(),
-                ReservationTimeResponse.from(reservation.getTime()),
-                reservation.getThemeId()
+                ReservationTimeResponse.from(reservationTime),
+                ThemeResponse.from(theme)
         );
-    }
-
-    public static List<ReservationResponse> from(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
     }
 }

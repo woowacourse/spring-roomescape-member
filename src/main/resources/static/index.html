@@ -41,7 +41,7 @@
         }
 
         button,
-        input {
+        input, select {
             font: inherit;
         }
 
@@ -319,7 +319,7 @@
             font-weight: 700;
         }
 
-        .field input {
+        .field input, .field select {
             width: 100%;
             height: 44px;
             padding: 0 12px;
@@ -330,7 +330,7 @@
             transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
         }
 
-        .field input:focus {
+        .field input:focus, .field select:focus {
             outline: 2px solid rgba(159, 47, 36, 0.18);
             border-color: var(--accent);
             box-shadow: 0 8px 18px rgba(111, 32, 25, 0.12);
@@ -349,6 +349,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, opacity 160ms ease;
+            padding: 0 16px;
         }
 
         .button:hover:not(:disabled) {
@@ -482,7 +483,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .navigation {
@@ -528,9 +529,28 @@
             text-align: left;
         }
 
-        .admin-section input {
-             width: calc(100% - 24px);
-             margin-bottom: 10px;
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: 12px;
+            width: min(500px, 90%);
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
         }
 
         @keyframes shimmer {
@@ -640,6 +660,7 @@
 
     <nav class="navigation">
         <button class="nav-button active" id="reservation-nav">예약 페이지</button>
+        <button class="nav-button" id="my-reservation-nav">내 예약 조회</button>
         <button class="nav-button" id="admin-nav">관리자 페이지</button>
     </nav>
 
@@ -726,6 +747,36 @@
         </section>
     </div>
 
+    <div id="my-reservation-page" class="hidden">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">내 예약 조회</h2>
+                <p class="section-copy">예약자 이름으로 예약 내역을 조회합니다.</p>
+            </div>
+            <div class="form">
+                <form id="searchReservationForm" class="field" style="display: flex; gap: 10px;">
+                    <input type="text" id="searchName" placeholder="예약자 이름 입력" required style="flex: 1;">
+                    <button type="submit" class="button secondary" style="width: auto; padding: 0 20px;">조회</button>
+                </form>
+            </div>
+            <div class="admin-section" style="margin-bottom: 0;">
+                <table id="myReservationTable">
+                    <thead>
+                    <tr>
+                        <th>예약 번호</th>
+                        <th>테마</th>
+                        <th>날짜</th>
+                        <th>시간</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p id="myReservationEmpty" class="empty hidden" style="text-align: center; padding: 20px;">조회된 예약이 없습니다.</p>
+            </div>
+        </section>
+    </div>
+
     <div id="admin-page" class="hidden">
         <div class="admin-section">
             <h2>테마 관리</h2>
@@ -760,7 +811,7 @@
         <div class="admin-section">
             <h2>시간 관리</h2>
             <form id="timeForm" class="form">
-                 <div class="field">
+                <div class="field">
                     <label for="timeStartAt">시작 시간</label>
                     <input type="time" id="timeStartAt" required>
                 </div>
@@ -795,41 +846,84 @@
             </table>
         </div>
     </div>
+
+    <div id="editModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="section-title" style="margin-bottom: 20px;">예약 수정</h2>
+            <input type="hidden" id="editReservationId">
+            <input type="hidden" id="editReservationName">
+
+            <div class="field">
+                <label for="editThemeSelect">테마 변경</label>
+                <select id="editThemeSelect"></select>
+            </div>
+
+            <div class="field">
+                <label for="editDate">날짜 변경</label>
+                <input type="date" id="editDate">
+            </div>
+
+            <div class="time-area">
+                <div class="time-title">시간 선택</div>
+                <div class="time-grid" id="editTimeGrid"></div>
+                <p class="helper" id="editTimeHelper">테마와 날짜를 선택하면 가능한 시간이 표시됩니다.</p>
+            </div>
+
+            <div class="button-row" style="margin-top: 24px; grid-template-columns: 1fr 1fr;">
+                <button class="button secondary" onclick="closeEditModal()">취소</button>
+                <button class="button primary" id="updateButton" onclick="updateMyReservation()" disabled>수정 완료</button>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script>
     // --- 공통 변수 및 함수 ---
     const reservationPage = document.getElementById('reservation-page');
+    const myReservationPage = document.getElementById('my-reservation-page');
     const adminPage = document.getElementById('admin-page');
     const reservationNav = document.getElementById('reservation-nav');
+    const myReservationNav = document.getElementById('my-reservation-nav');
     const adminNav = document.getElementById('admin-nav');
 
+    const API_THEMES = '/api/v1/themes';
+    const API_ADMIN_THEMES = '/api/v1/admin/themes';
+    const API_TIMES = '/api/v1/times';
+    const API_ADMIN_TIMES = '/api/v1/admin/times';
+    const API_RESERVATIONS = '/api/v1/reservations';
+    const API_ADMIN_RESERVATIONS = '/api/v1/admin/reservations';
+
     document.addEventListener("DOMContentLoaded", () => {
-        // 네비게이션 이벤트
         reservationNav.addEventListener('click', () => showPage('reservation'));
+        myReservationNav.addEventListener('click', () => showPage('my-reservation'));
         adminNav.addEventListener('click', () => showPage('admin'));
 
-        // 예약 페이지 초기화
         initializeReservationPage();
-
-        // 관리자 페이지 초기화
+        initializeMyReservationPage();
         initializeAdminPage();
 
-        showPage('reservation'); // 기본으로 예약 페이지 보여주기
+        showPage('reservation');
     });
 
     function showPage(pageName) {
+        reservationPage.classList.add('hidden');
+        myReservationPage.classList.add('hidden');
+        adminPage.classList.add('hidden');
+
+        reservationNav.classList.remove('active');
+        myReservationNav.classList.remove('active');
+        adminNav.classList.remove('active');
+
         if (pageName === 'admin') {
             adminPage.classList.remove('hidden');
-            reservationPage.classList.add('hidden');
             adminNav.classList.add('active');
-            reservationNav.classList.remove('active');
             loadAdminData();
+        } else if (pageName === 'my-reservation') {
+            myReservationPage.classList.remove('hidden');
+            myReservationNav.classList.add('active');
         } else {
             reservationPage.classList.remove('hidden');
-            adminPage.classList.add('hidden');
             reservationNav.classList.add('active');
-            adminNav.classList.remove('active');
         }
     }
 
@@ -840,6 +934,189 @@
             .replaceAll(">", "&gt;")
             .replaceAll("\"", "&quot;")
             .replaceAll("'", "&#39;");
+    }
+
+    async function checkResponse(response, defaultMessage) {
+        if (!response.ok) {
+            let errorMessage = defaultMessage;
+            try {
+                const errorData = await response.json();
+                if (errorData && errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (e) {}
+            throw new Error(errorMessage);
+        }
+        return response;
+    }
+
+    // --- 내 예약 조회 및 수정 스크립트 ---
+    let editState = {
+        selectedTimeId: null
+    };
+
+    function initializeMyReservationPage() {
+        document.getElementById('searchReservationForm').addEventListener('submit', searchMyReservations);
+        document.getElementById('editDate').addEventListener('change', loadEditAvailableTimes);
+        document.getElementById('editThemeSelect').addEventListener('change', loadEditAvailableTimes);
+    }
+
+    async function searchMyReservations(e) {
+        if (e) e.preventDefault();
+        const searchName = document.getElementById('searchName').value.trim();
+        if (!searchName) {
+            setStatus("예약자 이름을 입력해주세요.", "error");
+            return;
+        }
+
+        setStatus("예약 내역을 조회하는 중입니다.", "neutral");
+        const tbody = document.querySelector('#myReservationTable tbody');
+        const emptyMessage = document.getElementById('myReservationEmpty');
+
+        try {
+            const response = await fetch(`${API_RESERVATIONS}?name=${encodeURIComponent(searchName)}`);
+            await checkResponse(response, "예약 내역 조회에 실패했습니다.");
+            const reservations = await response.json();
+
+            tbody.innerHTML = '';
+            if (reservations.length === 0) {
+                emptyMessage.classList.remove('hidden');
+                setStatus("조회된 예약 내역이 없습니다.", "neutral");
+            } else {
+                emptyMessage.classList.add('hidden');
+                reservations.forEach(res => {
+                    const themeName = res.theme ? res.theme.name : '알 수 없음';
+                    const themeId = res.theme ? res.theme.id : null;
+                    const timeStartAt = res.time ? res.time.startAt : '';
+                    const timeId = res.time ? res.time.id : null;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${res.id}</td>
+                        <td>${escapeHtml(themeName)}</td>
+                        <td>${escapeHtml(res.date)}</td>
+                        <td>${escapeHtml(timeStartAt)}</td>
+                        <td>
+                            <button onclick="openEditModal(${res.id}, '${escapeHtml(searchName)}', '${res.date}', ${themeId}, ${timeId})" class="button secondary" style="margin-right: 4px;">수정</button>
+                            <button onclick="deleteMyReservation(${res.id}, '${escapeHtml(searchName)}')" class="button secondary">삭제</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                setStatus(`${reservations.length}건의 예약 내역을 찾았습니다.`, "success");
+            }
+        } catch (error) {
+            tbody.innerHTML = '';
+            emptyMessage.classList.add('hidden');
+            setStatus(error.message, "error");
+        }
+    }
+
+    // 수정 모달 열기
+    function openEditModal(id, name, date, themeId, timeId) {
+        document.getElementById('editReservationId').value = id;
+        document.getElementById('editReservationName').value = name;
+        document.getElementById('editDate').value = date;
+
+        // 테마 셀렉트박스 채우기
+        const select = document.getElementById('editThemeSelect');
+        select.innerHTML = state.themes.map(t =>
+            `<option value="${t.id}" ${t.id === themeId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`
+        ).join('');
+
+        document.getElementById('editModal').classList.remove('hidden');
+        loadEditAvailableTimes();
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+        editState.selectedTimeId = null;
+    }
+
+    // 수정용 가능 시간 조회
+    async function loadEditAvailableTimes() {
+        const themeId = document.getElementById('editThemeSelect').value;
+        const date = document.getElementById('editDate').value;
+        const grid = document.getElementById('editTimeGrid');
+        const helper = document.getElementById('editTimeHelper');
+        const updateBtn = document.getElementById('updateButton');
+
+        grid.innerHTML = '<div class="skeleton" style="grid-column: span 2;"></div>';
+        updateBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${API_RESERVATIONS}/available-times?date=${date}&themeId=${themeId}`);
+            await checkResponse(response, "시간 정보를 불러오지 못했습니다.");
+            const times = await response.json();
+            times.sort((a, b) => a.time.localeCompare(b.time));
+
+            grid.innerHTML = '';
+            if (times.length === 0) {
+                helper.textContent = "해당 날짜에 등록된 시간이 없습니다.";
+                return;
+            }
+
+            helper.textContent = "변경할 시간을 선택하세요.";
+            times.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'time-slot';
+                btn.disabled = !t.available;
+                btn.innerHTML = `<strong>${escapeHtml(t.time)}</strong><small class="${t.available ? 'available' : 'booked'}">${t.available ? '가능' : '완료'}</small>`;
+                btn.onclick = () => {
+                    editState.selectedTimeId = t.id;
+                    updateBtn.disabled = false;
+                    grid.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                grid.appendChild(btn);
+            });
+        } catch (e) {
+            grid.innerHTML = '';
+            helper.textContent = e.message;
+        }
+    }
+
+    // 예약 수정 요청
+    async function updateMyReservation() {
+        const id = document.getElementById('editReservationId').value;
+        const name = document.getElementById('editReservationName').value;
+        const date = document.getElementById('editDate').value;
+        const themeId = document.getElementById('editThemeSelect').value;
+        const timeId = editState.selectedTimeId;
+
+        try {
+            const response = await fetch(`${API_RESERVATIONS}/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, date, timeId, themeId })
+            });
+            await checkResponse(response, "예약 수정에 실패했습니다.");
+
+            setStatus("예약이 성공적으로 수정되었습니다.", "success");
+            closeEditModal();
+            searchMyReservations(); // 목록 갱신
+            loadPopularThemes();
+        } catch (error) {
+            setStatus(error.message, "error");
+        }
+    }
+
+    async function deleteMyReservation(id, name) {
+        if (!confirm("정말로 예약을 취소하시겠습니까?")) return;
+        try {
+            const response = await fetch(`${API_RESERVATIONS}/${id}?name=${encodeURIComponent(name)}`, {
+                method: 'DELETE'
+            });
+            await checkResponse(response, "예약 취소에 실패했습니다.");
+            setStatus("예약이 성공적으로 취소되었습니다.", "success");
+            searchMyReservations();
+            loadPopularThemes();
+            if (state.selectedThemeId && reservationDateInput.value) {
+                loadAvailableTimes();
+            }
+        } catch (error) {
+            setStatus(error.message, "error");
+        }
     }
 
     // --- 예약 페이지 스크립트 ---
@@ -889,20 +1166,15 @@
 
     async function loadThemes() {
         try {
-            const response = await fetch("/api/v1/themes");
-            if (!response.ok) throw new Error("테마 목록을 불러오지 못했습니다.");
+            const response = await fetch(API_THEMES);
+            await checkResponse(response, "테마 목록을 불러오지 못했습니다.");
             const themes = await response.json();
             state.themes = themes;
             renderThemes();
             if (themes.length > 0) {
                 selectTheme(themes[0].id);
-                setStatus("테마를 선택하고 가능 시간을 조회해 주세요.", "success");
-            } else {
-                setStatus("등록된 테마가 없습니다.", "error");
             }
         } catch (error) {
-            themeList.innerHTML = "";
-            themeEmpty.classList.remove("hidden");
             setStatus(error.message, "error");
         }
     }
@@ -912,14 +1184,11 @@
         popularRangeLabel.textContent = `${range.from} ~ ${range.to}`;
         renderPopularLoading();
 
-        const searchParams = new URLSearchParams({
-            from: range.from,
-            to: range.to
-        });
+        const searchParams = new URLSearchParams({ from: range.from, to: range.to });
 
         try {
-            const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
-            if (!response.ok) throw new Error("인기 테마를 불러오지 못했습니다.");
+            const response = await fetch(`${API_THEMES}/popular?${searchParams.toString()}`);
+            await checkResponse(response, "인기 테마를 불러오지 못했습니다.");
             const popularThemes = await response.json();
             state.popularThemes = popularThemes;
             renderPopularThemes();
@@ -933,8 +1202,7 @@
     function renderPopularLoading() {
         popularThemeEmpty.classList.add("hidden");
         popularThemeList.innerHTML = "";
-
-        for (let index = 0; index < 5; index += 1) {
+        for (let i = 0; i < 5; i++) {
             const skeleton = document.createElement("div");
             skeleton.className = "skeleton";
             popularThemeList.appendChild(skeleton);
@@ -951,18 +1219,13 @@
         popularThemeEmpty.classList.add("hidden");
         state.popularThemes.forEach(theme => {
             const button = document.createElement("button");
-            button.type = "button";
             button.className = "popular-card";
-            button.dataset.themeId = String(theme.id);
+            button.dataset.themeId = theme.id;
             button.innerHTML = `
-                <div class="popular-card-head">
-                    <span class="popular-rank">${theme.rank}위</span>
-                    <span class="popular-count">예약 ${theme.reservationCount}건</span>
-                </div>
-                <strong>${escapeHtml(theme.name)}</strong>
-                <p>${escapeHtml(theme.description)}</p>
+                <div class="popular-card-head"><span class="popular-rank">${theme.rank}위</span><span class="popular-count">예약 ${theme.reservationCount}건</span></div>
+                <strong>${escapeHtml(theme.name)}</strong><p>${escapeHtml(theme.description)}</p>
             `;
-            button.addEventListener("click", () => selectTheme(theme.id));
+            button.onclick = () => selectTheme(theme.id);
             popularThemeList.appendChild(button);
         });
         syncSelectedPopularCard();
@@ -977,15 +1240,10 @@
         themeEmpty.classList.add("hidden");
         state.themes.forEach(theme => {
             const button = document.createElement("button");
-            button.type = "button";
             button.className = "theme-card";
-            button.dataset.themeId = String(theme.id);
-            button.innerHTML = `
-                <strong>${escapeHtml(theme.name)}</strong>
-                <p>${escapeHtml(theme.description)}</p>
-                <div class="theme-meta">테마 번호 ${theme.id}</div>
-            `;
-            button.addEventListener("click", () => selectTheme(theme.id));
+            button.dataset.themeId = theme.id;
+            button.innerHTML = `<strong>${escapeHtml(theme.name)}</strong><p>${escapeHtml(theme.description)}</p><div class="theme-meta">테마 번호 ${theme.id}</div>`;
+            button.onclick = () => selectTheme(theme.id);
             themeList.appendChild(button);
         });
         syncSelectedThemeCard();
@@ -1000,100 +1258,64 @@
         syncSelectedPopularCard();
         const theme = findThemeById(themeId);
         selectedThemeLabel.textContent = theme ? theme.name : "선택 전";
-        setStatus(`"${theme ? theme.name : "테마"}"을 선택했습니다.`, "neutral");
     }
 
     function syncSelectedThemeCard() {
-        themeList.querySelectorAll(".theme-card").forEach((card) => {
-            card.classList.toggle("selected", Number(card.dataset.themeId) === state.selectedThemeId);
-        });
+        themeList.querySelectorAll(".theme-card").forEach(c => c.classList.toggle("selected", Number(c.dataset.themeId) === state.selectedThemeId));
     }
 
     function syncSelectedPopularCard() {
-        popularThemeList.querySelectorAll(".popular-card").forEach((card) => {
-            card.classList.toggle("selected", Number(card.dataset.themeId) === state.selectedThemeId);
-        });
+        popularThemeList.querySelectorAll(".popular-card").forEach(c => c.classList.toggle("selected", Number(c.dataset.themeId) === state.selectedThemeId));
     }
 
     function findThemeById(themeId) {
-        return state.themes.find((theme) => theme.id === themeId)
-            || state.popularThemes.find((theme) => theme.id === themeId);
+        return state.themes.find(t => t.id === themeId) || state.popularThemes.find(t => t.id === themeId);
     }
 
     async function loadAvailableTimes() {
-        if (!state.selectedThemeId) {
-            setStatus("먼저 테마를 선택해 주세요.", "error");
-            return;
-        }
-
-        if (!reservationDateInput.value) {
-            setStatus("예약 날짜를 선택해 주세요.", "error");
-            return;
-        }
-
+        if (!state.selectedThemeId || !reservationDateInput.value) return;
         renderTimeLoading();
         clearSelectedTime();
-        setStatus("가능 시간을 조회하는 중입니다.", "neutral");
-
-        const searchParams = new URLSearchParams({
-            date: reservationDateInput.value,
-            themeId: state.selectedThemeId
-        });
-
+        const params = new URLSearchParams({ date: reservationDateInput.value, themeId: state.selectedThemeId });
         try {
-            const response = await fetch(`/api/v1/times?${searchParams.toString()}`);
-            if (!response.ok) throw new Error("가능 시간을 불러오지 못했습니다.");
+            const response = await fetch(`${API_RESERVATIONS}/available-times?${params.toString()}`);
+            await checkResponse(response, "가능 시간을 불러오지 못했습니다.");
             const times = await response.json();
-
-            // 시간을 기준으로 오름차순 정렬
             times.sort((a, b) => a.time.localeCompare(b.time));
-
             renderTimeSlots(times);
-            const availableCount = times.filter((time) => time.available).length;
-            selectedAvailabilityLabel.textContent = `${availableCount}개`;
-            availabilityStat.textContent = `${availableCount}/${times.length}`;
-            setStatus(`예약 가능한 시간이 ${availableCount}개 있습니다.`, "success");
+            const availCount = times.filter(t => t.available).length;
+            selectedAvailabilityLabel.textContent = `${availCount}개`;
+            availabilityStat.textContent = `${availCount}/${times.length}`;
         } catch (error) {
             timeGrid.innerHTML = "";
-            timeHelper.textContent = "시간 정보를 불러오지 못했습니다.";
-            selectedAvailabilityLabel.textContent = "-";
-            availabilityStat.textContent = "실패";
             setStatus(error.message, "error");
         }
     }
 
     function renderTimeLoading() {
         timeGrid.innerHTML = "";
-        for (let index = 0; index < 4; index += 1) {
+        for (let i = 0; i < 4; i++) {
             const skeleton = document.createElement("div");
             skeleton.className = "skeleton";
             timeGrid.appendChild(skeleton);
         }
-        timeHelper.textContent = "시간 정보를 불러오는 중입니다.";
     }
 
     function renderTimeSlots(times) {
         timeGrid.innerHTML = "";
         if (times.length === 0) {
             timeHelper.textContent = "등록된 시간이 없습니다.";
-            availabilityStat.textContent = "0/0";
             return;
         }
-        timeHelper.textContent = "예약 가능한 시간만 선택할 수 있습니다.";
-        times.forEach((time) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "time-slot";
-            button.disabled = !time.available;
-            button.dataset.timeId = String(time.id);
-            button.innerHTML = `
-                <strong>${escapeHtml(time.time)}</strong>
-                <small class="${time.available ? "available" : "booked"}">${time.available ? "예약 가능" : "예약 완료"}</small>
-            `;
-            if (time.available) {
-                button.addEventListener("click", () => selectTime(time));
-            }
-            timeGrid.appendChild(button);
+        timeHelper.textContent = "예약 가능한 시간을 선택하세요.";
+        times.forEach(t => {
+            const btn = document.createElement("button");
+            btn.className = "time-slot";
+            btn.disabled = !t.available;
+            btn.dataset.timeId = t.id;
+            btn.innerHTML = `<strong>${escapeHtml(t.time)}</strong><small class="${t.available ? 'available' : 'booked'}">${t.available ? '예약 가능' : '예약 완료'}</small>`;
+            if (t.available) btn.onclick = () => selectTime(t);
+            timeGrid.appendChild(btn);
         });
     }
 
@@ -1101,74 +1323,33 @@
         state.selectedTimeId = time.id;
         selectedTimeLabel.textContent = time.time;
         reserveButton.disabled = false;
-        timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
-            slot.classList.toggle("selected", Number(slot.dataset.timeId) === time.id);
-        });
-        setStatus(`${time.time} 시간을 선택했습니다.`, "neutral");
+        timeGrid.querySelectorAll(".time-slot").forEach(s => s.classList.toggle("selected", Number(s.dataset.timeId) === time.id));
     }
 
     function clearSelectedTime() {
         state.selectedTimeId = null;
         selectedTimeLabel.textContent = "선택 전";
         reserveButton.disabled = true;
-        timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
-            slot.classList.remove("selected");
-        });
     }
 
     async function createReservation() {
         const name = reservationNameInput.value.trim();
-        if (!state.selectedThemeId) {
-            setStatus("테마를 선택해 주세요.", "error");
-            return;
-        }
-
-        if (!reservationDateInput.value) {
-            setStatus("예약 날짜를 선택해 주세요.", "error");
-            return;
-        }
-
-        if (!state.selectedTimeId) {
-            setStatus("예약할 시간을 선택해 주세요.", "error");
-            return;
-        }
-
-        if (!name) {
-            setStatus("예약자 이름을 입력해 주세요.", "error");
-            reservationNameInput.focus();
-            return;
-        }
-
+        if (!name) { setStatus("이름을 입력하세요.", "error"); return; }
         reserveButton.disabled = true;
-        setStatus("예약을 생성하는 중입니다.", "neutral");
         try {
-            const response = await fetch("/api/v1/reservations", {
+            const response = await fetch(API_RESERVATIONS, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name,
-                    date: reservationDateInput.value,
-                    timeId: state.selectedTimeId,
-                    themeId: state.selectedThemeId
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, date: reservationDateInput.value, timeId: state.selectedTimeId, themeId: state.selectedThemeId })
             });
-            if (response.status === 409) {
-                throw new Error("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
-            }
-
-            if (!response.ok) {
-                throw new Error("예약 생성에 실패했습니다.");
-            }
-            const createdReservation = await response.json();
+            await checkResponse(response, "예약 생성 실패");
+            const res = await response.json();
             reservationNameInput.value = "";
-            setStatus(`예약이 완료되었습니다. 예약 번호는 ${createdReservation.id}입니다.`, "success");
-            await loadAvailableTimes();
-            await loadPopularThemes();
-        } catch (error) {
-            reserveButton.disabled = !state.selectedTimeId;
-            setStatus(error.message, "error");
+            setStatus(`예약 완료! 번호: ${res.id}`, "success");
+            loadAvailableTimes();
+            loadPopularThemes();
+        } catch (e) {
+            setStatus(e.message, "error");
         }
     }
 
@@ -1176,26 +1357,19 @@
         statusCard.dataset.tone = tone;
         statusMessage.textContent = message;
         statusCard.classList.remove("bump");
-        requestAnimationFrame(() => {
-            statusCard.classList.add("bump");
-        });
+        requestAnimationFrame(() => statusCard.classList.add("bump"));
     }
 
     function getPopularDateRange() {
         const today = new Date();
         const from = new Date(today);
         const to = new Date(today);
-
-        // 과거 7일부터 향후 7일(미래 예약 포함)까지 넓은 범위를 인기 테마 기준으로 잡습니다.
         from.setDate(today.getDate() - 7);
         to.setDate(today.getDate() - 1);
-
-        return {
-            from: formatDate(from),
-            to: formatDate(to)
-        };
+        return { from: formatDate(from), to: formatDate(to) };
     }
 
+    // ✅ 타임존 버그가 해결된 로컬 기준 포맷팅
     function formatDate(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -1204,10 +1378,6 @@
     }
 
     // --- 관리자 페이지 스크립트 ---
-    const API_THEMES = '/api/v1/themes';
-    const API_TIMES = '/api/v1/times';
-    const API_RESERVATIONS = '/api/v1/reservations';
-
     function initializeAdminPage() {
         document.getElementById('themeForm').addEventListener('submit', addTheme);
         document.getElementById('timeForm').addEventListener('submit', addTime);
@@ -1222,116 +1392,75 @@
     async function fetchAndRender(url, tableId, renderRowFn) {
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`${url} 로딩 실패`);
             let data = await response.json();
-
-            // 관리자 페이지의 시간 목록도 시작 시간 기준으로 오름차순 정렬
-            if (url === API_TIMES) {
-                data.sort((a, b) => a.startAt.localeCompare(b.startAt));
-            }
-
-            const tbody = document.querySelector(`#${tableId} tbody`);
-            tbody.innerHTML = data.map(renderRowFn).join('');
-        } catch (error) {
-            console.error(error);
-        }
+            if (url === API_TIMES) data.sort((a, b) => a.startAt.localeCompare(b.startAt));
+            document.querySelector(`#${tableId} tbody`).innerHTML = data.map(renderRowFn).join('');
+        } catch (e) {}
     }
 
     async function deleteTheme(id) {
         try {
-            const response = await fetch(`${API_THEMES}/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userName: 'ADMIN' }) // 관리자 권한 확인을 위해 하드코딩된 userName 포함
-            });
-            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
-            loadAdminThemes();
-            loadThemes(); // 메인 화면의 테마 목록도 갱신
-            loadPopularThemes(); // 인기 테마 목록도 갱신
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
-        }
+            const response = await fetch(`${API_ADMIN_THEMES}/${id}`, { method: 'DELETE' });
+            await checkResponse(response, "테마 삭제 실패");
+            loadAdminThemes(); loadThemes(); loadPopularThemes();
+        } catch (e) { alert(e.message); }
     }
 
-    async function deleteTimeOrReservation(url, id, callback) {
+    async function deleteAdminReservation(id) {
         try {
-            const response = await fetch(`${url}/${id}`, {method: 'DELETE'});
-            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
-            callback();
-
-            // 예약 내역 삭제 시 화면 갱신
-            if (url === API_RESERVATIONS) {
-                if (state.selectedThemeId && reservationDateInput.value) {
-                    loadAvailableTimes();
-                }
-                loadPopularThemes();
-            }
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
-        }
+            const response = await fetch(`${API_ADMIN_RESERVATIONS}/${id}`, { method: 'DELETE' });
+            await checkResponse(response, "예약 삭제 실패");
+            loadAdminReservations(); loadPopularThemes();
+        } catch (e) { alert(e.message); }
     }
 
     async function addTheme(e) {
         e.preventDefault();
         const name = document.getElementById('themeName').value;
         const description = document.getElementById('themeDesc').value;
-        const imgUrl = document.getElementById('themeImgUrl').value;
-        await fetch(API_THEMES, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name, description, imgUrl, userName: 'ADMIN'}) // userName 하드코딩
-        });
-        e.target.reset();
-        loadAdminThemes();
-        loadThemes(); // 메인 화면의 테마 목록도 갱신
+        try {
+            const response = await fetch(API_ADMIN_THEMES, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, description})
+            });
+            await checkResponse(response, "추가 실패");
+            e.target.reset(); loadAdminThemes(); loadThemes();
+        } catch (e) { alert(e.message); }
     }
 
     function loadAdminThemes() {
-        fetchAndRender(API_THEMES, 'themeTable', theme => `
-            <tr>
-                <td>${theme.id}</td>
-                <td>${escapeHtml(theme.name)}</td>
-                <td>${escapeHtml(theme.description)}</td>
-                <td><button onclick="deleteTheme(${theme.id})" class="button secondary">삭제</button></td>
-            </tr>
-        `);
+        fetchAndRender(API_THEMES, 'themeTable', t => `<tr><td>${t.id}</td><td>${escapeHtml(t.name)}</td><td>${escapeHtml(t.description)}</td><td><button onclick="deleteTheme(${t.id})" class="button secondary">삭제</button></td></tr>`);
     }
 
     async function addTime(e) {
         e.preventDefault();
         const startAt = document.getElementById('timeStartAt').value;
-        await fetch(API_TIMES, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({startAt})
-        });
-        e.target.reset();
-        loadAdminTimes();
+        try {
+            const response = await fetch(API_ADMIN_TIMES, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({startAt})
+            });
+            await checkResponse(response, "추가 실패");
+            e.target.reset(); loadAdminTimes();
+        } catch (e) { alert(e.message); }
     }
 
     function loadAdminTimes() {
-        fetchAndRender(API_TIMES, 'timeTable', time => `
-            <tr>
-                <td>${time.id}</td>
-                <td>${escapeHtml(time.startAt)}</td>
-                <td><button onclick="deleteTimeOrReservation('${API_TIMES}', ${time.id}, loadAdminTimes)" class="button secondary">삭제</button></td>
-            </tr>
-        `);
+        fetchAndRender(API_TIMES, 'timeTable', t => `<tr><td>${t.id}</td><td>${escapeHtml(t.startAt)}</td><td><button onclick="deleteTimeOrReservation('${API_TIMES}', ${t.id}, loadAdminTimes)" class="button secondary">삭제</button></td></tr>`);
+    }
+
+    async function deleteTimeOrReservation(url, id, callback) {
+        try {
+            const endpoint = url === API_TIMES ? `${API_ADMIN_TIMES}/${id}` : `${url}/${id}`;
+            await fetch(endpoint, {method: 'DELETE'});
+            callback();
+        } catch (e) {}
     }
 
     function loadAdminReservations() {
-        fetchAndRender(API_RESERVATIONS, 'reservationTable', res => `
-            <tr>
-                <td>${res.id}</td>
-                <td>${escapeHtml(res.name)}</td>
-                <td>${res.date}</td>
-                <td>${res.time ? escapeHtml(res.time.startAt) : ''}</td>
-                <td>${res.themeId}</td>
-                <td><button onclick="deleteTimeOrReservation('${API_RESERVATIONS}', ${res.id}, loadAdminReservations)" class="button secondary">삭제</button></td>
-            </tr>
-        `);
+        fetchAndRender(API_RESERVATIONS, 'reservationTable', res => `<tr><td>${res.id}</td><td>${escapeHtml(res.name)}</td><td>${res.date}</td><td>${res.time ? res.time.startAt : ''}</td><td>${res.theme ? res.theme.name : ''}</td><td><button onclick="deleteAdminReservation(${res.id})" class="button secondary">삭제</button></td></tr>`);
     }
 </script>
 </body>

@@ -25,10 +25,11 @@ public class ReservationTimeServiceTest {
     @Test
     void 예약이_있는_시간을_삭제할_수_없다() {
         when(reservationTimeDao.delete(1L))
-                .thenThrow(new ReservationTimeInUseException());
+                .thenThrow(new ReservationTimeInUseException("해당 시간에 예약이 존재합니다."));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(ReservationTimeInUseException.class);
+                .isInstanceOf(ReservationTimeInUseException.class)
+                .hasMessage("해당 시간에 예약이 존재합니다.");
     }
 
     @Test
@@ -36,7 +37,8 @@ public class ReservationTimeServiceTest {
         when(reservationTimeDao.delete(1L)).thenReturn(0);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessage("해당 시간을 찾을 수 없습니다.");
     }
 
     @Test

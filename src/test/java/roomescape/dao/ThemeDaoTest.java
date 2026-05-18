@@ -1,25 +1,33 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularTheme;
+import roomescape.exception.ThemeInUseException;
+import roomescape.exception.ThemeNotFoundException;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Import(ThemeDao.class)
+@Import({
+        ThemeDao.class,
+        ReservationTimeDao.class,
+        ReservationDao.class
+})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeDaoTest {
 
@@ -27,26 +35,51 @@ public class ThemeDaoTest {
     private ThemeDao themeDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeDao reservationTimeDao;
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("img_url")
-    );
+    @Autowired
+    private ReservationDao reservationDao;
 
     @Test
     void 테마_생성_테스트() {
-        Long id = themeDao.insertTheme("이든의 공포 하우스", "이든이 귀신으로 나오는 공포 테마", "image.jpg");
+        String name = "이든의 공포 하우스";
+        String description = "이든이 귀신으로 나오는 공포 테마";
+        String imgUrl = "image.jpg";
+        Long id = themeDao.insertTheme(Theme.from(name, description, imgUrl));
 
         Theme actual = themeDao.findById(id);
-        Theme expected = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?", themeRowMapper, id);
 
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-        assertThat(actual.getName()).isEqualTo(expected.getName());
-        assertThat(actual.getDescription()).isEqualTo(expected.getDescription());
-        assertThat(actual.getImgUrl()).isEqualTo(expected.getImgUrl());
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getName()).isEqualTo(name);
+        assertThat(actual.getDescription()).isEqualTo(description);
+        assertThat(actual.getImgUrl()).isEqualTo(imgUrl);
+    }
+
+    @Test
+    void 테마_삭제_테스트() {
+        Long id = themeDao.insertTheme(Theme.from("이든의 공포 하우스", "이든이 귀신으로 나오는 공포 테마", "image.jpg"));
+
+        int deleteCount = themeDao.delete(id);
+
+        assertThat(deleteCount).isEqualTo(1);
+    }
+
+    @Test
+    void 예약이_존재하지_않는_테마_조회_시_예외_발생() {
+        assertThatThrownBy(() -> themeDao.findById(1L))
+                .isInstanceOf(ThemeNotFoundException.class)
+                .hasMessage("해당 테마를 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제_시_예외_발생() {
+        Long themeId = themeDao.insertTheme(Theme.from("이든의 공포 하우스", "이든이 귀신으로 나오는 공포 테마", "image.jpg"));
+        Long timeId = reservationTimeDao.insertReservationTime(ReservationTime.from(LocalTime.of(10, 0)));
+        reservationDao.insertReservation(Reservation.from("이든", LocalDate.of(2026, 5, 6), timeId, themeId));
+
+        assertThatThrownBy(() -> themeDao.delete(themeId))
+                .isInstanceOf(ThemeInUseException.class)
+                .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 
     @Test

@@ -3,9 +3,9 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exception.ReservationTimeNotFoundException;
 
 import java.util.List;
 
@@ -25,19 +25,14 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
-        Long id = reservationTimeDao.insertReservationTime(request.startAt());
+        ReservationTime time = ReservationTime.from(request.startAt());
+        Long id = reservationTimeDao.insertReservationTime(time);
         return ReservationTimeResponse.from(reservationTimeDao.findById(id));
     }
 
     @Transactional
     public void deleteReservationTime(Long id) {
         int deleteCount = reservationTimeDao.delete(id);
-        validateDelete(deleteCount);
-    }
-
-    private void validateDelete(int deleteCount) {
-        if (deleteCount == 0) {
-            throw new ReservationTimeNotFoundException();
-        }
+        ReservationTime.validateDeletion(deleteCount);
     }
 }

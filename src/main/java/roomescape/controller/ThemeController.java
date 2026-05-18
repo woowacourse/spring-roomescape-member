@@ -1,27 +1,22 @@
 package roomescape.controller;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.ThemeCreateRequest;
-import roomescape.dto.request.ThemeDeleteRequest;
 import roomescape.dto.response.PopularThemeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/themes")
+@Validated
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -35,20 +30,7 @@ public class ThemeController {
         return ResponseEntity.ok().body(themeResponses);
     }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeCreateRequest request) {
-        ThemeResponse themeResponse = themeService.createTheme(request);
-        return ResponseEntity.created(URI.create("/api/v1/themes/" + themeResponse.id())).body(themeResponse);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id,
-                                            @RequestBody ThemeDeleteRequest request) {
-        themeService.deleteTheme(id, request.userName());
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping(params = {"from", "to"})
+    @GetMapping(path = "/popular", params = {"from", "to"})
     public ResponseEntity<List<PopularThemeResponse>> getPopularTheme(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
