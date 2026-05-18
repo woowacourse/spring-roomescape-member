@@ -17,7 +17,7 @@ public class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -58,24 +58,24 @@ public class MissionStepTest {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(params)
-            .when().post("/reservations")
+            .when().post("/admin/reservations")
             .then().log().all()
             .statusCode(201)
             .body("id", is(1));
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/admin/reservations")
             .then().log().all()
             .statusCode(200)
             .body("size()", is(1));
 
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
+            .when().delete("/admin/reservations/1")
             .then().log().all()
             .statusCode(204);
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/admin/reservations")
             .then().log().all()
             .statusCode(200)
             .body("size()", is(0));
@@ -129,7 +129,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation1)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
@@ -142,13 +142,13 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation2)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(2));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
@@ -157,7 +157,7 @@ public class MissionStepTest {
     @Test
     void 없는_예약_삭제시_404_응답() {
         RestAssured.given().log().all()
-            .when().delete("/reservations/999")
+            .when().delete("/admin/reservations/999")
             .then().log().all()
             .statusCode(404);
     }
@@ -218,12 +218,12 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -240,7 +240,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))

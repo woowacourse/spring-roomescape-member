@@ -60,7 +60,7 @@ public class DatabaseMissionStepTest {
         );
 
         List<?> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList("reservations");
@@ -103,7 +103,7 @@ public class DatabaseMissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -111,7 +111,7 @@ public class DatabaseMissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
