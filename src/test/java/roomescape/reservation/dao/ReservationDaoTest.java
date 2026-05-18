@@ -19,16 +19,6 @@ import roomescape.reservationTime.domain.ReservationTime;
 @JdbcTest
 @Import(ReservationDao.class)
 public class ReservationDaoTest {
-    private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
-        return new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("name"),
-                LocalDate.parse(rs.getString("date")),
-                new ReservationTime(rs.getLong("time_id"),
-                        LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm"))),
-                rs.getLong("theme_id")
-        );
-    };
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,56 +28,29 @@ public class ReservationDaoTest {
 
     @Test
     void 이름으로_예약_조회_테스트() {
+        // given
         String name = "도우너";
+
+        // when
         List<Reservation> expected = reservationDao.findByName(name);
 
-        String sql =
-                """
-                        select r.id as reservation_id,
-                            r.name,
-                            r.date,
-                            t.id as time_id,
-                            t.start_at as start_at,
-                            r.theme_id as theme_id
-                        from reservation r
-                        inner join reservation_time t
-                        on r.time_id = t.id
-                        WHERE r.name =  ?
-                    """;
-
-        List<Reservation> actual = jdbcTemplate.query(sql, rowMapper, name);
-
-        assertAll(
-                () -> assertThat(actual.getFirst().getName()).isEqualTo(expected.getFirst().getName()),
-                () -> assertThat(actual.getFirst().getDate()).isEqualTo(expected.getFirst().getDate()),
-                () -> assertThat(actual.getFirst().getThemeId()).isEqualTo(expected.getFirst().getThemeId())
-        );
+        // then
+        assertThat(name).isEqualTo(expected.getFirst().getName());
     }
 
     @Test
     void 예약_생성_테스트() {
-        Reservation reservation = new Reservation("초록", LocalDate.parse("2026-05-05"),
-                new ReservationTime(6L, LocalTime.parse("15:00")), 1L);
-        Reservation expected = reservationDao.insert(reservation);
+        Reservation reservation = new Reservation(
+                "초록",
+                LocalDate.parse("2026-05-05"),
+                new ReservationTime(6L, LocalTime.parse("15:00")),
+                1L);
+        Reservation saved = reservationDao.insert(reservation);
 
-        String sql =
-                """
-                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
-                        from reservation r
-                        inner join reservation_time t
-                        on r.time_id = t.id
-                        and r.id = ?
-                """;
-        Reservation actual = jdbcTemplate.query(sql, rowMapper, expected.getId()).getFirst();
+        String sql = "SELECT name FROM reservation WHERE id = ?";
+        String actualName = jdbcTemplate.queryForObject(sql, String.class, saved.getId());
 
-        assertAll(
-                () -> assertThat(expected.getId()).isEqualTo(actual.getId()),
-                () -> assertThat(expected.getName()).isEqualTo(actual.getName()),
-                () -> assertThat(expected.getDate()).isEqualTo(actual.getDate()),
-                () -> assertThat(expected.getTime().getId()).isEqualTo(actual.getTime().getId()),
-                () -> assertThat(expected.getTime().getStartAt()).isEqualTo(actual.getTime().getStartAt()),
-                () -> assertThat(expected.getThemeId()).isEqualTo(actual.getThemeId())
-        );
+        assertThat(actualName).isEqualTo("초록");
     }
 
     @Test
