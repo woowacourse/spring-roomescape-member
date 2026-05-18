@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ class AvailabilityFlowTest {
         Integer time10 = createTime("10:00");
         Integer time11 = createTime("11:00");
         Integer time12 = createTime("12:00");
-        String date = "2026-08-05";
+        String date = LocalDate.now().plusDays(1).toString();
 
         // 1) 가용 시간 조회 - 모두 reserved=false
         RestAssured.given().log().all()

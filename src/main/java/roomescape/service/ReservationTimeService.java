@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.common.exception.InvalidDeleteException;
+import roomescape.domain.ReservationTimeStatus;
 import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.TimeWithStatusResponse;
+import roomescape.entity.ReservationTime;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,12 +33,12 @@ public class ReservationTimeService {
         return reservationtimeRepository.getById(id);
     }
 
-    public List<TimeWithStatusResponse> getReservationTimesWithAvailability(LocalDate date, Long themeId) {
+    public List<ReservationTimeStatus> getTimeSlotsWithReservationStatus(LocalDate date, Long themeId) {
         List<ReservationTime> times = getReservationTimes();
         Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
         return times.stream()
-                .map(time -> TimeWithStatusResponse.from(time, reservedTimeIds.contains(time.getId())))
+                .map(time -> new ReservationTimeStatus(time, reservedTimeIds.contains(time.getId())))
                 .toList();
     }
 
@@ -50,8 +51,10 @@ public class ReservationTimeService {
     @Transactional
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
+            throw new InvalidDeleteException("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
         }
+
+        getReservationTime(id);
         reservationtimeRepository.deleteById(id);
     }
 }

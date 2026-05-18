@@ -1,5 +1,6 @@
 package roomescape.api;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.TimeWithStatusResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -28,25 +28,30 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> search() {
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes()
                 .stream()
-                .map(ReservationTimeResponse::from)
+                .map(time -> ReservationTimeResponse.from(time, false))
                 .toList();
 
         return ResponseEntity.ok().body(responses);
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<TimeWithStatusResponse>> searchAvailableReservationTime(@RequestParam LocalDate date,
+    public ResponseEntity<List<ReservationTimeResponse>> searchTimeSlotsByDateAndTheme(@RequestParam LocalDate date,
                                                                                        @RequestParam Long themeId) {
-        return ResponseEntity.ok().body(reservationTimeService.getReservationTimesWithAvailability(date, themeId));
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimeSlotsWithReservationStatus(
+                        date, themeId)
+                .stream()
+                .map(ReservationTimeResponse::of)
+                .toList();
+        return ResponseEntity.ok().body(reservationTimeResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> add(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> add(@Valid @RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = ReservationTimeResponse.from(
-                reservationTimeService.addReservationTime(request));
+                reservationTimeService.addReservationTime(request), false);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

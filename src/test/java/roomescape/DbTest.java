@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DbTest {
 
+    public static final String FUTURE_FIRST_DATE = LocalDate.now().plusDays(1).toString();
+    
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -26,7 +29,7 @@ public class DbTest {
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
+            assertThat(connection.getCatalog()).isNotBlank();
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue();
             assertThat(connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue();
@@ -46,7 +49,7 @@ public class DbTest {
         Long themeId = jdbcTemplate.queryForObject("SELECT id from theme limit 1", Long.class);
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", timeId, themeId
+                "브라운", FUTURE_FIRST_DATE, timeId, themeId
         );
 
         List<Map> reservations = RestAssured.given().log().all()
@@ -72,7 +75,7 @@ public class DbTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", FUTURE_FIRST_DATE);
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 

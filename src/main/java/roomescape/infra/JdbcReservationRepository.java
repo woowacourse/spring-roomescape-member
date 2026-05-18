@@ -12,10 +12,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
+import roomescape.repository.ReservationRepository;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -34,8 +34,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         Theme theme = new Theme(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
-                rs.getString("description"),
-                rs.getString("thumbnail_image_url")
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
         );
         return new Reservation(
                 rs.getLong("reservation_id"),
@@ -60,6 +60,23 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT r.id as reservation_id, r.name, r.date,
+                       t.id as time_id, t.start_at as time_value,
+                       th.id as theme_id, th.name as theme_name,
+                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.name = ?
+                ORDER BY r.date DESC, time_value ASC;
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     @Override
@@ -140,5 +157,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    @Override
+    public void updateDateTime(Long id, LocalDate date, Long timeId) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?;
+                """;
+
+        jdbcTemplate.update(sql, date, timeId, id);
     }
 }

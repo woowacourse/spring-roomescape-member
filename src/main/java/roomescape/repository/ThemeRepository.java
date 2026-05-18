@@ -1,8 +1,10 @@
-package roomescape.domain;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import roomescape.common.exception.ResourceNotFoundException;
+import roomescape.entity.Theme;
 
 public interface ThemeRepository {
 
@@ -17,6 +19,6 @@ public interface ThemeRepository {
     void deleteById(Long id);
 
     default Theme getById(Long id) {
-        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 ID입니다."));
+        return findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
     }
 }

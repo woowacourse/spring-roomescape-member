@@ -41,9 +41,45 @@
             <tbody id="table-body"></tbody>
         </table>
     </section>
+
+    <section id="my-reservations" class="card lookup-card">
+        <div class="lookup-form">
+            <label class="field-label" for="my-reservation-name-input">예약자 이름</label>
+            <input id="my-reservation-name-input"
+                   class="input"
+                   type="text"
+                   placeholder="예: 브라운"
+                   autocomplete="off">
+            <button id="my-reservation-search-button"
+                    class="btn btn-primary"
+                    type="button">
+                내 예약 조회
+            </button>
+        </div>
+        <p id="my-reservation-lookup-message" class="lookup-message muted">
+            예약할 때 입력한 이름을 넣어주세요.
+        </p>
+    </section>
+
+    <section class="card my-reservation-card">
+        <table class="data">
+            <thead>
+            <tr>
+                <th style="width: 60px;">#</th>
+                <th>테마</th>
+                <th>예약자</th>
+                <th>날짜</th>
+                <th>시간</th>
+                <th class="actions">변경/취소</th>
+            </tr>
+            </thead>
+            <tbody id="my-reservation-table-body"></tbody>
+        </table>
+    </section>
 </main>
 
 <script th:src="@{/js/common.js}"></script>
 <script th:src="@{/js/reservation.js}"></script>
+<script th:src="@{/js/my-reservation.js}"></script>
 </body>
 </html>

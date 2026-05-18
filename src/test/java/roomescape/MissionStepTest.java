@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    public static final String FUTURE_FIRST_DATE = LocalDate.now().plusDays(1).toString();
 
     @Test
     void 예약_조회() {
@@ -51,7 +54,7 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", FUTURE_FIRST_DATE);
         params.put("timeId", timeId);
         params.put("themeId", themeId);
 
