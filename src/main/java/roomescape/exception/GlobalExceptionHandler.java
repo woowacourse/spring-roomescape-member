@@ -1,54 +1,97 @@
 package roomescape.exception;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String ERROR_PREFIX = "[ERROR] ";
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleReservationNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ERROR_PREFIX + "존재하지 않는 예약입니다."));
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        ErrorType errorType = e.getErrorType();
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
-    @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleReservationTimeNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ERROR_PREFIX + "존재하지 않는 예약시간입니다."));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgument(MethodArgumentNotValidException e) {
+        ErrorType errorType = ErrorType.METHOD_ARGUMENT_NOT_VALID;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
-    @ExceptionHandler(ReservationTimeInUseException.class)
-    public ResponseEntity<ErrorResponse> handleReservationTimeInUse() {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(ERROR_PREFIX + "예약이 존재하는 예약시간은 삭제할 수 없습니다."));
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPathVariable(MissingPathVariableException e) {
+        ErrorType errorType = ErrorType.MISSING_PATH_VARIABLE;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
-    @ExceptionHandler(ReservationAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleReservationAlreadyExists() {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(ERROR_PREFIX + "이미 예약이 존재합니다."));
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException e) {
+        ErrorType errorType = ErrorType.MISSING_REQUEST_PARAMETER;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
-    @ExceptionHandler(ThemeNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleThemeNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ERROR_PREFIX + "존재하지 않는 테마입니다."));
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        ErrorType errorType = ErrorType.HTTP_MESSAGE_NOT_READABLE;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
-    @ExceptionHandler(ThemeInUseException.class)
-    public ResponseEntity<ErrorResponse> handleThemeInUse() {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(ERROR_PREFIX + "예약이 존재하는 테마는 삭제할 수 없습니다."));
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        ErrorType errorType = ErrorType.METHOD_ARGUMENT_TYPE_MISMATCH;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException e) {
+        ErrorType errorType = ErrorType.CONSTRAINT_VIOLATION;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(ERROR_PREFIX + "예기치 못한 예외가 발생했습니다."));
+        ErrorType errorType = ErrorType.UNEXPECTED_EXCEPTION;
+
+        return ResponseEntity.status(errorType.getHttpStatus())
+                .body(new ErrorResponse(
+                        errorType.getErrorMessage(),
+                        errorType.getErrorCode()));
     }
 }

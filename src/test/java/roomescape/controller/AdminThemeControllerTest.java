@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class AdminThemeControllerTest {
 
     @Test
-    void 테마_추가() {
+    void 테마_생성시_성공하면_201을_반환한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams())
@@ -34,7 +35,7 @@ public class AdminThemeControllerTest {
     }
 
     @Test
-    void 테마_삭제() {
+    void 테마_삭제시_성공하면_204를_반환한다() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams())
@@ -62,7 +63,24 @@ public class AdminThemeControllerTest {
     }
 
     @Test
-    void 예약이_존재하는_테마를_삭제하면_409를_반환한다() {
+    void 테마_삭제시_테마가_존재하지_않으면_404를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams())
+                .when().post("/api/v1/admin/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/api/v1/admin/themes/2")
+                .then().log().all()
+                .statusCode(404)
+                .body("errorCode", is("THEME404_001"));
+    }
+
+    @Test
+    void 테마_삭제시_예약이_존재하면_409를_반환한다() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
 
@@ -90,21 +108,54 @@ public class AdminThemeControllerTest {
                 .contentType(ContentType.JSON)
                 .when().delete("/api/v1/admin/themes/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("errorCode", is("THEME409_001"));
+    }
+
+    @Test
+    void 테마_생성시_이름이_비어있으면_400을_반환한다() {
+        Map<String, Object> themeParams = new HashMap<>();
+        themeParams.put("name", "");
+        themeParams.put("description", "이든이 귀신으로 나옴");
+        themeParams.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/api/v1/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_001"));
+    }
+
+    @Test
+    void 테마_생성시_imgUrl_형식이_잘못되면_400을_반환한다() {
+        Map<String, Object> themeParams = new HashMap<>();
+        themeParams.put("name", "이든의 공포 하우스");
+        themeParams.put("description", "이든이 귀신으로 나옴");
+        themeParams.put("imgUrl", "링크~");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/api/v1/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_001"));
     }
 
     private Map<String, Object> themeParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "이든의 공포 하우스");
         params.put("description", "이든이 귀신으로 나옴");
-        params.put("imgUrl", "링크~");
+        params.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
         return params;
     }
 
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1L);
         params.put("themeId", 1L);
         return params;

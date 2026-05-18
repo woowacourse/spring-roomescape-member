@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
-public record ReservationCreateRequest(
+public record ReservationUpdateRequest(
         @NotNull
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
@@ -20,10 +20,6 @@ public record ReservationCreateRequest(
 
         @NotNull
         @Positive
-        Long timeId,
-
-        @NotNull
-        @Positive
-        Long themeId
+        Long timeId
 ) {
 }

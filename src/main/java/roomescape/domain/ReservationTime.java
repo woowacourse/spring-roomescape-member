@@ -1,24 +1,17 @@
 package roomescape.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
 public class ReservationTime {
 
     private final Long id;
-    @JsonFormat(pattern = "HH:mm")
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime time) {
-        this.id = id;
-        this.startAt = time;
-    }
+    public ReservationTime(Long id, LocalTime startAt) {
+        validateStartAt(startAt);
 
-    public static ReservationTime withId(Long id, LocalTime time) {
-        return new ReservationTime(
-                id,
-                time
-        );
+        this.id = id;
+        this.startAt = startAt;
     }
 
     public Long getId() {
@@ -27,5 +20,11 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
+    }
+
+    private void validateStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("예약 시작 시간은 비어 있을 수 없습니다.");
+        }
     }
 }

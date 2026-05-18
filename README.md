@@ -1,3 +1,5 @@
+## 사이클 1
+
 ### 기능명세서
 
 #### 화면
@@ -50,7 +52,7 @@ Password: 비워두기
 ##### Theme - 01
 
 - API 설명: 관리자가 테마를 추가할 수 있다.
-- URI: `/api/v1/themes`
+- URI: `/api/v1/admin/themes`
 - Method: `POST`
 - Path Variable: 없음
 - Query Variable: 없음
@@ -61,8 +63,7 @@ RequestBody
 {
   "name": "String",
   "description": "String",
-  "imgUrl": "String",
-  "userName": "String"
+  "imgUrl": "String"
 }
 ```
 
@@ -82,18 +83,12 @@ ResponseBody
 ##### Theme - 02
 
 - API 설명: 관리자가 테마를 삭제할 수 있다.
-- URI: `/api/v1/themes/{id}`
+- URI: `/api/v1/admin/themes/{id}`
 - Method: `DELETE`
 - Path Variable: `id`
 - Query Variable: 없음
 
-RequestBody
-
-```json
-{
-  "userName": "String"
-}
-```
+- RequestBody: 없음
 
 - ResponseBody: 없음
 
@@ -102,8 +97,8 @@ RequestBody
 - 이유
 
     - theme에 필요한 값들을 요청 필드로 받아서 post 요청을 보냈고,
-      반환 값에서는 id를 추가해줘서 했다. 중간에 userName을 추가한 이유는 admin을 확인하기 위함이다.
-    - delete도 현재 userName을 식별하여 admin일 때만 삭제할 수 있게 했다.
+      반환 값에서는 id를 추가해줘서 했다.
+    - 관리자 기능은 일반 사용자 API와 분리하기 위해 `/api/v1/admin/themes` 경로로 분리했다.
 
 #### 2단계
 
@@ -118,7 +113,7 @@ RequestBody
 ##### Times - 01
 
 - API 설명: 사용자가 예약 가능한 시간을 조회할 수 있다.
-- URI: `/api/v1/times?date=2026-05-08&themeId=1`
+- URI: `/api/v1/reservations/times?date=2026-05-08&themeId=1`
 - Method: `GET`
 - Path Variable: 없음
 - Query Variable: `date`, `themeId`
@@ -258,3 +253,31 @@ ResponseBody
 Controller는 가능한 Response DTO를 반환한다.
 단, 단순 조회 API는 현재 단계에서 도메인 반환을 허용한다.<br>
 계산값, 조합값, 화면 전용 필드가 포함되는 응답은 반드시 Response DTO를 사용한다.
+
+## 사이클 2
+
+### 기능명세서
+
+#### **1단계 - 서비스 정책 적용**
+
+다음 정책을 만족하지 않는 요청은 거부한다.
+
+- [x] 지나간 날짜·시간에 대한 예약 생성은 불가능하다.
+- [x] 같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.
+- [x] 예약이 존재하는 시간을 삭제할 수 없다.
+- [x] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
+
+#### **2단계 - 에러 응답 설계**
+
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해**의도된 에러 응답**을 반환한다.
+- [x] **500(서버 에러)이 사용자에게 노출되지 않도록**한다.
+- [x] 에러 응답 본문에**어떤 정보를 담을지 결정**한다.
+- [x] 브라우저에서 에러 발생 시 사용자에게**의미 있는 메시지가 표시**되어야 한다.
+
+#### **3단계 - 내 예약 조회/변경/취소**
+
+- [x] 사용자가**자신의 이름으로 본인의 예약 목록을 조회**할 수 있다.
+- [x] 사용자가 본인의 예약을**취소**할 수 있다.
+- [x] 이미 지난 예약은 취소할 수 없다.
+- [x] 사용자가 본인의 예약의**날짜·시간을 변경**할 수 있다.
+- [x] 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.

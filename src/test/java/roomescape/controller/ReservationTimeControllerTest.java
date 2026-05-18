@@ -15,18 +15,19 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
+    private static final String AVAILABLE_TIME_TEST_DATE = "2099-05-05";
 
     @Test
-    void 시간_조회() {
+    void 예약시간_조회시_성공하면_200을_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times")
+                .when().get("/api/v1/reservations/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
     }
 
     @Test
-    void 예약_가능_시간_조회() {
+    void 예약가능시간_조회시_성공하면_200을_반환한다() {
         createDefaultTimes();
         createDefaultThemes();
 
@@ -39,7 +40,7 @@ public class ReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservation/times?date=2026-05-05&themeId=1")
+                .when().get("/api/v1/reservations/times/availability?date=" + AVAILABLE_TIME_TEST_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))
@@ -49,7 +50,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void 사용자는_같은_날짜_시간이라도_테마가_다르면_각각_예약_가능하다() {
+    void 예약생성시_같은_날짜와_시간이어도_테마가_다르면_201을_반환한다() {
         createDefaultTimes();
         createDefaultThemes();
 
@@ -66,6 +67,42 @@ public class ReservationTimeControllerTest {
                 .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @Test
+    void 예약가능시간_조회시_date가_누락되면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations/times/availability?themeId=1")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_003"));
+    }
+
+    @Test
+    void 예약가능시간_조회시_themeId가_누락되면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations/times/availability?date=2026-05-15")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_003"));
+    }
+
+    @Test
+    void 예약가능시간_조회시_date_형식이_잘못되면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations/times/availability?date=2026/05/15&themeId=1")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_005"));
+    }
+
+    @Test
+    void 예약가능시간_조회시_themeId_형식이_잘못되면_400을_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/reservations/times/availability?date=2026-05-15&themeId=abc")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorCode", is("COMMON400_005"));
     }
 
     private void createDefaultTimes() {
@@ -98,7 +135,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> themeParams = new HashMap<>();
         themeParams.put("name", "이든의 공포 하우스");
         themeParams.put("description", "이든이 귀신으로 나옴");
-        themeParams.put("imgUrl", "링크~");
+        themeParams.put("imgUrl", "https://images.example.com/themes/horror-house.jpg");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
@@ -108,7 +145,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> themeParams2 = new HashMap<>();
         themeParams2.put("name", "정콩이의 방탈출");
         themeParams2.put("description", "니는 못나간다");
-        themeParams2.put("imgUrl", "링크~");
+        themeParams2.put("imgUrl", "https://images.example.com/themes/jungkong-room.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -120,7 +157,7 @@ public class ReservationTimeControllerTest {
     private Map<String, Object> reservationParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2026-05-05");
+        params.put("date", AVAILABLE_TIME_TEST_DATE);
         params.put("timeId", 1L);
         params.put("themeId", 1L);
         return params;

@@ -7,13 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeProjection;
+import roomescape.dto.PopularThemeResult;
 import roomescape.exception.ThemeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
+
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -30,7 +31,7 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         try {
             int deleteCount = themeDao.delete(id);
-            validateDelete(deleteCount);
+            validateDeleted(deleteCount);
         } catch (DataIntegrityViolationException e) {
             throw new ThemeInUseException();
         }
@@ -40,11 +41,13 @@ public class ThemeService {
         return themeDao.findAllThemes();
     }
 
-    public List<PopularThemeProjection> getPopularThemes(LocalDate from, LocalDate to) {
-        return themeDao.findPopularThemes(from, to);
+    public List<PopularThemeResult> getPopularThemes(LocalDate from, LocalDate to) {
+        return themeDao.findPopularThemes(from, to).stream()
+                .map(PopularThemeResult::from)
+                .toList();
     }
 
-    private void validateDelete(int deleteCount) {
+    private void validateDeleted(int deleteCount) {
         if (deleteCount == 0) {
             throw new ThemeNotFoundException();
         }

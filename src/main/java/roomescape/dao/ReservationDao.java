@@ -40,6 +40,28 @@ public class ReservationDao {
         return reservations;
     }
 
+    public List<Reservation> findAllReservationsByUserName(String userName) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at,
+                    r.theme_id
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                  ON r.time_id = t.id
+                WHERE r.name = ?
+                """;
+        List<Reservation> reservations = jdbcTemplate.query(
+                sql,
+                reservationRowMapper(),
+                userName
+        );
+        return reservations;
+    }
+
     public Reservation findReservationById(Long id) {
         String sql = """
                 SELECT
@@ -58,6 +80,11 @@ public class ReservationDao {
                 sql,
                 reservationRowMapper(), id);
         return reservation;
+    }
+
+    public int updateById(Long id, LocalDate date, Long timeId) {
+        String sql = "update reservation set date = ?, time_id = ? where id = ?";
+        return jdbcTemplate.update(sql, date.toString(), timeId, id);
     }
 
     public Long insertWithKeyHolder(String name, LocalDate date, Long timeId, Long themeId) {

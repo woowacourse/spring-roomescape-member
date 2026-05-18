@@ -1,22 +1,30 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RequestMapping("/api/v1/reservations")
 @RestController
+@Validated
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -26,15 +34,19 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @Size(min = 2, max = 10)
+            @Pattern(regexp = "^[a-zA-Z가-힣]+$")
+            @RequestParam(required = false) String userName
+    ) {
+        List<Reservation> reservations = reservationService.getReservations(userName);
         List<ReservationResponse> reservationResponses = ReservationResponse.fromAll(reservations);
         return ResponseEntity.ok().body(reservationResponses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody ReservationCreateRequest reservationCreateRequest) {
+            @Valid @RequestBody ReservationCreateRequest reservationCreateRequest) {
         Reservation savedReservation = reservationService.createReservation(
                 reservationCreateRequest.name(),
                 reservationCreateRequest.date(),
@@ -44,6 +56,20 @@ public class ReservationController {
         ReservationResponse reservationResponse = ReservationResponse.from(savedReservation);
         return ResponseEntity.created(URI.create("/api/v1/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest reservationUpdateRequest) {
+        Reservation updatedReservation = reservationService.updateReservation(
+                id,
+                reservationUpdateRequest.date(),
+                reservationUpdateRequest.name(),
+                reservationUpdateRequest.timeId()
+        );
+        ReservationResponse reservationResponse = ReservationResponse.from(updatedReservation);
+        return ResponseEntity.ok().body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

@@ -24,7 +24,8 @@ public class ThemeServiceTest {
 
     @Test
     void 존재하지_않는_테마는_삭제할_수_없다() {
-        when(themeDao.delete(1L)).thenReturn(0);
+        when(themeDao.delete(1L))
+                .thenReturn(0);
 
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(ThemeNotFoundException.class);
