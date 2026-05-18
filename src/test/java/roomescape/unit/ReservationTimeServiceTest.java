@@ -11,7 +11,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
-import roomescape.exception.BusinessException;
+import roomescape.common.exception.BusinessException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;

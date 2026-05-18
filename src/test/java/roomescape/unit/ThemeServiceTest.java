@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
-import roomescape.exception.BusinessException;
+import roomescape.common.exception.BusinessException;
 import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;

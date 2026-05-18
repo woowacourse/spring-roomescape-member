@@ -2,8 +2,8 @@ package roomescape.domain.reservation;
 
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.BusinessException;
-import roomescape.exception.ErrorCode;
+import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
