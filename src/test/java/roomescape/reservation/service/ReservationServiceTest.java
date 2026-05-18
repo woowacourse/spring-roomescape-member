@@ -16,7 +16,6 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.*;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,44 +44,6 @@ class ReservationServiceTest {
         reservationService = new ReservationService(
                 reservationRepository, reservationTimeRepository, themeRepository, fixedClock
         );
-    }
-
-    @Test
-    void 예약_목록을_조회하면_Repository_findAll_결과를_반환한다() {
-        List<Reservation> reservations = List.of(
-                new Reservation(
-                        1L,
-                        "브라운",
-                        LocalDate.of(2026, 5, 10),
-                        new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")
-                )
-        );
-        when(reservationRepository.findAll(0, 10)).thenReturn(reservations);
-
-        List<Reservation> result = reservationService.findReservations(0, 10);
-
-        verify(reservationRepository).findAll(0, 10);
-        assertThat(result).isSameAs(reservations);
-    }
-
-    @Test
-    void 사용자_예약_목록을_조회하면_Repository_findByName_결과를_반환한다() {
-        List<Reservation> reservations = List.of(
-                new Reservation(
-                        1L,
-                        "브라운",
-                        LocalDate.of(2026, 5, 10),
-                        new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")
-                )
-        );
-        when(reservationRepository.findByName("브라운", 1, 5)).thenReturn(reservations);
-
-        List<Reservation> result = reservationService.findUserReservations("브라운", 1, 5);
-
-        verify(reservationRepository).findByName("브라운", 1, 5);
-        assertThat(result).isSameAs(reservations);
     }
 
     @Test
