@@ -16,11 +16,23 @@ export function render(options = {}) {
 
     appEl.innerHTML = `
     ${renderHeader()}
-    ${state.route === "admin" ? renderAdmin() : renderReserve()}
+    ${renderCurrentPage()}
   `;
     modalRootEl.innerHTML = renderConfirm();
     toastRootEl.innerHTML = renderToast();
     syncThemeFilter();
+}
+
+function renderCurrentPage() {
+    if (state.route === "admin") {
+        return renderAdmin();
+    }
+
+    if (state.route === "reservations") {
+        return renderReservationLookupPage();
+    }
+
+    return renderReserve();
 }
 
 export function syncThemeFilter() {
@@ -35,6 +47,7 @@ export function syncThemeFilter() {
 
 function renderHeader() {
     const reserveActive = state.route === "reserve";
+    const reservationsActive = state.route === "reservations";
     const adminActive = state.route === "admin";
 
     return `
@@ -49,6 +62,7 @@ function renderHeader() {
         </button>
         <nav class="header-nav" aria-label="주요 화면">
           <button class="${reserveActive ? "is-active" : ""}" type="button" data-route="reserve">예약</button>
+          <button class="${reservationsActive ? "is-active" : ""}" type="button" data-route="reservations">예약보기</button>
           <button class="${adminActive ? "is-active" : ""}" type="button" data-route="admin">운영</button>
         </nav>
       </div>
@@ -72,7 +86,7 @@ function renderReserve() {
         <div class="metric-row" aria-label="예약 현황">
           ${renderMetric(state.themes.length, "테마")}
           ${renderMetric(popular.length, "인기")}
-          ${renderMetric(state.reservations.length, "예약")}
+          ${renderMetric(state.availableTimes.filter((time) => time.available).length, "가능 시간")}
         </div>
       </section>
 
@@ -84,26 +98,30 @@ function renderReserve() {
         ${theme ? `
           <aside class="booking-panel" aria-labelledby="booking-title">
             <form id="reservation-form">
-              <div class="booking-header">
-                <div>
-                  <p class="section-kicker">Order</p>
-                  <h2 id="booking-title">예약 정보</h2>
+                <div class="booking-header">
+                  <div>
+                    <p class="section-kicker">Order</p>
+                    <h2 id="booking-title">${state.editingReservationId ? "예약 변경" : "예약 정보"}</h2>
+                    ${state.editingReservationId ? `<span class="booking-mode-note">현재 예약을 수정하는 중입니다.</span>` : ""}
+                  </div>
+                  <div class="booking-header-actions">
+                    ${state.editingReservationId ? `<button class="secondary-button compact" type="button" data-action="cancel-editing">변경 취소</button>` : ""}
+                    <button class="booking-close-button" type="button" data-action="close-booking" aria-label="예약 정보 닫기">×</button>
+                  </div>
                 </div>
-                <button class="booking-close-button" type="button" data-action="close-booking" aria-label="예약 정보 닫기">×</button>
-              </div>
               ${renderSelectedTheme(theme)}
               ${renderReservationFields()}
               ${renderTimeSlots()}
               ${renderBookingSummary(theme)}
               <button class="primary-button submit-button" type="submit" ${canSubmitReservation() ? "" : "disabled"}>
-                ${state.submitting ? "예약 중" : "예약하기"}
+                ${state.submitting ? (state.editingReservationId ? "변경 중" : "예약 중") : (state.editingReservationId ? "변경하기" : "예약하기")}
               </button>
             </form>
           </aside>
         ` : ""}
 
         <section class="theme-section" aria-labelledby="theme-section-title">
-          <div class="section-toolbar">
+          <div class="section-toolbar theme-toolbar">
             <div>
               <p class="section-kicker">Theme List</p>
               <h2 id="theme-section-title">전체 테마</h2>
@@ -118,6 +136,57 @@ function renderReserve() {
 
           ${renderThemeGrid()}
         </section>
+      </section>
+    </main>
+  `;
+}
+
+function renderReservationLookupPage() {
+    const editingReservation = state.editingReservationId ? state.myReservations.find((reservation) => Number(reservation.id) === Number(state.editingReservationId)) : null;
+
+    return `
+    <main class="page-shell">
+      <section class="headline-row">
+        <div>
+          <p class="section-kicker">My Reservation</p>
+          <h1>예약 조회 및 변경</h1>
+          <p>이름으로 본인 예약을 조회하고 날짜와 시간을 변경하거나 취소할 수 있습니다.</p>
+        </div>
+        <div class="metric-row" aria-label="내 예약 현황">
+          ${renderMetric(state.myReservations.length, "내 예약")}
+          ${renderMetric(editingReservation ? 1 : 0, "변경 중")}
+        </div>
+      </section>
+
+      <section class="lookup-layout">
+        <section class="theme-section" aria-labelledby="reservation-lookup-title">
+          ${renderReservationLookup()}
+          ${renderMyReservations()}
+        </section>
+
+        ${editingReservation ? `
+          <section class="theme-section reservation-edit-section" aria-labelledby="lookup-booking-title">
+            <form id="reservation-form">
+              <div class="booking-header">
+                <div>
+                  <p class="section-kicker">Update</p>
+                  <h2 id="lookup-booking-title">예약 변경</h2>
+                  <span class="booking-mode-note">조회한 예약의 날짜와 시간을 수정합니다.</span>
+                </div>
+                <div class="booking-header-actions">
+                  <button class="secondary-button compact" type="button" data-action="cancel-editing">변경 취소</button>
+                </div>
+              </div>
+              ${renderSelectedTheme(selectedTheme())}
+              ${renderReservationFields()}
+              ${renderTimeSlots()}
+              ${renderBookingSummary(selectedTheme())}
+              <button class="primary-button submit-button" type="submit" ${canSubmitReservation() ? "" : "disabled"}>
+                ${state.submitting ? "변경 중" : "변경하기"}
+              </button>
+            </form>
+          </section>
+        ` : ""}
       </section>
     </main>
   `;
@@ -206,7 +275,7 @@ function renderSelectedTheme(theme) {
     return `
     <div class="selected-theme">
       <div class="selected-copy">
-        <span>선택한 테마</span>
+        <span>${state.editingReservationId ? "변경할 테마" : "선택한 테마"}</span>
         <strong>${escapeHtml(theme.name)}</strong>
         <p>${escapeHtml(theme.description)}</p>
       </div>
@@ -217,12 +286,12 @@ function renderSelectedTheme(theme) {
 function renderReservationFields() {
     return `
     <div class="form-row">
-      <label for="reservation-date">날짜</label>
-      <input id="reservation-date" name="date" type="date" min="${todayString()}" value="${escapeAttr(state.selectedDate)}">
+      <label for="guest-name">예약자</label>
+      <input id="guest-name" name="name" type="text" value="${escapeAttr(state.guestName)}" placeholder="이름" ${state.editingReservationId ? "readonly" : ""}>
     </div>
     <div class="form-row">
-      <label for="guest-name">예약자</label>
-      <input id="guest-name" name="name" type="text" value="${escapeAttr(state.guestName)}" placeholder="이름">
+      <label for="reservation-date">날짜</label>
+      <input id="reservation-date" name="date" type="date" min="${todayString()}" value="${escapeAttr(state.selectedDate)}">
     </div>
   `;
 }
@@ -268,6 +337,10 @@ function renderBookingSummary(theme) {
     return `
     <dl class="booking-summary">
       <div>
+        <dt>예약자</dt>
+        <dd>${escapeHtml(state.guestName || "-")}</dd>
+      </div>
+      <div>
         <dt>테마</dt>
         <dd>${theme ? escapeHtml(theme.name) : "-"}</dd>
       </div>
@@ -275,7 +348,80 @@ function renderBookingSummary(theme) {
         <dt>일정</dt>
         <dd>${escapeHtml(state.selectedDate || "-")} ${time ? escapeHtml(time.startAt) : ""}</dd>
       </div>
+      <div>
+        <dt>모드</dt>
+        <dd>${state.editingReservationId ? "예약 변경" : "새 예약"}</dd>
+      </div>
     </dl>
+  `;
+}
+
+function renderReservationLookup() {
+    return `
+    <section class="reservation-lookup-section" aria-labelledby="reservation-lookup-title">
+      <div class="section-toolbar compact">
+        <div>
+          <p class="section-kicker">My Reservation</p>
+          <h2 id="reservation-lookup-title">내 예약 조회</h2>
+          <p class="section-copy">예약자 이름으로 예약을 확인하고 변경하거나 취소할 수 있습니다.</p>
+        </div>
+      </div>
+      <form id="reservation-lookup-form" class="lookup-row">
+        <label class="search-field wide" for="reservation-name">
+          <span>예약자 이름</span>
+          <input id="reservation-name" name="name" type="text" value="${escapeAttr(state.guestName)}" placeholder="이름을 입력해 내 예약을 조회하세요">
+        </label>
+        <button class="secondary-button lookup-submit" type="submit">조회</button>
+      </form>
+    </section>
+  `;
+}
+
+function renderMyReservations() {
+    const hasName = Boolean(state.guestName.trim());
+
+    return `
+    <section class="my-reservations-section" aria-labelledby="my-reservations-title">
+      <div class="admin-panel-header">
+        <div>
+          <p class="section-kicker">My Reservation</p>
+          <h2 id="my-reservations-title">내 예약</h2>
+        </div>
+      </div>
+      ${renderMyReservationsContent(hasName)}
+    </section>
+  `;
+}
+
+function renderMyReservationsContent(hasName) {
+    if (!hasName) {
+        return renderEmpty("예약자 이름을 입력하면 내 예약을 확인할 수 있습니다.");
+    }
+
+    if (state.myReservations.length === 0) {
+        return renderEmpty("조회된 예약이 없습니다.");
+    }
+
+    return `
+    <div class="reservation-table" role="table" aria-label="내 예약 목록">
+      <div class="table-head" role="row">
+        <span>예약자</span>
+        <span>테마</span>
+        <span>일정</span>
+        <span>관리</span>
+      </div>
+      ${state.myReservations.map((reservation) => `
+        <div class="table-row" role="row">
+          <span>${escapeHtml(reservation.name)}</span>
+          <span>${escapeHtml(reservation.theme.name)}</span>
+          <span>${escapeHtml(reservation.date)} ${escapeHtml(reservation.time.startAt)}</span>
+          <span class="table-actions">
+            <button class="secondary-button" type="button" data-action="edit-reservation" data-reservation-id="${reservation.id}">변경</button>
+            <button class="danger-button" type="button" data-action="delete-reservation" data-reservation-id="${reservation.id}">취소</button>
+          </span>
+        </div>
+      `).join("")}
+    </div>
   `;
 }
 
@@ -291,15 +437,13 @@ function renderAdmin() {
         <div class="metric-row" aria-label="운영 현황">
           ${renderMetric(state.themes.length, "테마")}
           ${renderMetric(state.adminTimes.length, "시간")}
-          ${renderMetric(state.reservations.length, "예약")}
         </div>
       </section>
 
-      <section class="admin-layout">
+        <section class="admin-layout">
         <aside class="admin-tabs" aria-label="운영 메뉴">
           ${renderAdminTab("themes", "테마")}
           ${renderAdminTab("times", "시간")}
-          ${renderAdminTab("reservations", "예약")}
         </aside>
         <section class="admin-panel">
           ${renderAdminPanel()}
@@ -320,10 +464,6 @@ function renderAdminTab(tab, label) {
 function renderAdminPanel() {
     if (state.adminTab === "times") {
         return renderTimesAdmin();
-    }
-
-    if (state.adminTab === "reservations") {
-        return renderReservationsAdmin();
     }
 
     return renderThemesAdmin();
@@ -395,35 +535,6 @@ function renderTimesAdmin() {
           <button class="danger-button" type="button" data-action="delete-time" data-time-id="${time.id}">삭제</button>
         </div>
       `).join("") || renderEmpty("등록된 시간이 없습니다.")}
-    </div>
-  `;
-}
-
-function renderReservationsAdmin() {
-    return `
-    <div class="admin-panel-header">
-      <div>
-        <p class="section-kicker">Reservation</p>
-        <h2>예약 목록</h2>
-      </div>
-      <button class="secondary-button" type="button" data-action="refresh-all">새로고침</button>
-    </div>
-
-    <div class="reservation-table" role="table" aria-label="예약 목록">
-      <div class="table-head" role="row">
-        <span>예약자</span>
-        <span>테마</span>
-        <span>일정</span>
-        <span></span>
-      </div>
-      ${state.reservations.map((reservation) => `
-        <div class="table-row" role="row">
-          <span>${escapeHtml(reservation.name)}</span>
-          <span>${escapeHtml(reservation.theme.name)}</span>
-          <span>${escapeHtml(reservation.date)} ${escapeHtml(reservation.time.startAt)}</span>
-          <span><button class="danger-button" type="button" data-action="delete-reservation" data-reservation-id="${reservation.id}">삭제</button></span>
-        </div>
-      `).join("") || renderEmpty("예약이 없습니다.")}
     </div>
   `;
 }
