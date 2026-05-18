@@ -14,8 +14,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.error.type.ReservationErrorType;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
+import roomescape.global.error.exception.GeneralException;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -154,7 +156,10 @@ public class JdbcReservationRepository implements ReservationRepository {
             .addValue("timeId", reservation.getTime().getId())
             .addValue("themeId", reservation.getTheme().getId())
             .addValue("canceledAt", reservation.getCanceledAt());
-        jdbcTemplate.update(sql, parameters);
+        int updatedRowCount = jdbcTemplate.update(sql, parameters);
+        if (updatedRowCount == 0) {
+            throw new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND);
+        }
 
         return Reservation.reconstruct(reservation.getId(), reservation.getName(), reservation.getDate(),
             reservation.getTime(), reservation.getTheme(), reservation.getCanceledAt(), reservation.getDeletedAt());

@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.JdbcTimeRepository;
+import roomescape.global.error.exception.GeneralException;
 
 class JdbcReservationRepositoryTest {
 
@@ -378,6 +380,21 @@ class JdbcReservationRepositoryTest {
                 .get()
                 .extracting(Reservation::getCanceledAt)
                 .isEqualTo(canceledAt);
+        }
+
+        @Test
+        void 수정하려는_예약이_이미_삭제되었으면_예외가_발생한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
+            reservationRepository.deleteReservationById(reservation.getId());
+
+            // when & then
+            assertThatThrownBy(() -> reservationRepository.update(reservation))
+                .isInstanceOf(GeneralException.class)
+                .hasMessage("예약을 찾을 수 없습니다.");
         }
     }
 
