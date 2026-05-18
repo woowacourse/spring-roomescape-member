@@ -30,9 +30,10 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        List<ReservationResponseDto> responseDtos = reservationService.findAll();
-        return ResponseEntity.ok(responseDtos);
+    public ResponseEntity<List<ReservationResponseDto>> search(
+            @RequestParam(required = false) String name) {
+        List<ReservationResponseDto> found = reservationService.findReservation(name);
+        return ResponseEntity.ok(found);
     }
 
     @PostMapping
@@ -71,13 +72,5 @@ public class ReservationController {
         return ResponseEntity
                 .noContent()
                 .build();
-    }
-
-    @GetMapping(params = "name")
-    public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam String name) {
-        List<ReservationResponseDto> reservations = reservationService.findAllByName(name);
-
-        return ResponseEntity
-                .ok(reservations);
     }
 }

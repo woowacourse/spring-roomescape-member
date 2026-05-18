@@ -62,14 +62,21 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponseDto> findAll() {
+    public List<ReservationResponseDto> findReservation(String name) {
+        if (name == null) {
+            return findAll();
+        }
+        return findAllByName(name);
+    }
+
+    private List<ReservationResponseDto> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }
 
-    public List<ReservationResponseDto> findAllByName(String name) {
+    private List<ReservationResponseDto> findAllByName(String name) {
         return reservationRepository.findAllByName(name).stream()
                 .map(ReservationResponseDto::from)
                 .toList();
