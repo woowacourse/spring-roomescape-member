@@ -12,33 +12,30 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.repository.projection.PopularThemeProjection;
-import roomescape.repository.projection.ThemeEntity;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<ThemeEntity> ROW_MAPPER = (rs, rowNum) -> new ThemeEntity(
-            rs.getLong("id"),
-            new Theme(
+    private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) ->
+            Theme.reconstitute(
+                    rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("thumbnail_url")
-            )
-    );
+            );
 
-    private static final RowMapper<PopularThemeProjection> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularThemeProjection(
-            new ThemeEntity(
-                    rs.getLong("id"),
-                    new Theme(
+    private static final RowMapper<PopularThemeProjection> POPULAR_ROW_MAPPER = (rs, rowNum) ->
+            new PopularThemeProjection(
+                    Theme.reconstitute(
+                            rs.getLong("id"),
                             rs.getString("name"),
                             rs.getString("description"),
                             rs.getString("thumbnail_url")
-                    )
-            ),
-            rs.getLong("reservation_count")
-    );
+                    ),
+                    rs.getLong("reservation_count")
+            );
 
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -46,7 +43,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<ThemeEntity> findAll() {
+    public List<Theme> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail_url FROM theme",
                 ROW_MAPPER
@@ -54,8 +51,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<ThemeEntity> findById(Long id) {
-        List<ThemeEntity> result = jdbcTemplate.query(
+    public Optional<Theme> findById(Long id) {
+        List<Theme> result = jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
                 ROW_MAPPER,
                 id
@@ -64,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public ThemeEntity save(Theme theme) {
+    public Theme save(Theme theme) {
         String sql = "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -77,7 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ThemeEntity(id, theme);
+        return Theme.reconstitute(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
     }
 
     @Override

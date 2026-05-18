@@ -8,7 +8,6 @@ import roomescape.domain.policy.PopularThemePolicy;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.projection.ThemeEntity;
 import roomescape.service.dto.PopularThemeResult;
 import roomescape.service.dto.ThemeCreateCommand;
 import roomescape.service.dto.ThemeResult;
@@ -38,10 +37,8 @@ public class ThemeService {
     }
 
     public ThemeResult create(ThemeCreateCommand command) {
-        Theme theme = new Theme(command.getName(), command.getDescription(), command.getThumbnail());
-
-        ThemeEntity saved = themeRepository.save(theme);
-
+        Theme theme = Theme.create(command.getName(), command.getDescription(), command.getThumbnail());
+        Theme saved = themeRepository.save(theme);
         return ThemeResult.from(saved);
     }
 
@@ -58,9 +55,7 @@ public class ThemeService {
                         popularThemePolicy.to(today),
                         popularThemePolicy.limit())
                 .stream()
-                .map(p -> new PopularThemeResult(
-                        ThemeResult.from(p.getThemeEntity()),
-                        p.getReservationCount()))
+                .map(PopularThemeResult::from)
                 .toList();
     }
 

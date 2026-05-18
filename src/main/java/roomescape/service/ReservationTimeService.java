@@ -7,7 +7,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.projection.ReservationTimeEntity;
 import roomescape.service.dto.ReservationTimeCreateCommand;
 import roomescape.service.dto.ReservationTimeResult;
 
@@ -30,10 +29,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResult create(ReservationTimeCreateCommand command) {
-        ReservationTime time = new ReservationTime(command.getStartAt());
-
-        ReservationTimeEntity saved = reservationTimeRepository.save(time);
-
+        ReservationTime time = ReservationTime.create(command.getStartAt());
+        ReservationTime saved = reservationTimeRepository.save(time);
         return ReservationTimeResult.from(saved);
     }
 

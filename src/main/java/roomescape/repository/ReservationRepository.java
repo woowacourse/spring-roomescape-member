@@ -4,12 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
-import roomescape.repository.projection.ReservationEntity;
 
 public interface ReservationRepository {
-    List<ReservationEntity> findAll();
+    List<Reservation> findAll();
 
-    ReservationEntity save(Reservation reservation, Long timeId, Long themeId);
+    Reservation save(Reservation reservation);
 
     void deleteById(Long id);
 
@@ -17,9 +16,9 @@ public interface ReservationRepository {
 
     boolean existsByTimeId(Long timeId);
 
-    List<ReservationEntity> findByNameOrderByDateAscTimeAsc(String name);
+    List<Reservation> findByNameOrderByDateAscTimeAsc(String name);
 
-    Optional<ReservationEntity> findById(Long id);
+    Optional<Reservation> findById(Long id);
 
     boolean existsByDateAndTimeAndThemeExcludingId(LocalDate date, Long timeId, Long themeId, Long excludeId);
 

@@ -13,33 +13,29 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.repository.projection.ReservationEntity;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<ReservationEntity> ROW_MAPPER = (rs, rowNum) -> {
-        ReservationTime time = new ReservationTime(
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
+        ReservationTime time = ReservationTime.reconstitute(
+                rs.getLong("time_id"),
                 rs.getTime("time_start_at").toLocalTime()
         );
-        Theme theme = new Theme(
+        Theme theme = Theme.reconstitute(
+                rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("theme_description"),
                 rs.getString("theme_thumbnail")
         );
-        Reservation reservation = new Reservation(
+        return Reservation.reconstitute(
+                rs.getLong("reservation_id"),
                 rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),
                 time,
                 theme
-        );
-        return new ReservationEntity(
-                rs.getLong("reservation_id"),
-                rs.getLong("time_id"),
-                rs.getLong("theme_id"),
-                reservation
         );
     };
 
@@ -48,7 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findAll() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -69,7 +65,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public ReservationEntity save(Reservation reservation, Long timeId, Long themeId) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -77,13 +73,19 @@ public class JdbcReservationRepository implements ReservationRepository {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ReservationEntity(id, timeId, themeId, reservation);
+        return Reservation.reconstitute(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -117,7 +119,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findByNameOrderByDateAscTimeAsc(String name) {
+    public List<Reservation> findByNameOrderByDateAscTimeAsc(String name) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -141,7 +143,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
 
     @Override
-    public Optional<ReservationEntity> findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,

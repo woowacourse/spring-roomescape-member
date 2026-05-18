@@ -6,15 +6,28 @@ public class Theme {
 
     private static final int MAX_NAME_LENGTH = 30;
 
+
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnailUrl;
 
-    public Theme(String name, String description, String thumbnailUrl) {
+    private Theme(Long id, String name, String description, String thumbnailUrl) {
         validate(name, description, thumbnailUrl);
+        this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    // 새 테마 생성 (저장 전)
+    public static Theme create(String name, String description, String thumbnailUrl) {
+        return new Theme(null, name, description, thumbnailUrl);
+    }
+
+    // DB 재구성 (저장 후)
+    public static Theme reconstitute(Long id, String name, String description, String thumbnailUrl) {
+        return new Theme(id, name, description, thumbnailUrl);
     }
 
     private void validate(String name, String description, String thumbnail) {
@@ -48,6 +61,10 @@ public class Theme {
 
     public String getName() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getDescription() {
