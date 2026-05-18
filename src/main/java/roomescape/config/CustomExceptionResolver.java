@@ -36,6 +36,11 @@ public class CustomExceptionResolver implements HandlerExceptionResolver, Ordere
                 return new ModelAndView();
             }
 
+            if (ex instanceof IllegalStateException) {
+                writeJsonResponse(response, HttpStatus.CONFLICT, ex.getMessage());
+                return new ModelAndView();
+            }
+
             if (ex instanceof DataIntegrityViolationException) {
                 writeJsonResponse(response, HttpStatus.CONFLICT, "데이터 무결성 제약 조건을 위반했습니다.");
                 return new ModelAndView();
@@ -53,6 +58,11 @@ public class CustomExceptionResolver implements HandlerExceptionResolver, Ordere
 
             if (ex instanceof MethodArgumentTypeMismatchException) {
                 writeJsonResponse(response, HttpStatus.BAD_REQUEST, "요청 파라미터의 타입이 올바르지 않습니다.");
+                return new ModelAndView();
+            }
+
+            if (ex instanceof Exception) {
+                writeJsonResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
                 return new ModelAndView();
             }
         } catch (IOException e) {
