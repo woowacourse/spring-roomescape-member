@@ -2,9 +2,10 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.BusinessException;
+import roomescape.exception.BusinessConflictException;
 import roomescape.exception.DomainConflictException;
 import roomescape.exception.ErrorCode;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -49,10 +50,10 @@ public class ReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.THEME_NOT_FOUND));
 
         Reservation reservation = Reservation.create(name, date, time, theme, LocalDateTime.now(clock));
         checkDuplicated(reservation);
@@ -62,10 +63,10 @@ public class ReservationService {
     @Transactional
     public Reservation updateReservation(long id, String name, LocalDate date, long timeId) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
 
         ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         Reservation updated = reservation.changeSchedule(date, time, name, LocalDateTime.now(clock));
         checkDuplicated(updated);
@@ -76,7 +77,7 @@ public class ReservationService {
     @Transactional
     public void deleteUserReservation(long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
 
         reservation.checkCancellable(name, LocalDateTime.now(clock));
         reservationRepository.deleteByIdAndName(id, name);
@@ -87,7 +88,7 @@ public class ReservationService {
             reservationRepository.findBySchedule(reservation)
                     .ifPresent(reservation::checkDuplicatedWith);
         } catch (DomainConflictException e) {
-            throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
+            throw new BusinessConflictException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }
 }

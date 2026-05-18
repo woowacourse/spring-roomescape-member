@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.BusinessConflictException;
 import roomescape.exception.BusinessException;
 import roomescape.exception.DomainConflictException;
 import roomescape.exception.ErrorCode;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -95,7 +97,7 @@ class ReservationServiceTest {
                         1L, "브라운", LocalDate.of(2026, 5, 13), newTime, theme)));
 
         assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 5, 13), 1L, 1L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(BusinessConflictException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
     }
@@ -106,7 +108,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 "브라운", LocalDate.of(2026, 5, 10), 999L, 2L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND);
 
@@ -140,7 +142,7 @@ class ReservationServiceTest {
         when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.updateReservation(999L, "브라운", LocalDate.of(2026, 5, 11), 2L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
 
@@ -177,7 +179,7 @@ class ReservationServiceTest {
         when(reservationTimeRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 999L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND);
 
@@ -206,7 +208,7 @@ class ReservationServiceTest {
                 )));
 
         assertThatThrownBy(() -> reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 2L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(BusinessConflictException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
 
@@ -234,7 +236,7 @@ class ReservationServiceTest {
         when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.deleteUserReservation(999L, "레서"))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
 

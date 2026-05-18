@@ -2,7 +2,7 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.BusinessException;
+import roomescape.exception.BusinessConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
@@ -36,7 +36,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new BusinessException(ErrorCode.RESERVATION_TIME_IN_USE);
+            throw new BusinessConflictException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
         reservationTimeRepository.deleteById(id);
     }

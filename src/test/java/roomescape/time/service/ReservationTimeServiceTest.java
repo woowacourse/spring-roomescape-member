@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.BusinessConflictException;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservation.repository.ReservationRepository;
@@ -30,7 +31,7 @@ class ReservationTimeServiceTest {
     void 시간_삭제_시_예약이_존재하는_시간이면_예외가_발생한다() {
         when(reservationRepository.existsByTimeId(anyLong())).thenReturn(true);
         assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
-                .isInstanceOf(BusinessException.class)
+                .isInstanceOf(BusinessConflictException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                         .isEqualTo(ErrorCode.RESERVATION_TIME_IN_USE);
     }
