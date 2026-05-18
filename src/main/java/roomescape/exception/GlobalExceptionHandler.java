@@ -2,6 +2,7 @@ package roomescape.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -26,10 +27,18 @@ public class GlobalExceptionHandler {
         return toResponse(errorCode);
     }
 
+    @ExceptionHandler(DomainConflictException.class)
+    public ResponseEntity<ErrorResponse> handleDomainConflict(DomainConflictException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("DOMAIN_CONFLICT", e.getMessage()));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ErrorResponse> handleDomainRuleViolation(DomainRuleViolationException e) {
-        log.error("Domain invariant violated", e);
-        return toResponse(ErrorCode.INTERNAL_ERROR);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("DOMAIN_RULE_VIOLATION", e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
