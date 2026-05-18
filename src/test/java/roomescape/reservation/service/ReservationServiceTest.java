@@ -129,7 +129,9 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.of(newTime));
         when(themeRepository.findById(anyLong())).thenReturn(Optional.of(theme));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong())).thenReturn(true);
+        when(reservationRepository.findBySchedule(any(Reservation.class)))
+                .thenReturn(Optional.of(new Reservation(
+                        1L, "브라운", LocalDate.of(2026, 5, 13), newTime, theme)));
 
         assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 5, 13), 1L, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -160,9 +162,6 @@ class ReservationServiceTest {
 
         when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(newTime));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
-                7L, LocalDate.of(2026, 5, 11), 2L, 1L)).thenReturn(false);
-
         Reservation result = reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 2L);
 
         verify(reservationRepository).findById(7L);
@@ -236,8 +235,14 @@ class ReservationServiceTest {
         );
         when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(newTime));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
-                7L, LocalDate.of(2026, 5, 11), 2L, 1L)).thenReturn(true);
+        when(reservationRepository.findBySchedule(any(Reservation.class)))
+                .thenReturn(Optional.of(new Reservation(
+                        8L,
+                        "어셔",
+                        LocalDate.of(2026, 5, 11),
+                        newTime,
+                        reservation.getTheme()
+                )));
 
         assertThatThrownBy(() -> reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 2L))
                 .isInstanceOf(BusinessException.class)

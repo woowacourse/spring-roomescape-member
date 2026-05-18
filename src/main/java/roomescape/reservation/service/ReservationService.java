@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessException;
+import roomescape.exception.DomainConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -53,9 +54,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
-        validateUnique(date, timeId, themeId);
-
         Reservation reservation = Reservation.create(name, date, time, theme, LocalDateTime.now(clock));
+        checkDuplicated(reservation);
         return reservationRepository.save(reservation);
     }
 
@@ -67,9 +67,8 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
-        validateUniqueForUpdate(id, date, timeId, reservation.getTheme().getId());
-
         Reservation updated = reservation.changeSchedule(date, time, name, LocalDateTime.now(clock));
+        checkDuplicated(updated);
         reservationRepository.update(updated);
         return updated;
     }
@@ -83,14 +82,11 @@ public class ReservationService {
         reservationRepository.deleteByIdAndName(id, name);
     }
 
-    private void validateUnique(LocalDate date, long timeId, long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
-        }
-    }
-
-    private void validateUniqueForUpdate(long id, LocalDate date, long timeId, long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(id, date, timeId, themeId)) {
+    private void checkDuplicated(Reservation reservation) {
+        try {
+            reservationRepository.findBySchedule(reservation)
+                    .ifPresent(reservation::checkDuplicatedWith);
+        } catch (DomainConflictException e) {
             throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }

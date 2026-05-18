@@ -13,6 +13,7 @@ import roomescape.time.domain.ReservationTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -172,19 +173,24 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void 다른_예약과_겹치는_날짜_시간_테마가_있는지_자기_자신을_제외하고_확인한다() {
+    void 같은_날짜_시간_테마의_예약을_조회한다() {
         Reservation first = reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
-        boolean onlySelf = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
-                first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
-        reservationRepository.save(new Reservation(
-                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
-        boolean anotherReservation = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
-                first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+        Optional<Reservation> result = reservationRepository.findBySchedule(first);
 
-        assertThat(onlySelf).isFalse();
-        assertThat(anotherReservation).isTrue();
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(first.getId());
+    }
+
+    @Test
+    void 같은_날짜_시간_테마의_예약이_없으면_빈_Optional을_반환한다() {
+        Reservation reservation = new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme);
+
+        Optional<Reservation> result = reservationRepository.findBySchedule(reservation);
+
+        assertThat(result).isEmpty();
     }
 
 

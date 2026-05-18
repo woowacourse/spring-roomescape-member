@@ -58,6 +58,15 @@ public class Reservation {
         return new Reservation(id, name, newDate, newTime, theme);
     }
 
+    public void checkDuplicatedWith(Reservation other) {
+        if (other == null || isSameReservation(other)) {
+            return;
+        }
+        if (hasSameSchedule(other)) {
+            throw new DomainConflictException("이미 예약된 시간입니다.");
+        }
+    }
+
     public void checkCancellable(String requester, LocalDateTime now) {
         validateOwner(requester);
         if (isPast(now)) {
@@ -73,6 +82,16 @@ public class Reservation {
 
     private boolean isPast(LocalDateTime now) {
         return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
+    }
+
+    private boolean isSameReservation(Reservation other) {
+        return id != null && id.equals(other.id);
+    }
+
+    private boolean hasSameSchedule(Reservation other) {
+        return date.equals(other.date)
+                && time.getId().equals(other.time.getId())
+                && theme.getId().equals(other.theme.getId());
     }
 
     public Long getId() {

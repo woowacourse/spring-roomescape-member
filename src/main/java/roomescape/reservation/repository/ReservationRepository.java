@@ -92,20 +92,33 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper(), name, size, offset);
     }
 
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
-        return count != null && count > 0;
-    }
-
-    public boolean existsByDateAndTimeIdAndThemeIdAndIdNot(long id, LocalDate date, long timeId, long themeId) {
+    public Optional<Reservation> findBySchedule(Reservation reservation) {
         String sql = """
-                SELECT COUNT(*)
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ? AND id <> ?
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id         AS theme_id,
+                       th.name       AS theme_name,
+                       th.description AS theme_description,
+                       th.thumbnail  AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                ORDER BY r.id
+                LIMIT 1
                 """;
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId, id);
-        return count != null && count > 0;
+        try {
+            Reservation found = jdbcTemplate.queryForObject(sql, reservationRowsMapper(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId());
+            return Optional.ofNullable(found);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Reservation save(Reservation reservation) {
