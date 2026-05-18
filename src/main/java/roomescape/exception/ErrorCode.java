@@ -14,12 +14,12 @@ public enum ErrorCode {
 
     // 409
     RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 예약된 시간입니다."),
-    RESERVATION_TIME_DELETE_CONFLICT(HttpStatus.CONFLICT, "예약이 있는 시간은 삭제할 수 없습니다."),
     RESERVATION_TIME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 예약 시간입니다."),
-    THEME_DELETE_CONFLICT(HttpStatus.CONFLICT, "예약이 있는 테마는 삭제할 수 없습니다."),
 
     // 422
-    RESERVATION_DATE_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다.");
+    RESERVATION_DATE_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "현재보다 이전의 날짜는 예약할 수 없습니다."),
+    RESERVATION_TIME_DELETE_CONFLICT(HttpStatus.UNPROCESSABLE_ENTITY, "예약이 있는 시간은 삭제할 수 없습니다."),
+    THEME_DELETE_CONFLICT(HttpStatus.UNPROCESSABLE_ENTITY, "예약이 있는 테마는 삭제할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
