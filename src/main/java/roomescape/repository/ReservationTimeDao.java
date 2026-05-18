@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +13,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.TimeStatus;
+import roomescape.exception.ErrorMessage;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class ReservationTimeDao {
         int affected = jdbcTemplate.update(sql, TimeStatus.DELETED.name(), timeId);
 
         if (affected == 0) {
-            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 시간이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorMessage.TIME_NOT_FOUND);
         }
     }
 

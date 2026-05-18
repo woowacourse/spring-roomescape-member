@@ -38,6 +38,16 @@ public class ThemeAcceptanceTest extends AcceptanceTestSupport{
     }
 
     @Test
+    @DisplayName("존재하지 않는 테마 삭제 요청 시 404 상태코드를 반환한다.")
+    void deleteNotExistThemeRequestTest() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/999")
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", is(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+    }
+
+    @Test
     @DisplayName("예약이 존재하는 테마 삭제 요청 시 409 상태코드를 반환한다.")
     void deleteThemeInUseRequestTest() {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, status) VALUES (1, '10:00', 'AVAILABLE')");
