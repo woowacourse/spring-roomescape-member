@@ -1,8 +1,10 @@
 package roomescape.time.repository;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,15 +37,13 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public ReservationTime save(LocalTime startAt, LocalTime endAt) {
+    public ReservationTime save(LocalDateTime startAt, LocalDateTime endAt) {
         Number id = timeInsert.executeAndReturnKey(
                 new MapSqlParameterSource()
                         .addValue("start_time", startAt)
                         .addValue("end_time", endAt)
         );
-
-        Long timeId = id.longValue();
-        return new ReservationTime(timeId, startAt, endAt);
+        return new ReservationTime(id.longValue(), startAt, endAt);
     }
 
     @Override
@@ -54,6 +54,15 @@ public class JdbcTimeRepository implements TimeRepository {
                 id
         );
         return results.stream().findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findByDate(LocalDate date) {
+        return jdbcTemplate.query(
+                "SELECT id, start_time, end_time FROM reservation_time WHERE CAST(start_time AS DATE) = ? ORDER BY start_time",
+                new ReservationTimeRowMapper(),
+                Date.valueOf(date)
+        );
     }
 
     @Override
@@ -70,8 +79,8 @@ public class JdbcTimeRepository implements TimeRepository {
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(
                     rs.getLong("id"),
-                    rs.getObject("start_time", LocalTime.class),
-                    rs.getObject("end_time", LocalTime.class)
+                    rs.getObject("start_time", LocalDateTime.class),
+                    rs.getObject("end_time", LocalDateTime.class)
             );
         }
     }

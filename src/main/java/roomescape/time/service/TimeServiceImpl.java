@@ -1,6 +1,7 @@
 package roomescape.time.service;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,13 +23,18 @@ public class TimeServiceImpl implements TimeService {
     }
 
     @Override
-    public ReservationTime create(LocalTime startAt, LocalTime endAt) {
+    public ReservationTime create(LocalDateTime startAt, LocalDateTime endAt) {
         return timeRepository.save(startAt, endAt);
     }
 
     @Override
     public List<ReservationTime> findAll() {
         return timeRepository.findAll();
+    }
+
+    @Override
+    public List<ReservationTime> findByDate(LocalDate date) {
+        return timeRepository.findByDate(date);
     }
 
     @Override

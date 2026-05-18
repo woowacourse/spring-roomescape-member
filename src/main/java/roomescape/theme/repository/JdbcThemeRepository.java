@@ -86,7 +86,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                         SELECT t.id, t.name, t.description, t.image_url
                         FROM theme t
                         JOIN reservation r ON r.theme_id = t.id
-                        WHERE r.date BETWEEN ? AND ?
+                        JOIN reservation_time rt ON r.time_id = rt.id
+                        WHERE CAST(rt.start_time AS DATE) BETWEEN ? AND ?
                         GROUP BY t.id, t.name, t.description, t.image_url
                         ORDER BY COUNT(r.id) DESC, t.id ASC
                         LIMIT ?

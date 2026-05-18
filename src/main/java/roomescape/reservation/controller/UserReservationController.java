@@ -46,7 +46,7 @@ public class UserReservationController {
     public ResponseEntity<ReservationResponseDto> update(
             @PathVariable Long id, @RequestBody @Valid UserReservationUpdateRequestDto request) {
         ReservationResponseDto body = ReservationResponseDto.from(
-                reservationService.update(id, request.date(), request.timeId()));
+                reservationService.update(id, request.timeId()));
         return ResponseEntity.ok(body);
     }
 }

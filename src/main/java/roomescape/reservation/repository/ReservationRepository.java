@@ -15,13 +15,13 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    boolean update(Long id, LocalDate date, Long timeId);
+    boolean update(Long id, Long timeId);
 
     List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
 
     boolean deleteById(Long id);
 
-    boolean isDuplicated(Long themeId, ReservationTime time, LocalDate date);
+    boolean isDuplicated(Long themeId, ReservationTime time);
 
     boolean existsByTimeId(Long timeId);
 }

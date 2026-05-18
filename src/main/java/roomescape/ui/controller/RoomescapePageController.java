@@ -1,7 +1,7 @@
 package roomescape.ui.controller;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -104,13 +104,12 @@ public class RoomescapePageController {
     @PostMapping("/dashboard/reservations")
     public String createReservation(
             @RequestParam String name,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long themeId,
             @RequestParam Long timeId,
             RedirectAttributes redirectAttributes
     ) {
         try {
-            reservationService.create(new ReservationSaveServiceDto(name, date, themeId, timeId));
+            reservationService.create(new ReservationSaveServiceDto(name, themeId, timeId));
             addSuccessMessage(redirectAttributes, "예약을 생성했습니다.");
         } catch (PastReservationException | DuplicateReservationException |
                  IllegalArgumentException | ThemeNotFoundException | TimeNotFoundException e) {
@@ -159,8 +158,8 @@ public class RoomescapePageController {
 
     @PostMapping("/dashboard/times")
     public String createTime(
-            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime startAt,
-            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime endAt,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime startAt,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime endAt,
             RedirectAttributes redirectAttributes
     ) {
         try {

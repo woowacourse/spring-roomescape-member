@@ -10,11 +10,7 @@ public class PastReservationException extends BusinessException {
         super(HttpStatus.BAD_REQUEST, ErrorCode.PAST_RESERVATION);
     }
 
-    public static PastReservationException pastDate() {
-        return new PastReservationException();
-    }
-
-    public static PastReservationException pastTime() {
+    public static PastReservationException pastReservation() {
         return new PastReservationException();
     }
 
