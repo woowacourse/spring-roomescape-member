@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class ThemeController {
     @GetMapping("/{id}/available-time")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTime(
             @PathVariable long id,
-            @RequestParam String date
+            @RequestParam LocalDate date
     ) {
         List<ReservationTimeResponse> availableTimes = themeService.findAvailableTime(id, date);
 

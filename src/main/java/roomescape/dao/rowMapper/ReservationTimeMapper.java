@@ -1,7 +1,7 @@
 package roomescape.dao.rowMapper;
 
 import org.springframework.jdbc.core.RowMapper;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.time.ReservationTime;
 
 public final class ReservationTimeMapper {
 
