@@ -1,6 +1,7 @@
 package roomescape.domain.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.global.error.exception.GeneralException;
 
 class JdbcThemeRepositoryTest {
 
@@ -150,6 +152,18 @@ class JdbcThemeRepositoryTest {
             assertThat(countDeletedThemeById(theme1.getId())).isEqualTo(1);
             assertThat(themeRepository.findThemeByIdAndDeletedAtIsNull(theme1.getId())).isEmpty();
             assertThat(themeRepository.existsThemeByIdAndDeletedAtIsNull(theme1.getId())).isFalse();
+        }
+
+        @Test
+        void 삭제하려는_테마가_이미_삭제되었으면_예외가_발생한다() {
+            // given
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            themeRepository.deleteThemeById(theme.getId());
+
+            // when & then
+            assertThatThrownBy(() -> themeRepository.deleteThemeById(theme.getId()))
+                .isInstanceOf(GeneralException.class)
+                .hasMessage("테마를 찾을 수 없습니다.");
         }
     }
 

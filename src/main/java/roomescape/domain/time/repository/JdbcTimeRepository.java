@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.error.type.TimeErrorType;
+import roomescape.global.error.exception.GeneralException;
 
 @Repository
 public class JdbcTimeRepository implements TimeRepository {
@@ -106,6 +108,9 @@ public class JdbcTimeRepository implements TimeRepository {
         final String sql = "UPDATE reservation_time SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
-        jdbcTemplate.update(sql, parameters);
+        int updatedRowCount = jdbcTemplate.update(sql, parameters);
+        if (updatedRowCount == 0) {
+            throw new GeneralException(TimeErrorType.TIME_NOT_FOUND);
+        }
     }
 }

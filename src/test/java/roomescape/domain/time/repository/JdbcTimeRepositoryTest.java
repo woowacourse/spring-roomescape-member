@@ -1,6 +1,7 @@
 package roomescape.domain.time.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalTime;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.time.entity.Time;
+import roomescape.global.error.exception.GeneralException;
 
 class JdbcTimeRepositoryTest {
 
@@ -175,6 +177,18 @@ class JdbcTimeRepositoryTest {
             assertThat(timeRepository.findTimeByIdAndDeletedAtIsNull(time1.getId())).isEmpty();
             assertThat(timeRepository.existsTimeByIdAndDeletedAtIsNull(time1.getId())).isFalse();
             assertThat(timeRepository.existsTimeByStartAtAndDeletedAtIsNull(time1.getStartAt())).isFalse();
+        }
+
+        @Test
+        void 삭제하려는_시간이_이미_삭제되었으면_예외가_발생한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            timeRepository.deleteTimeById(time.getId());
+
+            // when & then
+            assertThatThrownBy(() -> timeRepository.deleteTimeById(time.getId()))
+                .isInstanceOf(GeneralException.class)
+                .hasMessage("예약 시간을 찾을 수 없습니다.");
         }
     }
 

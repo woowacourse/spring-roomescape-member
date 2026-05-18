@@ -200,7 +200,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void deleteReservationById(Long id) {
         String sql = "UPDATE reservation SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(sql, parameters);
+        int updatedRowCount = jdbcTemplate.update(sql, parameters);
+        if (updatedRowCount == 0) {
+            throw new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND);
+        }
     }
 
     @Override

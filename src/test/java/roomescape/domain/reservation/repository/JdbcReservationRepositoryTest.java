@@ -478,6 +478,21 @@ class JdbcReservationRepositoryTest {
             assertThat(countDeletedReservationById(reservation1.getId())).isEqualTo(1);
             assertThat(reservationRepository.existsReservationByIdAndDeletedAtIsNull(reservation1.getId())).isFalse();
         }
+
+        @Test
+        void 삭제하려는_예약이_이미_삭제되었으면_예외가_발생한다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            Reservation reservation = reservationRepository.save(
+                Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
+            reservationRepository.deleteReservationById(reservation.getId());
+
+            // when & then
+            assertThatThrownBy(() -> reservationRepository.deleteReservationById(reservation.getId()))
+                .isInstanceOf(GeneralException.class)
+                .hasMessage("예약을 찾을 수 없습니다.");
+        }
     }
 
     private Integer countDeletedReservationById(Long id) {
