@@ -3,6 +3,7 @@ package roomescape.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import roomescape.domain.exception.DomainRuleViolationException;
 
 import java.time.LocalTime;
 
@@ -12,7 +13,7 @@ class TimeTest {
     @CsvSource(value = {"09:59", "22:01"})
     void 오전_10시_오후_10시가_아니면_예외_처리한다(LocalTime value) {
         Assertions.assertThatThrownBy(() -> Time.create(value))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DomainRuleViolationException.class);
     }
 
     @ParameterizedTest

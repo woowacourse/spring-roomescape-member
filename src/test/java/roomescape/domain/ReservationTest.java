@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.DomainRuleViolationException;
 import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
@@ -34,7 +35,7 @@ class ReservationTest {
 
             assertThatThrownBy(() ->
                     Reservation.create(name, past, time, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test
@@ -51,7 +52,7 @@ class ReservationTest {
 
             assertThatThrownBy(() ->
                     Reservation.create(name, day15, time, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test
@@ -64,7 +65,7 @@ class ReservationTest {
 
             assertThatThrownBy(() ->
                     created.update(null, today, pastTime, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test
@@ -89,7 +90,7 @@ class ReservationTest {
             Name newName = new Name("뉴브라운");
             LocalDate dayAfterTomorrow = LocalDate.of(2026, 5, 9);
             assertThatThrownBy(() -> created.update(newName, dayAfterTomorrow, time, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test
@@ -114,7 +115,7 @@ class ReservationTest {
 
             assertThatThrownBy(() ->
                     created.update(name, day15, time, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test
@@ -125,7 +126,7 @@ class ReservationTest {
 
             assertThatThrownBy(() ->
                     Reservation.create(name, today, noonTime, theme, fixedNow))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(DomainRuleViolationException.class);
         }
 
         @Test

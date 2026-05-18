@@ -1,12 +1,14 @@
 package roomescape.domain.vo;
 
+import roomescape.domain.exception.InvalidValueException;
+
 public record Name(String value) {
     public Name {
         if (value.isBlank()) {
-            throw new IllegalArgumentException("이름은 공백일 수 없습니다");
+            throw new InvalidValueException("이름은 공백일 수 없습니다");
         }
         if (value.length() > 50) {
-            throw new IllegalArgumentException("이름은 50자 이하여야 합니다");
+            throw new InvalidValueException("이름은 50자 이하여야 합니다");
         }
     }
 }

@@ -1,6 +1,8 @@
 package roomescape.common;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,7 +14,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import roomescape.common.exception.RestApiException;
+import roomescape.domain.exception.DomainRuleViolationException;
+import roomescape.domain.exception.InvalidValueException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +31,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode);
     }
 
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<Object> handleDuplicateKey(DuplicateKeyException e) {
+        return handleExceptionInternal(CommonErrorCode.DUPLICATE_RESOURCE);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrity(DataIntegrityViolationException e) {
+        return handleExceptionInternal(CommonErrorCode.DATA_INTEGRITY_VIOLATION);
+    }
+
+    @ExceptionHandler(InvalidValueException.class)
+    public ResponseEntity<Object> handleInvalidValue(InvalidValueException e) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.builder()
+                        .code("INVALID_VALUE")
+                        .message(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(DomainRuleViolationException.class)
+    public ResponseEntity<Object> handleDomainRule(DomainRuleViolationException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ErrorResponse.builder()
+                        .code("DOMAIN_RULE_VIOLATION")
+                        .message(e.getMessage())
+                        .build());
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -33,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request) {
         CommonErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
-        return handlerExceptionInternal(ex, errorCode);
+        return handleExceptionInternal(ex, errorCode);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -60,7 +93,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
     }
 
-    private ResponseEntity<Object> handlerExceptionInternal(BindException e, ErrorCode errorCode) {
+    private ResponseEntity<Object> handleExceptionInternal(BindException e, ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(e, errorCode));
     }

@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.DomainRuleViolationException;
+
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -19,7 +21,7 @@ public class Time {
 
     private static void validate(LocalTime startAt) {
         if (startAt.isBefore(LocalTime.of(10, 0)) || startAt.isAfter(LocalTime.of(22, 0))) {
-            throw new IllegalArgumentException("영업 시간은 10시부터 22시 사이입니다.");
+            throw new DomainRuleViolationException("영업 시간은 10시부터 22시 사이입니다.");
         }
     }
 
