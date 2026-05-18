@@ -79,11 +79,11 @@ public class ReservationService {
         Reservation reservation = findReservationOrThrow(id);
         validateNotPastReservation(reservation, "변경");
 
-        ReservationTime newTime = findReservationTimeOrThrow(newTimeId);
+        LocalTime newTime = findReservationTimeOrThrow(newTimeId).startAt();
         validateNotClosedDate(newDate);
-        validateNotAlreadyBookedByOthers(newDate, newTime.startAt(), reservation.theme(), id);
+        validateNotAlreadyBookedByOthers(newDate, newTime, reservation.theme(), id);
 
-        Reservation rescheduledReservation = reservation.rescheduled(newDate, newTime.startAt());
+        Reservation rescheduledReservation = reservation.rescheduled(newDate, newTime);
         Reservation updatedReservation = reservationRepository.updateDateAndTime(rescheduledReservation);
         log.info("Reservation changed: id={}, date={}, time={}", updatedReservation.id(), updatedReservation.date(), updatedReservation.time());
         return updatedReservation;
