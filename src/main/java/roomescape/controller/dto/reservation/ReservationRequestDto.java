@@ -23,12 +23,12 @@ public record ReservationRequestDto(
         @NotNull(message = "테마 ID는 필수 입력값입니다.")
         Long themeId
 ) {
-        public ReservationCommand toCommand() {
-                return new ReservationCommand(
-                        MemberName.from(name),
-                        ReservationDate.from(date),
-                        timeId,
-                        themeId
-                );
-        }
+    public ReservationCommand toCommand() {
+        return new ReservationCommand(
+                MemberName.from(name),
+                ReservationDate.from(date),
+                timeId,
+                themeId
+        );
+    }
 }

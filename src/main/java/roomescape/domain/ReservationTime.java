@@ -1,14 +1,11 @@
 package roomescape.domain;
 
-import jakarta.validation.constraints.NotNull;
-import org.springframework.dao.DataRetrievalFailureException;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class ReservationTime {

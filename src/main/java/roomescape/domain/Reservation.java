@@ -5,7 +5,6 @@ import roomescape.domain.vo.ReservationDate;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -23,6 +22,18 @@ public class Reservation {
         this.date = Objects.requireNonNull(date);
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
+    }
+
+    public static Reservation create(MemberName name, ReservationDate date, ReservationTime time, Theme theme) {
+        validateNotPast(date, time);
+
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateNotPast(ReservationDate date, ReservationTime time) {
+        if (LocalDateTime.of(date.value(), time.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PAST_DATE_RESERVATION);
+        }
     }
 
     public Long getId() {
@@ -55,18 +66,6 @@ public class Reservation {
 
     public Reservation withId(Long key) {
         return new Reservation(key, this.memberName, this.date, this.time, this.theme);
-    }
-
-    public static Reservation create(MemberName name, ReservationDate date, ReservationTime time, Theme theme) {
-        validateNotPast(date, time);
-
-        return new Reservation(null, name, date, time, theme);
-    }
-
-    private static void validateNotPast(ReservationDate date, ReservationTime time) {
-        if (LocalDateTime.of(date.value(), time.getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.PAST_DATE_RESERVATION);
-        }
     }
 
     @Override

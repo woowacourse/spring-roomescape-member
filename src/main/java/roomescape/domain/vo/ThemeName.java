@@ -1,6 +1,5 @@
 package roomescape.domain.vo;
 
-import jakarta.validation.constraints.NotBlank;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 

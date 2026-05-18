@@ -5,7 +5,8 @@ import roomescape.domain.ReservationTime;
 import java.time.format.DateTimeFormatter;
 
 public record ReservationTimeResponseDto(
-        Long id, String startAt
+        Long id,
+        String startAt
 ) {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");

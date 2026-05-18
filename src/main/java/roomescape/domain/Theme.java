@@ -1,8 +1,9 @@
 package roomescape.domain;
 
-import java.util.Objects;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
+
+import java.util.Objects;
 
 public class Theme {
 
@@ -49,7 +50,7 @@ public class Theme {
         }
         Theme theme = (Theme) o;
         return id != null
-            && Objects.equals(id, theme.id);
+                && Objects.equals(id, theme.id);
     }
 
     @Override

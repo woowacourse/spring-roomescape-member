@@ -1,8 +1,5 @@
 package roomescape.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.validation.constraints.NotBlank;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 
@@ -14,7 +11,7 @@ public record ThemeImageUrl(
 ) {
 
     private static final Pattern PATTERN = Pattern.compile(
-        "^https?://[^\\s/$.?#][^\\s]*[^\\s/.]\\.(jpg|jpeg|png|gif|webp|bmp|svg)(\\?[^\\s]*)?$");
+            "^https?://[^\\s/$.?#][^\\s]*[^\\s/.]\\.(jpg|jpeg|png|gif|webp|bmp|svg)(\\?[^\\s]*)?$");
 
     public ThemeImageUrl {
         validateNotBlank(value);
@@ -23,6 +20,10 @@ public record ThemeImageUrl(
 
     public static ThemeImageUrl from(String imageUrl) {
         return new ThemeImageUrl(imageUrl);
+    }
+
+    public static ThemeImageUrl defaultImageUrl() {
+        return new ThemeImageUrl("https://i.pinimg.com/736x/87/e8/a2/87e8a2af70721d5b886d4343425d1bd4.jpg");
     }
 
     private void validateNotBlank(String value) {
@@ -36,9 +37,5 @@ public record ThemeImageUrl(
         if (!matcher.matches()) {
             throw new BusinessException(ErrorCode.INVALID_FORMAT, "올바른 이미지 URL 형식이 아닙니다.");
         }
-    }
-
-    public static ThemeImageUrl defaultImageUrl() {
-        return new ThemeImageUrl("https://i.pinimg.com/736x/87/e8/a2/87e8a2af70721d5b886d4343425d1bd4.jpg");
     }
 }
