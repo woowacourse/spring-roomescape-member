@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,8 +106,8 @@ public class ReservationTest {
     }
 
     @Test
-    @DisplayName("지난 날짜,시간에 대한 예약 시 400 상태를 반환해야한다.")
-    void pastReservationRequestTest() {
+    @DisplayName("지난 날짜에 대한 예약 시 400 상태를 반환해야한다.")
+    void pastDateReservationRequestTest() {
         jdbcTemplate.update("""
             INSERT INTO reservation_time
             VALUES (1, '10:00', 'AVAILABLE')
@@ -125,7 +127,37 @@ public class ReservationTest {
         params.put("name", "녀녕");
         params.put("date", pastDate);
         params.put("timeId", 1L);
-        params.put("themeId", 2L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("지나간 날짜에 대한 예약 생성은 불가능합니다."));
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 지난 시간에 대한 예약 시 400 상태를 반환해야한다.")
+    void sameDatePastTimeReservationRequestTest() {
+        LocalDateTime now = LocalDateTime.now();
+        String minTimeSql = String.format("INSERT INTO reservation_time VALUES (1, '%s', 'AVAILABLE')", LocalTime.MIN);
+        jdbcTemplate.update(minTimeSql);
+
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+
+        String reservationSql = String.format("INSERT INTO reservation VALUES (1, 'user_a', '%s', 1, 1)", now.toLocalDate());
+        jdbcTemplate.update(reservationSql);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", now.toLocalDate());
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
