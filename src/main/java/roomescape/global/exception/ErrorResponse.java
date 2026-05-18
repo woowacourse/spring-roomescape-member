@@ -18,4 +18,8 @@ public record ErrorResponse(
     public static ErrorResponse of(ErrorCode errorCode, List<FieldErrorDetail> fieldErrors) {
         return new ErrorResponse(errorCode.errorCode(), errorCode.message(), fieldErrors);
     }
+
+    public static ErrorResponse of(String errorCode, String message) {
+        return new ErrorResponse(errorCode, message, List.of());
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -75,6 +76,21 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.RESERVATION_DUPLICATE;
         return ResponseEntity.status(errorCode.status())
                 .body(ErrorResponse.of(errorCode));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
+        String message = e.getMessage();
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode, message));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
+        ErrorCode errorCode = ErrorCode.RESOURCE_NOT_FOUND;
+        return ResponseEntity.status(errorCode.status())
+                .body(ErrorResponse.of(errorCode.errorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
