@@ -76,7 +76,7 @@ public class ReservationService {
         boolean isSuccessful = reservationDao.update(modified);
 
         if (!isSuccessful) {
-            throw new OptimisticLockingFailureException("다른 사용자가 예약했습니다. 다시 시도해주세요.");
+            throw new ConflictException("다른 사용자가 예약했습니다. 다시 시도해주세요.");
         }
 
         return ReservationResponse.from(modified);
