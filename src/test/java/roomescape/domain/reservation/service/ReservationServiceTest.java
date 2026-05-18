@@ -3,9 +3,12 @@ package roomescape.domain.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +47,10 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
+    private final Clock fixedClock = Clock.fixed(
+        Instant.parse("2026-05-08T00:00:00Z"),
+        ZoneId.of("Asia/Seoul")
+    );
 
     @BeforeEach
     void setUp() {
@@ -59,7 +66,8 @@ class ReservationServiceTest {
         reservationRepository = new JdbcReservationRepository(dataSource);
         timeRepository = new JdbcTimeRepository(dataSource);
         themeRepository = new JdbcThemeRepository(dataSource);
-        reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository,
+            fixedClock);
     }
 
     @Nested
@@ -102,7 +110,8 @@ class ReservationServiceTest {
                 Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
             Reservation reservation = reservationRepository.save(Reservation.create("제이콥", date, time, theme));
             reservationRepository.update(Reservation.reconstruct(reservation.getId(), reservation.getName(),
-                reservation.getDate(), reservation.getTime(), reservation.getTheme(), LocalDateTime.now(), null));
+                reservation.getDate(), reservation.getTime(), reservation.getTheme(),
+                LocalDateTime.of(2026, 4, 30, 10, 0), null));
 
             // when
             List<ReservationResponseDto> actual = reservationService.getReservations();
@@ -130,7 +139,7 @@ class ReservationServiceTest {
         @Test
         void 성공() {
             // given
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(fixedClock).plusDays(1);
             Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
             Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
             Time time3 = timeRepository.save(Time.create(LocalTime.of(12, 0)));
@@ -170,7 +179,7 @@ class ReservationServiceTest {
         @Test
         void 삭제된_예약_시간과_테마에_연결된_예약은_수정을_권장한다() {
             // given
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(fixedClock).plusDays(1);
             Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
             Theme theme = themeRepository.save(
                 Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -194,7 +203,7 @@ class ReservationServiceTest {
         @Test
         void 지난_예약은_수정하거나_삭제할_수_없다() {
             // given
-            LocalDate date = LocalDate.now().minusDays(1);
+            LocalDate date = LocalDate.now(fixedClock).minusDays(1);
             Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
             Theme theme = themeRepository.save(
                 Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -215,7 +224,7 @@ class ReservationServiceTest {
         @Test
         void 취소된_예약은_취소_상태를_반환한다() {
             // given
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(fixedClock).plusDays(1);
             Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
             Theme theme = themeRepository.save(
                 Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -443,7 +452,7 @@ class ReservationServiceTest {
             @Test
             void 성공() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Time updateTime = timeRepository.save(Time.create(LocalTime.of(13, 0)));
                 Theme theme = themeRepository.save(
@@ -466,7 +475,7 @@ class ReservationServiceTest {
             @Test
             void 선택_필드가_null이면_기존_값을_유지한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -485,7 +494,7 @@ class ReservationServiceTest {
             @Test
             void 자기_자신_예약은_중복_검사에서_제외한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -510,7 +519,7 @@ class ReservationServiceTest {
             void 예약_ID가_존재하지_않으면_예외가_발생한다() {
                 // given
                 ReservationUpdateRequestDto request = new ReservationUpdateRequestDto("제이슨",
-                    LocalDate.now().plusDays(1), null, null);
+                    LocalDate.now(fixedClock).plusDays(1), null, null);
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.updateReservation(999L, request))
@@ -521,7 +530,7 @@ class ReservationServiceTest {
             @Test
             void 조회한_예약과_예약자_이름이_다르면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -537,7 +546,7 @@ class ReservationServiceTest {
             @Test
             void 이미_취소된_예약이면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -558,9 +567,9 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 Reservation savedReservation = reservationRepository.save(
-                    Reservation.create("제이슨", LocalDate.now().minusDays(1), time, theme));
+                    Reservation.create("제이슨", LocalDate.now(fixedClock).minusDays(1), time, theme));
                 ReservationUpdateRequestDto request = new ReservationUpdateRequestDto("제이슨",
-                    LocalDate.now().plusDays(1), null, null);
+                    LocalDate.now(fixedClock).plusDays(1), null, null);
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.updateReservation(savedReservation.getId(), request))
@@ -571,7 +580,7 @@ class ReservationServiceTest {
             @Test
             void 변경할_예약_시간과_테마가_존재하지_않으면_파라미터_에러를_모두_포함한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -594,7 +603,7 @@ class ReservationServiceTest {
             @Test
             void 기존_예약_시간과_테마가_삭제되었고_변경하지_않으면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -612,7 +621,7 @@ class ReservationServiceTest {
             @Test
             void 같은_날짜_시간_테마에_다른_예약이_있으면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -639,7 +648,7 @@ class ReservationServiceTest {
             @Test
             void 성공() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -673,7 +682,7 @@ class ReservationServiceTest {
             @Test
             void 조회한_예약과_예약자_이름이_다르면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -688,7 +697,7 @@ class ReservationServiceTest {
             @Test
             void 이미_취소된_예약이면_예외가_발생한다() {
                 // given
-                LocalDate date = LocalDate.now().plusDays(1);
+                LocalDate date = LocalDate.now(fixedClock).plusDays(1);
                 Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
@@ -708,7 +717,7 @@ class ReservationServiceTest {
                 Theme theme = themeRepository.save(
                     Theme.create("테마 이름", "테마 설명", "https://roomescape.com/images/themes/ring-banner.png"));
                 Reservation savedReservation = reservationRepository.save(
-                    Reservation.create("제이슨", LocalDate.now().minusDays(1), time, theme));
+                    Reservation.create("제이슨", LocalDate.now(fixedClock).minusDays(1), time, theme));
 
                 // when & then
                 assertThatThrownBy(() -> reservationService.cancelReservation(savedReservation.getId(), "제이슨"))
@@ -767,7 +776,7 @@ class ReservationServiceTest {
             reservation.getDate(),
             reservation.getTime(),
             reservation.getTheme(),
-            LocalDateTime.now(),
+            LocalDateTime.now(fixedClock),
             null
         ));
     }

@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCancelResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationStatus;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.error.type.ReservationErrorType;
 import roomescape.domain.reservation.mapper.ReservationMapper;
@@ -29,12 +31,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
-        ThemeRepository themeRepository) {
+        ThemeRepository themeRepository, Clock clock) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public List<ReservationResponseDto> getReservations() {
@@ -45,8 +49,24 @@ public class ReservationService {
     public List<ReservationByNameResponseDto> getReservationsByName(String name) {
         List<Reservation> reservations = reservationRepository.findReservationsByNameAndDeletedAtIsNull(name);
         return reservations.stream()
-            .map(ReservationMapper::toByNameResponseDto)
+            .map(reservation -> ReservationMapper.toByNameResponseDto(reservation, getStatus(reservation)))
             .toList();
+    }
+
+    private ReservationStatus getStatus(Reservation reservation) {
+        if (reservation.getCanceledAt() != null) {
+            return ReservationStatus.CANCELED;
+        }
+
+        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
+            return ReservationStatus.LOCKED;
+        }
+
+        if (reservation.getTime().getDeletedAt() != null || reservation.getTheme().getDeletedAt() != null) {
+            return ReservationStatus.EDIT_RECOMMENDED;
+        }
+
+        return ReservationStatus.EDITABLE;
     }
 
     private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
@@ -79,7 +99,7 @@ public class ReservationService {
             throw new GeneralException(ReservationErrorType.ALREADY_CANCELED);
         }
 
-        if (existingReservation.getDate().isBefore(LocalDate.now())) {
+        if (existingReservation.getDate().isBefore(LocalDate.now(clock))) {
             throw new GeneralException(ReservationErrorType.PAST_RESERVATION_UPDATE);
         }
 
@@ -104,12 +124,12 @@ public class ReservationService {
             throw new GeneralException(ReservationErrorType.ALREADY_CANCELED);
         }
 
-        if (reservation.getDate().isBefore(LocalDate.now())) {
+        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
             throw new GeneralException(ReservationErrorType.PAST_RESERVATION_CANCEL);
         }
 
         Reservation canceledReservation = Reservation.reconstruct(reservation.getId(), reservation.getName(),
-            reservation.getDate(), reservation.getTime(), reservation.getTheme(), LocalDateTime.now(),
+            reservation.getDate(), reservation.getTime(), reservation.getTheme(), LocalDateTime.now(clock),
             reservation.getDeletedAt());
 
         return ReservationMapper.toCancelResponseDto(reservationRepository.update(canceledReservation));

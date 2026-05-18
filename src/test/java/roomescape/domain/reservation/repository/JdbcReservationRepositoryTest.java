@@ -365,7 +365,7 @@ class JdbcReservationRepositoryTest {
             Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
             Reservation reservation = reservationRepository.save(
                 Reservation.create("예약자1", LocalDate.of(2026, 5, 1), time, theme));
-            LocalDateTime canceledAt = LocalDateTime.now();
+            LocalDateTime canceledAt = LocalDateTime.of(2026, 5, 1, 10, 0);
             Reservation canceledReservation = Reservation.reconstruct(reservation.getId(), reservation.getName(),
                 reservation.getDate(), reservation.getTime(), reservation.getTheme(), canceledAt, null);
 
@@ -478,7 +478,7 @@ class JdbcReservationRepositoryTest {
             reservation.getDate(),
             reservation.getTime(),
             reservation.getTheme(),
-            LocalDateTime.now(),
+            LocalDateTime.of(2026, 5, 1, 10, 0),
             null
         ));
     }

@@ -3,7 +3,6 @@ package roomescape.domain.theme.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
@@ -18,11 +17,6 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final Clock clock;
-
-    @Autowired
-    public ThemeService(ThemeRepository themeRepository) {
-        this(themeRepository, Clock.systemDefaultZone());
-    }
 
     public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;

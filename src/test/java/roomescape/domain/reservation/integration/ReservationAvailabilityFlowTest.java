@@ -48,7 +48,7 @@ class ReservationAvailabilityFlowTest {
     @Test
     void 예약_가능_시간_조회_후_예약을_생성하면_다시_조회할_때_예약된_시간이_제외된다() {
         // given
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.of(2099, 5, 1);
         Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
         Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
         Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));

@@ -14,6 +14,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationCreateRequestDtoTest {
 
+    private static final LocalDate VALID_DATE = LocalDate.of(2099, 5, 1);
+    private static final LocalDate PAST_DATE = LocalDate.of(2000, 5, 1);
+
     private final Validator validator = Validation
         .buildDefaultValidatorFactory()
         .getValidator();
@@ -26,7 +29,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now(),
+                VALID_DATE,
                 1L,
                 1L
             );
@@ -49,7 +52,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 name,
-                LocalDate.now(),
+                VALID_DATE,
                 1L,
                 1L
             );
@@ -66,7 +69,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "a".repeat(21),
-                LocalDate.now(),
+                VALID_DATE,
                 1L,
                 1L
             );
@@ -100,7 +103,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now().minusDays(1),
+                PAST_DATE,
                 1L,
                 1L
             );
@@ -117,7 +120,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now(),
+                VALID_DATE,
                 null,
                 1L
             );
@@ -135,7 +138,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now(),
+                VALID_DATE,
                 timeId,
                 1L
             );
@@ -152,7 +155,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now(),
+                VALID_DATE,
                 1L,
                 null
             );
@@ -170,7 +173,7 @@ class ReservationCreateRequestDtoTest {
             // given
             ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "예약자",
-                LocalDate.now(),
+                VALID_DATE,
                 1L,
                 themeId
             );

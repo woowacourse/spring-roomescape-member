@@ -36,6 +36,10 @@ class ThemeServiceTest {
     private ThemeRepository themeRepository;
     private TimeRepository timeRepository;
     private ReservationRepository reservationRepository;
+    private final Clock fixedClock = Clock.fixed(
+        Instant.parse("2026-05-08T00:00:00Z"),
+        ZoneId.of("Asia/Seoul")
+    );
 
     @BeforeEach
     void setUp() {
@@ -51,7 +55,7 @@ class ThemeServiceTest {
         themeRepository = new JdbcThemeRepository(dataSource);
         timeRepository = new JdbcTimeRepository(dataSource);
         reservationRepository = new JdbcReservationRepository(dataSource);
-        themeService = new ThemeService(themeRepository);
+        themeService = new ThemeService(themeRepository, fixedClock);
     }
 
     @Nested
@@ -110,8 +114,6 @@ class ThemeServiceTest {
         @Test
         void 오늘을_제외하고_직전_7일의_예약_개수로_인기_테마를_조회한다() {
             // given
-            Clock fixedClock = Clock.fixed(Instant.parse("2026-05-08T00:00:00Z"), ZoneId.of("Asia/Seoul"));
-            themeService = new ThemeService(themeRepository, fixedClock);
             LocalDate today = LocalDate.now(fixedClock);
 
             Theme includedTheme = themeRepository.save(
@@ -141,8 +143,6 @@ class ThemeServiceTest {
         @Test
         void 삭제된_테마와_예약과_시간은_인기_테마_조회에_반영하지_않는다() {
             // given
-            Clock fixedClock = Clock.fixed(Instant.parse("2026-05-08T00:00:00Z"), ZoneId.of("Asia/Seoul"));
-            themeService = new ThemeService(themeRepository, fixedClock);
             LocalDate targetDate = LocalDate.now(fixedClock).minusDays(1);
 
             Theme activeTheme = themeRepository.save(
