@@ -119,12 +119,17 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation update(Reservation reservation) {
-        jdbcTemplate.update(
+        int updatedRowCount = jdbcTemplate.update(
                 "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
                 reservation.getDate(),
                 reservation.getTimeId(),
                 reservation.getId()
         );
+
+        if (updatedRowCount == 0) {
+            throw new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+        }
+
         return reservation;
     }
 
