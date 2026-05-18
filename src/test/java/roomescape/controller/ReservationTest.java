@@ -4,6 +4,9 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.exception.ErrorMessage;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ReservationTest {
@@ -21,6 +25,7 @@ public class ReservationTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation_history");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -38,9 +43,11 @@ public class ReservationTest {
             VALUES (2, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
             """);
 
+        LocalDate reservedDate = LocalDate.now().plusDays(1);
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
-        params.put("date", "2025-05-05");
+        params.put("date", reservedDate);
         params.put("timeId", 1L);
         params.put("themeId", 2L);
 
@@ -59,7 +66,7 @@ public class ReservationTest {
                 .statusCode(200)
                 .body("size()", is(1))
                 .body("[0].name", is("녀녕"))
-                .body("[0].date", is("2025-05-05"))
+                .body("[0].date", is(reservedDate.toString()))
                 .body("[0].time.id", is(1))
                 .body("[0].time.startAt", is("10:00"))
                 .body("[0].theme.id", is(2))
@@ -81,7 +88,7 @@ public class ReservationTest {
             """);
         jdbcTemplate.update("""
             INSERT INTO reservation
-            VALUES (1, 'user_a', '2026-04-28', 'AVAILABLE', 1, 1)
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
             """);
 
         RestAssured.given().log().all()
@@ -96,5 +103,136 @@ public class ReservationTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    @DisplayName("지난 날짜에 대한 예약 시 400 상태를 반환해야한다.")
+    void pastDateReservationRequestTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO reservation
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
+            """);
+
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", pastDate);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("지나간 날짜에 대한 예약 생성은 불가능합니다."));
+    }
+
+    @Test
+    @DisplayName("예약 생성 시 timeId가 없으면 400 상태를 반환해야한다.")
+    void createReservationWithoutTimeIdTest() {
+        LocalDate reservedDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "타스");
+        params.put("date", reservedDate);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("시간은 필수입니다."));
+    }
+
+    @Test
+    @DisplayName("예약 생성 시 themeId가 없으면 400 상태를 반환해야한다.")
+    void createReservationWithoutThemeIdTest() {
+        LocalDate reservedDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "타스");
+        params.put("date", reservedDate);
+        params.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("테마는 필수입니다."));
+    }
+
+    @Test
+    @DisplayName("예약 수정 시 timeId가 없으면 400 상태를 반환해야한다.")
+    void updateReservationWithoutTimeIdTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO reservation
+            VALUES (1, 'user_a', '2026-04-28', 1, 1)
+            """);
+
+        LocalDate reservedDate = LocalDate.now().plusDays(1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", reservedDate);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("시간은 필수입니다."));
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 지난 시간에 대한 예약 시 400 상태를 반환해야한다.")
+    void sameDatePastTimeReservationRequestTest() {
+        LocalDateTime now = LocalDateTime.now();
+        String minTimeSql = String.format("INSERT INTO reservation_time VALUES (1, '%s', 'AVAILABLE')", LocalTime.MIN);
+        jdbcTemplate.update(minTimeSql);
+
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+
+        String reservationSql = String.format("INSERT INTO reservation VALUES (1, 'user_a', '%s', 1, 1)", now.toLocalDate());
+        jdbcTemplate.update(reservationSql);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "녀녕");
+        params.put("date", now.toLocalDate());
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is(ErrorMessage.CANNOT_SELECT_PAST_DATETIME.getMessage()));
     }
 }

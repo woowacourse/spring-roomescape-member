@@ -21,7 +21,10 @@ class AdminThemeTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
@@ -29,15 +32,16 @@ class AdminThemeTest {
     void managingThemeScenarioTest() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "공포");
-        params.put("thumbnailUrl", "test_url");
+        params.put("thumbnailUrl", "http://localhost:8080/roomescape.app/admin/themes");
         params.put("description", "공포_설명");
 
-        RestAssured.given().log().all()
+        long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
@@ -46,7 +50,7 @@ class AdminThemeTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1")
+                .when().delete("/admin/themes/" + themeId)
                 .then().log().all()
                 .statusCode(204);
     }

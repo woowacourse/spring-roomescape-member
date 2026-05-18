@@ -4,158 +4,270 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 관리자</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
 
+        /* ── Header ── */
         header {
-            background: #1a252f;
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
             color: white;
-            padding: 16px 24px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .tab-bar {
+            padding: 20px 32px;
             display: flex;
-            background: #2c3e50;
-            padding: 0 24px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header .logo { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
+        header .logo span { color: #a5b4fc; }
+        header .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
         }
 
-        .tab {
-            padding: 12px 20px;
-            color: #aaa;
+        /* ── Nav ── */
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 32px;
+            display: flex;
+            gap: 4px;
+        }
+        .nav-item {
+            padding: 14px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #64748b;
             cursor: pointer;
-            font-size: 0.95rem;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
         }
+        .nav-item:hover { color: #4f46e5; }
+        .nav-item.active { color: #4f46e5; border-bottom-color: #4f46e5; }
 
-        .tab.active { color: white; border-bottom-color: #3498db; }
-
-        .container { max-width: 900px; margin: 30px auto; padding: 0 16px; }
-
+        /* ── Layout ── */
+        .container { max-width: 960px; margin: 32px auto; padding: 0 20px; }
         .section { display: none; }
         .section.active { display: block; }
+        .grid-2 { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
 
+        /* ── Card ── */
         .card {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .card-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #94a3b8;
+            margin-bottom: 16px;
         }
 
-        .card h2 { font-size: 1rem; margin-bottom: 16px; color: #2c3e50; }
-
-        .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 0; }
-
+        /* ── Form ── */
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.82rem; font-weight: 500; color: #475569; margin-bottom: 5px; }
         input, select {
-            padding: 9px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            flex: 1;
-            min-width: 140px;
+            width: 100%;
+            padding: 9px 13px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: #1e293b;
+            background: white;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
 
+        /* ── Buttons ── */
         button {
             padding: 9px 18px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            font-family: inherit;
+            font-weight: 500;
+            transition: background 0.15s, transform 0.1s;
         }
+        button:active { transform: scale(0.98); }
+        .btn-primary { background: #4f46e5; color: white; width: 100%; padding: 10px; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-danger {
+            background: transparent;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 5px 12px;
+            font-size: 0.82rem;
+        }
+        .btn-danger:hover { background: #fef2f2; border-color: #dc2626; }
 
-        .btn-primary { background: #2c3e50; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn-primary:hover { background: #3d5166; }
-        .btn-danger:hover { background: #c0392b; }
+        /* ── Table ── */
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.88rem;
+            vertical-align: middle;
+            color: #334155;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+        .thumb { width: 56px; height: 40px; object-fit: cover; border-radius: 6px; }
+        .empty { color: #cbd5e1; font-size: 0.88rem; text-align: center; padding: 24px 0; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-size: 0.85rem; color: #666; border-bottom: 2px solid #eee; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; vertical-align: middle; }
-        tr:hover td { background: #fafafa; }
-        .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; }
-
-        .empty { color: #aaa; font-size: 0.9rem; padding: 16px 0; }
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            z-index: 100;
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+        #toast.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        #toast.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
 
-<header>방탈출 관리자</header>
+<header>
+    <div class="logo">🔐 방탈출 <span>관리자</span></div>
+    <div class="badge">ADMIN</div>
+</header>
 
-<div class="tab-bar">
-    <div class="tab active" onclick="showTab('theme')">테마</div>
-    <div class="tab" onclick="showTab('time')">예약 시간</div>
-    <div class="tab" onclick="showTab('reservation')">예약</div>
-</div>
+<nav class="nav">
+    <div class="nav-item active" onclick="showTab('theme')">테마</div>
+    <div class="nav-item" onclick="showTab('time')">예약 시간</div>
+    <div class="nav-item" onclick="showTab('reservation')">예약</div>
+</nav>
 
 <div class="container">
 
     <!-- 테마 -->
     <div class="section active" id="section-theme">
-        <div class="card">
-            <h2>테마 추가</h2>
-            <div class="form-row">
-                <input type="text" id="theme-name" placeholder="테마 이름">
-                <input type="text" id="theme-thumb" placeholder="썸네일 URL">
-                <input type="text" id="theme-desc" placeholder="설명">
-                <button class="btn-primary" onclick="createTheme()">추가</button>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">테마 추가</div>
+                <div class="form-group">
+                    <label>테마 이름</label>
+                    <input type="text" id="theme-name" placeholder="예: 공포의 저택">
+                </div>
+                <div class="form-group">
+                    <label>썸네일 URL</label>
+                    <input type="text" id="theme-thumb" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>설명</label>
+                    <input type="text" id="theme-desc" placeholder="테마 설명">
+                </div>
+                <button class="btn-primary" onclick="createTheme()">추가하기</button>
             </div>
-        </div>
-        <div class="card">
-            <h2>테마 목록</h2>
-            <table>
-                <thead><tr><th>ID</th><th>이름</th><th>설명</th><th>썸네일</th><th></th></tr></thead>
-                <tbody id="theme-list"></tbody>
-            </table>
+            <div class="card">
+                <div class="card-title">테마 목록</div>
+                <table>
+                    <thead><tr><th>ID</th><th>이름</th><th>설명</th><th>썸네일</th><th></th></tr></thead>
+                    <tbody id="theme-list"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- 예약 시간 -->
     <div class="section" id="section-time">
-        <div class="card">
-            <h2>시간 추가</h2>
-            <div class="form-row">
-                <input type="time" id="time-start">
-                <button class="btn-primary" onclick="createTime()">추가</button>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">시간 추가</div>
+                <div class="form-group">
+                    <label>시작 시간</label>
+                    <input type="time" id="time-start">
+                </div>
+                <button class="btn-primary" onclick="createTime()">추가하기</button>
             </div>
-        </div>
-        <div class="card">
-            <h2>예약 시간 목록</h2>
-            <table>
-                <thead><tr><th>ID</th><th>시작 시간</th><th></th></tr></thead>
-                <tbody id="time-list"></tbody>
-            </table>
+            <div class="card">
+                <div class="card-title">예약 시간 목록</div>
+                <table>
+                    <thead><tr><th>ID</th><th>시작 시간</th><th></th></tr></thead>
+                    <tbody id="time-list"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- 예약 -->
     <div class="section" id="section-reservation">
-        <div class="card">
-            <h2>예약 추가</h2>
-            <div class="form-row">
-                <input type="text" id="res-name" placeholder="예약자 이름">
-                <input type="date" id="res-date">
-                <select id="res-time"></select>
-                <select id="res-theme"></select>
-                <button class="btn-primary" onclick="createReservation()">추가</button>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">예약 추가</div>
+                <div class="form-group">
+                    <label>예약자 이름</label>
+                    <input type="text" id="res-name" placeholder="이름">
+                </div>
+                <div class="form-group">
+                    <label>날짜</label>
+                    <input type="date" id="res-date">
+                </div>
+                <div class="form-group">
+                    <label>시간</label>
+                    <select id="res-time"></select>
+                </div>
+                <div class="form-group">
+                    <label>테마</label>
+                    <select id="res-theme"></select>
+                </div>
+                <button class="btn-primary" onclick="createReservation()">추가하기</button>
             </div>
-        </div>
-        <div class="card">
-            <h2>예약 목록</h2>
-            <table>
-                <thead><tr><th>ID</th><th>이름</th><th>날짜</th><th>시간</th><th>테마</th><th></th></tr></thead>
-                <tbody id="reservation-list"></tbody>
-            </table>
+            <div class="card">
+                <div class="card-title">예약 목록</div>
+                <table>
+                    <thead><tr><th>ID</th><th>이름</th><th>날짜</th><th>시간</th><th>테마</th><th></th></tr></thead>
+                    <tbody id="reservation-list"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
 </div>
 
+<div id="toast"></div>
+
 <script>
     function showTab(name) {
-        document.querySelectorAll('.tab').forEach((t, i) => {
+        document.querySelectorAll('.nav-item').forEach((t, i) => {
             const names = ['theme', 'time', 'reservation'];
             t.classList.toggle('active', names[i] === name);
         });
@@ -163,12 +275,20 @@
         document.getElementById('section-' + name).classList.add('active');
     }
 
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = (type === 'success' ? '✓ ' : '✕ ') + msg;
+        el.className = `show ${type}`;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { el.className = type; }, 2800);
+    }
+
     // ── 테마 ──
     async function loadThemes() {
         const res = await fetch('/admin/themes');
         const themes = await res.json();
-        const tbody = document.getElementById('theme-list');
-        tbody.innerHTML = themes.length === 0
+        document.getElementById('theme-list').innerHTML = themes.length === 0
             ? '<tr><td colspan="5" class="empty">테마가 없습니다.</td></tr>'
             : themes.map(t => `
                 <tr>
@@ -179,7 +299,6 @@
                     <td><button class="btn-danger" onclick="deleteTheme(${t.id})">삭제</button></td>
                 </tr>`).join('');
 
-        // 예약 폼 select 동기화
         const sel = document.getElementById('res-theme');
         sel.innerHTML = themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
@@ -188,29 +307,38 @@
         const name = document.getElementById('theme-name').value.trim();
         const thumbnailUrl = document.getElementById('theme-thumb').value.trim();
         const description = document.getElementById('theme-desc').value.trim();
-        if (!name) return;
-        await fetch('/admin/themes', {
+        if (!name) { showToast('테마 이름을 입력해주세요.', 'error'); return; }
+        const res = await fetch('/admin/themes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, thumbnailUrl, description })
         });
-        document.getElementById('theme-name').value = '';
-        document.getElementById('theme-thumb').value = '';
-        document.getElementById('theme-desc').value = '';
-        loadThemes();
+        if (res.ok) {
+            document.getElementById('theme-name').value = '';
+            document.getElementById('theme-thumb').value = '';
+            document.getElementById('theme-desc').value = '';
+            loadThemes();
+            showToast('테마가 추가되었습니다.');
+        } else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '추가에 실패했습니다.', 'error');
+        }
     }
 
     async function deleteTheme(id) {
-        await fetch(`/admin/themes/${id}`, { method: 'DELETE' });
-        loadThemes();
+        const res = await fetch(`/admin/themes/${id}`, { method: 'DELETE' });
+        if (res.ok) { loadThemes(); showToast('테마가 삭제되었습니다.'); }
+        else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '삭제에 실패했습니다.', 'error');
+        }
     }
 
     // ── 예약 시간 ──
     async function loadTimes() {
         const res = await fetch('/admin/times');
         const times = await res.json();
-        const tbody = document.getElementById('time-list');
-        tbody.innerHTML = times.length === 0
+        document.getElementById('time-list').innerHTML = times.length === 0
             ? '<tr><td colspan="3" class="empty">등록된 시간이 없습니다.</td></tr>'
             : times.map(t => `
                 <tr>
@@ -219,33 +347,39 @@
                     <td><button class="btn-danger" onclick="deleteTime(${t.id})">삭제</button></td>
                 </tr>`).join('');
 
-        // 예약 폼 select 동기화
         const sel = document.getElementById('res-time');
         sel.innerHTML = times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
     }
 
     async function createTime() {
         const startAt = document.getElementById('time-start').value;
-        if (!startAt) return;
-        await fetch('/admin/times', {
+        if (!startAt) { showToast('시작 시간을 입력해주세요.', 'error'); return; }
+        const res = await fetch('/admin/times', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ startAt })
         });
-        loadTimes();
+        if (res.ok) { loadTimes(); showToast('시간이 추가되었습니다.'); }
+        else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '추가에 실패했습니다.', 'error');
+        }
     }
 
     async function deleteTime(id) {
-        await fetch(`/admin/times/${id}`, { method: 'DELETE' });
-        loadTimes();
+        const res = await fetch(`/admin/times/${id}`, { method: 'DELETE' });
+        if (res.ok) { loadTimes(); showToast('시간이 삭제되었습니다.'); }
+        else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '삭제에 실패했습니다.', 'error');
+        }
     }
 
     // ── 예약 ──
     async function loadReservations() {
         const res = await fetch('/admin/reservations');
         const list = await res.json();
-        const tbody = document.getElementById('reservation-list');
-        tbody.innerHTML = list.length === 0
+        document.getElementById('reservation-list').innerHTML = list.length === 0
             ? '<tr><td colspan="6" class="empty">예약이 없습니다.</td></tr>'
             : list.map(r => `
                 <tr>
@@ -263,21 +397,28 @@
         const date = document.getElementById('res-date').value;
         const timeId = Number(document.getElementById('res-time').value);
         const themeId = Number(document.getElementById('res-theme').value);
-        if (!name || !date) return;
-        await fetch('/admin/reservations', {
+        if (!name || !date) { showToast('이름과 날짜를 입력해주세요.', 'error'); return; }
+        const res = await fetch('/admin/reservations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, date, timeId, themeId })
         });
-        loadReservations();
+        if (res.ok) { loadReservations(); showToast('예약이 추가되었습니다.'); }
+        else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '추가에 실패했습니다.', 'error');
+        }
     }
 
     async function deleteReservation(id) {
-        await fetch(`/admin/reservations/${id}`, { method: 'DELETE' });
-        loadReservations();
+        const res = await fetch(`/admin/reservations/${id}`, { method: 'DELETE' });
+        if (res.ok) { loadReservations(); showToast('예약이 삭제되었습니다.'); }
+        else {
+            const err = await res.json().catch(() => null);
+            showToast(err?.message ?? '삭제에 실패했습니다.', 'error');
+        }
     }
 
-    // 초기 로드
     loadThemes();
     loadTimes();
     loadReservations();

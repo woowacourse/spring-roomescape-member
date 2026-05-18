@@ -3,7 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.TimeStatus;
+import roomescape.exception.ErrorMessage;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class ReservationTimeDao {
                 rs.getObject("start_at", LocalTime.class)
         );
 
-        if(TimeStatus.DELETED.name().equals(rs.getString("status"))) {
+        if (TimeStatus.DELETED.name().equals(rs.getString("status"))) {
             return reservationTime.deleted();
         }
 
@@ -51,10 +53,10 @@ public class ReservationTimeDao {
 
     public void deleteByTimeId(long timeId) {
         String sql = "UPDATE reservation_time SET status = ? WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, TimeStatus.DELETED.name(),timeId);
+        int affected = jdbcTemplate.update(sql, TimeStatus.DELETED.name(), timeId);
 
         if (affected == 0) {
-            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 시간이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorMessage.TIME_NOT_FOUND);
         }
     }
 
@@ -65,8 +67,8 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
         String sql = """
-                SELECT 
-                    rt.id, 
+                SELECT
+                    rt.id,
                     rt.start_at,
                     rt.status
                 FROM reservation_time rt
@@ -79,5 +81,23 @@ public class ReservationTimeDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, date, themeId, TimeStatus.AVAILABLE.name());
+    }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation_time
+                    WHERE start_at = ? AND status = ?
+                )
+                """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, startAt, TimeStatus.AVAILABLE.name())
+        );
+    }
+
+    public Optional<ReservationTime> findByTimeId(long timeId) {
+        String sql = "SELECT id, start_at, status FROM reservation_time WHERE id = ? AND status = ?";
+        return jdbcTemplate.query(sql, rowMapper, timeId, TimeStatus.AVAILABLE.name())
+                .stream().findFirst();
     }
 }

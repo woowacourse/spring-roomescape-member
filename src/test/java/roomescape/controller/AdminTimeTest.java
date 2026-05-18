@@ -21,21 +21,25 @@ class AdminTimeTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
     @DisplayName("시간 생성 / 조회 / 삭제 api 테스트")
     void managingTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("startAt", "11:00");
 
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -44,7 +48,7 @@ class AdminTimeTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
+                .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }

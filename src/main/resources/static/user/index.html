@@ -4,182 +4,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 예약</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
 
+        /* ── Header ── */
         header {
-            background: #2c3e50;
+            background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
             color: white;
-            padding: 16px 24px;
-            font-size: 1.3rem;
-            font-weight: bold;
-        }
-
-        .tab-bar {
+            padding: 20px 32px;
             display: flex;
-            background: #34495e;
-            padding: 0 24px;
+            align-items: center;
+            gap: 12px;
         }
+        header .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+        header .logo span { color: #a5b4fc; }
 
-        .tab {
-            padding: 12px 20px;
-            color: #aaa;
+        /* ── Nav ── */
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 32px;
+            display: flex;
+            gap: 4px;
+        }
+        .nav-item {
+            padding: 14px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #64748b;
             cursor: pointer;
-            font-size: 0.95rem;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
         }
+        .nav-item:hover { color: #4f46e5; }
+        .nav-item.active { color: #4f46e5; border-bottom-color: #4f46e5; }
 
-        .tab.active { color: white; border-bottom-color: #3498db; }
-
-        .container { max-width: 860px; margin: 40px auto; padding: 0 16px; }
-
+        /* ── Layout ── */
+        .container { max-width: 880px; margin: 36px auto; padding: 0 20px; }
         .section { display: none; }
         .section.active { display: block; }
 
+        /* ── Card ── */
         .card {
             background: white;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
-
-        .card h2 { font-size: 1.1rem; margin-bottom: 16px; color: #2c3e50; }
-
-        label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 4px; }
-
-        input[type="date"], input[type="text"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #94a3b8;
             margin-bottom: 16px;
         }
 
+        /* ── Step badge ── */
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .step-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-title { font-size: 1rem; font-weight: 600; color: #1e293b; }
+
+        /* ── Form ── */
+        label { display: block; font-size: 0.82rem; font-weight: 500; color: #475569; margin-bottom: 6px; }
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #1e293b;
+            margin-bottom: 16px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+        /* ── Buttons ── */
         button {
             padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 500;
+            transition: background 0.15s, transform 0.1s;
         }
+        button:active { transform: scale(0.98); }
+        .btn-primary { background: #4f46e5; color: white; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-success { background: #059669; color: white; }
+        .btn-success:hover { background: #047857; }
 
-        .btn-primary { background: #2c3e50; color: white; }
-        .btn-primary:hover { background: #3d5166; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #219a52; }
-
-        /* 테마 카드 */
+        /* ── Theme grid ── */
         .theme-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
-
         .theme-card {
-            border: 2px solid #eee;
-            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             overflow: hidden;
             cursor: pointer;
-            transition: border-color 0.15s;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
-
-        .theme-card:hover { border-color: #2c3e50; }
-        .theme-card.selected { border-color: #2c3e50; box-shadow: 0 0 0 2px #2c3e50; }
-
-        .theme-card img {
-            width: 100%;
-            height: 110px;
-            object-fit: cover;
-            display: block;
-        }
-
+        .theme-card:hover { border-color: #818cf8; box-shadow: 0 4px 12px rgba(79,70,229,0.12); }
+        .theme-card.selected { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.15); }
+        .theme-card img { width: 100%; height: 100px; object-fit: cover; display: block; }
         .theme-card-body { padding: 8px 10px; }
-        .theme-card-body .name { font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; }
-        .theme-card-body .desc { font-size: 0.78rem; color: #888; line-height: 1.4; }
+        .theme-card-body .name { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+        .theme-card-body .desc { font-size: 0.75rem; color: #94a3b8; line-height: 1.4; }
 
-        /* 인기 테마 */
-        .popular-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .popular-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .popular-card img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .popular-card-body { padding: 10px 12px; }
-        .popular-card-body .name { font-size: 0.95rem; font-weight: bold; margin-bottom: 4px; }
-        .popular-card-body .desc { font-size: 0.8rem; color: #888; line-height: 1.4; }
-
-        .rank-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: #2c3e50;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 12px;
-        }
-
-        /* 시간 선택 */
-        .time-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-
+        /* ── Time buttons ── */
+        .time-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .time-btn {
-            padding: 10px 18px;
-            border-radius: 6px;
-            border: 2px solid #ddd;
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
             background: white;
+            color: #475569;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.15s;
         }
+        .time-btn:hover { border-color: #818cf8; color: #4f46e5; background: #f5f3ff; }
+        .time-btn.selected { border-color: #4f46e5; background: #4f46e5; color: white; }
 
-        .time-btn:hover { border-color: #2c3e50; color: #2c3e50; }
-        .time-btn.selected { border-color: #2c3e50; background: #2c3e50; color: white; }
-
+        /* ── Alert ── */
         .alert {
             padding: 12px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 16px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+        /* ── Popular ── */
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 16px;
+        }
+        .popular-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: box-shadow 0.15s;
+        }
+        .popular-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .popular-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
+        .popular-card-body { padding: 10px 14px; }
+        .popular-card-body .name { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+        .popular-card-body .desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.4; }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .rank-badge.top3 { background: #f59e0b; }
 
         .hidden { display: none; }
+        .empty-text { color: #94a3b8; font-size: 0.88rem; padding: 8px 0; }
+
+        /* ── Sort bar ── */
+        .sort-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .sort-label { font-size: 0.8rem; font-weight: 500; color: #94a3b8; margin-right: 2px; }
+        .sort-btn {
+            padding: 5px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; font-family: inherit;
+            background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-weight: 500; transition: all 0.15s;
+        }
+        .sort-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .sort-btn.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+        /* ── Reservation list (single column) ── */
+        .reservation-list { display: flex; flex-direction: column; gap: 10px; }
+        .reservation-card {
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px;
+            background: white; transition: box-shadow 0.15s;
+        }
+        .reservation-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .reservation-card-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .reservation-card-info { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0; }
+        .reservation-card-theme {
+            font-size: 0.82rem; font-weight: 700; color: #4f46e5;
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .reservation-card-meta { display: flex; gap: 14px; font-size: 0.88rem; color: #475569; }
+        .reservation-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: 6px; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-danger:hover { background: #fee2e2; }
+
+        /* ── Inline edit form ── */
+        .edit-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+        .edit-form label { font-size: 0.8rem; font-weight: 500; color: #475569; margin-bottom: 4px; }
+        .edit-form input[type="date"] { margin-bottom: 10px; font-size: 0.88rem; padding: 8px 12px; }
+        .edit-form .time-list { margin-bottom: 10px; }
+        .edit-form .time-list .time-btn { padding: 7px 14px; font-size: 0.82rem; }
     </style>
 </head>
 <body>
 
-<header>방탈출 예약</header>
+<header>
+    <div class="logo">🔐 방탈출 <span>예약</span></div>
+</header>
 
-<div class="tab-bar">
-    <div class="tab active" onclick="showTab('reservation')">예약하기</div>
-    <div class="tab" onclick="showTab('popular')">인기 테마</div>
-</div>
+<nav class="nav">
+    <div class="nav-item active" onclick="showTab('reservation')">예약하기</div>
+    <div class="nav-item" onclick="showTab('myreservation')">내 예약 조회</div>
+    <div class="nav-item" onclick="showTab('popular')">인기 테마</div>
+</nav>
 
 <div class="container">
 
     <!-- 예약하기 -->
     <div class="section active" id="section-reservation">
         <div class="card">
-            <h2>1. 날짜와 테마를 선택하세요</h2>
+            <div class="step-header">
+                <div class="step-badge">1</div>
+                <div class="step-title">날짜와 테마를 선택하세요</div>
+            </div>
 
             <label for="date">예약 날짜</label>
             <input type="date" id="date">
@@ -191,24 +277,61 @@
         </div>
 
         <div class="card hidden" id="step2">
-            <h2>2. 시간을 선택하고 이름을 입력하세요</h2>
+            <div class="step-header">
+                <div class="step-badge">2</div>
+                <div class="step-title">시간을 선택하고 이름을 입력하세요</div>
+            </div>
 
             <label>예약 가능한 시간</label>
             <div class="time-list" id="timeList"></div>
 
-            <label for="name" style="margin-top: 8px;">예약자 이름</label>
+            <label for="name">예약자 이름</label>
             <input type="text" id="name" placeholder="이름을 입력하세요">
 
             <div id="alertBox"></div>
 
-            <button class="btn-success" onclick="submitReservation()">예약하기</button>
+            <button class="btn-success" onclick="submitReservation()">예약 완료</button>
+        </div>
+    </div>
+
+    <!-- 내 예약 조회 -->
+    <div class="section" id="section-myreservation">
+        <div class="card">
+            <div class="card-title">이름으로 예약 조회</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                <input type="text" id="search-name" placeholder="예약자 이름을 입력하세요" style="margin-bottom: 0;">
+                <button class="btn-primary" style="white-space: nowrap;" onclick="searchReservations()">조회</button>
+            </div>
+            <div class="sort-bar hidden" id="sort-bar">
+                <span class="sort-label">정렬</span>
+                <button class="sort-btn active" onclick="setSort('date-asc')">날짜 오름차순</button>
+                <button class="sort-btn" onclick="setSort('date-desc')">날짜 내림차순</button>
+                <button class="sort-btn" onclick="setSort('theme')">테마명순</button>
+            </div>
+            <div id="search-result"></div>
         </div>
     </div>
 
     <!-- 인기 테마 -->
     <div class="section" id="section-popular">
         <div class="card">
-            <h2>최근 1주 인기 테마 TOP 10</h2>
+            <div class="card-title">인기 테마 TOP 10</div>
+            <div style="margin-bottom: 16px;">
+                <div class="sort-bar" style="margin-bottom: 10px;">
+                    <span class="sort-label">기간</span>
+                    <button class="sort-btn active" id="preset-7"   onclick="setPopularPreset(7, this)">최근 1주</button>
+                    <button class="sort-btn"         id="preset-30"  onclick="setPopularPreset(30, this)">최근 1개월</button>
+                    <button class="sort-btn"         id="preset-90"  onclick="setPopularPreset(90, this)">최근 3개월</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <input type="date" id="popular-start" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <span style="color: #94a3b8; font-size: 0.9rem;">~</span>
+                    <input type="date" id="popular-end" style="width: auto; margin-bottom: 0; font-size: 0.88rem; padding: 7px 12px;"
+                           onchange="clearPopularPreset()">
+                    <button class="btn-primary btn-sm" onclick="loadPopularThemes()">조회</button>
+                </div>
+            </div>
             <div class="popular-grid" id="popularGrid"></div>
         </div>
     </div>
@@ -218,15 +341,170 @@
 <script>
     let selectedTimeId = null;
     let selectedThemeId = null;
+    let lastSearchName = '';
+    let currentSort = 'date-asc';
+    const editSelectedTimes = {};
+
+    function setSort(key) {
+        currentSort = key;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderReservations(lastSearchName);
+    }
+
+    function sortReservations(list) {
+        return [...list].sort((a, b) => {
+            if (currentSort === 'date-asc')  return a.date.localeCompare(b.date) || a.time.startAt.localeCompare(b.time.startAt);
+            if (currentSort === 'date-desc') return b.date.localeCompare(a.date) || a.time.startAt.localeCompare(b.time.startAt);
+            if (currentSort === 'theme')     return a.theme.name.localeCompare(b.theme.name, 'ko');
+            return 0;
+        });
+    }
 
     function showTab(name) {
-        document.querySelectorAll('.tab').forEach((t, i) => {
-            t.classList.toggle('active', ['reservation', 'popular'][i] === name);
+        document.querySelectorAll('.nav-item').forEach((t, i) => {
+            t.classList.toggle('active', ['reservation', 'myreservation', 'popular'][i] === name);
         });
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('section-' + name).classList.add('active');
+        if (name === 'popular') { initPopularDates(); loadPopularThemes(); }
+    }
 
-        if (name === 'popular') loadPopularThemes();
+    async function searchReservations() {
+        const name = document.getElementById('search-name').value.trim();
+        if (!name) {
+            document.getElementById('search-result').innerHTML =
+                '<div class="alert alert-error"><span>✕</span>이름을 입력해주세요.</div>';
+            return;
+        }
+        lastSearchName = name;
+        await renderReservations(name);
+    }
+
+    async function renderReservations(name) {
+        const resultEl = document.getElementById('search-result');
+        const res = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            resultEl.innerHTML = `<div class="alert alert-error"><span>✕</span>${err?.message ?? '조회에 실패했습니다.'}</div>`;
+            document.getElementById('sort-bar').classList.add('hidden');
+            return;
+        }
+        const list = await res.json();
+        if (list.length === 0) {
+            resultEl.innerHTML = '<p class="empty-text">예약 내역이 없습니다.</p>';
+            document.getElementById('sort-bar').classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('sort-bar').classList.remove('hidden');
+        const sorted = sortReservations(list);
+
+        resultEl.innerHTML = `
+            <div class="reservation-list">
+                ${sorted.map(r => `
+                    <div class="reservation-card" id="card-${r.id}">
+                        <div class="reservation-card-row">
+                            <div class="reservation-card-info">
+                                <span class="reservation-card-theme">${r.theme.name}</span>
+                                <div class="reservation-card-meta">
+                                    <span>📅 ${r.date}</span>
+                                    <span>🕐 ${r.time.startAt}</span>
+                                </div>
+                            </div>
+                            <div class="reservation-card-actions">
+                                <button class="btn-sm btn-secondary" onclick="toggleEditForm(${r.id}, ${r.theme.id}, '${r.date}')">수정</button>
+                                <button class="btn-sm btn-danger" onclick="cancelReservation(${r.id})">취소</button>
+                            </div>
+                        </div>
+                        <div class="edit-form hidden" id="edit-form-${r.id}">
+                            <label>새 날짜</label>
+                            <input type="date" id="edit-date-${r.id}" value="${r.date}"
+                                   onchange="loadEditTimes(${r.id}, ${r.theme.id})">
+                            <label>새 시간</label>
+                            <div class="time-list" id="edit-times-${r.id}">
+                                <p class="empty-text">날짜를 선택하면 가능한 시간이 표시됩니다.</p>
+                            </div>
+                            <div id="edit-alert-${r.id}"></div>
+                            <button class="btn-sm btn-primary" onclick="submitEdit(${r.id})">수정 완료</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    async function cancelReservation(id) {
+        if (!confirm('예약을 취소하시겠습니까?')) return;
+        const res = await fetch(`/reservations/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            await renderReservations(lastSearchName);
+        } else {
+            const err = await res.json().catch(() => null);
+            alert(err?.message ?? '취소에 실패했습니다.');
+        }
+    }
+
+    async function toggleEditForm(id, themeId, currentDate) {
+        const form = document.getElementById(`edit-form-${id}`);
+        const isHidden = form.classList.contains('hidden');
+        form.classList.toggle('hidden', !isHidden);
+        if (isHidden) {
+            await loadEditTimes(id, themeId, currentDate);
+        }
+    }
+
+    async function loadEditTimes(id, themeId, dateOverride) {
+        const dateInput = document.getElementById(`edit-date-${id}`);
+        const date = dateOverride ?? dateInput.value;
+        if (dateOverride) dateInput.value = date;
+        if (!date) return;
+
+        const timesEl = document.getElementById(`edit-times-${id}`);
+        timesEl.innerHTML = '<p class="empty-text">불러오는 중...</p>';
+        editSelectedTimes[id] = null;
+
+        const res = await fetch(`/times?date=${date}&themeId=${themeId}`);
+        const times = await res.json();
+
+        if (times.length === 0) {
+            timesEl.innerHTML = '<p class="empty-text">예약 가능한 시간이 없습니다.</p>';
+            return;
+        }
+        timesEl.innerHTML = '';
+        times.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'time-btn';
+            btn.textContent = t.startAt;
+            btn.onclick = () => {
+                timesEl.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                editSelectedTimes[id] = t.id;
+            };
+            timesEl.appendChild(btn);
+        });
+    }
+
+    async function submitEdit(id) {
+        const date = document.getElementById(`edit-date-${id}`).value;
+        const timeId = editSelectedTimes[id];
+        const alertEl = document.getElementById(`edit-alert-${id}`);
+
+        if (!date) { alertEl.innerHTML = '<div class="alert alert-error"><span>✕</span>날짜를 선택해주세요.</div>'; return; }
+        if (!timeId) { alertEl.innerHTML = '<div class="alert alert-error"><span>✕</span>시간을 선택해주세요.</div>'; return; }
+
+        const res = await fetch(`/reservations/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, timeId })
+        });
+
+        if (res.ok) {
+            await renderReservations(lastSearchName);
+        } else {
+            const err = await res.json().catch(() => null);
+            alertEl.innerHTML = `<div class="alert alert-error"><span>✕</span>${err?.message ?? '수정에 실패했습니다.'}</div>`;
+        }
     }
 
     async function loadThemes() {
@@ -252,21 +530,18 @@
 
     async function loadAvailableTimes() {
         const date = document.getElementById('date').value;
-
         if (!date || !selectedThemeId) {
             alert('날짜와 테마를 모두 선택해주세요.');
             return;
         }
-
         const res = await fetch(`/times?date=${date}&themeId=${selectedThemeId}`);
         const times = await res.json();
-
         const list = document.getElementById('timeList');
         list.innerHTML = '';
         selectedTimeId = null;
 
         if (times.length === 0) {
-            list.innerHTML = '<p style="color:#aaa;">예약 가능한 시간이 없습니다.</p>';
+            list.innerHTML = '<p class="empty-text">예약 가능한 시간이 없습니다.</p>';
         } else {
             times.forEach(t => {
                 const btn = document.createElement('button');
@@ -305,30 +580,59 @@
             loadAvailableTimes();
             document.getElementById('name').value = '';
         } else {
-            showAlert('예약에 실패했습니다.', 'error');
+            const errorData = await res.json().catch(() => null);
+            const message = errorData?.message ?? '예약에 실패했습니다.';
+            showAlert(message, 'error');
         }
     }
 
-    async function loadPopularThemes() {
+    function toDateStr(date) {
+        return date.toISOString().slice(0, 10);
+    }
+
+    function setPopularPreset(days, btn) {
         const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - days);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadPopularThemes();
+    }
 
-        const endDate = new Date(today);
-        endDate.setDate(today.getDate() - 1); // endAt: 어제 날짜
+    function clearPopularPreset() {
+        document.querySelectorAll('[id^="preset-"]').forEach(b => b.classList.remove('active'));
+    }
 
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 7);
+    async function loadPopularThemes() {
+        const startAt = document.getElementById('popular-start').value;
+        const endAt   = document.getElementById('popular-end').value;
+        const grid    = document.getElementById('popularGrid');
 
-        const endAt = endDate.toISOString().slice(0, 10);
-        const startAt = startDate.toISOString().slice(0, 10);
+        if (!startAt || !endAt) {
+            grid.innerHTML = '<p class="empty-text">기간을 선택해주세요.</p>';
+            return;
+        }
+        if (startAt > endAt) {
+            grid.innerHTML = '<p class="empty-text">시작일이 종료일보다 늦을 수 없습니다.</p>';
+            return;
+        }
 
+        grid.innerHTML = '<p class="empty-text">불러오는 중...</p>';
         const res = await fetch(`/themes/popular?startAt=${startAt}&endAt=${endAt}&limit=10`);
         const themes = await res.json();
-        const grid = document.getElementById('popularGrid');
+
+        if (themes.length === 0) {
+            grid.innerHTML = '<p class="empty-text">해당 기간에 예약된 테마가 없습니다.</p>';
+            return;
+        }
+
         grid.innerHTML = themes.map((t, i) => `
             <div class="popular-card">
                 <img src="${t.thumbnailUrl}" alt="${t.name}">
-                <span class="rank-badge">${i + 1}위</span>
                 <div class="popular-card-body">
+                    <div class="rank-badge ${i < 3 ? 'top3' : ''}">${i + 1}</div>
                     <div class="name">${t.name}</div>
                     <div class="desc">${t.description}</div>
                 </div>
@@ -336,8 +640,18 @@
         `).join('');
     }
 
+    function initPopularDates() {
+        const today = new Date();
+        const end = new Date(today); end.setDate(today.getDate() - 1);
+        const start = new Date(today); start.setDate(today.getDate() - 7);
+        document.getElementById('popular-start').value = toDateStr(start);
+        document.getElementById('popular-end').value   = toDateStr(end);
+    }
+
     function showAlert(msg, type) {
-        document.getElementById('alertBox').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        const icon = type === 'success' ? '✓' : '✕';
+        document.getElementById('alertBox').innerHTML =
+            `<div class="alert alert-${type}"><span>${icon}</span>${msg}</div>`;
     }
 
     function clearAlert() {
