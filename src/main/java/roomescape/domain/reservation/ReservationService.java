@@ -17,6 +17,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeService;
+import roomescape.support.exception.ReservationDateErrorCode;
 import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
@@ -34,12 +35,9 @@ public class ReservationService {
     public ReservationCreationResponse createReservation(ReservationCreationRequest request) {
         ReservationDate reservationDate = reservationDateService.findById(request.dateId());
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
-        validateAvailableDateTime(reservationDate, reservationTime);
+        validateNotPast(reservationDate, reservationTime);
         Theme theme = themeService.findById(request.themeId());
-        if (reservationRepository.existsByDateIdAndTimeIdAndThemeId(
-            request.dateId(), request.timeId(), request.themeId())) {
-            throw new RoomescapeException(ReservationErrorCode.RESERVATION_DUPLICATED);
-        }
+        validateNotDuplicated(request.dateId(), request.timeId(), request.themeId());
         Reservation savedReservation = reservationRepository.save(
             request.toEntity(reservationDate, reservationTime, theme));
         return ReservationCreationResponse.from(savedReservation);
@@ -65,35 +63,54 @@ public class ReservationService {
     }
 
     public void cancelReservation(Long id) {
-        validateModifiable(id);
+        Reservation reservation = findById(id);
+        validateModifiable(reservation);
         reservationRepository.deleteById(id);
     }
 
     public ReservationResponse updateReservation(Long id, @Valid ReservationUpdateRequest request) {
-        validateModifiable(id);
+        Reservation reservation = findById(id);
+        validateModifiable(reservation);
+
+        ReservationDate newReservationDate = reservationDateService.findById(request.dateId());
+        ReservationTime newReservationTime = reservationTimeService.findById(request.timeId());
+        validateNotPast(newReservationDate, newReservationTime);
+        validateNotDuplicated(request.dateId(), request.timeId(), reservation.getTheme().getId());
+
         int updatedCount = reservationRepository.updateReservation(id, request.dateId(), request.timeId());
         if (updatedCount == 0) {
             log.warn(" 수정할 예약 건이 없습니다. reservationId={}", id);
         }
-        Reservation reservation = reservationRepository.findById(id)
-            .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-        return ReservationResponse.from(reservation);
+        return ReservationResponse.from(findById(id));
     }
 
-    private void validateModifiable(Long id) {
-        LocalDate today = LocalDate.now();
-        Reservation reservation = reservationRepository.findById(id)
+    private Reservation findById(Long id) {
+        return reservationRepository.findById(id)
             .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-        LocalDate playDay = reservation.getDate().getPlayDay();
-        if (playDay.isBefore(today) || playDay.isEqual(today)) {
-            throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_UPDATE);
+    }
+
+    private void validateNotDuplicated(Long dateId, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateIdAndTimeIdAndThemeId(dateId, timeId, themeId)) {
+            throw new RoomescapeException(ReservationErrorCode.RESERVATION_DUPLICATED);
         }
     }
 
-    private void validateAvailableDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+    private void validateModifiable(Reservation reservation) {
+        validateNotPast(reservation.getDate(), reservation.getTime());
+        validateNotToday(reservation.getDate());
+    }
+
+    private void validateNotPast(ReservationDate reservationDate, ReservationTime reservationTime) {
         LocalDateTime dateTime = LocalDateTime.of(reservationDate.getPlayDay(), reservationTime.getStartAt());
         if (dateTime.isBefore(LocalDateTime.now())) {
             throw new RoomescapeException(ReservationTimeErrorCode.PAST_TIME_NOT_ALLOWED);
+        }
+    }
+
+    private void validateNotToday(ReservationDate reservationDate) {
+        LocalDate playDay = reservationDate.getPlayDay();
+        if (playDay.isEqual(LocalDate.now())) {
+            throw new RoomescapeException(ReservationDateErrorCode.TODAY_NOT_MODIFIED);
         }
     }
 }
