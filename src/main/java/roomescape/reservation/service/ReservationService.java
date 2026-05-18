@@ -50,8 +50,8 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime reservationTime = getReservationTime(timeId);
-        Theme theme = getTheme(themeId);
+        ReservationTime reservationTime = findReservationTimeOrThrow(timeId);
+        Theme theme = findThemeByIdOrThrow(themeId);
 
         validateNotClosedDate(date);
         validateNotAlreadyBookedByOthers(date, reservationTime.startAt(), theme);
@@ -65,7 +65,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation cancel(Long id) {
-        Reservation reservation = getReservation(id);
+        Reservation reservation = findReservationOrThrow(id);
         validateNotPastReservation(reservation, "취소");
 
         Reservation canceledReservation = reservation.cancel();
@@ -76,10 +76,10 @@ public class ReservationService {
 
     @Transactional
     public Reservation change(Long id, LocalDate newDate, Long newTimeId) {
-        Reservation reservation = getReservation(id);
+        Reservation reservation = findReservationOrThrow(id);
         validateNotPastReservation(reservation, "변경");
 
-        ReservationTime newTime = getReservationTime(newTimeId);
+        ReservationTime newTime = findReservationTimeOrThrow(newTimeId);
         validateNotClosedDate(newDate);
         validateNotAlreadyBookedByOthers(newDate, newTime.startAt(), reservation.theme(), id);
 
@@ -90,7 +90,7 @@ public class ReservationService {
     }
 
     @NonNull
-    private ReservationTime getReservationTime(Long timeId) {
+    private ReservationTime findReservationTimeOrThrow(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> {
                     log.warn("Reservation time not found: id={}", timeId);
@@ -99,7 +99,7 @@ public class ReservationService {
     }
 
     @NonNull
-    private Theme getTheme(Long themeId) {
+    private Theme findThemeByIdOrThrow(Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> {
                     log.warn("Theme not found: id={}", themeId);
@@ -108,7 +108,7 @@ public class ReservationService {
     }
 
     @NonNull
-    private Reservation getReservation(Long id) {
+    private Reservation findReservationOrThrow(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Reservation not found: id={}", id);

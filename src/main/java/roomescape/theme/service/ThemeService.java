@@ -27,7 +27,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public Theme findTheme(Long id) {
-        return getTheme(id);
+        return findThemeOrThrow(id);
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +54,7 @@ public class ThemeService {
 
     @Transactional
     public Theme updateStatus(Long id, boolean isActive) {
-        Theme theme = getTheme(id);
+        Theme theme = findThemeOrThrow(id);
         Theme changedTheme = theme.changeStatus(isActive);
         Theme updatedTheme = themeRepository.updateStatus(changedTheme);
         log.info("Theme status updated: id={}, name={}, isActive={}", updatedTheme.id(), updatedTheme.name(), updatedTheme.isActive());
@@ -62,7 +62,7 @@ public class ThemeService {
     }
 
     @NonNull
-    private Theme getTheme(Long id) {
+    private Theme findThemeOrThrow(Long id) {
         return themeRepository.findById(id).orElseThrow(() -> {
             log.warn("Theme not found: id={}", id);
             return new NotFoundException("해당 테마가 존재하지 않습니다.");
