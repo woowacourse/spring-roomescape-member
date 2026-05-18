@@ -1,7 +1,7 @@
 package roomescape.theme.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.exception.DomainRuleViolationException;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

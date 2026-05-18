@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.business;
 
 public class BusinessException extends RuntimeException {
 

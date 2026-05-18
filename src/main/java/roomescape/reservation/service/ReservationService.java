@@ -2,10 +2,10 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.BusinessConflictException;
-import roomescape.exception.DomainConflictException;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.ResourceNotFoundException;
+import roomescape.exception.business.BusinessConflictException;
+import roomescape.exception.business.ErrorCode;
+import roomescape.exception.business.ResourceNotFoundException;
+import roomescape.exception.domain.DomainConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;

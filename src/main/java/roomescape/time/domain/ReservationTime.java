@@ -1,6 +1,6 @@
 package roomescape.time.domain;
 
-import roomescape.exception.DomainRuleViolationException;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

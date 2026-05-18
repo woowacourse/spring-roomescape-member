@@ -1,6 +1,6 @@
 package roomescape.theme.domain;
 
-import roomescape.exception.DomainRuleViolationException;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 public class Theme {
 

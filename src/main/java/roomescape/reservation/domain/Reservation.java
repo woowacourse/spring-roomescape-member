@@ -1,7 +1,7 @@
 package roomescape.reservation.domain;
 
-import roomescape.exception.DomainConflictException;
-import roomescape.exception.DomainRuleViolationException;
+import roomescape.exception.domain.DomainConflictException;
+import roomescape.exception.domain.DomainRuleViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 

@@ -2,8 +2,8 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.BusinessConflictException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.business.BusinessConflictException;
+import roomescape.exception.business.ErrorCode;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;

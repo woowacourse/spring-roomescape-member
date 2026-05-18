@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.domain;
 
 public class DomainRuleViolationException extends RuntimeException {
 

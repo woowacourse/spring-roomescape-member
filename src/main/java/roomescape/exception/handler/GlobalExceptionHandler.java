@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import roomescape.exception.business.BusinessConflictException;
+import roomescape.exception.business.BusinessException;
+import roomescape.exception.business.ErrorCode;
+import roomescape.exception.business.ResourceNotFoundException;
+import roomescape.exception.domain.DomainConflictException;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 import java.util.stream.Collectors;
 
@@ -21,10 +27,19 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException e) {
+        return toResponse(HttpStatus.NOT_FOUND, e.getErrorCode());
+    }
+
+    @ExceptionHandler(BusinessConflictException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessConflict(BusinessConflictException e) {
+        return toResponse(HttpStatus.CONFLICT, e.getErrorCode());
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return toResponse(errorCode);
+        return toResponse(HttpStatus.BAD_REQUEST, e.getErrorCode());
     }
 
     @ExceptionHandler(DomainConflictException.class)
@@ -48,7 +63,7 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        return toResponse(errorCode, message);
+        return toResponse(HttpStatus.BAD_REQUEST, errorCode, message);
     }
 
     @ExceptionHandler({
@@ -57,33 +72,33 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class
     })
     public ResponseEntity<ErrorResponse> handleUnreadable(Exception e) {
-        return toResponse(ErrorCode.INVALID_INPUT);
+        return toResponse(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException e) {
-        return toResponse(ErrorCode.METHOD_NOT_ALLOWED);
+        return toResponse(HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
-        return toResponse(ErrorCode.RESOURCE_NOT_FOUND);
+        return toResponse(HttpStatus.NOT_FOUND, ErrorCode.RESOURCE_NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
         log.error("Unexpected exception", e);
-        return toResponse(ErrorCode.INTERNAL_ERROR);
+        return toResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR);
     }
 
-    private ResponseEntity<ErrorResponse> toResponse(ErrorCode errorCode) {
-        return toResponse(errorCode, errorCode.getMessage());
+    private ResponseEntity<ErrorResponse> toResponse(HttpStatus status, ErrorCode errorCode) {
+        return toResponse(status, errorCode, errorCode.getMessage());
     }
 
-    private ResponseEntity<ErrorResponse> toResponse(ErrorCode errorCode, String message) {
+    private ResponseEntity<ErrorResponse> toResponse(HttpStatus status, ErrorCode errorCode, String message) {
         ErrorResponse response = new ErrorResponse(errorCode.name(), message);
         return ResponseEntity
-                .status(errorCode.getStatus())
+                .status(status)
                 .body(response);
     }
 }

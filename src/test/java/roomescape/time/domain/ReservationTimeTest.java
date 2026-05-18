@@ -1,7 +1,7 @@
 package roomescape.time.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.exception.DomainRuleViolationException;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
