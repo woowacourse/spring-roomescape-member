@@ -1,18 +1,21 @@
 package roomescape.domain.reservation.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.time.entity.ReservationTime;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -35,9 +38,32 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 ON r.theme_id = t.id
             """;
 
+    private static final String FIND_RESERVATIONS_BY_USERNAME_QUERY = FIND_ALL_RESERVATIONS_WITH_TIME_QUERY + """
+            WHERE r.username = :username
+            """;
+
+    private static final String FIND_RESERVATION_BY_ID_QUERY = FIND_ALL_RESERVATIONS_WITH_TIME_QUERY + """
+            WHERE r.id = :id
+            """;
+
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
             DELETE FROM reservation
             WHERE id = :id
+            """;
+
+    private static final String UPDATE_RESERVATION_QUERY = """
+            UPDATE reservation
+            SET date = :date,
+                time_id = :timeId
+            WHERE id = :id
+            """;
+
+    private static final String EXISTS_RESERVATION_QUERY = """
+            SELECT COUNT(*)
+            FROM reservation
+            WHERE theme_id = :themeId
+              AND date = :date
+              AND time_id = :timeId
             """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -59,6 +85,36 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 FIND_ALL_RESERVATIONS_WITH_TIME_QUERY,
                 reservationWithTimeRowMapper()
         );
+    }
+
+    @Override
+    public List<Reservation> findByUsername(String username) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("username", username);
+
+        return jdbcTemplate.query(
+                FIND_RESERVATIONS_BY_USERNAME_QUERY,
+                parameters,
+                reservationWithTimeRowMapper()
+        );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue("id", id);
+
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    FIND_RESERVATION_BY_ID_QUERY,
+                    parameters,
+                    reservationWithTimeRowMapper()
+            );
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -86,6 +142,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(Reservation reservation) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", reservation.getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId());
+
+        jdbcTemplate.update(
+                UPDATE_RESERVATION_QUERY,
+                parameters
+        );
+
+        return reservation;
+    }
+
+    @Override
     public void deleteById(Long id) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
@@ -94,6 +165,22 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 DELETE_RESERVATION_BY_ID_QUERY,
                 parameters
         );
+    }
+
+    @Override
+    public boolean exists(Reservation reservation) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId());
+
+        Integer count = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_QUERY,
+                parameters,
+                Integer.class
+        );
+
+        return count != null && count > 0;
     }
 
     private RowMapper<Reservation> reservationWithTimeRowMapper() {

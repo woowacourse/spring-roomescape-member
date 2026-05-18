@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.theme.repository.ThemeReservationTimeResult;
 import roomescape.domain.theme.request.ThemeCreateRequest;
 import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.PopularThemesResponse;
@@ -38,10 +39,18 @@ public class ThemeService {
     }
 
     public ThemeReservationTimesResponse findAllThemeReservationTimes(Long themeId, LocalDate date) {
-        List<ThemeReservationTimeResponse> times = themeRepository.findAllThemeReservationTimesByThemeIdAndDate(
+        List<ThemeReservationTimeResult> results = themeRepository.findAllThemeReservationTimesByThemeIdAndDate(
                 themeId,
                 date
         );
+
+        List<ThemeReservationTimeResponse> times = results.stream()
+                .map(result -> new ThemeReservationTimeResponse(
+                        result.id(),
+                        result.startAt(),
+                        result.isAvailable()
+                ))
+                .toList();
 
         return new ThemeReservationTimesResponse(times);
     }

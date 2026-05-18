@@ -1,18 +1,11 @@
 package roomescape.domain.theme.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -20,9 +13,22 @@ import roomescape.domain.theme.request.ThemeCreateRequest;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private final ThemeRepository themeRepository = Mockito.mock(ThemeRepository.class);
+    @Mock
+    ThemeRepository themeRepository;
 
     private final Clock fixedClock = Clock.fixed(
             LocalDate.of(2026, 5, 6)
@@ -31,7 +37,12 @@ class ThemeServiceTest {
             ZoneId.systemDefault()
     );
 
-    private final ThemeService themeService = new ThemeService(themeRepository, fixedClock);
+    ThemeService themeService;
+
+    @BeforeEach
+    void setUp() {
+        themeService = new ThemeService(themeRepository, fixedClock);
+    }
 
     @Test
     @DisplayName("테마를 성공적으로 생성한다.")

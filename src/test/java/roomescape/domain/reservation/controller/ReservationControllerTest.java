@@ -1,18 +1,19 @@
 package roomescape.domain.reservation.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -46,12 +47,32 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("사용자는 이름으로 본인의 예약 목록을 조회한다.")
+    void findReservationsByUsername() {
+        RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("reservations[0].id", is(1))
+                .body("reservations[0].username", is("흑곰"))
+                .body("reservations[0].theme.id", is(1))
+                .body("reservations[0].theme.name", is("워너비"))
+                .body("reservations[0].theme.description", is("워너비 테마입니다."))
+                .body("reservations[0].theme.thumbnailUrl", is("https://example.com/wannabe.png"))
+                .body("reservations[0].date", is("2026-05-05"))
+                .body("reservations[0].time.id", is(1))
+                .body("reservations[0].time.startAt", is("10:00"));
+    }
+
+    @Test
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "새로운 사용자");
         params.put("themeId", 3);
-        params.put("date", "2026-05-08");
+        params.put("date", "9999-05-08");
         params.put("timeId", 6);
 
         RestAssured.given().log().all()
@@ -67,7 +88,7 @@ class ReservationControllerTest {
                 .body("theme.name", is("우주 정거장"))
                 .body("theme.description", is("우주에서 살아남으세요."))
                 .body("theme.thumbnailUrl", is("https://example.com/space.png"))
-                .body("date", is("2026-05-08"))
+                .body("date", is("9999-05-08"))
                 .body("time.id", is(6))
                 .body("time.startAt", is("15:00"));
     }
@@ -76,8 +97,62 @@ class ReservationControllerTest {
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약을 삭제할 수 없다.")
+    void deleteReservation_throwsException_whenUsernameDoesNotMatch() {
+        RestAssured.given().log().all()
+                .queryParam("username", "민준")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("사용자는 본인의 예약 날짜와 시간을 변경한다.")
+    void updateReservationSchedule() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "9999-05-08");
+        params.put("timeId", 6);
+
+        RestAssured.given().log().all()
+                .queryParam("username", "흑곰")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("username", is("흑곰"))
+                .body("theme.id", is(1))
+                .body("theme.name", is("워너비"))
+                .body("date", is("9999-05-08"))
+                .body("time.id", is(6))
+                .body("time.startAt", is("15:00"));
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약 날짜와 시간을 변경할 수 없다.")
+    void updateReservationSchedule_throwsException_whenUsernameDoesNotMatch() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "9999-05-08");
+        params.put("timeId", 6);
+
+        RestAssured.given().log().all()
+                .queryParam("username", "민준")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(403)
+                .body("code", is("RESERVATION_OWNER_MISMATCH"))
+                .body("message", is("본인의 예약만 취소할 수 있습니다."));
     }
 }

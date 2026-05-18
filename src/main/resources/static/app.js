@@ -5,6 +5,8 @@ const state = {
     selectedThemeId: null,
     selectedTimeId: null,
     reservationSort: "date",
+    currentUsername: localStorage.getItem("roomescape.username") || "",
+    editingReservationId: null,
 };
 
 const fallbackImages = [
@@ -20,6 +22,7 @@ const $ = (selector) => document.querySelector(selector);
 
 document.addEventListener("DOMContentLoaded", async () => {
     $("#dateInput").value = new Date().toISOString().slice(0, 10);
+    hydrateUser();
     renderPopularPeriod();
     bindEvents();
     await loadAll();
@@ -31,6 +34,14 @@ function bindEvents() {
     });
 
     $("#dateInput").addEventListener("change", loadThemeTimes);
+    $("#userForm").addEventListener("submit", saveCurrentUsername);
+    $("#changeUserButton").addEventListener("click", openUserDialog);
+    $("#closeApiDialogButton").addEventListener("click", closeApiResponseDialog);
+    $("#apiResponseDialog").addEventListener("click", (event) => {
+        if (event.target.id === "apiResponseDialog") {
+            closeApiResponseDialog();
+        }
+    });
     $("#reservationForm").addEventListener("submit", createReservation);
     $("#refreshReservationsButton").addEventListener("click", loadReservations);
     $("#reservationSortSelect").addEventListener("change", (event) => {
@@ -39,6 +50,9 @@ function bindEvents() {
     });
     $("#themeForm").addEventListener("submit", createTheme);
     $("#timeForm").addEventListener("submit", createTime);
+    document.querySelectorAll("[data-api-form]").forEach((form) => {
+        form.addEventListener("submit", submitApiForm);
+    });
 }
 
 async function loadAll() {
@@ -104,8 +118,14 @@ async function loadTimes() {
 }
 
 async function loadReservations() {
+    if (!state.currentUsername) {
+        state.reservations = [];
+        renderReservations();
+        return;
+    }
+
     try {
-        const data = await api("/admin/reservations");
+        const data = await api(`/reservations?username=${encodeURIComponent(state.currentUsername)}`);
         state.reservations = data.reservations || [];
         renderReservations();
     } catch (error) {
@@ -222,13 +242,21 @@ function renderPopularPeriod() {
 }
 
 function renderReservations() {
+    if (!state.currentUsername) {
+        $("#reservationList").innerHTML = emptyState("예약자 이름을 먼저 입력하세요.");
+        return;
+    }
+
     if (state.reservations.length === 0) {
-        $("#reservationList").innerHTML = emptyState("예약 내역이 없습니다.");
+        $("#reservationList").innerHTML = emptyState(`${state.currentUsername}님의 예약 내역이 없습니다.`);
         return;
     }
 
     const reservations = sortReservations(state.reservations);
-    $("#reservationList").innerHTML = reservations.map((reservation) => `
+    $("#reservationList").innerHTML = reservations.map((reservation) => {
+        const isEditing = reservation.id === state.editingReservationId;
+
+        return `
         <article class="reservation-item">
             <div>
                 <strong>${escapeHtml(reservation.username)}</strong>
@@ -238,13 +266,50 @@ function renderReservations() {
                     <span class="chip">${formatTime(reservation.time.startAt)}</span>
                 </div>
             </div>
-            <button class="danger-button" type="button" data-reservation-id="${reservation.id}">취소</button>
+            <div class="reservation-actions">
+                <button class="secondary-button compact-button" type="button" data-reservation-edit="${reservation.id}">
+                    ${isEditing ? "접기" : "변경"}
+                </button>
+                <button class="danger-button compact-button" type="button" data-reservation-delete="${reservation.id}">취소</button>
+            </div>
+            ${isEditing ? renderReservationEditForm(reservation) : ""}
         </article>
+    `;
+    }).join("");
+
+    document.querySelectorAll("[data-reservation-delete]").forEach((button) => {
+        button.addEventListener("click", () => deleteReservation(button.dataset.reservationDelete));
+    });
+    document.querySelectorAll("[data-reservation-edit]").forEach((button) => {
+        button.addEventListener("click", () => toggleReservationEdit(Number(button.dataset.reservationEdit)));
+    });
+    document.querySelectorAll("[data-reservation-update]").forEach((form) => {
+        form.addEventListener("submit", updateReservationSchedule);
+    });
+}
+
+function renderReservationEditForm(reservation) {
+    const timeOptions = state.times.map((time) => `
+        <option value="${time.id}" ${time.id === reservation.time.id ? "selected" : ""}>
+            ${formatTime(time.startAt)}
+        </option>
     `).join("");
 
-    document.querySelectorAll("[data-reservation-id]").forEach((button) => {
-        button.addEventListener("click", () => deleteReservation(button.dataset.reservationId));
-    });
+    return `
+        <form class="reservation-edit-form" data-reservation-update="${reservation.id}">
+            <label>
+                변경 날짜
+                <input name="date" type="date" value="${escapeHtml(reservation.date)}" required>
+            </label>
+            <label>
+                변경 시간
+                <select name="timeId" required>
+                    ${timeOptions}
+                </select>
+            </label>
+            <button class="primary-button compact-button" type="submit">저장</button>
+        </form>
+    `;
 }
 
 function sortReservations(reservations) {
@@ -301,7 +366,7 @@ async function createReservation(event) {
     event.preventDefault();
 
     const form = event.currentTarget;
-    const username = $("#usernameInput").value.trim();
+    const username = state.currentUsername || $("#usernameInput").value.trim();
     const date = $("#dateInput").value;
 
     if (!state.selectedThemeId || !state.selectedTimeId) {
@@ -321,6 +386,7 @@ async function createReservation(event) {
         });
         form.reset();
         $("#dateInput").value = date;
+        $("#usernameInput").value = username;
         showToast("예약이 완료되었습니다.");
         await Promise.all([loadReservations(), loadThemeTimes(), loadPopularThemes()]);
     } catch (error) {
@@ -368,12 +434,40 @@ async function createTime(event) {
 
 async function deleteReservation(id) {
     try {
-        await api(`/reservations/${id}`, {method: "DELETE"});
+        await api(`/reservations/${id}?username=${encodeURIComponent(state.currentUsername)}`, {method: "DELETE"});
         showToast("예약이 취소되었습니다.");
         await Promise.all([loadReservations(), loadThemeTimes(), loadPopularThemes()]);
     } catch (error) {
         showToast(error.message);
     }
+}
+
+async function updateReservationSchedule(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const reservationId = form.dataset.reservationUpdate;
+    const formData = new FormData(form);
+
+    try {
+        await api(`/reservations/${reservationId}?username=${encodeURIComponent(state.currentUsername)}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                date: formData.get("date"),
+                timeId: Number(formData.get("timeId")),
+            }),
+        });
+        state.editingReservationId = null;
+        showToast("예약이 변경되었습니다.");
+        await Promise.all([loadReservations(), loadThemeTimes(), loadPopularThemes()]);
+    } catch (error) {
+        showToast(error.message);
+    }
+}
+
+function toggleReservationEdit(id) {
+    state.editingReservationId = state.editingReservationId === id ? null : id;
+    renderReservations();
 }
 
 async function deleteTheme(id) {
@@ -414,6 +508,156 @@ function switchView(view) {
     if (view === "reservations") {
         loadReservations();
     }
+}
+
+async function submitApiForm(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const method = form.dataset.apiForm;
+    const fields = Object.fromEntries(new FormData(form));
+    const path = buildApiPath(form.dataset.apiPath, fields);
+    const body = buildApiBody(method, fields, path);
+
+    $("#apiStatusLabel").textContent = `${method} ${path}`;
+    $("#apiResponseOutput").textContent = "요청 중...";
+    openApiResponseDialog();
+
+    const startedAt = performance.now();
+
+    try {
+        const response = await fetch(path, {
+            method,
+            headers: {"Content-Type": "application/json"},
+            ...(body ? {body: JSON.stringify(body)} : {}),
+        });
+        const text = await response.text();
+        const elapsed = Math.round(performance.now() - startedAt);
+        const parsed = parseJsonOrText(text);
+
+        $("#apiStatusLabel").textContent = `${response.status} ${response.statusText} · ${elapsed}ms`;
+        $("#apiResponseOutput").textContent = JSON.stringify({
+            request: {
+                method,
+                path,
+                body: body || null,
+            },
+            response: {
+                status: response.status,
+                ok: response.ok,
+                body: parsed,
+            },
+        }, null, 2);
+
+        if (response.ok) {
+            await refreshAfterApiCall(method);
+        }
+    } catch (error) {
+        $("#apiStatusLabel").textContent = "요청 실패";
+        $("#apiResponseOutput").textContent = error.message;
+        openApiResponseDialog();
+    }
+}
+
+function buildApiPath(template, fields) {
+    return Object.entries(fields).reduce((path, [key, value]) => {
+        return path.replaceAll(`{${key}}`, encodeURIComponent(value));
+    }, template);
+}
+
+function buildApiBody(method, fields, path) {
+    if (method === "GET" || method === "DELETE") {
+        return null;
+    }
+
+    const body = {};
+    Object.entries(fields).forEach(([key, value]) => {
+        if (path.includes(encodeURIComponent(value)) && ["username", "reservationId"].includes(key)) {
+            return;
+        }
+        body[key] = numericApiFields.has(key) ? Number(value) : value;
+    });
+
+    return body;
+}
+
+const numericApiFields = new Set(["themeId", "timeId"]);
+
+function parseJsonOrText(text) {
+    if (!text) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (ignore) {
+        return text;
+    }
+}
+
+async function refreshAfterApiCall(method) {
+    if (!["POST", "PATCH", "DELETE"].includes(method)) {
+        return;
+    }
+
+    await Promise.all([
+        loadReservations(),
+        loadThemeTimes(),
+        loadPopularThemes(),
+        loadTimes(),
+        loadThemes(),
+    ]);
+}
+
+function hydrateUser() {
+    if (state.currentUsername) {
+        applyCurrentUsername(state.currentUsername);
+        closeUserDialog();
+        return;
+    }
+
+    openUserDialog();
+}
+
+function saveCurrentUsername(event) {
+    event.preventDefault();
+
+    const username = $("#currentUsernameInput").value.trim();
+    if (!username) {
+        showToast("예약자 이름을 입력하세요.");
+        return;
+    }
+
+    localStorage.setItem("roomescape.username", username);
+    applyCurrentUsername(username);
+    closeUserDialog();
+    loadReservations();
+}
+
+function applyCurrentUsername(username) {
+    state.currentUsername = username;
+    $("#currentUsernameLabel").textContent = `${username}님`;
+    $("#currentUsernameInput").value = username;
+    $("#usernameInput").value = username;
+    $("#usernameInput").readOnly = true;
+}
+
+function openUserDialog() {
+    $("#currentUsernameInput").value = state.currentUsername || "";
+    $("#userDialog").classList.add("show");
+    $("#currentUsernameInput").focus();
+}
+
+function closeUserDialog() {
+    $("#userDialog").classList.remove("show");
+}
+
+function openApiResponseDialog() {
+    $("#apiResponseDialog").classList.add("show");
+}
+
+function closeApiResponseDialog() {
+    $("#apiResponseDialog").classList.remove("show");
 }
 
 function emptyState(message) {

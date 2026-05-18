@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.time.entity.ReservationTime;
 import roomescape.domain.theme.entity.Theme;
 
 @JdbcTest
@@ -57,6 +57,34 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("사용자 이름으로 예약 목록을 조회한다.")
+    void findByUsernameTest() {
+        // when
+        List<Reservation> reservations = reservationRepository.findByUsername("흑곰");
+
+        // then
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations.getFirst().getUsername()).isEqualTo("흑곰");
+        assertThat(reservations.getFirst().getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
+        assertThat(reservations.getFirst().getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reservations.getFirst().getTheme().getName()).isEqualTo("워너비");
+    }
+
+    @Test
+    @DisplayName("ID로 예약을 조회한다.")
+    void findByIdTest() {
+        // when
+        Reservation reservation = reservationRepository.findById(1L).get();
+
+        // then
+        assertThat(reservation.getId()).isEqualTo(1L);
+        assertThat(reservation.getUsername()).isEqualTo("흑곰");
+        assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
+        assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reservation.getTheme().getName()).isEqualTo("워너비");
+    }
+
+    @Test
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given
@@ -73,6 +101,28 @@ class ReservationJdbcRepositoryTest {
         Reservation found = findReservationById(saved.getId());
         assertThat(found.getUsername()).isEqualTo("조이");
         assertThat(found.getTheme().getId()).isEqualTo(3L);
+        assertThat(found.getTime().getId()).isEqualTo(6L);
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간을 수정한다.")
+    void updateTest() {
+        // given
+        Reservation reservation = reservationRepository.findById(1L).get();
+        Reservation updatedReservation = new Reservation(
+                reservation.getId(),
+                reservation.getUsername(),
+                reservation.getTheme(),
+                LocalDate.of(9999, 5, 8),
+                new ReservationTime(6L, LocalTime.of(15, 0))
+        );
+
+        // when
+        reservationRepository.update(updatedReservation);
+
+        // then
+        Reservation found = findReservationById(1L);
+        assertThat(found.getDate()).isEqualTo(LocalDate.of(9999, 5, 8));
         assertThat(found.getTime().getId()).isEqualTo(6L);
     }
 

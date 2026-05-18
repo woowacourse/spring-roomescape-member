@@ -17,7 +17,12 @@
         <button class="tab active" data-view="booking">예약</button>
         <button class="tab" data-view="reservations">예약 현황</button>
         <button class="tab" data-view="admin">관리</button>
+        <button class="tab" data-view="api">API</button>
     </nav>
+    <div class="user-menu">
+        <span id="currentUsernameLabel">사용자 미설정</span>
+        <button id="changeUserButton" class="secondary-button compact-button" type="button">이름 변경</button>
+    </div>
 </header>
 
 <main>
@@ -140,9 +145,268 @@
             </form>
         </div>
     </section>
+
+    <section id="apiView" class="view">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">API Lab</p>
+                <h2>API 직접 호출</h2>
+            </div>
+        </div>
+
+        <div class="api-grid">
+            <form class="api-panel" data-api-form="GET" data-api-path="/reservations?username={username}">
+                <h3>본인 예약 목록 조회</h3>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <button class="secondary-button" type="submit">GET /reservations</button>
+            </form>
+
+            <form class="api-panel" data-api-form="GET" data-api-path="/admin/reservations">
+                <h3>전체 예약 목록 조회</h3>
+                <button class="secondary-button" type="submit">GET /admin/reservations</button>
+            </form>
+
+            <form class="api-panel" data-api-form="GET" data-api-path="/themes">
+                <h3>테마 목록 조회</h3>
+                <button class="secondary-button" type="submit">GET /themes</button>
+            </form>
+
+            <form class="api-panel" data-api-form="GET" data-api-path="/times">
+                <h3>예약 시간 목록 조회</h3>
+                <button class="secondary-button" type="submit">GET /times</button>
+            </form>
+
+            <form class="api-panel" data-api-form="GET" data-api-path="/themes/popular?period={period}&limit={limit}">
+                <h3>인기 테마 조회</h3>
+                <label>
+                    period
+                    <input name="period" type="number" value="7" min="1" required>
+                </label>
+                <label>
+                    limit
+                    <input name="limit" type="number" value="10" min="1" required>
+                </label>
+                <button class="secondary-button" type="submit">GET /themes/popular</button>
+            </form>
+
+            <form class="api-panel" data-api-form="POST" data-api-path="/reservations">
+                <h3>예약 생성</h3>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <label>
+                    themeId
+                    <input name="themeId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="date" value="9999-05-20" required>
+                </label>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="1" min="1" required>
+                </label>
+                <button class="primary-button" type="submit">POST /reservations</button>
+            </form>
+
+            <form class="api-panel" data-api-form="DELETE" data-api-path="/reservations/{reservationId}?username={username}">
+                <h3>본인 예약 취소</h3>
+                <label>
+                    reservationId
+                    <input name="reservationId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <button class="danger-button" type="submit">DELETE /reservations/{id}</button>
+            </form>
+
+            <form class="api-panel" data-api-form="PATCH" data-api-path="/reservations/{reservationId}?username={username}">
+                <h3>예약 날짜·시간 변경</h3>
+                <label>
+                    reservationId
+                    <input name="reservationId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="date" value="9999-05-21" required>
+                </label>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="2" min="1" required>
+                </label>
+                <button class="primary-button" type="submit">PATCH /reservations/{id}</button>
+            </form>
+
+            <form class="api-panel" data-api-form="POST" data-api-path="/admin/themes">
+                <h3>테마 생성</h3>
+                <label>
+                    name
+                    <input name="name" type="text" value="새로운 테마" required>
+                </label>
+                <label>
+                    description
+                    <textarea name="description" rows="3" required>새로운 테마 설명입니다.</textarea>
+                </label>
+                <label>
+                    thumbnailUrl
+                    <input name="thumbnailUrl" type="url" value="https://example.com/theme.png" required>
+                </label>
+                <button class="primary-button" type="submit">POST /admin/themes</button>
+            </form>
+
+            <form class="api-panel" data-api-form="DELETE" data-api-path="/admin/themes/{themeId}">
+                <h3>테마 삭제</h3>
+                <label>
+                    themeId
+                    <input name="themeId" type="number" value="1" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">DELETE /admin/themes/{id}</button>
+            </form>
+
+            <form class="api-panel" data-api-form="POST" data-api-path="/admin/times">
+                <h3>예약 시간 생성</h3>
+                <label>
+                    startAt
+                    <input name="startAt" type="time" value="18:00" required>
+                </label>
+                <button class="primary-button" type="submit">POST /admin/times</button>
+            </form>
+
+            <form class="api-panel" data-api-form="DELETE" data-api-path="/admin/times/{timeId}">
+                <h3>예약 시간 삭제</h3>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="1" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">DELETE /admin/times/{id}</button>
+            </form>
+
+            <form class="api-panel" data-api-form="GET" data-api-path="/themes/{themeId}/times?date={date}">
+                <h3>테마 예약 가능 시간 조회</h3>
+                <label>
+                    themeId
+                    <input name="themeId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="date" value="2026-05-05" required>
+                </label>
+                <button class="secondary-button" type="submit">GET /themes/{id}/times</button>
+            </form>
+
+            <form class="api-panel error-panel" data-api-form="POST" data-api-path="/reservations">
+                <h3>에러: 존재하지 않는 시간</h3>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <label>
+                    themeId
+                    <input name="themeId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="date" value="9999-05-20" required>
+                </label>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="999" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">400 INVALID_REQUEST</button>
+            </form>
+
+            <form class="api-panel error-panel" data-api-form="PATCH" data-api-path="/reservations/{reservationId}?username={username}">
+                <h3>에러: 다른 사람 예약 변경</h3>
+                <label>
+                    reservationId
+                    <input name="reservationId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="date" value="9999-05-21" required>
+                </label>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="2" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">403 OWNER_MISMATCH</button>
+            </form>
+
+            <form class="api-panel error-panel" data-api-form="POST" data-api-path="/reservations">
+                <h3>에러: 잘못된 날짜 형식</h3>
+                <label>
+                    username
+                    <input name="username" type="text" value="도윤" required>
+                </label>
+                <label>
+                    themeId
+                    <input name="themeId" type="number" value="1" min="1" required>
+                </label>
+                <label>
+                    date
+                    <input name="date" type="text" value="abc" required>
+                </label>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="1" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">400 INVALID_BODY</button>
+            </form>
+
+            <form class="api-panel error-panel" data-api-form="DELETE" data-api-path="/admin/times/{timeId}">
+                <h3>에러: 예약 있는 시간 삭제</h3>
+                <label>
+                    timeId
+                    <input name="timeId" type="number" value="1" min="1" required>
+                </label>
+                <button class="danger-button" type="submit">409 DELETE_CONFLICT</button>
+            </form>
+        </div>
+    </section>
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<div id="userDialog" class="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="userDialogTitle">
+    <form id="userForm" class="dialog-panel">
+        <p class="eyebrow">User</p>
+        <h2 id="userDialogTitle">예약자 이름을 입력하세요.</h2>
+        <p>입력한 이름으로 본인의 예약을 조회하고 변경할 수 있습니다.</p>
+        <label>
+            예약자 이름
+            <input id="currentUsernameInput" name="username" type="text" autocomplete="name" placeholder="도윤" required>
+        </label>
+        <button class="primary-button" type="submit">시작하기</button>
+    </form>
+</div>
+
+<div id="apiResponseDialog" class="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="apiResponseTitle">
+    <section class="dialog-panel api-dialog-panel">
+        <div class="section-head compact">
+            <div>
+                <p class="eyebrow">Response</p>
+                <h2 id="apiResponseTitle">API 응답</h2>
+            </div>
+            <button id="closeApiDialogButton" class="secondary-button compact-button" type="button">닫기</button>
+        </div>
+        <span id="apiStatusLabel">대기 중</span>
+        <pre id="apiResponseOutput">{}</pre>
+    </section>
+</div>
 
 <script src="/app.js" defer></script>
 </body>

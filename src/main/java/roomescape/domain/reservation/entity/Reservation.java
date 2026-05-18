@@ -1,7 +1,9 @@
 package roomescape.domain.reservation.entity;
 
-import java.time.LocalDate;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.time.entity.ReservationTime;
+
+import java.time.LocalDate;
 
 public class Reservation {
 
@@ -48,5 +50,13 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public boolean isOwnedBy(String username) {
+        return this.username.equals(username);
+    }
+
+    public boolean hasSameSchedule(LocalDate date, ReservationTime time) {
+        return this.date.equals(date) && this.time.getId().equals(time.getId());
     }
 }

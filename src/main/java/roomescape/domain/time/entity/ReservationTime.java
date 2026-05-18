@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.entity;
+package roomescape.domain.time.entity;
 
 import java.time.LocalTime;
 
@@ -23,5 +23,9 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
+    }
+
+    public boolean isBefore(LocalTime time) {
+        return startAt.isBefore(time);
     }
 }

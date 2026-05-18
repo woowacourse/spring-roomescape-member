@@ -1,14 +1,14 @@
-package roomescape.domain.reservation.service;
+package roomescape.domain.time.service;
 
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.exception.ReservationTimeDeleteConflictException;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
-import roomescape.domain.reservation.response.ReservationTimeResponse;
+import roomescape.domain.time.entity.ReservationTime;
+import roomescape.domain.time.exception.ReservationTimeDeleteConflictException;
+import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.domain.time.request.ReservationTimeCreateRequest;
+import roomescape.domain.time.response.ReservationTimeResponse;
 
 @Service
 @Transactional(readOnly = true)

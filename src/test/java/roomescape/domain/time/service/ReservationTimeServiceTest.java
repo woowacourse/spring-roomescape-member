@@ -1,22 +1,26 @@
-package roomescape.domain.reservation.service;
+package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
-import roomescape.domain.reservation.response.ReservationTimeResponse;
+import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.time.entity.ReservationTime;
+import roomescape.domain.time.exception.ReservationTimeDeleteConflictException;
+import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.domain.time.request.ReservationTimeCreateRequest;
+import roomescape.domain.time.response.ReservationTimeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -24,9 +28,12 @@ class ReservationTimeServiceTest {
     @Mock
     ReservationTimeRepository reservationTimeRepository;
 
-    @InjectMocks
     ReservationTimeService reservationTimeService;
 
+    @BeforeEach
+    void setUp() {
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    }
 
     @Test
     @DisplayName("예약 시간을 성공적으로 생성한다.")
@@ -81,6 +88,24 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteReservationTimeBy(timeId);
 
         // then
+        verify(reservationTimeRepository).deleteById(timeId);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간 삭제 시 예외가 발생한다.")
+    void deleteReservationTimeBy_throwsException_whenReservationExists() {
+        // given
+        Long timeId = 1L;
+
+        doThrow(new DataIntegrityViolationException("예약이 존재하는 시간입니다."))
+                .when(reservationTimeRepository)
+                .deleteById(timeId);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeBy(timeId))
+                .isInstanceOf(ReservationTimeDeleteConflictException.class)
+                .hasMessageContaining("예약이 존재하는 시간은 삭제할 수 없습니다.");
+
         verify(reservationTimeRepository).deleteById(timeId);
     }
 }
