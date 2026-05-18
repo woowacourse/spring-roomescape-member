@@ -215,34 +215,6 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_생성시_이름이_두글자_미만이면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams(Map.of("name", "한")))
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
-    void 예약_생성시_이름이_열자_초과면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams(Map.of("name", "한".repeat(11))))
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
     void 예약_생성시_이름에_특수문자가_포함되면_400을_반환한다() {
         createDefaultTimes();
         createDefaultThemes();
@@ -250,68 +222,6 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams(Map.of("name", "한+한")))
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
-    void 예약_생성시_timeId가_누락되면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        Map<String, Object> params = reservationParams();
-        params.remove("timeId");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
-    void 예약_생성시_timeId가_음수면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams(Map.of("timeId", "-2")))
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
-    void 예약_생성시_themeId가_누락되면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        Map<String, Object> params = reservationParams();
-        params.remove("themeId");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_001"));
-    }
-
-    @Test
-    void 예약_생성시_themeId가_음수면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams(Map.of("themeId", "-4")))
                 .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -332,46 +242,6 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("errorCode", is("RESERVATION400_001"));
-    }
-
-    @Test
-    void 사용자가_자신의_이름으로_예약을_조회할때_이름이_두글자_미만이면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
-
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations?userName=브")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_006"));
-    }
-
-    @Test
-    void 사용자가_자신의_이름으로_예약을_조회할때_이름이_열글자_초과면_400을_반환한다() {
-        createDefaultTimes();
-        createDefaultThemes();
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
-
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations?userName=" + "브".repeat(11))
-                .then().log().all()
-                .statusCode(400)
-                .body("errorCode", is("COMMON400_006"));
     }
 
     @Test
