@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
@@ -103,7 +102,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public List<ThemeReservationTimeResponse> findAllThemeReservationTimesByThemeIdAndDate(
+    public List<ThemeReservationTimeResult> findAllThemeReservationTimesByThemeIdAndDate(
             Long themeId,
             LocalDate date
     ) {
@@ -114,7 +113,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.query(
                 FIND_ALL_THEME_RESERVATION_TIMES_BY_THEME_ID_AND_DATE_QUERY,
                 parameters,
-                themeReservationTimeResponseRowMapper()
+                themeReservationTimeResultRowMapper()
         );
     }
 
@@ -174,8 +173,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
         );
     }
 
-    private RowMapper<ThemeReservationTimeResponse> themeReservationTimeResponseRowMapper() {
-        return (resultSet, rowNumber) -> new ThemeReservationTimeResponse(
+    private RowMapper<ThemeReservationTimeResult> themeReservationTimeResultRowMapper() {
+        return (resultSet, rowNumber) -> new ThemeReservationTimeResult(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),
                 resultSet.getBoolean("is_available")

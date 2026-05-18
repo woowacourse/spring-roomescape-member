@@ -2,7 +2,6 @@ package roomescape.domain.theme.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import roomescape.domain.time.entity.ReservationTime;
 
 public record ThemeReservationTimeResponse(
         Long id,
@@ -10,12 +9,4 @@ public record ThemeReservationTimeResponse(
         LocalTime startAt,
         Boolean isAvailable
 ) {
-
-    public static ThemeReservationTimeResponse from(ReservationTime time, boolean isAvailable) {
-        return new ThemeReservationTimeResponse(
-                time.getId(),
-                time.getStartAt(),
-                isAvailable
-        );
-    }
 }

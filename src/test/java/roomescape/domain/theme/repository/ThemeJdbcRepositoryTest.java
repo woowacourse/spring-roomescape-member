@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -93,16 +92,16 @@ class ThemeJdbcRepositoryTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
 
         // when
-        List<ThemeReservationTimeResponse> result = themeRepository
+        List<ThemeReservationTimeResult> result = themeRepository
                 .findAllThemeReservationTimesByThemeIdAndDate(themeId, date);
 
         // then
         assertThat(result).hasSize(6);
         assertThat(result)
                 .extracting(
-                        ThemeReservationTimeResponse::id,
-                        ThemeReservationTimeResponse::startAt,
-                        ThemeReservationTimeResponse::isAvailable
+                        ThemeReservationTimeResult::id,
+                        ThemeReservationTimeResult::startAt,
+                        ThemeReservationTimeResult::isAvailable
                 )
                 .containsExactly(
                         tuple(1L, LocalTime.of(10, 0), false),
