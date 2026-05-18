@@ -1,6 +1,7 @@
 package roomescape.apitest.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static roomescape.config.FixedClockConfig.FUTURE_DATE;
 
 import io.restassured.RestAssured;
@@ -76,6 +77,20 @@ class ReservationApiTest {
                 .contains(generatedId);
 
         assertThat(names).containsOnly(userName);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/" + generatedId + "?userName=" + userName)
+                .then().log().all()
+                .statusCode(204);
+
+        List<Long> remainIds = RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("id", Long.class);
+
+        assertThat(remainIds).hasSize(initialReservationSize);
+        assertThat(remainIds).doesNotContain(generatedId);
     }
 
     @Test
