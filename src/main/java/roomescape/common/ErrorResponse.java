@@ -9,8 +9,6 @@ import java.util.List;
 public class ErrorResponse {
     private final String code;
     private final String message;
-    private final String path;
-    private final LocalDateTime timestamp;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final List<ValidationError> errors;
@@ -18,8 +16,6 @@ public class ErrorResponse {
     public ErrorResponse(Builder builder) {
         this.code = builder.code;
         this.message = builder.message;
-        this.path = builder.path;
-        this.timestamp = builder.timestamp;
         this.errors = builder.errors;
     }
 
@@ -35,14 +31,6 @@ public class ErrorResponse {
         return message;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
     public List<ValidationError> getErrors() {
         return errors;
     }
@@ -50,12 +38,10 @@ public class ErrorResponse {
     public static class ValidationError {
         private final String field;
         private final String message;
-        private final Object rejectedValue;
 
         private ValidationError(Builder builder) {
             this.field = builder.field;
             this.message = builder.message;
-            this.rejectedValue = builder.rejectedValue;
         }
 
         public static Builder builder() {
@@ -66,7 +52,6 @@ public class ErrorResponse {
             return ValidationError.builder()
                     .field(fieldError.getField())
                     .message(fieldError.getDefaultMessage())
-                    .rejectedValue(fieldError.getRejectedValue())
                     .build();
         }
 
@@ -78,14 +63,9 @@ public class ErrorResponse {
             return message;
         }
 
-        public Object getRejectedValue() {
-            return rejectedValue;
-        }
-
         public static class Builder {
             private String field;
             private String message;
-            private Object rejectedValue;
 
             public Builder field(String field) {
                 this.field = field;
@@ -94,11 +74,6 @@ public class ErrorResponse {
 
             public Builder message(String message) {
                 this.message = message;
-                return this;
-            }
-
-            public Builder rejectedValue(Object rejectedValue) {
-                this.rejectedValue = rejectedValue;
                 return this;
             }
 
@@ -111,8 +86,6 @@ public class ErrorResponse {
     public static class Builder {
         private String code;
         private String message;
-        private String path;
-        private LocalDateTime timestamp;
 
         private List<ValidationError> errors;
 
@@ -123,16 +96,6 @@ public class ErrorResponse {
 
         public Builder message(String message) {
             this.message = message;
-            return this;
-        }
-
-        public Builder path(String path) {
-            this.path = path;
-            return this;
-        }
-
-        public Builder timestamp(LocalDateTime timestamp) {
-            this.timestamp = timestamp;
             return this;
         }
 

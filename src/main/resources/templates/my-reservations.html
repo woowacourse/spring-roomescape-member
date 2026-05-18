@@ -652,6 +652,17 @@
         }
     }
 
+    async function parseError(r, fallback) {
+        try {
+            const e = await r.json();
+            const details = (e.errors || []).map(v => `· ${v.field}: ${v.message}`);
+            const msg = e.message || fallback;
+            return {code: e.code || null, message: details.length ? [msg, ...details].join('\n') : msg};
+        } catch {
+            return {code: null, message: fallback};
+        }
+    }
+
     async function doChange() {
         if (!changeTarget || !selTimeId) return;
         const date = document.getElementById('ch-date').value;
@@ -664,14 +675,9 @@
                 body: JSON.stringify({timeId: selTimeId, themeId: changeTarget.themeId, date})
             });
             if (!r.ok) {
-                let msg = '변경에 실패했습니다';
-                try {
-                    const e = await r.json();
-                    msg = e.message || msg;
-                } catch {
-                }
+                const {message} = await parseError(r, '변경에 실패했습니다');
                 closeChange();
-                toast('err', msg);
+                toast('err', message);
                 return;
             }
             closeChange();
@@ -703,14 +709,10 @@
         try {
             const r = await fetch(`/reservations/${cancelTarget.id}?name=${encodeURIComponent(currentName)}`, {method: 'DELETE'});
             if (!r.ok) {
-                let msg = '취소에 실패했습니다';
-                try {
-                    const e = await r.json();
-                    msg = e.message || msg;
-                } catch {
-                }
+                const {code, message} = await parseError(r, '취소에 실패했습니다');
+                const displayMsg = code === 'DUPLICATE' ? '이미 지난 예약은 취소할 수 없습니다' : message;
                 closeCancel();
-                toast('err', msg);
+                toast('err', displayMsg);
                 return;
             }
             closeCancel();
@@ -724,7 +726,7 @@
 
     function toast(type, msg) {
         const el = document.getElementById('toast');
-        el.textContent = msg;
+        el.innerHTML = msg.replace(/\n/g, '<br>');
         el.className = `toast show ${type}`;
         setTimeout(() => {
             el.className = 'toast';
