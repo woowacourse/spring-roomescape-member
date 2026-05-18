@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.AlreadyExistException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -18,6 +21,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UpdateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -41,7 +45,7 @@ class ReservationServiceTest {
         // given
         ReservationTime time = saveTime(10, 0);
         Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 5, 5), time.getId(),
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now().plusDays(1), time.getId(),
                 theme.getId());
 
         // when
@@ -50,7 +54,7 @@ class ReservationServiceTest {
         // then
         assertThat(response)
                 .extracting(ReservationResponse::name, ReservationResponse::date)
-                .containsExactly("브라운", LocalDate.of(2026, 5, 5));
+                .containsExactly("브라운", LocalDate.now().plusDays(1));
     }
 
     @Test
@@ -61,7 +65,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 시간입니다.");
     }
 
@@ -73,8 +77,38 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    void 중복_예약을_하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        LocalDate date = LocalDate.now().plusDays(1);
+        saveReservation("브라운", date, time, theme);
+
+        ReservationRequest request = new ReservationRequest("로지", date, time.getId(), theme.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(AlreadyExistException.class)
+                .hasMessage("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+    }
+
+    @Test
+    void 지나간_날짜로_예약하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 4, 1), time.getId(),
+                theme.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
     }
 
     @Test
@@ -94,6 +128,83 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 예약자_이름으로_예약을_조회한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        saveReservation("브라운", LocalDate.of(2026, 5, 5), time, theme);
+        saveReservation("로지", LocalDate.of(2026, 5, 6), time, theme);
+
+        // when
+        List<ReservationResponse> responses = reservationService.getMyReservation("로지");
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses).extracting(ReservationResponse::name).containsExactly("로지");
+    }
+
+    @Test
+    void 예약_날짜_시간을_변경한다() {
+        // given
+        ReservationTime time1 = saveTime(10, 0);
+        ReservationTime time2 = saveTime(11, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        Reservation saved = saveReservation("브라운", LocalDate.now().plusDays(1), time1, theme);
+
+        UpdateReservationRequest request = new UpdateReservationRequest(LocalDate.now().plusDays(2), time2.getId());
+
+        // when
+        ReservationResponse response = reservationService.update(saved.getId(), request);
+
+        // then
+        assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(2));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        UpdateReservationRequest request = new UpdateReservationRequest(LocalDate.now().plusDays(1), time.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(999L, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 지나간_날짜로_변경하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        Reservation saved = saveReservation("브라운", LocalDate.now().plusDays(1), time, theme);
+
+        UpdateReservationRequest request = new UpdateReservationRequest(LocalDate.of(2026, 4, 1), time.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(saved.getId(), request))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage("지나간 날짜·시간에 대한 예약 생성은 불가능합니다.");
+    }
+
+    @Test
+    void 중복된_날짜_시간으로_변경하면_예외가_발생한다() {
+        // given
+        ReservationTime time = saveTime(10, 0);
+        Theme theme = saveTheme("방탈출1", "설명", "https://thumb.com");
+        LocalDate date = LocalDate.now().plusDays(1);
+        saveReservation("브라운", date, time, theme);
+        Reservation saved = saveReservation("로지", LocalDate.now().plusDays(2), time, theme);
+
+        UpdateReservationRequest request = new UpdateReservationRequest(date, time.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(saved.getId(), request))
+                .isInstanceOf(AlreadyExistException.class)
+                .hasMessage("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+    }
+
+    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime time = saveTime(10, 0);
@@ -108,7 +219,7 @@ class ReservationServiceTest {
     void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
     }
 

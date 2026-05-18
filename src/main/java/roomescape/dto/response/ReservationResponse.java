@@ -15,10 +15,10 @@ public record ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-               new CreateReservationTimeResponse(
-                       reservation.getTime().getId(),
-                       reservation.getTime().getStartAt()
-               ),
+                new CreateReservationTimeResponse(
+                        reservation.getTime().getId(),
+                        reservation.getTime().getStartAt()
+                ),
                 new ThemeResponse(
                         reservation.getTheme().getId(),
                         reservation.getTheme().getName(),

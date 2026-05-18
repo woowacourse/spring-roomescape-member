@@ -260,7 +260,7 @@ class ThemeDaoTest {
     }
 
     private ReservationTime saveTime(int hour, int minute) {
-        return timeDao.insert(ReservationTime.createWithoutId(LocalTime.MAX.of(hour, minute)));
+        return timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(hour, minute)));
     }
 
     private void saveReservation(LocalDate date, ReservationTime time, Theme theme) {
