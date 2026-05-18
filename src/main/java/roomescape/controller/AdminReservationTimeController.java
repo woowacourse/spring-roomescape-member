@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -36,7 +35,6 @@ public class AdminReservationTimeController {
                 .body(response);
     }
 
-    @Nonnull
     private static URI buildLocationUri(ReservationTimeResponseDto responseDto) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()

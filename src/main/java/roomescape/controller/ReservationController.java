@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -29,13 +28,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> search(
-            @RequestParam(required = false) String name) {
-        List<ReservationResponseDto> found = reservationService.findReservation(name);
-        return ResponseEntity.ok(found);
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto request) {
         ReservationResponseDto response = reservationService.create(request);
@@ -43,6 +35,21 @@ public class ReservationController {
         URI location = buildLocationUri(response);
         return ResponseEntity.created(location)
                 .body(response);
+    }
+
+    private static URI buildLocationUri(ReservationResponseDto response) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponseDto>> find(
+            @RequestParam(required = false) String name) {
+        List<ReservationResponseDto> found = reservationService.findReservation(name);
+        return ResponseEntity.ok(found);
     }
 
     @PatchMapping("/{id}")
@@ -55,15 +62,6 @@ public class ReservationController {
         return ResponseEntity
                 .noContent()
                 .build();
-    }
-
-    @Nonnull
-    private static URI buildLocationUri(ReservationResponseDto response) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(response.id())
-                .toUri();
     }
 
     @DeleteMapping("/{id}")

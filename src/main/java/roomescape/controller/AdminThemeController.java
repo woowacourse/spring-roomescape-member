@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ public class AdminThemeController {
                 .body(response);
     }
 
-    @Nonnull
     private static URI buildLocationUri(ThemeResponseDto responseDto) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
