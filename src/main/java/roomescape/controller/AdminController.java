@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +43,13 @@ public class AdminController {
         return reservationService.readAllReservation();
     }
 
+    @GetMapping("/reservations/{id}")
+    public ReservationResponseDTO findReservationById(@PathVariable Long id) {
+        return reservationService.findById(id);
+    }
+
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponseDTO> add(@RequestBody ReservationTimeRequestDTO request) {
+    public ResponseEntity<ReservationTimeResponseDTO> add(@Valid @RequestBody ReservationTimeRequestDTO request) {
         ReservationTimeResponseDTO saved = reservationTimeService.addReservationTime(request);
         return ResponseEntity.created(URI.create("/times/" + saved.id())).build();
     }
@@ -51,13 +57,15 @@ public class AdminController {
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponseDTO> add(@RequestBody ThemeRequestDTO request) {
+    public ResponseEntity<ThemeResponseDTO> add(@Valid @RequestBody ThemeRequestDTO request) {
         ThemeResponseDTO saved = themeService.addTheme(request);
-        return ResponseEntity.created(URI.create("/theme/" + saved.id())).build();
+        return ResponseEntity.created(URI.create("/themes/" + saved.id())).build();
     }
 
     @DeleteMapping("/themes/{id}")

@@ -9,12 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
+import roomescape.exception.ThemeInUseException;
+import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcThemeRepository;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Import({JdbcThemeRepository.class,
+        JdbcReservationRepository.class,
         ThemeService.class})
 class ThemeServiceTest {
 
@@ -32,6 +39,20 @@ class ThemeServiceTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id", "runningTime")
                 .isEqualTo(themeRequestDTO);
+    }
+
+    @DisplayName("불완전한 정보로 테마 생성 요청 시 IllegalArgumentException을 던진다")
+    @ParameterizedTest(name = "{0}")
+    @CsvSource(value = {
+            "이름 누락, , 설명, 이미지",
+            "설명 누락, 이름, , 이미지",
+            "이미지 누락, 이름, 설명, "
+    })
+    void 불완전한_정보로_테마_생성_요청_시_예외를_던진다(String description, String name, String themeDesc, String imageUrl) {
+        ThemeRequestDTO invalidRequest = new ThemeRequestDTO(name, themeDesc, imageUrl);
+
+        assertThatThrownBy(() -> themeService.addTheme(invalidRequest))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("모든 테마를 조회한다")
@@ -90,5 +111,13 @@ class ThemeServiceTest {
         themeService.deleteTheme(addedTheme.id());
 
         assertThat(themeService.findAllThemes()).isEmpty();
+    }
+
+    @DisplayName("예약이 존재하는 테마를 삭제하면 ThemeInUseException을 던진다")
+    @Sql("/data.sql")
+    @Test
+    void 예약이_존재하는_테마를_삭제하면_ThemeInUseException을_던진다() {
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isExactlyInstanceOf(ThemeInUseException.class);
     }
 }

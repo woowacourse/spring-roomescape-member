@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 예약 확인</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+      margin-top: 50px;
+    }
+    .container {
+      border: 2px solid #000;
+      padding: 20px;
+      width: 600px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 60%;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    .cancel-btn {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+    }
+    .edit-btn {
+      background-color: #ffc107;
+      border: none;
+    }
+    /* 모달 스타일 */
+    #edit-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border: 2px solid #000;
+      z-index: 1000;
+    }
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .modal-btn-group {
+      margin-top: 20px;
+    }
+    /* 에러 모달 스타일 */
+    #error-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border: 2px solid #000;
+      z-index: 1100;
+      text-align: center;
+      min-width: 300px;
+      max-width: 500px;
+    }
+    #error-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1099;
+    }
+    #error-modal-title {
+      color: #d9534f;
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    #error-modal-detail {
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    #error-close-btn {
+      background-color: #333;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>내 예약 확인</h1>
+  <input type="text" id="username-input" placeholder="이름을 입력하세요">
+  <button id="search-btn">조회</button>
+</div>
+
+<div class="container">
+  <table id="reservation-table">
+    <thead>
+      <tr>
+        <th>테마</th>
+        <th>날짜</th>
+        <th>시간</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody id="reservation-list">
+    </tbody>
+  </table>
+</div>
+
+<a href="/">[메인으로 돌아가기]</a>
+
+<!-- 수정 모달 -->
+<div id="modal-overlay"></div>
+<div id="edit-modal">
+  <h3>예약 수정</h3>
+  <p id="edit-theme-name"></p>
+  <label>날짜: <input type="date" id="edit-date"></label><br><br>
+  <label>시간: 
+    <select id="edit-time">
+    </select>
+  </label>
+  <div class="modal-btn-group">
+    <button id="save-edit-btn">저장</button>
+    <button id="close-modal-btn">취소</button>
+  </div>
+</div>
+
+<!-- 에러 모달 -->
+<div id="error-modal-overlay"></div>
+<div id="error-modal">
+  <h3 id="error-modal-title"></h3>
+  <p id="error-modal-detail"></p>
+  <button id="error-close-btn">확인</button>
+</div>
+
+<script>
+  let currentEditingId = null;
+  let allTimes = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // 0. 모든 시간 목록 미리 로드 (수정용)
+    fetch('/times')
+    .then(res => res.json())
+    .then(times => { allTimes = times; });
+
+    document.getElementById('search-btn').addEventListener('click', loadReservations);
+
+    document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+    document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
+    document.getElementById('error-close-btn').addEventListener('click', closeErrorModal);
+  });
+
+  function showErrorModal(title, detail) {
+    document.getElementById('error-modal-title').textContent = title;
+    document.getElementById('error-modal-detail').textContent = detail;
+    document.getElementById('error-modal-overlay').style.display = 'block';
+    document.getElementById('error-modal').style.display = 'block';
+  }
+
+  function closeErrorModal() {
+    document.getElementById('error-modal-overlay').style.display = 'none';
+    document.getElementById('error-modal').style.display = 'none';
+  }
+
+  function loadReservations() {
+    const username = document.getElementById('username-input').value;
+    if (!username) return alert('이름을 입력해주세요.');
+
+    fetch(`/api/reservations?username=${username}`)
+    .then(async res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '조회 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
+        throw new Error('조회 실패');
+      }
+    })
+    .then(reservations => {
+      const list = document.getElementById('reservation-list');
+      list.innerHTML = '';
+      
+      reservations.forEach(res => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${res.theme.name}</td>
+          <td>${res.date}</td>
+          <td>${res.time.startAt}</td>
+          <td>
+            <button class="edit-btn" onclick="openEditModal(${res.id}, '${res.theme.name}', '${res.date}', ${res.time.id})">수정</button>
+            <button class="cancel-btn" onclick="cancelReservation('${res.name}', '${res.date}', ${res.time.id}, ${res.theme.id})">취소</button>
+          </td>
+        `;
+        list.appendChild(tr);
+      });
+    })
+    .catch(err => console.error(err));
+  }
+
+  function cancelReservation(name, date, timeId, themeId) {
+    if (!confirm('정말 취소하시겠습니까?')) return;
+
+    const params = new URLSearchParams({
+      name: name,
+      date: date,
+      timeId: timeId,
+      themeId: themeId
+    });
+
+    fetch(`/api/reservations?${params.toString()}`, { method: 'DELETE' })
+    .then(async res => {
+      if (res.ok) {
+        alert('취소되었습니다.');
+        loadReservations();
+      } else {
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '취소 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
+      }
+    });
+  }
+
+  function openEditModal(id, themeName, date, timeId) {
+    currentEditingId = id;
+    document.getElementById('edit-theme-name').textContent = themeName;
+    document.getElementById('edit-date').value = date;
+    
+    const timeSelect = document.getElementById('edit-time');
+    timeSelect.innerHTML = '';
+    allTimes.forEach(time => {
+      const option = document.createElement('option');
+      option.value = time.id;
+      option.textContent = time.startAt;
+      if (time.id === timeId) option.selected = true;
+      timeSelect.appendChild(option);
+    });
+
+    document.getElementById('modal-overlay').style.display = 'block';
+    document.getElementById('edit-modal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+    document.getElementById('edit-modal').style.display = 'none';
+    currentEditingId = null;
+  }
+
+  function saveEdit() {
+    const newDate = document.getElementById('edit-date').value;
+    const newTimeId = document.getElementById('edit-time').value;
+
+    fetch(`/api/reservations/${currentEditingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: newDate, timeId: parseInt(newTimeId) })
+    })
+    .then(async res => {
+      if (res.ok) {
+        alert('수정 성공!');
+        closeModal();
+        loadReservations();
+      } else {
+        const errorData = await res.json().catch(() => null);
+        showErrorModal(errorData?.title || '수정 실패', errorData?.detail || '알 수 없는 오류가 발생했습니다.');
+      }
+    });
+  }
+</script>
+</body>
+</html>

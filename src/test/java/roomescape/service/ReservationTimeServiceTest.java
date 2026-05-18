@@ -1,8 +1,10 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 
@@ -27,7 +30,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 생성한다")
     @Test
     void ReservationTimeRequestDTO를_받아_ReservationTimeResponseDTO를_리턴한다() {
-        ReservationTimeRequestDTO reservationTimeRequestDTO = new ReservationTimeRequestDTO("10:00");
+        ReservationTimeRequestDTO reservationTimeRequestDTO = new ReservationTimeRequestDTO(LocalTime.parse("10:00"));
 
         ReservationTimeResponseDTO addedTime =
                 reservationTimeService.addReservationTime(reservationTimeRequestDTO);
@@ -43,10 +46,10 @@ class ReservationTimeServiceTest {
     void 존재하는_모든_예약_시간의_ReservationTimeResponseDto가_담긴_리스트를_리턴한다() {
         // given
         ReservationTimeResponseDTO addedTime10 = reservationTimeService.addReservationTime(
-                new ReservationTimeRequestDTO("10:00")
+                new ReservationTimeRequestDTO(LocalTime.parse("10:00"))
         );
         ReservationTimeResponseDTO addedTime11 = reservationTimeService.addReservationTime(
-                new ReservationTimeRequestDTO("11:00")
+                new ReservationTimeRequestDTO(LocalTime.parse("11:00"))
         );
 
         // when
@@ -62,7 +65,7 @@ class ReservationTimeServiceTest {
     @Sql("/data.sql")
     @Test
     void 특정_테마의_특정_날짜의_예약된_시간을_조회한다() {
-        List<ReservationTime> reservedTimes = reservationTimeService.findReservedTimes(
+        List<ReservationTimeResponseDTO> reservedTimes = reservationTimeService.findReservedTimes(
                 LocalDate.now(),
                 11L
         );
@@ -74,11 +77,33 @@ class ReservationTimeServiceTest {
     @Test
     void 예약_시간의_id로_예약_시간을_삭제한다() {
         ReservationTimeResponseDTO addedTime = reservationTimeService.addReservationTime(
-                new ReservationTimeRequestDTO("10:00")
+                new ReservationTimeRequestDTO(LocalTime.parse("10:00"))
         );
 
         reservationTimeService.deleteReservationTime(addedTime.id());
 
         assertThat(reservationTimeService.findAllReservationTime()).isEmpty();
+    }
+
+    @DisplayName("예약이 존재하는 예약 시간의 삭제를 거부한다")
+    @Sql("/data.sql")
+    @Test
+    void 삭제하려는_예약_시간에_대한_예약이_존재한다면_ReservationTimeInUseException을_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isExactlyInstanceOf(ReservationTimeInUseException.class);
+    }
+
+    @DisplayName("존재하지 않는 예약 시간의 삭제를 거부한다")
+    @Test
+    void 삭제하려는_예약_시간이_존재하지_않으면_ReservationTimeNotFoundException을_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isExactlyInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @DisplayName("시작 시간이 누락된 예약 시간 생성 요청 시 IllegalArgumentException을 던진다")
+    @Test
+    void 시작_시간이_누락되면_IllegalArgumentException을_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.addReservationTime(new ReservationTimeRequestDTO(null)))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

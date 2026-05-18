@@ -1,17 +1,18 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
+    private LocalDate date;
+    private ReservationTime time;
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -21,6 +22,13 @@ public class Reservation {
 
     public static Reservation withoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(null, name, date, time, theme);
+    }
+
+    public void changeDateAndTime(LocalDate date, ReservationTime time) {
+        validateDate(date);
+        validateTime(time);
+        this.date = date;
+        this.time = time;
     }
 
     public Long getId() {
@@ -43,31 +51,16 @@ public class Reservation {
         return theme;
     }
 
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
+    }
+
     public Long getTimeId() {
         return time.getId();
     }
 
     public Long getThemeId() {
         return theme.getId();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-                && Objects.equals(date, that.date) && Objects.equals(time,
-                that.time) && Objects.equals(theme, that.theme);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, date, time, theme);
     }
 
     @Override
@@ -79,5 +72,36 @@ public class Reservation {
                 ", time=" + time +
                 ", theme=" + theme +
                 '}';
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 필수입니다.");
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
     }
 }
