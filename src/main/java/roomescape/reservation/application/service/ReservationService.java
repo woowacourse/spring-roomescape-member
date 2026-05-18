@@ -57,31 +57,25 @@ public class ReservationService {
 
     public ReservationQueryResult update(ReservationUpdateCommand request, LocalDateTime currentDateTime) {
         ReservationDetail reservationDetail = getReservationDetail(request.id());
-        validateOwner(request.name(), reservationDetail);
+        Reservation reservation = toReservation(reservationDetail);
+        validateOwner(request.name(), reservation);
         validateReservationNotPast(reservationDetail, currentDateTime);
 
         ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
         validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
-        validateDuplicateReservation(request, reservationDetail);
+        validateDuplicateReservation(request, reservation);
 
-        Reservation updatedReservation = toReservation(reservationDetail).update(request.date(), request.timeId());
+        Reservation updatedReservation = reservation.update(request.date(), request.timeId());
         Reservation savedReservation = reservationRepository.update(updatedReservation);
         return toQueryResult(savedReservation);
     }
 
     public int delete(Long id, String name, LocalDateTime currentDateTime) {
         ReservationDetail reservationDetail = getReservationDetail(id);
-        validateOwner(name, reservationDetail);
+        Reservation reservation = toReservation(reservationDetail);
+        validateOwner(name, reservation);
         validateReservationNotPast(reservationDetail, currentDateTime);
         return reservationRepository.delete(id);
-    }
-
-    private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
-        LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
-
-        if (triedDateTime.isBefore(currentDateTime)) {
-            throw new RoomEscapeException(ReservationErrorCode.PAST_RESERVATION_TIME);
-        }
     }
 
     private ReservationDetail getReservationDetail(Long id) {
@@ -99,21 +93,29 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicateReservation(ReservationUpdateCommand request, ReservationDetail reservationDetail) {
+    private void validateDuplicateReservation(ReservationUpdateCommand request, Reservation reservation) {
         Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTimeExcludingId(
                 request.date(),
-                reservationDetail.themeId(),
+                reservation.getThemeId(),
                 request.timeId(),
-                reservationDetail.reservationId()
+                reservation.getId()
         );
         if (existsByDateAndTime) {
             throw new RoomEscapeException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
     }
 
-    private void validateOwner(String name, ReservationDetail reservationDetail) {
-        if (!reservationDetail.username().equals(name)) {
+    private void validateOwner(String name, Reservation reservation) {
+        if (!reservation.isOwner(name)) {
             throw new RoomEscapeException(ReservationErrorCode.FORBIDDEN_RESERVATION_ACCESS);
+        }
+    }
+
+    private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
+        LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
+
+        if (triedDateTime.isBefore(currentDateTime)) {
+            throw new RoomEscapeException(ReservationErrorCode.PAST_RESERVATION_TIME);
         }
     }
 

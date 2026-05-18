@@ -35,4 +35,8 @@ public class Reservation {
                 .timeId(timeId)
                 .build();
     }
+
+    public boolean isOwner(String name) {
+        return this.name.equals(name);
+    }
 }
