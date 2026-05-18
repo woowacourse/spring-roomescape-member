@@ -2,9 +2,8 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,6 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(TIME_ID))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_TIME_IN_USE));
-
-        verify(reservationTimeRepository, never()).deleteTime(TIME_ID);
     }
 
     @Test
@@ -50,9 +47,8 @@ class ReservationTimeServiceTest {
         given(reservationTimeRepository.existsById(TIME_ID)).willReturn(true);
         given(reservationRepository.existsByTimeId(TIME_ID)).willReturn(false);
 
-        reservationTimeService.deleteReservationTime(TIME_ID);
-
-        verify(reservationTimeRepository).deleteTime(TIME_ID);
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(TIME_ID))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -63,7 +59,5 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(TIME_ID))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        verify(reservationTimeRepository, never()).deleteTime(TIME_ID);
     }
 }

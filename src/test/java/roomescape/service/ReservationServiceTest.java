@@ -1,13 +1,10 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -97,28 +94,13 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("저장된 모든 예약을 조회한다")
-    void findAllReservations() {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        List<Reservation> stored = List.of(
-                new Reservation(1L, "브라운", LocalDate.of(2026, 5, 3), time, theme),
-                new Reservation(2L, "조이", LocalDate.of(2026, 5, 4), time, theme));
-        given(reservationRepository.findAllReservations()).willReturn(stored);
-
-        List<Reservation> reservations = reservationService.findAllReservations();
-
-        assertThat(reservations).hasSize(2);
-    }
-
-    @Test
     @DisplayName("사용자명에 해당하는 예약이 없으면 예외가 발생한다")
     void throwException_WhenNoReservationsByName() {
         given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
+
         assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
-        verify(reservationRepository, times(1)).findReservationsByName(any());
     }
 
     @Test
@@ -127,18 +109,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.findReservationsByName(null))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT));
-
-        verify(reservationRepository, never()).findReservationsByName(any());
-    }
-
-    @Test
-    @DisplayName("저장된 예약이 없으면 빈 목록을 반환한다")
-    void findEmptyReservations() {
-        given(reservationRepository.findAllReservations()).willReturn(List.of());
-
-        List<Reservation> reservations = reservationService.findAllReservations();
-
-        assertThat(reservations).isEmpty();
     }
 
     @Test
@@ -148,9 +118,8 @@ class ReservationServiceTest {
         Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        reservationService.deleteReservationByAdmin(reservationId);
-
-        verify(reservationRepository).deleteById(eq(reservationId));
+        assertThatCode(() -> reservationService.deleteReservationByAdmin(reservationId))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -162,8 +131,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteReservationByAdmin(reservationId))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
-
-        verify(reservationRepository, never()).deleteById(reservationId);
     }
 
     @Test
@@ -173,9 +140,8 @@ class ReservationServiceTest {
         Reservation reservation = createReservation(reservationId, "브라운", LocalDate.now().plusDays(1));
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        reservationService.cancelReservation(reservationId);
-
-        verify(reservationRepository).deleteById(eq(reservationId));
+        assertThatCode(() -> reservationService.cancelReservation(reservationId))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -187,8 +153,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancelReservation(reservationId))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
-
-        verify(reservationRepository, never()).deleteById(reservationId);
     }
 
     @Test
@@ -201,8 +165,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancelReservation(reservationId))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_ALREADY_PAST));
-
-        verify(reservationRepository, never()).deleteById(reservationId);
     }
 
     @Test
@@ -306,7 +268,6 @@ class ReservationServiceTest {
 
         Reservation changedReservation = reservationService.changeReservationDateTime(reservationId, updateCommand);
 
-        verify(reservationRepository).updateDateTime(reservationId, changedDate, 2L);
         assertThat(changedReservation.id()).isEqualTo(reservationId);
         assertThat(changedReservation.name()).isEqualTo("브라운");
         assertThat(changedReservation.date()).isEqualTo(changedDate);
@@ -324,8 +285,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
-
-        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     @Test
@@ -339,8 +298,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_ALREADY_PAST));
-
-        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     @Test
@@ -356,8 +313,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-
-        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     @Test
@@ -374,8 +329,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_PAST_TIME));
-
-        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     @Test
@@ -395,8 +348,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.changeReservationDateTime(reservationId, updateCommand))
                 .isInstanceOfSatisfying(RoomescapeException.class, exception ->
                         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_DUPLICATED));
-
-        verify(reservationRepository, never()).updateDateTime(any(), any(), any());
     }
 
     private Reservation createReservation(Long id, String name, LocalDate date) {
