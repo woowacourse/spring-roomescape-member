@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.springframework.stereotype.Component;
-import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.client.BusinessRuleViolationException;
 
 @Component
 public class FutureOnlyPolicy implements ReservationPolicy {

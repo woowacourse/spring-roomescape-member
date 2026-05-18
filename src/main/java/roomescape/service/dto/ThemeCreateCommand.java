@@ -1,6 +1,6 @@
 package roomescape.service.dto;
 
-import roomescape.exception.InvalidCommandException;
+import roomescape.exception.client.InvalidCommandException;
 
 public class ThemeCreateCommand {
     private final String name;

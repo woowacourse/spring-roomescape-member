@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.domain.policy.ReservationPolicy;
-import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.client.BusinessRuleViolationException;
 
 public class TestFutureOnlyPolicy implements ReservationPolicy {
 

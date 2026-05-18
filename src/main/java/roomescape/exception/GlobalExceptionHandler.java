@@ -14,6 +14,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
 import roomescape.domain.exception.InvalidDomainException;
+import roomescape.exception.base.RoomeScapeException;
+import roomescape.exception.base.RoomeScapeServerException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

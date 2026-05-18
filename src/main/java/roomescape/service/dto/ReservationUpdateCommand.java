@@ -1,7 +1,7 @@
 package roomescape.service.dto;
 
 import java.time.LocalDate;
-import roomescape.exception.InvalidCommandException;
+import roomescape.exception.client.InvalidCommandException;
 
 public class ReservationUpdateCommand {
     private final Long id;

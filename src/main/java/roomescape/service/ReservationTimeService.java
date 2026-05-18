@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.client.BusinessRuleViolationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;

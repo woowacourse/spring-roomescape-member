@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.policy.PopularThemePolicy;
-import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.client.BusinessRuleViolationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.PopularThemeResult;

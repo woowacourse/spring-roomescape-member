@@ -1,7 +1,7 @@
 package roomescape.service.dto;
 
 import java.time.LocalTime;
-import roomescape.exception.InvalidCommandException;
+import roomescape.exception.client.InvalidCommandException;
 
 public class ReservationTimeCreateCommand {
     private final LocalTime startAt;
