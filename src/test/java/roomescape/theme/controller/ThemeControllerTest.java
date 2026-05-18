@@ -7,7 +7,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.AvailableTime;
-import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
 
 import java.time.LocalTime;
@@ -53,7 +52,7 @@ class ThemeControllerTest {
         when(themeService.getAvailableTimes(any(), any())).thenReturn(availableTimes);
 
         mockMvc.perform(get("/themes/1/available-times")
-                        .param("date", "2025-05-06"))
+                        .param("date", "2026-05-14"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[0].id").value(1L))

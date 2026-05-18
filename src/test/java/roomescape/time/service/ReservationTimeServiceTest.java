@@ -5,6 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -12,15 +15,18 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -48,9 +54,25 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 시간을_삭제하면_Repository_remove에_id를_전달한다() {
-        reservationTimeService.removeTime(3L);
+    void 예약이_없는_시간은_삭제_가능하다() {
+        when(reservationRepository.existsByTimeId(any()))
+                .thenReturn(false);
 
-        verify(reservationTimeRepository).remove(3L);
+        reservationTimeService.removeTime(1L);
+
+        verify(reservationTimeRepository).remove(1L);
+    }
+
+    @Test
+    void 예약이_있는_시간을_삭제하면_예외를_발생하고_삭제하지_않는다() {
+        when(reservationRepository.existsByTimeId(any()))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> reservationTimeService.removeTime(3L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_IN_USE);
+
+        verify(reservationTimeRepository, never()).remove(any());
     }
 }

@@ -1,16 +1,22 @@
 package roomescape.admin.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.RequestTheme;
-import roomescape.theme.dto.ResponseTheme;
+import roomescape.theme.dto.ThemeRequest;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.RequestReservationTime;
-import roomescape.time.dto.ResponseReservationTime;
+import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -18,35 +24,54 @@ public class AdminController {
 
     private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
+    private final ReservationService reservationService;
 
-    public AdminController(ThemeService themeService, ReservationTimeService reservationTimeService) {
+    public AdminController(ThemeService themeService, ReservationTimeService reservationTimeService, ReservationService reservationService) {
         this.themeService = themeService;
         this.reservationTimeService = reservationTimeService;
+        this.reservationService = reservationService;
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ResponseTheme> createTheme(@RequestBody RequestTheme requestTheme) {
-        Theme theme = themeService.createTheme(requestTheme.name(), requestTheme.description(), requestTheme.thumbnail());
-        ResponseTheme response = ResponseTheme.from(theme);
+    public ResponseEntity<ThemeResponse> createTheme(
+            @Valid @RequestBody ThemeRequest themeRequest) {
+        Theme theme = themeService.createTheme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTheme(@PathVariable("id") Long id) {
         themeService.removeTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ResponseReservationTime> createTime(@RequestBody RequestReservationTime request) {
+    public ResponseEntity<ReservationTimeResponse> createTime(
+            @Valid @RequestBody ReservationTimeRequest request) {
         ReservationTime time = reservationTimeService.createTime(request.startAt());
-        ResponseReservationTime response = ResponseReservationTime.from(time);
+        ReservationTimeResponse response = ReservationTimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> removeTime(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTime(@PathVariable("id") Long id) {
         reservationTimeService.removeTime(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<Reservation> reservations = reservationService.getReservations();
+        List<ReservationResponse> response = reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
+        reservationService.deleteReservation(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

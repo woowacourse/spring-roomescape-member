@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationRepository {
@@ -67,6 +68,70 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
+        return row != null && row > 0;
+    }
+
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return row != null && row > 0;
+    }
+
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return row != null && row > 0;
+    }
+
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return row != null && row > 0;
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id    AS theme_id,
+                       th.name    AS theme_name,
+                       th.description    AS theme_description,
+                       th.thumbnail    AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowsMapper(), id)
+                .stream()
+                .findFirst();
+    }
+
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id    AS theme_id,
+                       th.name    AS theme_name,
+                       th.description    AS theme_description,
+                       th.thumbnail    AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.name = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowsMapper(), name);
+    }
+
     private RowMapper<Reservation> reservationRowsMapper() {
         return (rs, rowNum) -> {
             ReservationTime time = new ReservationTime(
@@ -91,9 +156,11 @@ public class ReservationRepository {
         };
     }
 
-    public boolean existsByTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
-        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
-        return row != null && row > 0;
+    public int update(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation " +
+                "SET date = ?, time_id = ? " +
+                "WHERE id = ?";
+
+        return jdbcTemplate.update(sql, date, timeId, id);
     }
 }

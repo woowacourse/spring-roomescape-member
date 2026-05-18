@@ -1,0 +1,45 @@
+package roomescape.global.exception;
+
+import org.springframework.http.HttpStatus;
+
+public enum ErrorCode {
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력값이 적절하지 않습니다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청이 적절하지 않습니다"),
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청 리소스가 존재하지 않습니다."),
+
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "허용되지 않는 HTTP 메서드입니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
+
+    RESERVATION_DUPLICATE(HttpStatus.CONFLICT, "이미 예약된 일정입니다."),
+    RESERVATION_PAST_DATETIME(HttpStatus.BAD_REQUEST, "과거 날짜, 시간으로 예약할 수 없습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
+    RESERVATION_FORBIDDEN(HttpStatus.FORBIDDEN, "예약을 변경 및 취소할 권한이 없습니다."),
+    RESERVATION_EXPIRED(HttpStatus.BAD_REQUEST, "이미 시간이 지난 예약은 변경하거나 취소할 수 없습니다."),
+
+    RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다."),
+    RESERVATION_TIME_IN_USE(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다."),
+
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
+    THEME_IN_USE(HttpStatus.CONFLICT, "예약이 존재하는 테마는 삭제할 수 없습니다."),
+    ;
+
+    private final HttpStatus status;
+    private final String message;
+
+    ErrorCode(final HttpStatus status, final String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public String errorCode() {
+        return this.name();
+    }
+
+    public HttpStatus status() {
+        return status;
+    }
+
+    public String message() {
+        return message;
+    }
+}

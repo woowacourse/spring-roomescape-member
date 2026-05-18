@@ -42,9 +42,10 @@
             transition: color 0.15s;
         }
         nav a:hover { color: #f1f5f9; }
+        nav a.primary { color: #f59e0b; font-weight: 700; }
 
         main {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 3rem 2rem;
         }
@@ -58,10 +59,7 @@
             margin-bottom: 1.75rem;
         }
 
-        .section-title {
-            font-size: 1.375rem;
-            font-weight: 700;
-        }
+        .section-title { font-size: 1.375rem; font-weight: 700; }
 
         .badge {
             background: #f59e0b;
@@ -75,42 +73,31 @@
 
         .theme-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.25rem;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
         }
 
         .theme-card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
-            overflow: hidden;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
+            gap: 0.6rem;
+            position: relative;
             transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
         .theme-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: #f59e0b55;
             box-shadow: 0 8px 32px #00000055;
         }
 
-        .card-thumbnail {
-            width: 100%;
-            height: 170px;
-            object-fit: cover;
-            background: #334155;
-            display: block;
-        }
-
-        .card-body {
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            gap: 0.5rem;
-        }
-
         .card-rank {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             width: 28px;
             height: 28px;
             border-radius: 50%;
@@ -125,17 +112,18 @@
         .card-rank.top3 { background: #f59e0b; color: #0f172a; }
 
         .card-name {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 700;
+            padding-right: 2.5rem;
         }
 
         .card-desc {
             font-size: 0.85rem;
             color: #94a3b8;
-            line-height: 1.55;
+            line-height: 1.6;
             flex: 1;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -169,7 +157,8 @@
 <header>
     <a href="/" class="logo">🔐 방탈출</a>
     <nav>
-        <a href="/reservation-cancel.html">예약 취소</a>
+        <a href="/my-reservations.html" class="primary">내 예약</a>
+        <a href="/admin/index.html">관리자</a>
     </nav>
 </header>
 
@@ -195,6 +184,12 @@
 </main>
 
 <script>
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
     function goReservation(theme) {
         sessionStorage.setItem('selectedTheme', JSON.stringify(theme));
         location.href = '/reservation.html';
@@ -209,14 +204,10 @@
             : '';
 
         card.innerHTML = `
-            <img class="card-thumbnail" src="${theme.thumbnail}" alt="${theme.name}"
-                 onerror="this.style.background='#334155';this.removeAttribute('src')">
-            <div class="card-body">
-                ${rankHtml}
-                <div class="card-name">${theme.name}</div>
-                <div class="card-desc">${theme.description}</div>
-                <button class="btn-reserve">예약하기</button>
-            </div>
+            ${rankHtml}
+            <div class="card-name">${escapeHtml(theme.name)}</div>
+            <div class="card-desc">${escapeHtml(theme.description)}</div>
+            <button class="btn-reserve">예약하기</button>
         `;
 
         card.querySelector('.btn-reserve').addEventListener('click', () => goReservation(theme));

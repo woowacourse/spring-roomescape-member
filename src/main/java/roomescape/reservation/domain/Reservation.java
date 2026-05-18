@@ -1,9 +1,12 @@
 package roomescape.reservation.domain;
 
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -14,15 +17,11 @@ public class Reservation {
     private Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
-        }
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
-        }
-        if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
-        }
+        validateReservationName(name);
+        validateReservationDate(date);
+        validateReservationTime(time);
+        validateTheme(theme);
+
         this.id = id;
         this.name = name;
         this.date = date;
@@ -48,5 +47,41 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public void validateOwnedBy(String name) {
+        if (!this.name.equals(name)) {
+            throw new BusinessException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+    }
+
+    public void validateNotExpired(LocalDateTime dateTime) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(dateTime)) {
+            throw new BusinessException(ErrorCode.RESERVATION_EXPIRED);
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("예약 테마는 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateReservationTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateReservationDate(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
+        }
+    }
+
+    private static void validateReservationName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
+        }
     }
 }

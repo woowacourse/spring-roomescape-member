@@ -99,7 +99,7 @@ class ReservationRepositoryTest {
                 null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
 
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isTrue();
@@ -107,9 +107,141 @@ class ReservationRepositoryTest {
     @Test
     void 동일한테마_동일한시간대에_예약이_존재하지_않으면_false를_반환한다() {
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void 해당_시간에_예약이_존재하면_true를_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsByTimeId(time.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 해당_시간에_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsByTimeId(time.getId());
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 해당_테마에_예약이_존재하면_true를_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 해당_테마에_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 사용자_이름으로_등록된_예약이_존재한다면_이름과_동일한_예약들을_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 11), time, theme));
+
+        // when
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).allMatch(r -> r.getName().equals("어셔"));
+    }
+
+    @Test
+    void 동일한_사용자_이름으로_등록된_예약이_존재하지_않는다면_빈값을_반환한다() {
+        // given
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void 다른_이름의_사용자_예약은_조회되지_않는다() {
+        // given
+        Reservation reservation1 = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+        Reservation reservation2 = reservationRepository.save(new Reservation(
+                null, "레서", LocalDate.of(2026, 5, 11), time, theme));
+
+        // when
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result).allMatch(r -> r.getName().equals("어셔"));
+    }
+
+    @Test
+    void 예약_id로_데이터존재여부_조회시_등록된_예약이_존재한다면_true를_반환한다() {
+        // given
+        Reservation reservation = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsById(reservation.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 예약_id로_데이터존재여부_조회시_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsById(1L);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 예약id에_해당하는_예약의_date와_time_id를_변경한다() {
+        // given
+        Reservation saved = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 20), time, theme));
+
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:00");
+
+        ReservationTime newTime = jdbcTemplate.queryForObject(
+                "SELECT * FROM reservation_time WHERE start_at = '15:00'",
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))));
+
+        // when
+        int updated = reservationRepository.update(
+                saved.getId(), LocalDate.of(2026, 5, 25), newTime.getId());
+
+        // then
+        assertThat(updated).isEqualTo(1);
+        Reservation updatedReservation = reservationRepository.findById(saved.getId()).orElseThrow();
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 25));
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(newTime.getId());
     }
 }
