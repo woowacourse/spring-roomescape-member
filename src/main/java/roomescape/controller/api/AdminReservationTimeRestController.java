@@ -1,14 +1,13 @@
 package roomescape.controller.api;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.dto.ApiResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
 import roomescape.service.ReservationTimeService;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,30 +22,26 @@ public class AdminReservationTimeRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> create(@Valid  @RequestBody ReservationTimeCreateRequest reservationTimeReq) {
-        ReservationTimeResponse newReservationTime = reservationTimeService.create(reservationTimeReq);
-        URI uri = URI.create("/admin/times/" + newReservationTime.getId());
-        return ResponseEntity.created(uri).body(newReservationTime);
+    public ApiResponse<ReservationTimeResponse> create(@Valid @RequestBody ReservationTimeCreateRequest reservationTimeReq) {
+        return new ApiResponse<>(reservationTimeService.create(reservationTimeReq));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> read(
+    public ApiResponse<List<ReservationTimeResponse>> read(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId
-            ) {
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.read(date, themeId);
-        return ResponseEntity.ok(reservationTimes);
+    ) {
+        return new ApiResponse<>(reservationTimeService.read(date, themeId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationTimeResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationTimeUpdateRequest newReservationTimeReq) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.update(id, newReservationTimeReq);
-        return ResponseEntity.ok(reservationTimeResponse);
+    public ApiResponse<ReservationTimeResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationTimeUpdateRequest newReservationTimeReq) {
+        return new ApiResponse<>(reservationTimeService.update(id, newReservationTimeReq));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id) {
         reservationTimeService.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ApiResponse<>(null);
     }
 }

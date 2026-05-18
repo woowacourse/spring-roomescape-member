@@ -42,13 +42,13 @@ class ReservationScenarioTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/reservations/mine?name=브라운")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.size()", is(1));
     }
 
     @Test
@@ -65,7 +65,7 @@ class ReservationScenarioTest {
                 .body(createParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("name", "은오");
@@ -84,7 +84,7 @@ class ReservationScenarioTest {
                 .when().get("/reservations/mine?name=은오")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.size()", is(1));
     }
 
     @Test
@@ -101,7 +101,7 @@ class ReservationScenarioTest {
                 .body(createParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("name", "은오");
@@ -120,7 +120,7 @@ class ReservationScenarioTest {
                 .when().get("/reservations/mine?name=브라운")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -137,18 +137,18 @@ class ReservationScenarioTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/reservations/mine?name=브라운")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -167,12 +167,12 @@ class ReservationScenarioTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/times?themeId=1&date=2026-06-04")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.size()", is(1));
     }
 }

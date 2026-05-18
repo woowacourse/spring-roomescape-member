@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import roomescape.common.exception.dto.ExceptionResponse;
+import roomescape.common.dto.ExceptionResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
-        return ResponseEntity.status(e.getErrorCode().getStatus())
+        return ResponseEntity.ok()
                 .body(new ExceptionResponse(e.getErrorCode().getStatus(), e.getErrorCode().name(), e.getErrorCode().getMessage()));
     }
 

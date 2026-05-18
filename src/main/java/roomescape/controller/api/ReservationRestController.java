@@ -1,14 +1,13 @@
 package roomescape.controller.api;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.dto.ApiResponse;
 import roomescape.domain.reservation.dto.ReservationCreateRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationUpdateRequest;
 import roomescape.service.ReservationService;
 
-import java.net.URI;
 import java.util.List;
 
 @RequestMapping("/reservations")
@@ -22,39 +21,35 @@ public class ReservationRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest reservationReq) {
-        ReservationResponse newReservation = reservationService.create(reservationReq);
-        URI uri = URI.create("/reservations/" + newReservation.getId());
-        return ResponseEntity.created(uri).body(newReservation);
+    public ApiResponse<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest reservationReq) {
+        return new ApiResponse<>(reservationService.create(reservationReq));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> read(@PathVariable Long id) {
-        ReservationResponse reservationResponse = reservationService.read(id);
-        return ResponseEntity.ok(reservationResponse);
+    public ApiResponse<ReservationResponse> read(@PathVariable Long id) {
+        return new ApiResponse<>(reservationService.read(id));
     }
 
     @GetMapping
-    public List<ReservationResponse> readAll() {
-        return reservationService.readAll();
+    public ApiResponse<List<ReservationResponse>> readAll() {
+        return new ApiResponse<>(reservationService.readAll());
     }
 
     @GetMapping("/mine")
-    public List<ReservationResponse> readMyReservations(
+    public ApiResponse<List<ReservationResponse>> readMyReservations(
             @RequestParam String name
     ) {
-        return reservationService.readMyReservations(name);
+        return new ApiResponse<>(reservationService.readMyReservations(name));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationUpdateRequest newReservationReq) {
-        ReservationResponse reservationResponse = reservationService.update(id, newReservationReq);
-        return ResponseEntity.ok(reservationResponse);
+    public ApiResponse<ReservationResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationUpdateRequest newReservationReq) {
+        return new ApiResponse<>(reservationService.update(id, newReservationReq));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ApiResponse<>(null);
     }
 }

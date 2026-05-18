@@ -29,13 +29,13 @@ class ThemeScenarioTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.size()", is(1));
     }
 
     @Test
@@ -51,17 +51,17 @@ class ThemeScenarioTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 }

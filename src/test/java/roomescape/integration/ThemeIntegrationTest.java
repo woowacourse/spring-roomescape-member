@@ -38,10 +38,10 @@ class ThemeIntegrationTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201)
-                .body("name", is("무서운 이야기"))
-                .body("description", is("공포"))
-                .body("url", is("http://example.com"));
+                .statusCode(200)
+                .body("data.name", is("무서운 이야기"))
+                .body("data.description", is("공포"))
+                .body("data.url", is("http://example.com"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class ThemeIntegrationTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -61,7 +61,7 @@ class ThemeIntegrationTest {
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -74,7 +74,7 @@ class ThemeIntegrationTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("data.size()", is(2));
     }
 
     @Test
@@ -85,7 +85,7 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
     }
 
     @Test
@@ -109,7 +109,7 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/999")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
     }
 
     @Test
@@ -122,7 +122,8 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(422);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Nested
@@ -150,19 +151,19 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_예약_수_내림차순() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11)); // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));    // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));    // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
-                    .body("id", contains(5, 3));
+                    .body("data.id", contains(5, 3));
         }
 
         @Test
@@ -170,19 +171,19 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_예약_수_동일시_id_오름차순() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(3));  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));    // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));    // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(3));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
-                    .body("id", contains(3, 5));
+                    .body("data.id", contains(3, 5));
         }
 
         @Test
@@ -190,19 +191,19 @@ class ThemeIntegrationTest {
         void 인기_테마_조회_범위_밖_예약_제외() {
             LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11)); // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));    // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));    // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(2));
+                    .body("data.size()", is(2));
         }
     }
 }

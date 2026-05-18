@@ -27,13 +27,13 @@ class ReservationTimeScenarioTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.size()", is(1));
     }
 
     @Test
@@ -47,7 +47,7 @@ class ReservationTimeScenarioTest {
                 .body(createParams)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("startAt", "12:00");
@@ -58,7 +58,7 @@ class ReservationTimeScenarioTest {
                 .when().put("/admin/times/1")
                 .then().log().all()
                 .statusCode(200)
-                .body("startAt", is("12:00:00"));
+                .body("data.startAt", is("12:00:00"));
     }
 
     @Test
@@ -72,7 +72,7 @@ class ReservationTimeScenarioTest {
                 .body(createParams)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("startAt", "12:00");
@@ -88,7 +88,7 @@ class ReservationTimeScenarioTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("[0].startAt", is("12:00:00"));
+                .body("data[0].startAt", is("12:00:00"));
     }
 
     @Test
@@ -102,17 +102,17 @@ class ReservationTimeScenarioTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 }

@@ -37,7 +37,7 @@ class MissionStep2Test {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO theme (name,  description, url) VALUES (?, ?, ?)","무서워", "akdk", "https://hello.com");
+        jdbcTemplate.update("INSERT INTO theme (name,  description, url) VALUES (?, ?, ?)", "무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
 
@@ -45,7 +45,7 @@ class MissionStep2Test {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationResponse.class);
+                .jsonPath().getList("data", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
@@ -54,7 +54,7 @@ class MissionStep2Test {
 
     @Test
     void DB_추가_삭제_API_전환() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES (?, ?, ?)","무서워", "akdk", "https://hello.com");
+        jdbcTemplate.update("INSERT INTO theme (name, description, url) VALUES (?, ?, ?)", "무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -67,7 +67,7 @@ class MissionStep2Test {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
@@ -75,10 +75,9 @@ class MissionStep2Test {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
-
 }

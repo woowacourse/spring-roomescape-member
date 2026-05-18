@@ -1,7 +1,7 @@
 package roomescape.controller.api;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.dto.ApiResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -18,16 +18,16 @@ public class UserThemeRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readAll() {
-        return ResponseEntity.ok().body(themeService.findAll());
+    public ApiResponse<List<ThemeResponse>> readAll() {
+        return new ApiResponse<>(themeService.findAll());
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> readPopularTheme(
+    public ApiResponse<List<ThemeResponse>> readPopularTheme(
             @RequestParam(defaultValue = "7") Integer period,
             @RequestParam(defaultValue = "10") Integer limit
     ) {
-        return ResponseEntity.ok().body(themeService.findPopularTheme(period, limit));
+        return new ApiResponse<>(themeService.findPopularTheme(period, limit));
     }
 }
 

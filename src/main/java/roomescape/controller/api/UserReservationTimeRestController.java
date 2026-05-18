@@ -1,7 +1,7 @@
 package roomescape.controller.api;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.common.dto.ApiResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
@@ -19,11 +19,10 @@ public class UserReservationTimeRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> read(
+    public ApiResponse<List<ReservationTimeResponse>> read(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId
-            ) {
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.read(date, themeId);
-        return ResponseEntity.ok(reservationTimes);
+    ) {
+        return new ApiResponse<>(reservationTimeService.read(date, themeId));
     }
 }

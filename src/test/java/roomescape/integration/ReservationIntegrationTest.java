@@ -43,9 +43,9 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .body("name", is("브라운"))
-                .body("date", is("2026-08-04"));
+                .statusCode(200)
+                .body("data.name", is("브라운"))
+                .body("data.date", is("2026-08-04"));
     }
 
     @Test
@@ -55,7 +55,7 @@ class ReservationIntegrationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -68,7 +68,7 @@ class ReservationIntegrationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("data.size()", is(2));
     }
 
     @Test
@@ -88,8 +88,8 @@ class ReservationIntegrationTest {
                 .when().put("/reservations/1")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", is("은오"))
-                .body("date", is("2026-08-08"));
+                .body("data.name", is("은오"))
+                .body("data.date", is("2026-08-08"));
     }
 
     @Test
@@ -106,12 +106,12 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
     }
 
     @Test
@@ -121,7 +121,7 @@ class ReservationIntegrationTest {
                 .when().get("/reservations/mine?name=은오")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -131,7 +131,7 @@ class ReservationIntegrationTest {
                 .when().get("/times?themeId=1&date=2026-06-04")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("data.size()", is(2));
     }
 
     @Test
@@ -148,14 +148,15 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -188,7 +189,8 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(422);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -205,7 +207,8 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -222,7 +225,8 @@ class ReservationIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -231,6 +235,7 @@ class ReservationIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 }

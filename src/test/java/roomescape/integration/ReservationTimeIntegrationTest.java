@@ -32,8 +32,8 @@ class ReservationTimeIntegrationTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201)
-                .body("startAt", is("10:00:00"));
+                .statusCode(200)
+                .body("data.startAt", is("10:00:00"));
     }
 
     @Test
@@ -58,14 +58,15 @@ class ReservationTimeIntegrationTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -75,7 +76,7 @@ class ReservationTimeIntegrationTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("data.size()", is(0));
     }
 
     @Test
@@ -88,7 +89,7 @@ class ReservationTimeIntegrationTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("data.size()", is(2));
     }
 
     @Test
@@ -105,7 +106,7 @@ class ReservationTimeIntegrationTest {
                 .when().put("/admin/times/1")
                 .then().log().all()
                 .statusCode(200)
-                .body("startAt", is("12:00:00"));
+                .body("data.startAt", is("12:00:00"));
     }
 
     @Test
@@ -119,7 +120,8 @@ class ReservationTimeIntegrationTest {
                 .body(params)
                 .when().put("/admin/times/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 
     @Test
@@ -130,7 +132,7 @@ class ReservationTimeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
     }
 
     @Test
@@ -139,7 +141,7 @@ class ReservationTimeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/999")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
     }
 
     @Test
@@ -152,6 +154,7 @@ class ReservationTimeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(422);
+                .statusCode(200)
+                .body("ok", is(false));
     }
 }
