@@ -38,7 +38,7 @@
 
 # 💻 기능 요구 사항 (member)
 
-## 테마 + 사용자 예약 단계 - 지난 미션까지는 관리자가 전화·현장 예약을 받아 시스템에 직접 등록했다. 이번 사이클부터는 사용자가 브라우저에서 직접 예약하는 서비스로 발전시킨다. 별도의 로그인은 없으며, 사용자는 이름으로 식별된다.
+## (사이클1) 테마 + 사용자 예약 단계 - 지난 미션까지는 관리자가 전화·현장 예약을 받아 시스템에 직접 등록했다. 이번 사이클부터는 사용자가 브라우저에서 직접 예약하는 서비스로 발전시킨다. 별도의 로그인은 없으며, 사용자는 이름으로 식별된다.
 
 ### 단계 1 - 테마 도메인 추가
 
@@ -61,6 +61,29 @@
 
 - [x] 최근 1주 동안 reservation이 많았던 theme 상위 10개를 조회한다.
     - [x] 오늘 5월 8일이면, date가 5월 1일~5월 7일인 reservation을 집계해 인기 순서대로 10개를 응답한다.
+
+## (사이클2) 예약 변경/취소와 에러 처리 - 서비스 정책을 적용하면서 잘못된 요청에 사용자가 이해할 수 있는 응답을 주고, 사용자가 본인의 예약을 변경·취소할 수 있게 만든다. 단순히 에러를 처리하는 것이 아니라, "사용자가 이 응답을 받으면 다음에 뭘 할 수 있는가" 를 의식하는 것이 핵심이다.
+
+### 1단계 - 서비스 정책 적용
+
+- [x] 지나간 date·time에 대한 reservation 생성은 불가능하다.
+- [x] 같은 date+time+theme에 이미 reservation이 있으면 중복 예약을 거부한다.
+- [x] reservation이 존재하는 reservation time을 삭제할 수 없다.
+- [x] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
+
+### 2단계 - 에러 응답 설계
+
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
+- [x] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+- [x] 에러 응답 본문에 어떤 정보를 담을지 결정한다.
+- [x] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
+
+### 3단계 - 내 예약 조회/변경/취소
+
+- [x] 사용자가 자신의 name으로 본인의 reservation 목록을 조회할 수 있다.
+- [x] 사용자가 본인의 reservation을 취소할 수 있다.
+- [x] 사용자가 본인의 reservation의 date·time을 변경할 수 있다.
+- [x] 변경·취소 시 발생하는 에러 케이스(이미 지난 reservation을 취소, 변경하려는 time이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
 
 # 💻 기능 요구 사항 (admin)
 
@@ -186,30 +209,45 @@ Content-Type: application/json
 
 # 📝API 명세
 
-| 기능           | 메서드 / URL                                 | 요청 본문                               | 응답 본문                                                                                               |
-|--------------|-------------------------------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------|
-| (어드민)        |                                           |
-| 시간 추가        | `POST /admin/times`                       | `{startAt}`                         | `{id, startAt}`                                                                                     |
-| 시간 삭제        | `DELETE /admin/times/{id}`                |                                     |                                                                                                     |
-| 테마 추가        | `POST /admin/themes`                      | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl, runtime}`                                                    |
-| 테마 삭제        | `DELETE /admin/themes/{id}`               |                                     |                                                                                                     |
-| (유저)         |                                           |                                     |
-| 예약 추가        | `POST /reservations`                      | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
-| 예약 조회        | `GET /reservations`                       |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
-| 예약 삭제        | `DELETE /reservations/{id}`               |                                     |                                                                                                     |
-| 시간 조회        | `GET /times`                              |                                     | `[{id, startAt}, ...]`                                                                              |
-| 예약 가능한 시간 조회 | `GET /times/available/date={}&themeId={}` |                                     | `[{id, startAt}, ...]`                                                                              |
-| 테마 조회        | `GET /themes`                             |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
-| 인기 있는 테마 조회  | `GET /themes/popular?days={}&limit={}`    |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
+| 기능           | 메서드 / URL                                    | 요청 본문                               | 응답 본문                                                                                               |
+|--------------|----------------------------------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------|
+| (어드민)        |                                              |
+| 모든 예약 조회     | `GET /admin/reservations`                    |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 예약 삭제        | `DELETE /admin/reservations/{id}`            |                                     |                                                                                                     |
+| 시간 추가        | `POST /admin/times`                          | `{startAt}`                         | `{id, startAt}`                                                                                     |
+| 시간 삭제        | `DELETE /admin/times/{id}`                   |                                     |                                                                                                     |
+| 테마 추가        | `POST /admin/themes`                         | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl, runtime}`                                                    |
+| 테마 삭제        | `DELETE /admin/themes/{id}`                  |                                     |                                                                                                     |
+| (유저)         |                                              |                                     |
+| 예약 추가        | `POST /reservations`                         | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
+| 예약 시간 수정     | `PATCH /reservations/{id}/schedule?name={}`  | `{date, timeId}`                    | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
+| 이름으로 예약 조회   | `GET /reservations?name={}`                  |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 본인의 예약 삭제    | `DELETE /reservations/{id}?name={}`          |                                     |                                                                                                     |
+| 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |
+| 예약 가능한 시간 조회 | `GET /times/available?date={}&themeId={}`    |                                     | `[{id, startAt}, ...]`                                                                              |
+| 테마 조회        | `GET /themes`                                |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
+| 인기 있는 테마 조회  | `GET /themes/popular?recentDays={}&limit={}` |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
 
-# 응답 코드
+# 📝 에러
 
-| 응답 코드                       | 상황                 |
-|-----------------------------|--------------------|
-| `200 Ok`                    | 정상적으로 조회됨          |
-| `201 Created`               | 정상적으로 생성됨          |
-| `204 No Content`            | 반환값이 없음            |
-| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
-| `404 Not Found`             | 없는 자원에 대한 접근       |
-| `409 Conflict`              | 서버의 현재 상태와 충돌      |
-| `500 Internal Server Error` | 서버 내부 오류           |
+## 에러 응답 본문
+
+```json
+{
+  "message": "이미 예약이 있습니다. date=2026-05-16, reservationTimeId=2, themeId=1"
+}
+```
+
+## 응답 코드
+
+| 응답 코드                       | 상황                          |
+|-----------------------------|-----------------------------|
+| `200 Ok`                    | 정상적으로 조회됨                   |
+| `201 Created`               | 정상적으로 생성됨                   |
+| `204 No Content`            | 반환값이 없음                     |
+| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음          |
+| `403 Forbidden`             | 요청에 대한 권한이 없음               |
+| `404 Not Found`             | 없는 자원에 대한 접근                |
+| `409 Conflict`              | 서버의 현재 상태와 충돌               |
+| `422 Unprocessable Entity`  | 요청 형식은 맞으나, 내부 검증에서 통과하지 못함 |
+| `500 Internal Server Error` | 서버 내부 오류                    |

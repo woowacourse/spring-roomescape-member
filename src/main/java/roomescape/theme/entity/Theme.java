@@ -5,7 +5,6 @@ import java.util.Objects;
 
 public class Theme {
 
-    // TODO: 요구사항에 따라 theme의 runtime은 고정한다.
     public static final Duration RUNTIME = Duration.ofMinutes(60);
 
     private final Long id;

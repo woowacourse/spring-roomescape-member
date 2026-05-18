@@ -1,10 +1,12 @@
 package roomescape.config;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.payload.ReservationRequest;
+import roomescape.reservation.payload.ReservationUpdateRequest;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.theme.entity.Theme;
@@ -40,6 +42,13 @@ public final class TestFixture {
         return new ReservationRequest(name, date, timeId, themeId);
     }
 
+    public static ReservationUpdateRequest reservationupdateRequest(
+            LocalDate date,
+            Long timeId
+    ) {
+        return new ReservationUpdateRequest(date, timeId);
+    }
+
     public static Reservation reservation(
             String name,
             LocalDate date,
@@ -73,6 +82,28 @@ public final class TestFixture {
                 "timeId", timeId,
                 "themeId", themeId
         );
+    }
+
+    public static Map<String, Object> reservationUpdateRequestBody(
+            LocalDate date,
+            Long timeId
+    ) {
+        return Map.of(
+                "date", date.toString(),
+                "timeId", timeId
+        );
+    }
+
+    public static LocalDate futureReservationDate(Clock clock) {
+        return LocalDate.now(clock).plusDays(2);
+    }
+
+    public static LocalDate nextReservationDate(Clock clock) {
+        return futureReservationDate(clock).plusDays(1);
+    }
+
+    public static LocalDate pastReservationDate(Clock clock) {
+        return LocalDate.now(clock).minusDays(1);
     }
 
 }

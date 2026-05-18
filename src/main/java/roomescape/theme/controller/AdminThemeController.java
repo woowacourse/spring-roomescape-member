@@ -1,6 +1,7 @@
 package roomescape.theme.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,12 +30,14 @@ public class AdminThemeController {
             @Valid @RequestBody ThemeRequest request
     ) {
         Theme theme = themeService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
+        URI location = URI.create("/themes");
+
+        return ResponseEntity.created(location)
                 .body(ThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(
+    public ResponseEntity<Void> deleteTheme(
             @PathVariable Long id
     ) {
         themeService.deleteById(id);

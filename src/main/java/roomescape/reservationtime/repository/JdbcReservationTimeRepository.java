@@ -7,14 +7,17 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.InUseException;
 import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -42,7 +45,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationTimeDuplicatedException(reservationTime.getStartAt());
+            throw new DuplicatedException(DomainType.RESERVATION_TIME, reservationTime.getStartAt());
         }
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -67,11 +70,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = """
                 SELECT rt.id, rt.start_at
                 FROM reservation_time rt
-                WHERE rt.id NOT IN (
-                    SELECT r.time_id
+                WHERE NOT EXISTS (
+                    SELECT 1
                     FROM reservation r
                     WHERE r.date = ?
                       AND r.theme_id = ?
+                      AND r.time_id = rt.id
                 )
                 ORDER BY rt.id
                 """;
@@ -82,7 +86,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new InUseException(DomainType.RESERVATION_TIME, id, e);
+        }
     }
 
 }

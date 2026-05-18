@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.NotFoundException;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -39,9 +40,9 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findPopularThemes(int days, int limit) {
+    public List<Theme> findPopularThemes(int recentDays, int limit) {
         LocalDate today = LocalDate.now(clock);
-        LocalDate start = today.minusDays(days);
+        LocalDate start = today.minusDays(recentDays);
 
         return themeRepository.findPopularThemes(start, today, limit);
     }
@@ -50,7 +51,20 @@ public class ThemeService {
     public void deleteById(Long id) {
         int affected = themeRepository.deleteById(id);
         if (affected == 0) {
-            throw new ThemeNotFoundException(id);
+            throw new NotFoundException(DomainType.THEME, id);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Theme getById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(DomainType.THEME, id));
+    }
+
+    @Transactional(readOnly = true)
+    public void validateExists(Long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new NotFoundException(DomainType.THEME, id);
         }
     }
 

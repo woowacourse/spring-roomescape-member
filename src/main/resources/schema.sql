@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS reservation
 
     PRIMARY KEY (id),
     CONSTRAINT unique_reservation_date_time_theme
-        UNIQUE (date, time_id, theme_id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
-        ON DELETE CASCADE,
+        UNIQUE (date, theme_id, time_id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
-        ON DELETE CASCADE
 );

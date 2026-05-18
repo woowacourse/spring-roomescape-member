@@ -15,12 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
 class AdminThemeControllerTest {
+
+    private static final String THEME_NAME = "테마";
+    private static final String THEME_DESCRIPTION = "테마 설명";
+    private static final String THEME_THUMBNAIL_URL = "https://example.com/theme.png";
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,25 +35,33 @@ class AdminThemeControllerTest {
 
     @Test
     void 테마를_추가한다() throws Exception {
-        Map<String, Object> request = themeRequestBody("테마", "테마 설명", "https://example.com/theme.png");
+        // given
+        Map<String, Object> request = themeRequestBody(THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL_URL);
 
-        mockMvc.perform(post("/admin/themes")
+        // when
+        ResultActions result = mockMvc.perform(post("/admin/themes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("테마"))
-                .andExpect(jsonPath("$.description").value("테마 설명"))
-                .andExpect(jsonPath("$.thumbnailUrl").value("https://example.com/theme.png"))
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(THEME_NAME))
+                .andExpect(jsonPath("$.description").value(THEME_DESCRIPTION))
+                .andExpect(jsonPath("$.thumbnailUrl").value(THEME_THUMBNAIL_URL))
                 .andExpect(jsonPath("$.runtime").value(60));
     }
 
     @Test
     void 테마를_삭제한다() throws Exception {
-        Map<String, Object> request = themeRequestBody("테마", "테마 설명", "https://example.com/theme.png");
+        // given
+        Map<String, Object> request = themeRequestBody(THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL_URL);
         int id = postTheme(request);
 
-        mockMvc.perform(delete("/admin/themes/{id}", id))
-                .andExpect(status().isNoContent());
+        // when
+        ResultActions result = mockMvc.perform(delete("/admin/themes/{id}", id));
+
+        // then
+        result.andExpect(status().isNoContent());
     }
 
     private int postTheme(Map<String, Object> request) throws Exception {

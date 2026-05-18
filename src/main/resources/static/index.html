@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Roomescape</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -12,13 +13,12 @@
     <nav class="tabs" aria-label="주요 메뉴">
         <a href="#home" data-route="home">홈</a>
         <a href="#reservation" data-route="reservation">예약</a>
+        <a href="#mine" data-route="mine">내 예약</a>
         <a href="#admin" data-route="admin">관리자</a>
     </nav>
 </header>
 
 <main class="container">
-    <div id="notice" class="notice" role="status" hidden></div>
-
     <section id="page-home" class="page" data-page="home">
         <div class="page-title">
             <h1>방탈출 예약</h1>
@@ -53,9 +53,17 @@
                 <h2>인기 테마</h2>
             </div>
             <form id="popular-theme-form" class="toolbar compact popular-toolbar">
-                <p class="fixed-condition">최근 7일 기준 상위 10개 테마</p>
+                <label>
+                    최근 일수
+                    <input id="popular-recent-days" type="number" min="1" max="30" value="7" required>
+                </label>
+                <label>
+                    개수
+                    <input id="popular-limit" type="number" min="1" max="20" value="10" required>
+                </label>
                 <button type="submit">인기 테마 조회</button>
             </form>
+            <p id="popular-theme-message" class="form-message is-empty" aria-live="polite"></p>
             <div id="popular-theme-cards" class="theme-grid compact-grid">
                 <p class="empty inline">최근 7일 기준 인기 테마를 조회할 수 있습니다.</p>
             </div>
@@ -79,6 +87,7 @@
                 </label>
                 <button type="submit">가능 시간 조회</button>
             </form>
+            <p id="availability-message" class="form-message is-empty" aria-live="polite"></p>
         </section>
         <section class="panel">
             <div class="section-head">
@@ -96,6 +105,33 @@
                 <input id="selected-time" type="hidden" required>
                 <button type="submit">예약 생성</button>
             </form>
+            <p id="reservation-message" class="form-message is-empty" aria-live="polite"></p>
+        </section>
+    </section>
+
+    <section id="page-mine" class="page" data-page="mine" hidden>
+        <div class="page-title">
+            <h1>내 예약</h1>
+            <p>이름으로 예약을 확인하고 날짜와 시간을 변경할 수 있습니다.</p>
+        </div>
+        <section class="panel">
+            <form id="my-reservation-form" class="toolbar mine-toolbar">
+                <label>
+                    이름
+                    <input id="my-reservation-name" type="text" maxlength="10" required>
+                </label>
+                <button type="submit">예약 조회</button>
+            </form>
+            <p id="my-reservation-message" class="form-message is-empty" aria-live="polite"></p>
+        </section>
+        <section class="panel">
+            <div class="section-head">
+                <h2>조회 결과</h2>
+                <button type="button" data-refresh="my-reservations">새로고침</button>
+            </div>
+            <div id="my-reservation-list" class="reservation-list">
+                <p class="empty inline">이름을 입력하면 예약 내역이 표시됩니다.</p>
+            </div>
         </section>
     </section>
 
@@ -109,6 +145,7 @@
                 <h2>예약 목록</h2>
                 <button type="button" data-refresh="reservations">새로고침</button>
             </div>
+            <p id="admin-reservation-message" class="form-message is-empty" aria-live="polite"></p>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -149,9 +186,11 @@
                         </label>
                         <button type="submit">추가</button>
                     </form>
+                    <p id="theme-message" class="form-message is-empty" aria-live="polite"></p>
                 </div>
                 <div class="admin-block">
                     <h3>테마 목록</h3>
+                    <p id="theme-list-message" class="form-message is-empty" aria-live="polite"></p>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -189,9 +228,11 @@
                         </label>
                         <button type="submit">추가</button>
                     </form>
+                    <p id="time-message" class="form-message is-empty" aria-live="polite"></p>
                 </div>
                 <div class="admin-block">
                     <h3>시간 목록</h3>
+                    <p id="time-list-message" class="form-message is-empty" aria-live="polite"></p>
                     <div class="table-wrap">
                         <table>
                             <thead>

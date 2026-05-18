@@ -13,15 +13,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.DomainType;
+import roomescape.common.exception.DuplicatedException;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.theme.entity.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final String SELECT_RESERVATION_WITH_TIME = """
+    private static final String SELECT_RESERVATION_WITH_TIME_AND_THEME = """
             SELECT
                 r.id AS reservation_id,
                 r.name AS reservation_name,
@@ -78,7 +79,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationDuplicatedException(
+            throw new DuplicatedException(
+                    DomainType.RESERVATION,
                     reservation.getDate(),
                     reservation.getTime().getId(),
                     reservation.getTheme().getId()
@@ -96,8 +98,41 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(Reservation reservation, LocalDate date, ReservationTime reservationTime) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        try {
+            jdbcTemplate.update(
+                    sql,
+                    date,
+                    reservationTime.getId(),
+                    reservation.getId()
+            );
+        } catch (DuplicateKeyException e) {
+            throw new DuplicatedException(
+                    DomainType.RESERVATION,
+                    date,
+                    reservationTime.getId(),
+                    reservation.getTheme().getId()
+            );
+        }
+
+        return Reservation.of(
+                reservation.getId(),
+                reservation.getName(),
+                date,
+                reservationTime,
+                reservation.getTheme()
+        );
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = ?";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = ?";
 
         List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
 
@@ -106,8 +141,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = SELECT_RESERVATION_WITH_TIME + "ORDER BY r.id";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "ORDER BY r.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByName(String name) {
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.name = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     @Override

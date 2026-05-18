@@ -32,10 +32,10 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
-            @RequestParam("days") Integer days,
+            @RequestParam("recentDays") Integer recentDays,
             @RequestParam("limit") Integer limit
     ) {
-        List<ThemeResponse> popularThemeResponses = themeService.findPopularThemes(days, limit).stream()
+        List<ThemeResponse> popularThemeResponses = themeService.findPopularThemes(recentDays, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
 

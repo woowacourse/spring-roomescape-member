@@ -7,6 +7,8 @@ import roomescape.theme.entity.Theme;
 
 public interface ThemeRepository {
 
+    boolean existsById(Long id);
+
     Theme save(Theme theme);
 
     Optional<Theme> findById(Long id);

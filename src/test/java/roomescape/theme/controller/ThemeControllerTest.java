@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.service.ThemeService;
 
@@ -20,6 +21,12 @@ import roomescape.theme.service.ThemeService;
 @AutoConfigureMockMvc
 @SpringBootTest
 class ThemeControllerTest {
+
+    private static final String THEME_NAME = "공포의 저택";
+    private static final String THEME_DESCRIPTION = "공포의 저택 설명";
+    private static final String THEME_THUMBNAIL_URL = "https://example.com/theme.png";
+    private static final String RECENT_DAYS = "7";
+    private static final String POPULAR_LIMIT = "10";
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,23 +36,30 @@ class ThemeControllerTest {
 
     @Test
     void 테마_목록을_조회한다() throws Exception {
-        themeService.save(themeRequest("공포의 저택"));
+        // given
+        themeService.save(themeRequest(THEME_NAME));
 
-        mockMvc.perform(get("/themes"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].name", hasItem("공포의 저택")))
-                .andExpect(jsonPath("$[*].description", hasItem("공포의 저택 설명")))
-                .andExpect(jsonPath("$[*].thumbnailUrl", hasItem("https://example.com/theme.png")))
+        // when
+        ResultActions result = mockMvc.perform(get("/themes"));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].name", hasItem(THEME_NAME)))
+                .andExpect(jsonPath("$[*].description", hasItem(THEME_DESCRIPTION)))
+                .andExpect(jsonPath("$[*].thumbnailUrl", hasItem(THEME_THUMBNAIL_URL)))
                 .andExpect(jsonPath("$[*].runtime", hasItem(60)));
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")
     @Test
     void 최근_1주_동안_예약이_많은_테마_상위_10개를_조회한다() throws Exception {
-        mockMvc.perform(get("/themes/popular")
-                        .queryParam("days", "7")
-                        .queryParam("limit", "10"))
-                .andExpect(status().isOk())
+        // when
+        ResultActions result = mockMvc.perform(get("/themes/popular")
+                        .queryParam("recentDays", RECENT_DAYS)
+                        .queryParam("limit", POPULAR_LIMIT));
+
+        // then
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[0].name").value("테마5"))
                 .andExpect(jsonPath("$[1].name").value("테마4"))
