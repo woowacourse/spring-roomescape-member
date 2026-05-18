@@ -138,30 +138,6 @@ class ReservationTest {
         }
 
         @Test
-        void 이름이_없다면_원래_이름을_사용한다(){
-            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
-            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
-
-            LocalDate dayAfterTomorrow = LocalDate.of(2026, 5, 12);
-            Reservation updated = created.update(null, dayAfterTomorrow, time, theme, fixedNow);
-
-            assertThat(updated.getName().value()).isEqualTo(created.getName().value());
-            assertThat(updated.getDate()).isNotEqualTo(created.getDate());
-        }
-
-        @Test
-        void 날짜가_없다면_원래_날짜를_사용한다(){
-            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
-            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
-
-            Name newName = new Name("뉴브라운");
-            Reservation updated = created.update(newName, null, time, theme, fixedNow);
-
-            assertThat(updated.getName().value()).isNotEqualTo(created.getName().value());
-            assertThat(updated.getDate()).isEqualTo(created.getDate());
-        }
-
-        @Test
         void 예약_날짜_둘_다_변경이_가능히다() {
             LocalDate tomorrow = LocalDate.of(2026, 5, 11);
             Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);

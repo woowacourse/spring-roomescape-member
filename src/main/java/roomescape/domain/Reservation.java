@@ -32,10 +32,7 @@ public class Reservation {
     }
 
     public Reservation update(Name name, LocalDate date, Time time, Theme theme, LocalDateTime now) {
-        Name updatedName = Optional.ofNullable(name).orElse(this.name);
-        LocalDate updatedDate = Optional.ofNullable(date).orElse(this.date);
-
-        Reservation updated = new Reservation(this.id, updatedName, updatedDate, time, theme);
+        Reservation updated = new Reservation(this.id, name, date, time, theme);
         updated.validate(now);
         return updated;
     }
