@@ -25,11 +25,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.theme.PopularThemesResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
-import roomescape.dto.theme.ThemesResponseDto;
+import roomescape.controller.dto.ResourceIdResponseDto;
+import roomescape.controller.dto.theme.PopularThemesResponseDto;
+import roomescape.controller.dto.theme.ThemeRequestDto;
+import roomescape.controller.dto.theme.ThemeResponseDto;
+import roomescape.controller.dto.theme.ThemesResponseDto;
 import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -190,9 +190,9 @@ class ThemeControllerTest {
 
     private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-            theme.getName(),
+            theme.getName().value(),
             theme.getDescription(),
-            theme.getImageUrl()
+            theme.getImageUrl().value()
         );
     }
 }

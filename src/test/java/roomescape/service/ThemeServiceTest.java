@@ -9,8 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.theme.ThemeRequestDto;
+import roomescape.controller.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
+import roomescape.service.command.ThemeCommand;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ class ThemeServiceTest {
             .thenReturn(SAVED_THEME);
 
         // when
-        Theme saved = themeService.addTheme(themeRequestDtoFrom(THEME));
+        Theme saved = themeService.addTheme(themeCommandFrom(THEME));
 
         // then
         assertThat(saved).isEqualTo(SAVED_THEME);
@@ -93,8 +94,8 @@ class ThemeServiceTest {
         return themes;
     }
 
-    ThemeRequestDto themeRequestDtoFrom(Theme theme) {
-        return new ThemeRequestDto(
+    ThemeCommand themeCommandFrom(Theme theme) {
+        return new ThemeCommand(
             theme.getName(),
             theme.getDescription(),
             theme.getImageUrl()

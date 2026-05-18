@@ -24,11 +24,11 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
-import roomescape.dto.reservationTime.ReservationTimeRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeResponseDto;
-import roomescape.dto.reservationTime.ReservationTimesResponseDto;
+import roomescape.controller.dto.ResourceIdResponseDto;
+import roomescape.controller.dto.reservationTime.AvailableReservationTimesResponseDto;
+import roomescape.controller.dto.reservationTime.ReservationTimeRequestDto;
+import roomescape.controller.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.controller.dto.reservationTime.ReservationTimesResponseDto;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
 

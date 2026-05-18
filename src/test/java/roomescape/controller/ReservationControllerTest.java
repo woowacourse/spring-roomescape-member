@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.controller.dto.reservation.ReservationRequestDto;
+import roomescape.controller.dto.reservation.ReservationResponseDto;
+import roomescape.controller.dto.reservation.ReservationsResponseDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -17,10 +19,6 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
-import roomescape.dto.reservation.ReservationUpdateRequestDto;
-import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.service.ReservationService;
@@ -30,7 +28,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +57,7 @@ class ReservationControllerTest {
     void 예약을_추가한다() {
         //given
         ReservationRequestDto request = requestDtoFrom(RESERVATION);
-        when(reservationService.addReservation(request))
+        when(reservationService.addReservation(request.toCommand()))
                 .thenReturn(RESERVATION.withId(1L));
 
         // when
@@ -194,15 +191,16 @@ class ReservationControllerTest {
         // given
         MemberName testName = new MemberName("브라운");
         Reservation reservation = new Reservation(1L, testName, new ReservationDate(LocalDate.now()), TIME, THEME);
-        ReservationUpdateRequestDto request = updateRequestDtoFrom(reservation);
+        ReservationRequestDto request = requestDtoFrom(reservation);
 
         // when
         Response response = RestAssured
                 .given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
+                .pathParam("id", reservation.getId())
                 .queryParam("name", "브라운")
-                .when().put("/reservations");
+                .when().put("/reservations/{id}");
 
         // then
         response
@@ -211,10 +209,6 @@ class ReservationControllerTest {
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
-    }
-
-    private ReservationUpdateRequestDto updateRequestDtoFrom(Reservation reservation) {
-        return new ReservationUpdateRequestDto(reservation.getId(), reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate().value(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }

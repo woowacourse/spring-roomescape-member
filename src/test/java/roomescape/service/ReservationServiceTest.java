@@ -24,13 +24,13 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationUpdateRequestDto;
+import roomescape.controller.dto.reservation.ReservationRequestDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
+import roomescape.service.command.ReservationCommand;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -61,7 +61,7 @@ class ReservationServiceTest {
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimes(any(), anyLong()))
             .thenReturn(List.of(availableTime));
         when(timeRepository.findAll())
                 .thenReturn(List.of(availableTime, impossibleTime));
@@ -84,11 +84,11 @@ class ReservationServiceTest {
         when(themeRepository.findById(SAVED_THEME.getId()))
             .thenReturn(Optional.of(SAVED_THEME));
 
-        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimes(any(), anyLong()))
             .thenReturn(List.of());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(RESERVATION)))
+        assertThatThrownBy(() -> reservationService.addReservation(commandFrom(RESERVATION)))
             .isInstanceOf(BusinessException.class)
             .hasMessageContaining("이미 예약된");
     }
@@ -105,11 +105,11 @@ class ReservationServiceTest {
         when(themeRepository.findById(otherTheme.getId()))
             .thenReturn(Optional.of(otherTheme));
 
-        when(timeRepository.findTimesByDateAndThemeId(any(ReservationDate.class), eq(otherTheme.getId())))
+        when(timeRepository.findAvailableTimes(any(ReservationDate.class), eq(otherTheme.getId())))
             .thenReturn(List.of(SAVED_TIME));
 
         // when & then
-        assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
+        assertThatCode(() -> reservationService.addReservation(commandFrom(reservation)))
             .doesNotThrowAnyException();
         verify(reservationRepository, times(1)).createReservation(any());
     }
@@ -126,8 +126,8 @@ class ReservationServiceTest {
             .hasMessageContaining("예약이 존재하는");
     }
 
-    private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName(), reservation.getDate(),
+    private ReservationCommand commandFrom(Reservation reservation) {
+        return new ReservationCommand(reservation.getName(), reservation.getDate(),
             reservation.getTime().getId(), reservation.getThemeId());
     }
 
@@ -208,18 +208,18 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(oldReservation));
 
         ReservationDate otherDate = new ReservationDate(LocalDate.now().plusDays(2));
-        ReservationUpdateRequestDto updateRequestDto = new ReservationUpdateRequestDto(reservationId, name, otherDate, SAVED_TIME.getId(), SAVED_THEME.getId());
-        when(timeRepository.findTimesByDateAndThemeId(eq(otherDate), eq(SAVED_THEME.getId())))
+        ReservationCommand command = new ReservationCommand(name, otherDate, SAVED_TIME.getId(), SAVED_THEME.getId());
+        when(timeRepository.findAvailableTimes(eq(otherDate), eq(SAVED_THEME.getId())))
                 .thenReturn(List.of(SAVED_TIME));
 
         // when
-        reservationService.update(updateRequestDto, name);
+        reservationService.update(reservationId, command, name);
 
         // then
         Reservation updatedReservation = new Reservation(
-                updateRequestDto.id(),
-                updateRequestDto.name(),
-                updateRequestDto.date(),
+                reservationId,
+                command.name(),
+                command.date(),
                 SAVED_TIME,
                 SAVED_THEME);
 

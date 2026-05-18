@@ -116,7 +116,7 @@ class JdbcReservationTimeRepositoryTest {
         reservationRepository.createReservation(Reservation.create(new MemberName("브라운"), tomorrow, bookedTime, theme));
 
         // when
-        List<ReservationTime> availableTimes = timeRepository.findTimesByDateAndThemeId(tomorrow, theme.getId());
+        List<ReservationTime> availableTimes = timeRepository.findAvailableTimes(tomorrow, theme.getId());
 
         // then
         assertThat(availableTimes).hasSize(1);
