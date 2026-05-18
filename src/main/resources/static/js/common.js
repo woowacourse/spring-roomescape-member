@@ -31,10 +31,25 @@ function showEmptyState(tbody, colspan, message) {
 
 async function fetchJson(url, options = {}) {
     const response = await fetch(url, options);
+
     if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+         const text = await response.text();
+         let message = `요청에 실패했습니다. 상태 코드: ${response.status}`;
+
+         if (text) {
+            try {
+                const errorBody = JSON.parse(text);
+                message = errorBody.message || message;
+            } catch (e) {
+                message = text;
+            }
+         }
+
+        throw new Error(message);
     }
+
     if (response.status === 204) return null;
+
     const text = await response.text();
     return text ? JSON.parse(text) : null;
 }
