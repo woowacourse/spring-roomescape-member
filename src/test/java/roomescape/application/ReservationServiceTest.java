@@ -181,4 +181,14 @@ public class ReservationServiceTest {
                 .extracting(response -> response.time().time())
                 .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
     }
+
+    @Test
+    void 존재하지_않는_ID로_예약을_삭제하면_예외가_발생한다() {
+        when(reservationRepository.deleteById(10L)).thenReturn(0);
+
+        assertThatThrownBy(() -> reservationService.delete(10L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ReservationErrorCode.RESERVATION_NOT_FOUND);
+    }
 }

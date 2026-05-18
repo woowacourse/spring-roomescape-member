@@ -89,12 +89,20 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        reservationRepository.deleteById(id);
+        int deletedCount = reservationRepository.deleteById(id);
+
+        if (deletedCount == 0) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 
     @Transactional
     public void delete(String name) {
-        reservationRepository.deleteByName(name);
+        int deletedCount = reservationRepository.deleteByName(name);
+
+        if (deletedCount == 0) {
+            throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 
     private void validateReservationDateTime(LocalDate date, LocalTime time) {
