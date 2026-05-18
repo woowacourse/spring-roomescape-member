@@ -183,6 +183,29 @@
         .hidden {
             display: none;
         }
+
+        .toast {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 12px 24px;
+            background: #1d6b1f;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -191,6 +214,8 @@
     <a href="index.html">← 메인으로</a>
 </header>
 <main>
+    <div id="toast" class="toast"></div>
+
     <div id="theme-info" class="theme-info">
         <div class="theme-info-body">
             <p class="empty">테마 정보를 불러오는 중...</p>
@@ -266,6 +291,13 @@
         input.value = today;
         input.addEventListener('change', loadAvailableTimes);
         loadAvailableTimes();
+    }
+    
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
     async function loadAvailableTimes() {
@@ -343,16 +375,15 @@
             });
 
             if (!res.ok) {
-                throw new Error(`서버 오류 (${res.status})`);
+                const body = await res.json().catch(() => ({}));
+                const msg = body.message || `서버 오류 (${res.status})`;
+                result.innerHTML = `<p class="error">예약에 실패했습니다. ${msg}</p>`;
+                submitBtn.disabled = false;
+                return;
             }
 
             const r = await res.json();
-            result.innerHTML = `
-                <div class="success">
-                    예약이 완료되었습니다!<br>
-                    <strong>${r.name}</strong>님, ${r.date} ${r.time.startAt} <strong>${r.theme.name}</strong>
-                </div>
-            `;
+            showToast(`${r.date} ${r.time.startAt} ${r.theme.name} 예약 완료!`);
 
             // 가능 시간 다시 조회 (방금 예약한 시간이 빠진 것 확인 가능)
             await loadAvailableTimes();

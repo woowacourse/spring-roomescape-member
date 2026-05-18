@@ -1,7 +1,7 @@
 package roomescape.service.dto;
 
 import java.time.LocalTime;
-import roomescape.repository.projection.ReservationTimeEntity;
+import roomescape.domain.ReservationTime;
 
 public class ReservationTimeResult {
 
@@ -13,11 +13,8 @@ public class ReservationTimeResult {
         this.startAt = startAt;
     }
 
-    public static ReservationTimeResult from(ReservationTimeEntity entity) {
-        return new ReservationTimeResult(
-                entity.getId(),
-                entity.getTime().getStartAt()
-        );
+    public static ReservationTimeResult from(ReservationTime time) {
+        return new ReservationTimeResult(time.getId(), time.getStartAt());
     }
 
     public Long getId() {

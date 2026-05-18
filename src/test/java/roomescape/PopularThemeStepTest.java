@@ -6,8 +6,6 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.sql.Date;
-import java.sql.Time;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.policy.PopularThemePolicy;
+import roomescape.support.ReservationTestHelper;
+import roomescape.support.TestRecentWeekPopularPolicy;
 
 
 /*
@@ -40,61 +40,70 @@ public class PopularThemeStepTest extends IntegrationTest {
     private static final LocalDate TODAY = LocalDate.of(2026, 5, 9);
 
     @TestConfiguration
-    static class FixedClockConfig {
+    static class FixedPolicyConfig {
         @Bean
         @Primary
-        public Clock fixedClock() {
-            return Clock.fixed(
+        public PopularThemePolicy fixedPopularThemePolicy() {
+            Clock fixed = Clock.fixed(
                     TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
+            return new TestRecentWeekPopularPolicy(fixed);
         }
     }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTestHelper helper;
 
-    private Long timeId;
     private Long islandThemeId;
     private Long cityThemeId;
     private Long balloonThemeId;
 
     @BeforeEach
     void setUp() {
-        // 모든 테스트 공통: 시간 1개, 핵심 테마 3개
-        timeId = insertTime(LocalTime.of(10, 0));
-        islandThemeId = insertTheme("무인도 탈출", "...", "https://example.com/island.jpg");
-        cityThemeId = insertTheme("도시 탈출", "...", "https://example.com/city.jpg");
-        balloonThemeId = insertTheme("열기구 탈출", "...", "https://example.com/balloon.jpg");
+        // 시간 슬롯 8개
+        Long time1 = helper.insertTime(LocalTime.of(10, 0));
+        Long time2 = helper.insertTime(LocalTime.of(11, 0));
+        Long time3 = helper.insertTime(LocalTime.of(12, 0));
+        Long time4 = helper.insertTime(LocalTime.of(13, 0));
+        Long time5 = helper.insertTime(LocalTime.of(14, 0));
+        Long time6 = helper.insertTime(LocalTime.of(15, 0));
+        Long time7 = helper.insertTime(LocalTime.of(16, 0));
+        Long time8 = helper.insertTime(LocalTime.of(17, 0));
+
+        //핵심테마 3개
+        islandThemeId = helper.insertTheme("무인도 탈출", "...", "https://example.com/island.jpg");
+        cityThemeId = helper.insertTheme("도시 탈출", "...", "https://example.com/city.jpg");
+        balloonThemeId = helper.insertTheme("열기구 탈출", "...", "https://example.com/balloon.jpg");
 
         LocalDate yesterday = TODAY.minusDays(1);
         LocalDate fiveDaysAgo = TODAY.minusDays(5);
         LocalDate eightDaysAgo = TODAY.minusDays(8);
 
         // 무인도: 어제 3건 + 5일 전 2건 = 5건 (1등)
-        insertReservation("user1", yesterday, timeId, islandThemeId);
-        insertReservation("user2", yesterday, timeId, islandThemeId);
-        insertReservation("user3", yesterday, timeId, islandThemeId);
-        insertReservation("user4", fiveDaysAgo, timeId, islandThemeId);
-        insertReservation("user5", fiveDaysAgo, timeId, islandThemeId);
+        helper.insertReservation("user1", yesterday, time1, islandThemeId);
+        helper.insertReservation("user2", yesterday, time2, islandThemeId);
+        helper.insertReservation("user3", yesterday, time3, islandThemeId);
+        helper.insertReservation("user4", fiveDaysAgo, time1, islandThemeId);
+        helper.insertReservation("user5", fiveDaysAgo, time2, islandThemeId);
 
         // 도시: 5일 전 4건 + 8일 전 2건 = 집계상 4건 (2등)
-        insertReservation("user6", fiveDaysAgo, timeId, cityThemeId);
-        insertReservation("user7", fiveDaysAgo, timeId, cityThemeId);
-        insertReservation("user8", fiveDaysAgo, timeId, cityThemeId);
-        insertReservation("user9", fiveDaysAgo, timeId, cityThemeId);
-        insertReservation("user10", eightDaysAgo, timeId, cityThemeId);
-        insertReservation("user11", eightDaysAgo, timeId, cityThemeId);
+        helper.insertReservation("user6", fiveDaysAgo, time3, cityThemeId);
+        helper.insertReservation("user7", fiveDaysAgo, time4, cityThemeId);
+        helper.insertReservation("user8", fiveDaysAgo, time5, cityThemeId);
+        helper.insertReservation("user9", fiveDaysAgo, time6, cityThemeId);
+        helper.insertReservation("user10", eightDaysAgo, time1, cityThemeId);
+        helper.insertReservation("user11", eightDaysAgo, time2, cityThemeId);
 
         // 열기구: 어제 1건
-        insertReservation("user12", yesterday, timeId, balloonThemeId);
+        helper.insertReservation("user12", yesterday, time4, balloonThemeId);
 
         // 무인도 오늘 5건 (오늘이라 집계 제외 검증용)
-        insertReservation("user13", TODAY, timeId, islandThemeId);
-        insertReservation("user14", TODAY, timeId, islandThemeId);
-        insertReservation("user15", TODAY, timeId, islandThemeId);
-        insertReservation("user16", TODAY, timeId, islandThemeId);
-        insertReservation("user17", TODAY, timeId, islandThemeId);
+        helper.insertReservation("user13", TODAY, time1, islandThemeId);
+        helper.insertReservation("user14", TODAY, time2, islandThemeId);
+        helper.insertReservation("user15", TODAY, time3, islandThemeId);
+        helper.insertReservation("user16", TODAY, time4, islandThemeId);
+        helper.insertReservation("user17", TODAY, time5, islandThemeId);
     }
 
 
@@ -172,30 +181,6 @@ public class PopularThemeStepTest extends IntegrationTest {
                 .statusCode(200)
                 .body("[0].name", is("무인도 탈출"))
                 .body("[0].reservationCount", is(5));
-    }
-
-    private Long insertTime(LocalTime startAt) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Time.valueOf(startAt));
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
-                Long.class, Time.valueOf(startAt));
-    }
-
-    private Long insertTheme(String name, String description, String thumbnailUrl) {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
-                name, description, thumbnailUrl);
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM theme WHERE name = ?",
-                Long.class, name);
-    }
-
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, Date.valueOf(date), timeId, themeId);
     }
 
 }
