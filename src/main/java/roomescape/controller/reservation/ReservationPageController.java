@@ -1,8 +1,6 @@
 package roomescape.controller.reservation;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,15 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.exception.ApiException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.InvalidInputException;
 import roomescape.service.reservation.ReservationService;
-import roomescape.controller.reservationtime.dto.ReservationTimeResponse;
-import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.controller.theme.dto.ThemeResponse;
-import roomescape.service.theme.ThemeService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -26,17 +19,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ReservationPageController {
 
     private final ReservationService reservationService;
-    private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
+    private final ReservationPageRequestParser reservationPageRequestParser;
+    private final ReservationPageModelAssembler reservationPageModelAssembler;
 
     public ReservationPageController(
             final ReservationService reservationService,
-            final ReservationTimeService reservationTimeService,
-            final ThemeService themeService
+            final ReservationPageRequestParser reservationPageRequestParser,
+            final ReservationPageModelAssembler reservationPageModelAssembler
     ) {
         this.reservationService = reservationService;
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
+        this.reservationPageRequestParser = reservationPageRequestParser;
+        this.reservationPageModelAssembler = reservationPageModelAssembler;
     }
 
     @GetMapping
@@ -55,14 +48,14 @@ public class ReservationPageController {
         String resolvedErrorCode = errorCode;
 
         try {
-            selectedThemeId = parseLongValue(themeId);
-            selectedDate = parseDate(date);
-            selectedTheme = getSelectedTheme(selectedThemeId);
+            selectedThemeId = reservationPageRequestParser.parseLongValue(themeId);
+            selectedDate = reservationPageRequestParser.parseDate(date);
+            selectedTheme = reservationPageModelAssembler.resolveSelectedTheme(selectedThemeId);
         } catch (ApiException exception) {
             resolvedErrorCode = resolveErrorCode(resolvedErrorCode, exception.getCode());
         }
 
-        addReservationPageAttributes(
+        reservationPageModelAssembler.populateReservationPage(
                 model,
                 selectedThemeId,
                 selectedTheme,
@@ -89,9 +82,9 @@ public class ReservationPageController {
         LocalDate parsedDate = null;
 
         try {
-            parsedThemeId = parseLongValue(themeId);
-            parsedTimeId = parseLongValue(timeId);
-            parsedDate = parseDate(date);
+            parsedThemeId = reservationPageRequestParser.parseLongValue(themeId);
+            parsedTimeId = reservationPageRequestParser.parseLongValue(timeId);
+            parsedDate = reservationPageRequestParser.parseDate(date);
             reservationService.save(name, parsedDate, parsedThemeId, parsedTimeId);
             addReservationNameAttribute(redirectAttributes, name);
         } catch (ApiException exception) {
@@ -157,8 +150,8 @@ public class ReservationPageController {
         LocalDate parsedDate = null;
 
         try {
-            parsedTimeId = parseLongValue(timeId);
-            parsedDate = parseDate(date);
+            parsedTimeId = reservationPageRequestParser.parseLongValue(timeId);
+            parsedDate = reservationPageRequestParser.parseDate(date);
             reservationService.updateByIdAndName(id, reservationName, parsedDate, parsedTimeId);
         } catch (ApiException exception) {
             return redirectReservationPageWithError(
@@ -182,50 +175,6 @@ public class ReservationPageController {
         return "redirect:/pages/user/reservations";
     }
 
-    private void addReservationPageAttributes(
-            final Model model,
-            final Long selectedThemeId,
-            final ThemeResponse selectedTheme,
-            final LocalDate selectedDate,
-            final String reservationName,
-            final int period,
-            final int limit,
-            final String errorCode
-    ) {
-        model.addAttribute("themes", themeService.getAll().stream()
-                .map(ThemeResponse::from)
-                .toList());
-        model.addAttribute("popularThemes", themeService.getPopularThemes(period, limit).stream()
-                .map(ThemeResponse::from)
-                .toList());
-        model.addAttribute("selectedThemeId", selectedThemeId);
-        model.addAttribute("selectedTheme", selectedTheme);
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("reservationName", reservationName);
-        model.addAttribute("period", period);
-        model.addAttribute("limit", limit);
-        model.addAttribute("errorCode", errorCode);
-        model.addAttribute("reservationTimes", reservationTimeService.getAll().stream()
-                .map(ReservationTimeResponse::from)
-                .toList());
-        model.addAttribute("availableTimes", getAvailableTimes(selectedThemeId, selectedTheme, selectedDate));
-        model.addAttribute("myReservations", getMyReservations(reservationName, errorCode));
-    }
-
-    private List<ReservationTimeResponse> getAvailableTimes(
-            final Long selectedThemeId,
-            final ThemeResponse selectedTheme,
-            final LocalDate selectedDate
-    ) {
-        if (selectedTheme == null || selectedDate == null) {
-            return List.of();
-        }
-
-        return reservationTimeService.findAvailableTimes(selectedDate, selectedThemeId).stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-    }
-
     private String redirectReservationPageWithError(
             final RedirectAttributes redirectAttributes,
             final Long themeId,
@@ -238,14 +187,6 @@ public class ReservationPageController {
         addReservationNameAttribute(redirectAttributes, reservationName);
         redirectAttributes.addAttribute("errorCode", errorCode);
         return "redirect:/pages/user/reservations";
-    }
-
-    private ThemeResponse getSelectedTheme(final Long themeId) {
-        if (themeId == null) {
-            return null;
-        }
-
-        return ThemeResponse.from(themeService.getById(themeId));
     }
 
     private void addDateAttribute(final RedirectAttributes redirectAttributes, final LocalDate date) {
@@ -272,55 +213,11 @@ public class ReservationPageController {
         redirectAttributes.addAttribute("reservationName", reservationName);
     }
 
-    private Long parseLongValue(final String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException exception) {
-            throw new InvalidInputException(
-                    ErrorCode.INVALID_TYPE_VALUE,
-                    "숫자 형식의 값이 필요합니다."
-            );
-        }
-    }
-
-    private LocalDate parseDate(final String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-
-        try {
-            return LocalDate.parse(value);
-        } catch (DateTimeParseException exception) {
-            throw new InvalidInputException(
-                    ErrorCode.INVALID_DATE_FORMAT,
-                    "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식이어야 합니다."
-            );
-        }
-    }
-
     private String resolveErrorCode(final String currentErrorCode, final String fallbackErrorCode) {
         if (currentErrorCode != null) {
             return currentErrorCode;
         }
 
         return fallbackErrorCode;
-    }
-
-    private List<ReservationResponse> getMyReservations(final String reservationName, final String errorCode) {
-        if (reservationName == null || reservationName.isBlank()) {
-            return List.of();
-        }
-
-        if (ErrorCode.RESERVATION_NAME_REQUIRED.getCode().equals(errorCode)) {
-            return List.of();
-        }
-
-        return reservationService.getAllByName(reservationName).stream()
-                .map(ReservationResponse::from)
-                .toList();
     }
 }
