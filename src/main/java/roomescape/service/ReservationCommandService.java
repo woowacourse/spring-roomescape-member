@@ -11,6 +11,7 @@ import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -22,6 +23,7 @@ public class ReservationCommandService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final Clock clock;
 
     private ReservationTime findTimeReference(long timeId) {
         try {
@@ -40,7 +42,7 @@ public class ReservationCommandService {
     }
 
     private void validateNotPast(LocalDate date, ReservationTime time) {
-        if (date.atTime(time.startAt()).isBefore(LocalDateTime.now())) {
+        if (date.atTime(time.startAt()).isBefore(LocalDateTime.now(clock))) {
             throw new PastReservationException();
         }
     }
