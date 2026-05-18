@@ -56,7 +56,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        Reservation reservation = converToReservation(null, request);
+        Reservation reservation = convertToReservation(null, request);
 
         Reservation saved = reservationDao.save(reservation);
 
@@ -71,25 +71,25 @@ public class ReservationService {
             throw new ForbiddenException("다른 사람의 예약은 변경할 수 없습니다.");
         }
 
-        Reservation modified = converToReservation(id, request);
+        Reservation modified = convertToReservation(id, request);
 
-        boolean isSucceed = reservationDao.update(modified);
+        boolean isSuccessful = reservationDao.update(modified);
 
-        if (!isSucceed) {
+        if (!isSuccessful) {
             throw new OptimisticLockingFailureException("다른 사용자가 예약했습니다. 다시 시도해주세요.");
         }
 
         return ReservationResponse.from(modified);
     }
 
-    private Reservation converToReservation(Long id, ReservationRequest request) {
+    private Reservation convertToReservation(Long id, ReservationRequest request) {
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         Theme theme = themeDao.findThemeById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
 
-        validate(request.date(), time, theme);
+        validateAvailability(request.date(), time, theme);
 
         return new Reservation(
                 id,
@@ -100,19 +100,39 @@ public class ReservationService {
         );
     }
 
-    private void validate(LocalDate date, ReservationTime time, Theme theme) {
+    private void validateAvailability(LocalDate date, ReservationTime time, Theme theme) {
+        validatePastTime(date, time);
+        validateDuplicate(date, time, theme);
+    }
+
+    private void validatePastTime(LocalDate date, ReservationTime time) {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime requestDateTime = LocalDateTime.of(date, time.getStartAt());
         if (requestDateTime.isBefore(now)) {
             throw new UnprocessableEntityException("이미 지난 시간입니다.");
         }
+    }
 
+    private void validateDuplicate(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationDao.existsBy(date, theme, time)) {
             throw new ConflictException("이미 존재하는 예약 건입니다.");
         }
     }
 
     public void delete(Long id) {
+        reservationDao.delete(id);
+    }
+
+    public void delete(Long id, String userName) {
+        Reservation origin = reservationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("삭제하려는 예약이 존재하지 않습니다."));
+
+        if (!userName.equals(origin.getName().value())) {
+            throw new ForbiddenException("다른 사람의 예약은 삭제할 수 없습니다.");
+        }
+
+        validatePastTime(origin.getDate(), origin.getTime());
+        
         reservationDao.delete(id);
     }
 }
