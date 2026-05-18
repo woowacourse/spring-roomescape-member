@@ -122,7 +122,7 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(422);
     }
 
     @Nested

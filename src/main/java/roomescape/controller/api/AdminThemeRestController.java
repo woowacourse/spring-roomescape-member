@@ -10,27 +10,28 @@ import roomescape.service.ThemeService;
 import java.net.URI;
 import java.util.List;
 
+@RequestMapping("/admin/themes")
 @RestController
-public class ThemeRestController {
+public class AdminThemeRestController {
 
     private final ThemeService themeService;
 
-    public ThemeRestController(ThemeService themeService) {
+    public AdminThemeRestController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
-    @PostMapping("/admin/themes")
+    @PostMapping
     public ResponseEntity<ThemeResponse> create(@Valid @RequestBody ThemeCreateRequest themeRequest) {
         ThemeResponse newTheme = themeService.create(themeRequest);
         return ResponseEntity.created(URI.create("/admin/themes/" + newTheme.getId())).body(newTheme);
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public ResponseEntity<List<ThemeResponse>> readAll() {
         return ResponseEntity.ok().body(themeService.findAll());
     }
 
-    @GetMapping("/themes/popular")
+    @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> readPopularTheme(
             @RequestParam(defaultValue = "7") Integer period,
             @RequestParam(defaultValue = "10") Integer limit
@@ -38,7 +39,7 @@ public class ThemeRestController {
         return ResponseEntity.ok().body(themeService.findPopularTheme(period, limit));
     }
 
-    @DeleteMapping("/admin/themes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
