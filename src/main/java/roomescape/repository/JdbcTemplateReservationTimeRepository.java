@@ -1,16 +1,15 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Repository
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
@@ -23,10 +22,12 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public ReservationTime addTime(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(conn -> {
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "INSERT INTO reservation_time(start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStatement.setTime(1, java.sql.Time.valueOf(reservationTime.startAt()));
+
             return preparedStatement;
         }, keyHolder);
 
@@ -58,9 +59,21 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
                             rs.getLong("id"),
                             rs.getTime("start_at").toLocalTime()
                     ), id);
+
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation_time WHERE id = ?",
+                Integer.class,
+                id
+        );
+
+        return Objects.nonNull(count) && count > 0;
     }
 }

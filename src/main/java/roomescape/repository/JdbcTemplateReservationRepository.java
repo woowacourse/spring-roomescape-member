@@ -1,5 +1,11 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,10 +14,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -45,6 +47,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail_url"));
+
             return new Reservation(
                     rs.getLong("reservation_id"),
                     rs.getString("reservation_name"),
@@ -80,6 +83,16 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
+    public void updateDateTime(Long id, LocalDate date, Long timeId) {
+        jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                date,
+                timeId,
+                id
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
@@ -98,5 +111,95 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 reservationRowMapper(),
                 name
         );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                            "t.id AS time_id, t.start_at, " +
+                            "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
+                            "th.thumbnail_url AS theme_thumbnail_url " +
+                            "FROM reservation r " +
+                            "JOIN reservation_time t ON r.time_id = t.id " +
+                            "JOIN theme th ON r.theme_id = th.id " +
+                            "WHERE r.id = ?",
+                    reservationRowMapper(),
+                    id
+            );
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) "
+                        + "FROM reservation "
+                        + "WHERE date = ? "
+                        + "AND time_id = ? "
+                        + "AND theme_id = ?",
+                Integer.class,
+                date,
+                timeId,
+                themeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsConflictingReservation(LocalDate date, Long timeId, Long themeId, Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) "
+                        + "FROM reservation "
+                        + "WHERE date = ? "
+                        + "AND time_id = ? "
+                        + "AND theme_id = ? "
+                        + "AND id != ?",
+                Integer.class,
+                date,
+                timeId,
+                themeId,
+                id
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE id = ?",
+                Integer.class,
+                id
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE theme_id = ?",
+                Integer.class,
+                themeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE time_id = ?",
+                Integer.class,
+                timeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
     }
 }

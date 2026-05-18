@@ -1,5 +1,11 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -10,12 +16,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @JdbcTest
 @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
 @Import({JdbcTemplateReservationRepository.class, JdbcTemplateThemeRepository.class})
@@ -23,6 +23,8 @@ class JdbcTemplateReservationRepositoryTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final long OTHER_TIME_ID = 2L;
+    private static final long OTHER_THEME_ID = 2L;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -33,14 +35,9 @@ class JdbcTemplateReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Reservation addReservation(String name, LocalDate date) {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = themeRepository.findById(THEME_ID).get();
-        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
-    }
-
     @Test
-    void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
+    @DisplayName("예약을 저장하면 id가 포함된 예약을 반환한다")
+    void saveReservation() {
         Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
 
         assertThat(saved.id()).isNotNull();
@@ -50,7 +47,8 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 모든_예약을_조인_조회한다() {
+    @DisplayName("모든 예약을 시간과 테마 정보와 함께 조회한다")
+    void findAllReservations() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("조이", LocalDate.of(2026, 5, 4));
 
@@ -61,10 +59,11 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 특정_사용자의_예약을_조회한다() {
+    @DisplayName("사용자 이름으로 예약을 조회한다")
+    void findReservationsByName() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("브라운", LocalDate.of(2026, 5, 4));
-        addReservation("조이", LocalDate.of(2026, 5, 4));
+        addReservation("조이", LocalDate.of(2026, 5, 6));
 
         List<Reservation> reservations = reservationRepository.findReservationsByName("브라운");
 
@@ -72,19 +71,205 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 예약이_없으면_빈_리스트를_반환한다() {
+    @DisplayName("id로 예약을 조회한다")
+    void findById() {
+        Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        Reservation reservation = reservationRepository.findById(saved.id()).get();
+
+        assertThat(reservation.id()).isEqualTo(saved.id());
+        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.date()).isEqualTo(LocalDate.of(2026, 5, 3));
+        assertThat(reservation.time().id()).isEqualTo(TIME_ID);
+        assertThat(reservation.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약이 없으면 빈 Optional을 반환한다")
+    void findById_WhenReservationDoesNotExist() {
+        assertThat(reservationRepository.findById(999L)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("예약이 없으면 빈 목록을 반환한다")
+    void findEmptyReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
 
         assertThat(reservations).isEmpty();
     }
 
     @Test
-    void id로_예약을_삭제한다() {
+    @DisplayName("id로 예약을 삭제한다")
+    void deleteReservationById() {
         long reservationId = addReservation("브라운", LocalDate.of(2026, 5, 3)).id();
 
         reservationRepository.deleteById(reservationId);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 시간을 수정한다")
+    void updateDateTime() {
+        Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        reservationRepository.updateDateTime(saved.id(), LocalDate.of(2026, 5, 4), OTHER_TIME_ID);
+        Reservation updated = reservationRepository.findById(saved.id()).get();
+
+        assertThat(updated.id()).isEqualTo(saved.id());
+        assertThat(updated.name()).isEqualTo("브라운");
+        assertThat(updated.date()).isEqualTo(LocalDate.of(2026, 5, 4));
+        assertThat(updated.time().id()).isEqualTo(OTHER_TIME_ID);
+        assertThat(updated.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약이 존재하는지 확인한다")
+    void existsById() {
+        long reservationId = addReservation("브라운", LocalDate.of(2026, 5, 3)).id();
+
+        boolean exists = reservationRepository.existsById(reservationId);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약이 없으면 존재하지 않는다고 판단한다")
+    void notExistsById() {
+        boolean exists = reservationRepository.existsById(999L);
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("테마에 예약이 존재하는지 확인한다")
+    void existsByThemeId() {
+        addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        boolean exists = reservationRepository.existsByThemeId(THEME_ID);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("테마에 예약이 없으면 존재하지 않는다고 판단한다")
+    void notExistsByThemeId() {
+        boolean exists = reservationRepository.existsByThemeId(THEME_ID);
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 시간에 예약이 존재하는지 확인한다")
+    void existsByTimeId() {
+        addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        boolean exists = reservationRepository.existsByTimeId(TIME_ID);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("예약 시간에 예약이 없으면 존재하지 않는다고 판단한다")
+    void notExistsByTimeId() {
+        boolean exists = reservationRepository.existsByTimeId(TIME_ID);
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 같은 시간, 같은 테마의 예약이 존재하면 중복 예약으로 판단한다")
+    void existsReservation() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(date, TIME_ID, THEME_ID);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("날짜가 다르면 같은 시간과 같은 테마라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenDateIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date.plusDays(1),
+                TIME_ID,
+                THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("시간이 다르면 같은 날짜와 같은 테마라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenTimeIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date,
+                OTHER_TIME_ID,
+                THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("테마가 다르면 같은 날짜와 같은 시간이라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenThemeIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date,
+                TIME_ID,
+                OTHER_THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 변경 중복 검사에서는 자기 자신을 제외한다")
+    void notExistsReservation_WhenSameReservation() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        Reservation reservation = addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsConflictingReservation(
+                date,
+                TIME_ID,
+                THEME_ID,
+                reservation.id()
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("예약 변경 중복 검사에서 다른 예약이 있으면 중복으로 판단한다")
+    void existsReservation_WhenOtherReservationExists() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsConflictingReservation(
+                date,
+                TIME_ID,
+                THEME_ID,
+                -1L
+        );
+
+        assertThat(exists).isTrue();
+    }
+
+    private Reservation addReservation(String name, LocalDate date) {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = themeRepository.findById(THEME_ID).get();
+        
+        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
     }
 }

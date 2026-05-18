@@ -1,5 +1,7 @@
 package roomescape.controller.admin;
 
+import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,8 +15,6 @@ import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -31,20 +31,16 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+    public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
+        Reservation reservation = reservationService.saveReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteById(id);
+        reservationService.deleteReservationByAdmin(id);
 
         return ResponseEntity.noContent().build();
     }

@@ -2,8 +2,11 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.exception.DomainException;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private static final int MAX_NAME_LENGTH = 30;
+
     public Reservation {
         validateName(name);
         validateDate(date);
@@ -13,28 +16,33 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
-            throw new IllegalArgumentException("유효하지 않는 테마입니다.");
+            throw new DomainException("유효하지 않는 테마입니다.");
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (Objects.isNull(time)) {
-            throw new IllegalArgumentException("유효하지 않은 시간입니다.");
+            throw new DomainException("유효하지 않은 시간입니다.");
         }
     }
 
     private void validateName(String name) {
         if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("유효하지 않은 이름입니다.");
+            throw new DomainException("유효하지 않은 이름입니다.");
         }
+
         if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+            throw new DomainException("이름은 공백일 수 없습니다.");
+        }
+
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new DomainException("이름은 30자 이하여야 합니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (Objects.isNull(date)) {
-            throw new IllegalArgumentException("유효하지 않은 날짜입니다");
+            throw new DomainException("유효하지 않은 날짜입니다");
         }
     }
 

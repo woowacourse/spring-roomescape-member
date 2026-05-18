@@ -24,15 +24,17 @@
         if (!body.name || !body.date || !body.timeId || !body.themeId) {
             return alert('모든 항목을 입력해주세요.');
         }
-        const res = await fetch('/admin/reservations', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) return alert('추가 실패');
-        const r = await res.json();
-        appendRow(r);
-        nameEl.value = ''; dateEl.value = ''; timeEl.value = ''; themeEl.value = '';
+        try {
+            const r = await RoomescapeApi.request('/admin/reservations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            }, '예약 추가에 실패했습니다.');
+            appendRow(r);
+            nameEl.value = ''; dateEl.value = ''; timeEl.value = ''; themeEl.value = '';
+        } catch (e) {
+            alert(e.message);
+        }
     });
 
     function appendRow(r) {
@@ -52,8 +54,11 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await RoomescapeApi.request(`/admin/reservations/${id}`, {method: 'DELETE'}, '예약 삭제에 실패했습니다.');
+            tr.remove();
+        } catch (e) {
+            alert(e.message);
+        }
     }
 })();

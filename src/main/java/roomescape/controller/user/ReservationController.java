@@ -1,9 +1,12 @@
 package roomescape.controller.user;
 
+import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,10 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -28,30 +30,35 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam("name") String name) {
-        try {
-            List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
-            return ResponseEntity.ok(responses);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        List<Reservation> reservations = reservationService.findReservationsByName(name);
+        List<ReservationResponse> responses = ReservationResponse.from(reservations);
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveUserReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+    public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
+        Reservation reservation = reservationService.saveReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteById(id);
+        reservationService.cancelReservation(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> changeReservationDateTime(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        Reservation reservation = reservationService.changeReservationDateTime(id, request.toChangeCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
+
+        return ResponseEntity.ok(reservationResponse);
     }
 }

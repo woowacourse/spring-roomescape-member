@@ -3,6 +3,7 @@ package roomescape;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -26,12 +27,14 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void contextLoads() {
+    @DisplayName("애플리케이션 컨텍스트가 정상 로드된다")
+    void loadContext() {
     }
 
     @Test
+    @DisplayName("예약을 생성하면 해당 시간은 예약 가능 시간에서 제외된다")
     @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
-    void 예약_가능_시간_조회_후_예약하면_해당_시간은_제외된다() {
+    void excludeReservedTime_WhenCreateReservation() {
         LocalDate date = LocalDate.now().plusDays(1);
 
         List<Integer> times = RestAssured.given()

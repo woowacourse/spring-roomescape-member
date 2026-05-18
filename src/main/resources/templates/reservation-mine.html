@@ -18,15 +18,16 @@
     <table class="data-table">
         <thead>
         <tr>
-            <th>번호</th><th>이름</th><th>테마</th><th>날짜</th><th>시간</th><th></th>
+            <th>번호</th><th>이름</th><th>테마</th><th>날짜</th><th>시간</th><th>변경</th><th>취소</th>
         </tr>
         </thead>
         <tbody id="reservation-rows">
-        <tr><td colspan="6" style="text-align:center; color:#888;">이름을 입력해 검색하세요.</td></tr>
+        <tr><td colspan="7" style="text-align:center; color:#888;">이름을 입력해 검색하세요.</td></tr>
         </tbody>
     </table>
 </main>
 
+<script th:src="@{/js/api-error.js}"></script>
 <script th:src="@{/js/reservation-mine.js}"></script>
 </body>
 </html>

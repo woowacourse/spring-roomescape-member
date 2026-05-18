@@ -16,15 +16,17 @@
             thumbnailUrl: thumbEl.value.trim()
         };
         if (!body.name) return alert('이름을 입력해주세요.');
-        const res = await fetch('/admin/themes', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) return alert('추가 실패');
-        const t = await res.json();
-        appendRow(t);
-        nameEl.value = ''; descEl.value = ''; thumbEl.value = '';
+        try {
+            const t = await RoomescapeApi.request('/admin/themes', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            }, '테마 추가에 실패했습니다.');
+            appendRow(t);
+            nameEl.value = ''; descEl.value = ''; thumbEl.value = '';
+        } catch (e) {
+            alert(e.message);
+        }
     });
 
     function appendRow(t) {
@@ -43,8 +45,11 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/themes/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await RoomescapeApi.request(`/admin/themes/${id}`, {method: 'DELETE'}, '테마 삭제에 실패했습니다.');
+            tr.remove();
+        } catch (e) {
+            alert(e.message);
+        }
     }
 })();

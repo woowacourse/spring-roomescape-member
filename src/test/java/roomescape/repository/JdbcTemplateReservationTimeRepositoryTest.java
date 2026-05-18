@@ -1,16 +1,16 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(JdbcTemplateReservationTimeRepository.class)
@@ -22,12 +22,9 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private long addTime(LocalTime startAt) {
-        return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
-    }
-
     @Test
-    void 시간을_저장하면_id가_채워진_도메인을_반환한다() {
+    @DisplayName("예약 시간을 저장하면 id가 포함된 예약 시간을 반환한다")
+    void saveReservationTime() {
         ReservationTime saved = reservationTimeRepository.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
 
         assertThat(saved.id()).isNotNull();
@@ -35,7 +32,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void 모든_시간을_조회한다() {
+    @DisplayName("모든 예약 시간을 조회한다")
+    void findAllReservationTimes() {
         addTime(LocalTime.of(10, 0));
         addTime(LocalTime.of(11, 0));
 
@@ -45,14 +43,16 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void 시간이_없으면_빈_리스트를_반환한다() {
+    @DisplayName("예약 시간이 없으면 빈 목록을 반환한다")
+    void findEmptyReservationTimes() {
         List<ReservationTime> times = reservationTimeRepository.findAllReservationTimes();
 
         assertThat(times).isEmpty();
     }
 
     @Test
-    void id로_시간을_조회한다() {
+    @DisplayName("id로 예약 시간을 조회한다")
+    void findReservationTimeById() {
         long id = addTime(LocalTime.of(10, 0));
 
         ReservationTime time = reservationTimeRepository.findById(id).get();
@@ -62,12 +62,35 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void id로_시간을_삭제한다() {
+    @DisplayName("id로 예약 시간을 삭제한다")
+    void deleteReservationTimeById() {
         long id = addTime(LocalTime.of(10, 0));
 
         reservationTimeRepository.deleteTime(id);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation_time", Integer.class);
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약 시간이 존재하는지 확인한다")
+    void existsById() {
+        long id = addTime(LocalTime.of(10, 0));
+
+        boolean exists = reservationTimeRepository.existsById(id);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약 시간이 없으면 존재하지 않는다고 판단한다")
+    void notExistsById() {
+        boolean exists = reservationTimeRepository.existsById(-1L);
+
+        assertThat(exists).isFalse();
+    }
+
+    private long addTime(LocalTime startAt) {
+        return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
     }
 }
