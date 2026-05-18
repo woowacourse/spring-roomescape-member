@@ -1,16 +1,7 @@
 package roomescape.domain.theme.controller;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +14,14 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -157,7 +156,10 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is(message));
+                .body("message", is("유효하지 않은 요청입니다."))
+                .body("details.size()", is(1))
+                .body("details[0].field", is(fieldName))
+                .body("details[0].message", is(message));
     }
 
     @ParameterizedTest
@@ -181,7 +183,35 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is(message));
+                .body("message", is("유효하지 않은 요청입니다."))
+                .body("details.size()", is(1))
+                .body("details[0].field", is(fieldName))
+                .body("details[0].message", is(message));
+    }
+
+    @Test
+    @DisplayName("테마 생성 시 여러 필수 값이 유효하지 않으면 모든 필드 오류를 반환한다.")
+    void createTheme_returnsAllValidationErrors_whenMultipleRequiredValuesAreInvalid() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", " ");
+        params.put("description", " ");
+        params.put("thumbnailUrl", " ");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST"))
+                .body("message", is("유효하지 않은 요청입니다."))
+                .body("details.size()", is(3))
+                .body("details.field", containsInAnyOrder("name", "description", "thumbnailUrl"))
+                .body("details.message", containsInAnyOrder(
+                        "테마 이름은 필수입니다.",
+                        "테마 설명은 필수입니다.",
+                        "썸네일 URL은 필수입니다."
+                ));
     }
 
     @Test

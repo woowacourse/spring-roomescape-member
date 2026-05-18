@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -43,13 +45,17 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_REQUEST;
         log.warn("요청 값 검증 예외가 발생했습니다.", exception);
 
-        String message = exception.getBindingResult()
-                .getAllErrors()
-                .getFirst()
-                .getDefaultMessage();
+        List<ErrorResponse.ValidationError> details = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> new ErrorResponse.ValidationError(
+                        fieldError.getField(),
+                        fieldError.getDefaultMessage()
+                ))
+                .toList();
 
         return ResponseEntity.status(errorCode.getStatus())
-                .body(ErrorResponse.of(errorCode, message));
+                .body(ErrorResponse.of(errorCode, errorCode.getMessage(), details));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

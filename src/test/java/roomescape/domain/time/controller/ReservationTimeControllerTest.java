@@ -72,7 +72,10 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is("예약 시간은 필수입니다."));
+                .body("message", is("유효하지 않은 요청입니다."))
+                .body("details.size()", is(1))
+                .body("details[0].field", is("startAt"))
+                .body("details[0].message", is("예약 시간은 필수입니다."));
     }
 
     @ParameterizedTest
