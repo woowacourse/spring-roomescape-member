@@ -5,14 +5,17 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.exception.DuplicateReservationException;
 import roomescape.domain.reservation.exception.PastReservationDateException;
+import roomescape.domain.reservation.exception.ReservationNotFoundException;
 import roomescape.domain.reservation.exception.ReservationOwnerMismatchException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.request.ReservationUpdateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.exception.ThemeNotFoundException;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.ReservationTime;
+import roomescape.domain.time.exception.ReservationTimeNotFoundException;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 
 import java.time.Clock;
@@ -55,14 +58,12 @@ public class ReservationService {
     @Transactional
     public ReservationResponse saveReservation(ReservationCreateRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 id의 ReservationTime이 존재하지 않습니다. timeId=" + request.timeId()));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
         validateReservationDateTimeIsNotPast(request.date(), time);
 
         Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 id에 해당하는 theme가 존재하지 않습니다. themeId=" + request.themeId()));
+                .orElseThrow(ThemeNotFoundException::new);
 
         Reservation reservation = new Reservation(
                 request.username(),
@@ -88,8 +89,7 @@ public class ReservationService {
     @Transactional
     public void cancelReservationBy(Long id, String username) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 id의 Reservation이 존재하지 않습니다. reservationId=" + id));
+                .orElseThrow(ReservationNotFoundException::new);
 
         if (!reservation.isOwnedBy(username)) {
             throw new ReservationOwnerMismatchException();
@@ -101,16 +101,14 @@ public class ReservationService {
     @Transactional
     public ReservationResponse updateReservationSchedule(Long id, String username, ReservationUpdateRequest request) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 id의 Reservation이 존재하지 않습니다. reservationId=" + id));
+                .orElseThrow(ReservationNotFoundException::new);
 
         if (!reservation.isOwnedBy(username)) {
             throw new ReservationOwnerMismatchException();
         }
 
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "해당 id의 ReservationTime이 존재하지 않습니다. timeId=" + request.timeId()));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
         validateReservationDateTimeIsNotPast(request.date(), time);
 

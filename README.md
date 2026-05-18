@@ -92,6 +92,9 @@
 | `INVALID_REQUEST`                  | 400       | 유효하지 않은 요청입니다. 또는 검증 실패 메시지 |
 | `INVALID_REQUEST_BODY`             | 400       | 요청 값이 올바르지 않습니다.                |
 | `PAST_DATE_RESERVATION`            | 400       | 과거 날짜로 예약할 수 없습니다.             |
+| `RESERVATION_NOT_FOUND`            | 404       | 존재하지 않는 예약입니다.                   |
+| `RESERVATION_TIME_NOT_FOUND`       | 404       | 존재하지 않는 예약 시간입니다.              |
+| `THEME_NOT_FOUND`                  | 404       | 존재하지 않는 테마입니다.                   |
 | `DATA_CONFLICT`                    | 409       | 요청한 데이터가 현재 상태와 충돌합니다.     |
 | `RESERVATION_TIME_DELETE_CONFLICT` | 409       | 예약이 존재하는 시간은 삭제할 수 없습니다.  |
 | `DUPLICATE_RESERVATION`            | 409       | 이미 예약된 시간입니다.                     |
