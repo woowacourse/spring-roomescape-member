@@ -1,5 +1,6 @@
 package roomescape.reservation.domain;
 
+import roomescape.exception.DomainRuleViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -15,13 +16,16 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약자 이름은 비어 있을 수 없습니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약 날짜는 비어 있을 수 없습니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약 시간은 비어 있을 수 없습니다.");
+        }
+        if (theme == null) {
+            throw new DomainRuleViolationException("예약 테마는 비어 있을 수 없습니다.");
         }
         this.id = id;
         this.name = name;

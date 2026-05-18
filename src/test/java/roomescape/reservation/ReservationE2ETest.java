@@ -142,7 +142,7 @@ class ReservationE2ETest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(409)
-                .body("name", is("PAST_RESERVATION_DELETE"));
+                .body("code", is("PAST_RESERVATION_DELETE"));
     }
 
     @Test

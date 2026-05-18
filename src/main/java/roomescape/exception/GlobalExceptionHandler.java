@@ -2,7 +2,6 @@ package roomescape.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -27,10 +26,10 @@ public class GlobalExceptionHandler {
         return toResponse(errorCode);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleDomain(IllegalArgumentException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
-        return toResponse(errorCode, e.getMessage());
+    @ExceptionHandler(DomainRuleViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDomainRuleViolation(DomainRuleViolationException e) {
+        log.error("Domain invariant violated", e);
+        return toResponse(ErrorCode.INTERNAL_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,18 +42,12 @@ public class GlobalExceptionHandler {
         return toResponse(errorCode, message);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException e) {
-        return toResponse(ErrorCode.INVALID_INPUT);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        return toResponse(ErrorCode.INVALID_INPUT);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingParameter(MissingServletRequestParameterException e) {
+    @ExceptionHandler({
+            HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ErrorResponse> handleUnreadable(Exception e) {
         return toResponse(ErrorCode.INVALID_INPUT);
     }
 
@@ -66,12 +59,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
         return toResponse(ErrorCode.RESOURCE_NOT_FOUND);
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {
-        log.error("Database exception", e);
-        return toResponse(ErrorCode.INTERNAL_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,6 +1,7 @@
 package roomescape.time.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.exception.DomainRuleViolationException;
 
 import java.time.LocalTime;
 
@@ -19,6 +20,6 @@ class ReservationTimeTest {
     @Test
     void 시작_시간이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DomainRuleViolationException.class);
     }
 }

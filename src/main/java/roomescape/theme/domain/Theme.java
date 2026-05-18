@@ -1,5 +1,7 @@
 package roomescape.theme.domain;
 
+import roomescape.exception.DomainRuleViolationException;
+
 public class Theme {
 
     private final Long id;
@@ -25,7 +27,7 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("테마 이름은 비어 있을 수 없습니다.");
         }
     }
 

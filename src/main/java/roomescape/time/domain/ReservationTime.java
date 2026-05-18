@@ -1,5 +1,7 @@
 package roomescape.time.domain;
 
+import roomescape.exception.DomainRuleViolationException;
+
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -9,7 +11,7 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약 시작 시간은 비어 있을 수 없습니다.");
         }
         this.id = id;
         this.startAt = startAt;

@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public record ErrorResponse(
-        String name,
+        String code,
         String message
 ) {
 }
