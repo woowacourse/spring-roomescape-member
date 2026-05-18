@@ -14,6 +14,8 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.MemoryReservationRepository;
 import roomescape.service.reservation.ReservationService;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.InvalidInputException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.service.reservationtime.ReservationTimeService;
 import roomescape.domain.theme.Theme;
@@ -46,8 +48,36 @@ class ReservationServiceTest {
         fixture.reservationService.save("쿠다", date, theme.getId(), time.getId());
 
         assertThrows(
-                IllegalArgumentException.class,
+                ConflictException.class,
                 () -> fixture.reservationService.save("아루", date, theme.getId(), time.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("과거 날짜로는 예약할 수 없다")
+    void savePastDate() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+
+        assertThrows(
+                InvalidInputException.class,
+                () -> fixture.reservationService.save("쿠다", LocalDate.now().minusDays(1), theme.getId(), time.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("오늘 날짜라도 이미 지난 시간으로는 예약할 수 없다")
+    void savePastTimeToday() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime time = fixture.reservationTimeService.save(pastTime);
+
+        assertThrows(
+                InvalidInputException.class,
+                () -> fixture.reservationService.save("쿠다", LocalDate.now(), theme.getId(), time.getId())
         );
     }
 
@@ -64,12 +94,91 @@ class ReservationServiceTest {
         assertThat(fixture.reservationRepository.findAll()).isEmpty();
     }
 
+    @Test
+    @DisplayName("지난 예약은 취소할 수 없다")
+    void deleteByIdAndNamePastReservation() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime time = fixture.reservationTimeService.save(pastTime);
+        Reservation saved = fixture.reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now(), theme, time)
+        );
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.deleteByIdAndName(saved.getId(), "쿠다")
+        );
+    }
+
+    @Test
+    @DisplayName("조회한 이름의 예약 날짜와 시간을 변경한다")
+    void updateByIdAndName() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime firstTime = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+        ReservationTime secondTime = fixture.reservationTimeService.save(LocalTime.parse("11:00"));
+        Reservation saved = fixture.reservationService.save("쿠다", LocalDate.parse("2026-08-06"), theme.getId(), firstTime.getId());
+
+        Reservation updated = fixture.reservationService.updateByIdAndName(
+                saved.getId(),
+                "쿠다",
+                LocalDate.parse("2026-08-07"),
+                secondTime.getId()
+        );
+
+        assertThat(updated.getDate()).isEqualTo(LocalDate.parse("2026-08-07"));
+        assertThat(updated.getTime().getId()).isEqualTo(secondTime.getId());
+    }
+
+    @Test
+    @DisplayName("조회한 이름의 다른 예약과 시간이 겹치면 변경할 수 없다")
+    void updateByIdAndNameDuplicate() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime firstTime = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+        ReservationTime secondTime = fixture.reservationTimeService.save(LocalTime.parse("11:00"));
+        LocalDate date = LocalDate.parse("2026-08-06");
+        Reservation target = fixture.reservationService.save("쿠다", date, theme.getId(), firstTime.getId());
+        fixture.reservationService.save("쿠다", date, theme.getId(), secondTime.getId());
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.updateByIdAndName(target.getId(), "쿠다", date, secondTime.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약은 변경할 수 없다")
+    void updateByIdAndNamePastReservation() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime savedTime = fixture.reservationTimeService.save(pastTime);
+        Reservation saved = fixture.reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now(), theme, savedTime)
+        );
+        ReservationTime futureTime = fixture.reservationTimeService.save(now.plusMinutes(10));
+
+        assertThrows(
+                ConflictException.class,
+                () -> fixture.reservationService.updateByIdAndName(
+                        saved.getId(),
+                        "쿠다",
+                        LocalDate.now().plusDays(1),
+                        futureTime.getId()
+                )
+        );
+    }
+
     private static class Fixture {
         private final MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
-        private final ReservationTimeService reservationTimeService =
-                new ReservationTimeService(new TestReservationTimeRepository(), reservationRepository);
         private final ThemeService themeService =
                 new ThemeService(new TestThemeRepository(), reservationRepository);
+        private final ReservationTimeService reservationTimeService =
+                new ReservationTimeService(new TestReservationTimeRepository(), reservationRepository, themeService);
         private final ReservationService reservationService =
                 new ReservationService(reservationRepository, reservationTimeService, themeService);
     }

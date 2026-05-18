@@ -17,9 +17,24 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(final String name) {
+        return reservations.stream()
+                .filter(it -> it.hasName(name))
+                .toList();
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         return reservations.stream()
                 .filter(it -> it.getId() == id)
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(final long id, final String name) {
+        return reservations.stream()
+                .filter(it -> it.getId() == id)
+                .filter(it -> it.hasName(name))
                 .findFirst();
     }
 
@@ -41,8 +56,37 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(final Reservation reservation) {
+        deleteById(reservation.getId());
+        reservations.add(reservation);
+        return reservation;
+    }
+
+    @Override
     public boolean existsByDateAndThemeIdAndTimeId(LocalDate date, long themeId, long timeId) {
         for (Reservation reservation : reservations) {
+            if (reservation.getDate().equals(date)
+                    && reservation.getTheme().getId() == themeId
+                    && reservation.getTime().getId() == timeId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean existsByDateAndThemeIdAndTimeIdExcludingId(
+            final LocalDate date,
+            final long themeId,
+            final long timeId,
+            final long reservationId
+    ) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getId() == reservationId) {
+                continue;
+            }
+
             if (reservation.getDate().equals(date)
                     && reservation.getTheme().getId() == themeId
                     && reservation.getTime().getId() == timeId) {

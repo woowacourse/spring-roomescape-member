@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.MemoryReservationRepository;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.ConflictException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.service.theme.ThemeService;
 
@@ -34,7 +36,7 @@ class ThemeServiceTest {
         themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
 
         assertThrows(
-                IllegalArgumentException.class,
+                ConflictException.class,
                 () -> themeService.save("미술관의 밤", "새 설명", "https://example.com/new-theme.png")
         );
     }
@@ -55,7 +57,7 @@ class ThemeServiceTest {
     void getByIdNotFound() {
         ThemeService themeService = new ThemeService(new TestThemeRepository(), new MemoryReservationRepository());
 
-        assertThrows(IllegalArgumentException.class, () -> themeService.getById(1L));
+        assertThrows(ResourceNotFoundException.class, () -> themeService.getById(1L));
     }
 
     @Test
@@ -74,7 +76,7 @@ class ThemeServiceTest {
                 roomescape.domain.reservationtime.ReservationTime.of(1L, java.time.LocalTime.parse("10:00"))
         ));
 
-        assertThrows(IllegalArgumentException.class, () -> themeService.deleteById(theme.getId()));
+        assertThrows(ConflictException.class, () -> themeService.deleteById(theme.getId()));
     }
 
     private static class TestThemeRepository implements ThemeRepository {
