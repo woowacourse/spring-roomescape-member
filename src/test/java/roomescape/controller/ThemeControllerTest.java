@@ -8,10 +8,11 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,11 +26,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.theme.PopularThemesResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
-import roomescape.dto.theme.ThemesResponseDto;
+import roomescape.controller.dto.ResourceIdResponseDto;
+import roomescape.controller.dto.theme.PopularThemesResponseDto;
+import roomescape.controller.dto.theme.ThemeRequestDto;
+import roomescape.controller.dto.theme.ThemeResponseDto;
+import roomescape.controller.dto.theme.ThemesResponseDto;
 import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -78,7 +79,7 @@ class ThemeControllerTest {
     @Test
     void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
         // given
-        Map<Theme, Integer> tenPopularThemesOrderByRank = createTenThemes();
+        List<Theme> tenPopularThemesOrderByRank = createTenThemes();
         PopularThemesResponseDto expectedResponse = PopularThemesResponseDto.from(tenPopularThemesOrderByRank);
 
         when(themeService.findWeekPopularThemesOrderByRank(10))
@@ -177,22 +178,17 @@ class ThemeControllerTest {
         }
     }
 
-    private Map<Theme, Integer> createTenThemes() {
-        Map<Theme, Integer> themesWithRank = new HashMap<>();
-
-        for (int i = 0; i < 10; i++) {
-            Theme theme = new Theme((long) i, new ThemeName("테마" + i), "설명" + i, ThemeImageUrl.defaultImageUrl());
-            themesWithRank.put(theme, i);
-        }
-
-        return themesWithRank;
+    private List<Theme> createTenThemes() {
+        return IntStream.range(0, 10)
+                .mapToObj(i -> new Theme((long) i, new ThemeName("테마" + i), "설명" + i, ThemeImageUrl.defaultImageUrl()))
+                .toList();
     }
 
     private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-            theme.getNameValue(),
+            theme.getName().value(),
             theme.getDescription(),
-            theme.getImageUrlValue()
+            theme.getImageUrl().value()
         );
     }
 }

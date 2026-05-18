@@ -31,9 +31,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getNameValue());
+            ps.setString(1, theme.getName().value());
             ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getImageUrlValue());
+            ps.setString(3, theme.getImageUrl().value());
             return ps;
         }, keyHolder);
 

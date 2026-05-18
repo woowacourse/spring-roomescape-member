@@ -1,11 +1,20 @@
 package roomescape.exception;
 
-import java.util.List;
+public record ResponseErrorMessage(String code, int status, String message) {
 
-public record ResponseErrorMessage(
-        List<String> message
-) {
-    public ResponseErrorMessage(String message) {
-        this(List.of(message));
+    public static ResponseErrorMessage of(ErrorCode errorCode) {
+        return new ResponseErrorMessage(
+                errorCode.name(),
+                errorCode.getStatus().value(), 
+                errorCode.getMessage()
+        );
+    }
+
+    public static ResponseErrorMessage of(ErrorCode errorCode, String customMessage) {
+        return new ResponseErrorMessage(
+                errorCode.name(),
+                errorCode.getStatus().value(),
+                customMessage
+        );
     }
 }

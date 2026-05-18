@@ -2,10 +2,11 @@ package roomescape.domain;
 
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class Reservation {
 
@@ -23,8 +24,16 @@ public class Reservation {
         this.theme = Objects.requireNonNull(theme);
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), ReservationDate.createForSave(date), time, theme);
+    public static Reservation create(MemberName name, ReservationDate date, ReservationTime time, Theme theme) {
+        validateNotPast(date, time);
+
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateNotPast(ReservationDate date, ReservationTime time) {
+        if (LocalDateTime.of(date.value(), time.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PAST_DATE_RESERVATION);
+        }
     }
 
     public Long getId() {
@@ -35,8 +44,8 @@ public class Reservation {
         return memberName;
     }
 
-    public LocalDate getDateValue() {
-        return date.value();
+    public ReservationDate getDate() {
+        return date;
     }
 
     public ReservationTime getTime() {

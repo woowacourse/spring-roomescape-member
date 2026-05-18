@@ -7,7 +7,10 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
+import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.JdbcThemeRepository;
@@ -107,13 +110,13 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime bookedTime = timeRepository.createReservationTime(new ReservationTime("10:00"));
         ReservationTime availableTime = timeRepository.createReservationTime(new ReservationTime("12:00"));
 
-        Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", ThemeImageUrl.defaultImageUrl().value()));
+        Theme theme = themeRepository.createTheme(new Theme(new ThemeName("테스트"), "테스트테마입니다.", ThemeImageUrl.defaultImageUrl()));
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationRepository.createReservation(new Reservation("브라운", tomorrow, bookedTime, theme));
+        ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
+        reservationRepository.createReservation(Reservation.create(new MemberName("브라운"), tomorrow, bookedTime, theme));
 
         // when
-        List<ReservationTime> availableTimes = timeRepository.findTimesByDateAndThemeId(tomorrow, theme.getId());
+        List<ReservationTime> availableTimes = timeRepository.findAvailableTimes(tomorrow, theme.getId());
 
         // then
         assertThat(availableTimes).hasSize(1);

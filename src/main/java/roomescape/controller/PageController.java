@@ -30,4 +30,9 @@ public class PageController {
     public String adminThemes() {
         return "admin/themes";
     }
+
+    @GetMapping("/my-reservations")
+    public String myReservations() {
+        return "my-reservations";
+    }
 }

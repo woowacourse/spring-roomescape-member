@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.BusinessException;
 
 class ThemeImageUrlTest {
 
@@ -14,8 +15,8 @@ class ThemeImageUrlTest {
     void 빈_문자열로_생성하면_예외가_발생한다(String value) {
         // when & then
         assertThatThrownBy(() -> new ThemeImageUrl(value))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("빈 문자열은");
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("빈 문자열은 이미지 URL로 사용할 수 없습니다.");
     }
 
     @ParameterizedTest
@@ -32,7 +33,7 @@ class ThemeImageUrlTest {
     void 올바르지_않은_형식으로_생성하면_예외가_발생한다(String value) {
         // when & then
         assertThatThrownBy(() -> new ThemeImageUrl(value))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("올바른 이미지 URL");
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("올바른 이미지 URL 형식이 아닙니다.");
     }
 }

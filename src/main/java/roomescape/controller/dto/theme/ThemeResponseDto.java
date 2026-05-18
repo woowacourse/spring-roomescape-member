@@ -1,0 +1,20 @@
+package roomescape.controller.dto.theme;
+
+import roomescape.domain.Theme;
+
+public record ThemeResponseDto(
+        Long id,
+        String name,
+        String description,
+        String imageUrl
+) {
+
+    public static ThemeResponseDto from(Theme theme) {
+        return new ThemeResponseDto(
+                theme.getId(),
+                theme.getName().value(),
+                theme.getDescription(),
+                theme.getImageUrl().value()
+        );
+    }
+}

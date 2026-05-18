@@ -1,11 +1,11 @@
 package roomescape.domain;
 
-import org.springframework.dao.DataRetrievalFailureException;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class ReservationTime {
@@ -33,6 +33,10 @@ public class ReservationTime {
         this(null, startAt);
     }
 
+    public static ReservationTime from(LocalTime time) {
+        return new ReservationTime(time);
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,13 +47,13 @@ public class ReservationTime {
 
     private LocalTime translateTime(String startAt) {
         if (!TIME_PATTERN.matcher(startAt).matches()) {
-            throw new IllegalArgumentException("시간 형식이 HH:mm (예: 09:30) 형태여야 합니다: " + startAt);
+            throw new BusinessException(ErrorCode.INVALID_FORMAT, "시간 형식이 HH:mm (예: 09:30) 형태여야 합니다: " + startAt);
         }
 
         try {
             return LocalTime.parse(startAt);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("유효하지 않은 시간 값입니다: " + startAt);
+            throw new BusinessException(ErrorCode.INVALID_VALUE, "유효하지 않은 시간 값입니다: " + startAt);
         }
     }
 

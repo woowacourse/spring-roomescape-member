@@ -6,9 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,10 +24,13 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.controller.dto.reservation.ReservationRequestDto;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
+import roomescape.service.command.ReservationCommand;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -60,14 +61,14 @@ class ReservationServiceTest {
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimes(any(), anyLong()))
             .thenReturn(List.of(availableTime));
         when(timeRepository.findAll())
                 .thenReturn(List.of(availableTime, impossibleTime));
 
         // when
         Map<ReservationTime, Boolean> timesWithAvailability = reservationService
-            .getTimesWithAvailability(RESERVATION.getDateValue(), RESERVATION.getThemeId());
+            .getTimesWithAvailability(RESERVATION.getDate(), RESERVATION.getThemeId());
 
         // then
         assertThat(timesWithAvailability).hasSize(2);
@@ -83,12 +84,12 @@ class ReservationServiceTest {
         when(themeRepository.findById(SAVED_THEME.getId()))
             .thenReturn(Optional.of(SAVED_THEME));
 
-        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findAvailableTimes(any(), anyLong()))
             .thenReturn(List.of());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(RESERVATION)))
-            .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> reservationService.addReservation(commandFrom(RESERVATION)))
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining("이미 예약된");
     }
 
@@ -96,19 +97,19 @@ class ReservationServiceTest {
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("이름", tomorrow, SAVED_TIME, otherTheme);
+        ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
+        Reservation reservation = Reservation.create(new MemberName("이름"), tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));
         when(themeRepository.findById(otherTheme.getId()))
             .thenReturn(Optional.of(otherTheme));
 
-        when(timeRepository.findTimesByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
+        when(timeRepository.findAvailableTimes(any(ReservationDate.class), eq(otherTheme.getId())))
             .thenReturn(List.of(SAVED_TIME));
 
         // when & then
-        assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
+        assertThatCode(() -> reservationService.addReservation(commandFrom(reservation)))
             .doesNotThrowAnyException();
         verify(reservationRepository, times(1)).createReservation(any());
     }
@@ -121,12 +122,107 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining("예약이 존재하는");
     }
 
-    private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(),
+    private ReservationCommand commandFrom(Reservation reservation) {
+        return new ReservationCommand(reservation.getName(), reservation.getDate(),
             reservation.getTime().getId(), reservation.getThemeId());
+    }
+
+    @Test
+    void 사용자_이름으로_해당_사용자의_예약_목록을_조회한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        when(reservationRepository.findReservationsByName(testName))
+                .thenReturn(List.of(new Reservation(1L, testName, new ReservationDate(LocalDate.now().minusDays(1)),SAVED_TIME, SAVED_THEME),
+                        new Reservation(2L, testName, new ReservationDate(LocalDate.now().minusDays(2)),SAVED_TIME, SAVED_THEME)));
+
+        // when
+        List<Reservation> reservations = reservationService.findReservationsByName(testName);
+
+        // then
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations).extracting(Reservation::getName)
+                .allSatisfy(name -> assertThat(name.value().equals(testName)));
+    }
+
+    @Test
+    void 관리자가_id로_예약을_삭제한다() {
+        // given
+        Long reservationId = 1L;
+
+        // when
+        reservationService.deleteReservation(reservationId);
+
+        // then
+        verify(reservationRepository, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void 사용자가_id로_자신의_예약을_삭제한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        Long reservationId = 1L;
+
+        Reservation reservation = new Reservation(reservationId, name, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+
+        // when
+        reservationService.deleteReservation(reservationId, name);
+
+        // then
+        verify(reservationRepository, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void 사용자가_타인의_예약을_삭제하려하면_예외가_발생한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        MemberName otherName = new MemberName("브라운");
+        Long reservationId = 1L;
+
+        Reservation reservation = new Reservation(reservationId, otherName, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteReservation(reservationId, name))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.RESERVATION_ACCESS_DENIED.getMessage());
+    }
+
+    @Test
+    void 사용자가_이름으로_자신의_예약을_수정한다() {
+        // given
+        MemberName name = new MemberName("제임스");
+        Long reservationId = 1L;
+
+        when(timeRepository.findById(anyLong())).thenReturn(Optional.of(SAVED_TIME));
+        when(themeRepository.findById(anyLong())).thenReturn(Optional.of(SAVED_THEME));
+
+        Reservation oldReservation = new Reservation(reservationId, name, new ReservationDate(LocalDate.now().plusDays(1)), SAVED_TIME, SAVED_THEME);
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(oldReservation));
+
+        ReservationDate otherDate = new ReservationDate(LocalDate.now().plusDays(2));
+        ReservationCommand command = new ReservationCommand(name, otherDate, SAVED_TIME.getId(), SAVED_THEME.getId());
+        when(timeRepository.findAvailableTimes(eq(otherDate), eq(SAVED_THEME.getId())))
+                .thenReturn(List.of(SAVED_TIME));
+
+        // when
+        reservationService.update(reservationId, command, name);
+
+        // then
+        Reservation updatedReservation = new Reservation(
+                reservationId,
+                command.name(),
+                command.date(),
+                SAVED_TIME,
+                SAVED_THEME);
+
+        verify(reservationRepository, times(1)).update(updatedReservation);
     }
 }

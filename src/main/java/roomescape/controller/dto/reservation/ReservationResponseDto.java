@@ -1,9 +1,10 @@
-package roomescape.dto.reservation;
+package roomescape.controller.dto.reservation;
+
+import roomescape.controller.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.controller.dto.theme.ThemeResponseDto;
+import roomescape.domain.Reservation;
 
 import java.time.format.DateTimeFormatter;
-import roomescape.domain.Reservation;
-import roomescape.dto.reservationTime.ReservationTimeResponseDto;
-import roomescape.dto.theme.ThemeResponseDto;
 
 public record ReservationResponseDto(
         Long id,
@@ -15,15 +16,16 @@ public record ReservationResponseDto(
 
     public static ReservationResponseDto from(Reservation reservation) {
         String name = reservation.getName().value();
-        String date = reservation.getDateValue().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String date = reservation.getDate().value().format(DateTimeFormatter.ISO_LOCAL_DATE);
+
         ReservationTimeResponseDto time = ReservationTimeResponseDto.from(reservation.getTime());
 
         return new ReservationResponseDto(
-            reservation.getId(),
-            name,
-            date,
-            time,
-            ThemeResponseDto.from(reservation.getTheme())
+                reservation.getId(),
+                name,
+                date,
+                time,
+                ThemeResponseDto.from(reservation.getTheme())
         );
     }
 }

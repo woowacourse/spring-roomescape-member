@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.vo.ReservationDate;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -67,8 +68,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findTimesByDateAndThemeId(LocalDate date, Long themeId) {
-        String formattedDate = DATE_FORMATTER.format(date);
+    public List<ReservationTime> findAvailableTimes(ReservationDate date, Long themeId) {
+        String formattedDate = DATE_FORMATTER.format(date.value());
 
         return template.query(
             """

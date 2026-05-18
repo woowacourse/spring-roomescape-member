@@ -1,8 +1,9 @@
 package roomescape.domain;
 
-import java.util.Objects;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
+
+import java.util.Objects;
 
 public class Theme {
 
@@ -18,24 +19,24 @@ public class Theme {
         this.imageUrl = Objects.requireNonNull(imageUrl);
     }
 
-    public Theme(String name, String description, String imageUrl) {
-        this(null, new ThemeName(name), description, new ThemeImageUrl(imageUrl));
+    public Theme(ThemeName name, String description, ThemeImageUrl imageUrl) {
+        this(null, name, description, imageUrl);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNameValue() {
-        return name.value();
+    public ThemeName getName() {
+        return name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String getImageUrlValue() {
-        return imageUrl.value();
+    public ThemeImageUrl getImageUrl() {
+        return imageUrl;
     }
 
     public Theme withId(Long id) {
@@ -49,7 +50,7 @@ public class Theme {
         }
         Theme theme = (Theme) o;
         return id != null
-            && Objects.equals(id, theme.id);
+                && Objects.equals(id, theme.id);
     }
 
     @Override

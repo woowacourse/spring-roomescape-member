@@ -16,6 +16,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.util.List;
+
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
@@ -58,9 +61,9 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(saved).isNotNull();
-        assertThat(saved.getNameValue()).isEqualTo(THEME.getNameValue());
+        assertThat(saved.getName()).isEqualTo(THEME.getName());
         assertThat(saved.getDescription()).isEqualTo(THEME.getDescription());
-        assertThat(saved.getImageUrlValue()).isEqualTo(THEME.getImageUrlValue());
+        assertThat(saved.getImageUrl()).isEqualTo(THEME.getImageUrl());
     }
 
     @Test
@@ -78,17 +81,17 @@ class JdbcThemeRepositoryTest {
         // given
         final int prevThemeEntityCount = themeRepository.findAll().size();
 
-        String first = "테마1";
-        String second = "테마2";
-        themeRepository.createTheme(new Theme(first, "-", ThemeImageUrl.defaultImageUrl().value()));
-        themeRepository.createTheme(new Theme(second, "-", ThemeImageUrl.defaultImageUrl().value()));
+        ThemeName first = new ThemeName("테마1");
+        ThemeName second = new ThemeName("테마2");
+        themeRepository.createTheme(new Theme(first, "-", ThemeImageUrl.defaultImageUrl()));
+        themeRepository.createTheme(new Theme(second, "-", ThemeImageUrl.defaultImageUrl()));
 
         // when
         List<Theme> all = themeRepository.findAll();
 
         // then
         assertThat(all).hasSize(prevThemeEntityCount + 2);
-        assertThat(all).extracting(Theme::getNameValue)
+        assertThat(all).extracting(Theme::getName)
                 .anySatisfy(name -> assertThat(name).isEqualTo(first))
                 .anySatisfy(name -> assertThat(name).isEqualTo(second));
     }
@@ -106,8 +109,8 @@ class JdbcThemeRepositoryTest {
 
         for (int i = 0; i < tenPopularThemesOrderByRank.size(); i++) {
             for (int j = 0; j < i + 1; j++) {
-                reservationRepository.createReservation(new Reservation(
-                    "name", LocalDate.now().minusDays(1), times.get(j), tenPopularThemesOrderByRank.get(i)
+                reservationRepository.createReservation(Reservation.create(
+                        new MemberName("name"), new ReservationDate(LocalDate.now().minusDays(1)), times.get(j), tenPopularThemesOrderByRank.get(i)
                 ));
             }
         }
@@ -123,7 +126,7 @@ class JdbcThemeRepositoryTest {
     private List<Theme> createAndSaveTenThemes() {
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme("테마" + i, "테마" + i, ThemeImageUrl.defaultImageUrl().value()));
+            themes.add(new Theme(new ThemeName("테마" + i), "테마" + i, ThemeImageUrl.defaultImageUrl()));
         }
 
         return themes.stream()

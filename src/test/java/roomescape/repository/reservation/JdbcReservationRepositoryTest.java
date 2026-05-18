@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
+import roomescape.domain.vo.ThemeName;
 import roomescape.repository.time.JdbcReservationTimeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
 
@@ -25,7 +27,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class JdbcReservationRepositoryTest {
 
     private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
-    private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
+    private static final Theme THEME = new Theme(new ThemeName("테마명"), "설명", ThemeImageUrl.defaultImageUrl());
+    private static final ReservationDate tomorrow = new ReservationDate(LocalDate.now().plusDays(1));
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
@@ -50,8 +53,7 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         // when
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("name", tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("name"), tomorrow, savedTime, savedTheme));
 
         // then
         assertThat(saved.getTime()).isEqualTo(savedTime);
@@ -64,11 +66,10 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
         ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
 
-        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        Theme savedTheme = themeRepository.createTheme(new Theme(new ThemeName("a"), "a", ThemeImageUrl.defaultImageUrl()));
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime1, savedTheme));
-        reservationRepository.createReservation(new Reservation("제임스",  tomorrow, savedTime2, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime1, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("제임스"),  tomorrow, savedTime2, savedTheme));
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -83,17 +84,16 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservations)
             .extracting(Reservation::getTheme)
-            .allSatisfy(theme -> assertThat(theme.getNameValue()).isEqualTo("a"));
+            .allSatisfy(theme -> assertThat(theme.getName().value()).isEqualTo("a"));
     }
 
     @Test
     void 저장되어_있는_예약을_아이디로_조회하여_삭제한다() {
         // given
         ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
-        Theme theme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        Theme theme = themeRepository.createTheme(new Theme(new ThemeName("a"), "a", ThemeImageUrl.defaultImageUrl()));
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, time, theme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, time, theme));
 
         // when & then
         assertThatCode(() -> reservationRepository.deleteById(saved.getId()))
@@ -106,16 +106,14 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime, savedTheme));
 
         // when
-        Reservation target = reservationRepository.findById(saved.getId());
+        Reservation target = reservationRepository.findById(saved.getId()).get();
 
         // then
         assertThat(target.getId()).isEqualTo(saved.getId());
         assertThat(target.getName()).isEqualTo(saved.getName());
-        assertThat(target.getDateValue()).isEqualTo(saved.getDateValue());
         assertThat(target.getTime()).isEqualTo(saved.getTime());
         assertThat(target.getTheme()).isEqualTo(saved.getTheme());
     }
@@ -126,8 +124,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(Reservation.create(new MemberName("브라운"),  tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeId(saved.getTimeId());
@@ -144,14 +141,51 @@ class JdbcReservationRepositoryTest {
             new ReservationTime(2L, "17:00"));
         Theme savedTheme = themeRepository.createTheme(THEME);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationRepository.createReservation(
-            new Reservation("브라운", tomorrow, savedTime, savedTheme));
+        reservationRepository.createReservation(Reservation.create(new MemberName("브라운"), tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeId(otherTime.getId());
 
         // then
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 사용자_이름으로_해당_사용자의_예약_목록을_조회한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
+        ReservationTime otherTime = timeRepository.createReservationTime(
+                new ReservationTime(2L, "17:00"));
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        reservationRepository.createReservation(Reservation.create(testName, tomorrow, time, savedTheme));
+        reservationRepository.createReservation(Reservation.create(testName, tomorrow, otherTime, savedTheme));
+
+        // when
+        List<Reservation> reservations = reservationRepository.findReservationsByName(testName);
+
+        // then
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations).extracting(Reservation::getName)
+                .allSatisfy(name -> assertThat(name.value().equals(testName)));
+    }
+
+    @Test
+    void 사용자의_예약을_업데이트한다() {
+        // given
+        MemberName testName = new MemberName("브라운");
+        ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
+        ReservationTime updatedTime = timeRepository.createReservationTime(new ReservationTime("17:00"));
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        Reservation oldReservation = reservationRepository.createReservation(Reservation.create(testName, tomorrow, time, savedTheme));
+        Reservation updatedReservation = new Reservation(oldReservation.getId(), testName, tomorrow, updatedTime, savedTheme);;
+
+        // when
+        reservationRepository.update(updatedReservation);
+
+        // then
+        assertThat(reservationRepository.findById(oldReservation.getId()).get()).isEqualTo(updatedReservation);
     }
 }

@@ -7,9 +7,9 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
-import roomescape.dto.theme.PopularThemeResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
+import roomescape.controller.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
+import roomescape.service.command.ThemeCommand;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,8 +22,8 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme addTheme(ThemeRequestDto request) {
-        Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
+    public Theme addTheme(ThemeCommand command) {
+        Theme theme = new Theme(command.name(), command.description(), command.imageUrl());
         return themeRepository.createTheme(theme);
     }
 
@@ -35,14 +35,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Map<Theme, Integer> findWeekPopularThemesOrderByRank(final int limit) {
-        List<Theme> themes = themeRepository.findWeekPopularThemesOrderByRank(limit);
-        Map<Theme, Integer> themesWithRank = new HashMap<>();
-
-        for (int i = 0; i < themes.size(); i++) {
-            themesWithRank.put(themes.get(i), i + 1);
-        }
-
-        return themesWithRank;
+    public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
+        return themeRepository.findWeekPopularThemesOrderByRank(limit);
     }
 }
