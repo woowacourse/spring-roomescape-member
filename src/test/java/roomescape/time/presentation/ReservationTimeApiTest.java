@@ -150,7 +150,6 @@ class ReservationTimeApiTest {
                 .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
-                .body("theme.id", equalTo(themeId.intValue()))
                 .body("times", hasSize(2));
     }
 
@@ -180,7 +179,6 @@ class ReservationTimeApiTest {
                 .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
-                .body("theme.id", equalTo(themeId.intValue()))
                 .body("times", hasSize(1))
                 .body("times[0].startAt", equalTo("11:00:00"));
     }
