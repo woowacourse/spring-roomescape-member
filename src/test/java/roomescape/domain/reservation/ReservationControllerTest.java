@@ -141,7 +141,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 삭제의 정상 요청과 응답을 확인한다.")
-    void deleteUserReservation() throws Exception {
+    void cancelUserReservation() throws Exception {
         // given
         Long id = 1L;
 
@@ -215,7 +215,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 삭제 시 id를 누락한 경우 예외가 발생한다.")
-    void deleteUserReservationWithoutId() throws Exception {
+    void cancelUserReservationWithoutId() throws Exception {
         // given & when & then
         mockMvc.perform(delete("/reservations"))
             .andExpect(status().isMethodNotAllowed());

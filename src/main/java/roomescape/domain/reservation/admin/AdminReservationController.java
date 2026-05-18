@@ -30,7 +30,7 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/admin/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(HttpServletRequest request, @PathVariable Long id) {
+    public ResponseEntity<Void> cancelReservation(HttpServletRequest request, @PathVariable Long id) {
         if (validator.isUnauthorized(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

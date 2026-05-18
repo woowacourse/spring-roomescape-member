@@ -92,7 +92,7 @@ class AdminReservationControllerTest {
 
     @Test
     @DisplayName("관리자가 예약 삭제 시 요청과 응답을 확인한다.")
-    void deleteReservation() throws Exception {
+    void cancelReservation() throws Exception {
         // given
         Long id = 1L;
         when(validator.isUnauthorized(any(HttpServletRequest.class))).thenReturn(false);
@@ -107,7 +107,7 @@ class AdminReservationControllerTest {
 
     @Test
     @DisplayName("관리자 인증에 실패하면 예약 삭제 시 401을 반환한다.")
-    void deleteReservationWhenUnauthorized() throws Exception {
+    void cancelReservationWhenUnauthorized() throws Exception {
         // given
         Long id = 1L;
         when(validator.isUnauthorized(any(HttpServletRequest.class))).thenReturn(true);
