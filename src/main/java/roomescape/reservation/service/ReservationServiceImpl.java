@@ -45,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = findTime(reservation.timeId());
         Long themeId = reservation.themeId();
-        time.validateNotPast();
+        time.validateReservableSchedule();
         validateThemeId(themeId);
         validateNotHoliday(time);
         validateDuplicatedReservation(themeId, time);
@@ -108,9 +108,9 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation update(Long id, Long timeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
-        reservation.getTime().validateReservationNotPast();
+        reservation.getTime().validateUpdatableReservation();
         ReservationTime newTime = findTime(timeId);
-        newTime.validateNotPast();
+        newTime.validateReservableSchedule();
         validateDuplicatedReservation(reservation.getThemeId(), newTime);
         reservationRepository.update(id, timeId);
         return reservation.withTime(newTime);
