@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ThemeCreateRequest;
-import roomescape.controller.dto.ThemeFamousFindRequest;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.domain.Theme;
+import roomescape.controller.dto.request.ThemeCreateRequest;
+import roomescape.controller.dto.request.ThemeFamousFindRequest;
+import roomescape.controller.dto.response.ThemeResponse;
+import roomescape.domain.theme.Theme;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -27,7 +29,7 @@ public class ThemeController {
 
     @PostMapping("/admin/themes")
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponse create(@RequestBody ThemeCreateRequest request) {
+    public ThemeResponse create(@Valid @RequestBody ThemeCreateRequest request) {
         Theme theme = themeService.create(request);
         return ThemeResponse.toDto(theme);
     }
@@ -41,8 +43,8 @@ public class ThemeController {
 
     @GetMapping("/themes/famous")
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
-        List<Theme> themes = themeService.findFamous(request);
+    public List<ThemeResponse> findFamous(@Valid @ModelAttribute ThemeFamousFindRequest request) {
+        List<Theme> themes = themeService.findFamous(request, LocalDate.now());
         return themes.stream()
                 .map(ThemeResponse::toDto)
                 .toList();

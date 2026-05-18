@@ -8,12 +8,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 
 @Repository
 public class ReservationTimeRepository {
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) ->
             ReservationTime.of(resultSet.getLong("id"), resultSet.getTime("start_at").toLocalTime());
+    private static final String EXISTS_BY_ID = """
+            SELECT EXISTS (
+                SELECT 1 
+                    FROM reservation_time
+                    WHERE id = ?
+                    )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -34,22 +41,16 @@ public class ReservationTimeRepository {
         return ReservationTime.of(generatedKey, time.getStartAt());
     }
 
-    public Optional<ReservationTime> findById(long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
-        List<ReservationTime> result = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
-        return result.stream().findFirst();
-    }
-
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
 
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
     }
 
-    public void delete(long id) {
-        String sql = "delete from reservation_time where id = ?";
-
-        jdbcTemplate.update(sql, id);
+    public Optional<ReservationTime> findById(long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        List<ReservationTime> result = jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id);
+        return result.stream().findFirst();
     }
 
     public List<ReservationTime> findByDateAndTheme(LocalDate date, long themeId) {
@@ -63,5 +64,16 @@ public class ReservationTimeRepository {
                 )
                 """;
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, date, themeId);
+    }
+
+    public void delete(long id) {
+        String sql = "delete from reservation_time where id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean existsById(long reservationTimeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_ID, Boolean.class, reservationTimeId));
     }
 }

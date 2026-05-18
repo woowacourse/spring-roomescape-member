@@ -1,17 +1,22 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationCreateRequest;
-import roomescape.controller.dto.ReservationResponse;
-import roomescape.domain.Reservation;
+import roomescape.controller.dto.request.ReservationCreateRequest;
+import roomescape.controller.dto.request.ReservationUpdateRequest;
+import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.domain.reservation.Reservation;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -24,16 +29,16 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse create(@RequestBody ReservationCreateRequest request) {
-        Reservation reservation = reservationService.reserve(request);
+    public ReservationResponse create(@Valid @RequestBody ReservationCreateRequest request) {
+        Reservation reservation = reservationService.reserve(request, LocalDateTime.now());
 
         return ReservationResponse.toDto(reservation);
     }
 
     @GetMapping("/reservations")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationService.findAll();
+    public List<ReservationResponse> findList(@RequestParam(required = false) String name) {
+        List<Reservation> reservations = reservationService.findList(name);
 
         return reservations.stream()
                 .map(ReservationResponse::toDto)
@@ -48,9 +53,16 @@ public class ReservationController {
         return ReservationResponse.toDto(reservation);
     }
 
-    @DeleteMapping("/admin/reservations/{id}")
+    @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
-        reservationService.cancel(id);
+        reservationService.cancel(id, LocalDateTime.now());
+    }
+
+    @PutMapping("/reservations/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ReservationResponse update(@Valid @RequestBody ReservationUpdateRequest request, @PathVariable long id) {
+        Reservation updated = reservationService.update(request, id, LocalDateTime.now());
+        return ReservationResponse.toDto(updated);
     }
 }

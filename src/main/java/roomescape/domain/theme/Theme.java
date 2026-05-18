@@ -1,25 +1,25 @@
-package roomescape.domain;
+package roomescape.domain.theme;
 
 import java.util.Objects;
 
 public class Theme {
     private final long id;
-    private final String name;
+    private final ThemeName name;
     private final String description;
-    private final String thumbnailUrl;
+    private final ThumbnailUrl thumbnailUrl;
 
-    private Theme(long id, String name, String description, String thumbnailUrl) {
+    private Theme(long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnailUrl = Objects.requireNonNull(thumbnailUrl);
     }
 
-    public static Theme of(long id, String name, String description, String thumbnailUrl) {
+    public static Theme load(long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         return new Theme(id, name, description, thumbnailUrl);
     }
 
-    public static Theme of(String name, String description, String thumbnailUrl) {
+    public static Theme create(ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
         return new Theme(0L, name, description, thumbnailUrl);
     }
 
@@ -27,7 +27,7 @@ public class Theme {
         return id;
     }
 
-    public String getName() {
+    public ThemeName getName() {
         return name;
     }
 
@@ -35,7 +35,7 @@ public class Theme {
         return description;
     }
 
-    public String getThumbnailUrl() {
+    public ThumbnailUrl getThumbnailUrl() {
         return thumbnailUrl;
     }
 

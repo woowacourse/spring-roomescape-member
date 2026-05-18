@@ -1,7 +1,7 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.response;
 
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 
 public class ReservationResponse {
     private final long id;
@@ -20,7 +20,7 @@ public class ReservationResponse {
     }
 
     public static ReservationResponse toDto(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(),
+        return new ReservationResponse(reservation.getId(), reservation.getName().getValue(),
                 reservation.getDate().getDate(),
                 ReservationTimeResponse.toDto(reservation.getTime()),
                 ThemeResponse.toDto(reservation.getTheme()));

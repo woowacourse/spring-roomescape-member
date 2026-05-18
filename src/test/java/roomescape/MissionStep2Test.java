@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -62,7 +62,7 @@ public class MissionStep2Test {
     void DB_추가_삭제_API_전환() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -77,7 +77,7 @@ public class MissionStep2Test {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/admin/reservations/1")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(200);
 

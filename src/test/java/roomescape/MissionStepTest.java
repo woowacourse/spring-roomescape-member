@@ -40,7 +40,7 @@ public class MissionStepTest {
     void 예약_추가_및_삭제() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -59,7 +59,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/reservations/1")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(200);
 

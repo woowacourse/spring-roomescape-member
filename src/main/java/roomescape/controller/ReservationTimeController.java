@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.AvailableTimeFindRequest;
-import roomescape.controller.dto.ReservationTimeCreateRequest;
-import roomescape.controller.dto.ReservationTimeResponse;
-import roomescape.domain.ReservationTime;
+import roomescape.controller.dto.request.AvailableTimeFindRequest;
+import roomescape.controller.dto.request.ReservationTimeCreateRequest;
+import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -26,7 +28,7 @@ public class ReservationTimeController {
 
     @PostMapping("/admin/times")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse create(@RequestBody ReservationTimeCreateRequest request) {
+    public ReservationTimeResponse create(@Valid @RequestBody ReservationTimeCreateRequest request) {
         ReservationTime found = reservationTimeService.create(request);
 
         return ReservationTimeResponse.toDto(found);
@@ -44,8 +46,8 @@ public class ReservationTimeController {
 
     @GetMapping("/times/available")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTimeResponse> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAvailable(request);
+    public List<ReservationTimeResponse> findAvailable(@Valid @ModelAttribute AvailableTimeFindRequest request) {
+        List<ReservationTime> reservationTimes = reservationTimeService.findAvailable(request, LocalDate.now());
 
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::toDto)
