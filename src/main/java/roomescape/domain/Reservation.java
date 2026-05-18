@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import roomescape.domain.exception.InvalidDomainException;
+import roomescape.domain.policy.ReservationPolicy;
 
 public class Reservation {
     private static final int MAX_NAME_LENGTH = 30;
@@ -9,9 +10,20 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
-
     private final Theme theme;
 
+    // 새 예약 생성용 - 정책 검증 포함
+    // TODO 정적 팩토리 메서드 적용 및 ~Entity 영속성 DB 매핑 엔티티 제거
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme, ReservationPolicy policy) {
+        validate(name, date, time, theme);
+        policy.validateCreatable(date, time.getStartAt());
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    // DB 재구성용 - 불변식 검증만
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
         this.name = name;

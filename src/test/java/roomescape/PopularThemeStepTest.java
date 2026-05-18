@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import roomescape.domain.policy.PopularThemePolicy;
+import roomescape.domain.policy.RecentWeekPopularPolicy;
 import roomescape.support.ReservationTestHelper;
 
 
@@ -38,14 +40,15 @@ public class PopularThemeStepTest extends IntegrationTest {
     private static final LocalDate TODAY = LocalDate.of(2026, 5, 9);
 
     @TestConfiguration
-    static class FixedClockConfig {
+    static class FixedPolicyConfig {
         @Bean
         @Primary
-        public Clock fixedClock() {
-            return Clock.fixed(
+        public PopularThemePolicy fixedPopularThemePolicy() {
+            Clock fixed = Clock.fixed(
                     TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
+            return new RecentWeekPopularPolicy(fixed);
         }
     }
 

@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import roomescape.domain.policy.FutureOnlyPolicy;
+import roomescape.domain.policy.ReservationPolicy;
 import roomescape.support.ReservationTestHelper;
 
 /*
@@ -36,14 +38,15 @@ public class MyReservationStepTest extends IntegrationTest {
     private static final LocalTime NOW_TIME = LocalTime.of(12, 0);
 
     @TestConfiguration
-    static class FixedClockConfig {
+    static class FixedPolicyConfig {
         @Bean
         @Primary
-        public Clock fixedClock() {
-            return Clock.fixed(
+        public ReservationPolicy fixedReservationPolicy() {
+            Clock fixed = Clock.fixed(
                     TODAY.atTime(NOW_TIME).atZone(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
+            return new FutureOnlyPolicy(fixed);
         }
     }
 

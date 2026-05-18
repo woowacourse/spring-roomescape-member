@@ -1,11 +1,10 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.domain.policy.PopularThemeCriteria;
+import roomescape.domain.policy.PopularThemePolicy;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -19,12 +18,16 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
+    private final PopularThemePolicy popularThemePolicy;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(
+            ThemeRepository themeRepository,
+            ReservationRepository reservationRepository,
+            PopularThemePolicy popularThemePolicy
+    ) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
+        this.popularThemePolicy = popularThemePolicy;
     }
 
 
@@ -48,14 +51,12 @@ public class ThemeService {
     }
 
     public List<PopularThemeResult> findPopular() {
-
-        PopularThemeCriteria criteria = PopularThemeCriteria.recentWeekTop10();
-        LocalDate today = LocalDate.now(clock);
+        LocalDate today = popularThemePolicy.today();
 
         return themeRepository.findPopularBetween(
-                        criteria.from(today),
-                        criteria.to(today),
-                        criteria.getLimit())
+                        popularThemePolicy.from(today),
+                        popularThemePolicy.to(today),
+                        popularThemePolicy.limit())
                 .stream()
                 .map(p -> new PopularThemeResult(
                         ThemeResult.from(p.getThemeEntity()),
