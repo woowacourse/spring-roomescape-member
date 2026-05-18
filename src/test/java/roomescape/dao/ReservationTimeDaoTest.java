@@ -6,7 +6,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
@@ -40,9 +42,9 @@ public class ReservationTimeDaoTest {
 
     @Test
     void 예약에서_사용중인_시간을_삭제하면_예외가_발생한다() {
-        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(10, 0));
-        Long themeId = themeDao.insertTheme("이든의 하우스", "설명", "링크");
-        reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, themeId);
+        Long timeId = reservationTimeDao.insertReservationTime(ReservationTime.from(LocalTime.of(10, 0)));
+        Long themeId = themeDao.insertTheme(Theme.from("이든의 하우스", "설명", "링크"));
+        reservationDao.insertReservation(Reservation.from("이든", LocalDate.of(2026, 5, 6), timeId, themeId));
 
         assertThatThrownBy(() -> reservationTimeDao.delete(timeId))
                 .isInstanceOf(ReservationTimeInUseException.class)
@@ -53,7 +55,7 @@ public class ReservationTimeDaoTest {
     void 예약_시간_생성_테스트() {
         LocalTime startTime = LocalTime.of(12, 0);
 
-        Long id = reservationTimeDao.insertReservationTime(startTime);
+        Long id = reservationTimeDao.insertReservationTime(ReservationTime.from(startTime));
         ReservationTime actual = reservationTimeDao.findById(id);
 
         assertThat(actual.getId()).isNotNull();

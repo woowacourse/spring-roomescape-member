@@ -13,8 +13,6 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.request.ReservationUpdateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exception.PastReservationTimeException;
-import roomescape.exception.ReservationNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +39,9 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations() {
         List<Reservation> reservations = reservationDao.findAllReservations();
+        if (reservations.isEmpty()) {
+            return List.of();
+        }
         List<Long> timeIds = reservations.stream().map(Reservation::getTimeId).toList();
         List<Long> themeIds = reservations.stream().map(Reservation::getThemeId).toList();
         Map<Long, ReservationTime> timeMap = reservationTimeDao.findAllByIds(timeIds)
@@ -49,30 +50,29 @@ public class ReservationService {
                 .stream().collect(Collectors.toMap(Theme::getId, Function.identity()));
         return reservations.stream()
                 .map(reservation -> ReservationResponse.from(
-                            reservation,
-                            timeMap.get(reservation.getTimeId()),
-                            themeMap.get(reservation.getThemeId())
+                        reservation,
+                        timeMap.get(reservation.getTimeId()),
+                        themeMap.get(reservation.getThemeId())
                 )).toList();
     }
 
     @Transactional
     public ReservationResponse createReservation(ReservationCreateRequest request) {
+        Reservation reservation = Reservation.from(request.name(), request.date(), request.timeId(), request.themeId());
         ReservationTime time = reservationTimeDao.findById(request.timeId());
-        LocalDateTime dateTime = LocalDateTime.of(request.date(), time.getStartAt());
-        validateNotPastDate(dateTime);
-        
-        Long id = reservationDao.insertReservation(request.name(), request.date(),
-                request.timeId(), request.themeId());
-        Reservation reservation = reservationDao.findReservationById(id);
-        Theme theme = themeDao.findById(reservation.getThemeId());
-        
-        return ReservationResponse.from(reservation, time, theme);
+        reservation.validateNotPast(LocalDateTime.of(request.date(), time.getStartAt()));
+
+        Long id = reservationDao.insertReservation(reservation);
+        Reservation newReservation = reservationDao.findReservationById(id);
+        Theme theme = themeDao.findById(newReservation.getThemeId());
+
+        return ReservationResponse.from(newReservation, time, theme);
     }
 
     @Transactional
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.delete(id);
-        validateChanged(deleteCount);
+        Reservation.validateDeletion(deleteCount);
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
@@ -91,43 +91,38 @@ public class ReservationService {
 
     public List<ReservationResponse> getUserReservations(String name) {
         List<Reservation> reservations = reservationDao.findUserReservations(name);
+        if (reservations.isEmpty()) {
+            return List.of();
+        }
+        List<Long> timeIds = reservations.stream().map(Reservation::getTimeId).toList();
+        List<Long> themeIds = reservations.stream().map(Reservation::getThemeId).toList();
+        Map<Long, ReservationTime> timeMap = reservationTimeDao.findAllByIds(timeIds)
+                .stream().collect(Collectors.toMap(ReservationTime::getId, Function.identity()));
+        Map<Long, Theme> themeMap = themeDao.findAllByIds(themeIds)
+                .stream().collect(Collectors.toMap(Theme::getId, Function.identity()));
         return reservations.stream()
-                .map(reservation -> {
-                    ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
-                    Theme theme = themeDao.findById(reservation.getThemeId());
-                    return ReservationResponse.from(reservation, time, theme);
-                })
-                .toList();
+                .map(reservation -> ReservationResponse.from(
+                        reservation,
+                        timeMap.get(reservation.getTimeId()),
+                        themeMap.get(reservation.getThemeId())
+                )).toList();
     }
 
     @Transactional
     public void deleteUserReservation(Long id, String name) {
         Reservation reservation = reservationDao.findReservationById(id);
         ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
-        LocalDateTime dateTime = LocalDateTime.of(reservation.getDate(), time.getStartAt());
-        validateNotPastDate(dateTime);
-
+        reservation.validateNotPast(LocalDateTime.of(reservation.getDate(), time.getStartAt()));
         int deleteCount = reservationDao.deleteUserReservation(id, name);
-        validateChanged(deleteCount);
+        Reservation.validateDeletion(deleteCount);
     }
 
     @Transactional
     public void updateUserReservation(Long id, ReservationUpdateRequest request) {
         ReservationTime time = reservationTimeDao.findById(request.timeId());
-        validateNotPastDate(LocalDateTime.of(request.date(), time.getStartAt()));
-        int updateCount = reservationDao.update(id, request.date(), request.timeId(), request.themeId());
-        validateChanged(updateCount);
-    }
-
-    private void validateNotPastDate(LocalDateTime dateTime) {
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new PastReservationTimeException("이전 날짜는 선택하실 수 없습니다.");
-        }
-    }
-
-    private void validateChanged(int count) {
-        if (count == 0) {
-            throw new ReservationNotFoundException("해당 예약을 찾을 수 없습니다.");
-        }
+        Reservation reservation = Reservation.from(id, request.name(), request.date(), request.timeId(), request.themeId());
+        reservation.validateNotPast(LocalDateTime.of(request.date(), time.getStartAt()));
+        int updateCount = reservationDao.update(id, reservation);
+        Reservation.validateDeletion(updateCount);
     }
 }

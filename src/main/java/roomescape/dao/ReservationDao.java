@@ -1,9 +1,5 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +11,10 @@ import roomescape.domain.Reservation;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.ReservationAlreadyExistsException;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+
 @Repository
 public class ReservationDao {
 
@@ -24,7 +24,7 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> Reservation.from(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             LocalDate.parse(resultSet.getString("date")),
@@ -42,24 +42,21 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 
-    public Long insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Long insertReservation(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(
-                        sql,
-                        new String[]{"id"}
-                );
-                ps.setString(1, name);
-                ps.setString(2, date.toString());
-                ps.setLong(3, timeId);
-                ps.setLong(4, themeId);
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, reservation.getName());
+                ps.setString(2, reservation.getDate().toString());
+                ps.setLong(3, reservation.getTimeId());
+                ps.setLong(4, reservation.getThemeId());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
+            throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재입니다.");
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("해당 시간, 테마를 찾을 수 없습니다.");
         }
@@ -85,10 +82,10 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
-    public int update(Long id, LocalDate date, Long timeId, Long themeId) {
+    public int update(Long id, Reservation reservation) {
         try {
             String sql = "UPDATE reservation SET date = ?, time_id = ?, theme_id = ? WHERE id = ?";
-            return jdbcTemplate.update(sql, date, timeId, themeId, id);
+            return jdbcTemplate.update(sql, reservation.getDate(), reservation.getTimeId(), reservation.getThemeId(), id);
         } catch (DuplicateKeyException e) {
             throw new ReservationAlreadyExistsException("해당 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
         }

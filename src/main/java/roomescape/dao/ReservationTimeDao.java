@@ -1,9 +1,5 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.util.List;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,13 +13,17 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
 
+import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.util.List;
+
 @Repository
 public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> ReservationTime.from(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
@@ -43,7 +43,10 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAllByIds(List<Long> timeIds) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id IN (:timeIds)";
+        if (timeIds.isEmpty()) {
+            return List.of();
+        }
+        String sql = "SELECT * FROM reservation_time WHERE id IN (:timeIds)";
         MapSqlParameterSource parameters = new MapSqlParameterSource("timeIds", timeIds);
         return namedParameterJdbcTemplate.query(sql, parameters, reservationTimeRowMapper);
     }
@@ -53,7 +56,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    public Long insertReservationTime(LocalTime time) {
+    public Long insertReservationTime(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -62,7 +65,7 @@ public class ReservationTimeDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, time.toString());
+            ps.setString(1, time.getStartAt().toString());
             return ps;
         }, keyHolder);
 
