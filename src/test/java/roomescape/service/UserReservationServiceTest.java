@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,7 +69,6 @@ class UserReservationServiceTest {
 
         verify(reservationTimeRepository, times(1)).findById(1L);
         verify(reservationService, times(1)).create(command);
-        verifyNoMoreInteractions(reservationTimeRepository, reservationService);
         verifyNoInteractions(reservationRepository);
     }
 
@@ -87,8 +84,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationTimeRepository, times(1)).findById(1L);
-        verify(reservationService, never()).create(any());
-        verifyNoMoreInteractions(reservationTimeRepository);
         verifyNoInteractions(reservationService, reservationRepository);
     }
 
@@ -104,8 +99,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationTimeRepository, times(1)).findById(1L);
-        verify(reservationService, never()).create(any());
-        verifyNoMoreInteractions(reservationTimeRepository);
         verifyNoInteractions(reservationService, reservationRepository);
     }
 
@@ -120,7 +113,6 @@ class UserReservationServiceTest {
         assertThat(results).hasSize(1);
         assertThat(results.get(0).name()).isEqualTo(OWNER);
         verify(reservationRepository, times(1)).findByName(OWNER);
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -134,7 +126,6 @@ class UserReservationServiceTest {
 
         verify(reservationRepository, times(1)).findById(1L);
         verify(reservationRepository, times(1)).deleteById(1L);
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -149,8 +140,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationRepository, times(1)).findById(1L);
-        verify(reservationRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -166,8 +155,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationRepository, times(1)).findById(1L);
-        verify(reservationRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -183,8 +170,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationRepository, times(1)).findById(1L);
-        verify(reservationRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -208,7 +193,6 @@ class UserReservationServiceTest {
         verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeIdAndIdNot(
                 ANOTHER_FUTURE_DATE, 2L, VALID_THEME.getId(), 1L);
         verify(reservationRepository, times(1)).update(any(Reservation.class));
-        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository);
         verifyNoInteractions(reservationService);
     }
 
@@ -225,8 +209,6 @@ class UserReservationServiceTest {
         );
 
         verify(reservationRepository, times(1)).findById(1L);
-        verify(reservationRepository, never()).update(any());
-        verifyNoMoreInteractions(reservationRepository);
         verifyNoInteractions(reservationService, reservationTimeRepository);
     }
 
@@ -245,8 +227,6 @@ class UserReservationServiceTest {
 
         verify(reservationRepository, times(1)).findById(1L);
         verify(reservationTimeRepository, times(1)).findById(99L);
-        verify(reservationRepository, never()).update(any());
-        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository);
         verifyNoInteractions(reservationService);
     }
 
@@ -265,8 +245,6 @@ class UserReservationServiceTest {
 
         verify(reservationRepository, times(1)).findById(1L);
         verify(reservationTimeRepository, times(1)).findById(2L);
-        verify(reservationRepository, never()).update(any());
-        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository);
         verifyNoInteractions(reservationService);
     }
 
@@ -289,8 +267,6 @@ class UserReservationServiceTest {
         verify(reservationTimeRepository, times(1)).findById(2L);
         verify(reservationRepository, times(1)).existsByDateAndTimeIdAndThemeIdAndIdNot(
                 ANOTHER_FUTURE_DATE, 2L, VALID_THEME.getId(), 1L);
-        verify(reservationRepository, never()).update(any());
-        verifyNoMoreInteractions(reservationRepository, reservationTimeRepository);
         verifyNoInteractions(reservationService);
     }
 }

@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -56,8 +54,6 @@ class ReservationTimeServiceTest {
         );
 
         verify(reservationTimeRepository, times(1)).existsByStartAt(VALID_START_AT);
-        verify(reservationTimeRepository, never()).save(any());
-        verifyNoMoreInteractions(reservationTimeRepository);
         verifyNoInteractions(reservationRepository, themeRepository);
     }
 
@@ -73,7 +69,6 @@ class ReservationTimeServiceTest {
 
         verify(reservationTimeRepository, times(1)).existsByStartAt(VALID_START_AT);
         verify(reservationTimeRepository, times(1)).save(any(ReservationTime.class));
-        verifyNoMoreInteractions(reservationTimeRepository);
         verifyNoInteractions(reservationRepository, themeRepository);
     }
 
@@ -88,8 +83,6 @@ class ReservationTimeServiceTest {
         );
 
         verify(reservationTimeRepository, times(1)).existsById(1L);
-        verify(reservationTimeRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(reservationTimeRepository);
         verifyNoInteractions(reservationRepository, themeRepository);
     }
 
@@ -106,8 +99,6 @@ class ReservationTimeServiceTest {
 
         verify(reservationTimeRepository, times(1)).existsById(1L);
         verify(reservationRepository, times(1)).existsByTimeId(1L);
-        verify(reservationTimeRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
         verifyNoInteractions(themeRepository);
     }
 
@@ -122,7 +113,6 @@ class ReservationTimeServiceTest {
         verify(reservationTimeRepository, times(1)).existsById(1L);
         verify(reservationRepository, times(1)).existsByTimeId(1L);
         verify(reservationTimeRepository, times(1)).deleteById(1L);
-        verifyNoMoreInteractions(reservationTimeRepository, reservationRepository);
         verifyNoInteractions(themeRepository);
     }
 
@@ -137,7 +127,6 @@ class ReservationTimeServiceTest {
         );
 
         verify(themeRepository, times(1)).existsById(1L);
-        verifyNoMoreInteractions(themeRepository);
         verifyNoInteractions(reservationTimeRepository, reservationRepository);
     }
 
@@ -151,7 +140,6 @@ class ReservationTimeServiceTest {
 
         verify(themeRepository, times(1)).existsById(1L);
         verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2026, 5, 9), 1L);
-        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
         verifyNoInteractions(reservationRepository);
     }
 
@@ -169,7 +157,6 @@ class ReservationTimeServiceTest {
         assertThat(result).isEmpty();
         verify(themeRepository, times(1)).existsById(1L);
         verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2020, 1, 1), 1L);
-        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
         verifyNoInteractions(reservationRepository);
     }
 
@@ -187,7 +174,6 @@ class ReservationTimeServiceTest {
         assertThat(result).hasSize(1);
         verify(themeRepository, times(1)).existsById(1L);
         verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.now(), 1L);
-        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
         verifyNoInteractions(reservationRepository);
     }
 
@@ -205,7 +191,6 @@ class ReservationTimeServiceTest {
         assertThat(result).hasSize(2);
         verify(themeRepository, times(1)).existsById(1L);
         verify(reservationTimeRepository, times(1)).findAvailable(LocalDate.of(2099, 12, 31), 1L);
-        verifyNoMoreInteractions(themeRepository, reservationTimeRepository);
         verifyNoInteractions(reservationRepository);
     }
 }

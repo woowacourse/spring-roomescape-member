@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +47,9 @@ class ThemeServiceTest {
                 ThemeConflictException.class,
                 () -> themeService.create(VALID_COMMAND)
         );
+
+        verify(themeRepository, times(1)).existsByName(VALID_COMMAND.name());
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -55,6 +61,10 @@ class ThemeServiceTest {
         given(themeRepository.save(any(Theme.class))).willReturn(saved);
 
         assertDoesNotThrow(() -> themeService.create(VALID_COMMAND));
+
+        verify(themeRepository, times(1)).existsByName(VALID_COMMAND.name());
+        verify(themeRepository, times(1)).save(any(Theme.class));
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -66,6 +76,9 @@ class ThemeServiceTest {
                 ThemeNotFoundException.class,
                 () -> themeService.delete(1L)
         );
+
+        verify(themeRepository, times(1)).existsById(1L);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -78,6 +91,9 @@ class ThemeServiceTest {
                 ThemeInUseException.class,
                 () -> themeService.delete(1L)
         );
+
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationRepository, times(1)).existsByThemeId(1L);
     }
 
     @Test
@@ -87,5 +103,9 @@ class ThemeServiceTest {
         given(reservationRepository.existsByThemeId(1L)).willReturn(false);
 
         assertDoesNotThrow(() -> themeService.delete(1L));
+
+        verify(themeRepository, times(1)).existsById(1L);
+        verify(reservationRepository, times(1)).existsByThemeId(1L);
+        verify(themeRepository, times(1)).deleteById(1L);
     }
 }
