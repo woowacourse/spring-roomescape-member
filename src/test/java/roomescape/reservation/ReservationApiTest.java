@@ -2,21 +2,17 @@ package roomescape.reservation;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ReservationFixture;
@@ -25,12 +21,6 @@ import roomescape.support.TestDataHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationApiTest {
-
-    private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 1, 1);
-    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
-
-    @MockitoBean
-    Clock clock;
 
     @LocalServerPort
     private int port;
@@ -42,8 +32,6 @@ class ReservationApiTest {
 
     @BeforeEach
     void setUp() {
-        when(clock.instant()).thenReturn(CURRENT_DATE.atStartOfDay(ZONE_ID).toInstant());
-        when(clock.getZone()).thenReturn(ZONE_ID);
         RestAssured.port = port;
         testHelper = new TestDataHelper(jdbcTemplate);
         testHelper.clearDatabase();
@@ -65,7 +53,7 @@ class ReservationApiTest {
                 .statusCode(201)
                 .body("id", greaterThan(0))
                 .body("name", equalTo("스타크"))
-                .body("date", equalTo("2028-05-06"))
+                .body("date", equalTo("2099-12-31"))
                 .body("time.id", equalTo(timeId.intValue()))
                 .body("time.startAt", equalTo("09:00"))
                 .body("theme.id", equalTo(themeId.intValue()))
@@ -179,7 +167,7 @@ class ReservationApiTest {
                 .statusCode(200)
                 .body("id", equalTo(reservationId.intValue()))
                 .body("name", equalTo("스타크"))
-                .body("date", equalTo("2028-05-06"))
+                .body("date", equalTo("2099-12-31"))
                 .body("time.id", equalTo(updateTimeId.intValue()))
                 .body("time.startAt", equalTo("10:00"))
                 .body("theme.id", equalTo(themeId.intValue()))

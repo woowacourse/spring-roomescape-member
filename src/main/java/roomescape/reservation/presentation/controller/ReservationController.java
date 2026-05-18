@@ -1,6 +1,7 @@
 package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> save(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
-        ReservationCreateCommand createCommand = request.toCommand();
+        ReservationCreateCommand createCommand = request.toCommand(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ReservationResponse.from(reservationCommandService.save(createCommand)));
@@ -60,7 +61,7 @@ public class ReservationController {
             @PathVariable Long id,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
-        ReservationUpdateCommand updateCommand = request.toCommand();
+        ReservationUpdateCommand updateCommand = request.toCommand(LocalDateTime.now());
 
         return ResponseEntity.ok(ReservationResponse.from(reservationCommandService.update(id, updateCommand)));
     }
@@ -69,7 +70,7 @@ public class ReservationController {
     public ResponseEntity<Void> delete(
             @PathVariable Long id
     ) {
-        reservationCommandService.delete(id);
+        reservationCommandService.delete(id, LocalDateTime.now());
         return ResponseEntity.noContent().build();
     }
 }

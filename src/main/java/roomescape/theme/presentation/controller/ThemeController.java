@@ -1,5 +1,6 @@
 package roomescape.theme.presentation.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class ThemeController {
     @GetMapping("/popular-top-10")
     public ResponseEntity<List<PopularThemeResponse>> findPopularThemes() {
         return ResponseEntity.ok(
-                themeQueryService.findPopularThemes().stream()
+                themeQueryService.findPopularThemes(LocalDate.now()).stream()
                         .map(PopularThemeResponse::from)
                         .toList()
         );

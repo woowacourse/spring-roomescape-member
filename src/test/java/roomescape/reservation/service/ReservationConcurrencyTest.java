@@ -1,11 +1,7 @@
 package roomescape.reservation.service;
 
-import static org.mockito.Mockito.when;
-
-import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -20,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.ConflictException;
@@ -31,11 +26,7 @@ import roomescape.support.TestDataHelper;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ReservationConcurrencyTest {
 
-    private static final LocalDate CURRENT_DATE = LocalDate.of(2026, 1, 1);
-    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
-
-    @MockitoBean
-    Clock clock;
+    private static final LocalDateTime NOW = LocalDateTime.of(2026, 1, 1, 0, 0);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -47,8 +38,6 @@ public class ReservationConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-        when(clock.instant()).thenReturn(CURRENT_DATE.atStartOfDay(ZONE_ID).toInstant());
-        when(clock.getZone()).thenReturn(ZONE_ID);
         testHelper = new TestDataHelper(jdbcTemplate);
     }
 
@@ -64,7 +53,7 @@ public class ReservationConcurrencyTest {
     void save_concurrent_duplicate_exception() throws InterruptedException {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
-        ReservationCreateCommand command = ReservationFixture.futureStarkCreateCommand(themeId, timeId);
+        ReservationCreateCommand command = ReservationFixture.futureStarkCreateCommand(themeId, timeId, NOW);
 
         int numberOfThreads = 5;
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);

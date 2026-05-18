@@ -1,6 +1,7 @@
 package roomescape.fixture;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
@@ -11,27 +12,27 @@ public class ReservationFixture {
     private static final String STARK = "스타크";
     private static final String KAYA = "카야";
     private static final LocalDate PAST_RESERVATION_DATE = LocalDate.of(2000, 5, 6);
-    private static final LocalDate FUTURE_RESERVATION_DATE = LocalDate.of(2028, 5, 6);
+    private static final LocalDate FUTURE_RESERVATION_DATE = LocalDate.of(2099, 12, 31);
     private static final String PAST_RESERVATION_DATE_TEXT = "2000-05-06";
-    private static final String FUTURE_RESERVATION_DATE_TEXT = "2028-05-06";
+    private static final String FUTURE_RESERVATION_DATE_TEXT = "2099-12-31";
 
     private ReservationFixture() {
     }
 
-    public static ReservationCreateCommand pastStarkCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(STARK, PAST_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand pastStarkCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(STARK, PAST_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationCreateCommand futureStarkCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(STARK, FUTURE_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand futureStarkCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(STARK, FUTURE_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationCreateCommand futureKayaCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand futureKayaCreateCommand(Long themeId, Long timeId, LocalDateTime now) {
+        return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId, now);
     }
 
-    public static ReservationUpdateCommand futureStarkUpdateCommand(Long timeId) {
-        return new ReservationUpdateCommand(FUTURE_RESERVATION_DATE, timeId);
+    public static ReservationUpdateCommand futureStarkUpdateCommand(Long timeId, LocalDateTime now) {
+        return new ReservationUpdateCommand(FUTURE_RESERVATION_DATE, timeId, now);
     }
 
     public static LocalDate pastReservationDate() {
