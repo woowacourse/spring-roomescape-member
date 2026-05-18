@@ -22,7 +22,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleRoomEscape(RoomEscapeException e) {
-        return createBadRequestResponse(e.getMessage());
+        return ResponseEntity
+                .status(e.errorCode().status())
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler

@@ -11,6 +11,7 @@ public class ApiIntegrationTestHelper {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsert;
     private final SimpleJdbcInsert reservationTimeInsert;
+    private final SimpleJdbcInsert reservationInsert;
 
     public ApiIntegrationTestHelper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -19,6 +20,9 @@ public class ApiIntegrationTestHelper {
                 .usingGeneratedKeyColumns("id");
         this.reservationTimeInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+        this.reservationInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -42,13 +46,12 @@ public class ApiIntegrationTestHelper {
         )).longValue();
     }
 
-    public void insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                name,
-                date,
-                themeId,
-                timeId
-        );
+    public Long insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
+        return reservationInsert.executeAndReturnKey(Map.of(
+                "name", name,
+                "date", date,
+                "theme_id", themeId,
+                "time_id", timeId
+        )).longValue();
     }
 }

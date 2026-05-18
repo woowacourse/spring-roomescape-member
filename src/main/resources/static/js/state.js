@@ -1,4 +1,4 @@
-export const ADMIN_TABS = new Set(["themes", "times", "reservations"]);
+export const ADMIN_TABS = new Set(["themes", "times"]);
 
 export const state = {
     route: "reserve",
@@ -6,11 +6,12 @@ export const state = {
     themes: [],
     popularThemes: [],
     adminTimes: [],
-    reservations: [],
+    myReservations: [],
     availableTimes: [],
     selectedThemeId: null,
     selectedDate: tomorrowString(),
     selectedTimeId: null,
+    editingReservationId: null,
     guestName: "",
     themeQuery: "",
     loading: {

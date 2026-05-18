@@ -46,6 +46,11 @@ function applyRoute() {
         return;
     }
 
+    if (route === "reservations") {
+        state.route = "reservations";
+        return;
+    }
+
     state.route = "reserve";
 }
 
@@ -53,7 +58,14 @@ async function handleClick(event) {
     const routeButton = event.target.closest("[data-route]");
     if (routeButton) {
         const route = routeButton.dataset.route;
-        location.hash = route === "admin" ? `#/admin/${state.adminTab}` : "#/reserve";
+        if (route !== "reservations" && state.editingReservationId) {
+            cancelReservationEditing();
+        }
+        if (route === "admin") {
+            location.hash = `#/admin/${state.adminTab}`;
+            return;
+        }
+        location.hash = route === "reservations" ? "#/reservations" : "#/reserve";
         return;
     }
 
@@ -110,6 +122,16 @@ async function handleClick(event) {
             return;
         }
 
+        if (action === "edit-reservation") {
+            await startReservationEdit(Number(actionTarget.dataset.reservationId));
+            return;
+        }
+
+        if (action === "cancel-editing") {
+            cancelReservationEditing();
+            return;
+        }
+
         if (action === "cancel-confirm") {
             if (event.target !== actionTarget && actionTarget.classList.contains("modal-backdrop")) {
                 return;
@@ -140,7 +162,6 @@ async function handleClick(event) {
     if (timeButton && !timeButton.disabled) {
         state.selectedTimeId = Number(timeButton.dataset.timeSlotId);
         render();
-        appEl.querySelector("#guest-name")?.focus();
         return;
     }
 
@@ -152,6 +173,11 @@ async function handleClick(event) {
 
 async function handleSubmit(event) {
     event.preventDefault();
+
+    if (event.target.id === "reservation-lookup-form") {
+        await submitReservationLookup(event.target);
+        return;
+    }
 
     if (event.target.id === "reservation-form") {
         await submitReservation(event.target);
@@ -183,6 +209,11 @@ function handleInput(event) {
     if (event.target.id === "guest-name") {
         state.guestName = event.target.value;
         syncReservationButton();
+        return;
+    }
+
+    if (event.target.id === "reservation-name") {
+        state.guestName = event.target.value;
         return;
     }
 
@@ -221,17 +252,16 @@ async function refreshEverything() {
 }
 
 async function loadAllData() {
-    const [themes, popularThemes, adminTimes, reservations] = await Promise.all([
+    const [themes, popularThemes, adminTimes] = await Promise.all([
         api("/themes"),
         api("/themes/popular-top-10"),
-        api("/admin/times"),
-        api("/reservations")
+        api("/admin/times")
     ]);
 
     state.themes = themes;
     state.popularThemes = popularThemes;
     state.adminTimes = adminTimes;
-    state.reservations = reservations;
+    await loadReservations({silent: true});
 }
 
 async function loadAvailableTimes(options = {}) {
@@ -264,8 +294,8 @@ async function loadAvailableTimes(options = {}) {
 }
 
 async function submitReservation(form) {
-    const formData = new FormData(form);
-    const name = String(formData.get("name") || "").trim();
+    const name = state.guestName.trim();
+    const isEditing = Boolean(state.editingReservationId);
     let submitted = false;
 
     state.guestName = name;
@@ -280,22 +310,33 @@ async function submitReservation(form) {
     render();
 
     try {
-        await api("/reservations", {
-            method: "POST",
-            body: {
-                name,
-                date: state.selectedDate,
-                themeId: state.selectedThemeId,
-                timeId: state.selectedTimeId
-            }
-        });
+        if (state.editingReservationId) {
+            await api(`/reservations/${state.editingReservationId}`, {
+                method: "PATCH",
+                body: {
+                    name,
+                    date: state.selectedDate,
+                    timeId: state.selectedTimeId
+                }
+            });
+        } else {
+            await api("/reservations", {
+                method: "POST",
+                body: {
+                    name,
+                    date: state.selectedDate,
+                    themeId: state.selectedThemeId,
+                    timeId: state.selectedTimeId
+                }
+            });
+        }
 
-        state.guestName = "";
         state.selectedThemeId = null;
         state.selectedTimeId = null;
         state.availableTimes = [];
+        state.editingReservationId = null;
         await loadAllData({silent: true});
-        showToast("예약이 완료되었습니다.", "success");
+        showToast(isEditing ? "예약을 변경했습니다." : "예약이 완료되었습니다.", "success");
         submitted = true;
     } catch (error) {
         showToast(error.message, "error");
@@ -380,7 +421,36 @@ async function deleteTime(timeId) {
 }
 
 async function deleteReservation(reservationId) {
-    await mutateWithReload(() => api(`/reservations/${reservationId}`, {method: "DELETE"}), "예약을 삭제했습니다.");
+    const name = state.guestName.trim();
+
+    if (!name) {
+        showToast("예약자를 입력한 뒤 삭제해 주세요.", "error");
+        return;
+    }
+
+    const params = new URLSearchParams({name});
+    await mutateWithReload(() => api(`/reservations/${reservationId}?${params.toString()}`, {method: "DELETE"}), "예약을 삭제했습니다.");
+
+    if (Number(state.editingReservationId) === Number(reservationId)) {
+        cancelReservationEditing();
+    }
+}
+
+async function startReservationEdit(reservationId) {
+    const reservation = state.myReservations.find((item) => Number(item.id) === Number(reservationId));
+
+    if (!reservation) {
+        showToast("선택한 예약을 찾을 수 없습니다.", "error");
+        return;
+    }
+
+    state.editingReservationId = reservation.id;
+    state.guestName = reservation.name;
+    state.selectedThemeId = reservation.theme.id;
+    state.selectedDate = reservation.date;
+    state.selectedTimeId = reservation.time.id;
+    render();
+    await loadAvailableTimes();
 }
 
 async function mutateWithReload(request, successMessage) {
@@ -416,8 +486,15 @@ function ensureSelectedTheme() {
 function closeBookingPanel() {
     state.selectedThemeId = null;
     state.selectedTimeId = null;
+    state.editingReservationId = null;
     state.availableTimes = [];
     state.loading.times = false;
+}
+
+function cancelReservationEditing() {
+    state.editingReservationId = null;
+    state.selectedTimeId = null;
+    render();
 }
 
 function shouldCloseBookingFromBlankClick(event) {
@@ -456,6 +533,36 @@ function syncReservationButton() {
     }
 
     button.disabled = !canSubmitReservation();
+}
+
+async function loadReservations(options = {}) {
+    const name = state.guestName.trim();
+
+    if (!name) {
+        state.myReservations = [];
+        if (!options.silent) {
+            render();
+        }
+        return;
+    }
+
+    try {
+        const params = new URLSearchParams({name});
+        state.myReservations = await api(`/reservations?${params.toString()}`);
+    } catch (error) {
+        state.myReservations = [];
+        showToast(error.message, "error");
+    } finally {
+        if (!options.silent) {
+            render();
+        }
+    }
+}
+
+async function submitReservationLookup(form) {
+    const formData = new FormData(form);
+    state.guestName = String(formData.get("name") || "").trim();
+    await loadReservations();
 }
 
 function openConfirm(title, body, onConfirm) {

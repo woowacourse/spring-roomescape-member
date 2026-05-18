@@ -10,12 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeAvailableReservationTimeRepository;
+import roomescape.fake.FakeReservationQueryRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.FakeThemeRepository;
+import roomescape.global.RoomEscapeException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
-import roomescape.reservationtime.application.exception.ReservationTimeException;
 import roomescape.reservationtime.application.service.ReservationTimeService;
 import roomescape.reservationtime.domain.ReservationTime;
 
@@ -24,14 +27,16 @@ class ReservationTimeServiceTest {
     private FakeReservationTimeRepository timeRepository;
     private FakeReservationRepository reservationRepository;
     private FakeAvailableReservationTimeRepository availableTimeRepository;
+    private ReservationQueryService reservationQueryService;
     private ReservationTimeService timeService;
 
     @BeforeEach
     void setUp() {
         timeRepository = new FakeReservationTimeRepository();
-        reservationRepository = new FakeReservationRepository();
+        reservationRepository = new FakeReservationRepository(new FakeThemeRepository(), timeRepository);
         availableTimeRepository = new FakeAvailableReservationTimeRepository(timeRepository, reservationRepository);
-        timeService = new ReservationTimeService(timeRepository, availableTimeRepository);
+        reservationQueryService = new ReservationQueryService(new FakeReservationQueryRepository(reservationRepository));
+        timeService = new ReservationTimeService(timeRepository, availableTimeRepository, reservationQueryService);
 
         timeRepository.save(ReservationTime.builder()
                 .startAt(LocalTime.of(9, 0))
@@ -85,7 +90,7 @@ class ReservationTimeServiceTest {
         ReservationTimeCreateCommand createRequestDto = new ReservationTimeCreateCommand(LocalTime.of(9, 0));
 
         assertThatThrownBy(() -> timeService.save(createRequestDto))
-                .isInstanceOf(ReservationTimeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("시간 09:00이(가) 이미 존재합니다.");
     }
 }

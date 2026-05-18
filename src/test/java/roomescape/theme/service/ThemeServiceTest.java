@@ -9,23 +9,33 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.fake.FakeReservationQueryRepository;
+import roomescape.fake.FakeReservationRepository;
+import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
+import roomescape.global.RoomEscapeException;
+import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeQueryResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.service.ThemeService;
 import roomescape.theme.domain.repository.PopularTheme;
 
 public class ThemeServiceTest {
 
     private FakeThemeRepository themeRepository;
+    private ReservationQueryService reservationQueryService;
     private ThemeService themeService;
 
     @BeforeEach
     void setUp() {
         themeRepository = new FakeThemeRepository();
-        themeService = new ThemeService(themeRepository);
+        reservationQueryService = new ReservationQueryService(
+                new FakeReservationQueryRepository(
+                        new FakeReservationRepository(themeRepository, new FakeReservationTimeRepository())
+                )
+        );
+        themeService = new ThemeService(themeRepository, reservationQueryService);
     }
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
@@ -51,7 +61,7 @@ public class ThemeServiceTest {
         themeService.save(createRequestDto);
 
         assertThatThrownBy(() -> themeService.save(createRequestDto))
-                .isInstanceOf(ThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이름과 설명이 같은 테마가 이미 존재합니다.");
     }
 
@@ -86,7 +96,7 @@ public class ThemeServiceTest {
     @Test
     void theme_not_exists() {
         assertThatThrownBy(() -> themeService.findById(100L))
-                .isInstanceOf(ThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("존재하지 않는 테마 입니다.");
     }
 
