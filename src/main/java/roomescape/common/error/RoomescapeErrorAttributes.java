@@ -16,7 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 public class RoomescapeErrorAttributes extends DefaultErrorAttributes {
 
     private static final Logger log = LoggerFactory.getLogger(RoomescapeErrorAttributes.class);
-    private static final String DEFAULT_ERROR_MESSAGE = "요청 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+    private static final String SERVER_ERROR_MESSAGE = "요청 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+    private static final String CLIENT_ERROR_MESSAGE = "잘못된 요청입니다.";
 
     @Override
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
@@ -36,9 +37,9 @@ public class RoomescapeErrorAttributes extends DefaultErrorAttributes {
 
     private String toClientMessage(int status) {
         if (status >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-            return DEFAULT_ERROR_MESSAGE;
+            return SERVER_ERROR_MESSAGE;
         }
-        return DEFAULT_ERROR_MESSAGE;
+        return CLIENT_ERROR_MESSAGE;
     }
 
     private void logUnhandledException(WebRequest webRequest, Throwable error) {
