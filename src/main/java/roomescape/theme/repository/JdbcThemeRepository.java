@@ -7,8 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 
 import java.sql.Date;
@@ -60,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             jdbcTemplate.update("delete from theme where id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
         }
     }
 
@@ -83,7 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, ReservationStatus status, int limit) {
         String sql = """
             select
                 t.id,
@@ -94,6 +95,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             inner join theme t on r.theme_id = t.id
             where r.reservation_date >= ?
             and r.reservation_date < ?
+            and r.status = ?
             group by t.id
             order by count(r.id) desc, t.id asc
             limit ?
@@ -104,6 +106,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ThemeMapper,
                 Date.valueOf(startDate),
                 Date.valueOf(endDate),
+                status.name(),
                 limit
         );
     }
@@ -111,14 +114,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void update(Theme theme) {
         String sql = "update theme set name = ?, description = ?, thumbnail_url = ? where id = ?";
-        int updatedCount = jdbcTemplate.update(sql,
+        jdbcTemplate.update(
+                sql,
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailUrl(),
-                theme.getId());
-
-        if (updatedCount == 0) {
-            throw new IllegalArgumentException("수정하려는 테마가 존재하지 않습니다. (ID: " + theme.getId() + ")");
-        }
+                theme.getId()
+        );
     }
 }

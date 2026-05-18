@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -37,7 +38,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),
                 time,
-                theme
+                theme,
+                ReservationStatus.valueOf(resultSet.getString("reservation_status"))
         );
     };
 
@@ -49,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "insert into reservation (name, reservation_date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "insert into reservation (name, reservation_date, time_id, theme_id, status) values (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -58,6 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
+            ps.setString(5, reservation.getStatus().name());
             return ps;
         }, keyHolder);
 
@@ -67,15 +70,29 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+    public void update(Reservation reservation) {
+        String sql = """
+        update reservation
+           set name = ?, 
+               reservation_date = ?,
+               time_id = ?,
+               theme_id = ?
+         where id = ?
+        """;
+        jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
     }
 
     @Override
-    public void deleteAll() {
-        String sql = "delete from reservation";
-        jdbcTemplate.update(sql);
+    public void updateStatus(Long id, ReservationStatus status) {
+        String sql = "update reservation set status = ? where id = ?";
+        jdbcTemplate.update(sql, status.name(), id);
     }
 
     @Override
@@ -85,6 +102,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.id as reservation_id,
                 r.name as reservation_name,
                 r.reservation_date,
+                r.status as reservation_status,
                 r.time_id,
                 t.start_at as time_start_at,
                 h.id as theme_id,
@@ -102,64 +120,91 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
-            select
-                r.id as reservation_id,
-                r.name as reservation_name,
-                r.reservation_date,
-                r.time_id,
-                t.start_at as time_start_at,
-                h.id as theme_id,
-                h.name as theme_name,
-                h.description as theme_description,
-                h.thumbnail_url as theme_thumbnail_url
-            from reservation r
-            inner join reservation_time t on r.time_id = t.id
-            inner join theme h on r.theme_id = h.id
-            order by r.id
-            """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
-    }
-
-    @Override
-    public List<Reservation> findByFilter(LocalDate date, Long themeId) {
-        StringBuilder sql = new StringBuilder("""
-            select
-                r.id as reservation_id,
-                r.name as reservation_name,
-                r.reservation_date,
-                r.time_id,
-                t.start_at as time_start_at,
-                h.id as theme_id,
-                h.name as theme_name,
-                h.description as theme_description,
-                h.thumbnail_url as theme_thumbnail_url
-            from reservation r
-            inner join reservation_time t on r.time_id = t.id
-            inner join theme h on r.theme_id = h.id
-            where 1=1
-            """);
+    public List<Reservation> findByFilter(
+            String name,
+            LocalDate from,
+            LocalDate to,
+            Long themeId
+    ) {
         List<Object> params = new ArrayList<>();
 
-        if (date != null) {
-            sql.append(" and r.reservation_date = ?");
-            params.add(Date.valueOf(date));
-        }
+        StringBuilder sql = new StringBuilder("""
+        select
+            r.id              as reservation_id,
+            r.name            as reservation_name,
+            r.reservation_date,
+            r.status          as reservation_status,
+            r.time_id,
+            t.start_at        as time_start_at,
+            h.id              as theme_id,
+            h.name            as theme_name,
+            h.description     as theme_description,
+            h.thumbnail_url   as theme_thumbnail_url
+        from reservation r
+        inner join reservation_time t on r.time_id  = t.id
+        inner join theme            h on r.theme_id = h.id
+        where 1=1
+        """);
 
+        if (name != null) {
+            sql.append(" and r.name = ?");
+            params.add(name);
+        }
+        if (from != null) {
+            sql.append(" and r.reservation_date >= ?");
+            params.add(Date.valueOf(from));
+        }
+        if (to != null) {
+            sql.append(" and r.reservation_date <= ?");
+            params.add(Date.valueOf(to));
+        }
         if (themeId != null) {
             sql.append(" and r.theme_id = ?");
             params.add(themeId);
         }
-        sql.append(" order by r.id");
+        sql.append(" order by r.reservation_date desc, t.start_at desc");
 
         return jdbcTemplate.query(sql.toString(), reservationRowMapper, params.toArray());
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "select exists (select 1 from reservation where reservation_date = ? and time_id = ? and theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+    public boolean existsByDateAndTimeIdAndThemeIdAndStatus(
+            LocalDate date,
+            Long timeId,
+            Long themeId,
+            ReservationStatus status
+    ) {
+        String sql = """
+        select exists (
+            select 1 from reservation
+            where reservation_date = ?
+                and time_id = ? 
+                and theme_id = ?
+                and status = ?
+        )
+        """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, status.name());
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeIdAndStatusExcludingSelf(
+            LocalDate date,
+            Long timeId,
+            Long themeId,
+            Long excludeId,
+            ReservationStatus status
+    ) {
+        String sql = """
+        select exists (
+            select 1 from reservation
+            where reservation_date = ?
+              and time_id  = ?
+              and theme_id = ?
+              and id != ?
+              and status   = ?
+        )
+        """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, excludeId, status.name());
     }
 
     @Override

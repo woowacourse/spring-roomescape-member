@@ -7,8 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.time.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
@@ -57,7 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             jdbcTemplate.update("delete from reservation_time where id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
         }
     }
 
@@ -80,7 +81,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date, ReservationStatus availableStatus) {
         String sql = """
             SELECT rt.id, rt.start_at
             FROM reservation_time rt
@@ -88,10 +89,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 ON rt.id = r.time_id
                 AND r.theme_id = ?
                 AND r.reservation_date = ?
-            WHERE r.id IS NULL
+            WHERE r.id IS NULL OR r.status = ?
             ORDER BY rt.start_at
             """;
 
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date, availableStatus.name());
     }
 }

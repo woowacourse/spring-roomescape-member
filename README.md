@@ -1,137 +1,191 @@
 # 방탈출 사용자 예약
 
-## 1단계 - 테마 도메인 추가
+## 기능 요구 사항
 
-### 1. 테마 생성 기능
+### 부적절한 요청 거부
 
-#### 구현
-- [x] 구현 완료
+- [x] 지나간 날짜/시간에 대한 예약은 생성할 수 없다.
+- [x] 같은 날짜/시간/테마에 이미 예약이 있으면 중복 예약할 수 없다.
+  - [x] CANCELED 상태는 예약할 수 있다.
+- [x] 예약이 존재하는 시간및 테마를 삭제할 수 없다.
+- 유효하지 않은 값의 예약을 생성할 수 없다.
+    - [x] 빈 이름
+    - [x] 잘못된 날짜 형식
+    - [x] 시간 정보 없음
+    - [x] 테마 정보 없음
 
-#### 메서드 / URL
+### 내 예약 조회/변경/취소
 
-- POST /themes
+- [x] 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
+- [x] 사용자가 본인의 예약을 취소할 수 있다.
+- [x] 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
 
-#### 요청
+---
+
+## 에러 응답 명세
+
+### 응답 형식
+
+모든 에러 응답은 아래 JSON 구조를 따른다.
 
 ```json
 {
-  name,
-  description,
-  thumbnailUrl
+  "code": "에러_코드",
+  "message": "사용자에게 표시할 에러 메시지"
+}
+```
+- `code` : 클라이언트가 에러 종류를 구분할 수 있는 코드 메세지
+- `message` : 사용자가 읽을 수 있는 설명
+
+### HTTP 상태 코드별 에러 코드 목록
+
+#### 400 Bad Request — 유효하지 않은 입력값
+
+요청 본문의 형식 또는 값이 잘못된 경우.
+
+| code | 발생 상황                                        | message 예시 |
+|---|----------------------------------------------|---|
+| `VALIDATION_FAILED` | `@Valid` DTO 단에서의 검증 실패 (null, 빈 값, 범위 초과 등) | `요청 값 검증에 실패했습니다.` |
+
+**예시**
+
+```
+POST /reservations
+{ "name": "", "date": "2026-06-01", "timeId": 1, "themeId": 1 }
+```
+
+```json
+HTTP/1.1 400 Bad Request
+{
+  "code": "VALIDATION_FAILED",
+  "message": "요청 값 검증에 실패했습니다."
 }
 ```
 
-#### 응답
+---
 
-- 201 created
+#### 404 Not Found — 존재하지 않는 리소스
 
-```text
-Location: /themes/{id}
+요청한 ID에 해당하는 리소스가 없는 경우.
+
+| code | 발생 상황 | message 예시 |
+|---|---|---|
+| `RESOURCE_NOT_FOUND` | 예약 ID 없음 | `해당 ID의 예약이 존재하지 않습니다. ID: 99` |
+| `RESOURCE_NOT_FOUND` | 예약 시간 ID 없음 | `해당 ID의 예약 시간이 존재하지 않습니다. ID: 99` |
+| `RESOURCE_NOT_FOUND` | 테마 ID 없음 | `해당 ID의 테마가 존재하지 않습니다. ID: 99` |
+
+**예시**
+
 ```
-
-### 2. 테마 삭제 기능
-
-#### 구현
-- [x] 구현 완료
-
-#### 메서드 / URL
-
-- DELETE /themes/{id}
-
-#### 응답
-
-- 204 No Contents
-
-### 3. 예약에 테마 추가
-
-#### 구현
-- [x] 구현 완료
-
-## 2단계 - 사용자 예약
-
-### 1. 예약 가능한 시간 조회 기능
-
-#### 구현
-- [x] 구현 완료
-
-#### 메서드 / URL
-
-- GET /times/available-times
-
-#### 요청
-
-- query parameter
-
-```text
-date=2026-05-08&themeId=1
+GET /admin/reservations/99
 ```
-
-#### 응답
-
-- 200 ok
 
 ```json
-[
-  {
-    id,
-    startAt
-  }
-]
+HTTP/1.1 404 Not Found
+{
+  "code": "RESOURCE_NOT_FOUND",
+  "message": "해당 ID의 예약이 존재하지 않습니다. ID: 99"
+}
 ```
 
-## 3단계 - 인기 테마 조회
+---
 
-### 1. 최근 1주 동안 예약이 많았던 테마 상위 10개 조회 기능
+#### 409 Conflict — 중복 리소스
 
-#### 구현
-- [x] 구현 완료
+동일한 리소스가 이미 존재하는 경우.
 
-#### 메서드 / URL
+| code | 발생 상황 | message 예시 |
+|---|---|---|
+| `DUPLICATE_RESOURCE` | 같은 날짜·시간·테마 예약이 이미 존재 | `이미 해당 날짜와 시간에 예약이 존재합니다.` |
+| `DUPLICATE_RESOURCE` | 동일한 시작 시각의 예약 시간이 이미 존재 | `해당 시간이 이미 존재합니다.` |
+| `DUPLICATE_RESOURCE` | 동일한 이름의 테마가 이미 존재 | `이미 존재하는 테마 이름입니다.` |
 
-- GET /themes/popular
+**예시**
 
-#### 요청
-
-- query parameter
-
-```text
-period=7&limit=10
 ```
-
-#### 응답
-
-- 200 ok
+POST /reservations
+{ "name": "홍길동", "date": "2026-06-01", "timeId": 1, "themeId": 1 }
+```
 
 ```json
-[
-  {
-    id,
-    name,
-    description,
-    thumbnailUrl
-  }
-]
+HTTP/1.1 409 Conflict
+{
+  "code": "DUPLICATE_RESOURCE",
+  "message": "이미 해당 날짜와 시간에 예약이 존재합니다."
+}
 ```
 
-## 추가 - 리팩토링
+---
 
-### 1. admin URL 분리
+#### 422 Unprocessable Entity — 서비스 정책 위반
 
-#### 구현
-- [x] 구현 완료
+입력값 형식은 올바르지만, 비즈니스 규칙에 위반되는 경우.
 
-관리자 전용 API를 `/admin` 하위 경로로 분리.
+| code | 발생 상황 | message 예시 |
+|---|---|---|
+| `BUSINESS_RULE_VIOLATION` | 과거 날짜·시간으로 예약 생성 시도 | `과거 시각으로는 예약할 수 없습니다.` |
+| `BUSINESS_RULE_VIOLATION` | 이미 취소된 예약을 취소 시도 | `이미 취소된 예약입니다.` |
+| `BUSINESS_RULE_VIOLATION` | 이미 완료된 예약을 취소 시도 | `이미 이용 완료된 예약은 취소할 수 없습니다.` |
+| `BUSINESS_RULE_VIOLATION` | 취소/완료된 예약을 수정 시도 | `이미 취소되었거나 완료된 예약은 수정할 수 없습니다.` |
+| `BUSINESS_RULE_VIOLATION` | 예약이 존재하는 시간 삭제 시도 | `이 시간을 참조하는 예약이 있어 삭제할 수 없습니다. ID: 1` |
+| `BUSINESS_RULE_VIOLATION` | 예약이 존재하는 테마 삭제 시도 | `이 테마를 참조하는 예약이 있어 삭제할 수 없습니다. ID: 1` |
+| `BUSINESS_RULE_VIOLATION` | 이름이 10글자를 초과 | `이름은 10글자 이하여야 합니다. (현재 이름의 글자 수: 11)` |
+| `BUSINESS_RULE_VIOLATION` | 검색 기간의 from이 to보다 늦음 | `from 은 to 보다 이전이어야 합니다.` |
 
-#### Theme
+**예시**
 
-- 테마 생성: POST /admin/themes
-- 테마 삭제: DELETE /admin/themes/{id}
+```
+POST /reservations
+{ "name": "홍길동", "date": "2020-01-01", "timeId": 1, "themeId": 1 }
+```
 
-#### ReservationTime
+```json
+HTTP/1.1 422 Unprocessable Entity
+{
+  "code": "BUSINESS_RULE_VIOLATION",
+  "message": "과거 시각으로는 예약할 수 없습니다."
+}
+```
 
-- 타임 생성: POST /admin/times
-- 타임 삭제: DELETE /admin/times/{id}
+---
 
-#### Reservation
+#### 500 Internal Server Error — 서버 내부 오류
 
-- 예약 전체 삭제: DELETE /admin/reservations
+예상하지 못한 서버 에러. 원인은 서버 로그에만 기록되며, 클라이언트에는 고정된 메시지만 반환된다.
+
+| code | 발생 상황 | message |
+|---|---|---|
+| `INTERNAL_ERROR` | 처리되지 않은 모든 예외 | `일시적인 오류가 발생했습니다.` |
+| `INTERNAL_ERROR` | 도메인 레이어의 값 검증 실패 (빈 이름, null 필드 등) | `예약자 이름은 반드시 입력해야 합니다.` |
+
+```json
+HTTP/1.1 500 Internal Server Error
+{
+  "code": "INTERNAL_ERROR",
+  "message": "일시적인 오류가 발생했습니다."
+}
+```
+```
+클라이언트 요청
+  → DTO @Valid (400 Bad Request)  ← 여기서 걸러져야 한다.
+  → Service
+  → Domain                        ← 여기까지 null 오면 서버 버그로 판단한다.
+```
+
+DTO에서 @NotNull로 막았는데 Domain까지 null이 왔다는 건 검증 로직이 뚫렸거나 개발자 실수라는 뜻이다.
+따라서, Domain 에 NULL이 전달될 경우 이것은 서버 에러로 판단한다. 그러므로, 500 에러를 반환한다.
+
++) 개선사항
+기존에 domain에서 Object.requireNonNull() 로 NPE를 발생해 500 예외를 반환했습니다. 하지만, NPE는 범용적이라 제 코드 문제인지 라이브러리 문제인지 구분아 어렵다고 생각했습니다.
+따라서, NPE로 표현하는 게 불명확하다는 생각을 하여 `InvalidDomainStateException` 이라는 커스텀 예외를 만들어 500 에러를 반환하도록 변경했습니다.
+
+---
+
+#### 스프링 기본 예외
+
+`ResponseEntityExceptionHandler` 를 상속받아 해결
+
+`MethodArgumentNotValidException` 는 override를 통해 정제된 ErrorResponse 사용자에게 반환한다. 이외의 `HttpMessageNotReadableException` 
+`MethodArgumentTypeMismatchException` 등과 같은 나머지 기본 예외들은 스프링 기본 응답 형식을 이용한다.
+
+이유: @Valid에 @NotNull, @Size, @Positive 같은 기본 입력 형식 검증은 사용자가 자주 보게 될 것이기 때문에 이 예외는 @Override해서 정제된 메세지를 주는 건 의미가 있다고 생각했습니다.

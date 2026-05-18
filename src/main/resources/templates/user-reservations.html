@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>내 예약 조회 · Roomescape</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-logo" href="/">// ROOMESCAPE</a>
+  <div class="nav-actions">
+    <a class="nav-btn" href="/">← 홈</a>
+    <a class="nav-btn primary-btn" href="/admin">⌘ 관리자</a>
+  </div>
+</nav>
+
+<main class="page" style="padding-top:0;">
+
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · 예약 조회</p>
+    <h1>내 예약 조회</h1>
+    <p>이름으로 본인의 예약을 조회한다. 날짜 범위와 테마로 추가 필터링할 수 있다.</p>
+  </header>
+
+  <section class="panel">
+    <h2>조회 조건</h2>
+    <form class="filter-bar" id="searchForm" onsubmit="return false;" style="margin-bottom:0;">
+      <div class="field">
+        <label>이름 (필수)</label>
+        <input id="searchName" maxlength="10" placeholder="홍길동" required type="text" />
+      </div>
+      <div class="field">
+        <label>시작 날짜</label>
+        <input id="searchFrom" type="date" />
+      </div>
+      <div class="field">
+        <label>종료 날짜</label>
+        <input id="searchTo" type="date" />
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select id="searchTheme">
+          <option value="">전체</option>
+        </select>
+      </div>
+      <div class="field" style="align-self:end;">
+        <button class="primary" id="searchBtn" type="button">조회</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" id="resultSection" style="display:none;">
+    <div class="section-header">
+      <div>
+        <h2>조회 결과</h2>
+        <p class="panel-sub" id="resultSummary" style="margin-bottom:0;"></p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:56px;">ID</th>
+            <th style="width:120px;">날짜</th>
+            <th style="width:90px;">시간</th>
+            <th>테마</th>
+            <th style="width:110px;">상태</th>
+          </tr>
+        </thead>
+        <tbody id="resultRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+
+<script src="/user-reservations.js"></script>
+</body>
+</html>

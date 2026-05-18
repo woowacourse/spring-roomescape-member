@@ -34,6 +34,11 @@ public class UserThemeController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/{themeId}")
+    public ResponseEntity<ThemeResponse> readOne(@PathVariable Long themeId) {
+        return ResponseEntity.ok(ThemeResponse.from(themeService.getById(themeId)));
+    }
+
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> readPopular() {
         List<ThemeResponse> responses = themeService.findPopularThemes()

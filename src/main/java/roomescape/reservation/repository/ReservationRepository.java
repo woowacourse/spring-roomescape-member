@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,17 +11,17 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void deleteById(Long id);
+    void update(Reservation reservation);
 
-    void deleteAll();
+    void updateStatus(Long id, ReservationStatus status);
 
     Optional<Reservation> findById(Long id);
 
-    List<Reservation> findAll();
+    List<Reservation> findByFilter(String name, LocalDate from, LocalDate to, Long themeId);
 
-    List<Reservation> findByFilter(LocalDate date, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeIdAndStatus(LocalDate date, Long timeId, Long themeId, ReservationStatus status);
 
-    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeIdAndStatusExcludingSelf(LocalDate date, Long timeId, Long themeId, Long excludeId, ReservationStatus status);
 
     boolean existsByTimeId(Long timeId);
 

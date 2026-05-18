@@ -1,21 +1,22 @@
 package roomescape.theme.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.DuplicateResourceException;
-import roomescape.exception.ResourceInUseException;
 import roomescape.exception.ResourceNotFoundException;
-import roomescape.support.FixedClockConfig;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -24,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-@Import(FixedClockConfig.class)
 class ThemeServiceTest {
 
     @Autowired
@@ -32,6 +32,15 @@ class ThemeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private LocalDateTime futureDate;
+    private LocalDateTime today;
+
+    @BeforeEach
+    void setUp() {
+        today = LocalDateTime.now().withNano(0);
+        futureDate = today.plusDays(1);
+    }
 
     @Nested
     @DisplayName("save 메서드는")
@@ -112,16 +121,17 @@ class ThemeServiceTest {
         }
 
         @Test
-        @DisplayName("예약에 사용 중인 테마는 ResourceInUseException 이 발생하고 삭제되지 않는다.")
+        @DisplayName("예약에 사용 중인 테마는 BusinessRuleViolationException 이 발생하고 삭제되지 않는다.")
         void deleteByIdFailWhenInUse() {
             // given
+            LocalDate reservationDate = futureDate.toLocalDate();
+            Long timeId = insertReservationTime(futureDate.toLocalTime());
             Theme saved = themeService.save(new ThemeRequest("테마", "설명", "https://example.com/a.png"));
-            Long timeId = insertReservationTime(LocalTime.of(10, 0));
-            insertReservation("브라운", LocalDate.of(2026, 12, 31), timeId, saved.getId());
+            insertReservation("브라운", reservationDate, timeId, saved.getId(), ReservationStatus.RESERVED);
 
             // when & then
             assertThatThrownBy(() -> themeService.deleteById(saved.getId()))
-                    .isInstanceOf(ResourceInUseException.class)
+                    .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessageContaining("이 테마를 참조하는 예약이 있어 삭제할 수 없습니다.");
 
             assertThat(themeService.findAll()).hasSize(1);
@@ -158,9 +168,12 @@ class ThemeServiceTest {
     class FindPopularThemes {
 
         @Test
-        @DisplayName("최근 7일 이내 예약 수가 많은 테마를 내림차순으로 반환한다.")
+        @DisplayName("최근 7일 이내 예약 수가 많은 테마를 내림차순으로 반환한다. (오늘은 포함되지 않는다.)")
         void findPopularThemesReturnsTopByRecentReservations() {
             // given
+            LocalDate reservationDate = today.toLocalDate();
+            LocalDate day1Ago = reservationDate.minusDays(1);
+            LocalDate day7Ago = reservationDate.minusDays(7);
             Theme themeA = themeService.save(new ThemeRequest("A", "설명A", "https://example.com/a.png"));
             Theme themeB = themeService.save(new ThemeRequest("B", "설명B", "https://example.com/b.png"));
             Theme themeC = themeService.save(new ThemeRequest("C", "설명C", "https://example.com/c.png"));
@@ -169,14 +182,12 @@ class ThemeServiceTest {
             Long t11 = insertReservationTime(LocalTime.of(11, 0));
             Long t12 = insertReservationTime(LocalTime.of(12, 0));
 
-            // 기준 시각: 2026-05-06 → 최근 7일 = 2026-04-29 ~ 2026-05-06
-            // A: 2건 (최근 7일), B: 3건 (최근 7일), C: 0건
-            insertReservation("u1", LocalDate.of(2026, 5, 5), t10, themeA.getId());
-            insertReservation("u2", LocalDate.of(2026, 5, 4), t11, themeA.getId());
+            insertReservation("u1", day1Ago, t10, themeA.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u2", day1Ago, t11, themeA.getId(), ReservationStatus.COMPLETED);
 
-            insertReservation("u3", LocalDate.of(2026, 5, 5), t11, themeB.getId());
-            insertReservation("u4", LocalDate.of(2026, 5, 4), t10, themeB.getId());
-            insertReservation("u5", LocalDate.of(2026, 5, 3), t12, themeB.getId());
+            insertReservation("u3", day7Ago, t11, themeB.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u4", day7Ago, t10, themeB.getId(), ReservationStatus.COMPLETED);
+            insertReservation("u5", day7Ago, t12, themeB.getId(), ReservationStatus.COMPLETED);
 
             // when
             List<Theme> popular = themeService.findPopularThemes();
@@ -190,11 +201,11 @@ class ThemeServiceTest {
         @DisplayName("7일 보다 더 이전의 예약은 인기 테마 집계에서 제외된다.")
         void findPopularThemesExcludesOldReservations() {
             // given
+            LocalDate reservationDate = today.toLocalDate();
+            LocalDate day8Ago = reservationDate.minusDays(8);
             Theme theme = themeService.save(new ThemeRequest("Old", "설명", "https://example.com/o.png"));
             Long timeId = insertReservationTime(LocalTime.of(10, 0));
-
-            // 기준 시각 2026-05-06 의 8일 전 = 2026-04-28 → 제외돼야 함
-            insertReservation("oldUser", LocalDate.of(2026, 4, 28), timeId, theme.getId());
+            insertReservation("oldUser", day8Ago, timeId, theme.getId(), ReservationStatus.COMPLETED);
 
             // when
             List<Theme> popular = themeService.findPopularThemes();
@@ -261,10 +272,10 @@ class ThemeServiceTest {
         );
     }
 
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId, ReservationStatus status) {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name, date.toString(), timeId, themeId
+                "INSERT INTO reservation (name, reservation_date, time_id, theme_id, status) VALUES (?, ?, ?, ?, ?)",
+                name, date.toString(), timeId, themeId, status.name()
         );
     }
 }
