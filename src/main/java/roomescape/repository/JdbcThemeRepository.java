@@ -23,9 +23,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private static Map<String, Object> createParams(Theme theme) {
         return Map.of(
-                "name", theme.name(),
-                "description", theme.description(),
-                "thumbnail_url", theme.thumbnailUrl()
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail_url", theme.getThumbnailUrl()
         );
     }
 
@@ -49,9 +49,9 @@ public class JdbcThemeRepository implements ThemeRepository {
         long id = insert.executeAndReturnKey(params).longValue();
         return new Theme(
                 id,
-                theme.name(),
-                theme.description(),
-                theme.thumbnailUrl()
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
         );
     }
 
@@ -59,6 +59,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     public void deleteById(long id) {
         String sql = "DELETE FROM theme where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int update(Theme theme) {
+        String sql = "UPDATE theme SET name = ?, description = ?, thumbnail_url = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, theme.getName(), theme.getDescription(), theme.getThumbnailUrl(),
+                theme.getId());
     }
 
     @Override

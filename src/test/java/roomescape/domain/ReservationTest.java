@@ -22,7 +22,7 @@ class ReservationTest {
                 timeSlot,
                 theme
         );
-        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.getName()).isEqualTo("브라운");
     }
 
     @Test
@@ -48,6 +48,6 @@ class ReservationTest {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now().plusDays(1),
                 new TimeSlot(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com"));
-        assertThat(reservation.id()).isNull();
+        assertThat(reservation.getId()).isNull();
     }
 }

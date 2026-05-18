@@ -23,7 +23,7 @@ class ThemeServiceTest {
     @DisplayName("이름, 설명, 썸네일 URL을 입력받아 테마를 생성한다.")
     void saveTheme() {
         Theme theme = themeService.saveTheme("공포", "귀신의 집", "https://url");
-        assertThat(theme.name()).isEqualTo("공포");
+        assertThat(theme.getName()).isEqualTo("공포");
     }
 
     @Test
@@ -38,7 +38,7 @@ class ThemeServiceTest {
     @DisplayName("식별자를 통해 존재하는 특정 테마를 삭제한다.")
     void removeTheme() {
         Theme theme = themeService.saveTheme("공포", "귀신의 집", "https://url");
-        themeService.removeTheme(theme.id());
+        themeService.removeTheme(theme.getId());
         assertThat(themeService.allTheme()).isEmpty();
     }
 

@@ -1,22 +1,18 @@
 package roomescape.controller;
 
-import java.net.URI;
-import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationRequest;
-import roomescape.controller.dto.ReservationResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.TimeResponse;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
+import java.net.URI;
+import java.util.List;
+
+@Validated
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -33,24 +29,68 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> getReservation(@PathVariable long id) {
+    public ResponseEntity<ReservationResponse> getReservationById(@PathVariable long id) {
         Reservation reservation = reservationService.findReservationById(id);
         return ResponseEntity.ok(toResponse(reservation));
     }
 
+    @GetMapping(params = {"userName"})
+    public ResponseEntity<List<ReservationResponse>> getReservationByName(@RequestParam String userName) {
+        return ResponseEntity.ok(convertToReservationResponse(reservationService.findReservationByName(userName)));
+    }
+
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request) {
         Reservation reservation = reservationService.saveReservation(
                 request.name(), request.date(), request.timeId(), request.themeId()
         );
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.id()))
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
                 .body(toResponse(reservation));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
-        reservationService.removeReservation(id);
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable
+            long id,
+            @RequestParam @NotBlank
+            String userName
+    ) {
+        reservationService.removeReservation(id, userName);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable
+            long id,
+            @RequestBody @Valid
+            ReservationPutRequest request,
+            @RequestParam @NotBlank
+            String userName
+    ) {
+        reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(),
+                request.themeId());
+        return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
+    }
+
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<ReservationResponse> patchReservation(
+            @PathVariable
+            long id,
+            @RequestBody
+            ReservationPatchRequest request,
+            @RequestParam @NotBlank
+            String userName
+    ) {
+        reservationService.patchReservation(
+                id,
+                userName,
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId()
+        );
+        return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
     private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {
@@ -61,11 +101,11 @@ public class ReservationController {
 
     private ReservationResponse toResponse(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.name(),
-                reservation.date(),
-                TimeResponse.from(reservation.timeSlot()),
-                ThemeResponse.from(reservation.theme())
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                TimeResponse.from(reservation.getTimeSlot()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 }

@@ -6,7 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
+import roomescape.service.dto.AvailableTimeSlot;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +37,43 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     }
 
     @Override
+    public Optional<TimeSlot> findByStartAt(LocalTime startAt) {
+        String sql = "SELECT id, start_at FROM time_slot where start_at = ?";
+        List<TimeSlot> timeSlots = jdbcTemplate.query(sql, rowMapper(), startAt);
+        return Optional.ofNullable(DataAccessUtils.singleResult(timeSlots));
+    }
+
+    @Override
+    public List<AvailableTimeSlot> findAvailableTimeSlots(long themeId, LocalDate date) {
+        String sql = """
+                SELECT t.id, t.start_at, r.id IS NULL AS is_available
+                FROM time_slot t
+                LEFT JOIN reservation r 
+                ON t.id = r.time_id 
+                       AND r.theme_id = ?
+                       AND r.date = ?
+                """;
+        return jdbcTemplate.query(sql, availableTimeSlotRowMapper(), themeId, date);
+    }
+
+    @Override
     public TimeSlot save(TimeSlot timeSlot) {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(timeSlot);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new TimeSlot(reservationId, timeSlot.startAt());
+        return new TimeSlot(reservationId, timeSlot.getStartAt());
     }
 
     @Override
     public void deleteById(long timeId) {
         String sql = "DELETE FROM time_slot where id = ?";
         jdbcTemplate.update(sql, timeId);
+    }
+
+    @Override
+    public int update(TimeSlot timeSlot) {
+        String sql = "UPDATE time_slot SET start_at = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, timeSlot.getStartAt(), timeSlot.getId());
     }
 
     private SimpleJdbcInsert createInsert() {
@@ -55,13 +83,20 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     }
 
     private Map<String, Object> createParams(TimeSlot timeSlot) {
-        return Map.of("start_at", timeSlot.startAt());
+        return Map.of("start_at", timeSlot.getStartAt());
     }
 
     private RowMapper<TimeSlot> rowMapper() {
         return (rs, rowNum) -> new TimeSlot(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
+        );
+    }
+
+    private RowMapper<AvailableTimeSlot> availableTimeSlotRowMapper() {
+        return (rs, rowNum) -> new AvailableTimeSlot(
+                new TimeSlot(rs.getLong("id"), rs.getObject("start_at", LocalTime.class)),
+                rs.getBoolean("is_available")
         );
     }
 }

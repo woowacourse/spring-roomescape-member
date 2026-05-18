@@ -1,8 +1,14 @@
 package roomescape.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.TimeSlot;
-import roomescape.repository.ReservationRepository;
+import roomescape.exception.DuplicateTimeException;
+import roomescape.exception.ResourceInUseException;
+import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.TimeSlotNotFoundException;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
 import roomescape.service.dto.AvailableTimeSlot;
 
@@ -11,14 +17,15 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
-    private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
 
-    public TimeSlotService(TimeSlotRepository timeSlotRepository, ReservationRepository reservationRepository) {
+    public TimeSlotService(TimeSlotRepository timeSlotRepository, ThemeRepository themeRepository) {
         this.timeSlotRepository = timeSlotRepository;
-        this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<TimeSlot> allTimes() {
@@ -27,28 +34,50 @@ public class TimeSlotService {
 
     public TimeSlot findTimeSlotById(long id) {
         return timeSlotRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
+                .orElseThrow(() -> new TimeSlotNotFoundException(id));
     }
 
+    @Transactional
     public TimeSlot saveTime(LocalTime startAt) {
+        checkDuplicatedStartAt(startAt);
         TimeSlot timeSlot = TimeSlot.transientOf(startAt);
         return timeSlotRepository.save(timeSlot);
     }
 
+    @Transactional
     public void removeTime(long timeId) {
-        timeSlotRepository.deleteById(timeId);
+        try {
+            findTimeSlotById(timeId);
+            timeSlotRepository.deleteById(timeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("예약 시간");
+        }
+    }
+
+    @Transactional
+    public void putTime(long id, LocalTime startAt) {
+        findTimeSlotById(id);
+        checkDuplicatedStartAt(startAt);
+        timeSlotRepository.update(new TimeSlot(id, startAt));
+    }
+
+    @Transactional
+    public void patchTime(long id, LocalTime startAt) {
+        TimeSlot timeSlot = findTimeSlotById(id);
+        checkDuplicatedStartAt(startAt);
+        timeSlot.changeTime(startAt);
+        timeSlotRepository.update(timeSlot);
     }
 
     public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
-        List<TimeSlot> allTimeSlots = timeSlotRepository.findAll();
-        List<Long> reservedIds = reservationRepository.findByThemeIdAndDate(themeId, date);
-        return allTimeSlots.stream()
-                .map(timeSlot -> mapToAvailable(timeSlot, reservedIds))
-                .toList();
+        themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeNotFoundException(themeId));
+        return timeSlotRepository.findAvailableTimeSlots(themeId, date);
     }
 
-    private AvailableTimeSlot mapToAvailable(TimeSlot timeSlot, List<Long> reservedIds) {
-        boolean isAvailable = !reservedIds.contains(timeSlot.id());
-        return new AvailableTimeSlot(timeSlot, isAvailable);
+    private void checkDuplicatedStartAt(LocalTime startAt) {
+        if (timeSlotRepository.findByStartAt(startAt).isPresent()) {
+            throw new DuplicateTimeException(startAt.toString());
+        }
     }
 }

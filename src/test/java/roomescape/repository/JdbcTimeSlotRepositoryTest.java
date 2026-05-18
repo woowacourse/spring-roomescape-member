@@ -1,39 +1,40 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @JdbcTest
+@Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcTimeSlotRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private JdbcTimeSlotRepository timeRepository;
+    private JdbcThemeRepository themeRepository;
+    private JdbcReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcTimeSlotRepository(jdbcTemplate);
-        executeSchema();
-    }
-
-    private void executeSchema() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS time_slot (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
-        jdbcTemplate.execute("TRUNCATE TABLE time_slot");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
     @Test
@@ -41,31 +42,58 @@ class JdbcTimeSlotRepositoryTest {
     void save() {
         TimeSlot timeSlot = TimeSlot.transientOf(LocalTime.of(10, 0));
         TimeSlot savedTimeSlot = timeRepository.save(timeSlot);
-        assertThat(savedTimeSlot.id()).isPositive();
+        assertThat(savedTimeSlot.getId()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        Optional<TimeSlot> foundTimeSlot = timeRepository.findById(savedTimeSlot.id());
+        Optional<TimeSlot> foundTimeSlot = timeRepository.findById(savedTimeSlot.getId());
         assertThat(foundTimeSlot).isPresent();
-        assertThat(foundTimeSlot.get().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(foundTimeSlot.get().getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
-    @DisplayName("모든 예약 시간 객체 목록을 조회한다.")
-    void findAll() {
-        timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        List<TimeSlot> timeSlots = timeRepository.findAll();
-        assertThat(timeSlots).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("식별자로 예약 시간을 삭제한다.")
-    void deleteById() {
+    @DisplayName("존재하는 예약 시간을 삭제한다.")
+    void deleteExisting() {
+        int defaultSize = timeRepository.findAll().size();
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        timeRepository.deleteById(savedTimeSlot.id());
-        assertThat(timeRepository.findAll()).isEmpty();
+        timeRepository.deleteById(savedTimeSlot.getId());
+        assertThat(timeRepository.findAll().size() == defaultSize).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제해도 예외가 발생하지 않는다.")
+    void deleteNonExisting() {
+        assertThatCode(() -> timeRepository.deleteById(999L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("존재하는 예약 시간 정보를 수정한다.")
+    void updateExisting() {
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        TimeSlot updateTime = new TimeSlot(savedTimeSlot.getId(), LocalTime.of(12, 0));
+        assertThat(timeRepository.update(updateTime)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 수정하면 0을 반환한다.")
+    void updateNonExisting() {
+        TimeSlot updateTime = new TimeSlot(999L, LocalTime.of(12, 0));
+        assertThat(timeRepository.update(updateTime)).isZero();
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간을 삭제할 수 없다.")
+    void deleteTimeSlot_WithReservation() {
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(Theme.transientOf("공포", "설명", "url"));
+        reservationRepository.save(
+                Reservation.transientOf("브라운", LocalDate.now().plusDays(1), savedTimeSlot, savedTheme));
+
+        assertThatThrownBy(() -> timeRepository.deleteById(savedTimeSlot.getId()))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

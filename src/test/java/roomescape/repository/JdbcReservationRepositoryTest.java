@@ -1,23 +1,27 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.TimeSlot;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
+import roomescape.domain.TimeSlot;
 
 @JdbcTest
+@Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -30,20 +34,7 @@ class JdbcReservationRepositoryTest {
     @BeforeEach
     void setUp() {
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        executeSchema();
         insertDependencyData();
-    }
-
-    private void executeSchema() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS time_slot (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT, theme_id BIGINT)");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
-        jdbcTemplate.execute("TRUNCATE TABLE time_slot RESTART IDENTITY");
-        jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     private void insertDependencyData() {
@@ -58,7 +49,7 @@ class JdbcReservationRepositoryTest {
     void save() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
         Reservation savedReservation = jdbcReservationRepository.save(reservation);
-        assertThat(savedReservation.id()).isPositive();
+        assertThat(savedReservation.getId()).isPositive();
     }
 
     @Test
@@ -70,9 +61,9 @@ class JdbcReservationRepositoryTest {
                 savedTimeSlot,
                 savedTheme
         ));
-        Optional<Reservation> foundReservation = jdbcReservationRepository.findById(savedReservation.id());
+        Optional<Reservation> foundReservation = jdbcReservationRepository.findById(savedReservation.getId());
         assertThat(foundReservation).isPresent();
-        assertThat(foundReservation.get().name()).isEqualTo("브라운");
+        assertThat(foundReservation.get().getName()).isEqualTo("브라운");
     }
 
     @Test
@@ -96,19 +87,70 @@ class JdbcReservationRepositoryTest {
                 savedTimeSlot,
                 savedTheme
         ));
-        jdbcReservationRepository.deleteById(savedReservation.id());
+        jdbcReservationRepository.deleteById(savedReservation.getId());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 
     @Test
-    @DisplayName("특정 날짜, 테마, 시간에 해당하는 예약이 이미 존재하면 true를 반환한다.")
-    void existsByDateAndTimeIdAndThemeId() {
-        Theme theme = savedTheme;
-        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, theme);
-        System.out.println(jdbcReservationRepository.findAll());
-        System.out.println(jdbcReservationRepository.save(reservation));
+    @DisplayName("특정 날짜, 시간, 테마에 해당하는 예약이 이미 존재하면 해당 예약을 반환한다.")
+    void findByDateAndTimeIdAndThemeId() {
+        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
+        jdbcReservationRepository.save(reservation);
+        Optional<Reservation> existingReservation = jdbcReservationRepository.findByDateAndTimeIdAndThemeId(
+                LocalDate.now(),
+                savedTimeSlot.getId(),
+                savedTheme.getId()
+        );
 
-        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), 1L);
-        assertThat(exists).isTrue();
+        assertThat(existingReservation).isPresent();
+        assertThat(existingReservation.get().getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    @DisplayName("존재하는 예약을 변경 불가능한 날짜, 시간, 테마으로 수정 시도 시 예외가 발생한다.")
+    void updateByDuplicatedDateAndTimeIdAndThemeId() {
+        jdbcReservationRepository.save(Reservation.transientOf(
+                "브라운",
+                LocalDate.now(),
+                savedTimeSlot,
+                savedTheme
+        ));
+
+        Reservation newReservation = jdbcReservationRepository.save(
+                Reservation.transientOf(
+                        "네오",
+                        LocalDate.now().plusDays(7),
+                        savedTimeSlot,
+                        savedTheme
+                )
+        );
+
+        Reservation updateReservation = new Reservation(
+                newReservation.getId(),
+                "네오",
+                LocalDate.now(),
+                savedTimeSlot,
+                savedTheme
+        );
+
+        assertThatThrownBy(
+                () -> jdbcReservationRepository.update(updateReservation))
+                .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    @DisplayName("존재하는 예약을 삭제한다.")
+    void deleteExisting() {
+        Reservation saved = jdbcReservationRepository.save(
+                Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme));
+        jdbcReservationRepository.deleteById(saved.getId());
+        assertThat(jdbcReservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제해도 예외가 발생하지 않는다.")
+    void deleteNonExisting() {
+        assertThatCode(() -> jdbcReservationRepository.deleteById(999L))
+                .doesNotThrowAnyException();
     }
 }
