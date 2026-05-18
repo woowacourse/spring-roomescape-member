@@ -3,8 +3,11 @@ package roomescape.reservation.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.global.exception.policy.PastReservationNotAllowedException;
 import roomescape.global.exception.policy.ReservationConflictException;
@@ -42,6 +46,9 @@ class ReservationServiceTest {
     @Mock
     ReservationTimeRepository reservationTimeRepository;
 
+    @Spy
+    Clock clock = Clock.fixed(Instant.parse("2026-01-01T14:00:00Z"), ZoneId.systemDefault());
+
     @InjectMocks
     ReservationService reservationService;
 
@@ -64,7 +71,7 @@ class ReservationServiceTest {
         @Test
         void 과거_예약을_삭제하는_경우_거부한다() {
             // given
-            LocalDate pastDate = LocalDate.now().minusDays(1);
+            LocalDate pastDate = LocalDate.now(clock).minusDays(1);
             Reservation pastReservation = ReservationFixture.createByDate(pastDate);
 
             when(reservationRepository.findById(any(Long.class))).thenReturn(pastReservation);
@@ -77,7 +84,7 @@ class ReservationServiceTest {
         @Test
         void 식별자에_해당하는_예약을_삭제한다() {
             // given
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(clock).plusDays(1);
             Reservation reservation = ReservationFixture.createByDate(date);
 
             when(reservationRepository.findById(any(Long.class))).thenReturn(reservation);
@@ -122,7 +129,7 @@ class ReservationServiceTest {
         @Test
         void 과거_예약을_취소하는_경우_거부한다() {
             // given
-            LocalDate pastDate = LocalDate.now().minusDays(1);
+            LocalDate pastDate = LocalDate.now(clock).minusDays(1);
             Reservation pastReservation = ReservationFixture.createByDate(pastDate);
 
             when(reservationRepository.findById(any(Long.class))).thenReturn(pastReservation);
@@ -135,7 +142,7 @@ class ReservationServiceTest {
         @Test
         void 식별자에_해당하는_예약을_취소한다() {
             // given
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(clock).plusDays(1);
             Reservation reservation = ReservationFixture.createByDate(date);
 
             when(reservationRepository.findById(any(Long.class))).thenReturn(reservation);
@@ -154,7 +161,9 @@ class ReservationServiceTest {
         @Test
         void 예약을_생성한다() {
             // given
-            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, 1L);
+            LocalDate date = LocalDate.now(clock);
+            LocalTime time = LocalTime.now(clock).plusMinutes(5);
+            CreateReservationRequest request = new CreateReservationRequest("userA", date, 1L, 1L);
 
             when(reservationRepository.save(any(CreateReservationParams.class))).thenReturn(
                     ReservationFixture.createByDate(request.date()));
@@ -163,7 +172,7 @@ class ReservationServiceTest {
             when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
             when(reservationTimeRepository.findById(any(Long.class)))
-                    .thenReturn(ReservationTimeFixture.create(LocalTime.now().plusMinutes(5)));
+                    .thenReturn(ReservationTimeFixture.create(time));
 
             // when
             ReservationResponse reservationResponse = reservationService.reserve(request);
@@ -175,14 +184,16 @@ class ReservationServiceTest {
         @Test
         void 이미_예약이_존재하는_경우_예약을_거부한다() {
             //given
-            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, 1L);
+            LocalDate date = LocalDate.now(clock);
+            LocalTime time = LocalTime.now(clock).plusMinutes(5);
+            CreateReservationRequest request = new CreateReservationRequest("userA", date, 1L, 1L);
 
             when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
                     .thenReturn(true);
             when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
             when(reservationTimeRepository.findById(any(Long.class)))
-                    .thenReturn(ReservationTimeFixture.create(LocalTime.now().plusMinutes(5)));
+                    .thenReturn(ReservationTimeFixture.create(time));
 
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
@@ -192,12 +203,14 @@ class ReservationServiceTest {
         @Test
         void 예약_시간이_과거인_경우_예약을_거부한다() {
             //given
-            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, 1L);
+            LocalDate date = LocalDate.now(clock);
+            LocalTime time = LocalTime.now(clock).minusMinutes(5);
+            CreateReservationRequest request = new CreateReservationRequest("userA", date, 1L, 1L);
 
             when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
             when(reservationTimeRepository.findById(any(Long.class)))
-                    .thenReturn(ReservationTimeFixture.create(LocalTime.now().minusMinutes(5)));
+                    .thenReturn(ReservationTimeFixture.create(time));
 
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
@@ -208,7 +221,7 @@ class ReservationServiceTest {
         void 테마가_존재하지_않는_경우_예약이_실패한다() {
             //given
             Long themeId = 1L;
-            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, themeId);
+            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(clock), 1L, themeId);
 
             when(themeRepository.existsById(themeId))
                     .thenReturn(false);
@@ -227,14 +240,15 @@ class ReservationServiceTest {
         void 예약을_변경한다() {
             // given
             Long id = 1L;
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(clock).plusDays(1);
+            LocalTime time = LocalTime.now(clock).plusHours(1);
             Long timeId = 2L;
             RescheduleReservationInfo info = new RescheduleReservationInfo(id, date, timeId);
 
-            Reservation reservation = ReservationFixture.createByDate(LocalDate.now());
+            Reservation reservation = ReservationFixture.createByDate(LocalDate.now(clock));
 
             when(reservationRepository.findById(id)).thenReturn(reservation);
-            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(LocalTime.now().plusHours(1)));
+            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(time));
             when(themeRepository.existsById(any(Long.class))).thenReturn(true);
             when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
                     .thenReturn(false);
@@ -250,14 +264,15 @@ class ReservationServiceTest {
         void 변경하려는_날짜_시간에_이미_예약이_존재하는_경우_변경을_거부한다() {
             // given
             Long id = 1L;
-            LocalDate date = LocalDate.now().plusDays(1);
+            LocalDate date = LocalDate.now(clock).plusDays(1);
+            LocalTime time = LocalTime.now(clock);
             Long timeId = 2L;
             RescheduleReservationInfo info = new RescheduleReservationInfo(id, date, timeId);
 
-            Reservation reservation = ReservationFixture.createByDate(LocalDate.now());
+            Reservation reservation = ReservationFixture.createByDate(LocalDate.now(clock));
 
             when(reservationRepository.findById(id)).thenReturn(reservation);
-            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(LocalTime.now()));
+            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(time));
             when(themeRepository.existsById(any(Long.class))).thenReturn(true);
             when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
                     .thenReturn(true);
@@ -271,14 +286,15 @@ class ReservationServiceTest {
         void 변경하려는_예약_시간이_과거인_경우_예약을_거부한다() {
             // given
             Long id = 1L;
-            LocalDate pastDate = LocalDate.now().minusDays(1);
+            LocalDate pastDate = LocalDate.now(clock).minusDays(1);
+            LocalTime time = LocalTime.now(clock);
             Long timeId = 2L;
             RescheduleReservationInfo info = new RescheduleReservationInfo(id, pastDate, timeId);
 
-            Reservation reservation = ReservationFixture.createByDate(LocalDate.now().plusDays(1));
+            Reservation reservation = ReservationFixture.createByDate(LocalDate.now(clock).plusDays(1));
 
             when(reservationRepository.findById(id)).thenReturn(reservation);
-            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(LocalTime.now()));
+            when(reservationTimeRepository.findById(timeId)).thenReturn(ReservationTimeFixture.create(time));
             when(themeRepository.existsById(any(Long.class))).thenReturn(true);
 
             // when & then

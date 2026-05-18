@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public List<ReservationResponse> findAllReservations() {
         return reservationRepository.findAll().stream()
@@ -105,7 +107,7 @@ public class ReservationService {
     }
 
     private void validateFutureOrPresent(Reservation reservation) {
-        if (reservation.isCreatedBefore(LocalDateTime.now())) {
+        if (reservation.isCreatedBefore(LocalDateTime.now(clock))) {
             throw new ReservationUpdateNotAllowedException();
         }
     }
@@ -117,6 +119,6 @@ public class ReservationService {
     }
 
     private boolean isBeforeNow(LocalDateTime reservationDateTime) {
-        return reservationDateTime.isBefore(LocalDateTime.now());
+        return reservationDateTime.isBefore(LocalDateTime.now(clock));
     }
 }
