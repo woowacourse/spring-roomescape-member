@@ -1,19 +1,18 @@
-package roomescape.domain.policy;
+package roomescape.support;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import org.springframework.stereotype.Component;
+import roomescape.domain.policy.ReservationPolicy;
 import roomescape.exception.BusinessRuleViolationException;
 
-@Component
-public class FutureOnlyPolicy implements ReservationPolicy {
+public class TestFutureOnlyPolicy implements ReservationPolicy {
 
     private final Clock clock;
 
-    public FutureOnlyPolicy() {
-        this.clock = Clock.systemDefaultZone();
+    public TestFutureOnlyPolicy(Clock clock) {
+        this.clock = clock;
     }
 
     @Override

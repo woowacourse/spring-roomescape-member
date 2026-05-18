@@ -1,19 +1,18 @@
-package roomescape.domain.policy;
+package roomescape.support;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import org.springframework.stereotype.Component;
+import roomescape.domain.policy.PopularThemePolicy;
 
-@Component
-public class RecentWeekPopularPolicy implements PopularThemePolicy {
+public class TestRecentWeekPopularPolicy implements PopularThemePolicy {
 
     private static final int PERIOD_DAYS = 7;
     private static final int LIMIT = 10;
 
     private final Clock clock;
 
-    public RecentWeekPopularPolicy() {
-        this.clock = Clock.systemDefaultZone();
+    public TestRecentWeekPopularPolicy(Clock clock) {
+        this.clock = clock;
     }
 
     @Override

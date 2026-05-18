@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import roomescape.domain.policy.FutureOnlyPolicy;
 import roomescape.domain.policy.ReservationPolicy;
 import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.InvalidCommandException;
@@ -23,6 +22,7 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.support.ReservationTestHelper;
+import roomescape.support.TestFutureOnlyPolicy;
 
 /*
  * 미션2 사이클2 - 서비스 정책 검증 테스트.
@@ -46,7 +46,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
                     TODAY.atTime(NOW_TIME).atZone(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
-            return new FutureOnlyPolicy(fixed);
+            return new TestFutureOnlyPolicy(fixed);
         }
     }
 

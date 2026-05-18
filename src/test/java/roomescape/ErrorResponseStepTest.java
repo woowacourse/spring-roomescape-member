@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import roomescape.domain.policy.FutureOnlyPolicy;
 import roomescape.domain.policy.ReservationPolicy;
 import roomescape.support.ReservationTestHelper;
+import roomescape.support.TestFutureOnlyPolicy;
 
 /*
  * 미션2 사이클2 - 에러 응답 명세 통합 테스트.
@@ -45,7 +45,7 @@ public class ErrorResponseStepTest extends IntegrationTest {
                     TODAY.atTime(NOW_TIME).atZone(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
-            return new FutureOnlyPolicy(fixed);
+            return new TestFutureOnlyPolicy(fixed);
         }
     }
 

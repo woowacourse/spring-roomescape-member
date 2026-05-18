@@ -19,8 +19,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import roomescape.domain.policy.PopularThemePolicy;
-import roomescape.domain.policy.RecentWeekPopularPolicy;
 import roomescape.support.ReservationTestHelper;
+import roomescape.support.TestRecentWeekPopularPolicy;
 
 
 /*
@@ -48,7 +48,7 @@ public class PopularThemeStepTest extends IntegrationTest {
                     TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(),
                     ZoneId.systemDefault()
             );
-            return new RecentWeekPopularPolicy(fixed);
+            return new TestRecentWeekPopularPolicy(fixed);
         }
     }
 
