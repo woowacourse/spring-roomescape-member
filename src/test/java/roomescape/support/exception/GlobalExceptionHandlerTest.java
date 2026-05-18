@@ -2,16 +2,19 @@ package roomescape.support.exception;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import roomescape.support.exception.errors.ReservationErrors;
 
 class GlobalExceptionHandlerTest {
 
     @Test
-    void RoomescapeException을_에러_응답으로_변환한다() {
+    @DisplayName("RoomescapeException을 에러 응답으로 변환한다.")
+    void convertRoomescapeExceptionToErrorResponse() {
         // given
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
-        BadRequestException exception = new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_NAME);
+        BadRequestException exception = new BadRequestException(ReservationErrors.INVALID_RESERVATION_NAME);
 
         // when
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequestException(exception);
@@ -25,7 +28,8 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void 예상하지_못한_예외를_500_에러_응답으로_변환한다() {
+    @DisplayName("예상하지 못한 예외를 500 에러 응답으로 변환한다.")
+    void convertUnexpectedExceptionToInternalServerErrorResponse() {
         // given
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
         Exception exception = new IllegalStateException();
@@ -37,7 +41,7 @@ class GlobalExceptionHandlerTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getStatusCode().value()).isEqualTo(500);
             softly.assertThat(response.getBody().code()).isEqualTo("INTERNAL_SERVER_ERROR");
-            softly.assertThat(response.getBody().message()).isEqualTo("서버 내부 오류가 발생했습니다");
+            softly.assertThat(response.getBody().message()).isEqualTo("서버 내부 오류가 발생했습니다.");
         });
     }
 }

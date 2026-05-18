@@ -6,6 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -15,7 +16,8 @@ import roomescape.support.exception.RoomescapeException;
 class ReservationTest {
 
     @Test
-    void id가_없는_예약을_생성한다() {
+    @DisplayName("id가 없는 예약을 생성한다.")
+    void createReservationWithoutId() {
         // given
         String name = "보예";
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
@@ -37,7 +39,8 @@ class ReservationTest {
     }
 
     @Test
-    void id를_부여한_예약을_생성한다() {
+    @DisplayName("id를 부여한 예약을 생성한다.")
+    void createReservationWithId() {
         // given
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(15, 40));
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
@@ -70,7 +73,8 @@ class ReservationTest {
     }
 
     @Test
-    void DB에서_조회한_예약을_생성한다() {
+    @DisplayName("DB에서 조회한 예약을 생성한다.")
+    void createReservationLoadedFromDatabase() {
         // given
         long id = 1L;
         String name = "보예";
@@ -93,7 +97,8 @@ class ReservationTest {
     }
 
     @Test
-    void 이름이_null이면_예외가_발생한다() {
+    @DisplayName("이름이 null이면 예외가 발생한다.")
+    void throwExceptionWhenNameIsNull() {
         // given
         String name = null;
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
@@ -107,7 +112,8 @@ class ReservationTest {
     }
 
     @Test
-    void 이름이_공백이면_예외가_발생한다() {
+    @DisplayName("이름이 공백이면 예외가 발생한다.")
+    void throwExceptionWhenNameIsBlank() {
         // given
         String name = "            ";
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
@@ -121,7 +127,23 @@ class ReservationTest {
     }
 
     @Test
-    void 날짜가_null이면_예외가_발생한다() {
+    @DisplayName("이름이 10자를 초과하면 예외가 발생한다.")
+    void throwExceptionWhenNameExceedsTenCharacters() {
+        // given
+        String name = "보예보예보예보예보예보";
+        ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(15, 40));
+        Theme theme = Theme.of(1L, "공포", "무서운 테마", "theme-url");
+
+        // when & then
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
+            .isInstanceOf(RoomescapeException.class)
+            .hasMessage("이름은 10자 이하여야 합니다.");
+    }
+
+    @Test
+    @DisplayName("날짜가 null이면 예외가 발생한다.")
+    void throwExceptionWhenDateIsNull() {
         // given
         String name = "보예";
         ReservationDate date = null;
@@ -135,7 +157,8 @@ class ReservationTest {
     }
 
     @Test
-    void 예약_시간이_null이면_예외가_발생한다() {
+    @DisplayName("예약 시간이 null이면 예외가 발생한다.")
+    void throwExceptionWhenReservationTimeIsNull() {
         // given
         String name = "보예";
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));
@@ -149,7 +172,8 @@ class ReservationTest {
     }
 
     @Test
-    void 테마가_null이면_예외가_발생한다() {
+    @DisplayName("테마가 null이면 예외가 발생한다.")
+    void throwExceptionWhenThemeIsNull() {
         // given
         String name = "보예";
         ReservationDate date = ReservationDate.createWithoutId(LocalDate.of(2023, 8, 5));

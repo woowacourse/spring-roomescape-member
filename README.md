@@ -7,6 +7,13 @@
 - 사용자는 이름, 날짜 ID, 시간 ID, 테마 ID를 입력해 예약을 생성한다.
 - 예약 생성 시 이름이 비어 있으면 예외를 반환한다.
 - 예약 생성 시 날짜, 시간, 테마 값이 누락되면 예외를 반환한다.
+- 사용자는 이름으로 본인의 예약 목록을 조회한다.
+- 사용자는 본인의 예약을 취소한다.
+- 사용자는 본인의 예약 날짜와 시간을 변경한다.
+- 예약 변경 시 날짜와 시간이 모두 누락되면 예외를 반환한다.
+- 예약 변경 시 존재하지 않는 날짜나 시간이 입력되면 예외를 반환한다.
+- 예약 변경 시 변경하려는 날짜와 시간이 현재보다 이전이면 예외를 반환한다.
+- 예약 변경 시 같은 날짜, 시간, 테마의 다른 예약이 이미 존재하면 예외를 반환한다.
 - 관리자는 전체 예약 목록을 조회한다.
 - 관리자는 예약 ID로 예약을 삭제한다.
 
@@ -101,7 +108,7 @@
 
 ```json
 {
-  "name": "쿠키",
+  "name": "보예",
   "dateId": 1,
   "timeId": 2,
   "themeId": 3
@@ -113,7 +120,7 @@
 ```json
 {
   "id": 29,
-  "name": "쿠키",
+  "name": "보예",
   "date": "2026-05-01",
   "time": "11:00",
   "theme": {
@@ -123,6 +130,55 @@
   }
 }
 ```
+
+#### `GET /reservations?name={name}`
+
+- 설명: 사용자 이름으로 예약 목록 조회
+- 응답 `200 OK`
+
+```json
+{
+  "name": "보예",
+  "reservation": [
+    {
+      "reservationId": 29,
+      "date": {
+        "id": 1,
+        "startWhen": "2026-05-01"
+      },
+      "time": {
+        "id": 2,
+        "startAt": "11:00"
+      },
+      "theme": {
+        "id": 3,
+        "name": "청춘물",
+        "content": "학교 배경인 테마 입니다.",
+        "url": "/themes/youth"
+      }
+    }
+  ]
+}
+```
+
+#### `PATCH /reservations/{id}`
+
+- 설명: 사용자 예약 날짜와 시간 변경
+- 요청 본문
+
+```json
+{
+  "startWhen": "2026-05-10",
+  "startAt": "15:00"
+}
+```
+
+- 응답 `204 No Content`
+
+#### `DELETE /reservations/{id}`
+
+- 설명: 사용자 예약 취소
+- 응답 `204 No Content`
 
 #### `DELETE /admin/reservations/{id}`
 
@@ -190,7 +246,7 @@
 
 ### 예약 시간
 
-#### `GET /times?themeId={themeId}&dateId={dateId}`
+#### `GET /reservation-times/availability?themeId={themeId}&dateId={dateId}`
 
 - 설명: 특정 테마와 날짜의 예약 가능 시간 조회
 - 응답 `200 OK`

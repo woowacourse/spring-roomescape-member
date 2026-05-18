@@ -4,13 +4,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationTimeTest {
 
     @Test
-    void id가_없는_예약_시간을_생성한다() {
+    @DisplayName("id가 없는 예약 시간을 생성한다.")
+    void createReservationTimeWithoutId() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
 
@@ -25,7 +27,8 @@ class ReservationTimeTest {
     }
 
     @Test
-    void 예약_시간이_null이면_예외가_발생한다() {
+    @DisplayName("예약 시간이 null이면 예외가 발생한다.")
+    void throwExceptionWhenReservationTimeIsNull() {
         // given
         LocalTime startAt = null;
 

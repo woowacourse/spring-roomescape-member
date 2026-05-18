@@ -24,4 +24,12 @@ public class ReservationDate {
             reservationDate
         );
     }
+
+    public boolean isBefore(LocalDate compareDate) {
+        return date.isBefore(compareDate);
+    }
+
+    public boolean isSame(LocalDate compareDate) {
+        return date.isEqual(compareDate);
+    }
 }

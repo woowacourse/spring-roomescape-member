@@ -3,6 +3,7 @@ package roomescape.domain.reservationdate;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.support.exception.InternalServerException;
-import roomescape.support.exception.RoomescapeErrorCode;
+import roomescape.support.exception.errors.RoomescapeErrors;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
 
     private static final String INSERT_SQL = "insert into reservation_date(`date`) values (?)";
     private static final String FIND_BY_ID_SQL = "select id, `date` from reservation_date where id = ?";
+    private static final String FIND_BY_DATE_SQL = "select id, `date` from reservation_date where `date` = ?";
     private static final String FIND_ALL_SQL = "select id, `date` from reservation_date order by id";
     private static final String DELETE_BY_ID_SQL = "delete from reservation_date where id = ?";
 
@@ -59,6 +61,12 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         return jdbcTemplate.update(DELETE_BY_ID_SQL, id);
     }
 
+    @Override
+    public Optional<ReservationDate> findByDate(LocalDate startWhen) {
+        List<ReservationDate> result = jdbcTemplate.query(FIND_BY_DATE_SQL, reservationDateRowMapper(), startWhen);
+        return result.stream().findFirst();
+    }
+
     private RowMapper<ReservationDate> reservationDateRowMapper() {
         return (rs, rowNum) -> ReservationDate.of(
             rs.getLong(COLUMN_ID),
@@ -68,7 +76,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
 
     private long extractId(KeyHolder keyHolder) {
         if (keyHolder.getKey() == null) {
-            throw new InternalServerException(RoomescapeErrorCode.INVALID_GENERATED_KEY);
+            throw new InternalServerException(RoomescapeErrors.INVALID_GENERATED_KEY);
         }
         return keyHolder.getKey().longValue();
     }

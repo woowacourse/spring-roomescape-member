@@ -3,18 +3,16 @@ package roomescape.domain.theme;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.theme.dto.AdminThemeResponse;
-import roomescape.domain.theme.dto.CreateThemeRequest;
-import roomescape.domain.theme.dto.CreateThemeResponse;
+import roomescape.domain.theme.admin.dto.AdminThemeResponse;
+import roomescape.domain.theme.admin.dto.CreateThemeRequest;
+import roomescape.domain.theme.admin.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.support.exception.ConflictException;
-import roomescape.support.exception.ThemeErrorCode;
+import roomescape.support.exception.errors.ThemeErrors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
@@ -38,12 +36,9 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationRepository.countByThemeId(id) > 0) {
-            throw new ConflictException(ThemeErrorCode.THEME_IN_USE);
+            throw new ConflictException(ThemeErrors.THEME_IN_USE);
         }
-        int deletedCount = themeRepository.deleteById(id);
-        if (deletedCount == 0) {
-            log.warn("삭제할 테마가 존재하지 않습니다. themeId = {}", id);
-        }
+        themeRepository.deleteById(id);
     }
 
     public List<ThemeResponse> getAllTheme() {
