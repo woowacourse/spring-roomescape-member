@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.ReservationTimeRequest;
@@ -44,9 +44,9 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(ErrorReason.RESERVATION_TIME_NOT_FOUND));
         if (reservationRepository.existsByTimeId(id)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
+            throw new RoomescapeException(ErrorReason.RESERVATION_TIME_IN_USE);
         }
         reservationTimeRepository.deleteById(id);
     }

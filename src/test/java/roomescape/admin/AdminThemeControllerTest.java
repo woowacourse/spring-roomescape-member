@@ -17,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.ThemeService;
 import roomescape.theme.dto.ThemeResponse;
@@ -73,7 +73,7 @@ class AdminThemeControllerTest {
 
     @Test
     void 존재하지_않는_테마_삭제시_404() throws Exception {
-        willThrow(new RoomescapeException(ErrorCode.THEME_NOT_FOUND))
+        willThrow(new RoomescapeException(ErrorReason.THEME_NOT_FOUND))
                 .given(themeService).delete(0L);
 
         mockMvc.perform(delete("/admin/themes/0"))

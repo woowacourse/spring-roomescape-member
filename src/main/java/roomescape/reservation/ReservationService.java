@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -48,7 +48,7 @@ public class ReservationService {
         );
         if (reservationRepository.existsActiveByDateAndThemeAndTime(reservationRequest.date(), theme.getId(),
                 reservationTime.getId())) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new RoomescapeException(ErrorReason.RESERVATION_DUPLICATE);
         }
         return saveAndRespond(reservation);
     }
@@ -70,7 +70,7 @@ public class ReservationService {
         if (reservationRepository.existsActiveByDateAndThemeAndTimeExcludingId(reservationUpdateRequest.date(),
                 theme.getId(),
                 reservationTime.getId(), id)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new RoomescapeException(ErrorReason.RESERVATION_DUPLICATE);
         }
 
         return changeAndRespond(reservationUpdateRequest, reservation, theme, reservationTime);
@@ -94,7 +94,7 @@ public class ReservationService {
             Reservation saved = reservationRepository.save(reservation);
             return ReservationResponse.from(saved);
         } catch (DataIntegrityViolationException e) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new RoomescapeException(ErrorReason.RESERVATION_DUPLICATE);
         }
     }
 
@@ -107,22 +107,22 @@ public class ReservationService {
             reservationRepository.update(updated);
             return ReservationResponse.from(updated);
         } catch (DataIntegrityViolationException e) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+            throw new RoomescapeException(ErrorReason.RESERVATION_DUPLICATE);
         }
     }
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(ErrorReason.RESERVATION_NOT_FOUND));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId).stream().findFirst()
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(ErrorReason.THEME_NOT_FOUND));
     }
 
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(ErrorReason.RESERVATION_TIME_NOT_FOUND));
     }
 }

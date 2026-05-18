@@ -3,7 +3,7 @@ package roomescape.reservation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
@@ -73,7 +73,7 @@ public class Reservation {
 
     public void checkOwner(String userName) {
         if (!belongsTo(userName)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_OWNER);
+            throw new RoomescapeException(ErrorReason.RESERVATION_NOT_OWNER);
         }
     }
 
@@ -83,13 +83,13 @@ public class Reservation {
 
     private void validateActiveReservation() {
         if (this.deletedAt != null) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_CANCELED);
+            throw new RoomescapeException(ErrorReason.RESERVATION_ALREADY_CANCELED);
         }
     }
 
     private void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
         if (time.isPast(date, now)) {
-            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
+            throw new RoomescapeException(ErrorReason.PAST_RESERVATION);
         }
     }
 }
