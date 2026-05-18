@@ -14,7 +14,7 @@ import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.exception.ReservationOwnerMismatchException;
 
-@RestControllerAdvice(basePackages = "roomescape.reservation")
+@RestControllerAdvice
 public class ReservationExceptionHandler extends ApiExceptionHandlerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(ReservationExceptionHandler.class);

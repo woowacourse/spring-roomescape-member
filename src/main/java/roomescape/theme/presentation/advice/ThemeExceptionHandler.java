@@ -11,7 +11,7 @@ import roomescape.common.advice.ApiExceptionHandlerSupport;
 import roomescape.common.dto.ErrorResponse;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 
-@RestControllerAdvice(basePackages = "roomescape.theme")
+@RestControllerAdvice
 public class ThemeExceptionHandler extends ApiExceptionHandlerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(ThemeExceptionHandler.class);

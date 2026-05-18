@@ -12,7 +12,7 @@ import roomescape.common.dto.ErrorResponse;
 import roomescape.time.domain.exception.ReservationTimeInUseException;
 import roomescape.time.domain.exception.ReservationTimeNotFoundException;
 
-@RestControllerAdvice(basePackages = "roomescape.time")
+@RestControllerAdvice
 public class ReservationTimeExceptionHandler extends ApiExceptionHandlerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(ReservationTimeExceptionHandler.class);
