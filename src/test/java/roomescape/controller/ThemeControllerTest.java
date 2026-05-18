@@ -15,8 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -28,10 +30,13 @@ class ThemeControllerTest {
     private int port;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -113,21 +118,19 @@ class ThemeControllerTest {
     }
 
     @Test
-    void 예약이_존재하는_테마_삭제시_409를_반환한다() {
+    void 예약이_존재하는_테마_삭제시_422를_반환한다() {
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         String futureDate = LocalDate.now().plusDays(1)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "아이큐", futureDate, time.getId(), theme.getId()
-        );
+        reservationRepository.save(
+                Reservation.of("아이큐", futureDate, time, theme));
 
         Map<String, Object> response = RestAssured.given().log().all()
                 .when().delete("/admin/themes/" + theme.getId())
                 .then().log().all()
-                .statusCode(409)
+                .statusCode(422)
                 .extract().jsonPath().getMap(".");
 
         assertThat(response.get("message")).isEqualTo("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");

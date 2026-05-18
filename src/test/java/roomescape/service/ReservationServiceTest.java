@@ -85,6 +85,7 @@ class ReservationServiceTest {
         ReservationTime newTime = ReservationTime.of(2L, "11:00");
         Theme theme = Theme.of(1L, "공포", "desc", "url");
         Reservation existing = Reservation.of(1L, "아이큐", FUTURE_DATE, oldTime, theme);
+        LocalDate newDate = LocalDate.parse(FUTURE_DATE2);
 
         given(reservationRepository.findById(1L)).willReturn(Optional.of(existing));
         given(reservationTimeService.find(2L)).willReturn(newTime);
@@ -94,7 +95,7 @@ class ReservationServiceTest {
         Reservation result = reservationService.update(1L, request);
 
         assertThat(result.getTime().getId()).isEqualTo(2L);
-        verify(reservationRepository).update(anyLong(), any(), anyLong());
+        verify(reservationRepository).update(1L, newDate, 2L);
     }
 
     @Test
