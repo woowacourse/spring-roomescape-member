@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,13 +21,19 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                ), id);
+
+        List<ReservationTime> result = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))
+                ),
+                id
+        );
+
+        return result.stream().findFirst();
     }
 
     public List<ReservationTime> findAll() {
@@ -60,12 +67,6 @@ public class ReservationTimeDao {
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "Select count(*) from reservation_time where start_at = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
-        return count != null && count > 0;
-    }
-
-    public boolean existsById(Long id){
-        String sql = "SELECT count(*) FROM reservation_time where id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 }

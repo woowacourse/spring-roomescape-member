@@ -60,7 +60,7 @@ public class ReservationTimeService {
     }
 
     private void validateHasTime(Long id) {
-        if (reservationDao.existById(id)) {
+        if (reservationDao.existByTimeId(id)) {
             throw new ResourceInUseException("예약이 존재해 삭제할 수 없습니다");
         }
     }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -110,7 +111,7 @@ public class ReservationDao {
                 offset);
     }
 
-    public Reservation findById(long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = """
                 SELECT
                     r.id as reservation_id,
@@ -130,7 +131,8 @@ public class ReservationDao {
                 WHERE r.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql,
+        List<Reservation> result = jdbcTemplate.query(
+                sql,
                 (resultSet, rowNum) -> new Reservation(
                         resultSet.getLong("reservation_id"),
                         resultSet.getString("member_name"),
@@ -146,6 +148,7 @@ public class ReservationDao {
                         )
                 ),
                 id);
+        return result.stream().findFirst();
     }
 
     public Reservation save(Reservation reservation) {
@@ -206,12 +209,6 @@ public class ReservationDao {
     public boolean existByThemeId(Long themeId) {
         String sql = "SELECT count(*) FROM reservation where theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return count != null && count > 0;
-    }
-
-    public boolean existById(Long id) {
-        String sql = "SELECT count(*) FROM reservation where id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 

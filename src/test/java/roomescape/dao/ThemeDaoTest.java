@@ -31,7 +31,7 @@ class ThemeDaoTest {
     void 테마를_저장하고_id로_조회한다() {
         Theme savedTheme = themeDao.save(new Theme("공포", "무서운 테마", "thumbnail"));
 
-        Theme foundTheme = themeDao.findById(savedTheme.getId());
+        Theme foundTheme = themeDao.findById(savedTheme.getId()).orElseThrow();
 
         assertThat(foundTheme.getId()).isEqualTo(savedTheme.getId());
         assertThat(foundTheme.getName()).isEqualTo("공포");

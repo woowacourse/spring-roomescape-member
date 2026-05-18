@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,15 +20,20 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id);
+
+        List<Theme> result = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                id
+        );
+        return result.stream().findFirst();
     }
 
     public List<Theme> findAll() {
@@ -92,12 +98,6 @@ public class ThemeDao {
     public boolean existsByName(String name) {
         String sql = "SELECT count(*) FROM theme WHERE name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return count != null && count > 0;
-    }
-
-    public boolean existsById(Long id) {
-        String sql = "SELECT count(*) FROM theme WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 }
