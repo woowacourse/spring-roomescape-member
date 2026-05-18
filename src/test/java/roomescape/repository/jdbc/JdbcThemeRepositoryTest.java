@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("/clear.sql")
@@ -63,6 +65,22 @@ class JdbcThemeRepositoryTest {
         boolean deleted = themeRepository.deleteById(1L);
 
         assertThat(deleted).isFalse();
+    }
+
+    @Test
+    void 해당_테마에_예약이_있으면_테마를_삭제할_수_없다() {
+        Theme savedTheme = themeRepository.save(Theme.create("링", "공포 테마", "http:~"));
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운",
+                "2026-08-05",
+                1L,
+                savedTheme.getId()
+        );
+
+        assertThatThrownBy(() -> themeRepository.deleteById(savedTheme.getId()))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ThemeInUseException;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
 import roomescape.service.support.FakeThemeRepository;
@@ -73,6 +74,16 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.delete(1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 해당_테마에_예약이_있으면_테마_삭제시_예외가_발생한다() {
+        // given
+        themeRepository.failToDeleteByInUse();
+
+        // when & then
+        assertThatThrownBy(() -> themeService.delete(1L))
+                .isInstanceOf(ThemeInUseException.class);
     }
 
 }

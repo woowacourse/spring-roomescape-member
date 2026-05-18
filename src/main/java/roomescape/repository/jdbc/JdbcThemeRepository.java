@@ -1,14 +1,12 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.domain.exception.ThemeInUseException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.entity.ThemeEntity;
 
@@ -78,11 +76,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 WHERE id = ?
                 """;
 
-        try {
-            return jdbcTemplate.update(sql, themeId) > 0;
-        } catch (DataIntegrityViolationException exception) {
-            throw new ThemeInUseException(exception);
-        }
+        return jdbcTemplate.update(sql, themeId) > 0;
     }
 
     @Override
