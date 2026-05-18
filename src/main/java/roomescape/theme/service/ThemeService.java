@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.NotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -41,7 +42,7 @@ public class ThemeService {
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today;
 
-        return themeRepository.findPopularThemes(startDate, endDate, top);
+        return themeRepository.findPopularThemes(startDate, endDate, top, ReservationStatus.RESERVED);
     }
 
     @Transactional

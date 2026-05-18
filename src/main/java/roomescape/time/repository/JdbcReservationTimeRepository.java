@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -82,20 +83,21 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, long themeId) {
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, long themeId, ReservationStatus status) {
         String sql = """
                 SELECT * FROM reservation_time
                 WHERE start_at NOT IN (
                     SELECT start_at FROM reservation
                     WHERE date = :date
                     AND theme_id = :theme_id
-                    AND status = 'RESERVED'
+                    AND status = :status
                 )
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("theme_id", themeId);
+                .addValue("theme_id", themeId)
+                .addValue("status", status.name());
 
         return jdbcTemplate.query(sql, params, RESERVATION_TIME_ROW_MAPPER);
     }

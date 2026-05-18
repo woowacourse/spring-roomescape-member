@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
@@ -49,7 +50,7 @@ class ReservationTimeRepositoryTest {
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(
-                date, theme2.id());
+                date, theme2.id(), ReservationStatus.RESERVED);
 
         // then
         assertThat(availableTimes)

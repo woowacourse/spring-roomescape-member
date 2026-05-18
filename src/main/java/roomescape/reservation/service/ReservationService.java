@@ -12,6 +12,7 @@ import roomescape.closeddate.repository.ClosedDateRepository;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -130,14 +131,14 @@ public class ReservationService {
     }
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id())) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id(), ReservationStatus.RESERVED)) {
             log.warn("Reservation already exists: date={}, time={}, theme={}", date, time, theme.name());
             throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme, Long excludeId) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id(), excludeId)) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id(), excludeId, ReservationStatus.RESERVED)) {
             log.warn("Reservation already exists: date={}, time={}, theme={}", date, time, theme.name());
             throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }

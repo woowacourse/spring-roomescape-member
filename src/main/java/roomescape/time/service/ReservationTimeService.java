@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -54,7 +55,7 @@ public class ReservationTimeService {
                     return new NotFoundException("존재하지 않는 예약 시간입니다.");
                 });
 
-        if(reservationRepository.existsByTimeId(reservationTime.id())) {
+        if(reservationRepository.existsByTimeId(reservationTime.id(), ReservationStatus.RESERVED)) {
             log.warn("Cannot delete reservation time with existing reservations: id={}", id);
             throw new ConflictException("예약이 있는 예약 시간은 삭제할 수 없습니다.");
         }
@@ -65,6 +66,6 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableTimes(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
+        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId, ReservationStatus.RESERVED);
     }
 }

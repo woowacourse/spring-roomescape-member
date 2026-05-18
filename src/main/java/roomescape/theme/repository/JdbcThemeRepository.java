@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -91,7 +92,7 @@ public class JdbcThemeRepository implements ThemeRepository{
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit, ReservationStatus status) {
         String sql = """
                 SELECT
                     t.id,
@@ -103,7 +104,7 @@ public class JdbcThemeRepository implements ThemeRepository{
                 FROM reservation r
                 JOIN theme t ON r.theme_id = t.id
                 WHERE t.is_active = true
-                  AND r.status = 'RESERVED'
+                  AND r.status = :status
                   AND r.date >= :startDate
                   AND r.date < :endDate
                 GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
@@ -114,7 +115,8 @@ public class JdbcThemeRepository implements ThemeRepository{
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
                 .addValue("endDate", endDate)
-                .addValue("limit", limit);
+                .addValue("limit", limit)
+                .addValue("status", status.name());
 
         return jdbcTemplate.query(sql, params, (rs, rowNum) -> Theme.load(
                 rs.getLong("id"),
