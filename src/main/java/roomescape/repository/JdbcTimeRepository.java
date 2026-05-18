@@ -49,6 +49,18 @@ public class JdbcTimeRepository implements TimeRepository {
         jdbcTemplate.update(sql, timeId);
     }
 
+    @Override
+    public boolean existsByReferencedId(long timeId) {
+        String sql = """
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM reservation 
+                            WHERE time_id = ?                  
+                        )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
     private RowMapper<Time> rowMapper() {
         return (rs, rowNum) -> new Time(
                 rs.getLong("id"),

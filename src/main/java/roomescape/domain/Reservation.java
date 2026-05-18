@@ -1,5 +1,10 @@
 package roomescape.domain;
 
+import roomescape.domain.reservationStatus.PendingStatus;
+import roomescape.domain.reservationStatus.ReservationStatus;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -10,6 +15,7 @@ public class Reservation {
     private final LocalDate date;
     private final Time time;
     private final Theme theme;
+    private ReservationStatus reservationStatus;
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
         validate(name, date, time, theme);
@@ -18,19 +24,28 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.reservationStatus = PendingStatus.getInstance();
     }
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, ReservationStatus reservationStatus) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.reservationStatus = reservationStatus;
     }
 
-    public Reservation of(Long id, Reservation reservation) {
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+    public static Reservation of(Long id, Reservation reservation) {
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getReservationStatus()
+        );
     }
 
     private void validate(String name, LocalDate date, Time time, Theme theme) {
@@ -66,6 +81,30 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
+    }
+
+    public String getReservationStatusName() {
+        return reservationStatus.getName();
+    }
+
+    public void changeStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
+
+    public void confirm() {
+        reservationStatus.confirm(this);
+    }
+
+    public void cancel() {
+        reservationStatus.cancel(this);
+    }
+
+    public void complete() {
+        reservationStatus.complete(this);
     }
 
     @Override

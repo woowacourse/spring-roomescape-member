@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
+import roomescape.global.exception.CustomException;
 import roomescape.repository.FakeReservationDao;
 import roomescape.repository.FakeThemeDao;
 import roomescape.repository.FakeThemeSlotDao;
@@ -30,7 +31,7 @@ class TimeServiceTest {
         fakeThemeDao = new FakeThemeDao();
         fakeThemeSlotDao = new FakeThemeSlotDao();
 
-        reservationTimeService = new TimeService(fakeTimeDao, new FakeReservationDao(), fakeThemeSlotDao, fakeThemeDao);
+        reservationTimeService = new TimeService(fakeTimeDao, fakeThemeSlotDao, fakeThemeDao);
     }
 
     @Test
@@ -99,6 +100,6 @@ class TimeServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         assertThatThrownBy(() -> reservationTimeService.findThemeSlotBy(nonExistentThemeId, date))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 }

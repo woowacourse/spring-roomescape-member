@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 
-@Repository
 public interface ReservationRepository {
 
     List<Reservation> findAll();
@@ -19,4 +18,12 @@ public interface ReservationRepository {
     void deleteById(long id);
 
     boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId);
+
+    boolean isExistBy(Long reservationId);
+
+    List<Reservation> findByName(String name);
+
+    void updateStatus(Reservation reservation);
+
+    void updateDateAndTimeAndTheme(Reservation reservation);
 }

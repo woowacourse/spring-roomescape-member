@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.reservationStatus.*;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 
@@ -34,6 +35,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id AS r_id, 
                     r.name, 
                     r.date, 
+                    r.status,                
                     t.id AS t_id, 
                     t.start_at,
                     theme.id AS theme_id,
@@ -42,12 +44,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                     theme.thumbnail_url AS theme_thumbnail_url
                 FROM 
                     reservation r 
+                        INNER JOIN  
+                        time t ON r.time_id = t.id
                         INNER JOIN 
-                        time t 
-                            INNER JOIN 
-                        theme theme
-                            ON r.time_id = t.id 
-                                   AND r.theme_id = theme.id
+                        theme theme ON r.theme_id = theme.id
                 """;
         return jdbcTemplate.query(sql, rowMapper());
     }
@@ -59,6 +59,33 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id AS r_id,
                     r.name,
                     r.date,
+                    r.status,
+                    t.id AS t_id,
+                    t.start_at, 
+                    theme.id as theme_id,
+                    theme.name AS theme_name,
+                    theme.description AS theme_description,
+                    theme.thumbnail_url AS theme_thumbnail_url
+                FROM 
+                    reservation r 
+                        INNER JOIN 
+                        time t ON r.time_id = t.id
+                        INNER JOIN 
+                        theme theme ON r.theme_id = theme.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper(), reservationId).stream().findFirst();
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT 
+                    r.id AS r_id,
+                    r.name,
+                    r.date,
+                    r.status,
                     t.id AS t_id,
                     t.start_at, 
                     theme.id as theme_id,
@@ -75,23 +102,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                                 r.time_id = t.id 
                                    AND 
                                 r.theme_id = theme.id
-                WHERE r.id = ?
+                WHERE r.name = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper(), reservationId).stream().findFirst();
+        return jdbcTemplate.query(sql, rowMapper(), name).stream().toList();
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = createParams(reservation);
-        long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(
-                reservationId,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
-        );
+        Long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return Reservation.of(reservationId, reservation);
     }
 
     private Map<String, Object> createParams(Reservation reservation) {
@@ -99,7 +120,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
-                "theme_id", reservation.getTheme().getId()
+                "theme_id", reservation.getTheme().getId(),
+                "status", reservation.getReservationStatusName()
         );
     }
 
@@ -123,6 +145,49 @@ public class JdbcReservationRepository implements ReservationRepository {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, reservationTimeId));
     }
 
+    @Override
+    public boolean isExistBy(Long reservationId) {
+        String sql = """
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM reservation 
+                            WHERE id = ? 
+                        ) 
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, reservationId));
+    }
+
+    @Override
+    public void updateStatus(Reservation reservation) {
+        String sql = """
+                UPDATE reservation 
+                SET status = ? 
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql,
+                reservation.getReservationStatusName(),
+                reservation.getId()
+        );
+    }
+
+    @Override
+    public void updateDateAndTimeAndTheme(Reservation reservation) {
+        String sql = """
+                UPDATE reservation 
+                SET date = ?,
+                    time_id = ?,
+                    theme_id = ?
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql,
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+    }
+
     private RowMapper<Reservation> rowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("r_id"),
@@ -136,7 +201,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                         rs.getString("theme_name"),
                         rs.getString("theme_description"),
                         rs.getString("theme_thumbnail_url")
-                )
+                ),
+                toStatus(rs.getString("status"))
         );
+    }
+
+    private ReservationStatus toStatus(String statue) {
+        return switch (statue) {
+            case "PENDING" -> PendingStatus.getInstance();
+            case "CONFIRMED" -> ConfirmedStatus.getInstance();
+            case "COMPLETED" -> CompletedStatus.getInstance();
+            case "CANCELLED" -> CancelledStatus.getInstance();
+            default -> throw new IllegalArgumentException("존재하지 않는 예약 상태입니다.");
+        };
     }
 }

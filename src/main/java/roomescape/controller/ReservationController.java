@@ -2,24 +2,19 @@ package roomescape.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationRequest;
-import roomescape.controller.dto.ReservationResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.TimeResponse;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
+@Validated
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -33,12 +28,36 @@ public class ReservationController {
         return ResponseEntity.ok(convertToReservationResponse(reservationService.allReservations()));
     }
 
+    @GetMapping(params = "name")
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(@NotBlank @RequestParam String name) {
+        return ResponseEntity.ok(convertToReservationResponse(reservationService.findReservationBy(name)));
+    }
+
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = reservationService.saveReservation(reservationRequest.name(),
-                reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
+        Reservation reservation = reservationService.saveReservation(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
+        );
         ReservationResponse reservationResponse = toResponse(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
+    }
+
+    @PatchMapping("/{reservationId}/cancel")
+    public ResponseEntity<Void> cancelMyReservation(@PathVariable Long reservationId) {
+        reservationService.cancelReservation(reservationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> modifyMyReservation(
+            @PathVariable Long reservationId,
+            @Valid @RequestBody ReservationModifyRequest request
+    ) {
+        Reservation reservation = reservationService.modifyReservation(reservationId, request.date(), request.timeId(), request.themeId());
+        return ResponseEntity.ok().body(toResponse(reservation));
     }
 
     @DeleteMapping("/{id}")
@@ -59,7 +78,8 @@ public class ReservationController {
                 reservation.getName(),
                 reservation.getDate(),
                 TimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme())
+                ThemeResponse.from(reservation.getTheme()),
+                reservation.getReservationStatusName()
         );
     }
 }

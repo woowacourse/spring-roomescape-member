@@ -2,8 +2,12 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -24,13 +28,19 @@ public class ThemeService {
         return themeRepository.save(theme);
     }
 
-    public void removeTheme(long timeId) {
-        themeRepository.deleteById(timeId);
+    public void removeTheme(long themeId) {
+        getThemeOrElseThrow(themeId);
+        themeRepository.deleteById(themeId);
     }
 
     public Theme findTheme(long themeId) {
+        return getThemeOrElseThrow(themeId);
+    }
+
+    @NonNull
+    private Theme getThemeOrElseThrow(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마 ID가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     public List<Theme> findPopularThemes(Long topCount, Long during) {

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.lang.NonNull;
@@ -10,6 +11,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ThemeSlotRepository;
@@ -41,6 +44,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation saveReservation(String name, LocalDate date, Long reservationTimeId, Long themeId) {
+        validateBeforeDate(date);
         validateIsExistBy(date, reservationTimeId, themeId);
 
         Theme theme = getThemeOrElseThrow(themeId);
@@ -50,12 +54,7 @@ public class ReservationService {
         return reservation;
     }
 
-    private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
-        if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
-            throw new IllegalArgumentException("해당 테마, 날짜, 시간에 예약이 존재합니다.");
-        }
-    }
-
+    @Transactional
     public void removeReservation(long reservationId) {
         getReservationOrElseThrow(reservationId);
         reservationRepository.deleteById(reservationId);
@@ -65,21 +64,71 @@ public class ReservationService {
         return getReservationOrElseThrow(reservationId);
     }
 
+    public List<Reservation> findReservationBy(String name) {
+        return reservationRepository.findByName(name);
+    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = getReservationOrElseThrow(reservationId);
+        reservation.cancel();
+        reservationRepository.updateStatus(reservation);
+    }
+
+    @Transactional
+    public Reservation modifyReservation(Long reservationId, LocalDate date, Long timeId, Long themeId) {
+        Time time = getTimeOrElseThrow(timeId);
+        Theme theme = getThemeOrElseThrow(themeId);
+        Reservation reservation = getReservationOrElseThrow(reservationId);
+
+        validateIsExistBy(date, timeId, themeId);
+        validateDateTime(date, time);
+
+        Reservation updateReservation = new Reservation(
+                reservationId,
+                reservation.getName(),
+                date,
+                time,
+                theme,
+                reservation.getReservationStatus()
+        );
+        reservationRepository.updateDateAndTimeAndTheme(updateReservation);
+        return updateReservation;
+    }
+
     @NonNull
     private Theme getThemeOrElseThrow(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     @NonNull
     private Time getTimeOrElseThrow(Long reservationTimeId) {
         return timeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException("시간 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_NOT_FOUND));
     }
 
     @NonNull
     private Reservation getReservationOrElseThrow(long reservationId) {
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("예약 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateBeforeDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_ALLOWED_DATE);
+        }
+    }
+
+    private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
+        if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
+            throw new CustomException(ErrorCode.RESERVATION_ALREADY_EXIST);
+        }
+    }
+
+    private void validateDateTime(LocalDate date, Time time) {
+        if (date.equals(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_TIME_OUT);
+        }
     }
 }

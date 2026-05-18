@@ -1,20 +1,14 @@
 package roomescape.controller.dto;
 
-public record ThemeRequest(String name, String description, String thumbnailUrl) {
+import jakarta.validation.constraints.NotBlank;
 
-    public ThemeRequest {
-        validate(name, description, thumbnailUrl);
-    }
+public record ThemeRequest(
+        @NotBlank
+        String name,
 
-    private void validate(String name, String description, String thumbnailUrl) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 필수이며 비어있을 수 없습니다.");
-        }
-        if (description == null) {
-            throw new IllegalArgumentException("설명은 필수입니다.");
-        }
-        if (thumbnailUrl == null) {
-            throw new IllegalArgumentException("썸네일은 필수입니다.");
-        }
-    }
-}
+        @NotBlank
+        String description,
+
+        @NotBlank
+        String thumbnailUrl
+) { }

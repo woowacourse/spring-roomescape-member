@@ -1,12 +1,11 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import roomescape.domain.Reservation;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 
 public class FakeReservationDao implements ReservationRepository {
 
@@ -26,8 +25,14 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         long id = sequence++;
-        Reservation savedReservation = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        Reservation savedReservation = new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getReservationStatus()
+        );
         storage.put(id, savedReservation);
         return savedReservation;
     }
@@ -39,6 +44,54 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId) {
-        return false;
+        return storage.values().stream()
+                .anyMatch(reservation ->
+                        Objects.equals(reservation.getTime().getId(), reservationTimeId) ||
+                                Objects.equals(reservation.getTheme().getId(), themeId) ||
+                                reservation.getDate().equals(date)
+                );
+    }
+
+    @Override
+    public boolean isExistBy(Long reservationId) {
+        return storage.containsKey(reservationId);
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return storage.values().stream()
+                .filter(reservation -> Objects.equals(reservation.getName(), name))
+                .toList();
+    }
+
+    @Override
+    public void updateStatus(Reservation reservation) {
+        Long id = reservation.getId();
+        if (!storage.containsKey(id)) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+
+        Reservation getReservation = storage.get(id);
+        getReservation.changeStatus(reservation.getReservationStatus());
+    }
+
+    @Override
+    public void updateDateAndTimeAndTheme(Reservation reservation) {
+        Long id = reservation.getId();
+        if (!storage.containsKey(id)) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
+
+        Reservation getReservation = storage.get(id);
+        Reservation newReservation = new Reservation(
+                getReservation.getId(),
+                getReservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                getReservation.getReservationStatus()
+        );
+        storage.remove(id);
+        storage.put(id, newReservation);
     }
 }

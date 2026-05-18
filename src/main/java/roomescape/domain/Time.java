@@ -38,6 +38,10 @@ public class Time {
         return startAt;
     }
 
+    public boolean isBefore(LocalTime time) {
+        return startAt.isBefore(time);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
