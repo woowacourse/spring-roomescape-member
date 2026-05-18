@@ -1,11 +1,13 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationResponses;
+import roomescape.reservation.controller.dto.UpdateReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
@@ -21,20 +23,29 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<ReservationResponses> getReservations(
+    @GetMapping(params = "!name")
+    public ResponseEntity<ReservationResponses> findReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         List<Reservation> reservations = reservationService.findReservations(page, size);
-        List<ReservationResponse> response = reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(new ReservationResponses(response));
+        ReservationResponses response = ReservationResponses.from(reservations);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping(params = "name")
+    public ResponseEntity<ReservationResponses> findUserReservations(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<Reservation> reservations = reservationService.findUserReservations(name, page, size);
+        ReservationResponses response = ReservationResponses.from(reservations);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         Reservation reservation = reservationService.createReservation(
                 request.name(),
                 request.date(),
@@ -44,9 +55,21 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @Valid @RequestBody UpdateReservationRequest request
+    ) {
+        Reservation reservation = reservationService.updateReservation(id, name, request.date(), request.timeId());
+        ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+    @DeleteMapping(value = "/{id}", params = "name")
+    public ResponseEntity<Void> deleteUserReservation(@PathVariable Long id, @RequestParam String name) {
+        reservationService.deleteUserReservation(id, name);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

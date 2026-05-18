@@ -1,33 +1,97 @@
 package roomescape.reservation.domain;
 
+import roomescape.exception.domain.DomainConflictException;
+import roomescape.exception.domain.DomainRuleViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
-    private Long id;
-    private String name;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약자 이름은 비어 있을 수 없습니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약 날짜는 비어 있을 수 없습니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
+            throw new DomainRuleViolationException("예약 시간은 비어 있을 수 없습니다.");
+        }
+        if (theme == null) {
+            throw new DomainRuleViolationException("예약 테마는 비어 있을 수 없습니다.");
         }
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
+        if (time.isPast(date, now)) {
+            throw new DomainConflictException("지난 시간으로는 예약할 수 없습니다.");
+        }
+        return new Reservation(name, date, time, theme);
+    }
+
+    public Reservation changeSchedule(LocalDate newDate, ReservationTime newTime, String requester, LocalDateTime now) {
+        validateOwner(requester);
+        if (isPast(now)) {
+            throw new DomainConflictException("지난 예약은 변경할 수 없습니다.");
+        }
+        if (newTime.isPast(newDate, now)) {
+            throw new DomainConflictException("과거로는 변경할 수 없습니다.");
+        }
+        return new Reservation(id, name, newDate, newTime, theme);
+    }
+
+    public void checkDuplicatedWith(Reservation other) {
+        if (other == null || isSameReservation(other)) {
+            return;
+        }
+        if (hasSameSchedule(other)) {
+            throw new DomainConflictException("이미 예약된 시간입니다.");
+        }
+    }
+
+    public void checkCancellable(String requester, LocalDateTime now) {
+        validateOwner(requester);
+        if (isPast(now)) {
+            throw new DomainConflictException("지난 예약은 취소할 수 없습니다.");
+        }
+    }
+
+    private void validateOwner(String name) {
+        if (!this.name.equals(name)) {
+            throw new DomainConflictException("본인의 예약만 수정할 수 있습니다.");
+        }
+    }
+
+    private boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
+    }
+
+    private boolean isSameReservation(Reservation other) {
+        return id != null && id.equals(other.id);
+    }
+
+    private boolean hasSameSchedule(Reservation other) {
+        return date.equals(other.date)
+                && time.getId().equals(other.time.getId())
+                && theme.getId().equals(other.theme.getId());
     }
 
     public Long getId() {

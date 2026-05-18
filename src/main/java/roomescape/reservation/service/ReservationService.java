@@ -2,15 +2,20 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.business.BusinessConflictException;
+import roomescape.exception.business.ErrorCode;
+import roomescape.exception.business.ResourceNotFoundException;
+import roomescape.exception.domain.DomainConflictException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,29 +25,70 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            Clock clock
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public List<Reservation> findReservations(int page, int size) {
         return reservationRepository.findAll(page, size);
     }
 
-    @Transactional
-    public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new InvalidReservationTimeException(timeId));
-        Theme theme = themeRepository.findById(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
+    public List<Reservation> findUserReservations(String name, int page, int size) {
+        return reservationRepository.findByName(name, page, size);
+    }
 
+    @Transactional
+    public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
+        ReservationTime time = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.THEME_NOT_FOUND));
+
+        Reservation reservation = Reservation.create(name, date, time, theme, LocalDateTime.now(clock));
+        checkDuplicated(reservation);
         return reservationRepository.save(reservation);
     }
 
     @Transactional
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+    public Reservation updateReservation(long id, String name, LocalDate date, long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        ReservationTime time = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        Reservation updated = reservation.changeSchedule(date, time, name, LocalDateTime.now(clock));
+        checkDuplicated(updated);
+        reservationRepository.update(updated);
+        return updated;
+    }
+
+    @Transactional
+    public void deleteUserReservation(long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        reservation.checkCancellable(name, LocalDateTime.now(clock));
+        reservationRepository.deleteByIdAndName(id, name);
+    }
+
+    private void checkDuplicated(Reservation reservation) {
+        try {
+            reservationRepository.findBySchedule(reservation)
+                    .ifPresent(reservation::checkDuplicatedWith);
+        } catch (DomainConflictException e) {
+            throw new BusinessConflictException(ErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 }

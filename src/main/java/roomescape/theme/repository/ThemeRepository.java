@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +10,7 @@ import roomescape.theme.domain.Theme;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository {
@@ -17,6 +19,59 @@ public class ThemeRepository {
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")));
+    }
+
+    public Optional<Theme> findById(long themeId) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Long id = rs.getLong("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                String thumbnail = rs.getString("thumbnail");
+
+                return new Theme(id, name, description, thumbnail);
+            }, themeId);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<Long> findReservedTimeIds(long themeId, LocalDate date) {
+        String sql = "SELECT r.time_id FROM reservation r " +
+                "JOIN reservation_time rt ON r.time_id = rt.id " +
+                "WHERE r.theme_id = ? AND r.date = ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                rs.getLong("time_id"),
+                themeId, date);
+    }
+
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = "SELECT r.theme_id, t.name, t.description, t.thumbnail " +
+                "FROM reservation r " +
+                "JOIN theme t ON r.theme_id = t.id " +
+                "WHERE r.date BETWEEN ? AND ? " +
+                "GROUP BY r.theme_id " +
+                "ORDER BY count(r.theme_id) DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")),
+                startDate, endDate, limit);
     }
 
     public Theme save(Theme theme) {
@@ -35,57 +90,8 @@ public class ThemeRepository {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public Theme findById(Long themeId) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String name = rs.getString("name");
-            String description = rs.getString("description");
-            String thumbnail = rs.getString("thumbnail");
-
-            return new Theme(id, name, description, thumbnail);
-        }, themeId);
-    }
-
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")));
-    }
-
-    public List<Long> findNotAvailableTimes(Long id, LocalDate date) {
-        String sql = "SELECT r.time_id FROM reservation r " +
-                "JOIN reservation_time rt ON r.time_id = rt.id " +
-                "WHERE r.theme_id = ? AND r.date = ?";
-
-
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
-                rs.getLong("time_id"),
-                id, date);
-    }
-
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql = "SELECT r.theme_id, t.name, t.description, t.thumbnail " +
-                "FROM reservation r " +
-                "JOIN theme t ON r.theme_id = t.id " +
-                "WHERE r.date BETWEEN ? AND ? " +
-                "GROUP BY r.theme_id " +
-                "ORDER BY count(r.theme_id) DESC " +
-                "LIMIT ?";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("theme_id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")),
-                startDate, endDate, limit);
     }
 }

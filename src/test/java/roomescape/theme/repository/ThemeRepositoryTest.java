@@ -47,12 +47,17 @@ class ThemeRepositoryTest {
     void 존재하는_id로_조회하면_테마를_반환한다() {
         Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
 
-        Theme result = themeRepository.findById(saved.getId());
+        Theme result = themeRepository.findById(saved.getId()).orElseThrow();
 
         assertThat(result.getId()).isEqualTo(saved.getId());
         assertThat(result.getName()).isEqualTo("공포방");
         assertThat(result.getDescription()).isEqualTo("무서운방입니다.");
         assertThat(result.getThumbnail()).isEqualTo("image-url");
+    }
+
+    @Test
+    void 존재하지_않는_id로_조회하면_빈_Optional을_반환한다() {
+        assertThat(themeRepository.findById(999L)).isEmpty();
     }
 
     @Test
@@ -63,17 +68,6 @@ class ThemeRepositoryTest {
         List<Theme> result = themeRepository.findAll();
 
         assertThat(result).hasSize(2);
-    }
-
-    @Test
-    void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
-        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
-
-        themeRepository.deleteById(saved.getId());
-
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM theme WHERE id = ?", Integer.class, saved.getId());
-        assertThat(count).isZero();
     }
 
     @Test
@@ -115,10 +109,21 @@ class ThemeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "B", recentDate, 3L, 1L);
 
-        List<Long> availableTimes = themeRepository.findNotAvailableTimes(1L, LocalDate.now());
+        List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(1L, LocalDate.now());
 
-        assertThat(availableTimes.size()).isEqualTo(2L);
-        assertThat(availableTimes.get(0)).isEqualTo(1L);
-        assertThat(availableTimes.get(1)).isEqualTo(3L);
+        assertThat(reservedTimeIds.size()).isEqualTo(2L);
+        assertThat(reservedTimeIds.get(0)).isEqualTo(1L);
+        assertThat(reservedTimeIds.get(1)).isEqualTo(3L);
+    }
+
+    @Test
+    void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
+        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
+
+        themeRepository.deleteById(saved.getId());
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM theme WHERE id = ?", Integer.class, saved.getId());
+        assertThat(count).isZero();
     }
 }

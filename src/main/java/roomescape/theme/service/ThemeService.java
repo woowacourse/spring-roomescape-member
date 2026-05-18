@@ -23,31 +23,15 @@ public class ThemeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    @Transactional
-    public Theme createTheme(String name, String description, String thumbnail) {
-        Theme theme = new Theme(null, name, description, thumbnail);
-        return themeRepository.save(theme);
-    }
-
-    @Transactional
-    public void deleteTheme(Long id) {
-        themeRepository.deleteById(id);
-    }
-
     public List<Theme> findThemes() {
         return themeRepository.findAll();
     }
 
-    public List<AvailableTime> findAvailableTimes(Long id, LocalDate date) {
+    public AvailableTimes findAvailableTimes(long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> availableTimes = themeRepository.findNotAvailableTimes(id, date);
+        List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(themeId, date);
 
-        return reservationTimes.stream()
-                .map(t -> AvailableTime.of(
-                        t.getId(),
-                        t.getStartAt(),
-                        !availableTimes.contains(t.getId())))
-                .toList();
+        return AvailableTimes.from(reservationTimes, reservedTimeIds);
     }
 
     public List<PopularTheme> findPopularThemes(LocalDate endDate, int days, int limit) {
@@ -57,5 +41,16 @@ public class ThemeService {
         return IntStream.range(0, themes.size())
                 .mapToObj(idx -> PopularTheme.of(themes.get(idx), idx + 1))
                 .toList();
+    }
+
+    @Transactional
+    public Theme createTheme(String name, String description, String thumbnail) {
+        Theme theme = new Theme(null, name, description, thumbnail);
+        return themeRepository.save(theme);
+    }
+
+    @Transactional
+    public void deleteTheme(long id) {
+        themeRepository.deleteById(id);
     }
 }

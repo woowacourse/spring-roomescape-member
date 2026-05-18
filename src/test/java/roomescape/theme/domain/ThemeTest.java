@@ -1,6 +1,7 @@
 package roomescape.theme.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.exception.domain.DomainRuleViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,12 +20,12 @@ class ThemeTest {
     @Test
     void 이름이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Theme(1L, null, "무서운방입니다.", "image-url"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DomainRuleViolationException.class);
     }
 
     @Test
     void 이름이_공백이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Theme(1L, " ", "무서운방입니다.", "image-url"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DomainRuleViolationException.class);
     }
 }

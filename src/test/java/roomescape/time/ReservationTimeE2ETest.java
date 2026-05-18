@@ -36,7 +36,7 @@ class ReservationTimeE2ETest {
 
     @Test
     @DisplayName("GET /times - 시간 목록을 조회한다")
-    void getTimes() {
+    void findTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
 
@@ -44,9 +44,9 @@ class ReservationTimeE2ETest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("[0].id", is(1))
-                .body("[1].id", is(2));
+                .body("times.size()", is(2))
+                .body("times[0].id", is(1))
+                .body("times[1].id", is(2));
     }
 
     @Test
@@ -79,6 +79,6 @@ class ReservationTimeE2ETest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("times.size()", is(0));
     }
 }

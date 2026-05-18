@@ -13,6 +13,7 @@ import roomescape.time.domain.ReservationTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,15 +53,6 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void 예약을_저장한다() {
-        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
-
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
-        assertThat(count).isEqualTo(1);
-    }
-
-    @Test
     void 예약_전체를_조회한다() {
         reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
@@ -95,6 +87,114 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    void 이름으로_사용자_예약_목록을_페이지_단위로_조회한다() {
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 11), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 12), time, theme));
+
+        List<Reservation> result = reservationRepository.findByName("브라운", 0, 10);
+
+        assertThat(result).hasSize(2);
+        assertThat(result)
+                .extracting(Reservation::getName)
+                .containsExactly("브라운", "브라운");
+        assertThat(result)
+                .extracting(Reservation::getDate)
+                .containsExactly(LocalDate.of(2026, 5, 10), LocalDate.of(2026, 5, 12));
+    }
+
+    @Test
+    void 이름으로_사용자_예약_목록을_조회할_때_페이지를_적용한다() {
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 11), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 12), time, theme));
+
+        List<Reservation> result = reservationRepository.findByName("브라운", 1, 2);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getDate()).isEqualTo(LocalDate.of(2026, 5, 12));
+    }
+
+    @Test
+    void 예약을_저장한다() {
+        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void id로_예약을_조회한다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        Reservation result = reservationRepository.findById(savedReservation.getId()).get();
+
+        assertThat(result.getId()).isEqualTo(savedReservation.getId());
+        assertThat(result.getName()).isEqualTo("브라운");
+        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
+        assertThat(result.getTime().getId()).isEqualTo(time.getId());
+        assertThat(result.getTheme().getId()).isEqualTo(theme.getId());
+    }
+
+    @Test
+    void 존재하지_않는_id로_조회하면_빈_Optional을_반환한다() {
+        assertThat(reservationRepository.findById(999L)).isEmpty();
+    }
+
+    @Test
+    void 예약의_날짜와_시간을_변경한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
+        ReservationTime newTime = jdbcTemplate.queryForObject(
+                "SELECT * FROM reservation_time WHERE start_at = ?",
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))),
+                "12:00"
+        );
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        Reservation updated = new Reservation(
+                savedReservation.getId(), "브라운", LocalDate.of(2026, 5, 11), newTime, theme);
+
+        reservationRepository.update(updated);
+
+        Reservation result = reservationRepository.findById(savedReservation.getId()).get();
+        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 11));
+        assertThat(result.getTime().getId()).isEqualTo(newTime.getId());
+        assertThat(result.getTime().getStartAt()).isEqualTo(LocalTime.of(12, 0));
+    }
+
+    @Test
+    void 같은_날짜_시간_테마의_예약을_조회한다() {
+        Reservation first = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        Optional<Reservation> result = reservationRepository.findBySchedule(first);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(first.getId());
+    }
+
+    @Test
+    void 같은_날짜_시간_테마의_예약이_없으면_빈_Optional을_반환한다() {
+        Reservation reservation = new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme);
+
+        Optional<Reservation> result = reservationRepository.findBySchedule(reservation);
+
+        assertThat(result).isEmpty();
+    }
+
+
+    @Test
     void 예약을_삭제하면_삭제된_행_수가_반환되고_DB에서_삭제된다() {
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
@@ -105,5 +205,31 @@ class ReservationRepositoryTest {
                 "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
         assertThat(deletedRows).isEqualTo(1);
         assertThat(count).isZero();
+    }
+
+    @Test
+    void id와_이름이_일치하는_예약을_삭제한다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        int deletedRows = reservationRepository.deleteByIdAndName(savedReservation.getId(), "브라운");
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
+        assertThat(deletedRows).isEqualTo(1);
+        assertThat(count).isZero();
+    }
+
+    @Test
+    void id와_이름이_일치하지_않으면_삭제하지_않는다() {
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+
+        int deletedRows = reservationRepository.deleteByIdAndName(savedReservation.getId(), "레서");
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
+        assertThat(deletedRows).isZero();
+        assertThat(count).isEqualTo(1);
     }
 }

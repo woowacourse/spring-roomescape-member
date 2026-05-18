@@ -6,16 +6,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.AvailableTime;
+import roomescape.theme.service.AvailableTimes;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
+import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,26 +40,27 @@ class ThemeControllerTest {
 
         mockMvc.perform(get("/themes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("공포방"))
-                .andExpect(jsonPath("$[1].name").value("추리방"));
+                .andExpect(jsonPath("$.themes.length()").value(2))
+                .andExpect(jsonPath("$.themes[0].name").value("공포방"))
+                .andExpect(jsonPath("$.themes[1].name").value("추리방"));
     }
 
     @Test
     void 특정테마와_날짜를_통해_예약_가능한_시간을_조회한다() throws Exception {
-        List<AvailableTime> availableTimes = List.of(
-                new AvailableTime(1L, LocalTime.of(13, 0), true),
-                new AvailableTime(2L, LocalTime.of(15, 0), false),
-                new AvailableTime(3L, LocalTime.of(17, 0), true));
-        when(themeService.findAvailableTimes(any(), any())).thenReturn(availableTimes);
+        List<ReservationTime> reservationTimes = List.of(
+                new ReservationTime(1L, LocalTime.of(13, 0)),
+                new ReservationTime(2L, LocalTime.of(15, 0)),
+                new ReservationTime(3L, LocalTime.of(17, 0)));
+        AvailableTimes availableTimes = AvailableTimes.from(reservationTimes, List.of(2L));
+        when(themeService.findAvailableTimes(anyLong(), any())).thenReturn(availableTimes);
 
         mockMvc.perform(get("/themes/1/available-times")
                         .param("date", "2025-05-06"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].startAt").value("15:00"))
-                .andExpect(jsonPath("$[2].isAvailable").value(true));
+                .andExpect(jsonPath("$.times.length()").value(3))
+                .andExpect(jsonPath("$.times[0].id").value(1L))
+                .andExpect(jsonPath("$.times[1].startAt").value("15:00"))
+                .andExpect(jsonPath("$.times[2].isAvailable").value(true));
     }
 
     @Test
@@ -82,6 +83,6 @@ class ThemeControllerTest {
                         .param("days", "1")
                         .param("limit", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(10));
+                .andExpect(jsonPath("$.themes.length()").value(10));
     }
 }

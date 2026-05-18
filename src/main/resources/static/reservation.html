@@ -9,14 +9,17 @@
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0f172a;
+            background:
+                radial-gradient(900px 500px at 90% -10%, #f59e0b14, transparent 60%),
+                radial-gradient(700px 400px at -10% 20%, #6366f114, transparent 60%),
+                #0b1220;
             color: #f1f5f9;
             min-height: 100vh;
         }
 
         header {
-            background: #1e293b;
-            border-bottom: 1px solid #334155;
+            background: #0b1220cc;
+            border-bottom: 1px solid #1f2a3d;
             padding: 1rem 2rem;
             display: flex;
             align-items: center;
@@ -24,12 +27,16 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            backdrop-filter: blur(12px);
         }
 
         .logo {
             font-size: 1.4rem;
             font-weight: 800;
-            color: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
         }
 
@@ -52,21 +59,23 @@
 
         /* ── 선택된 테마 패널 ── */
         .theme-panel {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
+            background: linear-gradient(135deg, #1e293b 0%, #1a2438 100%);
+            border: 1px solid #2a3851;
+            border-radius: 16px;
             overflow: hidden;
             display: flex;
             gap: 1.25rem;
             margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px #00000044;
         }
 
         .theme-panel img {
             width: 140px;
             height: 140px;
-            object-fit: cover;
+            object-fit: contain;
             flex-shrink: 0;
-            background: #334155;
+            background: #0f172a;
+            padding: 0.4rem;
         }
 
         .theme-panel-body {
@@ -98,15 +107,19 @@
 
         /* ── 단계 카드 ── */
         .step-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
+            background: linear-gradient(180deg, #1e293b 0%, #1a2438 100%);
+            border: 1px solid #2a3851;
+            border-radius: 16px;
             padding: 1.5rem;
             margin-bottom: 1.25rem;
-            transition: border-color 0.2s;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            position: relative;
         }
 
-        .step-card.active { border-color: #f59e0b55; }
+        .step-card.active {
+            border-color: #f59e0b66;
+            box-shadow: 0 0 0 1px #f59e0b22, 0 12px 30px #00000055;
+        }
 
         .step-header {
             display: flex;
@@ -116,20 +129,33 @@
         }
 
         .step-num {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: #334155;
             color: #94a3b8;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: background 0.25s, color 0.25s, box-shadow 0.25s;
         }
-        .step-card.active .step-num { background: #f59e0b; color: #0f172a; }
-        .step-card.done .step-num { background: #22c55e; color: white; }
+        .step-card.active .step-num {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: #0f172a;
+            box-shadow: 0 4px 14px #f59e0b55;
+        }
+        .step-card.done .step-num {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            font-size: 0; /* 숫자 숨기고 ::before 체크마크만 */
+        }
+        .step-card.done .step-num::before {
+            content: '✓';
+            font-size: 0.95rem;
+        }
 
         .step-title {
             font-size: 1rem;
@@ -167,20 +193,29 @@
         }
 
         .time-slot {
-            padding: 0.75rem 0.5rem;
-            border-radius: 10px;
-            border: 1px solid #475569;
-            background: #0f172a;
+            padding: 0.85rem 0.5rem;
+            border-radius: 12px;
+            border: 1px solid #2a3851;
+            background: #0b1220;
             color: #f1f5f9;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.15s, background 0.15s;
+            transition: border-color 0.15s, background 0.15s, transform 0.1s;
             user-select: none;
         }
-        .time-slot:hover:not(.booked) { border-color: #f59e0b; background: #1e293b; }
-        .time-slot.selected { border-color: #f59e0b; background: #f59e0b22; color: #f59e0b; }
+        .time-slot:hover:not(.booked) {
+            border-color: #f59e0b;
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+        .time-slot.selected {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b22, #fbbf2422);
+            color: #fbbf24;
+            box-shadow: 0 4px 14px #f59e0b33;
+        }
 
         .time-slot.booked {
             opacity: 0.35;
@@ -221,20 +256,29 @@
 
         /* ── 예약하기 버튼 ── */
         .btn-submit {
-            margin-top: 0.5rem;
+            margin-top: 0.75rem;
             width: 100%;
             padding: 1rem;
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: #0f172a;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 800;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+            box-shadow: 0 6px 20px #f59e0b44;
+            letter-spacing: 0.3px;
         }
-        .btn-submit:hover { background: #d97706; }
-        .btn-submit:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+        .btn-submit:hover { filter: brightness(1.08); box-shadow: 0 8px 24px #f59e0b66; }
+        .btn-submit:active { transform: translateY(1px); }
+        .btn-submit:disabled {
+            background: #334155;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            filter: none;
+        }
 
         /* ── 완료 화면 ── */
         .success-box {
@@ -352,9 +396,10 @@
         grid.innerHTML = '<p class="state-msg">불러오는 중...</p>';
 
         try {
-            const times = await fetch(
+            const body = await fetch(
                 `/themes/${state.theme.id}/available-times?date=${state.date}`
             ).then(r => r.json());
+            const times = body.times;
 
             grid.innerHTML = '';
             if (!times.length) {
@@ -392,6 +437,15 @@
         document.getElementById('submit-btn').disabled = !e.target.value.trim();
     });
 
+    /* ── 서버 에러 메시지 추출 ── */
+    async function readErrorMessage(res, fallback) {
+        try {
+            const body = await res.json();
+            if (body && body.message) return body.message;
+        } catch { /* ignore */ }
+        return fallback;
+    }
+
     /* ── 예약하기 ── */
     document.getElementById('submit-btn').addEventListener('click', async () => {
         const name = document.getElementById('name-input').value.trim();
@@ -414,11 +468,18 @@
                 }),
             });
 
-            if (!res.ok) throw new Error(await res.text());
+            if (!res.ok) {
+                const msg = await readErrorMessage(res, '예약에 실패했습니다. 다시 시도해주세요.');
+                errEl.textContent = msg;
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '예약하기';
+                return;
+            }
 
             showSuccess(name);
         } catch (e) {
-            errEl.textContent = '예약에 실패했습니다. 다시 시도해주세요.';
+            errEl.textContent = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
             errEl.style.display = 'block';
             btn.disabled = false;
             btn.textContent = '예약하기';
