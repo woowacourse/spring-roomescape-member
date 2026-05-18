@@ -59,10 +59,10 @@ public class Reservation {
         return deletedAt;
     }
 
-    public void cancel(LocalDateTime now) {
+    public Reservation cancel(LocalDateTime now) {
         validateActiveReservation();
         validateNotPast(date, time, now);
-        this.deletedAt = now;
+        return new Reservation(this.id, this.userName, this.theme, this.date, this.time, now);
     }
 
     public Reservation change(Theme newTheme, LocalDate newDate, ReservationTime newTime, LocalDateTime now) {

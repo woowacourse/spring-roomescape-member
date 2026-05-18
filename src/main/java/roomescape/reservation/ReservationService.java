@@ -79,8 +79,8 @@ public class ReservationService {
     @Transactional
     public void delete(Long id) {
         Reservation reservation = getReservation(id);
-        reservation.cancel(LocalDateTime.now(clock));
-        reservationRepository.update(reservation);
+        Reservation canceled = reservation.cancel(LocalDateTime.now(clock));
+        reservationRepository.update(canceled);
     }
 
     public List<ReservationResponse> readByUserName(String userName) {

@@ -46,9 +46,10 @@ class ReservationTest {
     void 활성_예약_취소() {
         Reservation reservation = new Reservation(1L, "동키", theme, LocalDate.of(2026, 12, 31), time, null);
 
-        reservation.cancel(now);
+        Reservation canceled = reservation.cancel(now);
 
-        assertThat(reservation.getDeletedAt()).isEqualTo(now);
+        assertThat(canceled.getDeletedAt()).isEqualTo(now);
+        assertThat(reservation.getDeletedAt()).isNull();
     }
 
     @Test
