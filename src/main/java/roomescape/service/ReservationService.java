@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.DataInconsistencyException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -124,7 +125,7 @@ public class ReservationService {
 
         return ReservationResult.from(
                 reservationRepository.findById(command.getId())
-                        .orElseThrow(() -> new IllegalStateException("Update 직후 조회 실패"))
+                        .orElseThrow(() -> new DataInconsistencyException("Update 직후 조회 실패"))
         );
     }
 

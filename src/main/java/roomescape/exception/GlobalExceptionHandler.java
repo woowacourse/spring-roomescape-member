@@ -21,11 +21,22 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 커스텀 예외 통합 처리 - 예외가 추가돼도 핸들러이제 더 추가 안해도 됨.
+
+    // 4xx 클라이언트 예외 통합 처리
     @ExceptionHandler(RoomeScapeException.class)
     public ResponseEntity<ErrorResponse> handleRoomeScapeException(RoomeScapeException e) {
         return ResponseEntity
                 .status(e.getStatus())
                 .body(new ErrorResponse(e.getMessage()));
+    }
+
+    // 5xx 서버 예외 통합 처리 - fallback으로 가지 않고, 의식적으로 잡은 500에러
+    @ExceptionHandler(RoomeScapeServerException.class)
+    public ResponseEntity<ErrorResponse> handleServerException(RoomeScapeServerException e) {
+        log.error("서버 내부 오류 발생", e);// 내부에 해당 에러가 던진 "메시지 문자열"이 들어가 있어서 로그에 찍힘 !
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(new ErrorResponse("서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."));
     }
 
 

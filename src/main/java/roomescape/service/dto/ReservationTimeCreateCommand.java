@@ -1,7 +1,7 @@
 package roomescape.service.dto;
 
 import java.time.LocalTime;
-import roomescape.domain.exception.InvalidDomainException;
+import roomescape.exception.InvalidCommandException;
 
 public class ReservationTimeCreateCommand {
     private final LocalTime startAt;
@@ -14,7 +14,7 @@ public class ReservationTimeCreateCommand {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidDomainException("예약 시간은 비어 있을 수 없습니다.");
+            throw new InvalidCommandException("예약 시간은 비어 있을 수 없습니다.");
         }
     }
 

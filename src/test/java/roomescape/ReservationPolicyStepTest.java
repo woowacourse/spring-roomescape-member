@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import roomescape.domain.exception.InvalidDomainException;
 import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.InvalidCommandException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationCreateCommand;
@@ -205,7 +205,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
             assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
                     null, TODAY.plusDays(1), timeId10, themeId
             )))
-                    .isInstanceOf(InvalidDomainException.class)
+                    .isInstanceOf(InvalidCommandException.class)
                     .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
         }
 
@@ -215,7 +215,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
             assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
                     "브라운", null, timeId10, themeId
             )))
-                    .isInstanceOf(InvalidDomainException.class)
+                    .isInstanceOf(InvalidCommandException.class)
                     .hasMessage("예약 날짜는 비어 있을 수 없습니다.");
         }
 
@@ -225,7 +225,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
             assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
                     "브라운", TODAY.plusDays(1), null, themeId
             )))
-                    .isInstanceOf(InvalidDomainException.class)
+                    .isInstanceOf(InvalidCommandException.class)
                     .hasMessage("예약 시간을 선택해 주세요.");
         }
 
@@ -235,7 +235,7 @@ public class ReservationPolicyStepTest extends IntegrationTest {
             assertThatThrownBy(() -> reservationService.create(new ReservationCreateCommand(
                     "브라운", TODAY.plusDays(1), timeId10, null
             )))
-                    .isInstanceOf(InvalidDomainException.class)
+                    .isInstanceOf(InvalidCommandException.class)
                     .hasMessage("예약 테마를 선택해 주세요.");
         }
     }
