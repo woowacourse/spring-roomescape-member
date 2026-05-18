@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
-import roomescape.exception.ConflictException;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -45,7 +45,7 @@ public class ThemeService {
         themeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(THEME_DOES_NOT_EXISTS));
         if (reservationRepository.existsByThemeId(id)) {
-            throw new ConflictException(THEME_HAS_RESERVATION);
+            throw new BusinessRuleViolationException(THEME_HAS_RESERVATION);
         }
         themeRepository.deleteById(id);
     }

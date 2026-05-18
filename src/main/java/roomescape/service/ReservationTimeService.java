@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.AvailableTimeFindRequest;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ConflictException;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -42,7 +42,7 @@ public class ReservationTimeService {
         reservationTimeRepository.findById(reservationTimeId)
                 .orElseThrow(() -> new NotFoundException(TIME_NOT_FOUND));
         if (reservationRepository.existsByTimeId(reservationTimeId)) {
-            throw new ConflictException(TIME_HAS_RESERVATION);
+            throw new BusinessRuleViolationException(TIME_HAS_RESERVATION);
         }
         reservationTimeRepository.delete(reservationTimeId);
     }
