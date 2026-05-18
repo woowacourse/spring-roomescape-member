@@ -3,6 +3,7 @@ package roomescape.controller.admin;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -97,7 +98,8 @@ class ThemeRequestParameterTest {
                 .deleteTheme(1L);
 
         mockMvc.perform(delete("/admin/themes/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.action").value("존재하지 않는 테마입니다."));
     }
 
     @Test

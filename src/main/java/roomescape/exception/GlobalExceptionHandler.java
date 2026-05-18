@@ -102,7 +102,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> createResponse(ErrorCode errorCode, HttpServletRequest request) {
         return ResponseEntity
                 .status(toHttpStatus(errorCode))
-                .body(ErrorResponse.from(errorCode, request.getRequestURI()));
+                .body(ErrorResponse.of(errorCode, request.getRequestURI()));
     }
 
     private ResponseEntity<ErrorResponse> createResponse(

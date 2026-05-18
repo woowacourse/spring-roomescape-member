@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public record ErrorResponse(String code, String path, String message, String action) {
-    public static ErrorResponse from(ErrorCode errorCode, String path) {
+    public static ErrorResponse of(ErrorCode errorCode, String path) {
         return new ErrorResponse(
                 errorCode.getCode(),
                 path,

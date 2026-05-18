@@ -39,7 +39,7 @@ public enum ErrorCode {
     THEME_NOT_FOUND(
             "THEME_NOT_FOUND",
             "존재하지 않는 테마입니다.",
-            "테마 목록에서 다시 선택해주세요."
+            "존재하지 않는 테마입니다."
     ),
     RESERVATION_PAST_TIME(
             "RESERVATION_PAST_TIME",
