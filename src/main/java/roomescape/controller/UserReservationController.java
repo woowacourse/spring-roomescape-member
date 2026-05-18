@@ -52,7 +52,7 @@ public class UserReservationController {
     @PatchMapping("/{id}")
     public ReservationResponse update(
             @PathVariable Long id,
-            @RequestBody ReservationUpdateRequest request
+            @RequestBody @Valid ReservationUpdateRequest request
     ) {
         ReservationResult updated = reservationService.updateByOwner(request.toCommand(id));
         return ReservationResponse.from(updated);
