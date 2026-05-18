@@ -4,16 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.DuplicateReservationException;
+import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.InvalidReservationException;
 import roomescape.common.exception.ResourceNotFoundException;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -172,7 +176,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 자신의_이름으로_예약_목록을_조회한다() {
+    void 자신의_이름에_해당하는_예약_목록을_조회한다() {
         ReservationTime tenClock = createReservationTime(TEN);
         ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
         Theme theme = createTheme();
@@ -255,6 +259,175 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 선택한_예약에_내_이름이_일치하면_예약의_날짜와_시간을_수정할_수_있다() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        ReservationTime updateTime = createReservationTime(LocalTime.of(12, 0));
+        LocalDate updateDate = FUTURE_SECOND_DATE.plusDays(1);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                updateDate,
+                updateTime.getId()
+        );
+
+        Reservation updatedReservation = reservationService.updateReservation(reservation.getId(), name, updateRequest);
+
+        assertThat(updatedReservation.getId()).isNotNull();
+        assertThat(updatedReservation.getName()).isEqualTo(name);
+        assertThat(updatedReservation.getDate()).isEqualTo(updateDate);
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(updateTime.getId());
+        assertThat(updatedReservation.getTime().getStartAt()).isEqualTo(updateTime.getStartAt());
+        assertThat(updatedReservation.getTheme().getId()).isEqualTo(theme.getId());
+        assertThat(updatedReservation.getTheme().getName()).isEqualTo(theme.getName());
+    }
+
+    @Test
+    void 예약을_수정할_때_존재하지_않는_예약이면_예외() {
+        ReservationTime updateTime = createReservationTime(TEN);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                FUTURE_SECOND_DATE,
+                updateTime.getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.updateReservation(1L, "브라운", updateRequest))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 예약을_수정할_때_예약한_이름과_사용자_이름이_일치하지_않으면_예외() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        ReservationTime updateTime = createReservationTime(LocalTime.of(12, 0));
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                FUTURE_SECOND_DATE.plusDays(1),
+                updateTime.getId()
+        );
+        String userName = "브리";
+
+        assertThatThrownBy(() -> reservationService.updateReservation(reservation.getId(), userName, updateRequest))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("선택한 예약과 사용자 이름이 일치하지 않습니다.");
+    }
+
+    @Test
+    void 예약을_수정할_때_존재하지_않는_시간_ID이면_예외() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                FUTURE_SECOND_DATE.plusDays(1),
+                999L
+        );
+
+        assertThatThrownBy(() -> reservationService.updateReservation(reservation.getId(), name, updateRequest))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("예약할 수 없는 시간입니다.");
+    }
+
+    @Test
+    @Sql("/data_relative_dates.sql")
+    void 예약을_수정할_때_이미_지난_예약이면_예외() {
+        String name = "김민수";
+        Reservation pastReservation = reservationService.getReservationsByName(name).getFirst();
+        Long pastReservationId = pastReservation.getId();
+
+        ReservationTime updateTime = timeRepository.findAll().getFirst();
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                FUTURE_SECOND_DATE,
+                updateTime.getId()
+        );
+
+        LocalDateTime dateTime = LocalDateTime.of(pastReservation.getDate(), pastReservation.getTime().getStartAt());
+        assertThat(dateTime.isBefore(LocalDateTime.now())).isTrue();
+        assertThatThrownBy(() -> reservationService.updateReservation(pastReservationId, name, updateRequest))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+    }
+
+    @Test
+    void 예약을_수정할_때_변경하려는_날짜와_시간이_과거이면_예외() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        ReservationTime pastTime = createReservationTime(LocalTime.now().minusMinutes(1));
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                LocalDate.now(),
+                pastTime.getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.updateReservation(reservation.getId(), name, updateRequest))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("지난 날짜와 시간으로는 예약을 수정할 수 없습니다.");
+    }
+
+    @Test
+    void 예약을_수정할_때_변경하려는_예약_시간이_이미_차_있으면_예외() {
+        ReservationTime tenClock = createReservationTime(TEN);
+        ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
+        Theme theme = createTheme();
+
+        String name = "브라운";
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                tenClock.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        ReservationRequest anotherRequest = new ReservationRequest(
+                "브리",
+                FUTURE_SECOND_DATE.plusDays(1),
+                twelveClock.getId(),
+                theme.getId()
+        );
+        reservationService.addReservation(anotherRequest);
+
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
+                FUTURE_SECOND_DATE.plusDays(1),
+                twelveClock.getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.updateReservation(reservation.getId(), name, updateRequest))
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessage("이미 예약된 시간입니다.");
     }
 
     private ReservationTime createReservationTime(LocalTime time) {

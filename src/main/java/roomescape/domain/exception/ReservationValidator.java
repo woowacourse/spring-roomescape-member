@@ -9,11 +9,11 @@ import roomescape.common.exception.InvalidReservationException;
 @Component
 public class ReservationValidator {
 
-    public void validateFutureReservationDateTime(LocalDate date, LocalTime time) {
+    public void validateFutureReservationDateTime(LocalDate date, LocalTime time, String message) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidReservationException("지난 날짜와 시간으로는 예약할 수 없습니다.");
+            throw new InvalidReservationException(message);
         }
     }
 }

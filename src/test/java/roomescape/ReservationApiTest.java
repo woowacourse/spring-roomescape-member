@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 class ReservationApiTest {
 
     public static final String FUTURE_FIRST_DATE = LocalDate.now().plusDays(1).toString();
+    public static final String FUTURE_SECOND_DATE = LocalDate.now().plusDays(2).toString();
 
     @Test
     void 예약_조회_빈목록() {
@@ -249,6 +250,34 @@ class ReservationApiTest {
                 .statusCode(400);
     }
 
+    @Test
+    void 예약을_수정한다() {
+        Integer reservationTimeId = createTime("10:00");
+        Integer updateTimeId = createTime("12:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String name = "브라운";
+        Integer reservationId = createReservation(name, FUTURE_FIRST_DATE, reservationTimeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", updateTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", name)
+                .body(params)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(reservationId))
+                .body("name", is(name))
+                .body("date", is(FUTURE_SECOND_DATE))
+                .body("time.id", is(updateTimeId))
+                .body("time.startAt", is("12:00"))
+                .body("theme.id", is(themeId));
+    }
+
     private Integer createTime(String startAt) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);
@@ -262,6 +291,134 @@ class ReservationApiTest {
                 .extract().jsonPath().get("id");
     }
 
+    @Test
+    void 예약을_수정할_때_존재하지_않는_예약이면_404() {
+        Integer updateTimeId = createTime("12:00");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", updateTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", "브라운")
+                .body(params)
+                .when().patch("/reservations/" + 1)
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약입니다."));
+    }
+
+    @Test
+    void 예약을_수정할_때_사용자_이름이_일치하지_않으면_403() {
+        Integer reservationTimeId = createTime("10:00");
+        Integer updateTimeId = createTime("12:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Integer reservationId = createReservation("브라운", FUTURE_FIRST_DATE, reservationTimeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", updateTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", "브리")
+                .body(params)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(403)
+                .body("message", is("선택한 예약과 사용자 이름이 일치하지 않습니다."));
+    }
+
+    @Test
+    void 예약을_수정할_때_존재하지_않는_시간_ID이면_404() {
+        Integer reservationTimeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String name = "브라운";
+        Integer reservationId = createReservation(name, FUTURE_FIRST_DATE, reservationTimeId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", 9999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", name)
+                .body(params)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("예약할 수 없는 시간입니다."));
+    }
+
+    @Test
+    @Sql("/data_relative_dates.sql")
+    void 예약을_수정할_때_이미_지난_예약이면_400() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", "김민수")
+                .body(params)
+                .when().patch("/reservations/" + 1)
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 지난 예약은 변경할 수 없습니다."));
+    }
+
+    @Test
+    void 예약을_수정할_때_변경하려는_날짜와_시간이_과거이면_400() {
+        Integer reservationTimeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String name = "브라운";
+        Integer reservationId = createReservation(name, FUTURE_FIRST_DATE, reservationTimeId, themeId);
+
+        String pastDate = LocalDate.now().minusDays(1).toString();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", pastDate);
+        params.put("timeId", reservationTimeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", name)
+                .body(params)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("지난 날짜와 시간으로는 예약을 수정할 수 없습니다."));
+    }
+
+    @Test
+    void 예약을_수정할_때_변경하려는_예약_시간이_이미_차_있으면_409() {
+        Integer tenClockId = createTime("10:00");
+        Integer twelveClockId = createTime("12:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String name = "브라운";
+        Integer reservationId = createReservation(name, FUTURE_FIRST_DATE, tenClockId, themeId);
+
+        createReservation("브리", FUTURE_SECOND_DATE, twelveClockId, themeId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", FUTURE_SECOND_DATE);
+        params.put("timeId", twelveClockId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("name", name)
+                .body(params)
+                .when().patch("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is("이미 예약된 시간입니다."));
+    }
+
     private Integer createTheme(String name, String description, String thumbnailImageUrl) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -272,6 +429,22 @@ class ReservationApiTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract().jsonPath().get("id");
+    }
+
+    private Integer createReservation(String name, String date, Integer timeId, Integer themeId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", date);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().get("id");

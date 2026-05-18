@@ -27,6 +27,8 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
+    void updateDateTime(Long id, LocalDate date, Long timeId);
+
     default Reservation getById(Long id) {
         return findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다."));
     }

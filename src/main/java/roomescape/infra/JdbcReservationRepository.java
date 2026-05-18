@@ -158,4 +158,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
+
+    @Override
+    public void updateDateTime(Long id, LocalDate date, Long timeId) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?;
+                """;
+
+        jdbcTemplate.update(sql, date, timeId, id);
+    }
 }
