@@ -25,4 +25,6 @@ public interface ReservationRepository {
 
     void updateDateAndTime(Long id, LocalDate date, Long timeId);
 
+    boolean existsByThemeId(Long themeId);
+
 }

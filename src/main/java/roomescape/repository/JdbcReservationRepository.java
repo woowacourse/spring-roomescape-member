@@ -183,5 +183,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, Date.valueOf(date), timeId, id);
     }
 
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation WHERE theme_id = ?
+                )
+                """;
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(result);
+    }
 
 }

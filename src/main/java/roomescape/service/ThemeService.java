@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.policy.PopularThemeCriteria;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.projection.ThemeEntity;
 import roomescape.service.dto.PopularThemeResult;
@@ -16,12 +18,15 @@ import roomescape.service.dto.ThemeResult;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
     private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
         this.clock = clock;
     }
+
 
     public List<ThemeResult> findAll() {
         return themeRepository.findAll().stream()
@@ -38,6 +43,7 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
+        validateNotInUse(id);
         themeRepository.deleteById(id);
     }
 
@@ -57,4 +63,11 @@ public class ThemeService {
                 .toList();
     }
 
+    private void validateNotInUse(Long themeId) {
+        if (reservationRepository.existsByThemeId(themeId)) {
+            throw new BusinessRuleViolationException(
+                    "예약이 존재하는 테마는 삭제할 수 없습니다."
+            );
+        }
+    }
 }
