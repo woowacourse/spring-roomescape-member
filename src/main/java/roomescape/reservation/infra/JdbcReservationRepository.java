@@ -167,7 +167,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name);
 
-        template.update(sql, params);
+        return template.update(sql, params);
     }
 
     @Override
