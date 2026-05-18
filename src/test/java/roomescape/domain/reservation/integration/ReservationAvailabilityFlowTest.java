@@ -46,17 +46,18 @@ class ReservationAvailabilityFlowTest {
     }
 
     @Test
-    void 예약_가능_시간_조회_후_예약을_생성하면_다시_조회할_때_예약된_시간이_제외된다() {
+    void 예약_가능_시간_조회_후_예약을_생성하면_같은_테마에서만_예약된_시간이_제외된다() {
         // given
         LocalDate date = LocalDate.of(2099, 5, 1);
         Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
         Time time2 = timeRepository.save(Time.create(LocalTime.of(11, 0)));
-        Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+        Theme themeA = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+        Theme themeB = themeRepository.save(Theme.create("테마2", "설명2", "image2.png"));
 
         // when
         List<Integer> beforeReservationTimeIds = given()
             .queryParam("date", date.toString())
-            .queryParam("themeId", theme.getId())
+            .queryParam("themeId", themeA.getId())
             .when().get("/api/times")
             .then()
             .statusCode(200)
@@ -66,18 +67,28 @@ class ReservationAvailabilityFlowTest {
 
         given()
             .contentType(ContentType.JSON)
-            .body(new ReservationCreateRequestDto("예약자", date, time1.getId(), theme.getId()))
+            .body(new ReservationCreateRequestDto("예약자", date, time1.getId(), themeA.getId()))
             .when().post("/api/reservations")
             .then()
             .statusCode(201)
             .body("name", equalTo("예약자"))
             .body("date", equalTo(date.toString()))
             .body("timeId", equalTo(time1.getId().intValue()))
-            .body("themeId", equalTo(theme.getId().intValue()));
+            .body("themeId", equalTo(themeA.getId().intValue()));
 
-        List<Integer> afterReservationTimeIds = given()
+        List<Integer> sameThemeTimeIds = given()
             .queryParam("date", date.toString())
-            .queryParam("themeId", theme.getId())
+            .queryParam("themeId", themeA.getId())
+            .when().get("/api/times")
+            .then()
+            .statusCode(200)
+            .extract()
+            .jsonPath()
+            .getList("id");
+
+        List<Integer> otherThemeTimeIds = given()
+            .queryParam("date", date.toString())
+            .queryParam("themeId", themeB.getId())
             .when().get("/api/times")
             .then()
             .statusCode(200)
@@ -86,10 +97,10 @@ class ReservationAvailabilityFlowTest {
             .getList("id");
 
         // then
-        assertThat(beforeReservationTimeIds)
-            .containsExactly(time1.getId().intValue(), time2.getId().intValue());
+        assertThat(beforeReservationTimeIds).containsExactly(time1.getId().intValue(), time2.getId().intValue());
 
-        assertThat(afterReservationTimeIds)
-            .containsExactly(time2.getId().intValue());
+        assertThat(sameThemeTimeIds).containsExactly(time2.getId().intValue());
+
+        assertThat(otherThemeTimeIds).containsExactly(time1.getId().intValue(), time2.getId().intValue());
     }
 }
