@@ -53,6 +53,7 @@ public class ReservationService {
         return reservation;
     }
 
+    @Transactional
     public void removeReservation(long reservationId) {
         getReservationOrElseThrow(reservationId);
         reservationRepository.deleteById(reservationId);
