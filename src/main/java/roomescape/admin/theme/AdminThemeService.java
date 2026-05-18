@@ -4,10 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.admin.theme.dto.AdminThemeRequest;
 import roomescape.admin.theme.dto.AdminThemeResponse;
 import roomescape.admin.theme.dto.AdminThemesResponse;
-import roomescape.user.reservation.ReservationRepository;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
+import roomescape.domain.reservation.ReservationRepository;
 
 import java.util.List;
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 @Service
 public class AdminThemeService {
@@ -35,25 +37,33 @@ public class AdminThemeService {
         return AdminThemeResponse.from(saved);
     }
 
-    private void validateDuplicateTheme(String name) {
-        if (adminThemeRepository.existsByName(name)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 테마 이름입니다.");
-        }
-    }
-
     public AdminThemesResponse getAllThemes() {
         List<Theme> themes = adminThemeRepository.findAll();
 
         return AdminThemesResponse.from(themes);
     }
 
-    public void deleteTheme(Long id) {
-        if (!adminThemeRepository.existsById(id)) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 theme id 입니다.");
+    public void deleteTheme(Long themeId) {
+        validateThemeId(themeId);
+        validateTimeDeletable(themeId);
+        adminThemeRepository.deleteById(themeId);
+    }
+
+    private void validateThemeId(Long themeId) {
+        if (!adminThemeRepository.existsById(themeId)) {
+            throw new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND);
         }
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+    }
+
+    private void validateTimeDeletable(Long themeId) {
+        if (reservationRepository.existsByThemeId(themeId)) {
+            throw new RoomescapeException(ErrorCode.TIME_DELETE_NOT_ALLOWED);
         }
-        adminThemeRepository.deleteById(id);
+    }
+
+    private void validateDuplicateTheme(String name) {
+        if (adminThemeRepository.existsByName(name)) {
+            throw new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION_NAME);
+        }
     }
 }

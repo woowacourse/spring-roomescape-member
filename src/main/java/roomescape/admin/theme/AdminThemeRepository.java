@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 @Repository
 public class AdminThemeRepository {

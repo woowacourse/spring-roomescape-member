@@ -1,6 +1,7 @@
 package roomescape.admin.theme;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.theme.dto.AdminThemeRequest;
 import roomescape.admin.theme.dto.AdminThemeResponse;
 
-import java.util.List;
 import roomescape.admin.theme.dto.AdminThemesResponse;
 
 @RestController
@@ -28,7 +28,8 @@ public class AdminThemeController {
         @RequestBody @Valid AdminThemeRequest request
     ) {
         AdminThemeResponse response = adminThemeService.createTheme(request);
-        return ResponseEntity.ok(response);
+        URI location = URI.create("/admin/themes/" + response.id());
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/admin/themes")

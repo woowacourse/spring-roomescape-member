@@ -3,10 +3,9 @@ const ALL_THEMES_API = '/admin/themes';
 document.addEventListener('DOMContentLoaded', loadAllThemes);
 
 function loadAllThemes() {
-  fetch(ALL_THEMES_API)
-    .then(res => res.json())
-    .then(renderAllThemes)
-    .catch(err => console.error('테마 조회 실패:', err));
+  apiFetch(ALL_THEMES_API)
+    .then(data => renderAllThemes(data.themes))
+    .catch(showError);
 }
 
 function renderAllThemes(themes) {
