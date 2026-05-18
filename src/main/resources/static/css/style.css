@@ -560,3 +560,72 @@ table.data .actions {
         height: 45px;
     }
 }
+
+/* 내 예약 조회 영역 */
+.lookup-card {
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.lookup-form {
+    display: grid;
+    grid-template-columns: 120px minmax(180px, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.field-label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.lookup-message {
+    margin: 12px 0 0;
+    font-size: 0.9rem;
+}
+
+.my-reservation-card {
+    margin-top: 0;
+}
+
+.theme-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+}
+
+.theme-summary-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.theme-summary-text strong,
+.theme-summary-text span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .lookup-form {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .topbar .nav {
+        flex-wrap: wrap;
+    }
+
+    .card {
+        overflow-x: auto;
+    }
+}
