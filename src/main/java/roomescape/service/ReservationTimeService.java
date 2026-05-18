@@ -73,10 +73,6 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationTimeQueryingDao.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
-        }
-
         if (reservationQueryingDao.existsReservationByTimeId(id)) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_DELETE_CONFLICT);
         }

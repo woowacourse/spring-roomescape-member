@@ -30,10 +30,10 @@ public class ThemeUpdatingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public int delete(Long id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", id);
-        return jdbcTemplate.update(sql, param);
+        jdbcTemplate.update(sql, param);
     }
 }

@@ -47,9 +47,6 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        themeQueryingDao.findThemeById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
-
         if (reservationQueryingDao.existsReservationByThemeId(id)) {
             throw new BusinessException(ErrorCode.THEME_DELETE_CONFLICT);
         }

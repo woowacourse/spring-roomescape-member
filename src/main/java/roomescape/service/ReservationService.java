@@ -102,9 +102,6 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationQueryingDao.existsById(id)) {
-            throw new BusinessException(ErrorCode.RESERVATION_NOT_FOUND);
-        }
         reservationUpdatingDao.delete(id);
     }
 
