@@ -7,6 +7,7 @@ import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
@@ -71,21 +72,18 @@ public class ReservationService {
     }
 
     private void validateNoDuplicate(Long timeId, Long themeId, ReservationDate reservationDate) {
-        boolean isExists = reservationRepository.findByTimeAndTheme(timeId, themeId)
-                .stream()
-                .anyMatch(r -> r.getDate().equals(reservationDate));
-        if (isExists) {
+        Reservations reservations = new Reservations(
+                reservationRepository.findByTimeAndTheme(timeId, themeId));
+        if (reservations.hasReservationOn(reservationDate)) {
             throw new ConflictException(DUPLICATED_RESERVATION);
         }
     }
 
     private void validateNoDuplicateForUpdate(long excludeId, Long timeId, Long themeId,
             ReservationDate reservationDate) {
-        boolean isExists = reservationRepository.findByTimeAndTheme(timeId, themeId)
-                .stream()
-                .filter(r -> r.getId() != excludeId)
-                .anyMatch(r -> r.getDate().equals(reservationDate));
-        if (isExists) {
+        Reservations reservations = new Reservations(
+                reservationRepository.findByTimeAndTheme(timeId, themeId));
+        if (reservations.hasReservationOnExcluding(reservationDate, excludeId)) {
             throw new ConflictException(DUPLICATED_RESERVATION);
         }
     }
