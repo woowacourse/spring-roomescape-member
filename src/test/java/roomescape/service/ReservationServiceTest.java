@@ -36,12 +36,15 @@ class ReservationServiceTest {
     @Autowired
     private ThemeService themeService;
 
+    @Autowired
+    private Clock clock;
+
     @Test
     void 예약을_저장하고_조회한다() {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 20), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", futureDate(), savedTime.getId(),
                 savedTheme.getId());
 
         //when
@@ -56,7 +59,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 20), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", futureDate(), savedTime.getId(),
                 savedTheme.getId());
 
         //when
@@ -71,13 +74,13 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 20), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", futureDate(), savedTime.getId(),
                 savedTheme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.save(
                 "피노",
-                LocalDate.of(2030, 5, 20),
+                futureDate(),
                 savedTime.getId(),
                 savedTheme.getId()))
                 .isInstanceOf(DuplicateResourceException.class)
@@ -91,13 +94,13 @@ class ReservationServiceTest {
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
         Theme savedOtherTheme = themeService.save(new Theme("코미디", "웃김", "https://roomescape.com"));
 
-        reservationService.save("맥스", LocalDate.of(2030, 5, 20), savedTime.getId(),
+        reservationService.save("맥스", futureDate(), savedTime.getId(),
                 savedTheme.getId());
 
 
         Reservation newReservation = reservationService.save(
                 "피노",
-                LocalDate.of(2030, 5, 20),
+                futureDate(),
                 savedTime.getId(),
                 savedOtherTheme.getId());
 
@@ -112,13 +115,13 @@ class ReservationServiceTest {
 
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
 
-        reservationService.save("맥스", LocalDate.of(2030, 5, 20), savedTime.getId(),
+        reservationService.save("맥스", futureDate(), savedTime.getId(),
                 savedTheme.getId());
 
 
         Reservation newReservation = reservationService.save(
                 "피노",
-                LocalDate.of(2030, 5, 20),
+                futureDate(),
                 savedOtherTime.getId(),
                 savedTheme.getId());
 
@@ -132,7 +135,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.save(
                 "맥스",
-                LocalDate.of(2030, 5, 14),
+                pastDate(),
                 savedTime.getId(),
                 savedTheme.getId()))
                 .isInstanceOf(PastReservationException.class)
@@ -146,12 +149,24 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.save(
                 "맥스",
-                LocalDate.of(2030, 5, 15),
+                today(),
                 savedTime.getId(),
                 savedTheme.getId()
         ))
                 .isInstanceOf(PastReservationException.class)
                 .hasMessageContaining("지난 날짜 또는 시간은 예약할 수 없습니다.");
+    }
+
+    private LocalDate futureDate() {
+        return LocalDate.now(clock).plusDays(5);
+    }
+
+    private LocalDate pastDate() {
+        return LocalDate.now(clock).minusDays(1);
+    }
+
+    private LocalDate today() {
+        return LocalDate.now(clock);
     }
 
     @TestConfiguration
