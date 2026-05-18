@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReservationSchedulePolicy;
 import roomescape.reservation.domain.exception.DuplicateReservationException;
 import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
@@ -84,13 +85,13 @@ public class ReservationService {
     }
 
     private void validateOwner(Reservation reservation, String name, String message) {
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.isOwnedBy(name)) {
             throw new ReservationOwnerMismatchException(message);
         }
     }
 
     private void validateNotPast(Reservation reservation, String message) {
-        if (!reservationSchedulePolicy.canReserve(reservation.getDate(), reservation.getTime().getStartAt())) {
+        if (reservation.isPast(reservationSchedulePolicy)) {
             throw new PastReservationException(message);
         }
     }

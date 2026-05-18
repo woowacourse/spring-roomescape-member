@@ -26,6 +26,14 @@ public class Reservation {
         return theme.getId();
     }
 
+    public boolean isOwnedBy(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isPast(ReservationSchedulePolicy policy) {
+        return !policy.canReserve(date, time.getStartAt());
+    }
+
     public boolean isSameSlot(LocalDate date, Long timeId) {
         return this.date.equals(date) && this.time.getId().equals(timeId);
     }
