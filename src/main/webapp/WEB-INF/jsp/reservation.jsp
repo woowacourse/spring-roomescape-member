@@ -110,6 +110,20 @@
             background: #0d1129;
         }
 
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c5cae9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
         .form-group select option {
             background: #151932;
             color: #ffffff;
@@ -353,7 +367,19 @@
 
             fetch(`/times/available?date=${date}&themeId=${themeId}`)
                 .then(response => response.json())
-                .then(times => renderTimeSlots(times))
+                .then(times => {
+                    const today = new Date().toISOString().split('T')[0];
+                    if (date === today) {
+                        const now = new Date();
+                        times = times.filter(time => {
+                            const [hour, minute] = time.startAt.split(':');
+                            const slotTime = new Date();
+                            slotTime.setHours(parseInt(hour), parseInt(minute), 0);
+                            return slotTime > now;
+                        });
+                    }
+                    renderTimeSlots(times);
+                })
                 .catch(error => {
                     console.error('시간 목록 불러오기 실패:', error);
                     document.getElementById('timeSlots').innerHTML =
@@ -445,7 +471,7 @@
                     });
                 } else {
                     return response.json().then(error => {
-                        alert('예약 실패: ' + (error.message || '알 수 없는 오류'));
+                        alert(error.message || '예약에 실패했습니다.');
                     });
                 }
             })

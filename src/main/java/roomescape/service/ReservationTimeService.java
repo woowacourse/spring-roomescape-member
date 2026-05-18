@@ -1,9 +1,11 @@
 package roomescape.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRequest;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
+import roomescape.exception.ReferencedDataException;
+import roomescape.dto.reservationtime.ReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
@@ -45,6 +47,10 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
-        reservationTimeUpdatingDao.delete(id);
+        try {
+            reservationTimeUpdatingDao.delete(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ReferencedDataException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+        }
     }
 }

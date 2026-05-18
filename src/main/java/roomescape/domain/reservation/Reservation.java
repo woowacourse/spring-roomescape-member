@@ -35,8 +35,12 @@ public class Reservation {
         this.createdAt = createdAt;
     }
 
-    public Reservation reservationWithId(Long id) {
+    public Reservation withReservationId(Long id) {
         return new Reservation(id, this.name, this.date, this.time, this.theme, this.createdAt);
+    }
+
+    public Reservation withUpdatedDateAndTime(LocalDate date, ReservationTime time) {
+        return new Reservation(id, this.name, date, time, this.theme, this.createdAt);
     }
 
     public Long getId() {

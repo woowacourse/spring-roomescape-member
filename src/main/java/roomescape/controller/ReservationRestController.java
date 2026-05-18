@@ -3,13 +3,14 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservation.ReservationRequest;
-import roomescape.domain.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
@@ -45,6 +46,12 @@ public class ReservationRestController {
         ReservationResponse newReservation = reservationService.create(reservationReq);
         URI uri = URI.create("/reservations/" + newReservation.getId());
         return ResponseEntity.created(uri).body(newReservation);
+    }
+
+    @PatchMapping("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @RequestBody ReservationRequest reservationReq) {
+        ReservationResponse updatedReservation = reservationService.update(id, reservationReq);
+        return ResponseEntity.ok(updatedReservation);
     }
 
     @DeleteMapping("/reservations/{id}")
