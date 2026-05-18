@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public record ThemeWithCount(long id, String name, String description, String imageUrl, long count) {
+
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DESCRIPTION = "description";

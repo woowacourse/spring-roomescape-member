@@ -1,4 +1,6 @@
 package roomescape.domain.reservationTime;
 
-public record ReservationTimeWithAvailable(long id, String startAt, boolean isAvailable) {
+import java.time.LocalTime;
+
+public record ReservationTimeWithAvailable(long id, LocalTime startAt, boolean isAvailable) {
 }

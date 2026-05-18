@@ -1,20 +1,18 @@
 package roomescape.dto.theme;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import roomescape.domain.theme.PopularThemeCondition;
+
+import java.time.LocalDate;
 
 public record PopularConditionRequest(
-        @NotNull
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 YYYY-MM-DD 형식이여야 합니다.")
-        String startDate,
-        @NotNull
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 YYYY-MM-DD 형식이여야 합니다.")
-        String endDate,
-        @NotNull
+
+        @NotNull(message = "시작 날짜는 반드시 포함되어야 합니다.")
+        LocalDate startDate,
+
+        @NotNull(message = "종료 날짜는 반드시 포함되어야 합니다.")
+        LocalDate endDate,
+
+        @NotNull(message = "조회 개수는 반드시 포함되어야 합니다.")
         Long size
 ) {
-    public PopularThemeCondition to() {
-        return new PopularThemeCondition(startDate, endDate, size);
-    }
 }

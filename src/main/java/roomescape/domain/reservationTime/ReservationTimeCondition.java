@@ -1,31 +1,16 @@
 package roomescape.domain.reservationTime;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import roomescape.exception.ErrorMessage;
-import roomescape.exception.ReservationTimeConditionException;
 
-public record ReservationTimeCondition(String date, long themeId) {
-    public ReservationTimeCondition {
-        validate(date, themeId);
-    }
+public record ReservationTimeCondition(
 
-    private static void validate(String date, long themeId) {
-        validateDate(date);
-        validateThemeId(themeId);
-    }
+        @NotNull(message = "날짜는 필수입니다.")
+        LocalDate date,
 
-    private static void validateDate(String date) {
-        try {
-            LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            throw new ReservationTimeConditionException(ErrorMessage.INVALID_DATE_FORMAT);
-        }
-    }
-
-    private static void validateThemeId(long themeId) {
-        if(themeId <= 0) {
-            throw new ReservationTimeConditionException(ErrorMessage.INVALID_THEME_ID);
-        }
-    }
+        @Min(value = 1, message = "themeId는 1 이상이어야 합니다.")
+        long themeId
+) {
 }

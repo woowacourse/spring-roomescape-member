@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 public abstract class BaseRepositoryTest {
@@ -57,7 +59,7 @@ public abstract class BaseRepositoryTest {
         );
     }
 
-    protected void insertReservationTime(String time) {
+    protected void insertReservationTime(LocalTime time) {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", time);
     }
 
@@ -66,7 +68,7 @@ public abstract class BaseRepositoryTest {
     }
 
 
-    protected void insertReservation(String name, String date, long timeId, long themeId) {
+    protected void insertReservation(String name, LocalDate date, long timeId, long themeId) {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", name, date, timeId, themeId);
     }
 

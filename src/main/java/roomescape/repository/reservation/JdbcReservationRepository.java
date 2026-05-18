@@ -1,17 +1,19 @@
 package roomescape.repository.reservation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -32,54 +34,62 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
 
     private static final String SELECT_ALL_SQL = """
-        SELECT\s
-            r.id AS id,\s
-            r.name AS name,\s
-            r.date AS date,\s
-            rt.id AS timeId,\s
-            rt.start_at AS startAt,\s
-            t.id AS themeId,\s
-            t.name AS themeName,\s
-            t.description AS themeDescription,\s
-            t.image_url AS themeImageUrl\s
-        FROM reservation AS r\s
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.date AS date,
+            rt.id AS timeId,
+            rt.start_at AS startAt,
+            t.id AS themeId,
+            t.name AS themeName,
+            t.description AS themeDescription,
+            t.image_url AS themeImageUrl
+        FROM reservation AS r
         JOIN reservation_time AS rt ON r.time_id = rt.id
         JOIN theme AS t ON r.theme_id = t.id
     """;
 
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE time_id = ?\s
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
             )
     """;
     private static final String EXIST_BY_THEME_ID_SQL = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE theme_id = ?\s
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
             )
     """;
 
-    private static final String EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE time_id = ?\s
-                    AND theme_id = ?\s
-                    AND date = ?\s
+    private static final String EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE_SQL = """
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                    AND theme_id = ?
+                    AND date = ?
             )
             """;
+
+    private static final String UPDATE_RESERVATION_SQL = """
+        UPDATE reservation
+        SET date = ?, time_id = ?
+        WHERE id = ?
+        """;
+
+    private static final String SELECT_BY_ID_SQL = SELECT_ALL_SQL + "WHERE r.id = ?";
 
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
-            rs.getString(COLUMN_DATE),
+            rs.getObject(COLUMN_DATE, LocalDate.class),
             new ReservationTime(
                     rs.getLong(ALIAS_TIME_ID),
-                    rs.getString(ALIAS_START_AT)
+                    rs.getObject(ALIAS_START_AT, LocalTime.class)
             ),
             new Theme(
                     rs.getLong(ALIAS_THEME_ID),
@@ -111,16 +121,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+    public Reservation addReservation(Reservation reservation) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_NAME, reservationCommand.name(),
-                COLUMN_DATE, reservationCommand.date(),
-                COLUMN_TIME_ID, reservationCommand.timeId(),
-                COLUMN_THEME_ID, reservationCommand.themeId()
+                COLUMN_NAME, reservation.name(),
+                COLUMN_DATE, reservation.date(),
+                COLUMN_TIME_ID, reservation.time().id(),
+                COLUMN_THEME_ID, reservation.theme().id()
         )).longValue();
 
-        return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
-                theme);
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(),
+                reservation.theme());
     }
 
     @Override
@@ -130,17 +140,32 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(long timeId) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_SQL, Boolean.class, timeId));
+        return jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_SQL, Boolean.class, timeId) == Boolean.TRUE;
     }
 
     @Override
     public boolean existsByThemeId(long themeId) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId));
+        return jdbcTemplate.queryForObject(EXIST_BY_THEME_ID_SQL, Boolean.class, themeId) == Boolean.TRUE;
     }
 
     @Override
-    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
-                Boolean.class, timeId, themeId, date));
+    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
+        return jdbcTemplate.queryForObject(
+                EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE_SQL,
+                Boolean.class,
+                timeId, themeId, date
+        ) == Boolean.TRUE;
+    }
+
+    @Override
+    public Optional<Reservation> getReservationById(long id) {
+        List<Reservation> results = jdbcTemplate.query(SELECT_BY_ID_SQL, MAPPER, id);
+        return results.stream().findFirst();
+    }
+
+    @Override
+    public Reservation updateReservation(long id, LocalDate date, long reservationTimeId) {
+        jdbcTemplate.update(UPDATE_RESERVATION_SQL, date, reservationTimeId, id);
+        return getReservationById(id).get();
     }
 }

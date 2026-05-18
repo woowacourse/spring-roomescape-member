@@ -1,18 +1,18 @@
 package roomescape.repository.reservationTime;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
+
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -39,14 +39,22 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             ) AS r ON r.time_id = t.id
             """;
 
+    private static final String EXIST_BY_START_AT_SQL = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation_time
+            WHERE start_at = ?
+        )
+        """;
+
     private static final RowMapper<ReservationTime> MAPPER = (rs, rowNumber) -> new ReservationTime(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT)
+            rs.getObject(COLUMN_START_AT, LocalTime.class)
     );
 
     private static final RowMapper<ReservationTimeWithAvailable> CONDITION_MAPPER = (rs, rowNumber) -> new ReservationTimeWithAvailable(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT),
+            rs.getObject(COLUMN_START_AT, LocalTime.class),
             rs.getBoolean(COLUMN_AVAILABLE)
     );
 
@@ -61,12 +69,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
+    public ReservationTime addReservationTime(ReservationTime reservationTime) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_START_AT, reservationTimeCommand.startAt()
+                COLUMN_START_AT, reservationTime.startAt()
         )).longValue();
 
-        return ReservationTime.from(id, reservationTimeCommand);
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     @Override
@@ -94,5 +102,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 reservationTimeCondition.date(),
                 reservationTimeCondition.themeId()
         );
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return jdbcTemplate.queryForObject(
+                EXIST_BY_START_AT_SQL,
+                Boolean.class,
+                startAt
+        ) == Boolean.TRUE;
     }
 }

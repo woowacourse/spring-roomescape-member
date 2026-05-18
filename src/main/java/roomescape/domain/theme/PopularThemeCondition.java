@@ -1,4 +1,6 @@
 package roomescape.domain.theme;
 
-public record PopularThemeCondition(String startDate, String endDate, long size) {
+import java.time.LocalDate;
+
+public record PopularThemeCondition(LocalDate startDate, LocalDate endDate, long size) {
 }
