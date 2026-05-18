@@ -34,13 +34,15 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     private FakeReservationRepository reservationRepository;
     private FakeReservationTimeRepository timeRepository;
+    private FakeThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new FakeReservationRepository();
-        reservationQueryService = new ReservationQueryService(new FakeReservationQueryRepository(reservationRepository));
-        themeService = new ThemeService(new FakeThemeRepository(), reservationQueryService);
+        themeRepository = new FakeThemeRepository();
         timeRepository = new FakeReservationTimeRepository();
+        reservationRepository = new FakeReservationRepository(themeRepository, timeRepository);
+        reservationQueryService = new ReservationQueryService(new FakeReservationQueryRepository(reservationRepository));
+        themeService = new ThemeService(themeRepository, reservationQueryService);
         FakeAvailableReservationTimeRepository availableReservationTimeRepository =
                 new FakeAvailableReservationTimeRepository(timeRepository, reservationRepository);
         timeService = new ReservationTimeService(timeRepository, availableReservationTimeRepository,

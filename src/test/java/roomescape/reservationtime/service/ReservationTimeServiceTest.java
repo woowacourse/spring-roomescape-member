@@ -13,6 +13,7 @@ import roomescape.fake.FakeAvailableReservationTimeRepository;
 import roomescape.fake.FakeReservationQueryRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.FakeThemeRepository;
 import roomescape.global.RoomEscapeException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.application.service.ReservationQueryService;
@@ -32,7 +33,7 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         timeRepository = new FakeReservationTimeRepository();
-        reservationRepository = new FakeReservationRepository();
+        reservationRepository = new FakeReservationRepository(new FakeThemeRepository(), timeRepository);
         availableTimeRepository = new FakeAvailableReservationTimeRepository(timeRepository, reservationRepository);
         reservationQueryService = new ReservationQueryService(new FakeReservationQueryRepository(reservationRepository));
         timeService = new ReservationTimeService(timeRepository, availableTimeRepository, reservationQueryService);

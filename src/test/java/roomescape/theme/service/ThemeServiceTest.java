@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationQueryRepository;
 import roomescape.fake.FakeReservationRepository;
+import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.RoomEscapeException;
 import roomescape.reservation.application.service.ReservationQueryService;
@@ -30,7 +31,9 @@ public class ThemeServiceTest {
     void setUp() {
         themeRepository = new FakeThemeRepository();
         reservationQueryService = new ReservationQueryService(
-                new FakeReservationQueryRepository(new FakeReservationRepository())
+                new FakeReservationQueryRepository(
+                        new FakeReservationRepository(themeRepository, new FakeReservationTimeRepository())
+                )
         );
         themeService = new ThemeService(themeRepository, reservationQueryService);
     }

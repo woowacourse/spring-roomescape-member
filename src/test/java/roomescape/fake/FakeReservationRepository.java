@@ -5,16 +5,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.NoArgsConstructor;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
-@NoArgsConstructor
 public class FakeReservationRepository implements ReservationRepository {
 
+    private final FakeThemeRepository themeRepository;
+    private final FakeReservationTimeRepository timeRepository;
     private final Map<Long, Reservation> reservations = new LinkedHashMap<>();
     private Long idHolder = 1L;
+
+    public FakeReservationRepository(FakeThemeRepository themeRepository,
+                                     FakeReservationTimeRepository timeRepository) {
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
+    }
 
     @Override
     public List<ReservationDetail> findAll() {
@@ -31,6 +39,31 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         return Optional.ofNullable(reservations.get(id));
+    }
+
+    @Override
+    public Optional<ReservationDetail> findDetailById(Long id) {
+        Reservation reservation = reservations.get(id);
+        if (reservation == null) {
+            return Optional.empty();
+        }
+
+        Theme theme = themeRepository.findById(reservation.getThemeId())
+                .orElseThrow();
+        ReservationTime reservationTime = timeRepository.findById(reservation.getTimeId())
+                .orElseThrow();
+
+        return Optional.of(new ReservationDetail(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getThemeId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailImgUrl(),
+                reservation.getTimeId(),
+                reservationTime.getStartAt()
+        ));
     }
 
     @Override
