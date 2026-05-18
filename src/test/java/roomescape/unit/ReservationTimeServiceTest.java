@@ -77,7 +77,7 @@ class ReservationTimeServiceTest {
         LocalTime time = LocalTime.of(10, 0);
         ReservationTime reservationTime = new ReservationTime(1L, time);
 
-        when(reservationTimeQueryingDao.findAllReservationTime(null, null))
+        when(reservationTimeQueryingDao.findAllReservationTime())
                 .thenReturn(List.of(reservationTime));
 
         // when
