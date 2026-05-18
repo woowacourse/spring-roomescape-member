@@ -1,5 +1,9 @@
 package roomescape.common;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -12,10 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.GlobalExceptionHandlerTest.FakeController.TestRequest;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
@@ -71,7 +75,7 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Bean Validation 실패 시 400을 반환한다")
     void returnsBadRequestForValidationFailure() {
-        TestRequest testRequest = new TestRequest(null);
+        FakeController.TestRequest testRequest = new FakeController.TestRequest(null);
         RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(testRequest)
@@ -80,8 +84,48 @@ class GlobalExceptionHandlerTest {
                 .status(HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    @DisplayName("Bean Validation 실패 시 invalid-params와 instance를 포함한다")
+    void returnsInvalidParamsAndInstanceOnValidationFailure() {
+        FakeController.TestRequest testRequest = new FakeController.TestRequest(null);
+        RestAssuredMockMvc.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(testRequest)
+                .when().post("/test/validate")
+                .then()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("title", equalTo("입력값 검증 실패"))
+                .body("instance", equalTo("/test/validate"))
+                .body("invalid-params", hasSize(1))
+                .body("invalid-params[0].field", equalTo("value"))
+                .body("invalid-params[0].reason", notNullValue());
+    }
+
+    @Test
+    @DisplayName("BaseException 발생 시 ProblemDetail 구조로 응답한다")
+    void returnsProblemDetailForBaseException() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/not-found")
+                .then()
+                .status(HttpStatus.NOT_FOUND)
+                .body("status", equalTo(404))
+                .body("detail", equalTo("찾을 수 없음"));
+    }
+
+    @Test
+    @DisplayName("Path variable 타입 불일치 시 400을 반환한다")
+    void returnsBadRequestForTypeMismatch() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/type-mismatch/not-a-number")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+    }
+
     @RestController
     static class FakeController {
+
+        record TestRequest(@NotNull String value) {
+        }
 
         @GetMapping("/test/not-found")
         void throwNotFoundException() {
@@ -102,7 +146,8 @@ class GlobalExceptionHandlerTest {
         void validate(@Valid @RequestBody TestRequest request) {
         }
 
-        record TestRequest(@NotNull String value) {
+        @GetMapping("/test/type-mismatch/{id}")
+        void typeMismatch(@PathVariable Long id) {
         }
     }
 }

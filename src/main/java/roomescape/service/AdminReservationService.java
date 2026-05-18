@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
@@ -15,46 +14,43 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.PageResponse;
 
 @Service
 @Transactional(readOnly = true)
-public class ReservationService {
+public class AdminReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+    public AdminReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> findAllByName(String name) {
-        return reservationDao.findAllByName(name);
+    public PageResponse<Reservation> findAll(int page, int size) {
+        int offset = page * size;
+        List<Reservation> content = reservationDao.findAll(size, offset);
+        long totalElements = reservationDao.count();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        return new PageResponse<>(content, totalElements, totalPages, page, size);
     }
 
-    public Reservation findActiveById(Long id) {
-        Reservation reservation = reservationDao.findById(id)
+    public Reservation findById(Long id) {
+        return reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
-        if (!reservation.isActive()) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
-        }
-        return reservation;
     }
 
     @Transactional
-    public Reservation create(ReservationRequestDto reservationRequest) {
+    public Reservation createByAdmin(ReservationRequestDto reservationRequest) {
         Reservation reservation = buildReservation(reservationRequest);
-        reservation.validateCreate(LocalDateTime.now());
         return reservationDao.insert(reservation);
     }
 
     @Transactional
-    public Reservation updateByUser(Long id, String name, ReservationPatchDto reservationPatchDto) {
-        Reservation reservation = findActiveById(id);
-        if (!reservation.getName().equals(name)) {
-            throw new BadRequestException("본인의 예약만 수정할 수 있습니다.");
-        }
+    public Reservation update(Long id, ReservationPatchDto reservationPatchDto) {
+        Reservation reservation = findById(id);
         Time time = timeDao.findById(reservationPatchDto.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
         reservation.update(reservationPatchDto.date(), time);
@@ -62,12 +58,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(Long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
-        LocalDateTime now = LocalDateTime.now();
-        reservation.cancelIfValid(now);
+    public void cancelByAdmin(Long id) {
+        Reservation reservation = findById(id);
+        reservation.cancel(LocalDateTime.now());
         reservationDao.update(reservation);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        if (!reservationDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
+        reservationDao.delete(id);
     }
 
     private Reservation buildReservation(ReservationRequestDto reservationRequest) {

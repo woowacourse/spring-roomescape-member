@@ -11,6 +11,8 @@ public interface CommonDao<T> {
 
     T insert(T t);
 
+    T update(T t);
+
     int delete(Long id);
 
     boolean existsById(Long id);

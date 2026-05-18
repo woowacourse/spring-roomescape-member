@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -21,6 +23,12 @@ public class Time {
         if (startAt.isBefore(LocalTime.of(10, 0)) || startAt.isAfter(LocalTime.of(22, 0))) {
             throw new IllegalArgumentException("영업 시간은 10시부터 22시 사이입니다.");
         }
+    }
+
+    public boolean isReservationBefore(LocalDateTime dateTime, LocalDate reservationDate) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, startAt);
+
+        return reservationDateTime.isBefore(dateTime);
     }
 
     @Override

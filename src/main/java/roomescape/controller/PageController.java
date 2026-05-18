@@ -20,4 +20,9 @@ public class PageController {
     public String admin() {
         return "admin";
     }
+
+    @GetMapping("/my-reservations")
+    public String myReservations() {
+        return "my-reservations";
+    }
 }

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Named.named;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +53,37 @@ class TimeTest {
         @DisplayName("id 없이 생성하면 id가 null이다")
         void createsTimeWithNullId() {
             assertThat(new Time(LocalTime.of(13, 0)).getId()).isNull();
+        }
+    }
+
+    @Nested
+    class IsReservationBefore {
+
+        private static final LocalDate DATE = LocalDate.of(2026, 6, 1);
+        private static final Time TIME = new Time(1L, LocalTime.of(13, 0));
+
+        @Test
+        @DisplayName("예약 시간이 기준 시각보다 과거이면 true를 반환한다")
+        void returnsTrueWhenReservationIsPast() {
+            LocalDateTime now = LocalDateTime.of(DATE, LocalTime.of(14, 0));
+
+            assertThat(TIME.isReservationBefore(now, DATE)).isTrue();
+        }
+
+        @Test
+        @DisplayName("예약 시간이 기준 시각과 같으면 false를 반환한다")
+        void returnsFalseWhenReservationIsPresent() {
+            LocalDateTime now = LocalDateTime.of(DATE, LocalTime.of(13, 0));
+
+            assertThat(TIME.isReservationBefore(now, DATE)).isFalse();
+        }
+
+        @Test
+        @DisplayName("예약 시간이 기준 시각보다 미래이면 false를 반환한다")
+        void returnsFalseWhenReservationIsFuture() {
+            LocalDateTime now = LocalDateTime.of(DATE, LocalTime.of(12, 0));
+
+            assertThat(TIME.isReservationBefore(now, DATE)).isFalse();
         }
     }
 }

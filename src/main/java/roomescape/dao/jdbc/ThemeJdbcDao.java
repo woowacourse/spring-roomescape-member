@@ -89,6 +89,22 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
+    public Theme update(Theme theme) {
+        String sql = """
+                UPDATE themes
+                SET name = :name, thumbnail_url = :thumbnailUrl, description = :description
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName().getValue())
+                .addValue("thumbnailUrl", theme.getThumbnailUrl())
+                .addValue("description", theme.getDescription())
+                .addValue("id", theme.getId());
+        jdbcTemplate.update(sql, params);
+        return theme;
+    }
+
+    @Override
     public int delete(Long id) {
         String sql = """
                 DELETE FROM themes

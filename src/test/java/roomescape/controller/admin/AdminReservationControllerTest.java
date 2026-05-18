@@ -2,8 +2,11 @@ package roomescape.controller.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -24,9 +27,11 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
+import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.response.ReservationResponseDto;
-import roomescape.service.ReservationService;
+import roomescape.dto.response.AdminReservationResponseDto;
+import roomescape.dto.response.PageResponse;
+import roomescape.service.AdminReservationService;
 
 @WebMvcTest(AdminReservationController.class)
 class AdminReservationControllerTest {
@@ -38,7 +43,7 @@ class AdminReservationControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean
-    private ReservationService reservationService;
+    private AdminReservationService reservationService;
 
     @BeforeEach
     void setUp() {
@@ -49,35 +54,38 @@ class AdminReservationControllerTest {
     class Get {
 
         @Test
-        @DisplayName("전체 예약 목록을 조회한다")
+        @DisplayName("전체 예약 목록을 페이지로 조회한다")
         void returnsAllReservations() {
             List<Reservation> reservations = List.of(reservation);
-            given(reservationService.findAll()).willReturn(reservations);
-            List<ReservationResponseDto> expected = reservations.stream()
-                    .map(ReservationResponseDto::from)
+            List<AdminReservationResponseDto> content = reservations.stream()
+                    .map(AdminReservationResponseDto::from)
                     .toList();
+            PageResponse<Reservation> pageResponse = new PageResponse<>(reservations, 1L, 1, 0, 10);
+            given(reservationService.findAll(anyInt(), anyInt())).willReturn(pageResponse);
 
-            List<ReservationResponseDto> actual = RestAssuredMockMvc.given()
+            PageResponse<AdminReservationResponseDto> actual = RestAssuredMockMvc.given()
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(new TypeRef<>() {
-                    });
+                    .extract().as(new TypeRef<>() {});
 
-            assertThat(actual).isEqualTo(expected);
+            assertThat(actual.content()).isEqualTo(content);
+            assertThat(actual.totalElements()).isEqualTo(1L);
         }
 
         @Test
         @DisplayName("존재하는 예약 id를 조회하면 200을 반환한다")
         void returnsReservationById() {
             given(reservationService.findById(reservation.getId())).willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
                     .when().get("/admin/reservations/" + reservation.getId())
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(AdminReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
         }
@@ -91,19 +99,59 @@ class AdminReservationControllerTest {
         void createsReservation() {
             ReservationRequestDto requestDto = new ReservationRequestDto(reservation.getName(), reservation.getDate(),
                     time.getId(), theme.getId());
-            given(reservationService.create(any(ReservationRequestDto.class))).willReturn(reservation);
-            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+            given(reservationService.createByAdmin(any(ReservationRequestDto.class))).willReturn(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
-            ReservationResponseDto actual = RestAssuredMockMvc.given()
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().post("/admin/reservations")
                     .then()
                     .status(HttpStatus.CREATED)
                     .header("Location", "http://localhost/admin/reservations/" + reservation.getId())
-                    .extract().as(ReservationResponseDto.class);
+                    .extract().as(AdminReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class Patch {
+
+        @Test
+        @DisplayName("유효한 요청으로 예약을 수정하면 200을 반환한다")
+        void updatesReservation() {
+            ReservationPatchDto requestDto = new ReservationPatchDto(LocalDate.now().plusDays(2), time.getId());
+            given(reservationService.update(eq(reservation.getId()), any(ReservationPatchDto.class)))
+                    .willReturn(reservation);
+            AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
+
+            AdminReservationResponseDto actual = RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestDto)
+                    .when().patch("/admin/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(AdminReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class Cancel {
+
+        @Test
+        @DisplayName("어드민이 예약을 취소하면 204를 반환한다")
+        void cancelsReservation() {
+            willDoNothing().given(reservationService).cancelByAdmin(reservation.getId());
+
+            RestAssuredMockMvc.given()
+                    .when().delete("/admin/reservations/" + reservation.getId() + "/cancel")
+                    .then()
+                    .status(HttpStatus.NO_CONTENT);
+
+            then(reservationService).should().cancelByAdmin(reservation.getId());
         }
     }
 
@@ -113,6 +161,8 @@ class AdminReservationControllerTest {
         @Test
         @DisplayName("예약을 삭제하면 204를 반환한다")
         void deletesReservation() {
+            willDoNothing().given(reservationService).delete(reservation.getId());
+
             RestAssuredMockMvc.given()
                     .when().delete("/admin/reservations/" + reservation.getId())
                     .then()

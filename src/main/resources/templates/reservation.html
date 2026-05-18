@@ -78,6 +78,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
 .slot.avail{border-color:var(--acc);color:var(--acc)}
 .slot.avail:hover{background:var(--acc);color:var(--white);box-shadow:0 0 20px var(--glow)}
 .slot.booked{border-color:var(--border);color:var(--muted);cursor:not-allowed}
+.slot.past{border-color:var(--border);color:var(--muted);cursor:not-allowed;opacity:.45}
 .slot-hint{font-size:.75rem;display:block;margin-top:.25rem;opacity:.7;letter-spacing:.05em}
 
 .note{font-size:.88rem;color:var(--muted);margin-top:1.25rem;letter-spacing:.08em}
@@ -239,12 +240,28 @@ async function onDate(date) {
       grid.innerHTML = '<p class="msg">이 날짜에 예약 가능한 시간이 없습니다</p>';
       return;
     }
+    const now = new Date();
+    const isToday = date === now.toISOString().slice(0, 10);
     times.forEach(t => {
+      const [h, m] = (t.time?.startAt || '').split(':').map(Number);
+      const slotTime = new Date(date);
+      slotTime.setHours(h, m, 0, 0);
+      const isPast = isToday && slotTime <= now;
+
+      let stateClass, stateText;
+      if (t.alreadyBooked) {
+        stateClass = 'booked'; stateText = '예약됨';
+      } else if (isPast) {
+        stateClass = 'past'; stateText = '지난 시간';
+      } else {
+        stateClass = 'avail'; stateText = '예약 가능';
+      }
+
       const btn = document.createElement('button');
-      btn.className = `slot ${t.alreadyBooked ? 'booked' : 'avail'}`;
-      btn.disabled = t.alreadyBooked;
-      btn.innerHTML = `${fmt(t.time?.startAt)}<span class="slot-hint">${t.alreadyBooked ? '예약됨' : '예약 가능'}</span>`;
-      if (!t.alreadyBooked) btn.onclick = () => openModal(t.time?.id, fmt(t.time?.startAt));
+      btn.className = `slot ${stateClass}`;
+      btn.disabled = t.alreadyBooked || isPast;
+      btn.innerHTML = `${fmt(t.time?.startAt)}<span class="slot-hint">${stateText}</span>`;
+      if (!t.alreadyBooked && !isPast) btn.onclick = () => openModal(t.time?.id, fmt(t.time?.startAt));
       grid.appendChild(btn);
     });
   } catch {
