@@ -56,23 +56,23 @@ public class ReservationService {
     }
 
     public ReservationQueryResult update(ReservationUpdateCommand request, LocalDateTime currentDateTime) {
-        Reservation reservation = getReservation(request.id());
-        validateOwner(request.name(), reservation);
-        validateReservationNotPast(reservation, currentDateTime);
+        ReservationDetail reservationDetail = getReservationDetail(request.id());
+        validateOwner(request.name(), reservationDetail);
+        validateReservationNotPast(reservationDetail, currentDateTime);
 
         ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
         validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
-        validateDuplicateReservation(request, reservation);
+        validateDuplicateReservation(request, reservationDetail);
 
-        Reservation updatedReservation = reservation.update(request.date(), request.timeId());
+        Reservation updatedReservation = toReservation(reservationDetail).update(request.date(), request.timeId());
         Reservation savedReservation = reservationRepository.update(updatedReservation);
         return toQueryResult(savedReservation);
     }
 
     public int delete(Long id, String name, LocalDateTime currentDateTime) {
-        Reservation reservation = getReservation(id);
-        validateOwner(name, reservation);
-        validateReservationNotPast(reservation, currentDateTime);
+        ReservationDetail reservationDetail = getReservationDetail(id);
+        validateOwner(name, reservationDetail);
+        validateReservationNotPast(reservationDetail, currentDateTime);
         return reservationRepository.delete(id);
     }
 
@@ -84,8 +84,8 @@ public class ReservationService {
         }
     }
 
-    private Reservation getReservation(Long id) {
-        return reservationRepository.findById(id)
+    private ReservationDetail getReservationDetail(Long id) {
+        return reservationRepository.findDetailById(id)
                 .orElseThrow(() -> new RoomEscapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 
@@ -99,27 +99,26 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicateReservation(ReservationUpdateCommand request, Reservation reservation) {
+    private void validateDuplicateReservation(ReservationUpdateCommand request, ReservationDetail reservationDetail) {
         Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTimeExcludingId(
                 request.date(),
-                reservation.getThemeId(),
+                reservationDetail.themeId(),
                 request.timeId(),
-                reservation.getId()
+                reservationDetail.reservationId()
         );
         if (existsByDateAndTime) {
             throw new RoomEscapeException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
     }
 
-    private void validateOwner(String name, Reservation reservation) {
-        if (!reservation.getName().equals(name)) {
+    private void validateOwner(String name, ReservationDetail reservationDetail) {
+        if (!reservationDetail.username().equals(name)) {
             throw new RoomEscapeException(ReservationErrorCode.FORBIDDEN_RESERVATION_ACCESS);
         }
     }
 
-    private void validateReservationNotPast(Reservation reservation, LocalDateTime currentDateTime) {
-        ReservationTimeQueryResult timeQueryResult = timeService.findById(reservation.getTimeId());
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), timeQueryResult.startAt());
+    private void validateReservationNotPast(ReservationDetail reservationDetail, LocalDateTime currentDateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDetail.date(), reservationDetail.startAt());
 
         if (reservationDateTime.isBefore(currentDateTime)) {
             throw new RoomEscapeException(ReservationErrorCode.PAST_RESERVATION_MODIFICATION);
@@ -130,5 +129,15 @@ public class ReservationService {
         ThemeQueryResult themeQueryResult = themeService.findById(reservation.getThemeId());
         ReservationTimeQueryResult timeQueryResult = timeService.findById(reservation.getTimeId());
         return ReservationQueryResult.from(reservation, themeQueryResult, timeQueryResult);
+    }
+
+    private Reservation toReservation(ReservationDetail reservationDetail) {
+        return Reservation.builder()
+                .id(reservationDetail.reservationId())
+                .name(reservationDetail.username())
+                .date(reservationDetail.date())
+                .themeId(reservationDetail.themeId())
+                .timeId(reservationDetail.timeId())
+                .build();
     }
 }
