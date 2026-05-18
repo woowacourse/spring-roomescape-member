@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.validation.ReservationTimeNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.mapper.ReservationTimeMapper;
 import roomescape.time.repository.dao.ReservationTimeDao;
@@ -20,7 +21,7 @@ public class ReservationTimeRepository {
 
     @Transactional
     public ReservationTime save(CreateReservationTimeParams params) {
-        Long id = reservationTimeDao.insert(params.startAt());
+        Long id = reservationTimeDao.save(params.startAt());
         return new ReservationTime(id, params.startAt());
     }
 
@@ -35,18 +36,22 @@ public class ReservationTimeRepository {
         int deletedCount = reservationTimeDao.deleteById(id);
 
         if (deletedCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 ID입니다");
+            throw new ReservationTimeNotFoundException();
         }
     }
 
     public ReservationTime findById(Long id) {
          ReservationTimeEntity reservationTimeEntity = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
          return ReservationTimeMapper.toReservationTime(reservationTimeEntity);
     }
 
     public List<Long> findIdByCondition(FindReservedTimeParams params) {
         return reservationTimeDao.findReservedTimeIds(params.themeId(), params.date());
+    }
+
+    public boolean existsById(Long id) {
+        return reservationTimeDao.existsById(id);
     }
 }

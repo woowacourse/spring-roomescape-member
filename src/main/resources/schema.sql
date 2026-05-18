@@ -1,7 +1,8 @@
 CREATE TABLE reservation_time
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at TIME NOT NULL,
+    id         BIGINT NOT NULL AUTO_INCREMENT,
+    start_at   TIME   NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 
@@ -10,20 +11,23 @@ CREATE TABLE theme
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255),
-    image_url    VARCHAR(512),
-    is_deleted BOOLEAN DEFAULT FALSE,
+    image_url   VARCHAR(512),
+    is_deleted  BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
-    date     DATE NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    name         VARCHAR(255) NOT NULL,
+    date         DATE         NOT NULL,
+    time_id      BIGINT,
+    theme_id     BIGINT,
+    is_deleted   BOOLEAN DEFAULT FALSE,
+    is_cancelled BOOLEAN DEFAULT FALSE,
+    active_check BOOLEAN AS (CASE WHEN is_deleted = FALSE AND is_cancelled = FALSE THEN TRUE ELSE NULL END),
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (date, time_id, theme_id)
+    CONSTRAINT unique_active_reservation UNIQUE (date, time_id, theme_id, active_check)
 );

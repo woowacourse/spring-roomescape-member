@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,8 @@ class MissionStepTest {
         dataInitializer.initializeReservationTime(LocalTime.now());
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2023-08-05",
                 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -72,7 +74,8 @@ class MissionStepTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false",
+                Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -83,7 +86,7 @@ class MissionStepTest {
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -94,7 +97,8 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false",
+                Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -102,7 +106,8 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer countAfterDelete = jdbcTemplate.queryForObject(
+                "SELECT count(1) from reservation where is_deleted = false", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 }

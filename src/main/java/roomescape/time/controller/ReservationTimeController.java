@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.controller.dto.request.CreateResrvationTimeRequest;
+import roomescape.time.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.time.controller.dto.response.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
 
@@ -29,16 +30,16 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody CreateResrvationTimeRequest createResrvationTimeRequest) {
-        ReservationTimeResponse createdReservationTime = reservationTimeService.addReservationTime(
-                createResrvationTimeRequest);
+            @Valid @RequestBody CreateReservationTimeRequest createReservationTimeRequest) {
+        ReservationTimeResponse createdReservationTime = reservationTimeService.createReservationTime(
+                createReservationTimeRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdReservationTime);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeService.removeRegisteredReservationTime(id);
+        reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 }

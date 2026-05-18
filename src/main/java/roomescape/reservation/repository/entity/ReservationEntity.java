@@ -14,12 +14,18 @@ public class ReservationEntity {
     private final LocalDate date;
     private final Long timeId;
     private final Long themeId;
+    private final boolean isCancelled;
 
-    public ReservationEntity(Long id, String name, LocalDate date, Long timeId, Long themeId) {
+    public ReservationEntity(Long id, String name, LocalDate date, Long timeId, Long themeId, boolean isCancelled) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        this.isCancelled = isCancelled;
+    }
+
+    public ReservationEntity(Long id, String name, LocalDate date, Long timeId, Long themeId) {
+        this(id, name, date, timeId, themeId, false);
     }
 }

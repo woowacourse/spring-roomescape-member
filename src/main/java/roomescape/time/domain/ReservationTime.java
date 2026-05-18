@@ -1,8 +1,10 @@
 package roomescape.time.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.global.exception.validation.InvalidIdException;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -13,7 +15,14 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validateId(id);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateId(Long id) {
+        if(Objects.isNull(id) || id <= 0) {
+            throw new InvalidIdException(id);
+        }
     }
 }

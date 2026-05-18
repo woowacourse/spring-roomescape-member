@@ -25,7 +25,6 @@ import roomescape.util.TestDataInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("테마 API 요구사항 테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeApiTest {
@@ -72,7 +71,6 @@ class ThemeApiTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("")).hasSizeGreaterThanOrEqualTo(2);
 
-        // JSON 응답 구조 검증
         assertThat(response.jsonPath().getList("id")).doesNotContainNull();
         assertThat(response.jsonPath().getList("name")).contains("귀신의 집", "물고기");
         assertThat(response.jsonPath().getList("description")).contains("무서워요", "어푸");

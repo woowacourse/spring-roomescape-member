@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ class ReservationApiTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -61,6 +62,32 @@ class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    void 사용자_예약_내역_조회() {
+        dataInitializer.initializeReservationTime(LocalTime.now());
+        dataInitializer.initializeTheme("귀신의집", "무서워요", "/resources/image/...");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "userA");
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=user")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));

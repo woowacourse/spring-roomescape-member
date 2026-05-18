@@ -2,215 +2,656 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>방탈출 예약하기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 예약 - Roomescape</title>
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 2rem; background: #f1f5f9; color: #1e293b; margin: 0; line-height: 1.5; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #4f46e5; margin-bottom: 2.5rem; font-size: 2rem; font-weight: 800; }
-        
-        .step { margin-bottom: 2rem; padding: 1.5rem; border: 2px solid #f1f5f9; border-radius: 12px; background: white; transition: all 0.3s ease; position: relative; }
-        .step.active { border-color: #e0e7ff; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.05); }
-        .step.disabled { opacity: 0.3; pointer-events: none; background: #fafafa; border-color: #f1f5f9; }
-        
-        h2 { font-size: 1.15rem; margin-top: 0; color: #334155; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
-        .step-num { background: #4f46e5; color: white; width: 26px; height: 26px; display: inline-flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 0.85rem; font-weight: bold; }
-        .step.disabled .step-num { background: #94a3b8; }
-        
-        input[type="date"], input[type="text"] { width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; outline: none; transition: border-color 0.2s; }
-        input:focus { border-color: #4f46e5; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; }
-        .btn-card { padding: 1rem 0.5rem; border: 2px solid #e2e8f0; border-radius: 10px; background: white; cursor: pointer; text-align: center; transition: all 0.2s; font-size: 1rem; font-weight: 700; color: #475569; }
-        .btn-card:hover:not(:disabled) { border-color: #4f46e5; color: #4f46e5; background: #f5f3ff; }
-        .btn-card.selected { background: #4f46e5; color: white; border-color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
-        .btn-card:disabled { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; border-color: #f1f5f9; opacity: 0.6; }
-        
-        .submit-btn { width: 100%; padding: 1.25rem; background: #4f46e5; color: white; border: none; border-radius: 12px; font-size: 1.15rem; font-weight: 800; cursor: pointer; margin-top: 1rem; transition: transform 0.1s, background 0.2s; }
-        .submit-btn:hover { background: #4338ca; }
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 700px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 900;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Step Card */
+        .step {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            border-color: #e0e7ff;
+            transform: translateY(-2px);
+        }
+
+        .step.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .step-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Calendar Grid */
+        .calendar {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .calendar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .cal-btn {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            padding: 0.5rem;
+        }
+
+        .cal-day-label {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            padding: 0.75rem 0;
+            text-transform: uppercase;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            margin: 2px;
+        }
+
+        .cal-day:hover:not(.disabled):not(.selected) {
+            background: #f5f3ff;
+            color: var(--primary);
+        }
+
+        .cal-day.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .cal-day.disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+            font-weight: normal;
+        }
+
+        .cal-day.today {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .item-btn {
+            padding: 1rem 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.2s;
+            color: var(--text-main);
+        }
+
+        .item-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        .item-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .item-btn:disabled {
+            background: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+            border-color: #f1f5f9;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .submit-btn:active { transform: scale(0.98); }
-        
-        .nav { margin-bottom: 1.5rem; }
-        .nav a { color: #64748b; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.25rem; }
-        .nav a:hover { color: #4f46e5; }
-        
-        .loading-msg { color: #94a3b8; text-align: center; padding: 1.5rem; grid-column: 1 / -1; font-style: italic; }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            font-weight: 600;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+            border-left: 6px solid var(--primary);
+        }
+
+        .toast-success { border-left-color: var(--success); }
+        .toast-error { border-left-color: var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .loading-msg {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1rem;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+
+        /* Theme Info Box */
+        .time-selection-container {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .theme-info-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .theme-info-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .theme-info-box h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .theme-info-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        #timeList {
+            flex: 2;
+        }
+
+        @media (max-width: 650px) {
+            .time-selection-container {
+                flex-direction: column;
+            }
+            .theme-info-box {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            #timeList {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="nav"><a href="/">&larr; 메인화면</a></div>
-        <h1>방탈출 예약</h1>
-        
-        <div class="step active" id="step1">
-            <h2><span class="step-num">1</span> 날짜 선택</h2>
-            <input type="date" id="dateInput">
-        </div>
 
-        <div class="step disabled" id="step2">
-            <h2><span class="step-num">2</span> 테마 선택</h2>
-            <div class="grid" id="themeList"></div>
-        </div>
+<nav>
+    <a href="/" class="nav-logo">Roomescape</a>
+    <div class="nav-links">
+        <a href="/user-reservation.html" class="active">예약하기</a>
+        <a href="/popular-themes.html">인기테마</a>
+        <a href="/user-reservation-list.html">내 예약</a>
+    </div>
+</nav>
 
-        <div class="step disabled" id="step3">
-            <h2><span class="step-num">3</span> 시간 선택</h2>
-            <div class="grid" id="timeList"></div>
-        </div>
+<div class="container">
+    <h1>예약하기</h1>
 
-        <div class="step disabled" id="step4">
-            <h2><span class="step-num">4</span> 예약 완료</h2>
-            <input type="text" id="nameInput" placeholder="이름을 입력해주세요">
-            <button class="submit-btn" id="reserveBtn">지금 바로 예약하기</button>
+    <div class="step active" id="step1">
+        <div class="step-header">
+            <span class="step-num">1</span>
+            <h2>날짜 선택</h2>
+        </div>
+        <div class="calendar">
+            <div class="calendar-header">
+                <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
+                <h3 id="currentMonthYear"></h3>
+                <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="cal-day-label">일</div>
+                <div class="cal-day-label">월</div>
+                <div class="cal-day-label">화</div>
+                <div class="cal-day-label">수</div>
+                <div class="cal-day-label">목</div>
+                <div class="cal-day-label">금</div>
+                <div class="cal-day-label">토</div>
+            </div>
+            <div class="calendar-grid" id="calendarDays"></div>
         </div>
     </div>
 
-    <script>
-        const dateInput = document.getElementById('dateInput');
-        const themeList = document.getElementById('themeList');
-        const timeList = document.getElementById('timeList');
-        const nameInput = document.getElementById('nameInput');
-        const reserveBtn = document.getElementById('reserveBtn');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        const step4 = document.getElementById('step4');
+    <div class="step disabled" id="step2">
+        <div class="step-header">
+            <span class="step-num">2</span>
+            <h2>테마 선택</h2>
+        </div>
+        <div class="grid" id="themeList"></div>
+    </div>
 
-        let selectedDate = '';
-        let selectedThemeId = null;
-        let selectedTimeId = null;
+    <div class="step disabled" id="step3">
+        <div class="step-header">
+            <span class="step-num">3</span>
+            <h2>시간 선택</h2>
+        </div>
+        <div class="time-selection-container">
+            <div id="selectedThemeInfo" class="theme-info-box">
+                <div class="loading-msg">테마 정보를 불러오고 있습니다...</div>
+            </div>
+            <div class="grid" id="timeList"></div>
+        </div>
+    </div>
 
-        // Set min date to today
+    <div class="step disabled" id="step4">
+        <div class="step-header">
+            <span class="step-num">4</span>
+            <h2>예약 정보 입력</h2>
+        </div>
+        <input type="text" id="nameInput" placeholder="방문하실 분의 성함을 입력해주세요 (영어 가능)">
+        <button class="submit-btn" id="reserveBtn">지금 바로 예약 완료하기</button>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    const themeList = document.getElementById('themeList');
+    const timeList = document.getElementById('timeList');
+    const nameInput = document.getElementById('nameInput');
+    const reserveBtn = document.getElementById('reserveBtn');
+    
+    const steps = [
+        document.getElementById('step1'),
+        document.getElementById('step2'),
+        document.getElementById('step3'),
+        document.getElementById('step4')
+    ];
+
+    let selectedDate = '';
+    let selectedThemeId = null;
+    let selectedTimeId = null;
+    let themesData = [];
+
+    let calendarDate = new Date();
+
+    function renderCalendar() {
+        const calendarDays = document.getElementById('calendarDays');
+        const currentMonthYear = document.getElementById('currentMonthYear');
+        
+        const year = calendarDate.getFullYear();
+        const month = calendarDate.getMonth();
+        
+        currentMonthYear.textContent = `${year}년 ${month + 1}월`;
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        
         const today = new Date();
-        dateInput.min = today.toISOString().split('T')[0];
-
-        dateInput.addEventListener('change', async (e) => {
-            selectedDate = e.target.value;
-            if (selectedDate) {
-                step2.classList.remove('disabled');
-                step2.classList.add('active');
-                step3.classList.add('disabled');
-                step4.classList.add('disabled');
-                selectedThemeId = null;
-                selectedTimeId = null;
-                timeList.innerHTML = '';
-                await loadThemes();
-            }
-        });
-
-        async function loadThemes() {
-            themeList.innerHTML = '<div class="loading-msg">테마 정보를 불러오고 있습니다...</div>';
-            try {
-                const res = await fetch('/themes');
-                const themes = await res.json();
-                themeList.innerHTML = '';
-                
-                if (themes.length === 0) {
-                    themeList.innerHTML = '<div class="loading-msg">현재 선택 가능한 테마가 없습니다.</div>';
-                    return;
-                }
-
-                themes.forEach(theme => {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-card';
-                    btn.textContent = theme.name;
-                    btn.onclick = () => selectTheme(theme.id, btn);
-                    themeList.appendChild(btn);
-                });
-            } catch (e) {
-                themeList.innerHTML = '<div class="loading-msg">데이터 로드 중 오류가 발생했습니다.</div>';
-            }
+        today.setHours(0,0,0,0);
+        
+        calendarDays.innerHTML = '';
+        
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day disabled';
+            calendarDays.appendChild(div);
         }
-
-        async function selectTheme(themeId, clickedBtn) {
-            selectedThemeId = themeId;
-            document.querySelectorAll('#themeList .btn-card').forEach(b => b.classList.remove('selected'));
-            clickedBtn.classList.add('selected');
+        
+        for (let day = 1; day <= lastDate; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dateObj = new Date(year, month, day);
             
-            step3.classList.remove('disabled');
-            step3.classList.add('active');
-            step4.classList.add('disabled');
-            selectedTimeId = null;
-            await loadAvailableTimes();
-        }
-
-        async function loadAvailableTimes() {
-            timeList.innerHTML = '<div class="loading-msg">예약 가능 시간을 확인 중입니다...</div>';
-            try {
-                const res = await fetch(`/times?themeId=${selectedThemeId}&date=${selectedDate}`);
-                const data = await res.json();
-                timeList.innerHTML = '';
-                
-                if (!data.availableTimes || data.availableTimes.length === 0) {
-                    timeList.innerHTML = '<div class="loading-msg">해당 날짜에는 예약 가능한 시간이 없습니다.</div>';
-                    return;
-                }
-
-                data.availableTimes.forEach(time => {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-card';
-                    
-                    if (!time.available) {
-                        btn.disabled = true;
-                        btn.innerHTML = `${time.startAt}<br><span style="font-size:0.7rem; font-weight:normal; color:#94a3b8;">예약마감</span>`;
-                    } else {
-                        btn.textContent = time.startAt;
-                        btn.onclick = () => selectTime(time.id, btn);
-                    }
-                    timeList.appendChild(btn);
-                });
-            } catch (e) {
-                timeList.innerHTML = '<div class="loading-msg">시간 정보를 불러올 수 없습니다.</div>';
-            }
-        }
-
-        function selectTime(timeId, clickedBtn) {
-            selectedTimeId = timeId;
-            document.querySelectorAll('#timeList .btn-card').forEach(b => b.classList.remove('selected'));
-            clickedBtn.classList.add('selected');
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            div.textContent = day;
             
-            step4.classList.remove('disabled');
-            step4.classList.add('active');
-            nameInput.focus();
+            if (dateObj < today) {
+                div.classList.add('disabled');
+            } else {
+                if (dateStr === selectedDate) div.classList.add('selected');
+                if (dateObj.getTime() === today.getTime()) div.classList.add('today');
+                
+                div.onclick = () => {
+                    selectedDate = dateStr;
+                    renderCalendar();
+                    onDateChange();
+                };
+            }
+            calendarDays.appendChild(div);
         }
+    }
 
-        reserveBtn.addEventListener('click', async () => {
-            const name = nameInput.value.trim();
-            if (!name) {
-                alert('예약자 성함을 입력해주세요.');
-                nameInput.focus();
-                return;
+    function changeMonth(offset) {
+        calendarDate.setMonth(calendarDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    function onDateChange() {
+        if (selectedDate) {
+            activateStep(1);
+            resetSteps(2);
+            loadThemes();
+        }
+    }
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            toast.style.transition = 'all 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    renderCalendar();
+
+    async function loadThemes() {
+        themeList.innerHTML = '<div class="loading-msg">테마를 불러오고 있습니다...</div>';
+        try {
+            const res = await fetch('/themes');
+            const themes = await res.json();
+            themesData = themes;
+            themeList.innerHTML = '';
+            themes.forEach(theme => {
+                const btn = document.createElement('button');
+                btn.className = 'item-btn';
+                btn.textContent = theme.name;
+                btn.onclick = () => selectTheme(theme.id, btn);
+                themeList.appendChild(btn);
+            });
+        } catch (e) { showToast('테마 로드 실패', 'error'); }
+    }
+
+    async function selectTheme(themeId, btn) {
+        selectedThemeId = themeId;
+        document.querySelectorAll('#themeList .item-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        renderSelectedThemeInfo(themeId);
+        
+        activateStep(2);
+        resetSteps(3);
+        await loadAvailableTimes();
+    }
+
+    function renderSelectedThemeInfo(themeId) {
+        const theme = themesData.find(t => t.id === themeId);
+        const infoBox = document.getElementById('selectedThemeInfo');
+        if (theme && infoBox) {
+            infoBox.innerHTML = `
+                <img src="${theme.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${theme.name}">
+                <h3>${theme.name}</h3>
+                <p>${theme.description || '설명이 없습니다.'}</p>
+            `;
+        }
+    }
+
+    async function loadAvailableTimes() {
+        timeList.innerHTML = '<div class="loading-msg">조회 중...</div>';
+        try {
+            const res = await fetch(`/themes/${selectedThemeId}/times?date=${selectedDate}`);
+            const data = await res.json();
+            timeList.innerHTML = '';
+            
+            data.availableTimes.forEach(time => {
+                const btn = document.createElement('button');
+                btn.className = 'item-btn';
+                btn.innerHTML = time.available ? time.startAt : `${time.startAt}<br><span style="font-size:0.6rem;opacity:0.7">마감</span>`;
+                btn.disabled = !time.available;
+                btn.onclick = () => selectTime(time.id, btn);
+                timeList.appendChild(btn);
+            });
+        } catch (e) { showToast('시간 정보 로드 실패', 'error'); }
+    }
+
+    function selectTime(timeId, btn) {
+        selectedTimeId = timeId;
+        document.querySelectorAll('#timeList .item-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        activateStep(3);
+        nameInput.focus();
+    }
+
+    reserveBtn.onclick = async () => {
+        const name = nameInput.value.trim();
+        if (!name) { showToast('이름을 입력해주세요.', 'error'); return; }
+
+        try {
+            const res = await fetch('/reservations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: name,
+                    date: selectedDate,
+                    themeId: selectedThemeId,
+                    timeId: selectedTimeId
+                })
+            });
+            if (res.ok) {
+                showToast('🎉 예약이 완료되었습니다!', 'success');
+                setTimeout(() => window.location.href = `/user-reservation-list.html?name=${encodeURIComponent(name)}`, 1500);
+            } else {
+                const error = await res.json();
+                showToast(error.message || '예약 실패', 'error');
             }
+        } catch (e) { showToast('서버 오류 발생', 'error'); }
+    };
 
-            const payload = {
-                name: name,
-                date: selectedDate,
-                themeId: selectedThemeId,
-                timeId: selectedTimeId
-            };
+    function activateStep(index) {
+        steps[index].classList.remove('disabled');
+        steps[index].classList.add('active');
+    }
 
-            reserveBtn.disabled = true;
-            reserveBtn.textContent = '예약 요청을 보내는 중...';
+    function resetSteps(fromIndex) {
+        for (let i = fromIndex; i < steps.length; i++) {
+            steps[i].classList.add('disabled');
+            steps[i].classList.remove('active');
+        }
+    }
+</script>
 
-            try {
-                const res = await fetch('/reservations', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (res.ok) {
-                    alert('🎉 예약이 완료되었습니다! 현장에서 뵙겠습니다.');
-                    window.location.href = '/';
-                } else {
-                    const error = await res.json();
-                    alert(error.message || '예약 처리에 실패했습니다. 다른 시간을 선택해주세요.');
-                    loadAvailableTimes(); // Refresh
-                }
-            } catch (e) {
-                alert('통신 중 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
-            } finally {
-                reserveBtn.disabled = false;
-                reserveBtn.textContent = '지금 바로 예약하기';
-            }
-        });
-    </script>
 </body>
 </html>

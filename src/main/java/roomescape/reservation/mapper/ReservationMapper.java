@@ -14,7 +14,7 @@ public class ReservationMapper {
 
     public static Reservation toReservation(ReservationEntity reservationEntity,
                                             ReservationTimeEntity reservationTimeEntity, ThemeEntity themeEntity) {
-        return new Reservation(reservationEntity.getId(), reservationEntity.getName(), reservationEntity.getDate(),
+        return new Reservation(reservationEntity.getId(), reservationEntity.getName(), reservationEntity.getDate(), reservationEntity.isCancelled(),
                 ReservationTimeMapper.toReservationTime(reservationTimeEntity),
                 ThemeMapper.toTheme(themeEntity));
     }
