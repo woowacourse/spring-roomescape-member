@@ -105,7 +105,7 @@ public class ReservationService {
     }
 
     private void validateFutureOrPresent(Reservation reservation) {
-        if (isBeforeNow(reservation.getReservationDateTime())) {
+        if (reservation.isCreatedBefore(LocalDateTime.now())) {
             throw new ReservationUpdateNotAllowedException();
         }
     }

@@ -82,4 +82,8 @@ public class Reservation {
                 theme
         );
     }
+
+    public boolean isCreatedBefore(LocalDateTime dateTime) {
+        return getReservationDateTime().isBefore(dateTime);
+    }
 }
