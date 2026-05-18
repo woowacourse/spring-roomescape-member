@@ -40,18 +40,8 @@ public class ReservationController {
         ReservationResponseDto response = reservationService.create(request);
 
         URI location = buildLocationUri(response);
-
         return ResponseEntity.created(location)
                 .body(response);
-    }
-
-    @Nonnull
-    private static URI buildLocationUri(ReservationResponseDto response) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(response.id())
-                .toUri();
     }
 
     @PatchMapping("/{id}")
@@ -66,6 +56,15 @@ public class ReservationController {
                 .build();
     }
 
+    @Nonnull
+    private static URI buildLocationUri(ReservationResponseDto response) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
@@ -76,7 +75,7 @@ public class ReservationController {
 
     @GetMapping(params = "name")
     public ResponseEntity<List<ReservationResponseDto>> findByName(@RequestParam String name) {
-        List<ReservationResponseDto> reservations = reservationService.findByName(name);
+        List<ReservationResponseDto> reservations = reservationService.findAllByName(name);
 
         return ResponseEntity
                 .ok(reservations);

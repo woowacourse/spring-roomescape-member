@@ -35,11 +35,11 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto request) {
-        ReservationTime reservationTime = findReservationTime(request.timeId());
-        Theme theme = findTheme(request.themeId());
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
 
-        validateNotPast(request.date(), reservationTime);
-        validateNotDuplicated(request.date(), reservationTime.getId(), theme.getId());
+        validateFutureDateTime(request.date(), reservationTime);
+        validateUniqueForCreate(request.date(), reservationTime.getId(), theme.getId());
 
         Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
         Reservation reservation = reservationRepository.create(reservationWithoutId);
@@ -47,13 +47,7 @@ public class ReservationService {
         return ReservationResponseDto.from(reservation);
     }
 
-    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
-        }
-    }
-
-    private void validateNotPast(LocalDate date, ReservationTime time) {
+    private void validateFutureDateTime(LocalDate date, ReservationTime time) {
         if (date.isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.RESERVATION_DATE_PASSED);
         }
@@ -62,14 +56,10 @@ public class ReservationService {
         }
     }
 
-    private ReservationTime findReservationTime(Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-    }
-
-    private Theme findTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
+    private void validateUniqueForCreate(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
+        }
     }
 
     public List<ReservationResponseDto> findAll() {
@@ -79,20 +69,7 @@ public class ReservationService {
                 .toList();
     }
 
-    @Transactional
-    public void delete(Long id) {
-        Reservation reservation = findReservation(id);
-        validateNotPastReservation(reservation);
-        reservationRepository.delete(id);
-    }
-
-    private void validateNotPastReservation(Reservation reservation) {
-        if (reservation.isPast(LocalDateTime.now())) {
-            throw new CustomException(ErrorCode.RESERVATION_ALREADY_PAST);
-        }
-    }
-
-    public List<ReservationResponseDto> findByName(String name) {
+    public List<ReservationResponseDto> findAllByName(String name) {
         return reservationRepository.findAllByName(name).stream()
                 .map(ReservationResponseDto::from)
                 .toList();
@@ -100,26 +77,48 @@ public class ReservationService {
 
     @Transactional
     public void update(Long reservationId, ReservationUpdateRequestDto request) {
-        Reservation reservation = findReservation(reservationId);
-        validateNotPastReservation(reservation);
+        Reservation reservation = getReservation(reservationId);
+        validateFutureReservation(reservation);
+        ReservationTime time = getReservationTime(request.timeId());
+        validateFutureDateTime(request.date(), time);
 
-        ReservationTime time = findReservationTime(request.timeId());
-        validateNotPast(request.date(), time);
-        validateNotDuplicated(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
+        validateUniqueForUpdate(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
 
         Reservation updated = reservation.changeSchedule(request.date(), time);
         reservationRepository.update(updated);
     }
 
-    private Reservation findReservation(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() ->
-                        new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
-    }
-
-    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId, Long excludeId) {
+    private void validateUniqueForUpdate(LocalDate date, Long timeId, Long themeId, Long excludeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeIdExcludingId(date, timeId, themeId, excludeId)) {
             throw new CustomException(ErrorCode.RESERVATION_DUPLICATED);
         }
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Reservation reservation = getReservation(id);
+        validateFutureReservation(reservation);
+        reservationRepository.delete(id);
+    }
+
+    private void validateFutureReservation(Reservation reservation) {
+        if (reservation.isPast(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_ALREADY_PAST);
+        }
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private ReservationTime getReservationTime(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+    }
+
+    private Theme getTheme(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 }
