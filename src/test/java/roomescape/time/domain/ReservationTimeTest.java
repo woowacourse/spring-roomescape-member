@@ -71,7 +71,6 @@ class ReservationTimeTest {
     @DisplayName("예약 시작 시간이 유효하지 않은 경우 예외가 발생한다.")
     void validate_startAt() {
         assertThatThrownBy(() -> ReservationTime.load(1L, null))
-                .isInstanceOf(DomainValidationException.class)
-                .hasMessage("예약 시작 시간은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 }

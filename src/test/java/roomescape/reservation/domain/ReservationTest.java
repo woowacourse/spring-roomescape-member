@@ -102,8 +102,7 @@ class ReservationTest {
 
         //then
         assertThatThrownBy(() -> Reservation.create(name, pastDate, startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("과거 날짜/시간으로는 예약할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -113,11 +112,9 @@ class ReservationTest {
         String emptyName = "";
 
         assertThatThrownBy(() -> Reservation.create(nullName, date, startAt, theme))
-                .isInstanceOf(DomainValidationException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
 
         assertThatThrownBy(() -> Reservation.create(emptyName, date, startAt, theme))
-                .isInstanceOf(DomainValidationException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 }

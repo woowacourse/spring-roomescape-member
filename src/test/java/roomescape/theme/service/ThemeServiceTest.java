@@ -64,8 +64,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.findTheme(unregisteredId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

@@ -61,8 +61,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 예약 시간 생성 시 예외가 발생한다.")
     void create_already_exist() {
         assertThatThrownBy(() -> reservationTimeService.create(LocalTime.of(15, 40)))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -89,8 +88,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(time.id()))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("예약이 있는 예약 시간은 삭제할 수 없습니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test

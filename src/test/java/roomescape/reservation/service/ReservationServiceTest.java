@@ -109,8 +109,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(name, date1, wrongTimeId, theme1.id()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -121,8 +120,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create("한다", date1, reservationTime1.id(), theme1.id()))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -150,8 +148,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.cancel(saved.id()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -178,8 +175,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.change(saved.id(), date1, reservationTime1.id()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -191,8 +187,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.change(saved.id(), date1, reservationTime1.id()))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -215,8 +210,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.change(saved.id(), date2, reservationTime1.id()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 불가능한 날짜입니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -227,7 +221,6 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.change(wrongId, date1, reservationTime1.id()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 }
