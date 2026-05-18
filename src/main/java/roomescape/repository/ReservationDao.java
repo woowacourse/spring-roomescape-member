@@ -178,6 +178,18 @@ public class ReservationDao {
         );
     }
 
+    public boolean existsByThemeId(long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation
+                    WHERE theme_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, themeId)
+        );
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
