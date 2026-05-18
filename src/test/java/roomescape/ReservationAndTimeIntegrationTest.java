@@ -5,6 +5,9 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +40,10 @@ public class ReservationAndTimeIntegrationTest {
     @BeforeEach
     void init() {
         RestAssured.port = port;
-        savedTime = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        // 현재 시간보다 1시간 뒤 시간으로 저장
+        LocalTime futureTime = LocalTime.now().plusHours(1).withSecond(0).withNano(0);
+        savedTime = reservationTimeRepository.save(
+                ReservationTime.of(futureTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
         savedTheme = themeRepository.save(Theme.of("공포", "무서워요", "https://zeze.com"));
     }
 
@@ -52,9 +58,12 @@ public class ReservationAndTimeIntegrationTest {
 
     @Test
     void 예약_추가_및_삭제() {
+        String futureDate = LocalDate.now().plusDays(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", futureDate);
         params.put("timeId", savedTime.getId());
         params.put("themeId", savedTheme.getId());
 

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -31,6 +35,12 @@ public class ReservationTimeIntegrationTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    private static final String FUTURE_DATE = LocalDate.now().plusDays(1)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -44,7 +54,7 @@ public class ReservationTimeIntegrationTest {
         int createdId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")  // 변경
                 .then().log().all()
                 .statusCode(201)
                 .extract().path("id");
@@ -59,7 +69,7 @@ public class ReservationTimeIntegrationTest {
         assertThat(times.get(0).get("startAt")).isEqualTo("10:00");
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + createdId)
+                .when().delete("/admin/times/" + createdId)  // 변경
                 .then().log().all()
                 .statusCode(204);
     }
@@ -71,7 +81,7 @@ public class ReservationTimeIntegrationTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", FUTURE_DATE);
         reservation.put("timeId", time.getId());
         reservation.put("themeId", theme.getId());
 
@@ -90,5 +100,20 @@ public class ReservationTimeIntegrationTest {
 
         assertThat(reservations).hasSize(1);
         assertThat(reservations.get(0).get("name")).isEqualTo("브라운");
+    }
+
+    @Test
+    void 예약이_존재하는_시간_삭제시_422를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/admin/times/" + time.getId())  // /times → /admin/times
+                .then().log().all()
+                .statusCode(422)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
+import roomescape.exception.BusinessRuleViolationException;
+import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -14,17 +17,19 @@ public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
     private static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
+    private static final String THEME_HAS_RESERVATION = "해당 테마에 예약이 존재하여 삭제할 수 없습니다.";
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public Theme find(long themeId) {
-        return themeRepository.findById(themeId).orElseThrow(
-                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS)
-        );
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NotFoundException(THEME_DOES_NOT_EXISTS));
     }
 
     public List<Theme> findAll() {
@@ -37,6 +42,11 @@ public class ThemeService {
     }
 
     public void delete(long id) {
+        themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(THEME_DOES_NOT_EXISTS));
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new BusinessRuleViolationException(THEME_HAS_RESERVATION);
+        }
         themeRepository.deleteById(id);
     }
 

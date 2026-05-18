@@ -1,11 +1,16 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import roomescape.exception.BusinessRuleViolationException;
 
 public class ReservationTime {
     public static final String TIME_SHOULD_NOT_BE_NULL = "시간을 입력해야 합니다.";
     private static final String INVALID_TIME_FORMAT = "시간 형식이 올바르지 않습니다. (HH:mm)";
+    private static final String PAST_RESERVATION = "지나간 날짜·시간에는 예약할 수 없습니다.";
+
     private final long id;
     private final LocalTime startAt;
 
@@ -40,6 +45,13 @@ public class ReservationTime {
     private static void validateIsNull(Object startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException(TIME_SHOULD_NOT_BE_NULL);
+        }
+    }
+
+    public void validateReservable(LocalDate date) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, this.startAt);
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new BusinessRuleViolationException(PAST_RESERVATION);
         }
     }
 

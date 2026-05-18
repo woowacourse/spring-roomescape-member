@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -26,10 +30,13 @@ class ThemeControllerTest {
     private int port;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -50,7 +57,7 @@ class ThemeControllerTest {
         Map<String, Object> result = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().getMap(".");
@@ -92,11 +99,41 @@ class ThemeControllerTest {
         Theme saved = themeRepository.save(Theme.of("공포", "무서운 테마", "https://example.com/img.jpg"));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + saved.getId())
+                .when().delete("/admin/themes/" + saved.getId())
                 .then().log().all()
                 .statusCode(204);
 
         assertThat(themeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void 존재하지_않는_테마_삭제시_404를_반환한다() {
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/admin/themes/999")
+                .then().log().all()
+                .statusCode(404)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("존재하지 않는 테마입니다");
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제시_422를_반환한다() {
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        String futureDate = LocalDate.now().plusDays(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        reservationRepository.save(
+                Reservation.of("아이큐", futureDate, time, theme));
+
+        Map<String, Object> response = RestAssured.given().log().all()
+                .when().delete("/admin/themes/" + theme.getId())
+                .then().log().all()
+                .statusCode(422)
+                .extract().jsonPath().getMap(".");
+
+        assertThat(response.get("message")).isEqualTo("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
@@ -106,9 +143,9 @@ class ThemeControllerTest {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
 
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저1", java.time.LocalDate.now().minusDays(1), time.getId(), theme1.getId());
+                "유저1", LocalDate.now().minusDays(1), time.getId(), theme1.getId());
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저2", java.time.LocalDate.now().minusDays(1), time.getId(), theme2.getId());
+                "유저2", LocalDate.now().minusDays(1), time.getId(), theme2.getId());
 
         List<Map<String, Object>> result = RestAssured.given().log().all()
                 .when().get("/themes/famous")

@@ -95,4 +95,18 @@ class ThemeRepositoryTest {
 
         assertThat(famous).isEmpty();
     }
+
+    @Test
+    void 테마에_예약이_존재하면_true를_반환한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        reservationRepository.save(
+                Reservation.of("아이큐", LocalDate.now().plusDays(1).toString(), time, savedTheme));
+
+        assertThat(reservationRepository.existsByThemeId(savedTheme.getId())).isTrue();
+    }
+
+    @Test
+    void 테마에_예약이_없으면_false를_반환한다() {
+        assertThat(reservationRepository.existsByThemeId(savedTheme.getId())).isFalse();
+    }
 }
