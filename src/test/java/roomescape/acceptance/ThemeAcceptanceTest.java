@@ -51,6 +51,15 @@ class ThemeAcceptanceTest {
     }
 
     @Test
+    void GET_themes_id_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/themes/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("테마을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
     void GET_themes_id_times_예약된_시간은_isReserved_true_나머지는_false() {
         insertTheme(1L, "공포");
         insertTime(1L, "10:00");

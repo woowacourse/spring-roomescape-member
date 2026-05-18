@@ -4,17 +4,23 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.reservationTime.CreateReservationTimeRequest;
-import roomescape.dto.reservationTime.ReservationTimeResponses;
+import roomescape.dto.reservationtime.CreateReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponses;
+import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ResourceNotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponses getReservationTimes(int page, int size) {
@@ -27,7 +33,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTime getReservationTime(Long id) {
-        return reservationTimeRepository.findById(id);
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("예약 시간", id));
     }
 
     @Transactional
@@ -38,6 +45,16 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.deleteById(id);
+        validateNotReferencedByReservation(id);
+        int affected = reservationTimeRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ResourceNotFoundException("예약 시간", id);
+        }
+    }
+
+    private void validateNotReferencedByReservation(Long id) {
+        if (reservationRepository.existsByReservationTimeId(id)) {
+            throw new ReservationTimeInUseException();
+        }
     }
 }

@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.TestClockConfig;
 import roomescape.domain.PopularTheme;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -20,8 +21,6 @@ import roomescape.repository.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 
-    private static final LocalDate TODAY = LocalDate.of(2026, 5, 7);
-
     private FakeThemeRepository themeRepository;
     private FakeReservationRepository reservationRepository;
     private FakeReservationTimeRepository reservationTimeRepository;
@@ -32,9 +31,8 @@ class ThemeServiceTest {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
-        TimeProvider timeProvider = () -> TODAY;
         service = new ThemeService(themeRepository, reservationRepository,
-                reservationTimeRepository, timeProvider);
+                reservationTimeRepository, new TestClockConfig().timeProvider());
     }
 
     @Test
@@ -80,6 +78,22 @@ class ThemeServiceTest {
 
         assertThat(found.getId()).isEqualTo(id);
         assertThat(found.getName()).isEqualTo("공포");
+    }
+
+    @Test
+    void getTheme_없는_id이면_ResourceNotFoundException() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getTheme(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("테마")
+                .hasMessageContaining("9999");
+    }
+
+    @Test
+    void deleteTheme_없는_id이면_ResourceNotFoundException() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.deleteTheme(9999L))
+                .isInstanceOf(roomescape.exception.ResourceNotFoundException.class)
+                .hasMessageContaining("테마")
+                .hasMessageContaining("9999");
     }
 
     @Test
@@ -129,8 +143,8 @@ class ThemeServiceTest {
     }
 
     private Reservation buildReservation(String name, Long themeId, Long timeId, LocalDate date) {
-        Theme theme = themeRepository.findById(themeId);
-        ReservationTime time = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId).orElseThrow();
+        ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow();
         return new Reservation(null, name, theme, date, time);
     }
 }

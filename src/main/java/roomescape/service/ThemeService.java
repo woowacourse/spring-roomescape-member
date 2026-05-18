@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponses;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -42,7 +43,8 @@ public class ThemeService {
     }
 
     public Theme getTheme(Long id) {
-        return themeRepository.findById(id);
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("테마", id));
     }
 
     @Transactional
@@ -53,7 +55,10 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.deleteById(id);
+        int affected = themeRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ResourceNotFoundException("테마", id);
+        }
     }
 
     @Transactional(readOnly = true)

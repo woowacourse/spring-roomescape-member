@@ -1,15 +1,19 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.reservationTime.ReservationTimeResponse;
-import roomescape.dto.reservationTime.ReservationTimeResponses;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.reservationtime.ReservationTimeResponses;
 import roomescape.service.ReservationTimeService;
 
+@Validated
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
@@ -22,8 +26,8 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<ReservationTimeResponses> readTimes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
         return ResponseEntity.ok(reservationTimeService.getReservationTimes(page, size));
     }

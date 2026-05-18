@@ -1,5 +1,6 @@
 package roomescape.acceptance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import io.restassured.RestAssured;
@@ -42,6 +43,19 @@ class AdminReservationTimeAcceptanceTest {
     }
 
     @Test
+    void POST_admin_times_본문의_startAt이_누락되면_400과_메시지를_반환한다() {
+        Map<String, Object> body = Map.of();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("startAt은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void DELETE_admin_times_id_시간을_삭제한다() {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (1, '10:00')");
 
@@ -49,5 +63,29 @@ class AdminReservationTimeAcceptanceTest {
                 .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void DELETE_admin_times_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("예약 시간을(를) 찾을 수 없습니다. id=9999"));
+    }
+
+    @Test
+    void DELETE_admin_times_참조하는_예약이_존재하면_409과_메시지를_반환한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (1, '10:00')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (1, '테마', '설명', 'https://thumbnail.url')");
+        jdbcTemplate.update(
+                "INSERT INTO reservation(name, theme_id, date, time_id) VALUES ('브라운', 1, '2026-05-08', 1)");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", equalTo("예약이 존재하는 시간은 삭제할 수 없습니다."));
     }
 }

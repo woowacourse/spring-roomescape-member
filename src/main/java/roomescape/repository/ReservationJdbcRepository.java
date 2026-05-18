@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -60,7 +62,23 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public List<Reservation> findAllByName(String name, int limit, int offset) {
+        String sql = """
+                select r.id, r.name, r.date,
+                       t.id as time_id, t.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail_image_url
+                from reservation r
+                join reservation_time t on r.time_id = t.id
+                join theme th on r.theme_id = th.id
+                where r.name = ?
+                order by r.id
+                limit ? offset ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, name, limit, offset);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id, r.name, r.date,
                        t.id as time_id, t.start_at,
@@ -70,7 +88,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 join theme th on r.theme_id = th.id
                 where r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -91,9 +113,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int update(Reservation reservation) {
+        String sql = "update reservation set name = ?, theme_id = ?, date = ?, time_id = ? where id = ?";
+        return jdbcTemplate.update(sql,
+                reservation.getName(),
+                reservation.getTheme().getId(),
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId());
     }
 
     @Override
@@ -110,5 +143,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "select exists(select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
+    @Override
+    public boolean existsByReservationTimeId(Long timeId) {
+        String sql = "select exists(select 1 from reservation where time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
 }

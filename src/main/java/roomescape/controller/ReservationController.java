@@ -1,11 +1,18 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +21,10 @@ import roomescape.domain.Reservation;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.service.ReservationService;
 
+@Validated
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -28,30 +37,40 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<ReservationResponses> readReservations(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size,
+            @RequestParam(required = false) @Size(min = 1) String name
     ) {
-        return ResponseEntity.ok(reservationService.getReservations(page, size));
+        return ResponseEntity.ok(reservationService.getReservations(page, size, name));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> readTime(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> readReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(ReservationResponse.from(reservationService.getReservation(id)));
     }
 
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @RequestBody CreateReservationRequest createReservationRequest) {
+            @Valid @RequestBody CreateReservationRequest createReservationRequest) {
         Reservation createdReservation = reservationService.createReservation(createReservationRequest);
 
         URI location = URI.create("/reservations/" + createdReservation.getId());
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateReservationRequest request) {
+        Reservation updated = reservationService.updateOwnReservation(id, request);
+        return ResponseEntity.ok(ReservationResponse.from(updated));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelReservation(
+            @PathVariable Long id,
+            @NotBlank @RequestParam String name) {
+        reservationService.cancelOwnReservation(id, name);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,5 +1,6 @@
 package roomescape.acceptance;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import io.restassured.RestAssured;
@@ -45,6 +46,21 @@ class AdminThemeAcceptanceTest {
     }
 
     @Test
+    void POST_admin_themes_본문의_name이_누락되면_400과_메시지를_반환한다() {
+        Map<String, Object> body = Map.of(
+                "description", "무서움",
+                "thumbnailImageUrl", "https://thumbnail.url");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("name은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void DELETE_admin_themes_id_테마를_삭제한다() {
         jdbcTemplate.update(
                 "INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (1, '공포', '무서움', 'https://thumbnail.url')");
@@ -53,5 +69,14 @@ class AdminThemeAcceptanceTest {
                 .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void DELETE_admin_themes_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("테마을(를) 찾을 수 없습니다. id=9999"));
     }
 }

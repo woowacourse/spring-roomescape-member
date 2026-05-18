@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 
@@ -25,8 +26,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
-        return store.get(id);
+    public List<Reservation> findAllByName(String name, int limit, int offset) {
+        return store.values().stream()
+                .filter(r -> r.getName().equals(name))
+                .sorted(Comparator.comparing(Reservation::getId))
+                .skip(offset)
+                .limit(limit)
+                .toList();
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
     }
 
     @Override
@@ -37,8 +48,17 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        store.remove(id);
+    public int deleteById(Long id) {
+        return store.remove(id) == null ? 0 : 1;
+    }
+
+    @Override
+    public int update(Reservation reservation) {
+        if (!store.containsKey(reservation.getId())) {
+            return 0;
+        }
+        store.put(reservation.getId(), reservation);
+        return 1;
     }
 
     @Override
@@ -56,6 +76,12 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(r -> r.getDate().equals(date)
                         && r.getTime().getId().equals(timeId)
                         && r.getTheme().getId().equals(themeId));
+    }
+
+    @Override
+    public boolean existsByReservationTimeId(Long timeId) {
+        return store.values().stream()
+                .anyMatch(r -> r.getTime().getId().equals(timeId));
     }
 
     Collection<Reservation> all() {

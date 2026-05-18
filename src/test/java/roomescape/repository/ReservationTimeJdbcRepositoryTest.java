@@ -34,10 +34,15 @@ class ReservationTimeJdbcRepositoryTest {
     void findById_저장한_시간을_조회한다() {
         Long id = repository.save(new ReservationTime(null, LocalTime.of(10, 30)));
 
-        ReservationTime found = repository.findById(id);
+        ReservationTime found = repository.findById(id).orElseThrow();
 
         assertThat(found.getId()).isEqualTo(id);
         assertThat(found.getStartAt()).isEqualTo(LocalTime.of(10, 30));
+    }
+
+    @Test
+    void findById_없는_id이면_Optional_empty를_반환한다() {
+        assertThat(repository.findById(9999L)).isEmpty();
     }
 
     @Test

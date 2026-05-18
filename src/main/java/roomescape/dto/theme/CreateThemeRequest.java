@@ -1,8 +1,10 @@
 package roomescape.dto.theme;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CreateThemeRequest(
-        String name,
-        String description,
-        String thumbnailImageUrl
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnailImageUrl
 ) {
 }

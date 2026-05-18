@@ -48,4 +48,13 @@ class ReservationTimeAcceptanceTest {
                 .statusCode(200)
                 .body("startAt", equalTo("10:00"));
     }
+
+    @Test
+    void GET_times_id_없는_id면_404과_메시지를_반환한다() {
+        RestAssured.given().log().all()
+                .when().get("/times/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", equalTo("예약 시간을(를) 찾을 수 없습니다. id=9999"));
+    }
 }

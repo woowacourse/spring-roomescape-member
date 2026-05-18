@@ -47,7 +47,7 @@
         <div class="stats-row">
             <div class="stat-card blue">
                 <div class="stat-value" id="total-count">–</div>
-                <div class="stat-label">전체 예약</div>
+                <div class="stat-label">조회된 예약</div>
             </div>
         </div>
 
@@ -90,9 +90,11 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">예약 목록</span>
-                <button class="btn btn-ghost btn-sm" onclick="loadReservations()">
-                    🔄 새로고침
-                </button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input id="filter-name" placeholder="이름으로 검색..." style="padding: 6px 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 13px; width: 160px;" type="text">
+                    <button class="btn btn-primary btn-sm" onclick="searchReservations()">검색</button>
+                    <button class="btn btn-ghost btn-sm" onclick="clearSearch()">전체 보기</button>
+                </div>
             </div>
             <div class="table-wrap">
                 <table>
@@ -117,6 +119,11 @@
                     </tbody>
                 </table>
             </div>
+            <div style="text-align: center; margin-top: 12px;">
+                <button class="btn btn-ghost" id="res-load-more-btn" onclick="loadMore()" style="display:none;">
+                    더 보기
+                </button>
+            </div>
         </div>
     </main>
 </div>
@@ -124,7 +131,8 @@
 <div id="toast-container"></div>
 
 <script>
-    // ── Utils ─────────────────────────────────────────
+    const resPageState = {page: 0, hasNext: false, totalLoaded: 0, nameFilter: ''};
+
     function toast(msg, type = 'info') {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -141,7 +149,14 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let message = `오류가 발생했습니다. (HTTP ${res.status})`;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) message = json.message;
+            } catch (_) {
+                if (text) message = text;
+            }
+            throw new Error(message);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;
@@ -152,40 +167,77 @@
         el.style.display = el.style.display === 'none' ? '' : 'none';
     }
 
-    // ── Load ──────────────────────────────────────────
-    async function loadReservations() {
+    async function loadReservations(reset = true) {
+        if (reset) {
+            resPageState.page = 0;
+            resPageState.totalLoaded = 0;
+            document.getElementById('reservation-table-body').innerHTML =
+                `<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
+        }
+
         try {
-            const data = (await api('GET', '/reservations')).reservations;
-            document.getElementById('total-count').textContent = data.length;
+            let url = `/reservations?page=${resPageState.page}&size=20`;
+            if (resPageState.nameFilter) url += `&name=${encodeURIComponent(resPageState.nameFilter)}`;
+
+            const data = await api('GET', url);
+            const reservations = data.reservations;
+            resPageState.hasNext = data.hasNext;
+            resPageState.totalLoaded += reservations.length;
+
             const tbody = document.getElementById('reservation-table-body');
 
-            if (!data.length) {
+            if (reset && !reservations.length) {
                 tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>예약이 없습니다.</p></div></td></tr>`;
+                document.getElementById('total-count').textContent = '0';
+                document.getElementById('res-load-more-btn').style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = data.map(r => `
-        <tr>
-          <td><span class="badge badge-gray">#${r.id}</span></td>
-          <td><strong>${r.name}</strong></td>
-          <td>${r.theme ? `<span class="badge badge-blue">${r.theme.name || '–'}</span>` : '–'}</td>
-          <td>${r.date}</td>
-          <td>${r.time?.startAt ?? r.time ?? '–'}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteReservation(${r.id})">
-              🗑 삭제
-            </button>
-          </td>
-        </tr>
-      `).join('');
+            if (reset) tbody.innerHTML = '';
+
+            tbody.insertAdjacentHTML('beforeend', reservations.map(r => `
+                <tr>
+                    <td><span class="badge badge-gray">#${r.id}</span></td>
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.themeName ?? '–'}</td>
+                    <td>${r.date}</td>
+                    <td>${r.time ?? '–'}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteReservation(${r.id})">
+                            🗑 삭제
+                        </button>
+                    </td>
+                </tr>
+            `).join(''));
+
+            document.getElementById('total-count').textContent =
+                resPageState.hasNext ? `${resPageState.totalLoaded}+` : `${resPageState.totalLoaded}`;
+            document.getElementById('res-load-more-btn').style.display = resPageState.hasNext ? '' : 'none';
         } catch (e) {
             toast(`예약 조회 실패: ${e.message}`, 'error');
         }
     }
 
+    function searchReservations() {
+        const name = document.getElementById('filter-name').value.trim();
+        resPageState.nameFilter = name;
+        loadReservations(true);
+    }
+
+    function clearSearch() {
+        document.getElementById('filter-name').value = '';
+        resPageState.nameFilter = '';
+        loadReservations(true);
+    }
+
+    async function loadMore() {
+        resPageState.page++;
+        await loadReservations(false);
+    }
+
     async function loadThemes() {
         try {
-            const themes = (await api('GET', '/themes')).themes;
+            const themes = (await api('GET', '/themes?page=0&size=100')).themes;
             const sel = document.getElementById('res-theme');
             sel.innerHTML = '<option value="">테마 선택</option>' +
                 themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
@@ -199,20 +251,17 @@
         const date = document.getElementById('res-date').value;
         const sel = document.getElementById('res-time');
 
-        // 날짜+테마가 모두 있으면 가용 시간 조회
         if (themeId && date) {
             try {
                 const times = (await api('GET', `/themes/${themeId}/times?date=${date}`)).times;
                 sel.innerHTML = '<option value="">시간 선택</option>' +
                     times.map(t => `<option value="${t.id}" ${t.isReserved ? 'disabled' : ''}>${t.startAt}${t.isReserved ? ' (예약됨)' : ''}</option>`).join('');
                 return;
-            } catch (e) { /* fallback */
-            }
+            } catch (e) { /* fallback */ }
         }
 
-        // 전체 시간 목록
         try {
-            const times = (await api('GET', '/times')).times;
+            const times = (await api('GET', '/times?page=0&size=100')).times;
             sel.innerHTML = '<option value="">시간 선택</option>' +
                 times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
         } catch (e) {
@@ -220,7 +269,6 @@
         }
     }
 
-    // ── CRUD ─────────────────────────────────────────
     async function createReservation() {
         const name = document.getElementById('res-name').value.trim();
         const date = document.getElementById('res-date').value;
@@ -244,7 +292,7 @@
             document.getElementById('res-date').value = '';
             document.getElementById('res-theme').value = '';
             document.getElementById('res-time').innerHTML = '<option value="">시간 선택</option>';
-            await loadReservations();
+            await loadReservations(true);
         } catch (e) {
             toast(`예약 추가 실패: ${e.message}`, 'error');
         }
@@ -253,21 +301,22 @@
     async function deleteReservation(id) {
         if (!confirm(`예약 #${id}을 삭제할까요?`)) return;
         try {
-            await api('DELETE', `/reservations/${id}`);
+            await api('DELETE', `/admin/reservations/${id}`);
             toast('예약이 삭제되었습니다.', 'success');
-            await loadReservations();
+            await loadReservations(true);
         } catch (e) {
             toast(`삭제 실패: ${e.message}`, 'error');
         }
     }
 
-    // ── Init ─────────────────────────────────────────
     document.getElementById('res-date').addEventListener('change', loadTimes);
+    document.getElementById('filter-name').addEventListener('keydown', e => {
+        if (e.key === 'Enter') searchReservations();
+    });
     document.addEventListener('DOMContentLoaded', () => {
-        loadReservations();
+        loadReservations(true);
         loadThemes();
         loadTimes();
-        // 오늘 날짜를 기본값으로
         document.getElementById('res-date').value = new Date().toISOString().split('T')[0];
     });
 </script>

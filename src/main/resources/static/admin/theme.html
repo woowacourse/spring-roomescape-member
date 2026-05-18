@@ -79,7 +79,7 @@
         <div class="stats-row">
             <div class="stat-card red">
                 <div class="stat-value" id="theme-count">–</div>
-                <div class="stat-label">등록된 테마</div>
+                <div class="stat-label">조회된 테마</div>
             </div>
         </div>
 
@@ -114,7 +114,7 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">테마 목록</span>
-                <button class="btn btn-ghost btn-sm" onclick="loadThemes()">🔄 새로고침</button>
+                <button class="btn btn-ghost btn-sm" onclick="loadThemes(true)">🔄 새로고침</button>
             </div>
             <div class="table-wrap">
                 <table>
@@ -137,6 +137,11 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+            <div style="text-align: center; margin-top: 12px;">
+                <button class="btn btn-ghost" id="theme-load-more-btn" onclick="loadThemeMore()" style="display:none;">
+                    더 보기
+                </button>
             </div>
         </div>
 
@@ -185,6 +190,8 @@
 <div id="toast-container"></div>
 
 <script>
+    const themePageState = {page: 0, hasNext: false, totalLoaded: 0, allThemes: []};
+
     function toast(msg, type = 'info') {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -201,7 +208,14 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let message = `오류가 발생했습니다. (HTTP ${res.status})`;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) message = json.message;
+            } catch (_) {
+                if (text) message = text;
+            }
+            throw new Error(message);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;
@@ -212,51 +226,77 @@
         el.style.display = el.style.display === 'none' ? '' : 'none';
     }
 
-    // ── Load Themes ────────────────────────────────────
-    async function loadThemes() {
-        try {
-            const data = (await api('GET', '/themes')).themes;
-            document.getElementById('theme-count').textContent = data.length;
+    function renderThemeRows(themes) {
+        return themes.map(t => `
+            <tr>
+                <td><span class="badge badge-gray">#${t.id}</span></td>
+                <td>
+                    ${t.thumbnailImageUrl
+            ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:56px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                       <div style="display:none;width:56px;height:40px;background:var(--bg-input);border-radius:6px;align-items:center;justify-content:center;font-size:20px;">🎭</div>`
+            : `<div style="width:56px;height:40px;background:var(--bg-input);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎭</div>`}
+                </td>
+                <td><strong>${t.name}</strong></td>
+                <td style="color: var(--text-secondary); max-width: 280px;">
+                    <span title="${t.description}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        ${t.description || '–'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTheme(${t.id}, '${t.name.replace(/'/g, "\\'")}')">
+                        🗑 삭제
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-            // Update dropdown for time check
-            const sel = document.getElementById('check-theme');
-            sel.innerHTML = '<option value="">테마 선택</option>' +
-                data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    async function loadThemes(reset = true) {
+        if (reset) {
+            themePageState.page = 0;
+            themePageState.totalLoaded = 0;
+            themePageState.allThemes = [];
+            document.getElementById('theme-table-body').innerHTML =
+                `<tr><td colspan="5"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
+        }
+
+        try {
+            const data = await api('GET', `/themes?page=${themePageState.page}&size=20`);
+            const themes = data.themes;
+            themePageState.hasNext = data.hasNext;
+            themePageState.totalLoaded += themes.length;
+            themePageState.allThemes = themePageState.allThemes.concat(themes);
 
             const tbody = document.getElementById('theme-table-body');
-            if (!data.length) {
+            const sel = document.getElementById('check-theme');
+
+            if (reset && !themes.length) {
                 tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎭</div><p>등록된 테마가 없습니다.</p></div></td></tr>`;
+                sel.innerHTML = '<option value="">테마 선택</option>';
+                document.getElementById('theme-count').textContent = '0';
+                document.getElementById('theme-load-more-btn').style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = data.map(t => `
-        <tr>
-          <td><span class="badge badge-gray">#${t.id}</span></td>
-          <td>
-            ${t.thumbnailImageUrl
-                ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:56px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                 <div style="display:none;width:56px;height:40px;background:var(--bg-input);border-radius:6px;align-items:center;justify-content:center;font-size:20px;">🎭</div>`
-                : `<div style="width:56px;height:40px;background:var(--bg-input);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎭</div>`}
-          </td>
-          <td><strong>${t.name}</strong></td>
-          <td style="color: var(--text-secondary); max-width: 280px;">
-            <span title="${t.description}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-              ${t.description || '–'}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteTheme(${t.id}, '${t.name}')">
-              🗑 삭제
-            </button>
-          </td>
-        </tr>
-      `).join('');
+            if (reset) tbody.innerHTML = '';
+            tbody.insertAdjacentHTML('beforeend', renderThemeRows(themes));
+
+            sel.innerHTML = '<option value="">테마 선택</option>' +
+                themePageState.allThemes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+            document.getElementById('theme-count').textContent =
+                themePageState.hasNext ? `${themePageState.totalLoaded}+` : `${themePageState.totalLoaded}`;
+            document.getElementById('theme-load-more-btn').style.display = themePageState.hasNext ? '' : 'none';
         } catch (e) {
             toast(`테마 조회 실패: ${e.message}`, 'error');
         }
     }
 
-    // ── Popular ────────────────────────────────────────
+    async function loadThemeMore() {
+        themePageState.page++;
+        await loadThemes(false);
+    }
+
     async function loadPopular() {
         const limit = document.getElementById('popular-limit').value || 5;
         const container = document.getElementById('popular-list');
@@ -268,36 +308,35 @@
                 return;
             }
             container.innerHTML = `
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>순위</th><th>썸네일</th><th>이름</th><th>설명</th><th>예약 수</th></tr></thead>
-            <tbody>
-              ${data.map((t, i) => `
-                <tr>
-                  <td>
-                    <span class="popular-rank ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other'}">
-                      ${i + 1}
-                    </span>
-                  </td>
-                  <td>
-                    ${t.thumbnailImageUrl
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>순위</th><th>썸네일</th><th>이름</th><th>설명</th><th>예약 수</th></tr></thead>
+                        <tbody>
+                            ${data.map((t, i) => `
+                                <tr>
+                                    <td>
+                                        <span class="popular-rank ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other'}">
+                                            ${i + 1}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        ${t.thumbnailImageUrl
                 ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:56px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'">`
                 : `<div style="width:56px;height:40px;background:var(--bg-input);border-radius:6px;display:flex;align-items:center;justify-content:center;">🎭</div>`}
-                  </td>
-                  <td><strong>${t.name}</strong></td>
-                  <td style="color: var(--text-secondary);">${t.description || '–'}</td>
-                  <td><span class="badge badge-yellow">🔖 ${t.reservedCount}건</span></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>`;
+                                    </td>
+                                    <td><strong>${t.name}</strong></td>
+                                    <td style="color: var(--text-secondary);">${t.description || '–'}</td>
+                                    <td><span class="badge badge-yellow">🔖 ${t.reservedCount}건</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
         } catch (e) {
             container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
         }
     }
 
-    // ── Time Check ────────────────────────────────────
     async function checkTimes() {
         const themeId = document.getElementById('check-theme').value;
         const date = document.getElementById('check-date').value;
@@ -315,19 +354,18 @@
                 return;
             }
             container.innerHTML = `<div class="time-grid">
-        ${data.map(t => `
-          <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}">
-            <div>${t.startAt}</div>
-            <div class="time-slot-label">${t.isReserved ? '예약됨' : '예약 가능'}</div>
-          </div>
-        `).join('')}
-      </div>`;
+                ${data.map(t => `
+                    <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}">
+                        <div>${t.startAt}</div>
+                        <div class="time-slot-label">${t.isReserved ? '예약됨' : '예약 가능'}</div>
+                    </div>
+                `).join('')}
+            </div>`;
         } catch (e) {
             container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
         }
     }
 
-    // ── CRUD ─────────────────────────────────────────
     async function createTheme() {
         const name = document.getElementById('theme-name').value.trim();
         const description = document.getElementById('theme-desc').value.trim();
@@ -342,7 +380,7 @@
             document.getElementById('theme-name').value = '';
             document.getElementById('theme-desc').value = '';
             document.getElementById('theme-img').value = '';
-            await loadThemes();
+            await loadThemes(true);
         } catch (e) {
             toast(`추가 실패: ${e.message}`, 'error');
         }
@@ -353,15 +391,14 @@
         try {
             await api('DELETE', `/admin/themes/${id}`);
             toast(`"${name}" 테마가 삭제되었습니다.`, 'success');
-            await loadThemes();
+            await loadThemes(true);
         } catch (e) {
             toast(`삭제 실패: ${e.message}`, 'error');
         }
     }
 
-    // ── Init ─────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-        loadThemes();
+        loadThemes(true);
         document.getElementById('check-date').value = new Date().toISOString().split('T')[0];
     });
 </script>

@@ -1,0 +1,291 @@
+{
+  "info": {
+    "name": "Roomescape Member API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Reservation",
+      "item": [
+        {
+          "name": "예약 목록 조회 (페이징)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reservations?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "name", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "예약 목록 조회 (이름 필터)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reservations?page=0&size=20&name=홍길동",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "name", "value": "홍길동" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "예약 단건 조회",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reservations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations", "1"]
+            }
+          }
+        },
+        {
+          "name": "예약 생성",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"홍길동\",\n  \"themeId\": 1,\n  \"date\": \"2026-06-01\",\n  \"timeId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "본인 예약 수정",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reservations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"홍길동\",\n  \"themeId\": 1,\n  \"date\": \"2026-06-15\",\n  \"timeId\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "본인 예약 취소",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reservations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservations", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"홍길동\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Reservation",
+      "item": [
+        {
+          "name": "[관리자] 예약 삭제",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/admin/reservations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "reservations", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservation Time",
+      "item": [
+        {
+          "name": "예약 시간 목록 조회 (페이징)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/times?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["times"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "예약 시간 단건 조회",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/times/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["times", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Reservation Time",
+      "item": [
+        {
+          "name": "[관리자] 예약 시간 생성",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/times",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "times"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startAt\": \"10:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[관리자] 예약 시간 삭제",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/admin/times/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "times", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Theme",
+      "item": [
+        {
+          "name": "테마 목록 조회 (페이징)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/themes?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["themes"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "테마 단건 조회",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/themes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["themes", "1"]
+            }
+          }
+        },
+        {
+          "name": "테마별 예약 가능 시간 조회",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/themes/1/times?date=2026-06-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["themes", "1", "times"],
+              "query": [
+                { "key": "date", "value": "2026-06-01" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "인기 테마 조회",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/themes/popular?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["themes", "popular"],
+              "query": [
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Theme",
+      "item": [
+        {
+          "name": "[관리자] 테마 생성",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/themes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "themes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"공포의 밤\",\n  \"description\": \"무서운 방탈출 테마입니다.\",\n  \"thumbnailImageUrl\": \"https://example.com/image.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[관리자] 테마 삭제",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/admin/themes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "themes", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

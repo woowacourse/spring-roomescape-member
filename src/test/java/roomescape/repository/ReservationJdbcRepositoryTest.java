@@ -29,8 +29,8 @@ class ReservationJdbcRepositoryTest {
         Long themeId = insertTheme("공포");
         Long timeId = insertTime("10:00");
         Reservation reservation = new Reservation(
-                null, "브라운", new Theme(themeId, null, null, null),
-                LocalDate.of(2026, 5, 6), new ReservationTime(timeId, null));
+                null, "브라운", new Theme(themeId, "공포", "설명", "https://thumbnail.url"),
+                LocalDate.of(2026, 5, 6), new ReservationTime(timeId, LocalTime.of(10, 0)));
 
         Long id = repository.save(reservation);
 
@@ -45,7 +45,7 @@ class ReservationJdbcRepositoryTest {
         Long reservationId = jdbcTemplate.queryForObject(
                 "SELECT id FROM reservation ORDER BY id DESC LIMIT 1", Long.class);
 
-        Reservation found = repository.findById(reservationId);
+        Reservation found = repository.findById(reservationId).orElseThrow();
 
         assertThat(found.getId()).isEqualTo(reservationId);
         assertThat(found.getName()).isEqualTo("브라운");
@@ -54,6 +54,11 @@ class ReservationJdbcRepositoryTest {
         assertThat(found.getTheme().getName()).isEqualTo("공포");
         assertThat(found.getTime().getId()).isEqualTo(timeId);
         assertThat(found.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    void findById_없는_id이면_Optional_empty를_반환한다() {
+        assertThat(repository.findById(9999L)).isEmpty();
     }
 
     @Test
@@ -69,6 +74,29 @@ class ReservationJdbcRepositoryTest {
 
         assertThat(firstPage).extracting(Reservation::getName).containsExactly("A", "B");
         assertThat(secondPage).extracting(Reservation::getName).containsExactly("C");
+    }
+
+    @Test
+    void update_지정한_id의_필드를_갱신한다() {
+        Long themeA = insertTheme("A");
+        Long themeB = insertTheme("B");
+        Long time1 = insertTime("10:00");
+        Long time2 = insertTime("11:00");
+        insertReservation("브라운", themeA, "2026-06-01", time1);
+        Long reservationId = jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation ORDER BY id DESC LIMIT 1", Long.class);
+
+        int affected = repository.update(new Reservation(
+                reservationId, "브라운",
+                new Theme(themeB, "B", "설명", "https://thumbnail.url"),
+                LocalDate.of(2026, 6, 2),
+                new ReservationTime(time2, LocalTime.of(11, 0))));
+
+        assertThat(affected).isEqualTo(1);
+        Reservation found = repository.findById(reservationId).orElseThrow();
+        assertThat(found.getDate()).isEqualTo(LocalDate.of(2026, 6, 2));
+        assertThat(found.getTheme().getId()).isEqualTo(themeB);
+        assertThat(found.getTime().getId()).isEqualTo(time2);
     }
 
     @Test
@@ -124,6 +152,32 @@ class ReservationJdbcRepositoryTest {
                 LocalDate.of(2026, 5, 6), timeId, themeId);
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    void existsByReservationTimeId_해당_시간을_참조하는_예약이_있으면_true() {
+        Long themeId = insertTheme("공포");
+        Long timeId = insertTime("10:00");
+        insertReservation("브라운", themeId, "2026-05-06", timeId);
+
+        assertThat(repository.existsByReservationTimeId(timeId)).isTrue();
+    }
+
+    @Test
+    void existsByReservationTimeId_해당_시간을_참조하는_예약이_없으면_false() {
+        Long timeId = insertTime("10:00");
+
+        assertThat(repository.existsByReservationTimeId(timeId)).isFalse();
+    }
+
+    @Test
+    void existsByReservationTimeId_다른_시간을_참조하는_예약만_있으면_false() {
+        Long themeId = insertTheme("공포");
+        Long usedTimeId = insertTime("10:00");
+        Long targetTimeId = insertTime("11:00");
+        insertReservation("브라운", themeId, "2026-05-06", usedTimeId);
+
+        assertThat(repository.existsByReservationTimeId(targetTimeId)).isFalse();
     }
 
     private Long insertTheme(String name) {

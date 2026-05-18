@@ -6,9 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +52,34 @@ class AdminThemeControllerTest {
     }
 
     @Test
+    void POST_admin_themes_본문의_name이_빈_문자열이면_400과_메시지를_반환한다() throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "");
+        body.put("description", "무서움");
+        body.put("thumbnailImageUrl", "https://thumbnail.url");
+
+        mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("name은(는) 필수 입력값입니다."));
+    }
+
+    @Test
     void DELETE_admin_themes_id_200을_반환하고_서비스에_위임한다() throws Exception {
         mockMvc.perform(delete("/admin/themes/3"))
                 .andExpect(status().isOk());
 
         verify(themeService).deleteTheme(3L);
+    }
+
+    @Test
+    void DELETE_admin_themes_서비스가_ResourceNotFoundException을_던지면_404과_메시지를_반환한다() throws Exception {
+        org.mockito.BDDMockito.willThrow(new roomescape.exception.ResourceNotFoundException("테마", 9999L))
+                .given(themeService).deleteTheme(9999L);
+
+        mockMvc.perform(delete("/admin/themes/9999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("테마을(를) 찾을 수 없습니다. id=9999"));
     }
 }
