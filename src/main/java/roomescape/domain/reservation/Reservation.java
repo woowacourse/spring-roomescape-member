@@ -47,7 +47,11 @@ public class Reservation {
         return new Reservation(this.id, this.name, date, this.theme, time);
     }
 
-    public boolean isBefore(final LocalDateTime standardDateTime) {
+    public boolean hasName(final String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isPastAt(final LocalDateTime standardDateTime) {
         return getReservationDateTime().isBefore(standardDateTime);
     }
 

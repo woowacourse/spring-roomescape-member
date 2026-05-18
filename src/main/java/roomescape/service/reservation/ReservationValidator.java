@@ -1,10 +1,8 @@
 package roomescape.service.reservation;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
@@ -18,7 +16,7 @@ public class ReservationValidator {
         }
     }
 
-    public void validateCreateRequest(final LocalDate date, final Long themeId, final Long timeId) {
+    public void validateCreateRequest(final java.time.LocalDate date, final Long themeId, final Long timeId) {
         if (themeId == null) {
             throw new InvalidInputException(ErrorCode.THEME_ID_REQUIRED, "themeId는 필수입니다.");
         }
@@ -32,7 +30,7 @@ public class ReservationValidator {
         }
     }
 
-    public void validateUpdateRequest(final LocalDate date, final Long timeId) {
+    public void validateUpdateRequest(final java.time.LocalDate date, final Long timeId) {
         if (timeId == null) {
             throw new InvalidInputException(ErrorCode.RESERVATION_TIME_ID_REQUIRED, "timeId는 필수입니다.");
         }
@@ -42,14 +40,14 @@ public class ReservationValidator {
         }
     }
 
-    public void validateReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
-        if (toReservationDateTime(date, reservationTime).isBefore(LocalDateTime.now())) {
+    public void validateReservable(final Reservation reservation) {
+        if (reservation.isPastAt(LocalDateTime.now())) {
             throw new InvalidInputException(ErrorCode.RESERVATION_DATE_TIME_IN_PAST, "과거 날짜와 시간으로는 예약을 할 수 없습니다.");
         }
     }
 
     public void validateCancelable(final Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now())) {
+        if (reservation.isPastAt(LocalDateTime.now())) {
             throw new ConflictException(
                     ErrorCode.PAST_RESERVATION_CANNOT_BE_CANCELLED,
                     "이미 지난 예약은 취소할 수 없습니다."
@@ -58,15 +56,11 @@ public class ReservationValidator {
     }
 
     public void validateUpdatable(final Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now())) {
+        if (reservation.isPastAt(LocalDateTime.now())) {
             throw new ConflictException(
                     ErrorCode.PAST_RESERVATION_CANNOT_BE_UPDATED,
                     "이미 지난 예약은 변경할 수 없습니다."
             );
         }
-    }
-
-    private LocalDateTime toReservationDateTime(final LocalDate date, final ReservationTime reservationTime) {
-        return LocalDateTime.of(date, reservationTime.getStartAt());
     }
 }
