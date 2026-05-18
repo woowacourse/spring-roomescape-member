@@ -87,14 +87,14 @@ public class JdbcThemeRepository implements ThemeRepository {
                         FROM theme t
                         JOIN reservation r ON r.theme_id = t.id
                         JOIN reservation_time rt ON r.time_id = rt.id
-                        WHERE CAST(rt.start_time AS DATE) BETWEEN ? AND ?
+                        WHERE rt.start_time >= ? AND rt.start_time < ?
                         GROUP BY t.id, t.name, t.description, t.image_url
                         ORDER BY COUNT(r.id) DESC, t.id ASC
                         LIMIT ?
                         """,
                 new ThemeRowMapper(),
-                startDate,
-                endDate,
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay(),
                 limit
         );
     }

@@ -104,11 +104,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """
                 SELECT r.time_id FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
-                WHERE r.theme_id = ? AND CAST(rt.start_time AS DATE) = ?
+                WHERE r.theme_id = ? AND rt.start_time >= ? AND rt.start_time < ?
                 """,
                 (rs, rowNum) -> rs.getLong("time_id"),
                 themeId,
-                Date.valueOf(date)
+                date.atStartOfDay(),
+                date.plusDays(1).atStartOfDay()
         );
     }
 

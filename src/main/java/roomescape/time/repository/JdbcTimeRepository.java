@@ -1,6 +1,5 @@
 package roomescape.time.repository;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -59,9 +58,10 @@ public class JdbcTimeRepository implements TimeRepository {
     @Override
     public List<ReservationTime> findByDate(LocalDate date) {
         return jdbcTemplate.query(
-                "SELECT id, start_time, end_time FROM reservation_time WHERE CAST(start_time AS DATE) = ? ORDER BY start_time",
+                "SELECT id, start_time, end_time FROM reservation_time WHERE start_time >= ? AND start_time < ? ORDER BY start_time",
                 new ReservationTimeRowMapper(),
-                Date.valueOf(date)
+                date.atStartOfDay(),
+                date.plusDays(1).atStartOfDay()
         );
     }
 
