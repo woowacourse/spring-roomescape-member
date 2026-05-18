@@ -9,10 +9,10 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,9 +28,12 @@ class ReservationTimeServiceTest {
     @Mock
     ReservationTimeRepository reservationTimeRepository;
 
-    @InjectMocks
     ReservationTimeService reservationTimeService;
 
+    @BeforeEach
+    void setUp() {
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    }
 
     @Test
     @DisplayName("예약 시간을 성공적으로 생성한다.")

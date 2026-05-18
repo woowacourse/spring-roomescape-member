@@ -1,9 +1,10 @@
 package roomescape.domain.reservation.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.exception.DuplicateReservationException;
@@ -40,19 +41,34 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    ReservationRepository reservationRepository = Mockito.mock(ReservationRepository.class);
-    ReservationTimeRepository reservationTimeRepository = Mockito.mock(ReservationTimeRepository.class);
-    ThemeRepository themeRepository = Mockito.mock(ThemeRepository.class);
+    @Mock
+    ReservationRepository reservationRepository;
 
-    Clock fixedClock = Clock.fixed(
+    @Mock
+    ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    ThemeRepository themeRepository;
+
+    private final Clock fixedClock = Clock.fixed(
             LocalDate.of(2026, 5, 6)
-                    .atTime(23,0)
+                    .atTime(23, 0)
                     .atZone(ZoneId.systemDefault())
                     .toInstant(),
             ZoneId.systemDefault()
     );
 
-    ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, fixedClock);
+    ReservationService reservationService;
+
+    @BeforeEach
+    void setUp() {
+        reservationService = new ReservationService(
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository,
+                fixedClock
+        );
+    }
 
     @Test
     @DisplayName("예약을 성공적으로 생성한다.")

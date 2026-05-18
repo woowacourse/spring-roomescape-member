@@ -1,8 +1,11 @@
 package roomescape.domain.theme.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -21,9 +24,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private final ThemeRepository themeRepository = Mockito.mock(ThemeRepository.class);
+    @Mock
+    ThemeRepository themeRepository;
 
     private final Clock fixedClock = Clock.fixed(
             LocalDate.of(2026, 5, 6)
@@ -32,7 +37,12 @@ class ThemeServiceTest {
             ZoneId.systemDefault()
     );
 
-    private final ThemeService themeService = new ThemeService(themeRepository, fixedClock);
+    ThemeService themeService;
+
+    @BeforeEach
+    void setUp() {
+        themeService = new ThemeService(themeRepository, fixedClock);
+    }
 
     @Test
     @DisplayName("테마를 성공적으로 생성한다.")
