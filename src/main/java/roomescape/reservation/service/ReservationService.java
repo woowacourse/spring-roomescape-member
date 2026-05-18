@@ -58,7 +58,7 @@ public class ReservationService {
         validateNotPast(date, time.getStartAt());
         validateUnique(date, timeId, themeId);
 
-        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme);
         return reservationRepository.save(reservation);
     }
 
