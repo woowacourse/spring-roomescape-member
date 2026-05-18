@@ -1,13 +1,12 @@
 package roomescape.theme.presentation.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.application.ThemeService;
-import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.theme.presentation.dto.ThemesResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -17,12 +16,12 @@ public class ThemeController {
     private final ThemeService service;
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
+    public ResponseEntity<ThemesResponse> getThemes() {
         return ResponseEntity.ok(service.getThemes());
     }
 
     @GetMapping("/weeks/top")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+    public ResponseEntity<ThemesResponse> getPopularThemes() {
         return ResponseEntity.ok(service.getWeeksTopThemes());
     }
 }

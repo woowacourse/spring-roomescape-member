@@ -20,6 +20,7 @@ import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
+import roomescape.time.presentation.dto.ReservationTimesResponse;
 
 @Service
 @Transactional
@@ -32,11 +33,12 @@ public class ReservationTimeService {
     private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeRepository.findAll()
+    public ReservationTimesResponse getReservationTimes() {
+        List<ReservationTimeResponse> times = reservationTimeRepository.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+        return ReservationTimesResponse.from(times);
     }
 
     public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {

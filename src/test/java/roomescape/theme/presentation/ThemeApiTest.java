@@ -62,7 +62,7 @@ class ThemeApiTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(1));
+                .body("themes.size()", equalTo(1));
     }
 
     @Test

@@ -192,7 +192,7 @@ async function loadMyReservations(name) {
             { method: "GET" }
         );
         myReservationsCurrentName = name;
-        renderMyReservations(data);
+        renderMyReservations(data.reservations);
     } catch (error) {
         renderEmptyMyReservations("내 예약을 불러오지 못했습니다.");
         showFeedback(myReservationsFeedback, "error", error.message);

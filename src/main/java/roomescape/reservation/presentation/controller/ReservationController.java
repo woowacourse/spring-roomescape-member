@@ -1,7 +1,6 @@
 package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationUpdateRequest;
+import roomescape.reservation.presentation.dto.ReservationsResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,14 +27,14 @@ public class ReservationController {
     private final ReservationService service;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<ReservationsResponse> getReservations() {
         return ResponseEntity.ok().body(service.getReservations());
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<List<ReservationResponse>> getMyReservations(
+    public ResponseEntity<ReservationsResponse> getMyReservations(
             @RequestParam String name
-        ) {
+    ) {
         return ResponseEntity.ok().body(service.getMyReservations(name));
     }
 

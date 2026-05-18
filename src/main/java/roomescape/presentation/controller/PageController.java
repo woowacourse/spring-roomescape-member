@@ -19,17 +19,17 @@ public class PageController {
 
     @GetMapping({"/", "/reservation"})
     public String reservationPage(Model model) {
-        model.addAttribute("themes", themeService.getThemes());
-        model.addAttribute("popularThemes", themeService.getWeeksTopThemes());
+        model.addAttribute("themes", themeService.getThemes().themes());
+        model.addAttribute("popularThemes", themeService.getWeeksTopThemes().themes());
         model.addAttribute("today", LocalDate.now());
         return "reservation";
     }
 
     @GetMapping("/admin")
     public String adminPage(Model model) {
-        model.addAttribute("themes", themeService.getThemes());
-        model.addAttribute("times", reservationTimeService.getReservationTimes());
-        model.addAttribute("reservations", reservationService.getReservations(null));
+        model.addAttribute("themes", themeService.getThemes().themes());
+        model.addAttribute("times", reservationTimeService.getReservationTimes().times());
+        model.addAttribute("reservations", reservationService.getReservations().reservations());
         return "admin";
     }
 }

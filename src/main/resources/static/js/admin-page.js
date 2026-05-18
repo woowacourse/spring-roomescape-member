@@ -145,18 +145,18 @@ function renderThemes(themes) {
 }
 
 async function refreshReservations() {
-    const reservations = await request("/reservations", { method: "GET" });
-    renderReservations(reservations);
+    const data = await request("/reservations", { method: "GET" });
+    renderReservations(data.reservations);
 }
 
 async function refreshTimes() {
-    const times = await request("/times", { method: "GET" });
-    renderTimes(times);
+    const data = await request("/times", { method: "GET" });
+    renderTimes(data.times);
 }
 
 async function refreshThemes() {
-    const themes = await request("/themes", { method: "GET" });
-    renderThemes(themes);
+    const data = await request("/themes", { method: "GET" });
+    renderThemes(data.themes);
 }
 
 timeForm.addEventListener("submit", async (event) => {

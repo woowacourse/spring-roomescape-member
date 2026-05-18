@@ -13,6 +13,7 @@ import roomescape.reservation.domain.exception.ReservationOwnerMismatchException
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationUpdateRequest;
+import roomescape.reservation.presentation.dto.ReservationsResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
@@ -31,17 +32,19 @@ public class ReservationService {
     private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll().stream()
+    public ReservationsResponse getReservations() {
+        List<ReservationResponse> reservations = reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
+        return ReservationsResponse.from(reservations);
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getMyReservations(String name) {
-        return reservationRepository.findByName(name).stream()
+    public ReservationsResponse getMyReservations(String name) {
+        List<ReservationResponse> reservations = reservationRepository.findByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
+        return ReservationsResponse.from(reservations);
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {

@@ -72,7 +72,7 @@ class ReservationTimeApiTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(2));
+                .body("times.size()", equalTo(2));
     }
 
     @Test

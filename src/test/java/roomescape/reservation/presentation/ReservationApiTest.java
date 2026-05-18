@@ -142,8 +142,8 @@ class ReservationApiTest {
                 .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(1))
-                .body("[0].name", equalTo("포비"));
+                .body("reservations.size()", equalTo(1))
+                .body("reservations[0].name", equalTo("포비"));
     }
 
     @Test
@@ -166,7 +166,7 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(1));
+                .body("reservations.size()", equalTo(1));
     }
 
     @Test
