@@ -355,8 +355,7 @@ POST /times
 Content-Type: application/json
 
 {
-  "startAt": "10:00",
-  "endAt": "10:30"
+  "startAt": "10:00"
 }
 ```
 
