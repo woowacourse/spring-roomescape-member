@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.code.ReservationTimeErrorCode;
+import roomescape.exception.code.ThemeErrorCode;
 import roomescape.exception.custom.BusinessException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -36,10 +38,10 @@ public class ReservationService {
     @Transactional
     public ReservationSaveResponse save(ReservationSaveRequest body) {
         ReservationTime time = reservationTimeRepository.findById(body.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         Theme theme = themeRepository.findById(body.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 테마는 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
 
         validateReservationDateTime(body.date(), time.getStartAt());
 
@@ -66,9 +68,9 @@ public class ReservationService {
     @Transactional
     public void update(Long id, ReservationUpdateRequest body) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 예약은 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         ReservationTime time = reservationTimeRepository.findById(body.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         validateReservationDateTime(body.date(), time.getStartAt());
 
