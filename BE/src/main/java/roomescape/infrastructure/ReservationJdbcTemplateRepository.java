@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
 @Repository
-public class ReservationJdbcTemplateRepository implements ReservationRepository {
+public class ReservationJdbcTemplateRepository extends AbstractReservationRepository {
 
     private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
             SELECT r.id,
@@ -52,6 +53,23 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
             JOIN theme t ON r.theme_id = t.id
             WHERE r.id = ?
             """;
+
+    private static final String FIND_BY_NAME_QUERY = """
+            SELECT r.id,
+                   r.name AS reservation_name,
+                   r.date,
+                   rt.id AS time_id,
+                   rt.start_at,
+                   t.id AS theme_id,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.thumbnail_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.name = ?
+            """;
+
     private static final String FIND_ALL_QUERY = """
             SELECT r.id,
                    r.name AS reservation_name,
@@ -90,6 +108,8 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                       AND theme_id = ?
                 );
             """;
+
+    private static final String UPDATE_DATE_AND_TIME_QUERY = "UPDATE reservation SET date = :date, time_id = :time_id WHERE id = :id";
 
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM reservation WHERE id = ?";
 
@@ -140,8 +160,8 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         return Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.time().id(),
-                "theme_id", reservation.theme().id()
+                "time_id", reservation.timeId(),
+                "theme_id", reservation.themeId()
         );
     }
 
@@ -150,6 +170,11 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         List<Reservation> reservation = jdbcTemplate.query(FIND_BY_ID_QUERY, ROW_MAPPER, id);
         return reservation.stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(FIND_BY_NAME_QUERY, ROW_MAPPER, name);
     }
 
     @Override
@@ -181,10 +206,20 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        Map<String, Object> params = new java.util.HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("date", date);
         params.put("themeId", themeId);
         return namedParameterJdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, params, ROW_MAPPER);
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", reservation.id());
+        params.put("date", reservation.date());
+        params.put("time_id", reservation.timeId());
+
+        namedParameterJdbcTemplate.update(UPDATE_DATE_AND_TIME_QUERY, params);
     }
 
     @Override

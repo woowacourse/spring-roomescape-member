@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
 import roomescape.entity.ThemeSortType;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.NotFoundException;
+import roomescape.infrastructure.AbstractThemeRepository;
 
-public class FakeThemeRepository implements ThemeRepository {
+public class FakeThemeRepository extends AbstractThemeRepository {
 
     private final Map<Long, Theme> store = new HashMap<>();
     private long sequence = 0L;
@@ -51,14 +51,6 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-        Theme removed = store.remove(id);
-        if (removed == null) {
-            throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
-        }
-    }
-
-    public void clear() {
-        store.clear();
-        sequence = 0L;
+        store.remove(id);
     }
 }

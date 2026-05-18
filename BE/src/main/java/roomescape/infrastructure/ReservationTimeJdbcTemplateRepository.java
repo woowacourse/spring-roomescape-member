@@ -3,16 +3,14 @@ package roomescape.infrastructure;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.ReservationTime;
-import roomescape.entity.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeJdbcTemplateRepository implements ReservationTimeRepository {
+public class ReservationTimeJdbcTemplateRepository extends AbstractReservationTimeRepository {
 
     private static final String FIND_BY_QUERY = "SELECT id, start_at FROM reservation_time WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT id, start_at FROM reservation_time";
@@ -26,9 +24,9 @@ public class ReservationTimeJdbcTemplateRepository implements ReservationTimeRep
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeJdbcTemplateRepository(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+    public ReservationTimeJdbcTemplateRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }

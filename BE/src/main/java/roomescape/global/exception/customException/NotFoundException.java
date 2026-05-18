@@ -9,10 +9,6 @@ public class NotFoundException extends BusinessException {
         super(errorCode);
     }
 
-    public NotFoundException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
-
     @Override
     public HttpStatus httpStatus() {
         return HttpStatus.NOT_FOUND;

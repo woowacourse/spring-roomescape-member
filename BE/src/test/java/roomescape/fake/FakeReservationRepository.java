@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.entity.Reservation;
-import roomescape.entity.ReservationRepository;
+import roomescape.infrastructure.AbstractReservationRepository;
 
-public class FakeReservationRepository implements ReservationRepository {
+public class FakeReservationRepository extends AbstractReservationRepository {
 
     private final Map<Long, Reservation> store = new HashMap<>();
     private Long sequence = 1L;
@@ -34,6 +34,13 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         return Optional.ofNullable(store.get(id));
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return store.values().stream()
+                .filter(reservation -> reservation.name().equals(name))
+                .toList();
     }
 
     @Override
@@ -70,6 +77,11 @@ public class FakeReservationRepository implements ReservationRepository {
                 .filter(reservation -> date == null || reservation.date().equals(date))
                 .filter(reservation -> themeId == null || reservation.theme().id().equals(themeId))
                 .toList();
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        store.put(reservation.id(), reservation);
     }
 
     @Override

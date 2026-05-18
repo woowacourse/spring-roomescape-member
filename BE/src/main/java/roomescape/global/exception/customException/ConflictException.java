@@ -9,10 +9,6 @@ public class ConflictException extends BusinessException {
         super(errorCode);
     }
 
-    public ConflictException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
-
     @Override
     public HttpStatus httpStatus() {
         return HttpStatus.CONFLICT;
