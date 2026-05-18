@@ -55,16 +55,6 @@ public class ReservationService {
         }
     }
 
-    @NonNull
-    private Reservation getValidReservation(Long id, LocalDateTime now) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
-        if (reservation.isDateTimeBefore(now)) {
-            throw new UnprocessableException(UnprocessableCode.RESERVATION_ALREADY_STARTED);
-        }
-        return reservation;
-    }
-
     @Transactional
     public Reservation saveReservation(ReservationSaveCommand command, LocalDateTime now, ReservationSavePolicy policy) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
@@ -98,17 +88,20 @@ public class ReservationService {
         }
     }
 
+    @NonNull
+    private Reservation getValidReservation(Long id, LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
+        if (reservation.isDateTimeBefore(now)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_ALREADY_STARTED);
+        }
+        return reservation;
+    }
+
     private void validateEditedDateTime(ReservationEditCommand command, LocalDateTime now) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
-        LocalDateTime editedDateTime = command.date().atTime(time.startAt());
-
-        if (command.date().isBefore(now.toLocalDate())) {
-            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
-        }
-        if (editedDateTime.isBefore(now)) {
-            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
-        }
+        command.validateNow(time, now);
     }
 
     private static void checkReservationDuplication(int reservationCount) {
