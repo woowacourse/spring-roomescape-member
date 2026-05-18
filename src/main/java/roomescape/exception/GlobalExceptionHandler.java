@@ -33,8 +33,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        HttpStatus status = HttpStatus.valueOf(statusCode.value());
         return ResponseEntity.status(statusCode)
-                .body(new ExceptionResponse(HttpStatus.valueOf(statusCode.value()), "BAD_REQUEST", "잘못된 요청입니다."));
+                .body(new ExceptionResponse(status, status.name(), "잘못된 요청입니다."));
     }
 
     @ExceptionHandler(BusinessException.class)
