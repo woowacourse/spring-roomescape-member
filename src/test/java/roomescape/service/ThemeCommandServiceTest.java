@@ -37,4 +37,16 @@ class ThemeCommandServiceTest {
                 .isExactlyInstanceOf(ConflictException.class)
                 .hasMessage(ErrorMessage.DUPLICATE_THEME.getMessage());
     }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마 삭제 시 예외가 발생한다.")
+    void throwExceptionWhenDeleteThemeInUse() {
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, status) VALUES (1, '10:00', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO theme (id, name, thumbnail_url, description, status) VALUES (1, '공포의 저택', 'url', '설명', 'AVAILABLE')");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, 'user_a', '2026-06-01', 1, 1)");
+
+        assertThatThrownBy(() -> themeCommandService.delete(1L))
+                .isExactlyInstanceOf(ConflictException.class)
+                .hasMessage(ErrorMessage.THEME_IN_USE.getMessage());
+    }
 }

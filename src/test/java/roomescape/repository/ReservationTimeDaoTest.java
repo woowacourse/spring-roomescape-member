@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,34 @@ class ReservationTimeDaoTest {
         TimeStatus actual = deletedTime.status();
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("AVAILABLE 상태의 시간 ID로 조회하면 값이 반환된다.")
+    void findByTimeIdTest() {
+        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '09:00', 'AVAILABLE')");
+
+        Optional<ReservationTime> result = reservationTimeDao.findByTimeId(1L);
+
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().id()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간 ID로 조회하면 빈 Optional이 반환된다.")
+    void findByTimeIdNotFoundTest() {
+        Optional<ReservationTime> result = reservationTimeDao.findByTimeId(999L);
+
+        assertThat(result.isEmpty()).isTrue();
+    }
+
+    @Test
+    @DisplayName("DELETED 상태의 시간 ID로 조회하면 빈 Optional이 반환된다.")
+    void findByTimeIdDeletedTest() {
+        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '09:00', 'DELETED')");
+
+        Optional<ReservationTime> result = reservationTimeDao.findByTimeId(1L);
+
+        assertThat(result.isEmpty()).isTrue();
     }
 }

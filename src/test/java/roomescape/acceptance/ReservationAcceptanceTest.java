@@ -282,6 +282,6 @@ public class ReservationAcceptanceTest extends AcceptanceTestSupport{
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is("지나간 날짜, 시간에 대한 예약 생성은 불가능합니다."));
+                .body("message", is("지나간 날짜에 대한 예약 생성은 불가능합니다."));
     }
 }

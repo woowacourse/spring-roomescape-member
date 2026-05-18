@@ -55,12 +55,12 @@ public class UserReservationController {
         return ResponseEntity.ok(reservationQueryService.getReservationsByName(name));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> findReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationQueryService.getReservationById(id));
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservationById(
             @PathVariable Long id,
             @Valid @RequestBody ReservationUpdateRequest request

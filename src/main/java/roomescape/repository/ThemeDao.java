@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,6 +11,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeStatus;
+import roomescape.exception.ErrorMessage;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class ThemeDao {
         int affected = jdbcTemplate.update(sql, ThemeStatus.DELETED.name(), themeId);
 
         if(affected == 0) {
-            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorMessage.THEME_NOT_FOUND);
         }
     }
 
