@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.domain.ReservationSchedulePolicy;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.time.domain.ReservationTime;
@@ -19,6 +19,7 @@ import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
+import roomescape.time.presentation.dto.ReservationTimesResponse;
 
 @Service
 @Transactional
@@ -28,13 +29,15 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeRepository.findAll()
+    public ReservationTimesResponse getReservationTimes() {
+        List<ReservationTimeResponse> times = reservationTimeRepository.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+        return ReservationTimesResponse.from(times);
     }
 
     public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
@@ -54,7 +57,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeRequest request) {
-        Theme theme = findTheme(request.themeId());
+        validateThemeExists(request.themeId());
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(
                 request.themeId(), request.date());
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
@@ -63,12 +66,14 @@ public class ReservationTimeService {
                 .collect(Collectors.toSet());
         List<ReservationTime> availableTime = allTimes.stream()
                 .filter(time -> !reservedTimes.contains(time))
+                .filter(time -> reservationSchedulePolicy.canReserve(request.date(), time.getStartAt()))
                 .toList();
-        return AvailableReservationTimeResponse.from(theme, availableTime);
+        return AvailableReservationTimeResponse.from(availableTime);
     }
 
-    private Theme findTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
+    private void validateThemeExists(Long id) {
+        if (!themeRepository.existsThemeById(id)) {
+            throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
+        }
     }
 }

@@ -1,21 +1,27 @@
 package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
+import roomescape.reservation.presentation.dto.ReservationUpdateRequest;
+import roomescape.reservation.presentation.dto.ReservationsResponse;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -24,8 +30,15 @@ public class ReservationController {
     private final ReservationService service;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<ReservationsResponse> getReservations() {
         return ResponseEntity.ok().body(service.getReservations());
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<ReservationsResponse> getMyReservations(
+            @RequestParam @NotBlank(message = "이름은 필수입니다.") String name
+    ) {
+        return ResponseEntity.ok().body(service.getMyReservations(name));
     }
 
     @PostMapping
@@ -33,9 +46,18 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addReservation(request));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @Valid @RequestBody ReservationUpdateRequest request) {
+        return ResponseEntity.ok().body(service.updateReservation(id, request));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        service.cancelReservation(id);
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable Long id,
+            @RequestParam @NotBlank(message = "이름은 필수입니다.") String name) {
+        service.cancelReservation(id, name);
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -66,6 +67,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservation update(Reservation reservation) {
+        String sql = "UPDATE reservation "
+                + "SET name=:name, date=:date, time_id=:timeId, theme_id=:themeId "
+                + "WHERE id=:id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservation.getId())
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
+        jdbcTemplate.update(sql, params);
+        return reservation;
+    }
+
+    @Override
     public List<Reservation> findAll() {
         String sql = "SELECT "
                 + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
@@ -78,6 +94,23 @@ public class JdbcReservationRepository implements ReservationRepository {
                 + "ORDER BY r.date ASC, rt.start_at ASC";
 
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        String sql = "SELECT "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
+                + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
+                + "t.description AS t_description, t.duration_time AS t_duration_time, "
+                + "rt.id AS rt_id, rt.start_at AS rt_start_at "
+                + "FROM reservation r "
+                + "INNER JOIN theme t ON r.theme_id = t.id "
+                + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
+                + "WHERE r.name = :name "
+                + "ORDER BY r.date ASC, rt.start_at ASC";
+
+        SqlParameterSource params = new MapSqlParameterSource().addValue("name", name);
+        return jdbcTemplate.query(sql, params, rowMapper);
     }
 
     @Override
@@ -106,9 +139,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id=:id)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("id", id), Boolean.class));
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
+                + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
+                + "t.description AS t_description, t.duration_time AS t_duration_time, "
+                + "rt.id AS rt_id, rt.start_at AS rt_start_at "
+                + "FROM reservation r "
+                + "INNER JOIN theme t ON r.theme_id = t.id "
+                + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
+                + "WHERE r.id = :id";
+
+        SqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        return jdbcTemplate.query(sql, params, rowMapper).stream().findFirst();
     }
 
     @Override

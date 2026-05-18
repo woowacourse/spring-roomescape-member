@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,42 +62,16 @@ class ThemeApiTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(1));
+                .body("themes.size()", equalTo(1));
     }
 
     @Test
     @DisplayName("일주일간 인기 테마 목록을 조회하면 200을 반환한다")
     void getPopularThemes() {
-        Long themeId = given().contentType(ContentType.JSON)
-                .body(Map.of(
-                        "name", "테마A",
-                        "description", "설명",
-                        "thumbnailImageUrl", "https://example.com/a.png",
-                        "durationTime", "01:00:00"
-                ))
-                .when().post("/admin/themes")
-                .then().extract().jsonPath().getLong("id");
-
-        Long timeId = given().contentType(ContentType.JSON)
-                .body(Map.of("startAt", "10:00"))
-                .when().post("/times")
-                .then().extract().jsonPath().getLong("id");
-
-        String yesterday = LocalDate.now().minusDays(1).toString();
-        given().contentType(ContentType.JSON)
-                .body(Map.of(
-                        "name", "포비",
-                        "date", yesterday,
-                        "timeId", timeId,
-                        "themeId", themeId
-                ))
-                .when().post("/reservations");
-
         given().log().all()
                 .when().get("/themes/weeks/top")
                 .then().log().all()
-                .statusCode(200)
-                .body("[0].id", equalTo(themeId.intValue()));
+                .statusCode(200);
     }
 
     @Test

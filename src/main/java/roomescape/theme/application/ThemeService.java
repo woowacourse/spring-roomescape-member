@@ -10,6 +10,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.theme.presentation.dto.ThemesResponse;
 
 @Service
 @Transactional
@@ -35,23 +36,22 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> getThemes() {
-        List<Theme> themes = repository.findAll();
-        return themes.stream()
+    public ThemesResponse getThemes() {
+        List<ThemeResponse> themes = repository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return ThemesResponse.from(themes);
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> getWeeksTopThemes() {
-        List<Theme> themes = repository.findByReservationCountWithLimit(
+    public ThemesResponse getWeeksTopThemes() {
+        List<ThemeResponse> themes = repository.findByReservationCountWithLimit(
                 LocalDate.now().minusWeeks(WEEKS_BOUND),
                 LocalDate.now().minusDays(DAYS_BOUND),
                 THEME_SIZE_LIMIT
-        );
-
-        return themes.stream()
+        ).stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return ThemesResponse.from(themes);
     }
 }

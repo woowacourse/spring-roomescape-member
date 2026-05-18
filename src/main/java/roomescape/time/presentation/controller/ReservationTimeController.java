@@ -1,7 +1,6 @@
 package roomescape.time.presentation.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
+import roomescape.time.presentation.dto.ReservationTimesResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class ReservationTimeController {
     private final ReservationTimeService service;
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+    public ResponseEntity<ReservationTimesResponse> getReservationTimes() {
         return ResponseEntity.ok().body(service.getReservationTimes());
     }
 
