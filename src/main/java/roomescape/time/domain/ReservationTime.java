@@ -2,6 +2,8 @@ package roomescape.time.domain;
 
 import roomescape.exception.DomainRuleViolationException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -15,6 +17,10 @@ public class ReservationTime {
         }
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public boolean isPast(LocalDate date, LocalDateTime now) {
+        return LocalDateTime.of(date, startAt).isBefore(now);
     }
 
     public Long getId() {
