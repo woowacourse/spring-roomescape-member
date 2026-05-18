@@ -12,6 +12,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    Optional<ReservationDetail> findDetailById(Long id);
+
     Reservation save(Reservation reservation);
 
     Reservation update(Reservation reservation);
