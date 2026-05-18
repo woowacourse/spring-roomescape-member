@@ -1,7 +1,9 @@
 package roomescape.domain;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.DomainException;
+import roomescape.domain.exception.DomainRuleViolationException;
 import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -22,58 +25,129 @@ class ReservationTest {
     private final LocalDateTime fixedNow = LocalDateTime.of(2026, 5, 10, 12, 0);
 
 
-    @Test
-    void 과거_날짜는_예약_불가() {
-        LocalDate past = LocalDate.of(2026, 5, 9);
+    @Nested
+    @DisplayName("예약 생성 시")
+    class Create {
+        @Test
+        void 과거_날짜는_예약_불가() {
+            LocalDate past = LocalDate.of(2026, 5, 9);
 
-        assertThatThrownBy(() ->
-                Reservation.create(name, past, time, theme, fixedNow))
-                .isInstanceOf(DomainException.class);
+            assertThatThrownBy(() ->
+                    Reservation.create(name, past, time, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
+
+        @Test
+        void 정확히_14일_뒤는_가능() {
+            LocalDate exact14 = LocalDate.of(2026, 5, 24);
+
+            assertThatNoException().isThrownBy(() ->
+                    Reservation.create(name, exact14, time, theme, fixedNow));
+        }
+
+        @Test
+        void _15일_뒤는_불가() {
+            LocalDate day15 = LocalDate.of(2026, 5, 25);
+
+            assertThatThrownBy(() ->
+                    Reservation.create(name, day15, time, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
+
+        @Test
+        void 오늘_이미_지난_시각은_불가() {
+            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
+            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
+
+            LocalDate today = LocalDate.of(2026, 5, 10);
+            Time pastTime = new Time(1L, LocalTime.of(11, 0));
+
+            assertThatThrownBy(() ->
+                    created.update(null, today, pastTime, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
+
+        @Test
+        void 오늘_안_지난_시각은_가능() {
+            LocalDate today = LocalDate.of(2026, 5, 10);
+            Time eveningTime = new Time(1L, LocalTime.of(20, 0));
+
+            assertThatNoException().isThrownBy(() ->
+                    Reservation.create(name, today, eveningTime, theme, fixedNow));
+        }
     }
 
-    @Test
-    void 정확히_14일_뒤는_가능() {
-        LocalDate exact14 = LocalDate.of(2026, 5, 24);
+    @Nested
+    @DisplayName("예약 변경 후")
+    class Update {
 
-        assertThatNoException().isThrownBy(() ->
-                Reservation.create(name, exact14, time, theme, fixedNow));
-    }
+        @Test
+        void 과거_날짜는_예약_불가() {
+            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
+            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
 
-    @Test
-    void _15일_뒤는_불가() {
-        LocalDate day15 = LocalDate.of(2026, 5, 25);
+            Name newName = new Name("뉴브라운");
+            LocalDate dayAfterTomorrow = LocalDate.of(2026, 5, 9);
+            assertThatThrownBy(() -> created.update(newName, dayAfterTomorrow, time, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
 
-        assertThatThrownBy(() ->
-                Reservation.create(name, day15, time, theme, fixedNow))
-                .isInstanceOf(DomainException.class)
-                .hasMessageContaining("14일");
-    }
+        @Test
+        void 정확히_14일_뒤는_가능() {
+            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
+            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
 
-    @Test
-    void 오늘_이미_지난_시각은_불가() {
-        LocalDate today = LocalDate.of(2026, 5, 10);
-        Time noonTime = new Time(1L, LocalTime.of(11, 0));
+            Name newName = new Name("뉴브라운");
+            LocalDate exact14 = LocalDate.of(2026, 5, 24);
 
-        assertThatThrownBy(() ->
-                Reservation.create(name, today, noonTime, theme, fixedNow))
-                .isInstanceOf(DomainException.class);
-    }
+            assertThatNoException().isThrownBy(() ->
+                    created.update(newName, exact14, time, theme, fixedNow));
+        }
 
-    @Test
-    void 오늘_안_지난_시각은_가능() {
-        LocalDate today = LocalDate.of(2026, 5, 10);
-        Time eveningTime = new Time(1L, LocalTime.of(20, 0));
+        @Test
+        void _15일_뒤는_불가() {
+            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
+            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
 
-        assertThatNoException().isThrownBy(() ->
-                Reservation.create(name, today, eveningTime, theme, fixedNow));
-    }
+            Name newName = new Name("뉴브라운");
+            LocalDate day15 = LocalDate.of(2026, 5, 25);
 
-    @Test
-    void 미래_날짜는_시간_상관없이_가능() {
-        LocalDate tomorrow = LocalDate.of(2026, 5, 11);
-        Time anyTime = new Time(1L, LocalTime.of(10, 0));
+            assertThatThrownBy(() ->
+                    created.update(name, day15, time, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
 
-        assertThatNoException().isThrownBy(() ->
-                Reservation.create(name, tomorrow, anyTime, theme, fixedNow));
+        @Test
+        void 오늘_이미_지난_시각은_불가() {
+            LocalDate yesterday = LocalDate.of(2026, 5, 10);
+            LocalDate today = LocalDate.of(2026, 5, 10);
+            Time noonTime = new Time(1L, LocalTime.of(11, 0));
+
+            assertThatThrownBy(() ->
+                    Reservation.create(name, today, noonTime, theme, fixedNow))
+                    .isInstanceOf(DomainRuleViolationException.class);
+        }
+
+        @Test
+        void 오늘_안_지난_시각은_가능() {
+            LocalDate today = LocalDate.of(2026, 5, 10);
+            Time eveningTime = new Time(1L, LocalTime.of(20, 0));
+
+            assertThatNoException().isThrownBy(() ->
+                    Reservation.create(name, today, eveningTime, theme, fixedNow));
+        }
+
+        @Test
+        void 예약_날짜_둘_다_변경이_가능히다() {
+            LocalDate tomorrow = LocalDate.of(2026, 5, 11);
+            Reservation created = Reservation.create(name, tomorrow, time, theme, fixedNow);
+
+            Name newName = new Name("뉴브라운");
+            LocalDate dayAfterTomorrow = LocalDate.of(2026, 5, 12);
+            Reservation updated = created.update(newName, dayAfterTomorrow, time, theme, fixedNow);
+
+            assertThat(updated.getName()).isEqualTo(newName);
+            assertThat(updated.getDate()).isEqualTo(dayAfterTomorrow);
+        }
     }
 }

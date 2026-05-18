@@ -4,8 +4,6 @@ import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
 
-import java.util.Objects;
-
 public class Theme {
     private final Long id;
     private final Name name;
@@ -21,20 +19,6 @@ public class Theme {
 
     public static Theme create(Name name, ThumbnailUrl thumbnailUrl, Description description) {
         return new Theme(null, name, thumbnailUrl, description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Theme theme)) {
-            return false;
-        }
-
-        return Objects.equals(id, theme.id);
     }
 
     public Long getId() {

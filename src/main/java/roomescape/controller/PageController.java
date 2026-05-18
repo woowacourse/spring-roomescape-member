@@ -16,6 +16,11 @@ public class PageController {
         return "reservation";
     }
 
+    @GetMapping("/my-reservations")
+    public String myReservations() {
+        return "my-reservations";
+    }
+
     @GetMapping("/admin")
     public String admin() {
         return "admin";

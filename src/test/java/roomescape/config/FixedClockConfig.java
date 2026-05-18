@@ -1,19 +1,19 @@
 package roomescape.config;
 
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-@TestConfiguration
+@Configuration
 public class FixedClockConfig {
 
     @Bean
     @Primary
-    public Clock clock() {
+    public Clock clock1() {
         return Clock.fixed(
                 Instant.parse("2026-05-10T03:00:00Z"),
                 ZoneId.of("Asia/Seoul")

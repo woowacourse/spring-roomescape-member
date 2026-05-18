@@ -4,16 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.config.FixedClockConfig;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 public class MissionStepTest {
 
     private static final String TODAY = "2026-05-10";
-    private static final String FUTURE_DATE = "2026-05-15";
+    private static final String FUTURE_DATE = "2026-05-12";
     private static final String FUTURE_TIME = "14:00";
 
     @Test
@@ -47,7 +40,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -58,7 +51,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test
@@ -71,7 +64,7 @@ public class MissionStepTest {
                 .body(time)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().path("id");
 
         Map<String, Object> theme = new HashMap<>();
@@ -97,7 +90,7 @@ public class MissionStepTest {
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/admin/reservations")

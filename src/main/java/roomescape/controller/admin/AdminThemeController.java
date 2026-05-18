@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,7 +28,13 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponseDto> create(@Valid @RequestBody ThemeRequestDto themeRequest) {
-        return ResponseEntity.ok(themeService.create(themeRequest));
+        ThemeResponseDto created = themeService.create(themeRequest);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping
@@ -42,6 +50,6 @@ public class AdminThemeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
         themeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

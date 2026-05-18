@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.TimeRequestDto;
 import roomescape.dto.response.TimeResponseDto;
 import roomescape.service.TimeService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,7 +28,13 @@ public class AdminTimeController {
 
     @PostMapping
     public ResponseEntity<TimeResponseDto> create(@Valid @RequestBody TimeRequestDto timeRequest) {
-        return ResponseEntity.ok(timeService.create(timeRequest));
+        TimeResponseDto created = timeService.create(timeRequest);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping
@@ -42,6 +50,6 @@ public class AdminTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
         timeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

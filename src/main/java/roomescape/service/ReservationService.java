@@ -2,8 +2,10 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.ReservationErrorCode;
+import roomescape.common.ThemeErrorCode;
+import roomescape.common.TimeErrorCode;
+import roomescape.common.exception.RestApiException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
@@ -15,6 +17,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 
 import java.time.Clock;
@@ -50,21 +53,27 @@ public class ReservationService {
     public ReservationResponseDto findById(Long id) {
         return reservationDao.findById(id)
                 .map(ReservationResponseDto::from)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new RestApiException(ReservationErrorCode.NOT_FOUND));
+    }
+
+    public List<ReservationResponseDto> findByName(String name) {
+        return reservationDao.findByName(name).stream()
+                .map(ReservationResponseDto::from)
+                .toList();
     }
 
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto reservationRequest) {
         Time time = timeDao.findById(reservationRequest.timeId())
                 .map(TimeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new RestApiException(TimeErrorCode.NOT_FOUND));
 
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .map(ThemeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RestApiException(ThemeErrorCode.NOT_FOUND));
 
         if (reservationDao.existsByThemeIdAndTimeIdAndDate(reservationRequest.themeId(), reservationRequest.timeId(), reservationRequest.date())) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다. ");
+            throw new RestApiException(ReservationErrorCode.DUPLICATE);
         }
 
         Reservation reservation = Reservation.create(
@@ -81,10 +90,59 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+        Reservation reservation = reservationDao.findById(id)
+                .map(ReservationRow::toDomain)
+                .orElseThrow(() -> new RestApiException(ReservationErrorCode.NOT_FOUND));
+
+        if (!reservation.isDeletable(LocalDateTime.now(clock))) {
+            throw new RestApiException(ReservationErrorCode.DUPLICATE);
         }
 
         reservationDao.delete(id);
+    }
+
+    @Transactional
+    public void delete(Long id, String name) {
+        Reservation reservation = reservationDao.findByIdAndName(id, name)
+                .map(ReservationRow::toDomain)
+                .orElseThrow(() -> new RestApiException(ReservationErrorCode.NOT_FOUND));
+
+        if (!reservation.isDeletable(LocalDateTime.now(clock))) {
+            throw new RestApiException(ReservationErrorCode.DUPLICATE);
+        }
+
+        reservationDao.delete(id);
+    }
+
+    @Transactional
+    public ReservationResponseDto update(Long id, ReservationUpdateDto reservationUpdate) {
+        Time time = timeDao.findById(reservationUpdate.timeId())
+                .map(TimeRow::toDomain)
+                .orElseThrow(() -> new RestApiException(TimeErrorCode.NOT_FOUND));
+
+        Theme theme = themeDao.findById(reservationUpdate.themeId())
+                .map(ThemeRow::toDomain)
+                .orElseThrow(() -> new RestApiException(ThemeErrorCode.NOT_FOUND));
+
+        ReservationRow existing = reservationDao.findById(id)
+                .orElseThrow(() -> new RestApiException(ReservationErrorCode.NOT_FOUND));
+
+        boolean conflicts = reservationDao.existsByThemeIdAndTimeIdAndDateAndIdNot(
+                reservationUpdate.themeId(),
+                reservationUpdate.timeId(),
+                reservationUpdate.date(),
+                id
+        );
+
+        if (conflicts) {
+            throw new RestApiException(ReservationErrorCode.DUPLICATE);
+        }
+
+        Reservation updated = existing.toDomain()
+                .update(new Name(reservationUpdate.name()), reservationUpdate.date(), time, theme, LocalDateTime.now(clock));
+
+        ReservationRow saved = reservationDao.update(ReservationRow.from(updated));
+
+        return ReservationResponseDto.from(saved);
     }
 }
