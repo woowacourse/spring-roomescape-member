@@ -80,3 +80,10 @@ Error Code: 404 Not Found
   "message" : "요청받은 리소스를 찾을 수 없습니다."
 }
 ```
+
+Error Code: 500 Internal Server Error
+```json
+{
+  "message" : "서버에서 예외 핸들링을 하지 않은 에러가 발생했습니다."
+}
+```
