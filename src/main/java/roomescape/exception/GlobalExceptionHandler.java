@@ -101,14 +101,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleRuntime(RuntimeException e) {
         log.error("처리되지 않은 런타임 예외가 발생했습니다", e);
         return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), INTERNAL_ERROR_MESSAGE);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외가 발생했습니다", e);
         return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), INTERNAL_ERROR_MESSAGE);
