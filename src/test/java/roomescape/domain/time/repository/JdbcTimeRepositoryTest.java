@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -52,6 +53,17 @@ class JdbcTimeRepositoryTest {
             // then
             assertThat(actual.getId()).isEqualTo(1L);
             assertThat(actual.getStartAt()).isEqualTo(LocalTime.of(10, 30));
+        }
+
+        @Test
+        void 삭제되지_않은_같은_예약_시간은_중복_저장할_수_없다() {
+            // given
+            LocalTime startAt = LocalTime.of(10, 30);
+            timeRepository.save(Time.create(startAt));
+
+            // when & then
+            assertThatThrownBy(() -> timeRepository.save(Time.create(startAt)))
+                .isInstanceOf(DuplicateKeyException.class);
         }
     }
 

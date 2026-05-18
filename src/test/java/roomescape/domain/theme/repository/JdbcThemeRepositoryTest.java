@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -27,6 +28,7 @@ class JdbcThemeRepositoryTest {
     private JdbcThemeRepository themeRepository;
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert timeInsert;
+    private int timeSequence;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +47,7 @@ class JdbcThemeRepositoryTest {
             .withTableName("reservation_time")
             .usingColumns("start_at")
             .usingGeneratedKeyColumns("id");
+        timeSequence = 0;
     }
 
     @Nested
@@ -63,6 +66,16 @@ class JdbcThemeRepositoryTest {
             assertThat(actual.getName()).isEqualTo("테마1");
             assertThat(actual.getDescription()).isEqualTo("설명1");
             assertThat(actual.getImageUrl()).isEqualTo("image1.png");
+        }
+
+        @Test
+        void 삭제되지_않은_같은_이름의_테마는_중복_저장할_수_없다() {
+            // given
+            themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+
+            // when & then
+            assertThatThrownBy(() -> themeRepository.save(Theme.create("테마1", "설명2", "image2.png")))
+                .isInstanceOf(DuplicateKeyException.class);
         }
     }
 
@@ -350,7 +363,7 @@ class JdbcThemeRepositoryTest {
     private List<Long> saveReservations(Theme theme, LocalDate date, int count) {
         List<Long> reservationIds = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            Long timeId = saveTime(LocalTime.of(10, 0).plusMinutes(i));
+            Long timeId = saveTime(LocalTime.of(10, 0).plusMinutes(timeSequence++));
             reservationIds.add(saveReservation("예약자" + theme.getId() + "-" + i, date, timeId, theme.getId()));
         }
         return reservationIds;

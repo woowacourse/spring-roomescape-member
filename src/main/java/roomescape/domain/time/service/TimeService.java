@@ -2,7 +2,9 @@ package roomescape.domain.time.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
@@ -51,15 +53,21 @@ public class TimeService {
             .toList();
     }
 
+    @Transactional
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
         if (timeRepository.existsTimeByStartAtAndDeletedAtIsNull(requestDto.startAt())) {
             throw new GeneralException(TimeErrorType.ALREADY_EXIST_TIME);
         }
 
-        Time time = Time.create(requestDto.startAt());
-        return TimeMapper.toResponseDto(timeRepository.save(time));
+        try {
+            Time time = Time.create(requestDto.startAt());
+            return TimeMapper.toResponseDto(timeRepository.save(time));
+        } catch (DuplicateKeyException e) {
+            throw new GeneralException(TimeErrorType.ALREADY_EXIST_TIME);
+        }
     }
 
+    @Transactional
     public void deleteTimeById(Long id) {
         if (!timeRepository.existsTimeByIdAndDeletedAtIsNull(id)) {
             throw new GeneralException(TimeErrorType.TIME_NOT_FOUND);

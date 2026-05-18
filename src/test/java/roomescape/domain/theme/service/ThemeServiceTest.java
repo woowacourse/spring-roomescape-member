@@ -36,6 +36,7 @@ class ThemeServiceTest {
     private ThemeRepository themeRepository;
     private TimeRepository timeRepository;
     private ReservationRepository reservationRepository;
+    private int timeSequence;
     private final Clock fixedClock = Clock.fixed(
         Instant.parse("2026-05-08T00:00:00Z"),
         ZoneId.of("Asia/Seoul")
@@ -56,6 +57,7 @@ class ThemeServiceTest {
         timeRepository = new JdbcTimeRepository(dataSource);
         reservationRepository = new JdbcReservationRepository(dataSource);
         themeService = new ThemeService(themeRepository, fixedClock);
+        timeSequence = 0;
     }
 
     @Nested
@@ -321,7 +323,7 @@ class ThemeServiceTest {
     }
 
     private Reservation saveReservation(Theme theme, LocalDate date, int index) {
-        Time time = timeRepository.save(Time.create(LocalTime.of(10, 0).plusMinutes(index)));
+        Time time = timeRepository.save(Time.create(LocalTime.of(10, 0).plusMinutes(timeSequence++)));
         return reservationRepository.save(Reservation.create("예약자" + theme.getId() + "-" + index, date, time, theme));
     }
 }

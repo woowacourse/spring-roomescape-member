@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationByNameResponseDto;
@@ -75,6 +77,7 @@ public class ReservationService {
             .toList();
     }
 
+    @Transactional
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
 
@@ -84,9 +87,14 @@ public class ReservationService {
             throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
         }
 
-        return ReservationMapper.toCreateResponseDto(reservationRepository.save(reservation));
+        try {
+            return ReservationMapper.toCreateResponseDto(reservationRepository.save(reservation));
+        } catch (DuplicateKeyException e) {
+            throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
+        }
     }
 
+    @Transactional
     public ReservationCreateResponseDto updateReservation(Long id, ReservationUpdateRequestDto requestDto) {
         Reservation existingReservation = reservationRepository.findReservationByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND));
@@ -109,9 +117,14 @@ public class ReservationService {
             throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
         }
 
-        return ReservationMapper.toCreateResponseDto(reservationRepository.update(updateReservation));
+        try {
+            return ReservationMapper.toCreateResponseDto(reservationRepository.update(updateReservation));
+        } catch (DuplicateKeyException e) {
+            throw new GeneralException(ReservationErrorType.ALREADY_RESERVED);
+        }
     }
 
+    @Transactional
     public ReservationCancelResponseDto cancelReservation(Long id, String name) {
         Reservation reservation = reservationRepository.findReservationByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND));
@@ -206,6 +219,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void deleteReservationById(Long id) {
         if (!reservationRepository.existsReservationByIdAndDeletedAtIsNull(id)) {
             throw new GeneralException(ReservationErrorType.RESERVATION_NOT_FOUND);

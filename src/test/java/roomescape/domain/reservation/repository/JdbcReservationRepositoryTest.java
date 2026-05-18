@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -84,6 +85,19 @@ class JdbcReservationRepositoryTest {
             assertThat(reservationRepository.findReservationsByDeletedAtIsNull())
                 .extracting(Reservation::getId, Reservation::getName)
                 .containsExactly(tuple(actual.getId(), "예약자2"));
+        }
+
+        @Test
+        void 삭제되지_않고_취소되지_않은_예약은_같은_날짜_시간_테마로_중복_저장할_수_없다() {
+            // given
+            Time time = timeRepository.save(Time.create(LocalTime.of(10, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
+            LocalDate date = LocalDate.of(2026, 5, 1);
+            reservationRepository.save(Reservation.create("예약자1", date, time, theme));
+
+            // when & then
+            assertThatThrownBy(() -> reservationRepository.save(Reservation.create("예약자2", date, time, theme)))
+                .isInstanceOf(DuplicateKeyException.class);
         }
     }
 
