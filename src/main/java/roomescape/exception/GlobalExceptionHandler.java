@@ -43,55 +43,21 @@ public class GlobalExceptionHandler {
         return createResponse(errorCode, request, message);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+    @ExceptionHandler({
+            HttpMessageNotReadableException.class,
+            MissingServletRequestParameterException.class,
+            MethodArgumentTypeMismatchException.class,
+            DomainException.class,
+            IllegalArgumentException.class
+    })
+    public ResponseEntity<ErrorResponse> handleBadRequestException(
+            Exception exception,
             HttpServletRequest request
     ) {
-        ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
-
-        return createResponse(errorCode, request);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
-            MissingServletRequestParameterException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
-        String message = "필수 요청 값이 누락되었습니다: " + exception.getParameterName();
+        ErrorCode errorCode = resolveBadRequestErrorCode(exception);
+        String message = resolveBadRequestMessage(exception, errorCode);
 
         return createResponse(errorCode, request, message);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
-        String message = "요청 값의 형식이 올바르지 않습니다: " + exception.getName();
-
-        return createResponse(errorCode, request, message);
-    }
-
-    @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomainException(
-            DomainException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
-
-        return createResponse(errorCode, request, exception.getMessage());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException exception,
-            HttpServletRequest request
-    ) {
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT;
-
-        return createResponse(errorCode, request, exception.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -147,6 +113,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(toHttpStatus(errorCode))
                 .body(ErrorResponse.of(errorCode, request.getRequestURI(), message));
+    }
+
+    private ErrorCode resolveBadRequestErrorCode(Exception exception) {
+        if (exception instanceof HttpMessageNotReadableException) {
+            return ErrorCode.INVALID_REQUEST_BODY;
+        }
+
+        return ErrorCode.INVALID_INPUT;
+    }
+
+    private String resolveBadRequestMessage(Exception exception, ErrorCode errorCode) {
+        return switch (exception) {
+            case MissingServletRequestParameterException missingParameterException ->
+                    "필수 요청 값이 누락되었습니다: " + missingParameterException.getParameterName();
+            case MethodArgumentTypeMismatchException typeMismatchException ->
+                    "요청 값의 형식이 올바르지 않습니다: " + typeMismatchException.getName();
+            case DomainException domainException -> domainException.getMessage();
+            case IllegalArgumentException illegalArgumentException -> illegalArgumentException.getMessage();
+            default -> errorCode.getMessage();
+        };
     }
 
     private HttpStatus toHttpStatus(ErrorCode errorCode) {
