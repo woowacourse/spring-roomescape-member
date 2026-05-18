@@ -80,10 +80,10 @@ class ThemeServiceTest {
             .thenReturn(tenPopularThemesOrderByRank);
 
         // when
-        Map<Theme, Integer> themes = themeService.findWeekPopularThemesOrderByRank(10);
+        List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(10);
 
         // then
-        assertThat(themes.keySet()).containsExactlyElementsOf(tenPopularThemesOrderByRank);
+        assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);
     }
 
     private List<Theme> createTenThemes() {

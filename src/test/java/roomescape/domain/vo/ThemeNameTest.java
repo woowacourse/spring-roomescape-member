@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.BusinessException;
 
 class ThemeNameTest {
 
@@ -36,7 +37,7 @@ class ThemeNameTest {
     void 빈_문자열로_생성하면_예외가_발생한다(String value) {
         // when & then
         assertThatThrownBy(() -> new ThemeName(value))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining("빈 문자열은");
     }
 }
