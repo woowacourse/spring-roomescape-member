@@ -72,11 +72,11 @@ public class ReservationController {
     return ResponseEntity.noContent().build();
   }
 
-  @PatchMapping
+  @PatchMapping("/{reservationId}")
   public ResponseEntity<Void> updateMyReservation(
       @RequestBody UpdateMyReservation updateMyReservation,
       @RequestParam String name,
-      @RequestParam Long reservationId) {
+      @PathVariable Long reservationId) {
     reservationFacade.updateMyReservation(updateMyReservation, name, reservationId);
     return ResponseEntity.ok().build();
   }
