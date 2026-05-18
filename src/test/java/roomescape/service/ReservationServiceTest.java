@@ -9,15 +9,19 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.PastReservationTimeException;
 import roomescape.exception.ReservationNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ReservationServiceTest {
 
@@ -48,9 +52,11 @@ public class ReservationServiceTest {
         when(reservationDao.insertReservation(any(Reservation.class))).thenReturn(generatedId);
         when(reservationDao.findReservationById(generatedId)).thenReturn(savedReservation);
 
-        reservationService.createReservation(request);
+        ReservationResponse actual = reservationService.createReservation(request);
 
-        verify(reservationDao).insertReservation(any(Reservation.class));
+        assertThat(actual.id()).isEqualTo(generatedId);
+        assertThat(actual.name()).isEqualTo("이든");
+        assertThat(actual.theme().name()).isEqualTo("테마");
     }
 
     @Test
