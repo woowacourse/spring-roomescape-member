@@ -1,10 +1,12 @@
 package roomescape.reservation.domain;
 
+import roomescape.exception.DomainConflictException;
 import roomescape.exception.DomainRuleViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -36,6 +38,41 @@ public class Reservation {
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
+    }
+
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
+        if (time.isPast(date, now)) {
+            throw new DomainConflictException("지난 시간으로는 예약할 수 없습니다.");
+        }
+        return new Reservation(name, date, time, theme);
+    }
+
+    public Reservation changeSchedule(LocalDate newDate, ReservationTime newTime, String requester, LocalDateTime now) {
+        validateOwner(requester);
+        if (isPast(now)) {
+            throw new DomainConflictException("지난 예약은 변경할 수 없습니다.");
+        }
+        if (newTime.isPast(newDate, now)) {
+            throw new DomainConflictException("과거로는 변경할 수 없습니다.");
+        }
+        return new Reservation(id, name, newDate, newTime, theme);
+    }
+
+    public void checkCancellable(String requester, LocalDateTime now) {
+        validateOwner(requester);
+        if (isPast(now)) {
+            throw new DomainConflictException("지난 예약은 취소할 수 없습니다.");
+        }
+    }
+
+    private void validateOwner(String name) {
+        if (!this.name.equals(name)) {
+            throw new DomainConflictException("본인의 예약만 수정할 수 있습니다.");
+        }
+    }
+
+    private boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(now);
     }
 
     public Long getId() {
