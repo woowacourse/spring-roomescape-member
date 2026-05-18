@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import roomescape.common.exception.ResourceNotFoundException;
 import roomescape.entity.Reservation;
 
 public interface ReservationRepository {
@@ -25,6 +26,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     default Reservation getById(Long id) {
-        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID입니다."));
+        return findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다."));
     }
 }

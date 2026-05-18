@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,50 @@ class ReservationApiTest {
                 .body("id", notNullValue())
                 .body("name", is("민욱"))
                 .body("date", is(FUTURE_FIRST_DATE));
+    }
+
+    @Test
+    void 예약_추가할_때_지난_날짜인_경우_400() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        String pastDate = LocalDate.now().minusDays(1).toString();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", pastDate);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("지난 날짜와 시간으로는 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 예약_추가할_때_지난_시간인_경우_400() {
+        String pastTime = LocalTime.now()
+                .minusMinutes(1)
+                .format(DateTimeFormatter.ofPattern("HH:mm"));
+        Integer timeId = createTime(pastTime);
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "민욱");
+        params.put("date", LocalDate.now().toString());
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("지난 날짜와 시간으로는 예약할 수 없습니다."));
     }
 
     @Test
