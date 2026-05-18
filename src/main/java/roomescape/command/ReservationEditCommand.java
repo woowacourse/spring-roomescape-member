@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record ReservationEditCommand(LocalDate date, Long timeId) {
-    public void validateNow(ReservationTime reservationTime, LocalDateTime now){
+    public void validateNow(ReservationTime reservationTime, LocalDateTime now) {
         if (date().isBefore(now.toLocalDate())) {
             throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
         }

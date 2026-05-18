@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import roomescape.command.ReservationEditCommand;
 import roomescape.domain.Reservation;
 
 import java.time.LocalDate;

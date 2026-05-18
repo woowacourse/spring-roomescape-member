@@ -21,13 +21,6 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        return reservations.stream()
-                .filter(reservation -> id.equals(reservation.id()))
-                .findFirst();
-    }
-
-    @Override
     public List<Reservation> findAllReservations() {
         return List.copyOf(reservations);
     }
@@ -87,5 +80,12 @@ public class FakeReservationRepository implements ReservationRepository {
                 reservation.theme());
         int index = reservations.indexOf(reservation);
         reservations.set(index, updated);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return reservations.stream()
+                .filter(reservation -> id.equals(reservation.id()))
+                .findFirst();
     }
 }
