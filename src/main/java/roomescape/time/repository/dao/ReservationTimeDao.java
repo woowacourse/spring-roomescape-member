@@ -59,6 +59,10 @@ public class ReservationTimeDao {
         return namedParameterJdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
+    /**
+     * @param id ReservationTime 식별자
+     * @return 삭제된 row 개수
+     */
     public int deleteById(Long id) {
         String sql = "UPDATE reservation_time SET is_deleted = TRUE WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);

@@ -48,6 +48,10 @@ public class ThemeDao {
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
+    /**
+     * @param id Theme 식별자
+     * @return 삭제된 row 개수
+     */
     public int deleteById(Long id) {
         String sql = "UPDATE theme SET is_deleted = TRUE WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);

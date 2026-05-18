@@ -85,6 +85,10 @@ public class ReservationRepository {
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
 
+    /**
+     * @param params 업데이트할 Reservation 정보
+     * @return 업데이트된 row 개수
+     */
     @Transactional
     public int update(UpdateReservationParams params) {
         return reservationDao.update(
@@ -104,6 +108,10 @@ public class ReservationRepository {
         return reservationDao.deleteById(id);
     }
 
+    /**
+     * @param id Reservation 식별자
+     * @return 업데이트된 row 개수
+     */
     @Transactional
     public int cancelById(Long id) {
         return reservationDao.updateCancelledById(id, true);

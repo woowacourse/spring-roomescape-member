@@ -64,6 +64,14 @@ public class ReservationDao {
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
+    /**
+     * @param id Reservation 식별자
+     * @param name 예약자 이름
+     * @param date 예약 날짜
+     * @param timeId 예약 시간 식별자
+     * @param themeId 테마 식별자
+     * @return 업데이트된 row 개수
+     */
     public int update(Long id, String name, LocalDate date, Long timeId, Long themeId) {
         String sql = """
             UPDATE reservation
@@ -84,6 +92,11 @@ public class ReservationDao {
         return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
+    /**
+     * @param id Reservation 식별자
+     * @param status 취소 상태
+     * @return 업데이트된 row 개수
+     */
     public int updateCancelledById(Long id, boolean status) {
         String sql = "UPDATE reservation SET is_cancelled = :status WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource()
@@ -92,6 +105,10 @@ public class ReservationDao {
         return namedParameterJdbcTemplate.update(sql, parameters);
     }
 
+    /**
+     * @param id Reservation 식별자
+     * @return 삭제된 row 개수
+     */
     public int deleteById(Long id) {
         String sql = "UPDATE reservation SET is_deleted = TRUE WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
