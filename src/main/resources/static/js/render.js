@@ -1,6 +1,7 @@
 import {appEl, modalRootEl, toastRootEl} from "./dom.js";
 import {
   canSubmitReservation,
+  isPastReservation,
   selectedTheme,
   selectedTime,
   state,
@@ -69,6 +70,8 @@ function renderReserve() {
 
   return `
     <main class="page-shell">
+      ${renderMyReservations()}
+
       <section class="headline-row">
         <div>
           <p class="section-kicker">Now Booking</p>
@@ -285,6 +288,141 @@ function renderBookingSummary(theme) {
   `;
 }
 
+function renderMyReservations() {
+  const canSearch = Boolean(state.reservationSearchName.trim()) && !state.loading.searchedReservations;
+  const showReset = state.reservationSearchSubmitted || state.reservationSearchName;
+
+  return `
+    <section class="my-reservation-panel" aria-labelledby="my-reservation-title">
+      <div class="section-toolbar">
+        <div>
+          <p class="section-kicker">My Reservation</p>
+          <h2 id="my-reservation-title">내 예약 조회</h2>
+        </div>
+        <form id="reservation-search-form" class="reservation-search-form ${showReset ? "has-reset" : ""}">
+          <label class="search-field" for="reservation-search-name">
+            <span>예약자</span>
+            <input id="reservation-search-name" name="username" type="search" value="${escapeAttr(state.reservationSearchName)}" placeholder="이름">
+          </label>
+          <button class="primary-button submit-button" type="submit" ${canSearch ? "" : "disabled"}>
+            ${state.loading.searchedReservations ? "조회 중" : "조회"}
+          </button>
+          ${showReset ? `
+            <button class="secondary-button" type="button" data-action="clear-reservation-search">초기화</button>
+          ` : ""}
+        </form>
+      </div>
+
+      ${renderMyReservationResults()}
+    </section>
+  `;
+}
+
+function renderMyReservationResults() {
+  if (state.loading.searchedReservations) {
+    return `<div class="my-reservation-list">${Array.from({length: 2}, () => `<span class="my-reservation-skeleton"></span>`).join("")}</div>`;
+  }
+
+  if (!state.reservationSearchSubmitted) {
+    return renderEmpty("조회한 예약이 여기에 표시됩니다.");
+  }
+
+  if (state.searchedReservations.length === 0) {
+    return renderEmpty("예약 내역이 없습니다.");
+  }
+
+  return `
+    <div class="my-reservation-list">
+      ${state.searchedReservations.map(renderMyReservationItem).join("")}
+    </div>
+  `;
+}
+
+function renderMyReservationItem(reservation) {
+  const editing = Number(state.reservationEdit.id) === Number(reservation.id);
+  const past = isPastReservation(reservation);
+
+  return `
+    <article class="my-reservation-item ${editing ? "is-editing" : ""}">
+      <span class="row-thumb"><img src="${escapeAttr(reservation.theme.thumbnailImgUrl)}" alt="" loading="lazy" data-cover></span>
+      <span class="row-main">
+        <span class="reservation-card-heading">
+          <strong>${escapeHtml(reservation.theme.name)}</strong>
+          ${past ? `<em class="lock-badge">지난 예약</em>` : `<em class="open-badge">변경 가능</em>`}
+        </span>
+        <small>${escapeHtml(reservation.date)} ${escapeHtml(reservation.time.startAt)} · ${escapeHtml(reservation.name)}</small>
+      </span>
+      <span class="reservation-card-actions">
+        <button class="secondary-button" type="button" data-action="edit-reservation" data-reservation-id="${reservation.id}" ${past || editing ? "disabled" : ""}>
+          ${past ? "변경 불가" : "변경"}
+        </button>
+        <button class="danger-button" type="button" data-action="delete-reservation" data-delete-mode="cancel" data-reservation-id="${reservation.id}" ${past ? "disabled" : ""}>
+          ${past ? "취소 불가" : "예약 취소"}
+        </button>
+      </span>
+      ${editing ? renderReservationEditForm(reservation) : ""}
+    </article>
+  `;
+}
+
+function renderReservationEditForm(reservation) {
+  const selectedTimeId = Number(state.reservationEdit.timeId);
+  const canSubmit = Boolean(state.reservationEdit.date && selectedTimeId && !state.submitting && !state.reservationEdit.loading);
+
+  return `
+    <form id="reservation-edit-form" class="reservation-edit-form" data-reservation-id="${reservation.id}">
+      <div class="form-row">
+        <label for="reservation-edit-date">변경 날짜</label>
+        <input id="reservation-edit-date" name="date" type="date" min="${todayString()}" value="${escapeAttr(state.reservationEdit.date)}">
+      </div>
+      ${renderReservationEditTimes(reservation)}
+      <div class="reservation-edit-actions">
+        <button class="secondary-button" type="button" data-action="cancel-reservation-edit">취소</button>
+        <button class="primary-button" type="submit" ${canSubmit ? "" : "disabled"}>
+          ${state.submitting ? "저장 중" : "변경 저장"}
+        </button>
+      </div>
+    </form>
+  `;
+}
+
+function renderReservationEditTimes(reservation) {
+  if (state.reservationEdit.loading) {
+    return `
+      <div class="time-section">
+        <div class="subsection-heading"><h3>변경 시간</h3></div>
+        <div class="time-grid compact">${Array.from({length: 6}, () => `<span class="time-skeleton"></span>`).join("")}</div>
+      </div>
+    `;
+  }
+
+  if (state.reservationEdit.times.length === 0) {
+    return renderPanelNotice("선택한 날짜에 등록된 시간이 없습니다.");
+  }
+
+  return `
+    <div class="time-section">
+      <div class="subsection-heading">
+        <h3>변경 시간</h3>
+        <span>회색은 마감</span>
+      </div>
+      <div class="time-grid compact">
+        ${state.reservationEdit.times.map((time) => {
+          const current = isCurrentReservationTime(reservation, time);
+          const disabled = !time.available && !current;
+          const selected = Number(state.reservationEdit.timeId) === Number(time.id);
+
+          return `
+            <button class="time-slot ${selected ? "is-active" : ""} ${current ? "is-current" : ""}" type="button" data-action="select-edit-time" data-time-id="${time.id}" ${disabled ? "disabled" : ""}>
+              ${escapeHtml(time.startAt)}
+            </button>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderAdmin() {
   return `
     <main class="page-shell">
@@ -362,17 +500,27 @@ function renderThemesAdmin() {
     </form>
 
     <div class="data-list">
-      ${state.themes.map((theme) => `
-        <article class="data-row">
-          <span class="row-thumb"><img src="${escapeAttr(theme.thumbnailImgUrl)}" alt="" loading="lazy" data-cover></span>
-          <span class="row-main">
-            <strong>${escapeHtml(theme.name)}</strong>
-            <small>${escapeHtml(theme.description)}</small>
-          </span>
-          <button class="danger-button" type="button" data-action="delete-theme" data-theme-id="${theme.id}">삭제</button>
-        </article>
-      `).join("") || renderEmpty("등록된 테마가 없습니다.")}
+      ${state.themes.map(renderThemeAdminRow).join("") || renderEmpty("등록된 테마가 없습니다.")}
     </div>
+  `;
+}
+
+function renderThemeAdminRow(theme) {
+  const reservationCount = countReservationsByTheme(theme.id);
+  const locked = reservationCount > 0;
+
+  return `
+    <article class="data-row">
+      <span class="row-thumb"><img src="${escapeAttr(theme.thumbnailImgUrl)}" alt="" loading="lazy" data-cover></span>
+      <span class="row-main">
+        <strong>${escapeHtml(theme.name)}</strong>
+        <small>${escapeHtml(theme.description)}</small>
+        ${locked ? `<em class="lock-badge">${reservationCount}건 예약</em>` : `<em class="open-badge">삭제 가능</em>`}
+      </span>
+      <button class="danger-button" type="button" data-action="delete-theme" data-theme-id="${theme.id}" ${locked ? `disabled title="예약이 연결된 테마는 삭제할 수 없습니다."` : ""}>
+        ${locked ? "삭제 불가" : "삭제"}
+      </button>
+    </article>
   `;
 }
 
@@ -395,12 +543,24 @@ function renderTimesAdmin() {
     </form>
 
     <div class="time-admin-grid">
-      ${state.adminTimes.map((time) => `
-        <div class="time-admin-item">
-          <strong>${escapeHtml(time.startAt)}</strong>
-          <button class="danger-button" type="button" data-action="delete-time" data-time-id="${time.id}">삭제</button>
-        </div>
-      `).join("") || renderEmpty("등록된 시간이 없습니다.")}
+      ${state.adminTimes.map(renderTimeAdminItem).join("") || renderEmpty("등록된 시간이 없습니다.")}
+    </div>
+  `;
+}
+
+function renderTimeAdminItem(time) {
+  const reservationCount = countReservationsByTime(time.id);
+  const locked = reservationCount > 0;
+
+  return `
+    <div class="time-admin-item">
+      <span class="time-admin-copy">
+        <strong>${escapeHtml(time.startAt)}</strong>
+        ${locked ? `<em class="lock-badge">${reservationCount}건 예약</em>` : `<em class="open-badge">삭제 가능</em>`}
+      </span>
+      <button class="danger-button" type="button" data-action="delete-time" data-time-id="${time.id}" ${locked ? `disabled title="예약이 연결된 시간은 삭제할 수 없습니다."` : ""}>
+        ${locked ? "삭제 불가" : "삭제"}
+      </button>
     </div>
   `;
 }
@@ -422,14 +582,24 @@ function renderReservationsAdmin() {
         <span>일정</span>
         <span></span>
       </div>
-      ${state.reservations.map((reservation) => `
-        <div class="table-row" role="row">
-          <span>${escapeHtml(reservation.name)}</span>
-          <span>${escapeHtml(reservation.theme.name)}</span>
-          <span>${escapeHtml(reservation.date)} ${escapeHtml(reservation.time.startAt)}</span>
-          <span><button class="danger-button" type="button" data-action="delete-reservation" data-reservation-id="${reservation.id}">삭제</button></span>
-        </div>
-      `).join("") || renderEmpty("예약이 없습니다.")}
+      ${state.reservations.map(renderReservationAdminRow).join("") || renderEmpty("예약이 없습니다.")}
+    </div>
+  `;
+}
+
+function renderReservationAdminRow(reservation) {
+  const past = isPastReservation(reservation);
+
+  return `
+    <div class="table-row" role="row">
+      <span>${escapeHtml(reservation.name)}</span>
+      <span>${escapeHtml(reservation.theme.name)}</span>
+      <span>${escapeHtml(reservation.date)} ${escapeHtml(reservation.time.startAt)}</span>
+      <span>
+        <button class="danger-button" type="button" data-action="delete-reservation" data-reservation-id="${reservation.id}" ${past ? "disabled" : ""}>
+          ${past ? "삭제 불가" : "삭제"}
+        </button>
+      </span>
     </div>
   `;
 }
@@ -496,6 +666,19 @@ function isSelected(theme) {
 
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
+}
+
+function countReservationsByTheme(themeId) {
+  return state.reservations.filter((reservation) => Number(reservation.theme?.id) === Number(themeId)).length;
+}
+
+function countReservationsByTime(timeId) {
+  return state.reservations.filter((reservation) => Number(reservation.time?.id) === Number(timeId)).length;
+}
+
+function isCurrentReservationTime(reservation, time) {
+  return reservation.date === state.reservationEdit.date &&
+    Number(reservation.time.id) === Number(time.id);
 }
 
 function escapeHtml(value) {

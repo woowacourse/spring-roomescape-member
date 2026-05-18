@@ -8,27 +8,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.ThemeRepository;
 
 @JdbcTest
+@Import(JdbcThemeRepository.class)
 public class JdbcThemeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    ThemeRepository themeRepository;
-    ReservationTimeRepository timeRepository;
-    TestDataHelper testHelper;
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    private TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         testHelper = new TestDataHelper(jdbcTemplate);
     }
 
@@ -36,9 +35,9 @@ public class JdbcThemeRepositoryTest {
     @Test
     void save_successfully() {
         Theme theme = Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
+                .name("테마1")
+                .description("설명1")
+                .thumbnailImgUrl("img1.jpg")
                 .build();
 
         Theme savedTheme = themeRepository.save(theme);
@@ -46,9 +45,9 @@ public class JdbcThemeRepositoryTest {
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(savedTheme).isNotNull();
             assertSoftly.assertThat(savedTheme.getId()).isPositive();
-            assertSoftly.assertThat(savedTheme.getName()).isEqualTo("theme name");
-            assertSoftly.assertThat(savedTheme.getDescription()).isEqualTo("theme description");
-            assertSoftly.assertThat(savedTheme.getThumbnailImgUrl()).isEqualTo("theme img url");
+            assertSoftly.assertThat(savedTheme.getName()).isEqualTo("테마1");
+            assertSoftly.assertThat(savedTheme.getDescription()).isEqualTo("설명1");
+            assertSoftly.assertThat(savedTheme.getThumbnailImgUrl()).isEqualTo("img1.jpg");
         });
     }
 
@@ -56,9 +55,9 @@ public class JdbcThemeRepositoryTest {
     @Test
     void check_none_exists_successfully() {
         Theme theme = Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
+                .name("테마1")
+                .description("설명1")
+                .thumbnailImgUrl("img1.jpg")
                 .build();
 
         Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme);
@@ -69,55 +68,31 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에 특정 테마가 존재하는 것을 테스트 합니다.")
     @Test
     void check_exists_successfully() {
-        Theme theme1 = Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
-                .build();
-        themeRepository.save(theme1);
+        testHelper.insertTheme("테마1", "설명1", "img1.jpg");
 
-        Theme theme2 = Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
+        Theme theme = Theme.builder()
+                .name("테마1")
+                .description("설명1")
+                .thumbnailImgUrl("img1.jpg")
                 .build();
-        Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme2);
+        Boolean alreadyExists = themeRepository.existsByNameAndDescription(theme);
         assertThat(alreadyExists).isTrue();
     }
 
     @DisplayName("db에서 테마 삭제를 테스트 합니다.")
     @Test
     void delete_theme_successfully() {
-        Theme savedTheme = themeRepository.save(Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
-                .build());
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
 
-        assertThat(themeRepository.delete(savedTheme.getId())).isEqualTo(1);
+        assertThat(themeRepository.delete(themeId)).isEqualTo(1);
     }
 
     @DisplayName("db에서 테마를 전체 조회합니다.")
     @Test
     void find_all_themes() {
-        themeRepository.save(Theme.builder()
-                .name("theme name 1")
-                .description("theme description 1")
-                .thumbnailImgUrl("theme img url 1")
-                .build()
-        );
-        themeRepository.save(Theme.builder()
-                .name("theme name 2")
-                .description("theme description 2")
-                .thumbnailImgUrl("theme img url 2")
-                .build()
-        );
-        themeRepository.save(Theme.builder()
-                .name("theme name 3")
-                .description("theme description 3")
-                .thumbnailImgUrl("theme img url 3")
-                .build()
-        );
+        testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        testHelper.insertTheme("테마2", "설명2", "img2.jpg");
+        testHelper.insertTheme("테마3", "설명3", "img3.jpg");
 
         assertThat(themeRepository.findAll().size()).isEqualTo(3);
     }

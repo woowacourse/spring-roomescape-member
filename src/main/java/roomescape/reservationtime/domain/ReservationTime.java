@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.reservationtime.domain.exception.InvalidReservationTimeException;
+import roomescape.global.exception.RoomEscapeException;
 
 @Getter
 @EqualsAndHashCode(of = "startAt")
@@ -28,7 +28,7 @@ public class ReservationTime {
 
     private static LocalTime requireStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidReservationTimeException("시간은 비어있을 수 없습니다.");
+            throw new RoomEscapeException("시간은 비어있을 수 없습니다.");
         }
         return startAt;
     }

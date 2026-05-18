@@ -1,6 +1,5 @@
 package roomescape.theme.presentation.controller;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @RestController
 public class ThemeController {
 
-    private final Clock clock;
     private final ThemeQueryService themeQueryService;
 
     @GetMapping
@@ -32,7 +30,7 @@ public class ThemeController {
     @GetMapping("/popular-top-10")
     public ResponseEntity<List<PopularThemeResponse>> findPopularThemes() {
         return ResponseEntity.ok(
-                themeQueryService.findPopularThemes(LocalDate.now(clock)).stream()
+                themeQueryService.findPopularThemes(LocalDate.now()).stream()
                         .map(PopularThemeResponse::from)
                         .toList()
         );

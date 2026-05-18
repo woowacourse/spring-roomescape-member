@@ -1,25 +1,41 @@
 package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.fixture.ThemeFixture;
+import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.NotFoundException;
+import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.service.ThemeCommandService;
-import roomescape.theme.infra.JdbcThemeRepository;
 
-@JdbcTest
-@Import({ThemeCommandService.class, JdbcThemeRepository.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class ThemeCommandServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private ThemeCommandService themeCommandService;
+
+    private TestDataHelper testHelper;
+
+    @BeforeEach
+    void setUp() {
+        testHelper = new TestDataHelper(jdbcTemplate);
+    }
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test
@@ -33,18 +49,39 @@ public class ThemeCommandServiceTest {
     @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_theme_exception() {
-        themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
+        testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
 
         assertThatThrownBy(() -> themeCommandService.save(ThemeFixture.horrorThemeCreateCommand()))
-                .isInstanceOf(ThemeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("이름과 설명이 같은 테마가 이미 존재합니다.");
     }
 
     @DisplayName("테마의 삭제를 테스트합니다.")
     @Test
     void delete_theme() {
-        ThemeResult result = themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
 
-        assertThat(themeCommandService.delete(result.id())).isEqualTo(1);
+        assertThatNoException().isThrownBy(() -> themeCommandService.delete(themeId));
+    }
+
+    @DisplayName("삭제할 테마가 없을 시 예외 발생을 테스트합니다.")
+    @Test
+    void delete_not_found_theme_exception() {
+        assertThatThrownBy(() -> themeCommandService.delete(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @DisplayName("테마 삭제 시 해당 테마를 사용한 예약이 존재하면 예외 발생을 테스트합니다.")
+    @Test
+    void delete_theme_with_existing_reservation_exception() {
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        testHelper.insertReservation("스타크", date, themeId, timeId);
+
+        assertThatThrownBy(() -> themeCommandService.delete(themeId))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }
