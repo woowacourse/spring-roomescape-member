@@ -1,6 +1,5 @@
-package roomescape.dto.theme;
+package roomescape.controller.dto.theme;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

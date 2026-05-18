@@ -2,21 +2,25 @@ package roomescape.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record ThemeImageUrl(
-    @JsonValue String value
+        String value
 ) {
 
     private static final Pattern PATTERN = Pattern.compile(
         "^https?://[^\\s/$.?#][^\\s]*[^\\s/.]\\.(jpg|jpeg|png|gif|webp|bmp|svg)(\\?[^\\s]*)?$");
 
-    @JsonCreator
     public ThemeImageUrl {
         validateNotBlank(value);
         validatePattern(value);
+    }
+
+    public static ThemeImageUrl from(String imageUrl) {
+        return new ThemeImageUrl(imageUrl);
     }
 
     private void validateNotBlank(String value) {

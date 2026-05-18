@@ -1,4 +1,4 @@
-package roomescape.dto.reservation;
+package roomescape.controller.dto.reservation;
 
 import java.util.List;
 

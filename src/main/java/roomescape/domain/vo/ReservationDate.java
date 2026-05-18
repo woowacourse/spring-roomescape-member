@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.LocalDate;
 
 public record ReservationDate(
-        @JsonValue LocalDate value
+        LocalDate value
 ) {
-    @JsonCreator
-    public ReservationDate {
+    public static ReservationDate from(LocalDate date) {
+        return new ReservationDate(date);
     }
 }

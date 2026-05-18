@@ -1,15 +1,17 @@
 package roomescape.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeName(
-        @JsonValue String value
+        String value
 ) {
 
-    @JsonCreator
     public ThemeName {
         validateNotBlank(value);
+    }
+
+    public static ThemeName from(String name) {
+        return new ThemeName(name);
     }
 
     private void validateNotBlank(String value) {
