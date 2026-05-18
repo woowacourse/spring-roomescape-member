@@ -1,6 +1,7 @@
 package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
@@ -94,10 +94,9 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간 삭제 시 예외가 발생한다.")
+    @DisplayName("존재하지 않는 예약 시간 삭제 시 정상 처리된다.")
     void deleteNotExist() {
-        assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+        assertThatCode(() -> reservationTimeService.delete(999L))
+                .doesNotThrowAnyException();
     }
 }
