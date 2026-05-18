@@ -55,8 +55,8 @@ public class FakeReservationRepository implements ReservationRepository  {
     }
 
     @Override
-    public void deleteById(final Long reservationId) {
-        reservations.removeIf(reservation -> reservation.getId().equals(reservationId));
+    public boolean deleteById(final Long reservationId) {
+        return reservations.removeIf(reservation -> reservation.getId().equals(reservationId));
     }
 
     @Override

@@ -310,4 +310,11 @@ class ReservationServiceTest {
         assertThat(reservationRepository.findById(1L)).isEmpty();
     }
 
+    @Test
+    void 존재하지_않는_예약을_관리자가_삭제하면_예외가_발생한다() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(1L))
+                .isInstanceOf(NotFoundException.class);
+    }
+
 }

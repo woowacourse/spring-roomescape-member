@@ -150,4 +150,14 @@ class AdminReservationControllerTest {
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isZero();
     }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_예약을_관리자가_삭제하면_404를_응답한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/reservations/999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약입니다."));
+    }
 }

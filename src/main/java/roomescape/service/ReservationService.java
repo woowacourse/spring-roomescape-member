@@ -88,13 +88,11 @@ public class ReservationService {
 
         reservation.validateCancelableByCustomer(LocalDate.now(clock));
 
-        reservationRepository.deleteById(reservationId);
+        deleteReservation(reservationId);
     }
 
     public void delete(final Long reservationId) {
-        final Reservation reservation = getReservation(reservationId);
-
-        reservationRepository.deleteById(reservation.getId());
+        deleteReservation(reservationId);
     }
 
     public ReservationOptionResponse getReservationOptions() {
@@ -120,6 +118,14 @@ public class ReservationService {
         final Reservation reservation = reservationRepository.update(updatedReservation);
 
         return ReservationResponse.from(reservation);
+    }
+
+    private void deleteReservation(final Long reservationId) {
+        final boolean deleted = reservationRepository.deleteById(reservationId);
+
+        if (!deleted) {
+            throw new ReservationNotFoundException();
+        }
     }
 
     private Reservation getReservation(final Long reservationId) {

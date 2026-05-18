@@ -18,7 +18,7 @@ public interface ReservationRepository {
 
     Reservation update(Reservation updatedReservation);
 
-    void deleteById(Long reservationId);
+    boolean deleteById(Long reservationId);
 
     List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(LocalDate date, Long themeId);
 

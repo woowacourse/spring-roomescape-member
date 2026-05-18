@@ -175,15 +175,17 @@ class JdbcReservationRepositoryTest {
         insertTheme("링", "공포 테마", "http:~");
         insertReservation("브라운", "2026-08-05", 1L, 1L);
 
-        reservationRepository.deleteById(1L);
+        boolean deleted = reservationRepository.deleteById(1L);
 
+        assertThat(deleted).isTrue();
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
-        reservationRepository.deleteById(1L);
+    void 존재하지_않는_예약을_삭제하면_false를_반환한다() {
+        boolean deleted = reservationRepository.deleteById(1L);
 
+        assertThat(deleted).isFalse();
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
