@@ -3,13 +3,16 @@ package roomescape.domain.theme.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
-import roomescape.domain.theme.dto.response.ThemeResponseDTO;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
+import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.error.type.ThemeErrorType;
 import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.global.error.exception.GeneralException;
 
 @Service
 public class ThemeService {
@@ -17,41 +20,50 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    @Autowired
-    public ThemeService(ThemeRepository themeRepository) {
-        this(themeRepository, Clock.systemDefaultZone());
-    }
-
     public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
         this.clock = clock;
     }
 
-    public List<ThemeResponseDTO> getThemes() {
-        return convertThemesToDTO(themeRepository.findAllThemes());
+    public List<ThemeResponseDto> getThemes() {
+        return convertThemesToDto(themeRepository.findAllByDeletedAtIsNull());
     }
 
-    public List<ThemeResponseDTO> getPopularThemes() {
+    public List<ThemeResponseDto> getPopularThemes() {
         LocalDate today = LocalDate.now(clock);
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today.minusDays(1);
 
-        return convertThemesToDTO(
+        return convertThemesToDto(
             themeRepository.findPopularThemesDateBetween(startDate, endDate, 10));
     }
 
-    private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {
+    private List<ThemeResponseDto> convertThemesToDto(List<Theme> themes) {
         return themes.stream()
-            .map(ThemeMapper::toResponseDTO)
+            .map(ThemeMapper::toResponseDto)
             .toList();
     }
 
-    public ThemeResponseDTO saveTheme(ThemeCreateRequestDTO requestDTO) {
-        Theme theme = Theme.create(requestDTO.name(), requestDTO.description(), requestDTO.imageUrl());
-        return ThemeMapper.toResponseDTO(themeRepository.save(theme));
+    @Transactional
+    public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
+        if (themeRepository.existsThemeByNameAndDeletedAtIsNull(requestDto.name())) {
+            throw new GeneralException(ThemeErrorType.ALREADY_EXIST_THEME);
+        }
+
+        try {
+            Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
+            return ThemeMapper.toResponseDto(themeRepository.save(theme));
+        } catch (DuplicateKeyException e) {
+            throw new GeneralException(ThemeErrorType.ALREADY_EXIST_THEME);
+        }
     }
 
+    @Transactional
     public void deleteThemeById(Long id) {
+        if (!themeRepository.existsThemeByIdAndDeletedAtIsNull(id)) {
+            throw new GeneralException(ThemeErrorType.THEME_NOT_FOUND);
+        }
+
         themeRepository.deleteThemeById(id);
     }
 }

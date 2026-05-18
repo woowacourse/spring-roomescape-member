@@ -7,13 +7,17 @@ import roomescape.domain.theme.entity.Theme;
 
 public interface ThemeRepository {
 
-    List<Theme> findAllThemes();
+    List<Theme> findAllByDeletedAtIsNull();
 
     Theme save(Theme theme);
 
     void deleteThemeById(Long id);
 
-    Optional<Theme> findThemeById(Long id);
+    Optional<Theme> findThemeByIdAndDeletedAtIsNull(Long id);
+
+    boolean existsThemeByIdAndDeletedAtIsNull(Long id);
+
+    boolean existsThemeByNameAndDeletedAtIsNull(String name);
 
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit);
 }

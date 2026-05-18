@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.error.type.ThemeErrorType;
+import roomescape.global.error.exception.GeneralException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -28,15 +30,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllThemes() {
-        String sql = "SELECT id, name, description, image_url FROM theme";
+    public List<Theme> findAllByDeletedAtIsNull() {
+        String sql = "SELECT id, name, description, image_url FROM theme WHERE deleted_at IS NULL";
         return jdbcTemplate.query(
             sql,
             (resultSet, rowNum) -> Theme.reconstruct(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("image_url")
+                resultSet.getString("image_url"),
+                null
             ));
     }
 
@@ -48,20 +51,23 @@ public class JdbcThemeRepository implements ThemeRepository {
             "image_url", theme.getImageUrl()
         );
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(args).longValue();
-        return Theme.reconstruct(generatedKey, theme.getName(), theme.getDescription(), theme.getImageUrl());
+        return Theme.reconstruct(generatedKey, theme.getName(), theme.getDescription(), theme.getImageUrl(), null);
     }
 
     @Override
     public void deleteThemeById(Long id) {
-        final String sql = "DELETE FROM theme WHERE id = :id";
+        final String sql = "UPDATE theme SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
-        jdbcTemplate.update(sql, parameters);
+        int updatedRowCount = jdbcTemplate.update(sql, parameters);
+        if (updatedRowCount == 0) {
+            throw new GeneralException(ThemeErrorType.THEME_NOT_FOUND);
+        }
     }
 
     @Override
-    public Optional<Theme> findThemeById(Long id) {
-        final String sql = "SELECT id, name, description, image_url FROM theme WHERE id = :id";
+    public Optional<Theme> findThemeByIdAndDeletedAtIsNull(Long id) {
+        final String sql = "SELECT id, name, description, image_url FROM theme WHERE id = :id AND deleted_at IS NULL";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             Theme theme = jdbcTemplate.queryForObject(
@@ -71,7 +77,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
-                    resultSet.getString("image_url")
+                    resultSet.getString("image_url"),
+                    null
                 )
             );
             return Optional.ofNullable(theme);
@@ -81,12 +88,49 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existsThemeByIdAndDeletedAtIsNull(Long id) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE id = :id
+                  AND deleted_at IS NULL
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
+    public boolean existsThemeByNameAndDeletedAtIsNull(String name) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+                  AND deleted_at IS NULL
+            )
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+        Boolean exists = jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
     public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit) {
         String sql = """
             SELECT t.id, t.name, t.description, t.image_url
             FROM theme t
             JOIN reservation r ON t.id = r.theme_id
+            JOIN reservation_time rt ON r.time_id = rt.id
             WHERE r.date BETWEEN :startDate AND :endDate
+              AND t.deleted_at IS NULL
+              AND r.deleted_at IS NULL
+              AND r.canceled_at IS NULL
+              AND rt.deleted_at IS NULL
             GROUP BY t.id, t.name, t.description, t.image_url
             ORDER BY COUNT(r.id) DESC, t.id ASC
             LIMIT :limit
@@ -104,7 +148,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("image_url")
+                resultSet.getString("image_url"),
+                null
             ));
     }
 }

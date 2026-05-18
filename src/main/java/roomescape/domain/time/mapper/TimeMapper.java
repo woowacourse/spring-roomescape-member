@@ -1,6 +1,7 @@
 package roomescape.domain.time.mapper;
 
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.response.ReservationTimeResponseDto;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 
 public final class TimeMapper {
@@ -9,7 +10,11 @@ public final class TimeMapper {
 
     }
 
-    public static TimeResponseDTO toResponseDTO(Time time) {
-        return new TimeResponseDTO(time.getId(), time.getStartAt());
+    public static TimeResponseDto toResponseDto(Time time) {
+        return new TimeResponseDto(time.getId(), time.getStartAt());
+    }
+
+    public static ReservationTimeResponseDto toReservationResponseDto(Time time) {
+        return new ReservationTimeResponseDto(time.getId(), time.getStartAt(), time.getDeletedAt() != null);
     }
 }
