@@ -11,13 +11,12 @@ public record PopularThemeResponseDto(
     String description,
     String imageUrl
 ) {
-
-    public static PopularThemeResponseDto from(Theme theme, final int rank) {
+    public static PopularThemeResponseDto of(int rank, Theme theme) {
         return new PopularThemeResponseDto(
-            theme.getId(),
-            rank,
-            theme.getName().value(),
-            theme.getDescription(),
-            theme.getImageUrl().value());
+                theme.getId(),
+                rank,
+                theme.getName().value(),
+                theme.getDescription(),
+                theme.getImageUrl().value());
     }
 }

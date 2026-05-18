@@ -19,7 +19,6 @@ import roomescape.controller.dto.theme.ThemeResponseDto;
 import roomescape.controller.dto.theme.ThemesResponseDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
-import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -46,7 +45,7 @@ public class ThemeController {
         return new ResourceIdResponseDto(saved.getId());
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(
         @PathVariable Long id,

@@ -1,18 +1,17 @@
 package roomescape.controller.dto.theme;
 
-import java.util.List;
-import java.util.Map;
-
 import roomescape.domain.Theme;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 public record PopularThemesResponseDto(
-    List<PopularThemeResponseDto> themes
+        List<PopularThemeResponseDto> themes
 ) {
 
-    public static PopularThemesResponseDto from(Map<Theme, Integer> themesWithRank) {
-        return new PopularThemesResponseDto(themesWithRank.keySet()
-                .stream()
-                .map(theme -> PopularThemeResponseDto.from(theme, themesWithRank.get(theme)))
+    public static PopularThemesResponseDto from(List<Theme> themesOrderedByRank) {
+        return new PopularThemesResponseDto(IntStream.range(0, themesOrderedByRank.size())
+                .mapToObj(i -> PopularThemeResponseDto.of(i + 1, themesOrderedByRank.get(i)))
                 .toList());
     }
 }

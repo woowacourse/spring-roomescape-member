@@ -12,7 +12,7 @@ import roomescape.domain.vo.MemberName;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("reservations")
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -46,7 +46,7 @@ public class ReservationController {
         return new ResourceIdResponseDto(reservation.getId());
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(
             @RequestParam(value = "role", required = false) String role,
@@ -61,7 +61,7 @@ public class ReservationController {
         reservationService.deleteReservation(id, MemberName.from(name));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateReservation(
             @RequestParam(value = "name") String name,

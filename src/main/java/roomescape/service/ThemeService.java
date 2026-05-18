@@ -35,14 +35,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Map<Theme, Integer> findWeekPopularThemesOrderByRank(final int limit) {
-        List<Theme> themes = themeRepository.findWeekPopularThemesOrderByRank(limit);
-        Map<Theme, Integer> themesWithRank = new HashMap<>();
-
-        for (int i = 0; i < themes.size(); i++) {
-            themesWithRank.put(themes.get(i), i + 1);
-        }
-
-        return themesWithRank;
+    public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
+        return themeRepository.findWeekPopularThemesOrderByRank(limit);
     }
 }
