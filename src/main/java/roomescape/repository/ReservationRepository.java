@@ -16,7 +16,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation newReservation);
 
-    Reservation update(Reservation updatedReservation);
+    boolean update(Reservation updatedReservation);
 
     boolean deleteById(Long reservationId);
 

@@ -6,8 +6,10 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ReservationAlreadyExistsException;
 import roomescape.domain.exception.ReservationCancellationException;
 import roomescape.domain.exception.ReservationModificationException;
+import roomescape.domain.exception.ReservationOptionChangedException;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.request.ReservationUpdateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
@@ -131,6 +133,34 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 이미_예약된_시간으로_예약하면_예외가_발생한다() {
+        // given
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0)));
+        themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
+        reservationRepository.failToSaveByDuplicatedReservation();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(
+                new ReservationCreateRequest("브라운", LocalDate.of(2026, 5, 8), 1L, 1L)
+        ))
+                .isInstanceOf(ReservationAlreadyExistsException.class);
+    }
+
+    @Test
+    void 예약_옵션이_변경된_상태로_예약하면_예외가_발생한다() {
+        // given
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0)));
+        themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
+        reservationRepository.failToSaveByChangedOption();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(
+                new ReservationCreateRequest("브라운", LocalDate.of(2026, 5, 8), 1L, 1L)
+        ))
+                .isInstanceOf(ReservationOptionChangedException.class);
+    }
+
+    @Test
     void 예약_일정을_수정한다() {
         // given
         reservationRepository.add(Reservation.of(
@@ -250,6 +280,48 @@ class ReservationServiceTest {
         // then
         assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 9));
         assertThat(response.time().id()).isEqualTo(2L);
+    }
+
+    @Test
+    void 이미_예약된_시간으로_예약_일정을_수정하면_예외가_발생한다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(11, 0)));
+        reservationRepository.failToUpdateByDuplicatedReservation();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
+                1L,
+                new ReservationUpdateRequest(LocalDate.of(2026, 8, 6), 2L)
+        ))
+                .isInstanceOf(ReservationAlreadyExistsException.class);
+    }
+
+    @Test
+    void 예약_옵션이_변경된_상태로_예약_일정을_수정하면_예외가_발생한다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 8, 5),
+                ReservationTime.of(1L, LocalTime.of(10, 0)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+        reservationTimeRepository.add(ReservationTime.of(2L, LocalTime.of(11, 0)));
+        reservationRepository.failToUpdateByChangedOption();
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateByCustomer(
+                1L,
+                new ReservationUpdateRequest(LocalDate.of(2026, 8, 6), 2L)
+        ))
+                .isInstanceOf(ReservationOptionChangedException.class);
     }
 
     @Test

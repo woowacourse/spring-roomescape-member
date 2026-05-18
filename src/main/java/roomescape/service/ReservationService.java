@@ -1,12 +1,16 @@
 package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ReservationAlreadyExistsException;
 import roomescape.domain.exception.ReservationNotFoundException;
+import roomescape.domain.exception.ReservationOptionChangedException;
 import roomescape.domain.exception.ReservationTimeNotFoundException;
 import roomescape.domain.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -65,7 +69,7 @@ public class ReservationService {
                 LocalDateTime.now(clock)
         );
 
-        final Reservation savedReservation = reservationRepository.save(reservation);
+        final Reservation savedReservation = saveReservation(reservation);
 
         return ReservationResponse.from(savedReservation);
     }
@@ -115,9 +119,35 @@ public class ReservationService {
                 newReservationTime,
                 LocalDateTime.now(clock)
         );
-        final Reservation reservation = reservationRepository.update(updatedReservation);
+        final Reservation reservation = updateReservation(updatedReservation);
 
         return ReservationResponse.from(reservation);
+    }
+
+    private Reservation saveReservation(final Reservation reservation) {
+        try {
+            return reservationRepository.save(reservation);
+        } catch (DuplicateKeyException exception) {
+            throw new ReservationAlreadyExistsException(exception);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ReservationOptionChangedException(exception);
+        }
+    }
+
+    private Reservation updateReservation(final Reservation reservation) {
+        try {
+            final boolean updated = reservationRepository.update(reservation);
+
+            if (!updated) {
+                throw new ReservationNotFoundException();
+            }
+
+            return reservation;
+        } catch (DuplicateKeyException exception) {
+            throw new ReservationAlreadyExistsException(exception);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ReservationOptionChangedException(exception);
+        }
     }
 
     private void deleteReservation(final Long reservationId) {

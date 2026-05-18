@@ -1,8 +1,9 @@
 package roomescape.service.support;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.exception.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 
@@ -15,6 +16,8 @@ public class FakeReservationRepository implements ReservationRepository  {
 
     private final List<Reservation> reservations = new ArrayList<>();
     private Reservation savedReservation;
+    private RuntimeException saveException;
+    private RuntimeException updateException;
 
     @Override
     public List<Reservation> findAll() {
@@ -30,6 +33,10 @@ public class FakeReservationRepository implements ReservationRepository  {
 
     @Override
     public Reservation save(final Reservation newReservation) {
+        if (saveException != null) {
+            throw saveException;
+        }
+
         savedReservation = newReservation;
         Reservation savedReservationWithId = Reservation.of(
                 1L,
@@ -43,15 +50,19 @@ public class FakeReservationRepository implements ReservationRepository  {
     }
 
     @Override
-    public Reservation update(final Reservation updatedReservation) {
+    public boolean update(final Reservation updatedReservation) {
+        if (updateException != null) {
+            throw updateException;
+        }
+
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations.get(i).getId().equals(updatedReservation.getId())) {
                 reservations.set(i, updatedReservation);
-                return updatedReservation;
+                return true;
             }
         }
 
-        throw new ReservationNotFoundException();
+        return false;
     }
 
     @Override
@@ -77,5 +88,21 @@ public class FakeReservationRepository implements ReservationRepository  {
 
     public void add(final Reservation reservation) {
         reservations.add(reservation);
+    }
+
+    public void failToSaveByDuplicatedReservation() {
+        saveException = new DuplicateKeyException("duplicated reservation");
+    }
+
+    public void failToSaveByChangedOption() {
+        saveException = new DataIntegrityViolationException("changed reservation option");
+    }
+
+    public void failToUpdateByDuplicatedReservation() {
+        updateException = new DuplicateKeyException("duplicated reservation");
+    }
+
+    public void failToUpdateByChangedOption() {
+        updateException = new DataIntegrityViolationException("changed reservation option");
     }
 }

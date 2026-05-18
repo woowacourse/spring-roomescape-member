@@ -1,9 +1,7 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,9 +10,6 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.exception.ReservationAlreadyExistsException;
-import roomescape.domain.exception.ReservationNotFoundException;
-import roomescape.domain.exception.ReservationOptionChangedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.repository.entity.ReservationEntity;
@@ -125,31 +120,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation update(final Reservation reservation) {
+    public boolean update(final Reservation reservation) {
         final String sql = """
                 UPDATE reservation
                 SET date = ?, time_id = ?
                 WHERE id = ?
                 """;
 
-        try {
-            final int updatedCount = jdbcTemplate.update(
-                    sql,
-                    Date.valueOf(reservation.getDate()),
-                    reservation.getTime().getId(),
-                    reservation.getId()
-            );
+        final int updatedCount = jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
 
-            if (!hasUpdatedReservation(updatedCount)) {
-                throw new ReservationNotFoundException();
-            }
-
-            return reservation;
-        } catch (DuplicateKeyException exception) {
-            throw new ReservationAlreadyExistsException(exception);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ReservationOptionChangedException(exception);
-        }
+        return hasUpdatedReservation(updatedCount);
     }
 
     private static boolean hasUpdatedReservation(final int updatedCount) {
@@ -202,25 +187,19 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        sql,
-                        Statement.RETURN_GENERATED_KEYS
-                );
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql,
+                    Statement.RETURN_GENERATED_KEYS
+            );
 
-                preparedStatement.setString(1, reservationEntity.name());
-                preparedStatement.setDate(2, reservationEntity.date());
-                preparedStatement.setLong(3, reservationEntity.timeId());
-                preparedStatement.setLong(4, reservationEntity.themeId());
+            preparedStatement.setString(1, reservationEntity.name());
+            preparedStatement.setDate(2, reservationEntity.date());
+            preparedStatement.setLong(3, reservationEntity.timeId());
+            preparedStatement.setLong(4, reservationEntity.themeId());
 
-                return preparedStatement;
-            }, keyHolder);
-        } catch (DuplicateKeyException exception) {
-            throw new ReservationAlreadyExistsException(exception);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ReservationOptionChangedException(exception);
-        }
+            return preparedStatement;
+        }, keyHolder);
 
         return generatedIdFrom(keyHolder);
     }
