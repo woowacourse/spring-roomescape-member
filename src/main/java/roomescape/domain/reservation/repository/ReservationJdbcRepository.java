@@ -3,6 +3,8 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -31,12 +33,81 @@ public class ReservationJdbcRepository implements ReservationRepository {
             INNER JOIN reservation_time AS rt
                 ON r.time_id = rt.id
             INNER JOIN theme AS t
+                ON r.theme_id = t.id;
+            """;
+
+    private static final String FIND_ALL_RESERVATIONS_WITH_TIME_BY_USERNAME_QUERY = """
+            SELECT
+                r.id AS reservation_id,
+                r.username AS username,
+                r.date,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail_url AS theme_thumbnail_url,
+                rt.id AS time_id,
+                rt.start_at
+            FROM reservation AS r
+            INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+            INNER JOIN theme AS t
                 ON r.theme_id = t.id
+            WHERE r.username = :username;
+            """;
+
+    private static final String FIND_RESERVATION_WITH_TIME_AND_THEME_BY_ID_QUERY = """
+            SELECT
+                r.id AS reservation_id,
+                r.username AS username,
+                r.date,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail_url AS theme_thumbnail_url,
+                rt.id AS time_id,
+                rt.start_at
+            FROM reservation AS r
+            INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+            INNER JOIN theme AS t
+                ON r.theme_id = t.id
+            WHERE r.id = :id;
+            """;
+
+    private static final String UPDATE_RESERVATION_BY_ID_QUERY = """
+            UPDATE reservation
+            SET
+                username = :username,
+                theme_id = :themeId,
+                date = :date,
+                time_id = :timeId
+            WHERE id = :id;
             """;
 
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
             DELETE FROM reservation
             WHERE id = :id
+            """;
+
+    private static final String EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE theme_id = :themeId
+                    AND date = :date
+                    AND time_id = :timeId
+            );
+            """;
+
+    private static final String EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_AND_ID_NOT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE theme_id = :themeId
+                    AND date = :date
+                    AND time_id = :timeId
+                    AND id <> :id
+            );
             """;
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNumber) -> Reservation.of(
@@ -72,6 +143,36 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByUsername(String username) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("username", username);
+
+        return jdbcTemplate.query(
+                FIND_ALL_RESERVATIONS_WITH_TIME_BY_USERNAME_QUERY,
+                parameters,
+                RESERVATION_ROW_MAPPER
+        );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    FIND_RESERVATION_WITH_TIME_AND_THEME_BY_ID_QUERY,
+                    parameters,
+                    RESERVATION_ROW_MAPPER
+            );
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         if (reservation == null) {
             throw new IllegalArgumentException("reservation이 null 입니다.");
@@ -92,12 +193,62 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int update(Long id, Reservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException("reservation이 null 입니다.");
+        }
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("username", reservation.getUsername())
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId());
+
+        return jdbcTemplate.update(UPDATE_RESERVATION_BY_ID_QUERY, parameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        jdbcTemplate.update(
+        return jdbcTemplate.update(
                 DELETE_RESERVATION_BY_ID_QUERY,
-                parameters);
+                parameters
+        );
+    }
+
+    @Override
+    public boolean existsByThemeIdAndDateAndTimeId(Long themeId, LocalDate date, Long timeId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+
+        Boolean exists = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY,
+                parameters,
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
+    public boolean existsByThemeIdAndDateAndTimeIdAndIdNot(Long themeId, LocalDate date, Long timeId, Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("id", id);
+
+        Boolean exists = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_AND_ID_NOT_QUERY,
+                parameters,
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(exists);
     }
 }

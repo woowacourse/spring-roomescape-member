@@ -1,14 +1,15 @@
 package roomescape.domain.reservationtime.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.reservation.exception.ReservationTimeDeleteConflictException;
+import roomescape.common.exception.BusinessException;
 import roomescape.domain.reservationtime.entity.ReservationTime;
+import roomescape.domain.reservationtime.exception.TimeErrorCode;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.request.ReservationTimeUpdateRequest;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
 import roomescape.domain.reservationtime.response.ReservationTimesResponse;
 
@@ -18,7 +19,6 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    @Autowired
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -32,6 +32,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveReservationTime(ReservationTimeCreateRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DUPLICATE);
+        }
+
         ReservationTime reservationTime = ReservationTime.create(request.startAt());
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
@@ -40,11 +44,29 @@ public class ReservationTimeService {
     }
 
     @Transactional
+    public ReservationTimeResponse updateReservationTime(Long id, ReservationTimeUpdateRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        if (reservationTimeRepository.existsByStartAtAndIdNot(request.startAt(), id)) {
+            throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DUPLICATE);
+        }
+
+        reservationTime.update(request.startAt());
+        reservationTimeRepository.update(id, reservationTime);
+
+        return ReservationTimeResponse.from(reservationTime);
+    }
+
+    @Transactional
     public void deleteReservationTimeBy(Long id) {
         try {
-            reservationTimeRepository.deleteById(id);
+            int deletedCount = reservationTimeRepository.deleteById(id);
+            if (deletedCount == 0) {
+                throw new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND);
+            }
         } catch (DataIntegrityViolationException exception) {
-            throw new ReservationTimeDeleteConflictException(exception);
+            throw new BusinessException(TimeErrorCode.RESERVATION_TIME_DELETE_CONFLICT, exception);
         }
     }
 }

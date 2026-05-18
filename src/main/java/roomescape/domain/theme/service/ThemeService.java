@@ -3,13 +3,17 @@ package roomescape.domain.theme.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.BusinessException;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.exception.ThemeErrorCode;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.repository.ThemeReservationTimeResult;
 import roomescape.domain.theme.request.ThemeCreateRequest;
+import roomescape.domain.theme.request.ThemeUpdateRequest;
 import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
@@ -39,7 +43,8 @@ public class ThemeService {
     }
 
     public ThemeReservationTimesResponse findAllThemeReservationTimes(Long themeId, LocalDate date) {
-        // TODO: 잘못된 입력 예외 처리 (사이클 2)
+        findThemeByIdOrThrow(themeId);
+
         List<ThemeReservationTimeResult> timeResults = themeRepository.findAllReservationTimesByThemeIdAndDate(
                 themeId,
                 date
@@ -72,6 +77,10 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
+        if (themeRepository.existsByName(request.name())) {
+            throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
+        }
+
         Theme theme = Theme.create(
                 request.name(),
                 request.description(),
@@ -84,7 +93,33 @@ public class ThemeService {
     }
 
     @Transactional
+    public ThemeResponse updateTheme(Long id, ThemeUpdateRequest request) {
+        Theme theme = findThemeByIdOrThrow(id);
+
+        if (themeRepository.existsByNameAndIdNot(request.name(), id)) {
+            throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
+        }
+
+        theme.update(request.name(), request.description(), request.thumbnailUrl());
+        themeRepository.update(id, theme);
+
+        return ThemeResponse.from(theme);
+    }
+
+    @Transactional
     public void deleteThemeById(Long themeId) {
-        themeRepository.deleteById(themeId);
+        try {
+            int deletedCount = themeRepository.deleteById(themeId);
+            if (deletedCount == 0) {
+                throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
+            }
+        } catch (DataIntegrityViolationException exception) {
+            throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
+        }
+    }
+
+    private Theme findThemeByIdOrThrow(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
     }
 }

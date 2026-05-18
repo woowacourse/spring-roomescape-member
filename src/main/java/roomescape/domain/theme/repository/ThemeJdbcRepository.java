@@ -42,11 +42,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
             ORDER BY rt.start_at ASC;
             """;
 
-    private static final String DELETE_THEME_BY_ID_QUERY = """
-            DELETE FROM theme
-            WHERE id = :id;
-            """;
-
     private static final String FIND_POPULAR_THEMES_QUERY = """
             SELECT
                 t.id,
@@ -60,6 +55,36 @@ public class ThemeJdbcRepository implements ThemeRepository {
             GROUP BY t.id, t.name, t.description, t.thumbnail_url
             ORDER BY rank, t.id
             LIMIT :limit;
+            """;
+
+    private static final String UPDATE_THEME_QUERY = """
+            UPDATE theme
+            SET name = :name,
+                description = :description,
+                thumbnail_url = :thumbnailUrl
+            WHERE id = :id;
+            """;
+
+    private static final String DELETE_THEME_BY_ID_QUERY = """
+            DELETE FROM theme
+            WHERE id = :id;
+            """;
+
+    private static final String EXISTS_BY_NAME_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+            );
+            """;
+
+    private static final String EXISTS_BY_NAME_AND_ID_NOT_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+                    AND id <> :id
+            );
             """;
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) -> Theme.of(
@@ -167,13 +192,43 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int update(Long id, Theme theme) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnailUrl", theme.getThumbnailUrl());
+
+        return jdbcTemplate.update(UPDATE_THEME_QUERY, parameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        jdbcTemplate.update(
+        return jdbcTemplate.update(
                 DELETE_THEME_BY_ID_QUERY,
                 parameters
+        );
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY, parameters, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByNameAndIdNot(String name, Long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("id", id);
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_NAME_AND_ID_NOT_QUERY, parameters, Boolean.class)
         );
     }
 }

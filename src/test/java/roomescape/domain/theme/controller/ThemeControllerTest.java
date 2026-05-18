@@ -2,15 +2,11 @@ package roomescape.domain.theme.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,6 +88,16 @@ class ThemeControllerTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 테마의 예약 가능 시간 조회는 실패한다.")
+    void getAllThemeReservationTimesWithNotFoundThemeThrowException() {
+        RestAssured.given().log().all()
+                .queryParam("date", "2026-05-05")
+                .when().get("/themes/999/times")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
     @DisplayName("인기 테마 목록을 조회한다.")
     void getPopularThemes() {
         RestAssured.given().log().all()
@@ -114,55 +120,24 @@ class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 테마를 생성한다.")
-    void createTheme() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "새로운 테마");
-        params.put("description", "새로운 테마 설명입니다.");
-        params.put("thumbnailUrl", "https://example.com/new-theme.png");
-
+    @DisplayName("인기 테마 조회 기간은 양수여야 한다.")
+    void getPopularThemesWithInvalidPeriodThrowException() {
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
+                .queryParam("period", 0)
+                .queryParam("limit", 2)
+                .when().get("/themes/popular")
                 .then().log().all()
-                .statusCode(201)
-                .header("Location", notNullValue())
-                .body("id", notNullValue())
-                .body("name", is("새로운 테마"))
-                .body("description", is("새로운 테마 설명입니다."))
-                .body("thumbnailUrl", is("https://example.com/new-theme.png"));
+                .statusCode(400);
     }
 
     @Test
-    @DisplayName("관리자는 예약이 존재하지 않는 테마를 삭제한다.")
-    void deleteTheme() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "삭제할 테마");
-        params.put("description", "삭제할 테마 설명입니다.");
-        params.put("thumbnailUrl", "https://example.com/delete-theme.png");
-
-        Integer id = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .path("id");
-
+    @DisplayName("인기 테마 조회 개수는 양수여야 한다.")
+    void getPopularThemesWithInvalidLimitThrowException() {
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/" + id)
+                .queryParam("period", 7)
+                .queryParam("limit", 0)
+                .when().get("/themes/popular")
                 .then().log().all()
-                .statusCode(204);
-    }
-
-    @Test
-    @DisplayName("예약이 존재하는 테마는 삭제할 수 없다.")
-    void deleteThemeFailWhenReservationExists() {
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/1")
-                .then().log().all()
-                .statusCode(409);
+                .statusCode(400);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.repository;
 
+import static java.sql.Date.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -59,6 +60,38 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("이름으로 예약을 조회한다.")
+    void findAllByUsernameTest() {
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByUsername("포비");
+
+        // then
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations)
+                .extracting(Reservation::getUsername)
+                .containsExactly("포비");
+    }
+
+    @Test
+    @DisplayName("ID로 예약을 조회한다.")
+    void findByIdTest() {
+        // given
+        long generatedId = insertReservation(
+                "조이",
+                3L,
+                LocalDate.of(2026, 5, 10),
+                6L
+        );
+
+        // when
+        Reservation found = reservationRepository.findById(generatedId).orElse(null);
+
+        // then
+        assertThat(found).isNotNull();
+        assertThat(found.getUsername()).isEqualTo("조이");
+    }
+
+    @Test
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given
@@ -89,6 +122,33 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약을 수정한다.")
+    void updateTest() {
+        // given
+        long generatedId = insertReservation(
+                "조이",
+                3L,
+                LocalDate.of(2026, 5, 10),
+                6L
+        );
+        Reservation reservation = Reservation.of(
+                generatedId,
+                "조이",
+                Theme.of(3L, "theme", "desc", "url"),
+                LocalDate.of(2026, 5, 11),
+                ReservationTime.of(1L, LocalTime.of(10, 0))
+        );
+
+        // when
+        reservationRepository.update(generatedId, reservation);
+
+        // then
+        Map<String, Object> found = findReservationById(generatedId);
+        assertThat(found.get("date")).isEqualTo(valueOf(LocalDate.of(2026, 5, 11)));
+        assertThat(((Long) found.get("time_id"))).isEqualTo(1L);
+    }
+
+    @Test
     @DisplayName("ID로 예약을 삭제한다.")
     void deleteByIdTest() {
         // given
@@ -105,6 +165,52 @@ class ReservationJdbcRepositoryTest {
         // then
         List<Map<String, Object>> reservations = findAllReservationById(generatedId);
         assertThat(reservations).isEmpty();
+    }
+
+    @Test
+    @DisplayName("테마 ID, 날짜, 시간 ID로 예약 존재 여부를 확인한다.")
+    void existsByThemeIdAndDateAndTimeId() {
+        // given
+        long themeId = 1L;
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        long timeId = 1L;
+        insertReservation("유저", themeId, date, timeId);
+
+        // when
+        boolean exists = reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, date, timeId);
+        boolean notExists = reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, date, 2L);
+
+        // then
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("자기 자신을 제외하고 테마 ID, 날짜, 시간 ID로 예약 존재 여부를 확인한다.")
+    void existsByThemeIdAndDateAndTimeIdAndIdNot() {
+        // given
+        long themeId = 1L;
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        long timeId = 1L;
+        long generatedId = insertReservation("유저", themeId, date, timeId);
+
+        // when
+        boolean existsOtherReservation = reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                themeId,
+                date,
+                timeId,
+                generatedId + 1
+        );
+        boolean existsSelfReservation = reservationRepository.existsByThemeIdAndDateAndTimeIdAndIdNot(
+                themeId,
+                date,
+                timeId,
+                generatedId
+        );
+
+        // then
+        assertThat(existsOtherReservation).isTrue();
+        assertThat(existsSelfReservation).isFalse();
     }
 
     private long insertReservation(String username, long themeId, LocalDate date, long timeId) {

@@ -15,7 +15,8 @@
     </div>
     <nav class="tabs" aria-label="주요 화면">
         <button class="tab active" data-view="booking">예약</button>
-        <button class="tab" data-view="reservations">예약 현황</button>
+        <button class="tab" data-view="myReservations">내 예약</button>
+        <button class="tab" data-view="reservations">예약 현황 (전체)</button>
         <button class="tab" data-view="admin">관리</button>
     </nav>
 </header>
@@ -83,11 +84,25 @@
 
     </section>
 
+    <section id="myReservationsView" class="view">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">My Reservations</p>
+                <h2>내 예약 조회</h2>
+            </div>
+            <form id="myReservationSearchForm" class="toolbar">
+                <input id="myReservationNameInput" type="text" placeholder="예약자 이름 입력" required>
+                <button class="secondary-button" type="submit">조회</button>
+            </form>
+        </div>
+        <div id="myReservationList" class="reservation-list"></div>
+    </section>
+
     <section id="reservationsView" class="view">
         <div class="section-head">
             <div>
                 <p class="eyebrow">Reservations</p>
-                <h2>예약 현황</h2>
+                <h2>전체 예약 현황</h2>
             </div>
             <div class="toolbar">
                 <label class="select-label">
@@ -107,7 +122,7 @@
         <div class="section-head">
             <div>
                 <p class="eyebrow">Admin</p>
-                <h2>테마와 시간 관리</h2>
+                <h2>테마, 시간 및 예약 관리</h2>
             </div>
         </div>
         <div class="admin-grid">
@@ -137,6 +152,27 @@
                 </label>
                 <button class="primary-button" type="submit">시간 추가</button>
                 <div id="adminTimeList" class="admin-list"></div>
+            </form>
+
+            <form id="adminReservationForm" class="admin-panel">
+                <h3>예약 등록 (관리자)</h3>
+                <label>
+                    예약자 이름
+                    <input name="username" type="text" placeholder="이름" required>
+                </label>
+                <label>
+                    테마 ID
+                    <input name="themeId" type="number" required>
+                </label>
+                <label>
+                    날짜
+                    <input name="date" type="date" required>
+                </label>
+                <label>
+                    시간 ID
+                    <input name="timeId" type="number" required>
+                </label>
+                <button class="primary-button" type="submit">예약 추가</button>
             </form>
         </div>
     </section>
