@@ -17,6 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +64,7 @@ class ReservationTimeServiceTest {
 
     @Test
     void 시간_삭제_시_예약이_존재하는_시간이면_예외가_발생한다() {
-        when(reservationRepository.existsByTimeId(any())).thenReturn(true);
+        when(reservationRepository.existsByTimeId(anyLong())).thenReturn(true);
         assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())

@@ -30,7 +30,7 @@ public class ThemeRepository {
                 rs.getString("thumbnail")));
     }
 
-    public Optional<Theme> findById(Long themeId) {
+    public Optional<Theme> findById(long themeId) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -47,7 +47,7 @@ public class ThemeRepository {
         }
     }
 
-    public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
+    public List<Long> findReservedTimeIds(long themeId, LocalDate date) {
         String sql = "SELECT r.time_id FROM reservation r " +
                 "JOIN reservation_time rt ON r.time_id = rt.id " +
                 "WHERE r.theme_id = ? AND r.date = ?";
@@ -90,7 +90,7 @@ public class ThemeRepository {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

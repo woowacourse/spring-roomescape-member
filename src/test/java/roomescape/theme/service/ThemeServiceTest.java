@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,12 +68,12 @@ class ThemeServiceTest {
         );
         List<Long> reservedTimeIds = List.of(1L, 3L);
         when(reservationTimeRepository.findAll()).thenReturn(reservationTimes);
-        when(themeRepository.findReservedTimeIds(any(), any())).thenReturn(reservedTimeIds);
+        when(themeRepository.findReservedTimeIds(anyLong(), any())).thenReturn(reservedTimeIds);
 
         List<TimeAvailability> result = themeService.findAvailableTimes(1L, LocalDate.of(2026, 5, 6));
 
         verify(reservationTimeRepository, times(1)).findAll();
-        verify(themeRepository, times(1)).findReservedTimeIds(any(), any());
+        verify(themeRepository, times(1)).findReservedTimeIds(anyLong(), any());
         assertThat(result).containsExactly(
                 new TimeAvailability(1L, LocalTime.of(13, 0), false),
                 new TimeAvailability(2L, LocalTime.of(15, 0), true),

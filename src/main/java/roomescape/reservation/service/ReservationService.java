@@ -46,7 +46,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
 
@@ -60,7 +60,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateReservation(Long id, String name, LocalDate date, Long timeId) {
+    public Reservation updateReservation(long id, String name, LocalDate date, long timeId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
@@ -75,7 +75,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteUserReservation(Long id, String name) {
+    public void deleteUserReservation(long id, String name) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
@@ -83,13 +83,13 @@ public class ReservationService {
         reservationRepository.deleteByIdAndName(id, name);
     }
 
-    private void validateUnique(LocalDate date, Long timeId, Long themeId) {
+    private void validateUnique(LocalDate date, long timeId, long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }
 
-    private void validateUniqueForUpdate(Long id, LocalDate date, Long timeId, Long themeId) {
+    private void validateUniqueForUpdate(long id, LocalDate date, long timeId, long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(id, date, timeId, themeId)) {
             throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
         }

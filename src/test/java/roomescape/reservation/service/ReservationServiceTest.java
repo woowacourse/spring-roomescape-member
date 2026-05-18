@@ -21,6 +21,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,14 +91,14 @@ class ReservationServiceTest {
         Theme theme = new Theme(2L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2026, 5, 10), time, theme);
 
-        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
-        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.of(time));
+        when(themeRepository.findById(anyLong())).thenReturn(Optional.of(theme));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
         Reservation result = reservationService.createReservation("어셔", LocalDate.of(2026, 5, 10), 1L, 2L);
 
-        verify(reservationTimeRepository).findById(any());
-        verify(themeRepository).findById(any());
+        verify(reservationTimeRepository).findById(anyLong());
+        verify(themeRepository).findById(anyLong());
         verify(reservationRepository).save(any(Reservation.class));
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("어셔");
@@ -112,8 +114,8 @@ class ReservationServiceTest {
         ReservationTime newTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
-        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(newTime));
-        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+        when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.of(newTime));
+        when(themeRepository.findById(anyLong())).thenReturn(Optional.of(theme));
 
         assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 4, 1), 1L, 1L))
                 .isInstanceOf(DomainConflictException.class);
@@ -125,9 +127,9 @@ class ReservationServiceTest {
     void 이미_예약된_예약_시간인_경우_예외가_발생한다() {
         ReservationTime newTime = new ReservationTime(2L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
-        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(newTime));
-        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
-        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), any(), any())).thenReturn(true);
+        when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.of(newTime));
+        when(themeRepository.findById(anyLong())).thenReturn(Optional.of(theme));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong())).thenReturn(true);
 
         assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 5, 13), 1L, 1L))
                 .isInstanceOf(BusinessException.class)
@@ -137,7 +139,7 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_시간으로_예약을_생성하면_예외가_발생하고_예약을_저장하지_않는다() {
-        when(reservationTimeRepository.findById(any())).thenReturn(Optional.empty());
+        when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 "브라운", LocalDate.of(2026, 5, 10), 999L, 2L))
@@ -182,7 +184,7 @@ class ReservationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
 
-        verify(reservationTimeRepository, never()).findById(any());
+        verify(reservationTimeRepository, never()).findById(anyLong());
         verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
@@ -270,7 +272,7 @@ class ReservationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
 
-        verify(reservationRepository, never()).deleteByIdAndName(any(), any());
+        verify(reservationRepository, never()).deleteByIdAndName(anyLong(), any());
     }
 
     @Test
@@ -287,6 +289,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteUserReservation(7L, "레서"))
                 .isInstanceOf(DomainConflictException.class);
 
-        verify(reservationRepository, never()).deleteByIdAndName(any(), any());
+        verify(reservationRepository, never()).deleteByIdAndName(anyLong(), any());
     }
 }

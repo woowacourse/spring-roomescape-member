@@ -27,7 +27,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<TimeAvailability> findAvailableTimes(Long themeId, LocalDate date) {
+    public List<TimeAvailability> findAvailableTimes(long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(themeId, date);
 
@@ -55,7 +55,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void deleteTheme(Long id) {
+    public void deleteTheme(long id) {
         themeRepository.deleteById(id);
     }
 }

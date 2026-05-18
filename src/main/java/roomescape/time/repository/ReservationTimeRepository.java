@@ -27,7 +27,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, reservationTimeRowsMapper());
     }
 
-    public Optional<ReservationTime> findById(Long timeId) {
+    public Optional<ReservationTime> findById(long timeId) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         try {
             ReservationTime time = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -55,7 +55,7 @@ public class ReservationTimeRepository {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

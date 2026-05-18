@@ -46,7 +46,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper(), size, offset);
     }
 
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = """
                 SELECT r.id          AS reservation_id,
                        r.name        AS reservation_name,
@@ -92,13 +92,13 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper(), name, size, offset);
     }
 
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return count != null && count > 0;
     }
 
-    public boolean existsByDateAndTimeIdAndThemeIdAndIdNot(Long id, LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeIdAndIdNot(long id, LocalDate date, long timeId, long themeId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
@@ -129,7 +129,7 @@ public class ReservationRepository {
                 reservation.getTheme());
     }
 
-    public boolean existsByTimeId(Long id) {
+    public boolean existsByTimeId(long id) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count =  jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
@@ -143,12 +143,12 @@ public class ReservationRepository {
                 reservation.getId());
     }
 
-    public int deleteById(Long id) {
+    public int deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
-    public int deleteByIdAndName(Long id, String name) {
+    public int deleteByIdAndName(long id, String name) {
         String sql = "DELETE FROM reservation WHERE id = ? AND name = ?";
         return jdbcTemplate.update(sql, id, name);
     }

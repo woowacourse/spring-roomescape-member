@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -105,7 +106,7 @@ class ReservationControllerTest {
                 new ReservationTime(1L, LocalTime.of(18,0)),
                 new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
 
-        when(reservationService.createReservation(any(), any(), any(), any())).thenReturn(created);
+        when(reservationService.createReservation(any(), any(), anyLong(), anyLong())).thenReturn(created);
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -134,7 +135,7 @@ class ReservationControllerTest {
                 new ReservationTime(2L, LocalTime.of(20, 0)),
                 new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
 
-        when(reservationService.updateReservation(any(), any(), any(), any())).thenReturn(updated);
+        when(reservationService.updateReservation(anyLong(), any(), any(), anyLong())).thenReturn(updated);
 
         mockMvc.perform(patch("/reservations/1")
                         .param("name", "레서")
