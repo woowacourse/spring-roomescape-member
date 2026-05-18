@@ -30,25 +30,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PastReservationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlePastReservation(PastReservationException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(ErrorCode.PAST_RESERVATION.name(), e.getMessage());
     }
 
     @ExceptionHandler(ResourceConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflict(ResourceConflictException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(ErrorCode.CONFLICT.name(), e.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(ResourceNotFoundException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(ErrorCode.NOT_FOUND.name(), e.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedReservationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleUnauthorized(UnauthorizedReservationException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(ErrorCode.FORBIDDEN.name(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
-        return new ErrorResponse(message);
+        return new ErrorResponse(ErrorCode.INVALID_INPUT.name(), message);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -66,51 +66,51 @@ public class GlobalExceptionHandler {
         String message = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-        return new ErrorResponse(message);
+        return new ErrorResponse(ErrorCode.INVALID_INPUT.name(), message);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        return new ErrorResponse("파라미터 '" + e.getName() + "'의 형식이 올바르지 않습니다");
+        return new ErrorResponse(ErrorCode.INVALID_PARAMETER.name(), "파라미터 '" + e.getName() + "'의 형식이 올바르지 않습니다");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingParam(MissingServletRequestParameterException e) {
-        return new ErrorResponse("필수 파라미터 '" + e.getParameterName() + "'가 누락되었습니다");
+        return new ErrorResponse(ErrorCode.INVALID_PARAMETER.name(), "필수 파라미터 '" + e.getParameterName() + "'가 누락되었습니다");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotReadable(HttpMessageNotReadableException e) {
-        return new ErrorResponse("요청 본문 형식이 올바르지 않습니다");
+        return new ErrorResponse(ErrorCode.INVALID_PARAMETER.name(), "요청 본문 형식이 올바르지 않습니다");
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoResource(NoResourceFoundException e) {
-        return new ErrorResponse("요청한 리소스를 찾을 수 없습니다");
+        return new ErrorResponse(ErrorCode.RESOURCE_NOT_FOUND.name(), "요청한 리소스를 찾을 수 없습니다");
     }
 
     @ExceptionHandler(DomainValidationException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleDomainValidation(DomainValidationException e) {
         log.error("도메인 검증 실패 — 잘못된 값이 도메인 계층에 도달했습니다: {}", e.getMessage(), e);
-        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
+        return new ErrorResponse(ErrorCode.DOMAIN_VALIDATION_FAILED.name(), INTERNAL_ERROR_MESSAGE);
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRuntime(RuntimeException e) {
         log.error("처리되지 않은 런타임 예외가 발생했습니다", e);
-        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
+        return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), INTERNAL_ERROR_MESSAGE);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleUnexpected(Exception e) {
         log.error("처리되지 않은 예외가 발생했습니다", e);
-        return new ErrorResponse(INTERNAL_ERROR_MESSAGE);
+        return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), INTERNAL_ERROR_MESSAGE);
     }
 }
