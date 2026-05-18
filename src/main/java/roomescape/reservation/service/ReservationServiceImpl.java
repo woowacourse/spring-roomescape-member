@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -17,7 +18,6 @@ import roomescape.time.service.TimeService;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeRepository themeRepository;
@@ -40,17 +40,16 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll();
     }
 
-
     @Transactional
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = findTime(reservation.timeId());
         Long themeId = reservation.themeId();
-        LocalDate date = reservation.date();
+        time.validateReservableSchedule();
         validateThemeId(themeId);
-        validateNotHoliday(date);
-        validateDuplicatedReservation(themeId, time, date);
-        Reservation newReservation = new Reservation(reservation.name(), date, time, themeId);
+        validateNotHoliday(time);
+        validateDuplicatedReservation(themeId, time);
+        Reservation newReservation = new Reservation(reservation.name(), time, themeId);
         Reservation saved = reservationRepository.save(newReservation);
         return saved.withTheme(themeRepository.findById(themeId));
     }
@@ -64,15 +63,15 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private void validateNotHoliday(LocalDate date) {
-        if (holidayService.isHoliday(date)) {
+    private void validateNotHoliday(ReservationTime time) {
+        if (holidayService.isHoliday(time.getDate())) {
             throw new IllegalArgumentException("휴일은 예약이 불가합니다.");
         }
     }
 
-    private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
-        if (reservationRepository.isDuplicated(themeId, time, date)) {
-            throw new IllegalArgumentException("중복 예약은 불가합니다.");
+    private void validateDuplicatedReservation(Long themeId, ReservationTime time) {
+        if (reservationRepository.isDuplicated(themeId, time)) {
+            throw new DuplicateReservationException();
         }
     }
 
@@ -85,6 +84,35 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void cancel(Long id) {
+        boolean deleted = reservationRepository.deleteById(id);
+        if (!deleted) {
+            throw new ReservationNotFoundException(id);
+        }
+    }
+
+    @Override
+    public List<Reservation> getByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
+    @Override
+    public void cancelForUser(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        reservation.getTime().validateNotPastForCancel();
         reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public Reservation update(Long id, Long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        reservation.getTime().validateUpdatableReservation();
+        ReservationTime newTime = findTime(timeId);
+        newTime.validateReservableSchedule();
+        validateDuplicatedReservation(reservation.getThemeId(), newTime);
+        reservationRepository.update(id, timeId);
+        return reservation.withTime(newTime);
     }
 }

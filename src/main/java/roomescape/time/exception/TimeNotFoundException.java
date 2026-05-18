@@ -1,15 +1,12 @@
 package roomescape.time.exception;
 
-public class TimeNotFoundException extends RuntimeException {
-  private final Long id;
+import org.springframework.http.HttpStatus;
 
-  public TimeNotFoundException(Long id) {
-    super("예약 시간이 존재하지 않습니다. id=" + id);
-    this.id = id;
-  }
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
 
-  public Long getId() {
-    return id;
-  }
+public class TimeNotFoundException extends BusinessException {
+    public TimeNotFoundException(Long id) {
+        super(HttpStatus.NOT_FOUND, ErrorCode.TIME_NOT_FOUND, "예약 시간을 찾을 수 없습니다. id=" + id);
+    }
 }
-

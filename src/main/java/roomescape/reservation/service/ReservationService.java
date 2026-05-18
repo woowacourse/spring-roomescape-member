@@ -9,4 +9,7 @@ public interface ReservationService {
     List<Reservation> getAll();
     Reservation create(ReservationSaveServiceDto reservation);
     void cancel(Long id);
+    List<Reservation> getByName(String name);
+    void cancelForUser(Long id);
+    Reservation update(Long id, Long timeId);
 }

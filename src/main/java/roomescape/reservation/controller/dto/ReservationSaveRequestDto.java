@@ -1,17 +1,17 @@
 package roomescape.reservation.controller.dto;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 
 public record ReservationSaveRequestDto(
-        String name,
-        LocalDate date,
-        Long themeId,
-        Long timeId
+        @NotBlank String name,
+        @NotNull Long themeId,
+        @NotNull Long timeId
 ) {
 
     public ReservationSaveServiceDto toServiceDto() {
-        return new ReservationSaveServiceDto(name, date, themeId, timeId);
+        return new ReservationSaveServiceDto(name, themeId, timeId);
     }
 }

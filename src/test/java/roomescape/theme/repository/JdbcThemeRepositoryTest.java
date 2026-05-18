@@ -69,8 +69,6 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void findBestThemesByDate() {
-        Long timeId = insertTime("10:00", "12:00");
-
         Theme theme1 = jdbcThemeRepository.save(new Theme("테마1", "설명1", "https://img.test/1.png"));
         Theme theme2 = jdbcThemeRepository.save(new Theme("테마2", "설명2", "https://img.test/2.png"));
         Theme theme3 = jdbcThemeRepository.save(new Theme("테마3", "설명3", "https://img.test/3.png"));
@@ -78,15 +76,22 @@ class JdbcThemeRepositoryTest {
         LocalDate startDate = LocalDate.of(2026, 5, 3);
         LocalDate endDate = LocalDate.of(2026, 5, 10);
 
-        insertReservation("a1", LocalDate.of(2026, 5, 7), timeId, theme1.getId());
-        insertReservation("a2", LocalDate.of(2026, 5, 8), timeId, theme1.getId());
-        insertReservation("a3", LocalDate.of(2026, 5, 10), timeId, theme1.getId());
+        Long timeId7 = insertTime("2026-05-07 10:00:00", "2026-05-07 12:00:00");
+        Long timeId8 = insertTime("2026-05-08 10:00:00", "2026-05-08 12:00:00");
+        Long timeId9 = insertTime("2026-05-09 10:00:00", "2026-05-09 12:00:00");
+        Long timeId10 = insertTime("2026-05-10 10:00:00", "2026-05-10 12:00:00");
+        Long timeId6 = insertTime("2026-05-06 10:00:00", "2026-05-06 12:00:00");
+        Long timeId2 = insertTime("2026-05-02 10:00:00", "2026-05-02 12:00:00");
 
-        insertReservation("b1", LocalDate.of(2026, 5, 9), timeId, theme2.getId());
-        insertReservation("b2", LocalDate.of(2026, 5, 10), timeId, theme2.getId());
-        insertReservation("b_in", LocalDate.of(2026, 5, 6), timeId, theme2.getId());
+        insertReservation("a1", timeId7, theme1.getId());
+        insertReservation("a2", timeId8, theme1.getId());
+        insertReservation("a3", timeId10, theme1.getId());
 
-        insertReservation("c_out", LocalDate.of(2026, 5, 2), timeId, theme3.getId());
+        insertReservation("b1", timeId9, theme2.getId());
+        insertReservation("b2", timeId10, theme2.getId());
+        insertReservation("b_in", timeId6, theme2.getId());
+
+        insertReservation("c_out", timeId2, theme3.getId());
 
         // when
         List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(startDate, endDate, 10);
@@ -112,11 +117,10 @@ class JdbcThemeRepositoryTest {
         );
     }
 
-    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    private void insertReservation(String name, Long timeId, Long themeId) {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "INSERT INTO reservation (name, time_id, theme_id) VALUES (?, ?, ?)",
                 name,
-                java.sql.Date.valueOf(date),
                 timeId,
                 themeId
         );

@@ -5,9 +5,9 @@ DROP TABLE IF EXISTS holiday;
 
 CREATE TABLE reservation_time
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_time TIME NOT NULL,
-    end_time   TIME NOT NULL,
+    id         BIGINT   NOT NULL AUTO_INCREMENT,
+    start_time DATETIME NOT NULL,
+    end_time   DATETIME NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -22,23 +22,22 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL,
-    date    DATE         NOT NULL,
-    time_id BIGINT       NOT NULL,
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    CONSTRAINT uq_reservation UNIQUE (date, time_id, theme_id)
+    CONSTRAINT uq_reservation UNIQUE (time_id, theme_id)
 );
 
 CREATE TABLE holiday
 (
-    id          BIGINT      NOT NULL AUTO_INCREMENT,
-    date        DATE        NOT NULL,
+    id   BIGINT NOT NULL AUTO_INCREMENT,
+    date DATE   NOT NULL,
     PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_reservation_theme_date ON reservation (theme_id, date);
+CREATE INDEX idx_reservation_theme ON reservation (theme_id);
 CREATE INDEX idx_holiday_date ON holiday (date);

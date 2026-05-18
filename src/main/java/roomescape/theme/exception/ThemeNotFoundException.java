@@ -1,14 +1,12 @@
 package roomescape.theme.exception;
 
-public class ThemeNotFoundException extends RuntimeException {
-    private final Long id;
+import org.springframework.http.HttpStatus;
 
+import roomescape.error.BusinessException;
+import roomescape.error.ErrorCode;
+
+public class ThemeNotFoundException extends BusinessException {
     public ThemeNotFoundException(Long id) {
-        super("테마가 존재하지 않습니다. id=" + id);
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
+        super(HttpStatus.NOT_FOUND, ErrorCode.THEME_NOT_FOUND, "테마를 찾을 수 없습니다. id=" + id);
     }
 }

@@ -46,21 +46,21 @@ public class DatabaseMissionStepTest {
         );
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (start_time, end_time) VALUES (?, ?)",
-                "15:40", "16:00"
+                "2023-08-05 15:40:00", "2023-08-05 16:00:00"
         );
         Long timeId = jdbcTemplate.queryForObject(
                 "SELECT id FROM reservation_time WHERE start_time = ?",
                 Long.class,
-                "15:40"
+                "2023-08-05 15:40:00"
         );
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", timeId, 1L
+                "INSERT INTO reservation (name, time_id, theme_id) VALUES (?, ?, ?)",
+                "브라운", timeId, 1L
         );
 
         List<?> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList("reservations");
@@ -73,8 +73,8 @@ public class DatabaseMissionStepTest {
     @Test
     void DB_추가_삭제_API_전환() {
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "10:00");
-        time.put("endAt", "12:00");
+        time.put("startAt", "2030-06-01T10:00");
+        time.put("endAt", "2030-06-01T12:00");
 
         Map<String, String> theme = new HashMap<>();
         theme.put("name", "테마");
@@ -97,14 +97,13 @@ public class DatabaseMissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -112,7 +111,7 @@ public class DatabaseMissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
@@ -120,4 +119,3 @@ public class DatabaseMissionStepTest {
         assertThat(countAfterDelete).isEqualTo(0);
     }
 }
-

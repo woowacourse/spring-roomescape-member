@@ -62,7 +62,7 @@
                     <div class="head">
                         <div>
                             <strong th:text="${reservation.name()}"></strong>
-                            <p th:text="|${reservation.date()} · ${reservation.theme().name()} · ${reservation.time().startAt()} ~ ${reservation.time().endAt()}|"></p>
+                            <p th:text="|${reservation.time().startAt()} ~ ${reservation.time().endAt()} · ${reservation.theme().name()}|"></p>
                         </div>
                         <form class="inline-form" method="post" th:action="@{|/dashboard/reservations/${reservation.id()}/cancel|}">
                             <button type="submit" class="danger">취소</button>

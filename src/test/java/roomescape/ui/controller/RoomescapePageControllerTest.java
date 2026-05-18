@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -51,8 +51,9 @@ class RoomescapePageControllerTest {
     private HolidayService holidayService;
 
     private void stubDashboardData() {
+        ReservationTime time = new ReservationTime(1L, LocalDateTime.of(2026, 5, 6, 10, 0), LocalDateTime.of(2026, 5, 6, 11, 0));
         Mockito.when(reservationService.getAll()).thenReturn(List.of(
-                new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(11, 0)), 1L)
+                new Reservation("브라운", time, 1L)
                         .withId(1L)
                         .withTheme(new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L))
         ));
@@ -62,15 +63,11 @@ class RoomescapePageControllerTest {
         Mockito.when(themeService.getBestThemes()).thenReturn(List.of(
                 new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L)
         ));
-        Mockito.when(timeService.findAll()).thenReturn(List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(11, 0))
-        ));
+        Mockito.when(timeService.findAll()).thenReturn(List.of(time));
         Mockito.when(holidayService.getAll()).thenReturn(List.of(
                 new Holiday(1L, LocalDate.of(2026, 5, 7))
         ));
-        Mockito.when(themeService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(11, 0))
-        ));
+        Mockito.when(themeService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(time));
     }
 
     @Test
@@ -100,17 +97,15 @@ class RoomescapePageControllerTest {
                         .param("availableDate", "2026-05-06"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("테마 선택")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("미궁의 유산")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("10:00 (#1)")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("미궁의 유산")));
     }
 
     @Test
     void createReservation_redirectsWithSuccessMessage() throws Exception {
         mockMvc.perform(post("/dashboard/reservations")
                         .param("name", "브라운")
-                .param("date", "2026-05-06")
-                .param("themeId", "1")
-                .param("timeId", "1"))
+                        .param("themeId", "1")
+                        .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard/reservations"))
                 .andExpect(flash().attribute("successMessage", "예약을 생성했습니다."));
@@ -125,7 +120,6 @@ class RoomescapePageControllerTest {
 
         mockMvc.perform(post("/dashboard/reservations")
                         .param("name", "브라운")
-                        .param("date", "2026-05-06")
                         .param("themeId", "1")
                         .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
