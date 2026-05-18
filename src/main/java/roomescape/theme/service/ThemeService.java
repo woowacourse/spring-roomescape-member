@@ -75,7 +75,7 @@ public class ThemeService {
                 .map(time -> createResponse(time, reservedTimeIds))
                 .filter(response -> isMatchCondition(request.available(), response.available()))
                 .toList();
-        }
+    }
 
     private AvailableReservationTimeResponse createResponse(ReservationTime time, Set<Long> reservedIdSet) {
         boolean isAvailable = !reservedIdSet.contains(time.getId());

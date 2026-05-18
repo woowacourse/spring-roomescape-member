@@ -64,7 +64,8 @@ class MissionStepTest {
         dataInitializer.initializeReservationTime(LocalTime.now());
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2023-08-05",
                 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -73,7 +74,8 @@ class MissionStepTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false",
+                Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -95,7 +97,8 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false",
+                Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -103,7 +106,8 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation where is_deleted = false", Integer.class);
+        Integer countAfterDelete = jdbcTemplate.queryForObject(
+                "SELECT count(1) from reservation where is_deleted = false", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 }
