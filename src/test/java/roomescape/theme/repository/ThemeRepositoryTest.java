@@ -62,8 +62,8 @@ class ThemeRepositoryTest {
         List<Theme> themes = new ArrayList<>();
         for (String name : names) {
             Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
-            theme.updateStatus(true);
-            themes.add(theme);
+            Theme changedTheme = theme.changeStatus(true);
+            themes.add(changedTheme);
         }
         return themes;
     }

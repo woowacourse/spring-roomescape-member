@@ -42,8 +42,8 @@ class ReservationTimeRepositoryTest {
         ReservationTime time3 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(14, 0)));
         LocalDate date = LocalDate.of(2099, 10, 10);
         Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
-        theme1.updateStatus(true);
-        Theme theme2 = jdbcThemeRepository.save(theme1);
+        Theme changedTheme1 = theme1.changeStatus(true);
+        Theme theme2 = jdbcThemeRepository.save(changedTheme1);
         jdbcReservationRepository.save(Reservation.create("한다", date, time1.startAt(), theme2));
         jdbcReservationRepository.save(Reservation.create("한다", date, time2.startAt(), theme2));
 

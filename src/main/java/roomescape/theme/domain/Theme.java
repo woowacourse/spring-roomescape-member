@@ -3,11 +3,11 @@ package roomescape.theme.domain;
 import roomescape.common.exception.DomainValidationException;
 
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
-    private String thumbnailUrl;
-    private boolean isActive;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnailUrl;
+    private final boolean isActive;
 
     private Theme(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
         validate(name, description, thumbnailUrl);
@@ -70,7 +70,7 @@ public class Theme {
         return isActive;
     }
 
-    public void updateStatus(boolean isActive) {
-        this.isActive = isActive;
+    public Theme changeStatus(boolean isActive) {
+        return new Theme(id, name, description, thumbnailUrl, isActive);
     }
 }

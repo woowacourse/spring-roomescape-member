@@ -54,8 +54,8 @@ public class ThemeService {
     @Transactional
     public Theme updateStatus(Long id, boolean isActive) {
         Theme theme = getTheme(id);
-        theme.updateStatus(isActive);
-        Theme updatedTheme = themeRepository.updateStatus(theme);
+        Theme changedTheme = theme.changeStatus(isActive);
+        Theme updatedTheme = themeRepository.updateStatus(changedTheme);
         log.info("Theme status updated: id={}, name={}, isActive={}", updatedTheme.id(), updatedTheme.name(), updatedTheme.isActive());
         return updatedTheme;
     }
