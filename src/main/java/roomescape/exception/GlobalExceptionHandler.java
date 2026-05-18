@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ProblemDetail handleException(Exception e) {
+    public ProblemDetail handleRoomescapeException(RoomescapeException e) {
+        ErrorCode errorCode = e.getErrorCode();
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "서버 내부 오류가 발생했습니다."
+                errorCode.getStatus(),
+                errorCode.getMessage()
         );
-        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setTitle(errorCode.name());
         return problemDetail;
     }
 
@@ -30,13 +31,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ProblemDetail handleRoomescapeException(RoomescapeException e) {
-        ErrorCode errorCode = e.getErrorCode();
+    public ProblemDetail handleException(Exception e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                errorCode.getStatus(),
-                errorCode.getMessage()
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "서버 내부 오류가 발생했습니다."
         );
-        problemDetail.setTitle(errorCode.name());
+        problemDetail.setTitle("Internal Server Error");
         return problemDetail;
     }
 }
